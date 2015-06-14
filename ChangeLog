@@ -1,3 +1,10 @@
+2015-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c: Add/fix utility usage messages for -box,
+	-convolve, -gravity, -linewidth, -list, -mattecolor, -render and
+	-shave.  Resolves SourceForge issue #302 "MogrifyUsage prints
+	incomplete information ".
+
 2015-06-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Include JPEG headers to obtain
