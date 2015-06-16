@@ -106,7 +106,7 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
   * GM is used to process billions of files at the world's largest photo
     sites (e.g. `Flickr`_ and `Etsy`_).
   
-  * GM does not does not conflict with other installed software.
+  * GM does not conflict with other installed software.
 
   * GM suffers from fewer security issues and exploits.
 
