@@ -1095,7 +1095,7 @@ BreakAll:
     if(pixels) 
      {MagickFreeMemory(pixels);pixels=NULL;}
     if(image->next==NULL) break;
-    image=image->next;
+    image=SyncNextImageInList(image);
   }
 
   CloseBlob(image);

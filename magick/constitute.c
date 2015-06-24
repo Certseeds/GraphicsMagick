@@ -2113,6 +2113,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
   (void) SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
   (void) strlcpy(image->filename,clone_info->filename,MaxTextExtent);
   image->dither=image_info->dither;
+  DisassociateBlob(image);
 
 #if 0
   /*

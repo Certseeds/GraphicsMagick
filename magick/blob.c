@@ -4810,3 +4810,52 @@ MagickExport size_t WriteBlobString(Image *image,const char *string)
   assert(string != (const char *) NULL);
   return(WriteBlob(image,strlen(string),string));
 }
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++  D i s a s s o c i a t e B l o b                                            %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Checks if the blob of the specified image is referenced by other images. If
+%   the reference count is higher then 1 a new blob is assigned to the image.
+%
+%  The format of the DisassociateBlob method is:
+%
+%      void DisassociateBlob(Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o image: The image.
+%
+%
+*/
+MagickExport void DisassociateBlob(Image *image)
+{
+  BlobInfo
+    *blob;
+
+  int
+    clone;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(image->blob != (BlobInfo *) NULL);
+  assert(image->blob->signature == MagickSignature);
+  clone=MagickFalse;
+  LockSemaphoreInfo(image->blob->semaphore);
+  assert(image->blob->reference_count >= 0);
+  if (image->blob->reference_count > 1)
+    clone=MagickTrue;
+  UnlockSemaphoreInfo(image->blob->semaphore);
+  if (clone == MagickFalse)
+    return;
+  blob=CloneBlobInfo(image->blob);
+  DestroyBlob(image);
+  image->blob=blob;
+}

@@ -1,3 +1,9 @@
+2015-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (DisassociateBlob): Applied patch by Dirk Lemstra
+	to assure that the image blob is no longer shared with other
+	images when the image is written. This helps with thread safety.
+
 2015-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c: Add/fix utility usage messages for -box,
