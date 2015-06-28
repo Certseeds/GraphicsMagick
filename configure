@@ -1057,7 +1057,6 @@ with_jbig
 with_webp
 with_jpeg
 with_jp2
-with_lcms
 with_lcms2
 with_lzma
 with_png
@@ -1769,7 +1768,6 @@ Optional Packages:
   --without-webp          disable WEBP support
   --without-jpeg          disable JPEG support
   --without-jp2           disable JPEG v2 support
-  --without-lcms          disable lcms (v1.1X) support
   --without-lcms2         disable lcms (v2.X) support
   --without-lzma          disable LZMA support
   --without-png           disable PNG support
@@ -19644,19 +19642,6 @@ if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
 fi
 
-# Disable LCMS.
-
-# Check whether --with-lcms was given.
-if test "${with_lcms+set}" = set; then :
-  withval=$with_lcms; with_lcms=$withval
-else
-  with_lcms='yes'
-fi
-
-if test "$with_lcms" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-lcms=$with_lcms "
-fi
-
 # Disable LCMS2.
 
 # Check whether --with-lcms2 was given.
@@ -25670,132 +25655,8 @@ $as_echo "no" >&6; }
     fi
 fi
 
-#
-# Check for LCMS v1 (1.11 or later)
-#
-if test $have_lcms2 = 'yes'
-then
-  with_lcms='no'
-fi
 
-have_lcms='no'
-if test "$with_lcms" != 'no'
-then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lcms v1.1X support" >&5
-$as_echo_n "checking for lcms v1.1X support... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
-$as_echo "" >&6; }
-    failed=0
-    passed=0
-    have_lcms_header='no'
-
-    # Check for <lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      ac_fn_c_check_header_mongrel "$LINENO" "lcms.h" "ac_cv_header_lcms_h" "$ac_includes_default"
-if test "x$ac_cv_header_lcms_h" = xyes; then :
-  have_lcms_header='yes'
-fi
-
-
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-
-$as_echo "#define HAVE_LCMS_H 1" >>confdefs.h
-
-      fi
-    fi
-
-    # Check for <lcms/lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      ac_fn_c_check_header_mongrel "$LINENO" "lcms/lcms.h" "ac_cv_header_lcms_lcms_h" "$ac_includes_default"
-if test "x$ac_cv_header_lcms_lcms_h" = xyes; then :
-  have_lcms_header='yes'
-fi
-
-
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-
-$as_echo "#define HAVE_LCMS_LCMS_H 1" >>confdefs.h
-
-      fi
-    fi
-
-    # Failed to find lcms header?
-    if test "$have_lcms_header" != 'yes'
-    then
-      failed=`expr $failed + 1`
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cmsSetErrorHandler in -llcms" >&5
-$as_echo_n "checking for cmsSetErrorHandler in -llcms... " >&6; }
-if ${ac_cv_lib_lcms_cmsSetErrorHandler+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-llcms  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char cmsSetErrorHandler ();
-int
-main ()
-{
-return cmsSetErrorHandler ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_lcms_cmsSetErrorHandler=yes
-else
-  ac_cv_lib_lcms_cmsSetErrorHandler=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lcms_cmsSetErrorHandler" >&5
-$as_echo "$ac_cv_lib_lcms_cmsSetErrorHandler" >&6; }
-if test "x$ac_cv_lib_lcms_cmsSetErrorHandler" = xyes; then :
-  passed=`expr $passed + 1`
-else
-  failed=`expr $failed + 1`
-fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if LCMS package is complete" >&5
-$as_echo_n "checking if LCMS package is complete... " >&6; }
-    if test $passed -gt 0
-    then
-      if test $failed -gt 0
-      then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
-$as_echo "no -- some components failed test" >&6; }
-        have_lcms='no (failed tests)'
-      else
-        LIB_LCMS='-llcms'
-        LIBS="$LIB_LCMS $LIBS"
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        have_lcms='yes'
-      fi
-    else
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-    fi
-fi
-
- if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'; then
+ if test "$have_lcms2" = 'yes'; then
   HasLCMS_TRUE=
   HasLCMS_FALSE='#'
 else
@@ -25803,7 +25664,7 @@ else
   HasLCMS_FALSE=
 fi
 
-if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'
+if test "$have_lcms2" = 'yes'
 then
 
 $as_echo "#define HasLCMS 1" >>confdefs.h
@@ -30349,7 +30210,7 @@ if test "$have_jpeg"   = 'yes' ; then
    DELEGATES="$DELEGATES jpeg"
    MAGICK_FEATURES="$MAGICK_FEATURES JPEG"
 fi
-if test "$have_lcms" = 'yes' || test "$have_lcms2" = 'yes' ; then
+if test "$have_lcms2" = 'yes' ; then
    DELEGATES="$DELEGATES lcms"
    MAGICK_FEATURES="$MAGICK_FEATURES LCMS"
 fi
@@ -33391,7 +33252,6 @@ echo "Ghostscript lib   --with-gslib=$with_gslib       	$have_gslib"
 echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
 echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
 echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"
-echo "LCMS v1           --with-lcms=$with_lcms        	$have_lcms"
 echo "LCMS v2           --with-lcms2=$with_lcms2        	$have_lcms2"
 # echo "MPEG v2           --with-mpeg2=$with_mpeg2      	$have_mpeg2"
 echo "LZMA              --with-lzma=$with_lzma        	$have_lzma"

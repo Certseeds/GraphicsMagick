@@ -164,8 +164,8 @@ building under Microsoft Windows:
   format. HP printers usually accept PCL format rather than HPGL
   format.  Ghostscript (see above) is also required.
 
-* GraphicsMagick requires the lcms library (1.11 or later, including
-  2.X) available from
+* GraphicsMagick requires the lcms library (2.0 or later) available
+  from
 
      http://www.littlecms.com/
 

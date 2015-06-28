@@ -321,10 +321,6 @@ Optional Packages/Options
 
     disable JPEG v2 support
 
---without-lcms
-
-    disable lcms (v1.1X) support
-
 --without-lcms2
 
     disable lcms (v2.X) support

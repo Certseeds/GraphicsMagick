@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2013 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -55,39 +55,9 @@
 #    include <lcms2/lcms2.h>
 #  elif defined(HAVE_LCMS2_H)
 #    include <lcms2.h>
-#  elif defined(HAVE_LCMS_LCMS_H)
-#    include <lcms/lcms.h>
 #  else
-#    include <lcms.h>
-#endif
-
-/* LCMS_VERSION was introduced in lcms 1.12 with value 112 */
-
-#if !defined(LCMS_VERSION) || (LCMS_VERSION < 2000)
-#  define cmsSigXYZData   icSigXYZData
-#  define cmsSigLabData   icSigLabData
-#  define cmsSigCmykData  icSigCmykData
-#  define cmsSigYCbCrData icSigYCbCrData
-#  define cmsSigLuvData   icSigLuvData
-#  define cmsSigGrayData  icSigGrayData
-#  define cmsSigRgbData   icSigRgbData
-
-#  define cmsFLAGS_NOOPTIMIZE cmsFLAGS_NOTPRECALC
-
-#  define cmsUInt32Number DWORD
-
-#  define cmsSetLogErrorHandler(handler) cmsSetErrorHandler(handler)
-
-#  define cmsCreateTransformTHR(context,source_profile,source_type, \
-				target_profile,target_type,intent,flags) \
-  cmsCreateTransform(source_profile,source_type,target_profile,target_type, \
-		     intent,flags);
-
-#  define cmsOpenProfileFromMemTHR(context,profile,length) \
-  cmsOpenProfileFromMem(profile,length)
-
-#endif /* !defined(LCMS_VERSION) || (LCMS_VERSION < 2000) */
-
+#    error "LCMS 2 header missing!"
+#  endif
 #endif
 
 /*
@@ -484,10 +454,6 @@ typedef struct _TransformInfo
   unsigned long   signature;          /* structure validation signature */
 } TransformInfo;
 
-#if defined(LCMS_VERSION) && (LCMS_VERSION >= 2000)
-/*
-  This version works with lcms 2.0 and later.
-*/
 static void
 lcmsReplacementErrorHandler(cmsContext ContextID, cmsUInt32Number ErrorCode, const char *ErrorText)
 {
@@ -515,32 +481,6 @@ lcmsReplacementErrorHandler(cmsContext ContextID, cmsUInt32Number ErrorCode, con
 		     (ErrorText != (char *) NULL) ? ErrorText : "No error text");
     }
 }
-#else
-/*
-  This version works with lcms 1.1X versions starting with 1.11.
-*/
-static int
-lcmsReplacementErrorHandler(int ErrorCode, const char *ErrorText)
-{
-  ExceptionType
-    type;
-
-  switch(ErrorCode)
-  {
-    case LCMS_ERRC_ABORTED:
-      type=TransformError;
-      break;
-    default:
-    case LCMS_ERRC_RECOVERABLE:
-    case LCMS_ERRC_WARNING:
-      type=TransformWarning;
-      break;
-  }
-  (void) LogMagickEvent(type,GetMagickModule(),"lcms: #%d, %s",
-    ErrorCode,(ErrorText != (char *) NULL) ? ErrorText : "No error text");
-  return 1; /* tells lcms that we handled the problem */
-}
-#endif /* defined(LCMS_VERSION) && (LCMS_VERSION >= 2000) */
 
 static MagickPassFail
 ProfileImagePixels(void *mutable_data,         /* User provided mutable data */

@@ -1,3 +1,8 @@
+2015-06-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac, magick/profile.c: Removed support for lcms 1.X.
+	No one should be using a lesser version than lcms 2.0.
+
 2015-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (DisassociateBlob): Applied patch by Dirk Lemstra

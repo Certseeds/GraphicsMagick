@@ -662,16 +662,6 @@ if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
 fi
 
-# Disable LCMS.
-AC_ARG_WITH(lcms,
-	      AS_HELP_STRING([--without-lcms],
-                             [disable lcms (v1.1X) support]),
-	      [with_lcms=$withval],
-	      [with_lcms='yes'])
-if test "$with_lcms" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-lcms=$with_lcms "
-fi
-
 # Disable LCMS2.
 AC_ARG_WITH(lcms2,
 	      AS_HELP_STRING([--without-lcms2],
@@ -1891,74 +1881,11 @@ then
     fi
 fi
 
-#
-# Check for LCMS v1 (1.11 or later)
-#
-if test $have_lcms2 = 'yes'
+
+AM_CONDITIONAL(HasLCMS, test "$have_lcms2" = 'yes')
+if test "$have_lcms2" = 'yes'
 then
-  with_lcms='no'
-fi
-
-have_lcms='no'
-if test "$with_lcms" != 'no'
-then
-    AC_MSG_CHECKING([for lcms v1.1X support])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    have_lcms_header='no'
-
-    # Check for <lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      AC_CHECK_HEADER(lcms.h,have_lcms_header='yes',,)
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-        AC_DEFINE(HAVE_LCMS_H,1,Define if you have the <lcms.h> header file.)
-      fi
-    fi
-
-    # Check for <lcms/lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      AC_CHECK_HEADER(lcms/lcms.h,have_lcms_header='yes',,)
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-        AC_DEFINE(HAVE_LCMS_LCMS_H,1,Define if you have the <lcms/lcms.h> header file.)
-      fi
-    fi
-
-    # Failed to find lcms header?
-    if test "$have_lcms_header" != 'yes'
-    then
-      failed=`expr $failed + 1`
-    fi
-
-    AC_CHECK_LIB(lcms,cmsSetErrorHandler,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if LCMS package is complete)
-    if test $passed -gt 0
-    then
-      if test $failed -gt 0
-      then
-        AC_MSG_RESULT(no -- some components failed test)
-        have_lcms='no (failed tests)'
-      else
-        LIB_LCMS='-llcms'
-        LIBS="$LIB_LCMS $LIBS"
-        AC_MSG_RESULT(yes)
-        have_lcms='yes'
-      fi
-    else
-      AC_MSG_RESULT(no)
-    fi
-fi
-
-AM_CONDITIONAL(HasLCMS, test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes')
-if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'
-then
-  AC_DEFINE(HasLCMS,1,[Define if you have LCMS (v1.11 or later) library])
+  AC_DEFINE(HasLCMS,1,[Define if you have LCMS (v2.0 or later) library])
 fi
 AC_SUBST(LIB_LCMS)
 
@@ -3394,7 +3321,7 @@ if test "$have_jpeg"   = 'yes' ; then
    DELEGATES="$DELEGATES jpeg"
    MAGICK_FEATURES="$MAGICK_FEATURES JPEG"
 fi
-if test "$have_lcms" = 'yes' || test "$have_lcms2" = 'yes' ; then
+if test "$have_lcms2" = 'yes' ; then
    DELEGATES="$DELEGATES lcms"
    MAGICK_FEATURES="$MAGICK_FEATURES LCMS"
 fi
@@ -3675,7 +3602,6 @@ echo "Ghostscript lib   --with-gslib=$with_gslib       	$have_gslib"
 echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
 echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
 echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"
-echo "LCMS v1           --with-lcms=$with_lcms        	$have_lcms"
 echo "LCMS v2           --with-lcms2=$with_lcms2        	$have_lcms2"
 # echo "MPEG v2           --with-mpeg2=$with_mpeg2      	$have_mpeg2"
 echo "LZMA              --with-lzma=$with_lzma        	$have_lzma"
