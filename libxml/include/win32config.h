@@ -5,6 +5,8 @@
 #define HAVE_STDARG_H
 #define HAVE_MALLOC_H
 #define HAVE_ERRNO_H
+#define SEND_ARG2_CAST
+#define GETHOSTBYNAME_ARG_CAST
 
 #if defined(_WIN32_WCE)
 #undef HAVE_ERRNO_H
@@ -95,11 +97,11 @@ static int isnan (double d) {
 
 #if defined(_MSC_VER)
 #define mkdir(p,m) _mkdir(p)
+#if _MSC_VER < 1900
 #define snprintf _snprintf
+#endif
 #if _MSC_VER < 1500
-#  if !defined(vsnprintf)
-#    define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
-#  endif
+#define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
 #endif
 #elif defined(__MINGW32__)
 #define mkdir(p,m) _mkdir(p)
