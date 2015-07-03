@@ -1,5 +1,7 @@
 2015-07-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* webp: Updated bundled libwebp to release 0.4.3.
+
 	* ttf: Update bundled freetype to release 2.6.
 
 	* libxml: Update bundled libxml2 to release 2.9.2.
