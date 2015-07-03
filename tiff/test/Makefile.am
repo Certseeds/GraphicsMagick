@@ -47,8 +47,16 @@ XFAIL_TESTS =
 # Extra files which should be cleaned by 'make clean'
 CLEANFILES = test_packbits.tif o-*
 
+if HAVE_JPEG
+JPEG_DEPENDENT_CHECK_PROG=raw_decode
+else
+JPEG_DEPENDENT_CHECK_PROG=
+endif
+
 # Executable programs which need to be built in order to support tests
-check_PROGRAMS = ascii_tag long_tag short_tag strip_rw rewrite raw_decode custom_dir
+check_PROGRAMS = \
+	ascii_tag long_tag short_tag strip_rw rewrite custom_dir \
+	$(JPEG_DEPENDENT_CHECK_PROG)
 
 # Test scripts to execute
 TESTSCRIPTS = \
@@ -184,9 +192,22 @@ custom_dir_LDADD = $(LIBTIFF)
 
 AM_CPPFLAGS = -I$(top_srcdir)/libtiff
 
-# memcheck: valgrind's memory access checker
+# memcheck: valgrind's memory access checker.
+#
+# The suppressions which come with valgrind are sometimes insufficient
+# to handle certain system library aspects which may be reported and
+# which are unrelated to libtiff.  When first starting with a new
+# system (or after a major system update), it is good to execute the
+# test suite (known to already be passing!) like 'make memcheck
+# VALGRIND_EXTRA_OPTS=--gen-suppressions=all' to create valgrind
+# suppression entries in the test log.  Make sure that none of the
+# suppressions are due to libtiff itself.  Tell valgrind about the
+# suppressions by creating a .valgrindrc file with content like:
+# --memcheck:suppressions=mysupp.supp
 memcheck:
-	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full --read-var-info=yes --track-origins=yes --num-callers=12 --quiet $(VALGRIND_EXTRA_OPTS)' check
+	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full --read-var-info=yes \
+	--error-exitcode=2 --track-origins=yes --num-callers=12 \
+	--quiet $(VALGRIND_EXTRA_OPTS)' check
 
 # ptrcheck: valgrind's experimental pointer checking tool.
 ptrcheck:

@@ -1,4 +1,4 @@
-/* $Id: tiffgt.c,v 1.10 2010-07-01 15:56:56 dron Exp $ */
+/* $Id: tiffgt.c,v 1.13 2015-06-21 01:09:11 bfriesen Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler
@@ -74,8 +74,11 @@ static void	raster_reshape(int, int);
 static void	raster_keys(unsigned char, int, int);
 static void	raster_special(int, int, int);
 
+#if !HAVE_DECL_OPTARG
 extern  char* optarg;
 extern  int optind;
+#endif
+
 static TIFF* tif = NULL;
 
 int
@@ -287,6 +290,7 @@ static void
 raster_draw(void)
 {
   glDrawPixels(img.width, img.height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) raster);
+  glFlush();
 }
 
 static void
@@ -306,6 +310,8 @@ raster_reshape(int win_w, int win_h)
 static void
 raster_keys(unsigned char key, int x, int y)
 {
+        (void) x;
+        (void) y;
         switch (key) {
                 case 'b':                       /* photometric MinIsBlack */
                     photo = PHOTOMETRIC_MINISBLACK;
@@ -351,6 +357,8 @@ raster_keys(unsigned char key, int x, int y)
 static void
 raster_special(int key, int x, int y)
 {
+        (void) x;
+        (void) y;
         switch (key) {
                 case GLUT_KEY_PAGE_UP:          /* previous logical image */
                     if (TIFFCurrentDirectory(tif) > 0) {

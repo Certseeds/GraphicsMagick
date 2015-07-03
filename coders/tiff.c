@@ -69,13 +69,15 @@
 /*
   JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
 */
-#  if defined(HasJPEG)
-#    if defined(__MINGW32__)
-#       define XMD_H 1
-#    endif
-#    undef HAVE_STDLIB_H
-#    include "jpeglib.h"
-#  endif /* defined(HasJPEG) */
+#  if !defined(_VISUALC_)
+#    if defined(HasJPEG)
+#      if defined(__MINGW32__)
+#         define XMD_H 1
+#      endif
+#      undef HAVE_STDLIB_H
+#      include <jpeglib.h>
+#    endif /* defined(HasJPEG) */
+#  endif /* !defined(_VISUALC_) */
 
 #if defined(TIFF_VERSION_BIG)
 #  define HasBigTIFF 1
@@ -4311,7 +4313,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 
             FIXME
           */          
-#if BITS_IN_JSAMPLE
+#if defined(BITS_IN_JSAMPLE)
           depth=BITS_IN_JSAMPLE;
           bits_per_sample=BITS_IN_JSAMPLE;
 #endif

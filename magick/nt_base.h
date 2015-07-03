@@ -68,6 +68,9 @@ extern "C" {
 /* Define to 1 if you have the <tiffconf.h> header file. */
 #define HAVE_TIFFCONF_H 1
 
+/* Define to 1 if you have the `TIFFIsCODECConfigured' function. */
+#define HAVE_TIFFISCODECCONFIGURED 1
+
 /* Define to 1 if you have the `TIFFMergeFieldInfo' function. */
 #define HAVE_TIFFMERGEFIELDINFO 1
 
