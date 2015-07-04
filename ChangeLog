@@ -1,5 +1,7 @@
 2015-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/blob.c (WriteBlobFile): Properly handle short read.
+
 	* patches: Added directory of patches which may be useful when
 	integrating new versions of 3rd-party programs or libraries into
 	the VisualMagick build.
