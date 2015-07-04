@@ -48,7 +48,7 @@
 #else
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(WIN64)
 typedef unsigned __int32 uint32_t;
 #endif
 #endif
@@ -249,7 +249,7 @@ xmlDictAddString(xmlDictPtr dict, const xmlChar *name, unsigned int namelen) {
 #endif
     pool = dict->strings;
     while (pool != NULL) {
-	if (pool->end - pool->free > namelen)
+	if ((unsigned int) (pool->end - pool->free) > namelen)
 	    goto found_pool;
 	if (pool->size > size) size = pool->size;
         limit += pool->size;
@@ -317,7 +317,7 @@ xmlDictAddQString(xmlDictPtr dict, const xmlChar *prefix, unsigned int plen,
 #endif
     pool = dict->strings;
     while (pool != NULL) {
-	if (pool->end - pool->free > namelen + plen + 1)
+	if ((unsigned int) (pool->end - pool->free) > namelen + plen + 1)
 	    goto found_pool;
 	if (pool->size > size) size = pool->size;
         limit += pool->size;

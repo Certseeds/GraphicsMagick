@@ -1038,16 +1038,18 @@ xmlNanoHTTPConnectAttempt(struct sockaddr *addr)
 static SOCKET
 xmlNanoHTTPConnectHost(const char *host, int port)
 {
+#if !defined(HAVE_GETADDRINFO)
     struct hostent *h;
-    struct sockaddr *addr = NULL;
     struct in_addr ia;
+    int i;
+#endif
+    struct sockaddr *addr = NULL;
     struct sockaddr_in sockin;
 
 #ifdef SUPPORT_IP6
     struct in6_addr ia6;
     struct sockaddr_in6 sockin6;
 #endif
-    int i;
     SOCKET s;
 
     memset (&sockin, 0, sizeof(sockin));

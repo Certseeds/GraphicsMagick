@@ -2402,6 +2402,7 @@ xmlCharEncInFunc(xmlCharEncodingHandler * handler, xmlBufferPtr out,
  *     -2 if the transcoding fails (for *in is not valid utf8 string or
  *        the result of transformation can't fit into the encoding we want), or
  */
+#ifdef LIBXML_OUTPUT_ENABLED
 int
 xmlCharEncOutput(xmlOutputBufferPtr output, int init)
 {
@@ -2840,7 +2841,7 @@ retry:
     }
     return(ret);
 }
-
+#endif
 /**
  * xmlCharEncCloseFunc:
  * @handler:	char enconding transformation data structure
