@@ -38,7 +38,9 @@
 <p>2015-07-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>magick/blob.c (WriteBlobFile): Properly handle short read.</li>
+<li>magick/blob.c (WriteBlobFile): Properly handle short read. Read
+data in units of filesystem block size.
+(BlobToFile): Write data in units of filesystem block size.</li>
 <li>patches: Added directory of patches which may be useful when
 integrating new versions of 3rd-party programs or libraries into
 the VisualMagick build.</li>

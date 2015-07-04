@@ -544,12 +544,25 @@ MagickExport MagickPassFail BlobToFile(const char *filename,const void *blob,
       const char
 	*env = NULL;
 
+      size_t
+        block_size;
+
+      block_size=MagickGetFileSystemBlockSize();
+
       /*
 	Write data to file.
       */
       for (i=0; i < length; i+=count)
 	{
-	  count=write(file,(char *) blob+i,length-i);
+          unsigned int
+            amount;
+
+          if ((length-i) > block_size)
+            amount=block_size;
+          else
+            amount=length-i;
+
+	  count=write(file,(char *) blob+i,amount);
 	  if (count <= 0)
 	    break;
 	}
@@ -4462,6 +4475,7 @@ MagickExport MagickPassFail WriteBlobFile(Image *image,const char *filename)
             *buffer;
 
           size_t
+            block_size,
             length;
 
           register size_t
@@ -4470,11 +4484,14 @@ MagickExport MagickPassFail WriteBlobFile(Image *image,const char *filename)
           unsigned int
             count;
 
+          block_size=MagickGetFileSystemBlockSize();
           length=(size_t) attributes.st_size;
-  
-          count = 32768U;
-          if (count > length)
+
+          if (length < block_size)
             count = (unsigned int) length;
+          else
+            count = (unsigned int) block_size;
+
           buffer=MagickAllocateMemory(unsigned char *,count);
           i=0;
           if (buffer != (unsigned char *) NULL)

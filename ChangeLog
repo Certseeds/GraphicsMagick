@@ -1,6 +1,8 @@
 2015-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* magick/blob.c (WriteBlobFile): Properly handle short read.
+	* magick/blob.c (WriteBlobFile): Properly handle short read. Read
+	data in units of filesystem block size.
+	(BlobToFile): Write data in units of filesystem block size.
 
 	* patches: Added directory of patches which may be useful when
 	integrating new versions of 3rd-party programs or libraries into
