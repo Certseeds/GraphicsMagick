@@ -1,3 +1,13 @@
+2015-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c: Limit the data size passed to the read/write
+	calls to the filesystem blocksize and make multiple calls if
+	required.
+
+	* magick/pixel_cache.c: Limit the data size passed to the
+	read/write, pread/prwite calls and make multiple calls if
+	required.
+
 2015-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (WriteBlobFile): Properly handle short read. Read

@@ -122,6 +122,7 @@ MagickGetFileSystemBlockSize(void)
 void
 MagickSetFileSystemBlockSize(const size_t block_size)
 {
+  assert(block_size > 0);
   filesystem_blocksize=block_size;
 }
 
@@ -783,7 +784,8 @@ MagickSignalHandlerMessage(const int signo, const char *subtext)
     }
   (void) strlcat(message,"...\n",sizeof(message));
 
-  if (write(STDERR_FILENO,message,strlen(message)) == -1)
+  if (write(STDERR_FILENO,message,
+            (MAGICK_POSIX_IO_SIZE_T) strlen(message)) == -1)
     {
       /* Exists to quench warning */
     }
@@ -1124,9 +1126,20 @@ InitializeMagick(const char *path)
   {
     size_t
       block_size=16384;
-    
+
     if ((p=getenv("MAGICK_IOBUF_SIZE")) != (const char *) NULL)
-      block_size = (size_t) MagickAtoL(p);
+      {
+        long
+          block_size_long;
+    
+        block_size_long = MagickAtoL(p);
+        if ((block_size_long > 0L) && (block_size_long <= 2097152L))
+          block_size=(size_t) block_size_long;
+        else
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Ignoring unreasonable MAGICK_IOBUF_SIZE of "
+                                "%ld bbytes", block_size_long);
+      }
     
     MagickSetFileSystemBlockSize(block_size);
   }

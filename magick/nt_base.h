@@ -62,6 +62,11 @@ extern "C" {
 #endif
 
 /*
+  Size type passed to read/write
+*/
+#define MAGICK_POSIX_IO_SIZE_T unsigned int
+
+/*
   libtiff features.
 */
 

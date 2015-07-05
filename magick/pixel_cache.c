@@ -49,6 +49,9 @@
 /*
   Define declarations.
 */
+/* Maximum read/write size.  Should be no more than INT_MAX */
+#define MAGICK_IO_MAX INT_MAX
+
 #if defined(POSIX) && defined(S_IRUSR)
 #  define S_MODE     (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #elif defined (MSWINDOWS)
@@ -323,6 +326,9 @@ FilePositionRead(int file, void *buffer, size_t length,magick_off_t offset)
   register size_t
     total_count;
 
+  MAGICK_POSIX_IO_SIZE_T
+    io_size;
+
 #if !HAVE_PREAD
   if ((MagickSeek(file,offset,SEEK_SET)) < 0)
     return (ssize_t)-1;
@@ -343,11 +349,15 @@ FilePositionRead(int file, void *buffer, size_t length,magick_off_t offset)
 
       requested_io_size=length-total_count;
       io_buff_address=(char *) buffer+total_count;
+      if (requested_io_size > MAGICK_IO_MAX)
+        io_size=MAGICK_IO_MAX;
+      else
+        io_size=(MAGICK_POSIX_IO_SIZE_T) requested_io_size;
 #if HAVE_PREAD
       io_file_offset=offset+total_count;
-      count=pread(file,io_buff_address,requested_io_size,io_file_offset);
+      count=pread(file,io_buff_address,io_size,io_file_offset);
 #else
-      count=read(file,io_buff_address,requested_io_size);
+      count=read(file,io_buff_address,io_size);
 #endif
       if (count <= 0)
         break;
@@ -373,11 +383,8 @@ FilePositionWrite(int file, const void *buffer,size_t length,magick_off_t offset
   register size_t
     total_count;
 
-#if 0
-  fprintf(stderr,"FilePositionWrite file=%d, buffer=0x%p, length=%lu, "
-	  "offset=%" MAGICK_OFF_F "u\n",
-	  file,buffer,(unsigned long) length,offset);
-#endif
+  MAGICK_POSIX_IO_SIZE_T
+    io_size;
 
 #if !HAVE_PWRITE
   if ((MagickSeek(file,offset,SEEK_SET)) < 0)
@@ -398,11 +405,15 @@ FilePositionWrite(int file, const void *buffer,size_t length,magick_off_t offset
 
       io_buff_address=(char *) buffer+total_count;
       requested_io_size=length-total_count;
+      if (requested_io_size > MAGICK_IO_MAX)
+        io_size=MAGICK_IO_MAX;
+      else
+        io_size=(MAGICK_POSIX_IO_SIZE_T) requested_io_size;
 #if HAVE_PWRITE
       io_file_offset=offset+total_count;
-      count=pwrite(file,io_buff_address,requested_io_size,io_file_offset);
+      count=pwrite(file,io_buff_address,io_size,io_file_offset);
 #else
-      count=write(file,io_buff_address,requested_io_size);
+      count=write(file,io_buff_address,io_size);
 #endif
       if (count <= 0)
         break;
@@ -1611,8 +1622,20 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
 				"disk => memory clone");
           for (offset=0; offset < cache_info->length; offset+=count)
             {
+              size_t
+                requested_io_size;
+
+              unsigned int
+                io_size;
+
+              requested_io_size=(size_t) (cache_info->length-offset);
+              if (requested_io_size > MAGICK_IO_MAX)
+                io_size=MAGICK_IO_MAX;
+              else
+                io_size=(unsigned int) requested_io_size;
+
               count=read(cache_file,(char *) clone_info->pixels+offset,
-                         (size_t) (cache_info->length-offset));
+                         io_size);
               if (count <= 0)
                 break;
             }
@@ -1656,8 +1679,20 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
 				"memory => disk clone");
           for (offset=0L; offset < clone_info->length; offset+=count)
             {
+              size_t
+                requested_io_size;
+
+              MAGICK_POSIX_IO_SIZE_T
+                io_size;
+
+              requested_io_size=(size_t) (clone_info->length-offset);
+              if (requested_io_size > MAGICK_IO_MAX)
+                io_size=MAGICK_IO_MAX;
+              else
+                io_size=(MAGICK_POSIX_IO_SIZE_T) requested_io_size;
+
               count=write(clone_file,(char *) cache_info->pixels+offset,
-                          (size_t) (clone_info->length-offset));
+                          io_size);
               if (count <= 0)
                 break;
             }
@@ -1693,7 +1728,19 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
       length=(size_t) count;
       for (offset=0; offset < (magick_off_t) length; offset+=count)
         {
-          count=write(clone_file,buffer+offset,length-offset);
+          size_t
+            requested_io_size;
+
+          MAGICK_POSIX_IO_SIZE_T
+            io_size;
+
+          requested_io_size=(size_t) (length-offset);
+          if (requested_io_size > MAGICK_IO_MAX)
+            io_size=MAGICK_IO_MAX;
+          else
+            io_size=(MAGICK_POSIX_IO_SIZE_T) requested_io_size;
+
+          count=write(clone_file,buffer+offset,io_size);
           if (count <= 0)
             break;
         }
