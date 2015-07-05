@@ -1,5 +1,8 @@
 2015-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/montage.c (MontageImages): Fix Coverity 101317 "Resource
+	leak".
+
 	* magick/blob.c: Limit the data size passed to the read/write
 	calls to the filesystem blocksize and make multiple calls if
 	required.

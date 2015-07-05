@@ -264,7 +264,7 @@ MagickExport Image *MontageImages(const Image *images,
 
   char
     tile_geometry[MaxTextExtent],
-    *title;
+    *title = 0;
 
   const ImageAttribute
     *attribute;
@@ -779,6 +779,7 @@ MagickExport Image *MontageImages(const Image *images,
         number_images-=tiles_per_page;
       }
   }
+  MagickFreeMemory(title);
   DestroyImage(tile_image);
   if (texture != (Image *) NULL)
     DestroyImage(texture);
