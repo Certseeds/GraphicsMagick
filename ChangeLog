@@ -1,3 +1,7 @@
+2015-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/module.c (ModuleAliases): Add a module alias for GRAYA.
+
 2015-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/montage.c (MontageImages): Fix Coverity 101317 "Resource
