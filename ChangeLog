@@ -1,5 +1,8 @@
 2015-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/version.h.in (MagickCopyright): Update most recent
+	copyright year.
+
 	* magick/render.c (DrawAffineImage): Fix problem with negative x
 	offset.  Resolves SourceForge issue #306 "gm fails to convert svg
 	to jpeg if svg has images with negative coordinates".
