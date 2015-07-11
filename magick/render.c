@@ -1169,7 +1169,10 @@ DrawAffineImage(Image *image,const Image *composite,
         inverse_edge.x2=image->columns-1;
       start=(long) ceil(inverse_edge.x1-0.5);
       stop=(long) floor(inverse_edge.x2+0.5);
-      x=start;
+      if (stop >= start)
+        x=start;
+      else
+        x=stop;
       q=GetImagePixelsEx(image,x,y,stop-x+1,1,&image->exception);
       if (q == (PixelPacket *) NULL)
         thread_status=MagickFail;

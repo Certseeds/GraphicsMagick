@@ -3705,10 +3705,17 @@ ReadCachePixels(const Cache cache,const NexusInfo *nexus_info,
   assert(cache_info->signature == MagickSignature);
   if (nexus_info->in_core)
     return(MagickPass);
-  offset=nexus_info->region.y*(magick_off_t) cache_info->columns+nexus_info->region.x;
+  offset=nexus_info->region.y*(magick_off_t) cache_info->columns;
+  if ((long) (offset/cache_info->columns) != nexus_info->region.y)
+    return MagickFail;
+  offset += nexus_info->region.x;
   length=nexus_info->region.width*sizeof(PixelPacket);
+  if (length/sizeof(PixelPacket) != nexus_info->region.width)
+    return MagickFail;
   rows=nexus_info->region.height;  
   number_pixels=(magick_uint64_t) length*rows;
+  if ((length ==0) || (number_pixels/length != rows))
+    return MagickFail;
   if ((cache_info->columns == nexus_info->region.width) &&
       (number_pixels == (size_t) number_pixels))
     {

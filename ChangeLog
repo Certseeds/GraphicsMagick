@@ -1,3 +1,12 @@
+2015-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawAffineImage): Fix problem with negative x
+	offset.  Resolves SourceForge issue #306 "gm fails to convert svg
+	to jpeg if svg has images with negative coordinates".
+
+	* magick/pixel_cache.c (ReadCachePixels): Add checks for integer
+	overflows.
+
 2015-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/module.c (ModuleAliases): Add a module alias for GRAYA.
