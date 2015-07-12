@@ -1,5 +1,8 @@
 2015-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Brought up to date with changes thus far since last
+	release.
+
 	* magick/version.h.in (MagickCopyright): Update most recent
 	copyright year.
 

@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on February 28, 2015
+This file was last updated on July 11, 2015
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -15,10 +15,137 @@ ChangeLog file for full details.
 .. contents::
   :local:
 
-1.3.21 (February 28, 2015)
+1.3.22 (? ?, 2015)
 ==========================
 
 .. _`GCC bug 53967` : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53967
+
+
+Thanks:
+
+* Coverity: We thank Coverity for providing free service for free
+  software projects, and thank Jodie Cunningham for getting the
+  project set up in Coverity.
+
+Special Issues:
+
+* Due to `GCC bug 53967`_, several key agorithms (e.g. convolution)
+  may execute much faster (e.g. 2-3X) for x86-64 and/or when SSE is
+  enabled for floating point math (`-mfpmath=sse`) if the GCC option
+  `-frename-registers` is used. Default 32-bit builds do not
+  experience the problem since they use '387 math.  It is not clear in
+  what version of GCC this problem started but it was not noticed by
+  the developers until the GCC 4.6 timeframe.  Other compilers do not
+  suffer from this bug.  Please lobby the GCC project to fix this
+  embarrassing performance bug.
+
+* Magick++: Any libraries or applications using Magick++ should be
+  rebuilt in order to use this new release.  Libraries and
+  applications will be able to continue to use prior versions of
+  Magick++ without being re-built, while benefiting from updated C
+  libraries, provided that the system supports library versioning.
+
+Security Fixes:
+
+* General Coverity fixes.  Some might have security consequences.
+
+* Ghostscript options concatenation is more secure against buffer
+  overflow.
+
+* Windows: Built-in random number generator is now salted using
+  CryptGenRandom().  This improves the robustness of the temporary
+  file allocator.
+
+Bug fixes:
+
+* Coverity Fixes: Large amounts of fixes due to Coverity static
+  analysis.  See the ChangeLog and Mercurial for details. Coverity now
+  reports zero issues.
+
+* General: Fix problems with reading filenames that include a colon.
+
+* General: Fixed performance problem with sub-image path extraction
+  when there are many files in the directory.
+
+* General: Add missing options in utility help messages.
+
+* BMP: Reader was wrongly rejecting RLE-compressed files as being too
+  small (regression added in 1.3.21 release).
+
+* DrawAffineImage(): Fix problem with negative x offset.
+
+* -format: %Q now reports JPEG quality estimate if it is available.
+
+* -geometry: Fix handling of area geometries in the form "5000000@".
+
+* MIFF: Memory leak fixes.
+
+* MIFF: MIFF reader failed to read some MIFF headers properly.
+
+* PDF: Set image frame scene ids appropriately.
+
+* PNG: Memory leak fixes.
+
+* PS: Set image frame scene ids appropriately.
+
+* TIFF: Fix reading Old JPEG and YCbCr sample images from libtiff
+  pics-3.8.0.tar.gz image file collection.
+
+* TIFF: Disable matte channel for compression types which don't
+  support it.
+
+* XPM: Memory leak fixes.
+
+* XWD: Memory leak fixes.
+
+New Features:
+
+* GRAYA: New subformat for gray coder which supports alpha channel.
+  Format specifiers "R", "G", "B", "A", "C", "M", and "Y" may now be
+  used to save and restore the associated channel using the same raw
+  format as "GRAY".
+
+* Magick++: Image::repage() method added to support resetting 'page'.
+
+* PDF: Added '-define pdf:stop-on-error=true' optoin to cause PDF
+  reading to quit immediately upon any error.
+
+* Subframe specification: Now specific PS and PDF pages may be
+  selected, including re-ordering.
+
+Feature improvements:
+
+* PALM: Still a work in progress.  Closer to working using netpbm's
+  implementation as a reference.
+
+Performance Improvements:
+
+* None.
+
+Windows Delegate Updates/Additions:
+
+* webp: Updated bundled libwebp to release 0.4.3.
+
+* ttf: Update bundled freetype to release 2.6.
+
+* libxml: Update bundled libxml2 to release 2.9.2.
+
+Build Changes:
+
+* lcms ("Little CMS") v1 is no longer supported.
+
+* VisualMagick: Remember and re-use already given paths.
+
+Behavior Changes:
+
+Magick++: adaptiveThreshold() now accepts a 'double' value and the
+previous version of the method (using 'unsigned int') is deprecated.
+The STL function-object equivalent of the deprecated method is removed
+entirely.
+
+
+1.3.21 (February 28, 2015)
+==========================
 
 .. _`AddressSanitizer` : https://code.google.com/p/address-sanitizer/
 
