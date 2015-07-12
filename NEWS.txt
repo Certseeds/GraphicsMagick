@@ -128,6 +128,8 @@ Windows Delegate Updates/Additions:
 
 * ttf: Update bundled freetype to release 2.6.
 
+* lcms: Update bundled lcms2 to release 2.7.
+
 * libxml: Update bundled libxml2 to release 2.9.2.
 
 Build Changes:
