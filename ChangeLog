@@ -1,5 +1,7 @@
 2015-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* png: Updated bundled libpng to release 1.6.17.
+
 	* lcms: Update bundled lcms2 to release 2.7.
 
 2015-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
