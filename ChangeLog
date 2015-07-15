@@ -1,3 +1,9 @@
+2015-07-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/magick_wand.h: The declaration for MagickGetImageGravity()
+	was missing.  Resolves SourceForge bug #308 magick_wand.h misses
+	declaration of MagickGetImageGravity.
+
 2015-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* dcraw: Update bundled dcraw to release 9.26.0.
