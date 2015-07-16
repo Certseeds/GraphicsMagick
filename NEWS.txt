@@ -130,6 +130,8 @@ Windows Delegate Updates/Additions:
 
 * png: Updated bundled libpng to release 1.6.17.
 
+* tiff: Update bundled libtiff to release 4.0.4.
+
 * ttf: Update bundled freetype to release 2.6.
 
 * webp: Updated bundled libwebp to release 0.4.3.
