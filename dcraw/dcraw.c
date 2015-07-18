@@ -109,6 +109,21 @@ typedef unsigned long long UINT64;
 #define ushort unsigned short
 #endif
 
+<<<<<<< /home/bfriesen/src/graphics/GM/dcraw/dcraw.c
+#define strnlen STRNLEN
+static size_t strnlen(const char *s, size_t maxlen)
+{
+  size_t i;
+
+  for (i = 0; (i < maxlen) && (s[i+1] != '\0'); i++)
+  {
+  }
+
+  return i;
+}
+
+
+=======
 #define strnlen(s,maxlen) strnlen_port(s,maxlen)
 static size_t strnlen(const char *s, size_t maxlen)
 {
@@ -122,6 +137,7 @@ static size_t strnlen(const char *s, size_t maxlen)
 }
 
 
+>>>>>>> /tmp/bfriesen/dcraw.c~other.mYEOcW
 /*
    All global variables are defined here, and all functions that
    access them are prefixed with "CLASS".  Note that a thread-safe
