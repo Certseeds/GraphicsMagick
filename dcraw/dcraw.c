@@ -109,6 +109,19 @@ typedef unsigned long long UINT64;
 #define ushort unsigned short
 #endif
 
+#define strnlen(s,maxlen) strnlen_port(s,maxlen)
+static size_t strnlen(const char *s, size_t maxlen)
+{
+  size_t i;
+
+  for (i = 0; (i < maxlen) && (s[i+1] != '\0'); i++)
+  {
+  }
+
+  return i;
+}
+
+
 /*
    All global variables are defined here, and all functions that
    access them are prefixed with "CLASS".  Note that a thread-safe

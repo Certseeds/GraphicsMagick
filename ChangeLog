@@ -1,3 +1,7 @@
+2015-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* dcraw/dcraw.c: Add a port replacement for strnlen().
+
 2015-07-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* wand/magick_wand.h: The declaration for MagickGetImageGravity()
