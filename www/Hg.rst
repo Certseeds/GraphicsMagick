@@ -123,7 +123,7 @@ Mercurial for GraphicsMagick Developers
 
 Since Mercurial_ is a distributed revision control system, you may
 clone the GraphicsMagick repository and work for days or weeks (making
-your own local commits) before you deside to push some or all of your
+your own local commits) before you decide to push some or all of your
 changes to the GraphicsMagick development repository.  GraphicsMagick
 developers first commit changes to their own local respository, then
 they push their changes to the GraphicsMagick development repository
@@ -136,7 +136,7 @@ The repository hierarchy is as follows:
 
 1. Local
 
-  The developer makes any local changes and commits he likes in his
+  The developer makes any local changes and commits what he likes in his
   own repository.  It is best to commit often and whenever all the
   files have been updated to implement a coherent change or feature
   (including the ChangeLog file!) since Mercurial_ stores related

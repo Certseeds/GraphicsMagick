@@ -13,7 +13,7 @@ GraphicsMagick Image Processing System
                  With GraphicsMagick you can create GIFs dynamically making it
                  suitable for Web applications.  You can also resize, rotate,
                  sharpen, color reduce, or add special effects to an image and
-                 save your completed work in the same or differing image format.
+                 save your completed work in the same or different image format.
 
    :keywords: GraphicsMagick, ImageMagick, PerlMagick, image processing, OpenMP
               software development library, image, photo, software, Magick++,
@@ -84,7 +84,7 @@ gigapixel-size images. GraphicsMagick can create new images on the
 fly, making it suitable for building dynamic Web
 applications. GraphicsMagick may be used to resize, rotate, sharpen,
 color reduce, or add special effects to an image and save the result
-in the same or differing image format. Image processing operations are
+in the same or different image format. Image processing operations are
 available from the command line, as well as through C, C++, Lua, Perl,
 PHP, Python, Tcl, Ruby, Windows .NET, or Windows COM programming
 interfaces. With some modification, language extensions for
@@ -101,7 +101,7 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
   * GM is more efficient so it gets the job done faster using fewer
     resources.
 
-  * GM is much smaller and tighter (3-5X smaller installation footprint).
+  * GM is much smaller and lighter (3-5X smaller installation footprint).
 
   * GM is used to process billions of files at the world's largest photo
     sites (e.g. `Flickr`_ and `Etsy`_).
@@ -131,7 +131,7 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
     changes.
 
   * GM has 0.00 (zero) defects per 1000 lines of code (293,341 total
-    lines included) according to Coverity analsis on May 25, 2015.
+    lines included) according to Coverity analysis on May 25, 2015.
 
   * GM developers contribute to other free projects for the public good.
 

@@ -220,7 +220,7 @@ libraries, provided that the system supports library versioning.</li>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
-<li>Annotate: Some requestable text-subsitution attributes caused a
+<li>Annotate: Some requestable text-substitution attributes caused a
 crash.</li>
 <li>All formats: Image dimensions are checked to assure that they are
 within limits before proceeding to read the image.</li>
@@ -247,7 +247,7 @@ to PSD format.</li>
 <li>SUN: Header validation is now made fully robust, and arithmetic
 overflows in buffer-size calculations are detected to avoid heap
 overwrite.</li>
-<li>TIFF: Fix crashes for photometrics which may delivery one or three
+<li>TIFF: Fix crashes for photometrics which may deliver one or three
 samples per pixel (was assuming always three).</li>
 <li>VIFF: Fixes to prevent buffer overflow.  Validate colormap indexes.</li>
 <li>Windows delegates: Fix unexpected argument splitting when invoking
@@ -334,11 +334,11 @@ error paths.  Fixed bad memory access caused by empty file.</li>
 <blockquote>
 <ul class="simple">
 <li>compose: Supports composite operator names similar to the major
-*Magick brand, without losing any any compatibility with previous
+*Magick brand, without losing any compatibility with previous
 naming.</li>
 <li>ICO: Windows ICO reader now supports reading PNG-encoded files.</li>
 <li>Magick++ Geometry: New methods limitPixels() and fillArea() to
-support '&#64;' and '^' geometry qualifiers.  This enancement breaks
+support '&#64;' and '^' geometry qualifiers.  This enhancement breaks
 the ABI due to previous use of inline methods and no place to put
 the new flags.</li>
 <li>Magick++ Image::extent(): New method to place image on sized
@@ -347,7 +347,7 @@ canvas of constant color using gravity.</li>
 based on a format similar to command-line -format.</li>
 <li>Magick++ Image::resize(): New method to resize image specifying
 geometry, filter, and blur.</li>
-<li>Magick++ STL extentImage: New New function object to invoke image
+<li>Magick++ STL extentImage: New function object to invoke image
 extent method.</li>
 <li>Magick++ Image::quiet().  New method which blocks (ignores)
 warning exceptions when passed a 'true' argument.</li>
@@ -366,7 +366,7 @@ command-line.</li>
 <li>Windows Exceptions: A handler is registered (due to calling
 InitializeMagick()) to capture Windows Exceptions in a similar
 manner to the existing POSIX signal handler.  If an application is
-using the library and wants to provide it own Windows exception
+using the library and wants to provide its own Windows exception
 handling, then it should make any changes after invoking
 InitializeMagick().</li>
 </ul>
@@ -447,14 +447,14 @@ accurate method which does not alter the image.</li>
 <li>Wand API: Removed development debug fprintf which causes each
 drawing primitive to be printed to stderr.</li>
 <li>PS, PS2, PS3, PDF: Only use resolution from image or -density if
-units was properly specified.  Without units, resolution is
+units were properly specified.  Without units, resolution is
 worthless.</li>
 <li>PS, PS2, PS3, PDF: Use resolution from image if it appears to be
 valid.</li>
 <li>WebP: Fix inverted return status which caused failure to be
 reported instead of success.</li>
 <li>Rotation clipping/shearing errors for short wide images at some
-angles is fixed.</li>
+angles are fixed.</li>
 <li>-geometry: Deal with resize geometry missing width or height
 (e.g. '640x' or 'x480') by substituting the missing value with one
 which preserves the image aspect ratio.  This has been documented
@@ -509,7 +509,7 @@ existing image attribute.</li>
 'G', 'H', 'M', 'O', 'P', 'Q', 'T', 'U', 'W', 'X', and '&#64;', similar
 to the major brand.</li>
 <li>-operator: New quantum operators ThresholdBlackNegateQuantumOp and
-ThresholdWhiteNegateQuantumOp These correspond to -operator
+ThresholdWhiteNegateQuantumOp. These correspond to -operator
 &quot;Threshold-Black-Negate&quot; and &quot;Threshold-White-Negate&quot;.</li>
 <li>TIFF: Now support setting the TIFF &quot;Software&quot; tag for users who do
 not want to admit to using GraphicsMagick.</li>
@@ -608,7 +608,7 @@ denial of service.</li>
 <li>Build: configure FreeType test no longer insists that
 &lt;freetype/freetype.h&gt; can be included.</li>
 <li>CMS profile: Only delete the CMS transform if it is non-null.
-Fixes assersion observed when lcms returned a null profile and
+Fixed assertion observed when lcms returned a null profile and
 GraphicsMagick attempted to deallocate it.</li>
 <li>Drawing: Improve error handling logic so that drawing returns
 quickly on pixel access errors rather than plowing on ahead.  This
@@ -625,8 +625,8 @@ number of threads to use is specified.</li>
 <li>MIFF writer: PseudoClass format was written incorrectly for depth
 greater than 8.</li>
 <li>MIFF writer: RLE compressed format used inverted alpha from the
-other subformats and contrary to the MIFF specification.</li>
-<li>MIFF reader: Fixes Fixes to be able to read MIFF written by
+other subformats contrary to the MIFF specification.</li>
+<li>MIFF reader: Fixes to be able to read MIFF written by
 ImageMagick 6.X, including DirectClass grayscale images (except
 for RLE compressed).</li>
 <li>Mosaic: Fixed unsigned underflow problem with -mosaic when page
@@ -792,7 +792,7 @@ Ghostscript is needed but not yet installed.</li>
 <ul class="simple">
 <li>GM utility: New 'batch' command was contributed by Kenneth Xu
 which supports executing any number of other GM utility
-sub-commands in a single invokation in a sort of &quot;batch&quot; script.
+sub-commands in a single invocation in a sort of &quot;batch&quot; script.
 Input may be piped from standard input, from a specified file, or
 from a 'GM &gt;' command prompt.  This utilities front-end allows any
 other program/script to drive 'gm' using a co-process model and
@@ -805,7 +805,7 @@ setting.  Also support -orient to support setting the current
 image orientation.  Please note that the orientation property of
 EXIF profiles is not yet updated so the EXIF profile will be wrong
 after using -auto-orient.</li>
-<li>C API: AutoOrientImage(), new New function to automatically orient
+<li>C API: AutoOrientImage(), new function to automatically orient
 the image so that it is upright for normal viewing.</li>
 <li>Wand API: MagickGetImagePage()/MagickSetImagePage(), new functions
 to support getting and setting the image page size and offsets.</li>
@@ -841,7 +841,7 @@ installed on the system in order to build the modules
 configuration.</li>
 <li>AppendImages() now converts subsequent images to the colorspace of
 the first image, and no longer converts the first image to RGB.
-Instead, it is assumed the user knows what she is doing.</li>
+Instead, it is assumed the user knows what she/he is doing.</li>
 <li>SetImageColorRegion() no longer automatically converts the image
 to RGB.  The user is responsible for assuring that the provided
 color is in the same colorspace as the image.</li>
@@ -1024,7 +1024,7 @@ and therefore fail to be deleted.</li>
 <ul class="simple">
 <li>Added '+noise random' and '-operator noise-random' to 'convert'
 and 'mogrify'.  This modulates the existing image data with
-uniformely random noise.</li>
+uniformly random noise.</li>
 <li>Added -strip option in composite, convert, mogrify, and montage to
 remove all profiles and text attributes from the image.</li>
 <li>Added -repage option to composite, convert, mogrify, and montage
@@ -1174,7 +1174,7 @@ type systems.</li>
 <li>The matte channel was not being properly enabled or respected for
 TXT images.</li>
 <li>InitializeMagick() and DestroyMagick() are now fully thread safe.</li>
-<li>When a shear angle was as zero, the shear request was being
+<li>When a shear angle was zero, the shear request was being
 ignored entirely.</li>
 <li>In DispatchImage(), the <cite>K</cite> channel was always output as black for
 &quot;CMYK&quot; specification unless the image matte flag was True.</li>
@@ -1203,7 +1203,7 @@ specified command with an increasing number of threads to measure
 how an algorithm benefits from threading.  This mode includes a
 column to show the speedup compared with one thread, and the
 Karp-Flatt metric</li>
-<li>Added Add support for invoking &quot;gs-cmyk&quot; and &quot;gs-cmyka&quot; entries in
+<li>Added support for invoking &quot;gs-cmyk&quot; and &quot;gs-cmyka&quot; entries in
 delegates.mgk when ColorSeparationType or ColorSeparationMatteType
 is requested.  These cause Ghostscript to always output CMYK PAM
 format (even if the input file was not in CMYK format).</li>
@@ -1656,7 +1656,7 @@ polygons.</li>
 <p>Bug fixes:</p>
 <blockquote>
 <ul class="simple">
-<li>JPEG: Profile chunks need to be concatentated in order to build
+<li>JPEG: Profile chunks need to be concatenated in order to build
 the whole profile.  This was not working so embedded profiles
 larger than 32K or maybe 64K were being corrupted.  This bug was
 introduced in GraphicsMagick 1.2.</li>
@@ -2218,7 +2218,7 @@ they were natively supported.</li>
 <li>ImportImageChannelsMasked(), import selected image channels.</li>
 <li>SharpenImageChannel(), sharpen an image channel.</li>
 <li>UnsharpMaskImageChannel(), unsharpmask an image channel.</li>
-<li>New cache view interfaces to correct shortcommings of original
+<li>New cache view interfaces to correct shortcomings of original
 ones.  New interfaces are AcquireCacheViewPixels(),
 AcquireOneCacheViewPixel(), AcquireCacheViewIndexes(),
 GetCacheViewPixels(), SetCacheViewPixels(), and
@@ -2814,7 +2814,7 @@ and more efficient than 16.</li>
 <li>All utility support functions moved to magick/command.c in order to
 significantly reduce link dependencies, allowing statically-linked
 programs to be smaller.</li>
-<li>Use of MogrifyImage() elminated except for by utilities.</li>
+<li>Use of MogrifyImage() eliminated except for by utilities.</li>
 <li>Re-builds due to changes to &lt;magick/image.h&gt; reduced by splitting the
 header into multiple headers.</li>
 <li>ISO C '99 typedefs (gm_int16_t, gm_uint16_t, gm_int32_t, gm_uint32_t,
