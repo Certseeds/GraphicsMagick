@@ -1,3 +1,7 @@
+2015-07-19  Jaroslav Fojtik  <JaFojtik@seznam.cz>
+
+	* dcraw/dcraw.c: Fixed bad define WIN32.
+
 2015-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt, www/Hg.rst, www/index.rst: Applied English bugs patch
