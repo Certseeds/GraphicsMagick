@@ -3569,6 +3569,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   pyramid_image=CloneImage(image,0,0,True,&image->exception);
   if (pyramid_image == (Image *) NULL)
     ThrowWriterException2(FileOpenError,image->exception.reason,image);
+  (void) SetImageAttribute(pyramid_image,"subfiletype","NONE");
   do
     {
       pyramid_image->next=ResizeImage(image,pyramid_image->columns/2,
@@ -3580,6 +3581,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
         (void) MapImage(pyramid_image->next,image,False);
       pyramid_image->next->x_resolution=pyramid_image->x_resolution/2;
       pyramid_image->next->y_resolution=pyramid_image->y_resolution/2;
+      (void) SetImageAttribute(pyramid_image->next,"subfiletype","REDUCEDIMAGE");
       pyramid_image->next->previous=pyramid_image;
       pyramid_image=pyramid_image->next;
     } while ((pyramid_image->columns > 64) && (pyramid_image->rows > 64));
@@ -3590,8 +3592,6 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   */
   clone_info=CloneImageInfo(image_info);
   clone_info->adjoin=True;
-  (void) strlcpy(clone_info->magick,"TIFF",MaxTextExtent);
-  (void) strlcpy(image->magick,"TIFF",MaxTextExtent);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Invoking \"%.1024s\" encoder, monochrome=%s, grayscale=%s",
                         "TIFF",
@@ -3868,9 +3868,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_BITSPERSAMPLE,
                                    &bits_per_sample);
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_SAMPLEFORMAT,&sample_format);
-      if (LocaleCompare(image_info->magick,"PTIF") == 0)
-        if (image->previous != (Image *) NULL)
-          (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_REDUCEDIMAGE);
       (void) TIFFSetField(tiff,TIFFTAG_IMAGELENGTH,(uint32) image->rows);
       (void) TIFFSetField(tiff,TIFFTAG_IMAGEWIDTH,(uint32) image->columns);
 
@@ -4979,30 +4976,51 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             WriteNewsProfile(tiff,profile_tag,profile_data,profile_length);
           }
       }
-      {
-        /*
-          Page and Page number tags.  Page is the current page number
-          (0 based) and pages is the total number of pages.
-	*/
+      attribute=GetImageAttribute(image,"subfiletype");
+      if (attribute != (const ImageAttribute *) NULL)
+        {
+          /*
+            Support "REDUCEDIMAGE", "PAGE", and "MASK".  Any other
+            value results in no subfile type tag applied.
+          */
+          if (LocaleCompare(attribute->value,"REDUCEDIMAGE") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_REDUCEDIMAGE);
+            }
+          else if (LocaleCompare(attribute->value,"PAGE") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
+            }
+          else if (LocaleCompare(attribute->value,"MASK") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_MASK);
+            }
+        }
+      else
+        {
+          /*
+            Page and Page number tags.  Page is the current page number
+            (0 based) and pages is the total number of pages.
+          */
 
-        uint16
-          page,
-          pages;
+          uint16
+            page,
+            pages;
 
-        page=(uint16) scene;
-        pages=GetImageListLength(image);
+          page=(uint16) scene;
+          pages=GetImageListLength(image);
 
-        if (image_info->adjoin && pages > 1)
-          {
-            /*
-	      SubFileType = 2. LONG. The value 2 identifies a single
-	      page of a multi-page image.
-	    */
-            (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
-          }
+          if (image_info->adjoin && pages > 1)
+            {
+              /*
+                SubFileType = 2. LONG. The value 2 identifies a single
+                page of a multi-page image.
+              */
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
+            }
 
-        (void) TIFFSetField(tiff,TIFFTAG_PAGENUMBER,page,pages);
-      }
+          (void) TIFFSetField(tiff,TIFFTAG_PAGENUMBER,page,pages);
+        }
       attribute=GetImageAttribute(image,"artist");
       if (attribute != (const ImageAttribute *) NULL)
         (void) TIFFSetField(tiff,TIFFTAG_ARTIST,attribute->value);

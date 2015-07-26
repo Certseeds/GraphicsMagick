@@ -1,3 +1,11 @@
+2015-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WritePTIFImage): Fix SourceForge issue #269
+	"Convert creates SubfileType 0x2 instead of 0x1".  From looking at
+	the code, this is a regression since the time support for the page
+	subfile type was added (probably via changeset 11831
+	(037eef0f67f2) on 2007-08-17).
+
 2015-07-19  Jaroslav Fojtik  <JaFojtik@seznam.cz>
 
 	* dcraw/dcraw.c: Fixed bad define WIN32.
