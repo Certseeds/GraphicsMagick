@@ -752,7 +752,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     c;
 
   size_t
-    length;
+    length,
+    compressed_length;
 
   long
     y;
@@ -1513,7 +1514,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     length=(size_t) (1.01*MagickArraySize(packet_size,image->columns));
     if (length)
       length += 600;
-    compress_pixels=MagickAllocateMemory(unsigned char *,length);
+    compressed_length = length;
+    compress_pixels=MagickAllocateMemory(unsigned char *,compressed_length);
     if (compress_pixels == (unsigned char *) NULL)
       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     /*
@@ -1560,6 +1562,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       else
                         {
                           length=ReadBlobMSBLong(image);
+                          if (length > compressed_length)
+                            ThrowMIFFReaderException(CorruptImageError,LengthAndFilesizeDoNotMatch,
+                                                     image);
                           zip_info.avail_in=(uInt) ReadBlob(image,length,zip_info.next_in);
                           if ((size_t) zip_info.avail_in != length)
                             ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
