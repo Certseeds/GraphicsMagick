@@ -38,8 +38,8 @@ extern "C" {
 #define MagickLibVersion  0x161300
 #define MagickLibVersionText  "1.4"
 #define MagickLibVersionNumber 16,13,0
-#define MagickChangeDate   "20150726"
-#define MagickReleaseDate  "snapshot-20150726"
+#define MagickChangeDate   "20150727"
+#define MagickReleaseDate  "snapshot-20150727"
 	
 /*
   The MagickLibInterfaceNewest and MagickLibInterfaceOldest defines

@@ -1563,12 +1563,20 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                         {
                           length=ReadBlobMSBLong(image);
                           if (length > compressed_length)
-                            ThrowMIFFReaderException(CorruptImageError,LengthAndFilesizeDoNotMatch,
-                                                     image);
+                            {
+                              (void) inflateEnd(&zip_info);
+                              ThrowMIFFReaderException(CorruptImageError,
+                                                       LengthAndFilesizeDoNotMatch,
+                                                       image);
+                            }
                           zip_info.avail_in=(uInt) ReadBlob(image,length,zip_info.next_in);
                           if ((size_t) zip_info.avail_in != length)
-                            ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
-                                                     image);
+                            {
+                              (void) inflateEnd(&zip_info);
+                              ThrowMIFFReaderException(CorruptImageError,
+                                                       UnexpectedEndOfFile,
+                                                       image);
+                            }
                         }
                     }
                   zip_status=inflate(&zip_info,Z_NO_FLUSH);

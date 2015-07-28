@@ -1,3 +1,12 @@
+2015-07-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Applied fix
+	(http://hg.code.sf.net/u/zacmorris/graphicsmagick/rev/edcc4c184b42)
+	by Zac Morris to detect buffer overrun while reading zip
+	compressed data.
+	(ReadMIFFImage): Fixed some memory leaks which were occuring when
+	an exception was thrown from zip-compressed data reader.
+
 2015-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WritePTIFImage): Fix SourceForge issue #269
