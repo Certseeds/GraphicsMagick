@@ -1,3 +1,9 @@
+2015-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Fix logic problem
+	while validating EXIF GPS_OFFSET.  Problem reported by Federico
+	Larumbe.
+
 2015-07-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ReadMIFFImage): Applied fix

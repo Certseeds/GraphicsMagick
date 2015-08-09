@@ -2010,7 +2010,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	    }
 	  if (t == GPS_OFFSET && (gpsoffset != 0))
 	    {
-	      if ((gpsoffset < length) || (level < (DE_STACK_SIZE-2)))
+	      if ((gpsoffset < length) && (level < (DE_STACK_SIZE-2)))
 		{
 		  /*
 		    Push our current directory state onto the stack.
