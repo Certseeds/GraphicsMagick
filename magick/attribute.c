@@ -1747,13 +1747,17 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	    f,
 	    c;
 
-	  char
-	    *pde;
-
 	  unsigned char
-	    *pval;
+	    *pde,
+            *pval;
 
-	  pde=(char *) (ifdp+2+(12*de));
+	  pde=(unsigned char *) (ifdp+2+(12*de));
+          if (pde + 12 > tiffp + length)
+            {
+              if (debug)
+                fprintf(stderr, "EXIF: Invalid Exif, entry is beyond metadata limit.\n");
+              goto generate_attribute_failure;
+            }
 	  t=Read16u(morder,pde); /* get tag value */
 	  f=Read16u(morder,pde+2); /* get the format */
           if ((f < 0) ||

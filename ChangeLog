@@ -1,5 +1,9 @@
 2015-08-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/attribute.c (GenerateEXIFAttribute): Verify that entry
+	pointer is within the metadata buffer in order to avoid buffer
+	overflow.  Resolution and patch by Federico Larumbe.
+
 	* magick/profile.c (SetImageProfile): Avoid crash given NULL
 	profile pointer.  Resolution and patch by Federico Larumbe.
 
