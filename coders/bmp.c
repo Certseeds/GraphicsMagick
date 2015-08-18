@@ -1816,7 +1816,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
             *q++=ScaleQuantumToChar(p->green);
             *q++=ScaleQuantumToChar(p->red);
             if (bmp_info.bits_per_pixel == 32)
-              *q++=ScaleQuantumToChar(p->opacity);
+              *q++==ScaleQuantumToChar(MaxRGB-p->opacity);
             p++;
           }
           if (bmp_info.bits_per_pixel == 24)

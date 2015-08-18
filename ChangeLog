@@ -1,3 +1,9 @@
+2015-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (WriteBMPImage): Fix inverted alpha channel when
+	writing BGRA8888 format.  Problem was reported by 张铎 via the
+	graphicsmagick-help discussion list on 2015-08-17.
+
 2015-08-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Verify that entry
