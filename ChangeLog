@@ -1,5 +1,7 @@
 2015-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* README.txt: Fix SourceForge bug 314 "README: bad hg clone URL".
+
 	* magick/module.c (GetModuleListForDirectory): Fix Coverity 107017
 	"Copy into fixed size buffer" and 107013 "Overlapping buffer in
 	memory copy".

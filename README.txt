@@ -38,7 +38,7 @@ is available via the Mercurial distributed source control management
 tool (http://mercurial.selenic.com/). GraphicsMagick may be retrieved
 via the following command:
 
-  hg clone http://graphicsmagick.hg.sourceforge.net/hgweb/graphicsmagick/graphicsmagick/ GM
+  hg clone http://hg.code.sf.net/p/graphicsmagick/code/ GM
 
 Mercurial provides a complete stand-alone repository which contains
 the full history of the GraphicsMagick project.  You may use the
