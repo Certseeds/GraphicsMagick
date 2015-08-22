@@ -156,6 +156,13 @@ extern "C" {
     1310 Visual c++ .NET 2003
     1400 Visual C++ 2005
     1500 Visual C++ 2008
+    1600 Visual C++ 2010
+    1700 Visual C++ 2012
+    1800 Visual C++ 2013
+    1900 Visual C++ 2015
+
+  Should look at __CLR_VER ("Defines the version of the common language
+  runtime used when the application was compiled.") as well.
 */
 #if defined(_VISUALC_) && (_MSC_VER >= 1310)
 #  define HAVE_GLOBALMEMORYSTATUSEX 1

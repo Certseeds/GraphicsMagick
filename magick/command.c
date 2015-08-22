@@ -17062,6 +17062,12 @@ static unsigned int VersionCommand(ImageInfo *ARGUNUSED(image_info),
   (void) fprintf(stdout,"  MSVC Version:            %d\n", _MSC_VER);
 #  endif /* defined(_MSC_VER) */
 
+#  if defined(__CLR_VER)
+  (void) fprintf(stdout,"  CLR Version:             %d\n", __CLR_VER);
+#  endif /* defined(__CLR_VER) */
+
+  /* Defined for compilations that target x86 processors. This is not
+     defined for x64 processors. */
 #  if defined(_M_IX86)
   {
     const char
