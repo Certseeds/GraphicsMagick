@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2015-08-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/module.c (GetModuleListForDirectory): Fix Coverity 107017
+&quot;Copy into fixed size buffer&quot; and 107013 &quot;Overlapping buffer in
+memory copy&quot;.
+(UnloadModule): Fix SourceForge bug 312 &quot;uninitialized variable
+&quot;name&quot; in UnloadModule&quot;.</li>
+<li>coders/bmp.c (WriteBMPImage): Fix typo in fix on 2015-08-17.
+Fixes Coverity 107014 &quot;Test should be assignment&quot;.</li>
+<li>magick/module.c (OpenModules): Fix Coverity 107016 &quot;Resource
+leak&quot;.
+(GetModuleListForDirectory): Fix Coverity 107015 &quot;Resource leak&quot;.</li>
+</ul>
+</blockquote>
 <p>2015-08-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

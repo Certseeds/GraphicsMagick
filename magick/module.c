@@ -57,6 +57,7 @@
 /*
   Define declarations.
 */
+#define MAX_MODULES 511 /* Maximum number of modules supported by build. */
 #define ModuleFilename  "modules.mgk"
 #if defined(HasLTDL)
 #  define ModuleGlobExpression "*.la"
@@ -792,19 +793,12 @@ GetModuleListForDirectory(const char *path,           /* Directory to scan. */
   for (i=0; list[i] != (char *) NULL; i++);
 
   entry=readdir(directory);
-  while (entry != (struct dirent *) NULL)
+  while ((entry != (struct dirent *) NULL) && (i < (long) *max_entries))
   {
     if (!GlobExpression(entry->d_name,ModuleGlobExpression))
       {
         entry=readdir(directory);
         continue;
-      }
-    if (i >= (long) *max_entries)
-      {
-        *max_entries<<=1;
-        MagickReallocMemory(char **,list,*max_entries*sizeof(char *));
-        if (list == (char **) NULL)
-          break;
       }
     /*
       Determine module tag
@@ -812,9 +806,21 @@ GetModuleListForDirectory(const char *path,           /* Directory to scan. */
     module_tag[0]='\0';
     GetPathComponent(entry->d_name,BasePath,module_tag);
     LocaleUpper(module_tag);
+    /*
+      Following is Windows VisualStudio build specific
+    */
     if (LocaleNCompare("IM_MOD_",module_tag,7) == 0)
       {
-        (void) strcpy(module_tag,module_tag+10);
+        size_t
+          l,
+          o;
+
+        o=10;
+        for (l=0;
+             (l+o < sizeof(module_tag)) && (module_tag[l+o] != '\0');
+             l++)
+          module_tag[l] = module_tag[l+o];
+        module_tag[l]='\0';
         module_tag[strlen(module_tag)-1]='\0';
       }
 
@@ -862,7 +868,7 @@ GetModuleList(ExceptionInfo *exception)
   if (InitializeModuleSearchPath(MagickCoderModule,exception) == MagickFail)
     return ((char **) NULL);
 
-  max_entries=255;
+  max_entries=MAX_MODULES;
   modules=MagickAllocateMemory(char **,(max_entries+1)*sizeof(char *));
   if (modules == (char **) NULL)
     return((char **) NULL);
@@ -1007,9 +1013,6 @@ InitializeModuleSearchPath(MagickModuleType module_type,
   unsigned int
     path_index=0;
 
-  char
-    path[MaxTextExtent];
-
   const char
     *module_path = NULL;
 
@@ -1047,8 +1050,6 @@ InitializeModuleSearchPath(MagickModuleType module_type,
         break;
       }
     }
-
-  path[0]='\0';
 
   /*
     Allow the module search path to be explicitly specified.
@@ -1581,6 +1582,7 @@ OpenModules(ExceptionInfo *exception)
       {
         (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
           "GetModuleList did not return any modules");
+        MagickFreeMemory(modules);
         return(False);
       }
     for (p=modules; *p != (char *) NULL; p++)
@@ -2168,8 +2170,7 @@ static unsigned int
 UnloadModule(const CoderInfo *coder_info,ExceptionInfo *exception)
 {
   char
-    message[MaxTextExtent],
-    name[MaxTextExtent];
+    message[MaxTextExtent];
 
   unsigned int
     status=True;
@@ -2193,7 +2194,8 @@ UnloadModule(const CoderInfo *coder_info,ExceptionInfo *exception)
     {
       if (lt_dlclose((ModuleHandle) coder_info->handle))
         {
-          FormatString(message,"\"%.1024s: %.1024s\"",name,lt_dlerror());
+          FormatString(message,"\"%.1024s: %.1024s\"",coder_info->tag,
+                       lt_dlerror());
           ThrowException(exception,ModuleError,FailedToCloseModule,message);
           status=False;
         }

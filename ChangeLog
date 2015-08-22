@@ -1,3 +1,18 @@
+2015-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/module.c (GetModuleListForDirectory): Fix Coverity 107017
+	"Copy into fixed size buffer" and 107013 "Overlapping buffer in
+	memory copy".
+	(UnloadModule): Fix SourceForge bug 312 "uninitialized variable
+	"name" in UnloadModule".
+
+	* coders/bmp.c (WriteBMPImage): Fix typo in fix on 2015-08-17.
+	Fixes Coverity 107014 "Test should be assignment".
+
+	* magick/module.c (OpenModules): Fix Coverity 107016 "Resource
+	leak".
+	(GetModuleListForDirectory): Fix Coverity 107015 "Resource leak".
+
 2015-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (WriteBMPImage): Fix inverted alpha channel when
