@@ -1,3 +1,7 @@
+2015-08-22  Jaroslav Fojtik  <JaFojtik@seznam.cz>
+        * magick\ImageMagick.rc Replace Imagemagick.ico by GraphicsMagick.ico
+        * magick\Imagemagick.ico is no longer needed and not referenced anywhere.
+
 2015-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* README.txt: Fix SourceForge bug 314 "README: bad hg clone URL".
