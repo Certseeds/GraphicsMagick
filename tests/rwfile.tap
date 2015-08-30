@@ -11,7 +11,7 @@ rwfile=./rwfile
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 532
+test_plan_fn 556
 
 # ART format
 for type in ${check_types}
@@ -32,6 +32,20 @@ for type in ${check_types}
 do
   test_command_fn "BMP ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" BMP
   test_command_fn "BMP ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" BMP
+done
+
+# BMP2 format
+for type in ${check_types}
+do
+  test_command_fn "BMP2 ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" BMP2
+  test_command_fn "BMP2 ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" BMP2
+done
+
+# BMP3 format
+for type in ${check_types}
+do
+  test_command_fn "BMP3 ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" BMP3
+  test_command_fn "BMP3 ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" BMP3
 done
 
 # CALS format
@@ -319,6 +333,20 @@ for type in ${check_types}
 do
   test_command_fn "PS ${type}" -F PS ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PS
   #test_command_fn "PS ${type} (stdio)" -F PS ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PS
+done
+
+# PS2 format
+for type in ${check_types}
+do
+  test_command_fn "PS2 ${type}" -F PS ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PS2
+  #test_command_fn "PS2 ${type} (stdio)" -F PS ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PS2
+done
+
+# PS3 format
+for type in ${check_types}
+do
+  test_command_fn "PS3 ${type}" -F PS ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PS3
+  #test_command_fn "PS3 ${type} (stdio)" -F PS ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PS3
 done
 
 # PSD format

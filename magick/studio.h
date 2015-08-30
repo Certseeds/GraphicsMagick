@@ -433,7 +433,8 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 
 #if defined(MSWINDOWS) && !defined(Windows95) && !defined(__BORLANDC__) && \
   !(defined(_MSC_VER) && _MSC_VER < 1400) && \
-  !(defined(__MINGW32__) && __MSVCRT_VERSION__ < 0x800)
+  !(defined(__MSVCRT_VERSION__) && __MSVCRT_VERSION__ < 0x800)
+
   /*
     Windows '95 and Borland C do not support _lseeki64
     Visual Studio does not support _fseeki64 and _ftelli64 until the 2005 release.

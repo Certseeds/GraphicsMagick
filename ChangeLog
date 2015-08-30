@@ -1,6 +1,15 @@
-2015-08-22  Jaroslav Fojtik  <JaFojtik@seznam.cz>
-        * magick\ImageMagick.rc Replace Imagemagick.ico by GraphicsMagick.ico
-        * magick\Imagemagick.ico is no longer needed and not referenced anywhere.
+2015-08-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwblob.tap: Add specific tests for BMP2 BMP3 subformats.
+
+	* tests/rwfile.tap: Add specific tests for BMP2 BMP3 PS2 PS3
+	subformats.
+
+2015-08-30  Jaroslav Fojtik  <JaFojtik@seznam.cz>
+
+        * magick/ImageMagick.rc Replace Imagemagick.ico by GraphicsMagick.ico
+
+        * magick/Imagemagick.ico is no longer needed and not referenced anywhere.
 
 2015-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
