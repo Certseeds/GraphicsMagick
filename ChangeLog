@@ -1,5 +1,8 @@
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dcm.c (dicom_info): Try to make dicom_info array more
+	'const'.
+
 	* coders/dpx.c: Eliminate use of static buffer strings.
 
 	* coders/png.c: Make MNG chunk id strings constant rather than
