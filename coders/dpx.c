@@ -751,13 +751,10 @@ STATIC size_t DPXIOOctets(const long current_row, /* 0 based */
 
 }
 #endif
-STATIC const char *DescribeImageElementDescriptor(const DPXImageElementDescriptor descriptor)
+STATIC const char *DescribeImageElementDescriptor(char *buffer, const DPXImageElementDescriptor descriptor)
 {
   const char *
     description="Unknown";
-
-  static char
-    buffer[MaxTextExtent];
 
   switch(descriptor)
     {
@@ -842,11 +839,8 @@ STATIC const char *DescribeImageElementDescriptor(const DPXImageElementDescripto
 /*
   Describe the element transfer characteristic.
 */
-STATIC const char *DescribeImageTransferCharacteristic(const DPXTransferCharacteristic characteristic)
+STATIC const char *DescribeImageTransferCharacteristic(char *buffer, const DPXTransferCharacteristic characteristic)
 {
-  static char
-    buffer[MaxTextExtent];
-
   const char
     *description=buffer;
 
@@ -903,11 +897,8 @@ STATIC const char *DescribeImageTransferCharacteristic(const DPXTransferCharacte
 /*
   Describe the element colorimetric.
 */
-STATIC const char *DescribeImageColorimetric(const DPXColorimetric colorimetric)
+STATIC const char *DescribeImageColorimetric(char *buffer, const DPXColorimetric colorimetric)
 {
-  static char
-    buffer[MaxTextExtent];
-
   const char
     *description=buffer;
 
@@ -967,6 +958,8 @@ STATIC const char *DescribeImageColorimetric(const DPXColorimetric colorimetric)
 STATIC void DescribeDPXImageElement(const DPXImageElement *element_info,
                                     const unsigned int element)
 {
+  char txt_buffer[MaxTextExtent];
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Element %u: data_sign=%s",element, 
                         element_info->data_sign == 0 ?
@@ -984,11 +977,11 @@ STATIC void DescribeDPXImageElement(const DPXImageElement *element_info,
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Element %u: descriptor=%s(%u) transfer_characteristic=%s(%u) colorimetric=%s(%u)",
                         element,
-                        DescribeImageElementDescriptor((DPXImageElementDescriptor) element_info->descriptor),
+                        DescribeImageElementDescriptor(txt_buffer,(DPXImageElementDescriptor) element_info->descriptor),
                         (unsigned int) element_info->descriptor,
-                        DescribeImageTransferCharacteristic((DPXTransferCharacteristic) element_info->transfer_characteristic),
+                        DescribeImageTransferCharacteristic(txt_buffer,(DPXTransferCharacteristic) element_info->transfer_characteristic),
                         (unsigned int) element_info->transfer_characteristic,
-                        DescribeImageColorimetric((DPXColorimetric) element_info->colorimetric),
+                        DescribeImageColorimetric(txt_buffer,(DPXColorimetric) element_info->colorimetric),
                         (unsigned int) element_info->colorimetric);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Element %u: bits-per-sample=%u",
@@ -1580,6 +1573,9 @@ STATIC void TentUpsampleChroma(PixelPacket *pixels, unsigned long columns)
 
 STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
+  char
+    txt_buffer[MaxTextExtent];
+
   DPXFileInfo
     dpx_file_info;
 
@@ -1986,7 +1982,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           default:
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unhandled element descriptor: %s",
-                                    DescribeImageElementDescriptor(element_descriptor));
+                                    DescribeImageElementDescriptor(txt_buffer,element_descriptor));
             }
           }
         
@@ -3290,6 +3286,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
 
 STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
 {
+  char
+    txt_buffer[MaxTextExtent];
+
   DPXFileInfo
     dpx_file_info;
 
@@ -3824,12 +3823,14 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   for (i=0; i < number_of_elements; i++)
     {
       (void) strlcpy(dpx_image_info.element_info[i].description,
-                     DescribeImageElementDescriptor((DPXImageElementDescriptor) dpx_image_info.element_info[i].descriptor),
+                     DescribeImageElementDescriptor(txt_buffer,
+                     (DPXImageElementDescriptor) dpx_image_info.element_info[i].descriptor),
                      sizeof(dpx_image_info.element_info[0].description));
       (void) strlcat(dpx_image_info.element_info[i].description," / ",
                      sizeof(dpx_image_info.element_info[0].description));
       (void) strlcat(dpx_image_info.element_info[i].description,
-                     DescribeImageTransferCharacteristic((DPXTransferCharacteristic) dpx_image_info.element_info[i].transfer_characteristic),
+                     DescribeImageTransferCharacteristic(txt_buffer,
+                     (DPXTransferCharacteristic) dpx_image_info.element_info[i].transfer_characteristic),
                      sizeof(dpx_image_info.element_info[0].description));
     }
 
