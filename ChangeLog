@@ -1,3 +1,10 @@
+2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawAffineImage): Fix problem that sometimes
+	output rows are skipped when using OpenMP.  Problem identification
+	and patch by Kevin Matzen.  Resolves SourceForge issue #316
+	"-affine sometimes produces output with missing rows".
+
 2015-08-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwblob.tap: Add specific tests for BMP2 BMP3 subformats.
