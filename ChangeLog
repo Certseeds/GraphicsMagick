@@ -1,5 +1,11 @@
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/palm.c: Palm static arrays should be 'const'.
+
+	* coders/meta.c (jpeg_embed): Stop sharing writeable static string
+	'psheader'.
+	(tag_spec): The 'tags' static array should be all 'const'.
+
 	* coders/jp2.c: Try to reduce the amount of non-const static data.
 
 	* coders/dcm.c (dicom_info): Try to make dicom_info array more

@@ -85,7 +85,7 @@
 /*
   2 color (1 bit) palette
 */
-static unsigned char
+static const unsigned char
 PalmPalette1[2][3] =
   {
     {  0,  0,  0},
@@ -95,7 +95,7 @@ PalmPalette1[2][3] =
 /*
   4 color (2 bit) palette
 */
-static unsigned char
+static const unsigned char
 PalmPalette2[4][3] =
   {
     {  0,  0,  0},
@@ -107,7 +107,7 @@ PalmPalette2[4][3] =
 /*
   16 color (4 bit) palette
 */
-static unsigned char
+static const unsigned char
 PalmPalette4[16][3] =
   {
     {  0,  0,  0},
@@ -128,7 +128,7 @@ PalmPalette4[16][3] =
     {255,255,255}
   };
 
-static unsigned char
+static const unsigned char
 PalmPalette8[256][3] =
   {
     {   0,   0,   0 },
@@ -391,7 +391,7 @@ PalmPalette8[256][3] =
 /*
  The 256 color system palette for Palm Computing Devices.
 */
-static unsigned char
+static const unsigned char
   PalmPalette[256][3] =
   {
     {255, 255,255},
