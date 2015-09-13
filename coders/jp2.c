@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2009 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -87,6 +87,36 @@ static unsigned int
 #endif
 
 static MagickBool jasper_initialized=MagickFalse;
+static const char const * const jasper_options[] =
+  {
+    "imgareatlx",
+    "imgareatly",
+    "tilegrdtlx",
+    "tilegrdtly",
+    "tilewidth",
+    "tileheight",
+    "prcwidth",
+    "prcheight",
+    "cblkwidth",
+    "cblkheight",
+    "mode",
+    "ilyrrates",
+    "prg",
+    "nomct",
+    "numrlvls",
+    "sop",
+    "eph",
+    "lazy",
+    "rate",
+    "termall",
+    "segsym",
+    "vcausal",
+    "pterm",
+    "resetprob",
+    "numgbits",
+    NULL
+  };
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,16 +281,8 @@ static int BlobClose(jas_stream_obj_t *object)
   return (0);
 }
 
-static jas_stream_ops_t
-  StreamOperators =
-  {
-    BlobRead,
-    BlobWrite,
-    BlobSeek,
-    BlobClose
-  };
 
-static jas_stream_t *JP2StreamManager(Image *image)
+static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image)
 {
   jas_stream_t 
     *stream;
@@ -276,7 +298,7 @@ static jas_stream_t *JP2StreamManager(Image *image)
   stream->obj_=MagickAllocateMemory(jas_stream_obj_t *,sizeof(StreamManager));
   if (stream->obj_ == (jas_stream_obj_t *) NULL)
     return((jas_stream_t *) NULL);
-  stream->ops_=(&StreamOperators);
+  stream->ops_=stream_ops;
   stream->openmode_=JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
   stream->bufbase_=stream->tinybuf_;
   stream->bufsize_=1;
@@ -302,6 +324,15 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
 
   jas_matrix_t
     *pixels;
+
+  jas_stream_ops_t
+    StreamOperators =
+    {
+      BlobRead,
+      BlobWrite,
+      BlobSeek,
+      BlobClose
+    };
 
   jas_stream_t
     *jp2_stream;
@@ -349,7 +380,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   /*
     Obtain a JP2 Stream.
   */
-  jp2_stream=JP2StreamManager(image);
+  jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
   jp2_image=jas_image_decode(jp2_stream,-1,0);
@@ -839,6 +870,15 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   jas_matrix_t
     *jp2_pixels;
 
+  jas_stream_ops_t
+    StreamOperators =
+    {
+      BlobRead,
+      BlobWrite,
+      BlobSeek,
+      BlobClose
+    };
+
   jas_stream_t
     *jp2_stream;
 
@@ -903,7 +943,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   /*
     Obtain a JP2 stream.
   */
-  jp2_stream=JP2StreamManager(image);
+  jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
     ThrowWriterException(DelegateError,UnableToManageJP2Stream,image);
   number_components=image->matte ? 4 : 3;
@@ -1068,37 +1108,8 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   */
   {
     const char
-      **option_name;
+      const * const * option_name;
 
-    static const char *jasper_options[] =
-      {
-        "imgareatlx",
-        "imgareatly",
-        "tilegrdtlx",
-        "tilegrdtly",
-        "tilewidth",
-        "tileheight",
-        "prcwidth",
-        "prcheight",
-        "cblkwidth",
-        "cblkheight",
-        "mode",
-        "ilyrrates",
-        "prg",
-        "nomct",
-        "numrlvls",
-        "sop",
-        "eph",
-        "lazy",
-        "rate",
-        "termall",
-        "segsym",
-        "vcausal",
-        "pterm",
-        "resetprob",
-        "numgbits",
-        NULL
-      };
     for (option_name = jasper_options; *option_name != NULL; option_name++)
       {
         const char

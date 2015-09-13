@@ -1,5 +1,7 @@
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c: Try to reduce the amount of non-const static data.
+
 	* coders/dcm.c (dicom_info): Try to make dicom_info array more
 	'const'.
 
