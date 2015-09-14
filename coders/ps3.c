@@ -974,7 +974,7 @@ static MagickPassFail WritePS3MaskImage(const ImageInfo *image_info,Image *image
 static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    *PostscriptProlog[]=
+    const * const PostscriptProlog[]=
     {
       "/ByteStreamDecodeFilter",
       "{",
@@ -1129,7 +1129,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       "  token pop /y exch def pop",
       "  currentfile buffer readline pop",
       "  token pop /pointsize exch def pop",
-      (char *) NULL
+      (const char *) NULL
     },
     /*
       This hole in the PS prolog is for labels.
@@ -1183,7 +1183,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       "  grestore",
       "  sp {showpage} if",
       "} bind def",
-      (char *) NULL
+      (const char *) NULL
     };
 
   char
@@ -1194,7 +1194,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    **q;
+    const * const *q;
 
   CompressionType
     compression;

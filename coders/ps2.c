@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -316,7 +316,7 @@ ModuleExport void UnregisterPS2Image(void)
 static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    *PostscriptProlog[]=
+    const * const PostscriptProlog[]=
     {
       "%%%%BeginProlog",
       "%%",
@@ -450,9 +450,9 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       "  currentfile buffer readline pop",
       "  token pop /pointsize exch def pop",
       "  /Helvetica findfont pointsize scalefont setfont",
-      (char *) NULL
+      (const char *) NULL
     },
-    *PostscriptEpilog[]=
+    * const PostscriptEpilog[]=
     {
       "  x y scale",
       "  currentfile buffer readline pop",
@@ -466,7 +466,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       "  token pop /compression exch def pop",
       "  class 0 gt { PseudoClassImage } { DirectClassImage } ifelse",
       "  grestore",
-      (char *) NULL
+      (const char *) NULL
     };
 
   char
@@ -477,7 +477,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    **q;
+    const * const *q;
 
   CompressionType
     compression;

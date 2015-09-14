@@ -1,5 +1,8 @@
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/{ps.c, ps2.c, ps3.c}: Static string/array allocations are
+	now more const.
+
 	* coders/palm.c: Palm static arrays should be 'const'.
 
 	* coders/meta.c (jpeg_embed): Stop sharing writeable static string
