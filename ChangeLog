@@ -1,5 +1,8 @@
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c: Static string/array allocations are now more
+	const.
+
 	* coders/{ps.c, ps2.c, ps3.c}: Static string/array allocations are
 	now more const.
 

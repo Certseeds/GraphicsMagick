@@ -132,7 +132,7 @@ static char *ParseColor(char *data)
 #define NumberTargets  6
 
   static const char
-    *targets[NumberTargets] = { "c ", "g ", "g4 ", "m ", "b ", "s " };
+    * const targets[NumberTargets] = { "c ", "g ", "g4 ", "m ", "b ", "s " };
 
   register char
     *p,
@@ -550,7 +550,7 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
 #define GraymapExtent  95
 #define PiconGeometry  "48x48>"
 
-  static unsigned char
+  static const unsigned char
     Colormap[]=
     {
       0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x06, 0x00, 0x05, 0x00, 0xf4, 0x05,
