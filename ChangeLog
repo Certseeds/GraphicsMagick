@@ -1,3 +1,10 @@
+2015-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tiff: Update bundled libtiff sources to 4.0.6 release.
+
+	* magick/module.c (InitializeModuleSearchPath): Fix compilation
+	problem when UseInstalledMagick is not defined.
+
 2015-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c: Static string/array allocations are now more

@@ -1013,6 +1013,11 @@ InitializeModuleSearchPath(MagickModuleType module_type,
   unsigned int
     path_index=0;
 
+#if !defined(UseInstalledMagick)
+  char
+    path[MaxTextExtent];
+#endif /* !defined(UseInstalledMagick) */
+
   const char
     *module_path = NULL;
 
