@@ -106,8 +106,8 @@ static wmfL_Coord wmf_L_Coord_translate (wmfAPI* API,wmfD_Coord d_pt)
 	d_pt.x += P->Viewport_Origin.x;
 	d_pt.y += P->Viewport_Origin.y;
 
-	l_pt.x = (float) ((double) d_pt.x / PixelWidth (API));
-	l_pt.y = (float) ((double) d_pt.y / PixelHeight (API));
+	l_pt.x = (S32) ((double) d_pt.x / PixelWidth (API));
+	l_pt.y = (S32) ((double) d_pt.y / PixelHeight (API));
 
 	l_pt.x += P->dc->Window.Ox;
 	l_pt.y += P->dc->Window.Oy;
