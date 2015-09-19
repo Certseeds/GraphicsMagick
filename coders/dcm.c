@@ -281,7 +281,7 @@ typedef struct _DicomInfo
   Array holding information on DICOM elements
 */
 static const DicomInfo
-  const dicom_info[]=
+  dicom_info[]=
   {
     { 0x0000, 0x0000, "UL", "Group Length", (DicomElemParseFunc *) NULL },
     { 0x0000, 0x0001, "UL", "Command Length to End", (DicomElemParseFunc *) NULL },

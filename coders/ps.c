@@ -621,7 +621,7 @@ static inline char* AppendHexTriplet(char *q,
 static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
 {
   static const char
-    const * const PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "%%BeginProlog",
       "%",
@@ -887,7 +887,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
     page_geometry[MaxTextExtent];
 
   const char
-    const * const *q;
+    * const *q;
 
   const ImageAttribute
     *attribute;

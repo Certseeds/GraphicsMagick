@@ -974,7 +974,7 @@ static MagickPassFail WritePS3MaskImage(const ImageInfo *image_info,Image *image
 static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    const * const PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "/ByteStreamDecodeFilter",
       "{",
@@ -1194,7 +1194,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    const * const *q;
+    * const *q;
 
   CompressionType
     compression;

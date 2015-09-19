@@ -215,7 +215,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   unsigned int
-    colormap_entries,
+	colormap_entries;
+
+  unsigned int
     index;
 
   unsigned long
@@ -237,7 +239,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   size_t
-    count,
+    count;
+
+  unsigned int
     map_length;
 
   unsigned char

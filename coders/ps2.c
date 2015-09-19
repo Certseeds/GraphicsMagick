@@ -316,7 +316,7 @@ ModuleExport void UnregisterPS2Image(void)
 static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    const * const PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "%%%%BeginProlog",
       "%%",
@@ -477,7 +477,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    const * const *q;
+    * const *q;
 
   CompressionType
     compression;

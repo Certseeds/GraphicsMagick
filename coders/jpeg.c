@@ -1787,16 +1787,19 @@ static void WriteXMPProfile(j_compress_ptr jpeg_info,
                             const size_t profile_length)
 {
   size_t
-    remaining,
     count,
     index,
-    header_length,
-    marker_length,
-    total_length;
+	header_length,
+	total_length;
+
+  unsigned int
+	marker_length,
+	remaining;
 
   header_length=strlen(xmp_std_header)+1; /* Include terminating null */
   total_length=header_length+profile_length;
-  remaining=total_length;
+  /* XMP profile must be no larger than range of 'unsigned int' */
+  remaining=(unsigned int) Min(UINT_MAX,total_length);
 
   marker_length=Min(remaining,JPEG_MARKER_MAX_SIZE);
   jpeg_write_m_header(jpeg_info,XML_MARKER,marker_length);

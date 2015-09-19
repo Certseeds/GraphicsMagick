@@ -87,7 +87,7 @@ static unsigned int
 #endif
 
 static MagickBool jasper_initialized=MagickFalse;
-static const char const * const jasper_options[] =
+static const char * const jasper_options[] =
   {
     "imgareatlx",
     "imgareatly",
@@ -1108,7 +1108,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   */
   {
     const char
-      const * const * option_name;
+      * const * option_name;
 
     for (option_name = jasper_options; *option_name != NULL; option_name++)
       {

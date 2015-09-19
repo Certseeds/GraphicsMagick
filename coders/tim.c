@@ -123,10 +123,12 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
-  unsigned long
+  size_t
     bytes_per_line,
+    image_size;
+
+  unsigned long
     height,
-    image_size,
     pixel_mode,
     width;
 
@@ -209,7 +211,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     height=ReadBlobLSBShort(image);
     image_size=MagickArraySize(2,MagickArraySize(width,height));
     bytes_per_line=MagickArraySize(width,2);
-    width=(MagickArraySize(width,16))/bits_per_pixel;
+    width=(unsigned long)(MagickArraySize(width,16))/bits_per_pixel;
     /*
       Initialize image structure.
     */

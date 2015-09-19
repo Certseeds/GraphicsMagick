@@ -1786,7 +1786,7 @@ typedef struct _tag_spec
     *name;
 } tag_spec;
 
-static const tag_spec const tags[] = {
+static const tag_spec tags[] = {
   { 5, "Image Name" },
   { 7, "Edit Status" },
   { 10, "Priority" },
