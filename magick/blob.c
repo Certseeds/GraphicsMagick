@@ -2692,7 +2692,17 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                         count=fread(magick,1,MaxTextExtent,image->blob->handle.std);
                         (void) MagickFseek(image->blob->handle.std,
                                            -(magick_off_t) count,SEEK_CUR);
+#if defined(POSIX)
+                        /*
+                          Discard any buffered input and adjust the
+                          file pointer such that the next input
+                          operation accesses the byte after the last
+                          one read. This avoids possible problems if
+                          the fseek()/rewind() implementations do not
+                          implicitly empty the stdio input buffer.
+                         */
                         (void) fflush(image->blob->handle.std);
+#endif /* defined(POSIX) */
 			if (image->logging)
 			  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
 						"  read %" MAGICK_SIZE_T_F

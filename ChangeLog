@@ -1,3 +1,10 @@
+2015-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (OpenBlob): Disable fflush() of read-only handle
+	under Microsoft Windows, which produced a spurious error status,
+	blocking file reads for Visual Studio 2015 on Windows 2012 server.
+	Problem was reported and diagnosed by Dirk Lemstra.
+
 2015-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tiff: Update bundled libtiff sources to 4.0.6 release.
