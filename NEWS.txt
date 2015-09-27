@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on July 11, 2015
+This file was last updated on September 27, 2015
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -72,21 +72,35 @@ Bug fixes:
 * BMP: Reader was wrongly rejecting RLE-compressed files as being too
   small (regression added in 1.3.21 release).
 
+* BMP: Fix inverted alpha channel when writing BGRA8888 format.
+
 * DrawAffineImage(): Fix problem with negative x offset.
+
+* DrawAffineImage(): Fix problem that sometimes output rows are skipped when using OpenMP.
+
+* EXIF: Properly validate GPS_OFFSET.
 
 * -format: %Q now reports JPEG quality estimate if it is available.
 
 * -geometry: Fix handling of area geometries in the form "5000000@".
 
+* MagickGetImageGravity(): Prototype was missing in header files.
+
 * MIFF: Memory leak fixes.
 
 * MIFF: MIFF reader failed to read some MIFF headers properly.
+
+* MIFF: Detect buffer overrun attempt while reading zip compressed data.
 
 * PDF: Set image frame scene ids appropriately.
 
 * PNG: Memory leak fixes.
 
 * PS: Set image frame scene ids appropriately.
+
+* PTIF: Mark reduced frames as SubfileType 0x2 instead of 0x1.
+
+* SetImageProfile(): Avoid crash given NULL profile pointer.
 
 * TIFF: Fix reading Old JPEG and YCbCr sample images from libtiff
   pics-3.8.0.tar.gz image file collection.
@@ -130,7 +144,7 @@ Windows Delegate Updates/Additions:
 
 * png: Updated bundled libpng to release 1.6.17.
 
-* tiff: Update bundled libtiff to release 4.0.4.
+* tiff: Update bundled libtiff to release 4.0.6.
 
 * ttf: Update bundled freetype to release 2.6.
 

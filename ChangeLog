@@ -1,5 +1,8 @@
 2015-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Brought up to date with changes thus far since last
+	release.
+
 	* magick/blob.c (OpenBlob): Disable fflush() of read-only handle
 	under Microsoft Windows, which produced a spurious error status,
 	blocking file reads for Visual Studio 2015 on Windows 2012 server.

@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated on July 11, 2015</p>
+<p>This file was last updated on September 27, 2015</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file for full details.</p>
@@ -117,14 +117,21 @@ when there are many files in the directory.</li>
 <li>General: Add missing options in utility help messages.</li>
 <li>BMP: Reader was wrongly rejecting RLE-compressed files as being too
 small (regression added in 1.3.21 release).</li>
+<li>BMP: Fix inverted alpha channel when writing BGRA8888 format.</li>
 <li>DrawAffineImage(): Fix problem with negative x offset.</li>
+<li>DrawAffineImage(): Fix problem that sometimes output rows are skipped when using OpenMP.</li>
+<li>EXIF: Properly validate GPS_OFFSET.</li>
 <li>-format: %Q now reports JPEG quality estimate if it is available.</li>
 <li>-geometry: Fix handling of area geometries in the form &quot;5000000&#64;&quot;.</li>
+<li>MagickGetImageGravity(): Prototype was missing in header files.</li>
 <li>MIFF: Memory leak fixes.</li>
 <li>MIFF: MIFF reader failed to read some MIFF headers properly.</li>
+<li>MIFF: Detect buffer overrun attempt while reading zip compressed data.</li>
 <li>PDF: Set image frame scene ids appropriately.</li>
 <li>PNG: Memory leak fixes.</li>
 <li>PS: Set image frame scene ids appropriately.</li>
+<li>PTIF: Mark reduced frames as SubfileType 0x2 instead of 0x1.</li>
+<li>SetImageProfile(): Avoid crash given NULL profile pointer.</li>
 <li>TIFF: Fix reading Old JPEG and YCbCr sample images from libtiff
 pics-3.8.0.tar.gz image file collection.</li>
 <li>TIFF: Disable matte channel for compression types which don't
@@ -158,7 +165,7 @@ implementation as a reference.</li>
 <li>dcraw: Update bundled dcraw to release 9.26.0.</li>
 <li>lcms: Update bundled lcms2 to release 2.7.</li>
 <li>png: Updated bundled libpng to release 1.6.17.</li>
-<li>tiff: Update bundled libtiff to release 4.0.4.</li>
+<li>tiff: Update bundled libtiff to release 4.0.6.</li>
 <li>ttf: Update bundled freetype to release 2.6.</li>
 <li>webp: Updated bundled libwebp to release 0.4.3.</li>
 <li>libxml: Update bundled libxml2 to release 2.9.2.</li>
