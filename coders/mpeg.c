@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -198,6 +198,13 @@ ModuleExport void UnregisterMPEGImage(void)
 %
 */
 
+#define ThrowMPEGWriterException(code_,reason_,image_) \
+{ \
+  if (clone_info) \
+    DestroyImageInfo(clone_info);             \
+  ThrowWriterException(code_,reason_,image_); \
+}
+
 static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
   Image *image)
 {
@@ -260,7 +267,11 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
       (void) fprintf(file,"%s\n",filename);
       parameter_file=fopen(filename,"w");
       if (parameter_file == (FILE *) NULL)
-        return(False);
+        {
+          (void) fclose(file);
+          file=(FILE *) NULL;
+          return(False);
+        }
       if (image_info->quality < DefaultCompressionQuality)
         {
           q=Max((DefaultCompressionQuality-image_info->quality)/8.0,1.0);
@@ -284,6 +295,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
           }
         }
       (void) fclose(parameter_file);
+      parameter_file=(FILE *) NULL;
     }
   if (image_info->quality == DefaultCompressionQuality)
     (void) fprintf(file,"-\n");  /* default non intra quant matrix */
@@ -296,7 +308,11 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
       (void) fprintf(file,"%s\n",filename);
       parameter_file=fopen(filename,"w");
       if (parameter_file == (FILE *) NULL)
-        return(False);
+        {
+          (void) fclose(file);
+          file=(FILE *) NULL;
+          return(False);
+        }
       q=Min(Max(66.0-(2*image_info->quality)/3.0,1.0),255);
       for (i=0; i < 64; i++)
       {
@@ -305,6 +321,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
           (void) fprintf(parameter_file,"\n");
       }
       (void) fclose(parameter_file);
+      parameter_file=(FILE *) NULL;
     }
   (void) fprintf(file,"%.1024s.log\n",image_info->unique);  /* statistics log */
   (void) fprintf(file,"1\n");  /* input picture file format */
@@ -353,6 +370,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
           if ((horizontal_factor != 2) || (vertical_factor != 2))
             {
               (void) fclose(file);
+              file=(FILE *) NULL;
               return(False);
             }
         }
@@ -361,6 +379,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
             ((vertical_factor != 1) && (vertical_factor != 2)))
           {
             (void) fclose(file);
+            file=(FILE *) NULL;
             return(False);
           }
     }
@@ -395,6 +414,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
   (void) fprintf(file,"1 1 7 7\n");
   (void) fprintf(file,"1 1 3 3\n");
   (void) fclose(file);
+  file=(FILE *) NULL;
   return(True);
 }
 
@@ -409,7 +429,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
     *next_image;
 
   ImageInfo
-    *clone_info;
+    *clone_info = (ImageInfo *) NULL;
 
   register Image
     *p;
@@ -441,7 +461,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowMPEGWriterException(FileOpenError,UnableToOpenFile,image);
   CloseBlob(image);
   /*
     Determine if the sequence of images have identical page info.
@@ -487,7 +507,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
           FormatString(filename,"%.1024s.niq",basename);
           (void) remove(filename);
         }
-      ThrowWriterException(CoderError,UnableToWriteMPEGParameters,image)
+      ThrowMPEGWriterException(CoderError,UnableToWriteMPEGParameters,image);
     }
   count=0;
   clone_info->interlace=PlaneInterlace;
@@ -522,8 +542,14 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
           break;
         }
         case 1:
+        {
           blob=(unsigned char *)
             FileToBlob(previous_image,&length,&image->exception);
+          FormatString(filename,"%.1024s.%lu.yuv",basename,p->scene);
+          if (length > 0)
+            status=BlobToFile(filename,blob,length,&image->exception);
+          break;
+        }
         default:
         {
           FormatString(filename,"%.1024s.%lu.yuv",basename,p->scene);

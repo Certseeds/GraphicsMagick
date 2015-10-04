@@ -684,27 +684,35 @@ Windows Distribution Build Procedure
 
   3. Build ImageMagickObject
 
-     a. ``cd GM\contrib\win32\ATL7\ImageMagickObject``
+     a. Open Visual Studio Command Shell Window for WIN32 or WIN64
 
-     b. ``BuildImageMagickObject clean``
+     b. Change to GraphicsMagick project directory ``GM``
 
-     c. ``BuildImageMagickObject release``
+     c. ``cd GM\contrib\win32\ATL7\ImageMagickObject``
 
-     d. ``cd ..\..\..\..``
+     d. ``BuildImageMagickObject clean``
 
-  4. Open Windows Command Shell Window
+     e. ``BuildImageMagickObject release``
 
-     a. ``cd GM\PerlMagick``
+     f. ``cd ..\..\..\..``
 
-     b. ``nmake clean`` (only if this is a rebuild)
+  4. Build PerlMagick extension
 
-     c. ``C:\Perl32\perl Makefile.nt``
+     a. Open Visual Studio Command Shell Window for WIN32  or WIN64
+
+     b. Change to GraphicsMagick project directory ``GM``
+
+     c. ``cd GM\PerlMagick``
+
+     d. ``nmake clean`` (only if this is a rebuild)
+
+     e. ``C:\Perl32\bin\perl.exe Makefile.nt`` (or Perl64)
 
         Note that if multiple Perl's are installed, then it may be
         necessary to specify the full path to perl.exe in order to use
         the correct Perl.
 
-     d. ``nmake release``
+     f. ``nmake release``
 
   NOTE: access to *nmake* requires that there be a path to it. Depending on
   how the install of Visual Studio was done, this may not be the case.

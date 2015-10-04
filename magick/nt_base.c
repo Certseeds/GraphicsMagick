@@ -522,7 +522,8 @@ MagickUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
       FormatString(message,
                    "%s: caught exception 0x%08X \"%s\"...",
                    GetClientName(), (unsigned int) code, text);
-      if (write(STDERR_FILENO,message,strlen(message)) == -1)
+      if (write(STDERR_FILENO,message,
+                (MAGICK_POSIX_IO_SIZE_T) strlen(message)) == -1)
         {
           /* Exists to quench warning */
         }

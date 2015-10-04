@@ -1125,14 +1125,14 @@ static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
 	fp = JAS_CAST(FILE *, obj);
-	return fread(buf, 1, cnt, fp);
+	return (int) fread(buf, 1, cnt, fp);
 }
 
 static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
 	fp = JAS_CAST(FILE *, obj);
-	return fwrite(buf, 1, cnt, fp);
+	return (int) fwrite(buf, 1, cnt, fp);
 }
 
 static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)

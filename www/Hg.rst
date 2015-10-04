@@ -22,7 +22,7 @@ GraphicsMagick Mercurial
 
 .. _Mercurial : http://mercurial.selenic.com/
 .. _TortoiseHg : http://tortoisehg.bitbucket.org/
-.. _`GraphicsMagick repository at SourceForge` : http://sourceforge.net/p/graphicsmagick/code/
+.. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
 
 .. contents::
 
@@ -51,14 +51,7 @@ Web Access
 
 The `GraphicsMagick repository at SourceForge`_ web interface is
 available which may be used to interactively view the latest versions
-of files, or the changes to files, using your web browser.  Please
-note that the SourceForge web interface to repositories is the worst
-that we have ever experienced and it is difficult to imagine how it
-could be worse.  This was not the case when Mercurial was initially
-used at SourceForge and Mercurial's native web interface was offered.
-The user is advised to clone the whole repository and use Mercurial's
-own web interface, or a graphical tool like Tortoise Hg on their own
-machine to peruse the files and change history.
+of files, or the changes to files, using your web browser.
 
 Cloning the Mercurial Repository
 ==================================
@@ -130,7 +123,7 @@ Mercurial for GraphicsMagick Developers
 
 Since Mercurial_ is a distributed revision control system, you may
 clone the GraphicsMagick repository and work for days or weeks (making
-your own local commits) before you deside to push some or all of your
+your own local commits) before you decide to push some or all of your
 changes to the GraphicsMagick development repository.  GraphicsMagick
 developers first commit changes to their own local respository, then
 they push their changes to the GraphicsMagick development repository
@@ -143,7 +136,7 @@ The repository hierarchy is as follows:
 
 1. Local
 
-  The developer makes any local changes and commits he likes in his
+  The developer makes any local changes and commits what he likes in his
   own repository.  It is best to commit often and whenever all the
   files have been updated to implement a coherent change or feature
   (including the ChangeLog file!) since Mercurial_ stores related

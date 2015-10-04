@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2014 GraphicsMagick Group */
+/* Copyright (C) 2003-2015 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -2270,6 +2270,7 @@ WandExport void DrawComposite(DrawingWand *drawing_wand,
       }
       (void) MvgPrintf(drawing_wand,"'\n");
     }
+  MagickFreeMemory(base64);
   MagickFreeMemory(media_type);
 }
 
@@ -3828,8 +3829,12 @@ WandExport void DrawPushGraphicContext(DrawingWand *drawing_wand)
   MagickReallocMemory(DrawInfo **,drawing_wand->graphic_context,
                       (drawing_wand->index+1)*sizeof(DrawInfo *));
   if (drawing_wand->graphic_context == (DrawInfo **) NULL)
-    ThrowException3(&drawing_wand->exception,ResourceLimitError,
-      MemoryAllocationFailed,UnableToDrawOnImage);
+    {
+      drawing_wand->index--;
+      ThrowException3(&drawing_wand->exception,ResourceLimitError,
+                      MemoryAllocationFailed,UnableToDrawOnImage);
+      return;
+    }
   CurrentContext=CloneDrawInfo((ImageInfo *) NULL,
     drawing_wand->graphic_context[drawing_wand->index-1]);
   (void) MvgPrintf(drawing_wand,"push graphic-context\n");
@@ -4546,6 +4551,8 @@ WandExport void DrawSetStrokeDashArray(DrawingWand *drawing_wand,
 
   assert(drawing_wand != (DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
+  if (dash_array == (const double *) NULL)
+    n_new = 0;
   q=CurrentContext->dash_pattern;
   if (q != (const double *) NULL)
     while (*q++ != 0.0)

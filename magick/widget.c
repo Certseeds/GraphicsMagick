@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1026,7 +1026,8 @@ static void XEditText(Display *display,MagickXWidgetInfo *text_info,
       if (text_info->cursor != text_info->text)
         {
           text_info->cursor--;
-          (void) strcpy(text_info->cursor,text_info->cursor+1);
+          (void) memmove(text_info->cursor,text_info->cursor+1,
+                         strlen(text_info->cursor+1)+1);
           text_info->highlight=False;
           break;
         }
@@ -1871,6 +1872,7 @@ MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *win
         checklist=GetColorList(glob_pattern,&number_colors);
         if (number_colors == 0)
           {
+            MagickFreeMemory(checklist);
             (void) strlcpy(glob_pattern,reset_pattern,MaxTextExtent);
             (void) XBell(display,0);
           }
@@ -2291,8 +2293,8 @@ MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *win
             cancel_info.raised=True;
             XDrawBeveledButton(display,&windows->widget,&cancel_info);
           }
-        if (!MatteIsActive(reply_info,event.xbutton))
-          break;
+        /* if (!MatteIsActive(reply_info,event.xbutton)) */
+        /*   break; */
         break;
       }
       case ClientMessage:
@@ -3461,7 +3463,7 @@ MagickExport int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
             /*
               Dismiss button status changed.
             */
-            dismiss_info.raised=!cancel_info.raised;
+            dismiss_info.raised=!dismiss_info.raised;
             XDrawBeveledButton(display,&windows->widget,&dismiss_info);
             break;
           }
@@ -5264,8 +5266,7 @@ MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *wind
   */
   for (i=0; i < files; i++)
     MagickFreeMemory(filelist[i]);
-  if (filelist != (char **) NULL)
-    MagickFreeMemory(filelist);
+  MagickFreeMemory(filelist);
   if (*reply == '~')
     ExpandFilename(reply);
 }
@@ -5447,7 +5448,7 @@ MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *wind
     }
   for (i=0; i < fonts; i++)
     fontlist[i]=listhead[i];
-  qsort((void *) fontlist,fonts,sizeof(char **),FontCompare);
+  qsort((void *) fontlist,fonts,sizeof(char *),FontCompare);
   /*
     Determine Font Browser widget attributes.
   */
@@ -5725,7 +5726,7 @@ MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *wind
           }
         for (i=0; i < fonts; i++)
           fontlist[i]=listhead[i];
-        qsort((void *) fontlist,fonts,sizeof(char **),FontCompare);
+        qsort((void *) fontlist,fonts,sizeof(fontlist[0]),FontCompare);
         slider_info.height=
           scroll_info.height-((slider_info.min_y-scroll_info.y+1) << 1)+1;
         if (fonts > (int) visible_fonts)
@@ -7138,8 +7139,8 @@ MagickExport void MagickXListBrowserWidget(Display *display,MagickXWindows *wind
             cancel_info.raised=True;
             XDrawBeveledButton(display,window_info,&cancel_info);
           }
-        if (!MatteIsActive(reply_info,event.xbutton))
-          break;
+        /* if (!MatteIsActive(reply_info,event.xbutton)) */
+        /*   break; */
         break;
       }
       case ClientMessage:

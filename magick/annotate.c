@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2013 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -202,6 +202,9 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
     height,
     number_lines;
 
+  MagickBool
+    metrics_initialized = MagickFalse;
+
   /*
     Translate any embedded format characters (e.g. %f).
   */
@@ -246,8 +249,11 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
       Position text relative to image.
     */
     (void) CloneString(&annotate->text,textlist[i]);
-    if ((i == 0) || (annotate->gravity != NorthWestGravity))
-      (void) GetTypeMetrics(image,annotate,&metrics);
+    if ((!metrics_initialized) || (annotate->gravity != NorthWestGravity))
+      {
+        metrics_initialized=MagickTrue;
+        (void) GetTypeMetrics(image,annotate,&metrics);
+      }
     height=(unsigned long) (metrics.ascent-metrics.descent);
     switch (annotate->gravity)
     {
@@ -1056,14 +1062,17 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
       (void) FT_Done_FreeType(library);
       ThrowBinaryException(TypeError,UnableToReadFont,draw_info->font)
     }
+  /*
+    Select a charmap
+  */
   if (face->num_charmaps != 0)
-    ft_status=FT_Set_Charmap(face,face->charmaps[0]);
+    /* ft_status= */ (void) FT_Set_Charmap(face,face->charmaps[0]);
   encoding_type=ft_encoding_unicode;
   ft_status=FT_Select_Charmap(face,encoding_type);
   if (ft_status != 0)
     {
       encoding_type=ft_encoding_none;
-      ft_status=FT_Select_Charmap(face,encoding_type);
+      /* ft_status= */ (void) FT_Select_Charmap(face,encoding_type);
     }
   if (encoding != (char *) NULL)
     {
@@ -1819,15 +1828,6 @@ static MagickPassFail RenderX11(Image *image,const DrawInfo *draw_info,
       font_info=MagickXBestFont(display,&resource_info,False);
       if (font_info == (XFontStruct *) NULL)
         ThrowBinaryException(XServerError,UnableToLoadFont,draw_info->font);
-      if ((map_info == (XStandardColormap *) NULL) ||
-          (visual_info == (XVisualInfo *) NULL) ||
-          (font_info == (XFontStruct *) NULL))
-        {
-          MagickXFreeResources(display,visual_info,map_info,&pixel,font_info,
-            &resource_info,(MagickXWindowInfo *) NULL);
-          ThrowBinaryException(XServerError,UnableToLoadFont,
-            draw_info->server_name)
-        }
       cache_info=(*draw_info);
     }
   /*

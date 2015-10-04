@@ -447,7 +447,7 @@ offset (default zero) from the mean to compute the threshold::
 
     void            adaptiveThreshold ( const unsigned int width,
                                         const unsigned int height,
-                                        const unsigned offset = 0 )
+                                        const double offset = 0.0 )
 
 addNoise
 ++++++++
@@ -2345,6 +2345,13 @@ profile)::
     void            renderingIntent ( const RenderingIntent renderingIntent_ )
 
     RenderingIntent renderingIntent ( void ) const
+
+repage
+++++++
+
+Reset the image page canvas and position::
+
+    void            repage();
 
 resolutionUnits
 +++++++++++++++

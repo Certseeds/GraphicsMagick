@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -756,7 +756,7 @@ static unsigned int MaskWriteByteHook(Image *ARGUNUSED(mask_image),
   return(True);
 }
 
-static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WritePS3MaskImage(const ImageInfo *image_info,Image *image)
 {
   char
     buffer[MaxTextExtent];
@@ -774,10 +774,11 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
   unsigned char
     *pixels;
 
-  int
+  MagickPassFail
     status;
 
-  ExtendedSignedIntegralType
+  magick_off_t
+    here,
     start,
     stop;
 
@@ -786,16 +787,20 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(image->matte);
-  status=True;
+  status=MagickPass;
   compression=image->compression;
   if (image_info->compression != UndefinedCompression)
     compression=image_info->compression;
 
   /* Keep position of BeginData DSC comment for update later */
   start=TellBlob(image);
+  if (start < 0)
+    return MagickFail;
   FormatString(buffer,"%%%%BeginData:%13ld ASCII Bytes\n",0L);
   (void) WriteBlobString(image,buffer);
   stop=TellBlob(image);
+  if (stop < 0)
+    return MagickFail;
 
   /* Only lossless compressions for the mask */
   switch (compression)
@@ -804,6 +809,7 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
       FormatString(buffer,
         "currentfile %lu %lu "PS3_NoCompression" ByteStreamDecodeFilter\n",
         image->columns, image->rows);
+      break;
     case FaxCompression:
     default:
       FormatString(buffer,
@@ -831,12 +837,13 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
 
   mask_image=CloneImage(image,0,0,True,&image->exception);
   if (mask_image == (Image *) NULL)
-    ThrowWriterException2(CoderError,image->exception.reason,image);
+    return MagickFail;
   status=ChannelImage(mask_image, OpacityChannel);
   if (!status)
   {
+    CopyException(&image->exception,&mask_image->exception);
     DestroyImage(mask_image);
-    return(False);
+    return(MagickFail);
   }
   (void) SetImageType(mask_image, BilevelType);
   mask_image->matte=False;
@@ -914,12 +921,19 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
       break;
   }
   DestroyImage(mask_image);
-  length=TellBlob(image)-stop;
+  here=TellBlob(image);
+  if (here < 0)
+    return MagickFail;
+  length=here-stop;
   stop=TellBlob(image);
-  (void) SeekBlob(image,start,SEEK_SET);
+  if (stop < 0)
+    return MagickFail;
+  if (SeekBlob(image,start,SEEK_SET) != start)
+    ThrowWriterException(BlobError,UnableToSeekToOffset,image);
   FormatString(buffer,"%%%%BeginData:%13ld ASCII Bytes\n",(long) length);
   (void) WriteBlobString(image,buffer);
-  (void) SeekBlob(image,stop,SEEK_SET);
+  if (SeekBlob(image,stop,SEEK_SET) != stop)
+    ThrowWriterException(BlobError,UnableToSeekToOffset,image);
   (void) WriteBlobString(image,"%%EndData\n");
   (void)WriteBlobString(image, "/mask_stream exch def\n");
   return(status);
@@ -960,7 +974,7 @@ static unsigned int WritePS3MaskImage(const ImageInfo *image_info,Image *image)
 static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    *PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "/ByteStreamDecodeFilter",
       "{",
@@ -1115,7 +1129,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       "  token pop /y exch def pop",
       "  currentfile buffer readline pop",
       "  token pop /pointsize exch def pop",
-      (char *) NULL
+      (const char *) NULL
     },
     /*
       This hole in the PS prolog is for labels.
@@ -1169,7 +1183,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       "  grestore",
       "  sp {showpage} if",
       "} bind def",
-      (char *) NULL
+      (const char *) NULL
     };
 
   char
@@ -1180,7 +1194,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    **q;
+    * const *q;
 
   CompressionType
     compression;
@@ -1196,7 +1210,8 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     y_resolution,
     y_scale;
 
-  ExtendedSignedIntegralType
+  magick_off_t
+    current,
     start,
     stop;
 
@@ -1290,7 +1305,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
               image->page.y);
         else
           if (LocaleCompare(image_info->magick,"PS3") == 0)
-            (void) strcpy(page_geometry,PSPageGeometry);
+            (void) strlcpy(page_geometry,PSPageGeometry,sizeof(page_geometry));
       }
     (void) GetMagickGeometry(page_geometry,&geometry.x,&geometry.y,
        &geometry.width,&geometry.height);
@@ -1307,7 +1322,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     dx_resolution=72.0;
     dy_resolution=72.0;
     x_resolution=72.0;
-    (void) strcpy(density,PSDensityGeometry);
+    (void) strlcpy(density,PSDensityGeometry,sizeof(density));
     count=GetMagickDimension(density,&x_resolution,&y_resolution,NULL,NULL);
     if (count != 2)
       y_resolution=x_resolution;
@@ -1358,9 +1373,9 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       {
         /* Postscript magic */
         if (LocaleCompare(image_info->magick,"PS3") == 0)
-          (void) strcpy(buffer,"%!PS-Adobe-3.0\n");
+          (void) strlcpy(buffer,"%!PS-Adobe-3.0\n", sizeof(buffer));
         else
-          (void) strcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n");
+          (void) strlcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n", sizeof(buffer));
         (void) WriteBlobString(image,buffer);
 
         /* Creator */
@@ -1429,7 +1444,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
             (void) WriteBlobString(image,"%%Orientation: Portrait\n");
             (void) WriteBlobString(image,"%%PageOrder: Ascend\n");
             if (!image_info->adjoin)
-              (void) strcpy(buffer,"%%Pages: 1\n");
+              (void) strlcpy(buffer,"%%Pages: 1\n",sizeof(buffer));
             else
               FormatString(buffer,"%%%%Pages: %lu\n",(unsigned long)
                 GetImageListLength(image));
@@ -1546,9 +1561,13 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       in the blob.
     */
     start=TellBlob(image);
+    if (start < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
     FormatString(buffer,"%%%%BeginData:%13ld ASCII Bytes\n",0L);
     (void) WriteBlobString(image,buffer);
     stop=TellBlob(image);
+    if (stop < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
 
     /* Call to image display procedure */
     (void) WriteBlobString(image,"DisplayImage\n");
@@ -1862,12 +1881,19 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       }
 
     /* Update BeginData now that we know the data size */
-    length=TellBlob(image)-stop;
+    current=TellBlob(image);
+    if (current < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
+    length=current-stop;
     stop=TellBlob(image);
-    (void) SeekBlob(image,start,SEEK_SET);
+    if (stop < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
+    if (SeekBlob(image,start,SEEK_SET) != start)
+      ThrowWriterException(BlobError,UnableToSeekToOffset,image);
     FormatString(buffer,"%%%%BeginData:%13ld ASCII Bytes\n",(long) length);
     (void) WriteBlobString(image,buffer);
-    (void) SeekBlob(image,stop,SEEK_SET);
+    if (SeekBlob(image,stop,SEEK_SET) != stop)
+      ThrowWriterException(BlobError,UnableToSeekToOffset,image);
     (void) WriteBlobString(image,"%%EndData\n");
 
     /* End private dictionary if this is an EPS */

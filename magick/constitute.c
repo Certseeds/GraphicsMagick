@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -320,10 +320,17 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                       }
                     break;
                   }
+#if !defined(__COVERITY__)
                 case UndefinedDispatchType:
                   {
                     break;
                   }
+#else
+                default:
+                  {
+                    break;
+                  }
+#endif
                 } /* end switch */
               if (!SyncImagePixels(image))
                 break;
@@ -1603,8 +1610,9 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
 
       if (image != (Image *) NULL)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder: cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
+          "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
                               magick_info->name,
+                              GetImageListLength(image),
 			      (GetPixelCachePresent(image) ? "present" : "missing"),
                               MagickBoolToString(image->is_monochrome),
                               MagickBoolToString(image->is_grayscale),
@@ -1703,8 +1711,9 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
 
       if (image != (Image *) NULL)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder: cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
+          "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
                               magick_info->name,
+                              GetImageListLength(image),
 			      (GetPixelCachePresent(image) ? "present" : "missing"),
                               MagickBoolToString(image->is_monochrome),
                               MagickBoolToString(image->is_grayscale),
@@ -1753,6 +1762,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
     }
   if (GetBlobTemporary(image))
     RemoveTemporaryInputFile(clone_info);
+
   if ((image->next != (Image *) NULL) && IsSubimage(clone_info->tile,False))
     {
       char
@@ -1940,9 +1950,9 @@ static Image *ReadImages(const ImageInfo *image_info,ExceptionInfo *exception)
     return((Image *) NULL);
   Strip(command);
   images=StringToArgv(command,&number_images);
+  MagickFreeMemory(command);
   if (images == (char **) NULL)
     return((Image *) NULL);
-  MagickFreeMemory(command);
   /*
     Read the images into a linked list.
   */
@@ -2033,7 +2043,10 @@ MagickExport Image *ReadInlineImage(const ImageInfo *image_info,
   p++;
   blob=Base64Decode(p,&length);
   if (length == 0)
-    ThrowReaderException(CorruptImageError,CorruptImage,image);
+    {
+      MagickFreeMemory(blob);
+      ThrowReaderException(CorruptImageError,CorruptImage,image);
+    }
   handler=SetMonitorHandler((MonitorHandler) NULL);
   image=BlobToImage(image_info,blob,length,exception);
   (void) SetMonitorHandler(handler);
@@ -2100,6 +2113,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
   (void) SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
   (void) strlcpy(image->filename,clone_info->filename,MaxTextExtent);
   image->dither=image_info->dither;
+  DisassociateBlob(image);
 
 #if 0
   /*

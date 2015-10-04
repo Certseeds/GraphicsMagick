@@ -122,6 +122,7 @@ MagickGetFileSystemBlockSize(void)
 void
 MagickSetFileSystemBlockSize(const size_t block_size)
 {
+  assert(block_size > 0);
   filesystem_blocksize=block_size;
 }
 
@@ -766,7 +767,7 @@ MagickSignalHandlerMessage(const int signo, const char *subtext)
   for ( ; (num != 0) && (i < sizeof(message)-1) ; i++)
     {
       int rem = num % 10;
-      message[i] = (rem > 9)? (rem-10) + 'a' : rem + '0';
+      message[i] = rem + '0';
       num = num/10;
     }
   message[i] = '\0';
@@ -783,7 +784,8 @@ MagickSignalHandlerMessage(const int signo, const char *subtext)
     }
   (void) strlcat(message,"...\n",sizeof(message));
 
-  if (write(STDERR_FILENO,message,strlen(message)) == -1)
+  if (write(STDERR_FILENO,message,
+            (MAGICK_POSIX_IO_SIZE_T) strlen(message)) == -1)
     {
       /* Exists to quench warning */
     }
@@ -1112,18 +1114,8 @@ InitializeMagick(const char *path)
   /* Initialize logging */
   InitializeLogInfo();
 
-  /* Seed the random number generator */
-  srand(MagickRandNewSeed());
-
   /* Initialize our random number generator */
   InitializeMagickRandomGenerator();
-
-  /*
-    Set logging flags using the value of MAGICK_DEBUG if it is set in
-    the environment.
-  */
-  if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
-    (void) SetLogEventMask(p);
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
 			"Initialize Magick");
@@ -1134,9 +1126,20 @@ InitializeMagick(const char *path)
   {
     size_t
       block_size=16384;
-    
+
     if ((p=getenv("MAGICK_IOBUF_SIZE")) != (const char *) NULL)
-      block_size = (size_t) MagickAtoL(p);
+      {
+        long
+          block_size_long;
+    
+        block_size_long = MagickAtoL(p);
+        if ((block_size_long > 0L) && (block_size_long <= 2097152L))
+          block_size=(size_t) block_size_long;
+        else
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Ignoring unreasonable MAGICK_IOBUF_SIZE of "
+                                "%ld bbytes", block_size_long);
+      }
     
     MagickSetFileSystemBlockSize(block_size);
   }
@@ -1151,6 +1154,12 @@ InitializeMagick(const char *path)
   */
   if (GetClientName() == (const char *) NULL)
     DefineClientName(path);
+
+  /*
+    Initialize any logging configuration which could not complete
+    since we did not know the installation directory yet
+  */
+  InitializeLogInfoPost();
 
   /*
     Adjust minimum coder class if requested.
@@ -1399,7 +1408,7 @@ ListModuleMap(FILE *file,ExceptionInfo *exception)
     file=stdout;
 
    magick_array=GetMagickInfoArray(exception);
-   if ((!magick_array) || (exception->severity > UndefinedException))
+   if (!magick_array)
      return MagickFail;
 
    (void) fprintf(file, "<?xml version=\"1.0\"?>\n");

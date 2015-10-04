@@ -398,6 +398,14 @@ WandExport unsigned int ParseAbsoluteGeometry(const char *geometry,
 %
 %
 */
+static inline char *MoveStringForward(char *dst,const char *src,size_t dstlen)
+{
+  const size_t srclen = strlen(src);
+  const size_t movelen = Min(dstlen,srclen+1);
+  (void) memmove(dst,src,movelen);
+  dst[movelen-1]='\0';
+  return dst;
+}
 WandExport unsigned int ParseGeometry(const char *geometry,
   GeometryInfo *geometry_info)
 {
@@ -426,7 +434,7 @@ WandExport unsigned int ParseGeometry(const char *geometry,
   {
     if (isspace((int) (*p)))
       {
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         continue;
       }
     switch (*p)
@@ -434,31 +442,31 @@ WandExport unsigned int ParseGeometry(const char *geometry,
       case '%':
       {
         flags|=PercentValue;
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         break;
       }
       case '!':
       {
         flags|=AspectValue;
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         break;
       }
       case '<':
       {
         flags|=LessValue;
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         break;
       }
       case '>':
       {
         flags|=GreaterValue;
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         break;
       }
       case '@':
       {
         flags|=AreaValue;
-        (void) strcpy(p,p+1);
+        (void) MoveStringForward(p,p+1,sizeof(pedantic_geometry));
         break;
       }
       case '-':

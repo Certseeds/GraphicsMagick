@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -56,14 +56,15 @@
 */
 typedef struct _ColorPacket
 {
+  unsigned long
+    count;
+
   PixelPacket
     pixel;
 
   unsigned short
     index;
 
-  unsigned long
-    count;
 } ColorPacket;
 
 typedef struct _NodeInfo
@@ -123,6 +124,7 @@ static NodeInfo
 
 static void
   DestroyColorList(NodeInfo *node_info),
+  DestroyCubeInfo(CubeInfo *cube_info),
   HistogramToFile(const Image *,CubeInfo *,const NodeInfo *,FILE *,ExceptionInfo *);
 
 /*
@@ -188,7 +190,10 @@ ComputeCubeInfo(const Image *image,ExceptionInfo *exception)
     {
       p=AcquireImagePixels(image,0,y,image->columns,1,exception);
       if (p == (const PixelPacket *) NULL)
-        return(0);
+        {
+          DestroyCubeInfo(cube_info);
+          return(0);
+        }
       for (x=0; x < (long) image->columns; x++)
         {
           /*
@@ -204,6 +209,7 @@ ComputeCubeInfo(const Image *image,ExceptionInfo *exception)
                   node_info->child[id]=GetNodeInfo(cube_info,level);
                   if (node_info->child[id] == (NodeInfo *) NULL)
                     {
+                      DestroyCubeInfo(cube_info);
                       ThrowException3(exception,ResourceLimitError,
                                       MemoryAllocationFailed,
                                       UnableToDetermineTheNumberOfImageColors);
@@ -230,6 +236,7 @@ ComputeCubeInfo(const Image *image,ExceptionInfo *exception)
                                     (i+1)*sizeof(ColorPacket));
               if (node_info->list == (ColorPacket *) NULL)
                 {
+                  DestroyCubeInfo(cube_info);
                   ThrowException3(exception,ResourceLimitError,
                                   MemoryAllocationFailed,
                                   UnableToDetermineTheNumberOfImageColors);
@@ -481,6 +488,7 @@ MagickExport HistogramColorPacket *GetColorHistogram(const Image *image,
     number_colors*sizeof(HistogramColorPacket));
   if (histogram == 0)
     {
+      DestroyCubeInfo(cube_info);
       ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                       UnableToDetermineTheNumberOfImageColors);
       return 0;

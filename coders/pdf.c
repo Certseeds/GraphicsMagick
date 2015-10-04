@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2014 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -172,6 +172,9 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickBool
     use_crop_box = MagickFalse;
 
+  MagickBool
+    pdf_stop_on_error = MagickFalse;
+
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -181,8 +184,14 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if ((value=AccessDefinition(image_info,"pdf","use-cropbox"))) 
     {
       if (strcmp(value,"true") == 0)
-	use_crop_box = True;
+        use_crop_box = True;
     }
+
+   if ((value=AccessDefinition(image_info,"pdf","stop-on-error"))) 
+     {
+       if (strcmp(value,"true") == 0)
+         pdf_stop_on_error = True;
+     }
 
   /*
     Select Postscript delegate driver
@@ -210,7 +219,7 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   dy_resolution=72.0;
   if ((image->x_resolution == 0.0) || (image->y_resolution == 0.0))
     {
-      (void) strcpy(density,PSDensityGeometry);
+      (void) strlcpy(density,PSDensityGeometry,sizeof(density));
       count=GetMagickDimension(density,&image->x_resolution,&image->y_resolution,NULL,NULL);
       if (count != 2)
         image->y_resolution=image->x_resolution;
@@ -347,24 +356,44 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   {
     char
-      options[MaxTextExtent];
+      options[MaxTextExtent],
+      arg[MaxTextExtent];
 
     options[0]='\0';
 
     if (use_crop_box)
-      FormatString(options,"-dUseCropBox");
+      (void) strlcat(options,"-dUseCropBox",sizeof(options));
+
+    if (pdf_stop_on_error)
+      {
+        if (options[0] != '\0')
+          (void) strlcat(options," ",sizeof(options));
+        (void) strlcat(options,"-dPDFSTOPONERROR",sizeof(options));
+      }
+
     /*
       Append subrange.
     */
     if (image_info->subrange != 0)
-      FormatString(options+strlen(options)," -dFirstPage=%lu -dLastPage=%lu",
-		   image_info->subimage+1,image_info->subimage+image_info->subrange);
+      {
+        FormatString(arg,"-dFirstPage=%lu -dLastPage=%lu",
+                     image_info->subimage+1,
+                     image_info->subimage+image_info->subrange);
+        if (options[0] != '\0')
+          (void) strlcat(options," ",sizeof(options));
+        (void) strlcat(options,arg,sizeof(options));
+      }
+
     /*
       Append authentication string.
     */
     if (image_info->authenticate != (char *) NULL)
-      FormatString(options+strlen(options)," -sPDFPassword=%.1024s",
-		   image_info->authenticate);
+      {
+        FormatString(arg,"-sPDFPassword=%.1024s", image_info->authenticate);
+        if (options[0] != '\0')
+          (void) strlcat(options," ",sizeof(options));
+        (void) strlcat(options,arg,sizeof(options));
+      }
     (void) strlcpy(filename,image_info->filename,MaxTextExtent);
     clone_info=CloneImageInfo(image_info);
     if (!AcquireTemporaryFileName(clone_info->filename))
@@ -391,6 +420,9 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       clone_info->blob=(void *) NULL;
       clone_info->length=0;
       clone_info->magick[0]='\0';
+      clone_info->subimage=0;
+      clone_info->subrange=0;
+      MagickFreeMemory(clone_info->tile);
       image=ReadImage(clone_info,exception);
     }
   (void) LiberateTemporaryFile(postscript_filename);
@@ -405,14 +437,24 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       do
 	{
-	  (void) strcpy(image->magick,"PDF");
-	  (void) strlcpy(image->filename,filename,MaxTextExtent);
+	  (void) strlcpy(image->magick,"PDF",sizeof(image->magick));
+	  (void) strlcpy(image->filename,filename,sizeof(image->filename));
 	  next_image=SyncNextImageInList(image);
 	  if (next_image != (Image *) NULL)
 	    image=next_image;
 	} while (next_image != (Image *) NULL);
       while (image->previous != (Image *) NULL)
 	image=image->previous;
+      if (image_info->subimage != 0)
+        {
+          unsigned long
+            scene = image_info->subimage;
+
+          for (next_image=image;
+               next_image != (Image *) NULL;
+               next_image=next_image->next)
+            next_image->scene = scene++;
+        }
     }
   return(image);
 }
@@ -864,7 +906,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       dx_resolution=72.0;
       dy_resolution=72.0;
       x_resolution=72.0;
-      (void) strcpy(density,PSDensityGeometry);
+      (void) strlcpy(density,PSDensityGeometry,sizeof(density));
       count=GetMagickDimension(density,&x_resolution,&y_resolution,NULL,NULL);
       if (count != 2)
         y_resolution=x_resolution;
@@ -994,12 +1036,12 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       FormatString(buffer,"%lu 0 obj\n",object);
       (void) WriteBlobString(image,buffer);
       if ((image->storage_class == DirectClass) || (image->colors > 256))
-        (void) strcpy(buffer,"[ /PDF /Text /ImageC");
+        (void) strlcpy(buffer,"[ /PDF /Text /ImageC",sizeof(buffer));
       else
         if (compression == FaxCompression)
-          (void) strcpy(buffer,"[ /PDF /Text /ImageB");
+          (void) strlcpy(buffer,"[ /PDF /Text /ImageB",sizeof(buffer));
         else
-          (void) strcpy(buffer,"[ /PDF /Text /ImageI");
+          (void) strlcpy(buffer,"[ /PDF /Text /ImageI",sizeof(buffer));
       (void) WriteBlobString(image,buffer);
       (void) WriteBlobString(image," ]\n");
       (void) WriteBlobString(image,"endobj\n");
@@ -1027,7 +1069,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
             if (image->colorspace != CMYKColorspace)
               break;
             (void) WriteBlobString(image,buffer);
-            (void) strcpy(buffer,"/Decode [1 0 1 0 1 0 1 0]\n");
+            (void) strlcpy(buffer,"/Decode [1 0 1 0 1 0 1 0]\n",sizeof(buffer));
             break;
           }
         case LZWCompression:
@@ -1065,9 +1107,9 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
 				      "ImageToHuffman2DBlob reports success!");
 	      }
 	    DestroyExceptionInfo(&exception);
-            (void) strcpy(buffer,"/Filter [ /CCITTFaxDecode ]\n");
+            (void) strlcpy(buffer,"/Filter [ /CCITTFaxDecode ]\n",sizeof(buffer));
             (void) WriteBlobString(image,buffer);
-            (void) strcpy(buffer,"/Interpolate false\n");
+            (void) strlcpy(buffer,"/Interpolate false\n",sizeof(buffer));
             (void) WriteBlobString(image,buffer);
             FormatString(buffer,
                          "/DecodeParms [ << /K %.1024s /BlackIs1 false /Columns %ld /Rows %ld >> ]\n",
@@ -1475,7 +1517,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,buffer);
       if (image->colorspace == CMYKColorspace)
         {
-          (void) strcpy(buffer,"/DeviceCMYK\n");
+          (void) strlcpy(buffer,"/DeviceCMYK\n",sizeof(buffer));
         }
       else
         {
@@ -1484,13 +1526,13 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
               ((image_info->type != TrueColorType) &&
                (characteristics.grayscale)))
             {
-              (void) strcpy(buffer,"/DeviceGray\n");
+              (void) strlcpy(buffer,"/DeviceGray\n",sizeof(buffer));
             }
           else
             {
               if ((image->storage_class == DirectClass) || (image->colors > 256) ||
                   (compression == JPEGCompression))
-                (void) strcpy(buffer,"/DeviceRGB\n");
+                (void) strlcpy(buffer,"/DeviceRGB\n",sizeof(buffer));
               else
                 FormatString(buffer,"[ /Indexed /DeviceRGB %u %lu 0 R ]\n",
                              (unsigned int) image->colors-1,object+1);

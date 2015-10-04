@@ -51,6 +51,9 @@
 /* define if the compiler supports const_cast<> */
 #undef HAVE_CONST_CAST
 
+/* Define to 1 if you have the `CryptGenRandom' function. */
+#undef HAVE_CRYPTGENRANDOM
+
 /* Define to 1 if you have the `ctime_r' function. */
 #undef HAVE_CTIME_R
 
@@ -128,12 +131,6 @@
 /* Define if you have the <lcms2/lcms2.h> header file. */
 #undef HAVE_LCMS2_LCMS2_H
 
-/* Define if you have the <lcms.h> header file. */
-#undef HAVE_LCMS_H
-
-/* Define if you have the <lcms/lcms.h> header file. */
-#undef HAVE_LCMS_LCMS_H
-
 /* Define to 1 if you have the `lltostr' function. */
 #undef HAVE_LLTOSTR
 
@@ -155,9 +152,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `mkstemp' function. */
-#undef HAVE_MKSTEMP
 
 /* Define to 1 if you have a `mmap' system call which handles coherent file
    I/O. */
@@ -321,9 +315,6 @@
 /* define if the compiler supports basic templates */
 #undef HAVE_TEMPLATES
 
-/* Define to 1 if you have the `tempnam' function. */
-#undef HAVE_TEMPNAM
-
 /* Define to 1 if you have the <tiffconf.h> header file. */
 #undef HAVE_TIFFCONF_H
 
@@ -348,9 +339,6 @@
 /* Define to 1 if you have the `times' function. */
 #undef HAVE_TIMES
 
-/* Define to 1 if you have the `tmpnam_r' function. */
-#undef HAVE_TMPNAM_R
-
 /* Define to 1 if you have the `ulltostr' function. */
 #undef HAVE_ULLTOSTR
 
@@ -362,6 +350,9 @@
 
 /* Define to 1 if you have the `vsprintf' function. */
 #undef HAVE_VSPRINTF
+
+/* Define to 1 if you have the <wincrypt.h> header file. */
+#undef HAVE_WINCRYPT_H
 
 /* Define to 1 if you have the `_exit' function. */
 #undef HAVE__EXIT
@@ -396,7 +387,7 @@
 /* Define if you have JPEG library */
 #undef HasJPEG
 
-/* Define if you have LCMS (v1.11 or later) library */
+/* Define if you have LCMS (v2.0 or later) library */
 #undef HasLCMS
 
 /* Define if using libltdl to support dynamically loadable modules */
@@ -431,9 +422,6 @@
 
 /* Define to use the Windows GDI32 library */
 #undef HasWINGDI32
-
-/* Define if you have wmf library */
-#undef HasWMF
 
 /* Define if you have wmflite library */
 #undef HasWMFlite

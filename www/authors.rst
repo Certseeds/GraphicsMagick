@@ -37,42 +37,38 @@ Glenn Randers-Pehrson
 		Maintains the SourceForge mailing lists.
 
 Jaroslav Fojtik
-		Authored the ART, CUT, JNX, MAC, MATLAB, TOPOL, and
-                WPG coder modules. Improved the FITS and TXT coder
-                modules.
+		Authored the ART, CUT, HRZ, JNX, MAC, MATLAB, TOPOL,
+                and WPG coder modules. Improved the FITS and TXT coder
+                modules.  VisualMagick 'configure' improvements and
+                build testing/fixes for many versions of Microsoft
+                Visual Studio.
 
 Kenneth Xu
-
                 Contributed the implementation of 'gm batch', a simple
                 batch mode for GraphicsMagick.
 
 Troy Patteson
-
                 Contributed a several significant patches to fix image
                 rotation bugs and improve image rotation performance,
                 as well as an improved bi-linear interpolation
                 implementation.
 
 Sara Shafaei
-
                 Contributed a number of Wand API functions as well as
                 fixes for several composition operators.
 
 Brendan Lane
-
                 Contributed a large number of new Photoshop
                 composition operators and alpha-channel fixes for
                 existing ones.
 
 Dirk Lemstra
-
                 Contributed improvements to the VisualMagick configure
                 program to support configuring more build options via
                 the GUI dialogs and to deal with similarly named
                 files.
 
 Roman Hiestand
-
                 Contributed WebP coder improvements.
 
 
@@ -136,7 +132,6 @@ John Sergeant
 		reader.
 
 Roberto de Deus Barbosa Murta
-
                 Contributed the adaptive threshold implementation
                 (-lat), which executes in linear rather than quadratic
                 time.

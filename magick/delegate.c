@@ -1247,8 +1247,8 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method ReadConfigureFile reads the color configuration file which maps
-%  color strings with a particular image format.
+%  Method ReadConfigureFile reads the delegate configuration file which maps
+%  delegate invokation strings to a particular image format.
 %
 %  The format of the ReadConfigureFile method is:
 %
@@ -1257,8 +1257,8 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
 %
-%    o status: Method ReadConfigureFile returns True if at least one color
-%      is defined otherwise False.
+%    o status: Method ReadConfigureFile returns True if a matching
+%        entry is found, otherwise False.
 %
 %    o basename:  The color configuration filename.
 %
@@ -1298,7 +1298,7 @@ static unsigned int ReadConfigureFile(const char *basename,
   /*
     Read the delegates configure file.
   */
-  (void) strcpy(path,basename);
+  (void) strlcpy(path,basename,sizeof(path));
   if (depth == 0)
     xml=(char *) GetConfigureBlob(basename,path,&length,exception);
   else
@@ -1413,7 +1413,7 @@ static unsigned int ReadConfigureFile(const char *basename,
 
 # if defined(UseInstalledMagick)
 #  if defined(MagickBinPath)
-                    strcpy(BinPath,MagickBinPath);
+                    strlcpy(BinPath,MagickBinPath,sizeof(BinPath));
 #  else
                     {
                       char
@@ -1430,14 +1430,14 @@ static unsigned int ReadConfigureFile(const char *basename,
                         }
                       else
                         {
-                          strcpy(BinPath,key_value);
+                          strlcpy(BinPath,key_value,sizeof(BinPath));
                           MagickFreeMemory(key_value);
                         }
                     }
 #  endif /* defined(MagickBinPath) */
 # else
                     /* Base path off of client path */
-                    strcpy(BinPath,SetClientPath(NULL));
+                    strlcpy(BinPath,SetClientPath(NULL),sizeof(BinPath));
 # endif /* defined(UseInstalledMagick) */
                     if ((BinPath[0] != 0) &&
                         (BinPath[strlen(BinPath)-1] != *DirectorySeparator))

@@ -315,7 +315,7 @@ static void draw_pattern_push( wmfAPI* API,
                                unsigned long rows )
 {
   char
-    pattern_id[30];
+    pattern_id[MaxTextExtent];
 
   FormatString(pattern_id,"brush_%lu",id);
   DrawPushPattern(WmfDrawContext,pattern_id,0,0,columns,rows);
@@ -673,7 +673,8 @@ static void ipa_device_begin(wmfAPI * API)
       GetExceptionInfo(&exception);
 
       image_info = CloneImageInfo((ImageInfo *) 0);
-      (void) strcpy(image_info->filename, ddata->image_info->texture);
+      (void) strlcpy(image_info->filename, ddata->image_info->texture,
+                     sizeof(image_info->filename));
 
       if ( ddata->image_info->size )
         (void) CloneString(&image_info->size,ddata->image_info->size);
@@ -683,9 +684,9 @@ static void ipa_device_begin(wmfAPI * API)
       if(image)
         {
           char
-            pattern_id[30];
+            pattern_id[MaxTextExtent];
 
-          (void) strcpy(image->magick,"MIFF");
+          (void) strlcpy(image->magick,"MIFF",sizeof(image->magick));
           DrawPushDefs(WmfDrawContext);
           draw_pattern_push(API, ddata->pattern_id, image->columns, image->rows);
           DrawComposite(WmfDrawContext, CopyCompositeOp, 0, 0, image->columns, image->rows, image);
@@ -1139,7 +1140,7 @@ static void ipa_region_clip(wmfAPI *API, wmfPolyRectangle_t *poly_rect)
   if(poly_rect->count > 0)
     {
       char
-        clip_path_id[30];
+        clip_path_id[MaxTextExtent];
 
       /* Define clip path */
       ddata->clip_path_id++;
@@ -1616,7 +1617,7 @@ static void util_set_brush(wmfAPI * API, wmfDC * dc, const BrushApply brush_appl
         DrawPopDefs(WmfDrawContext);
         {
           char
-            pattern_id[30];
+            pattern_id[MaxTextExtent];
 
           FormatString(pattern_id, "#brush_%lu", ddata->pattern_id);
 
@@ -1727,7 +1728,7 @@ static void util_set_brush(wmfAPI * API, wmfDC * dc, const BrushApply brush_appl
 
             {
               char
-                pattern_id[30];
+                pattern_id[MaxTextExtent];
 
               FormatString(pattern_id, "#brush_%lu", ddata->pattern_id);
 
@@ -2258,7 +2259,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
         {
           if(LocaleCompare(wmf_font_name, SubFontMap[i].name) == 0)
             {
-              (void) strcpy(target,SubFontMap[i].mapping);
+              (void) strlcpy(target,SubFontMap[i].mapping,sizeof(target));
               break;
             }
         }

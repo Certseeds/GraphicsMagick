@@ -63,7 +63,7 @@ MODULES.MGK       IMAGEMAGICK DISCARDABLE "..\\VisualMagick\\bin\\modules.mgk"
 //
 /////////////////////////////////////////////////////////////////////////////
 
-IDR_MAGICKICON          ICON    DISCARDABLE     "ImageMagick.ico"
+IDR_MAGICKICON          ICON    DISCARDABLE     "GraphicsMagick.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

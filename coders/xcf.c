@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -473,7 +473,7 @@ static MagickPassFail load_tile_rle (Image* image,
                       goto bogus_rle;
                     }
     
-                  length = (*xcfdata << 8) + xcfdata[1];
+                  length = ((*xcfdata << 8) + xcfdata[1]) & 0xFFFF;
                   xcfdata += 2;
                 }
     
@@ -542,7 +542,7 @@ static MagickPassFail load_tile_rle (Image* image,
                       goto bogus_rle;
                     }
     
-                  length = (*xcfdata << 8) + xcfdata[1];
+                  length = ((*xcfdata << 8) + xcfdata[1]) & 0xFFFF;
                   xcfdata += 2;
                 }
     
@@ -716,6 +716,8 @@ static MagickPassFail load_level (Image* image,
         is stored.
       */
       saved_pos = TellBlob(image);
+      if (saved_pos < 0)
+        ThrowBinaryException(BlobError,UnableToObtainOffset,image->filename);
 
       /*
         read in the offset of the next tile so we can calculate the
@@ -965,6 +967,8 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
    *  next level offset is stored.
    */
   saved_pos = TellBlob(image);
+  if (saved_pos < 0)
+    ThrowBinaryException(BlobError,UnableToObtainOffset,image->filename);
   
   /* seek to the level offset */
   (void) SeekBlob(image, offset, SEEK_SET);
@@ -1288,12 +1292,13 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   while ( !foundPropEnd && !EOFBlob(image) )
     {
       PropType    prop_type = (PropType) ReadBlobMSBLong(image);
-      unsigned long  prop_size = ReadBlobMSBLong(image);
+      size_t      prop_size = ReadBlobMSBLong(image);
 
       switch ( prop_type )
         {
         case PROP_END:
           foundPropEnd = 1;
+          break;
 
         case PROP_COLORMAP:
           /* BOGUS: just skip it for now */
@@ -1333,13 +1338,18 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         case PROP_COMPRESSION:
           {
-            doc_info.compression = ReadBlobByte(image);
-
+            int c;
+            c = ReadBlobByte(image);
+            if (c == EOF)
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                   image);
+            doc_info.compression = c;
             if ((doc_info.compression != COMPRESS_NONE) &&
                 (doc_info.compression != COMPRESS_RLE) &&
                 (doc_info.compression != COMPRESS_ZLIB) &&
                 (doc_info.compression != COMPRESS_FRACTAL))
-              ThrowReaderException(CorruptImageError,CompressionNotValid,image);
+              ThrowReaderException(CorruptImageError,CompressionNotValid,
+                                   image);
           }
           break;
 
@@ -1348,7 +1358,8 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /* just skip it - we don't care about guides */
             for (i=0; i < prop_size; i++ )
               if (ReadBlobByte(image) == EOF)
-                ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                     image);
           }
           break;
 
@@ -1385,7 +1396,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case PROP_PARASITES:
           {
             /* BOGUS: we may need these for IPTC stuff */
-            for (i=0; i<prop_size; i++ )
+            for (i=0; i < prop_size; i++ )
               if (ReadBlobByte(image) == EOF)
                 ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
@@ -1415,7 +1426,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case PROP_PATHS:
           {
             /* BOGUS: just skip it for now */
-            for (i=0; i<prop_size; i++ )
+            for (i=0; i < prop_size; i++ )
               if (ReadBlobByte(image) == EOF)
                 ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
@@ -1444,15 +1455,20 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           {
             int buf[16];
-            long amount;
+            size_t amount;
 
             /* read over it... */
-            while (prop_size > 0 && !EOFBlob(image))
+            while (prop_size > 0) /* size_t prop_size, amount */
               {
-                amount = (long) Min (16, prop_size);
-                for (i=0; i<(unsigned long) amount; i++)
-                  amount = (long) ReadBlob(image, amount, &buf);
-                prop_size -= Min (16, amount);
+                amount = Min (sizeof(buf), prop_size);
+                for (i=0; i < amount; i++)
+                  {
+                    amount = ReadBlob(image, amount, &buf);
+                    if (amount == 0U)
+                      ThrowReaderException(CorruptImageError,
+                                           UnexpectedEndOfFile,image);
+                  }
+                prop_size -= Min (16U, amount);
               }
           }
           break;
@@ -1491,6 +1507,8 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
          the read pointer
       */
       magick_off_t oldPos = TellBlob(image);
+      if (oldPos < 0)
+        ThrowReaderException(BlobError,UnableToObtainOffset,image);
       do
         {
           long
@@ -1556,6 +1574,11 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
            *  next layer offset is stored.
            */
           saved_pos = TellBlob(image);
+          if (saved_pos < 0)
+            {
+              MagickFreeMemory(layer_info);
+              ThrowReaderException(BlobError,UnableToObtainOffset,image);
+            }
 
           if( first_layer <= current_layer && current_layer <= last_layer )
 	    {

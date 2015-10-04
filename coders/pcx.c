@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2010 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -209,6 +209,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *page_table = (ExtendedSignedIntegralType *) NULL;
 
   int
+    c,
     bits,
     id,
     mask;
@@ -294,39 +295,50 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   count=ReadBlob(image,1,(char *) &pcx_info.identifier);
   for (id=1; id < 1024; id++)
   {
+    MagickBool
+      read_header_ok = MagickFalse;
+
     /*
       Verify PCX identifier.
     */
-    pcx_info.version=ReadBlobByte(image);
-    if ((count != 1) || (pcx_info.identifier != 0x0aU))
-      ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
-    pcx_info.encoding=ReadBlobByte(image);
-    pcx_info.bits_per_pixel=ReadBlobByte(image);
-    pcx_info.left=ReadBlobLSBShort(image);
-    pcx_info.top=ReadBlobLSBShort(image);
-    pcx_info.right=ReadBlobLSBShort(image);
-    pcx_info.bottom=ReadBlobLSBShort(image);
-    pcx_info.horizontal_resolution=ReadBlobLSBShort(image);
-    pcx_info.vertical_resolution=ReadBlobLSBShort(image);
-    /*
-      Read PCX raster colormap.
-    */
-    image->columns=(pcx_info.right-pcx_info.left)+1;
-    image->rows=(pcx_info.bottom-pcx_info.top)+1;
-    image->depth=pcx_info.bits_per_pixel <= 8 ? 8 : 8;
-    image->units=PixelsPerInchResolution;
-    image->x_resolution=pcx_info.horizontal_resolution;
-    image->y_resolution=pcx_info.vertical_resolution;
-    image->colors=16;
-    count=ReadBlob(image,3*image->colors,(char *) pcx_colormap);
-    if (count != 3*image->colors)
+    do
+      {
+        if ((c = ReadBlobByte(image)) == EOF)
+          break;
+        pcx_info.version=c;
+        if ((count != 1) || (pcx_info.identifier != 0x0aU))
+          ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
+        if ((c = ReadBlobByte(image)) == EOF)
+          break;
+        pcx_info.encoding=c;
+        if ((c = ReadBlobByte(image)) == EOF)
+          break;
+        pcx_info.bits_per_pixel=c;
+        pcx_info.left=ReadBlobLSBShort(image);
+        pcx_info.top=ReadBlobLSBShort(image);
+        pcx_info.right=ReadBlobLSBShort(image);
+        pcx_info.bottom=ReadBlobLSBShort(image);
+        pcx_info.horizontal_resolution=ReadBlobLSBShort(image);
+        pcx_info.vertical_resolution=ReadBlobLSBShort(image);
+        if (ReadBlob(image,3*16,(char *) pcx_colormap) != 3*16)
+          break;
+        if ((c = ReadBlobByte(image)) == EOF)
+          break;
+        pcx_info.reserved=c;
+        if ((c = ReadBlobByte(image)) == EOF)
+          break;
+        pcx_info.planes=c;
+        pcx_info.bytes_per_line=ReadBlobLSBShort(image);
+        pcx_info.palette_info=ReadBlobLSBShort(image);
+        pcx_info.horizontal_screen_size=ReadBlobLSBShort(image);
+        pcx_info.vertical_screen_size=ReadBlobLSBShort(image);
+        if (EOFBlob(image))
+          break;
+        read_header_ok=MagickTrue;
+      } while (0);
+
+    if (!read_header_ok)
       ThrowPCXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-    pcx_info.reserved=ReadBlobByte(image);
-    pcx_info.planes=ReadBlobByte(image);
-    pcx_info.bytes_per_line=ReadBlobLSBShort(image);
-    pcx_info.palette_info=ReadBlobLSBShort(image);
-    pcx_info.horizontal_screen_size=ReadBlobLSBShort(image);
-    pcx_info.vertical_screen_size=ReadBlobLSBShort(image);
 
     if (image->logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -363,6 +375,17 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             (unsigned int) pcx_info.horizontal_screen_size,
                             (unsigned int) pcx_info.vertical_screen_size
                             );
+
+    /*
+      Read PCX raster colormap.
+    */
+    image->columns=(pcx_info.right-pcx_info.left)+1;
+    image->rows=(pcx_info.bottom-pcx_info.top)+1;
+    image->depth=8; /* or pcx_info.bits_per_pixel */
+    image->units=PixelsPerInchResolution;
+    image->x_resolution=pcx_info.horizontal_resolution;
+    image->y_resolution=pcx_info.vertical_resolution;
+    image->colors=16;
 
     /*
       Validate rows, columns, bits
@@ -423,15 +446,18 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Read image data.
     */
-    pcx_packets=(size_t) image->rows*pcx_info.bytes_per_line*pcx_info.planes;
+    pcx_packets=MagickArraySize(image->rows,
+                                MagickArraySize(pcx_info.bytes_per_line,
+                                                pcx_info.planes));
     if ((size_t) (pcx_info.bits_per_pixel*pcx_info.planes*image->columns) >
         (pcx_packets*8U))
       ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
     pcx_pixels=MagickAllocateMemory(unsigned char *,pcx_packets);
+    if (pcx_pixels == (unsigned char *) NULL)
+      ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     scanline=MagickAllocateArray(unsigned char *,Max(image->columns,
       (size_t) pcx_info.bytes_per_line),Max(pcx_info.planes,8));
-    if ((pcx_pixels == (unsigned char *) NULL) ||
-        (scanline == (unsigned char *) NULL))
+    if (scanline == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     if (pcx_info.encoding == 0)
       {
@@ -483,15 +509,15 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->matte=pcx_info.planes > 3;
     else
       if ((pcx_info.version == 5) ||
-          ((pcx_info.bits_per_pixel*pcx_info.planes) == 1))
+          (((size_t) pcx_info.bits_per_pixel*pcx_info.planes) == 1))
         {
           /*
             Initialize image colormap.
           */
           if (image->colors > 256)
-            ThrowPCXReaderException(CorruptImageError,ColormapExceeds256Colors,
+            ThrowPCXReaderException(CorruptImageError,ColormapExceedsColorsLimit,
               image);
-          if ((pcx_info.bits_per_pixel*pcx_info.planes) == 1)
+          if (((size_t) pcx_info.bits_per_pixel*pcx_info.planes) == 1)
             {
               /*
                 Monochrome colormap.
@@ -532,10 +558,10 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       indexes=AccessMutableIndexes(image);
       r=scanline;
       if (image->storage_class == DirectClass)
-        for (i=0; i < pcx_info.planes; i++)
+        for (i=0; i < (unsigned int) pcx_info.planes; i++)
         {
           r=scanline+i;
-          for (x=0; x < pcx_info.bytes_per_line; x++)
+          for (x=0; x < (long) pcx_info.bytes_per_line; x++)
           {
             switch (i)
             {
@@ -561,18 +587,18 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
               }
             }
-            r+=pcx_info.planes;
+            r+=(unsigned int) pcx_info.planes;
           }
         }
       else
-        if (pcx_info.planes > 1)
+        if ((unsigned int) pcx_info.planes > 1)
           {
             for (x=0; x < (long) image->columns; x++)
               *r++=0;
-            for (i=0; i < pcx_info.planes; i++)
+            for (i=0; i < (unsigned int) pcx_info.planes; i++)
             {
               r=scanline;
-              for (x=0; x < pcx_info.bytes_per_line; x++)
+              for (x=0; x < (long) pcx_info.bytes_per_line; x++)
               {
                  bits=(*p++);
                  for (mask=0x80; mask != 0; mask>>=1)
@@ -874,6 +900,18 @@ static MagickPassFail WriteRLEPixels(Image *image,
   return (MagickPass);
 }
 
+#define LiberatePCXAllocations()                \
+  {                                             \
+    MagickFreeMemory(pcx_colormap);             \
+    MagickFreeMemory(pcx_pixels);               \
+    MagickFreeMemory(page_table);               \
+  }
+
+#define ThrowPCXWriterException(code_,reason_,image_) \
+{ \
+  LiberatePCXAllocations();                   \
+  ThrowWriterException(code_,reason_,image_); \
+}
 static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
 {
   long
@@ -899,8 +937,8 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     length;
 
   unsigned char
-    *pcx_colormap,
-    *pcx_pixels;
+    *pcx_colormap = (unsigned char *) NULL,
+    *pcx_pixels = (unsigned char *) NULL;
 
   MagickBool
     adjoin,
@@ -930,7 +968,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   logging=image->logging;
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowPCXWriterException(FileOpenError,UnableToOpenFile,image);
 
   write_dcx=MagickFalse;
   if (LocaleCompare(image_info->magick,"DCX") == 0)
@@ -943,7 +981,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       page_table=MagickAllocateMemory(ExtendedSignedIntegralType *,
         1024*sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
-        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
       for (scene=0; scene < 1024; scene++)
         (void) WriteBlobLSBLong(image,0x00000000L);
     }
@@ -965,6 +1003,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
 				 (OptimizeType == image_info->type),
 				 &image->exception))
       {
+        LiberatePCXAllocations();
 	CloseBlob(image);
 	return MagickFail;
       }
@@ -1032,7 +1071,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     */
     pcx_colormap=MagickAllocateMemory(unsigned char *,3*256);
     if (pcx_colormap == (unsigned char *) NULL)
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     for (i=0; i < (3*256); i++)
       pcx_colormap[i]=0;
     q=pcx_colormap;
@@ -1054,7 +1093,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     length=(size_t) pcx_info.bytes_per_line*pcx_info.planes;
     pcx_pixels=MagickAllocateMemory(unsigned char *,length);
     if (pcx_pixels == (unsigned char *) NULL)
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=pcx_pixels;
     if (image->storage_class == DirectClass)
       {
@@ -1228,7 +1267,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       MagickFreeMemory(page_table);
     }
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToWriteFile,image);
+    ThrowPCXWriterException(FileOpenError,UnableToWriteFile,image);
   CloseBlob(image);
   return(True);
 }

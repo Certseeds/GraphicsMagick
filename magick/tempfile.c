@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2011 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -131,11 +131,27 @@ static void ComposeTemporaryFileName(char *name)
   char
     *c;
 
+  assert(name != (char *) NULL);
+
   for (c=name; *c; c++)
     {
       if (*c == 'X')
 	*c=SafeChars[MagickRandomInteger() % (sizeof(SafeChars)-1)];
     }
+}
+
+/*
+  Validate a temporary directory path
+*/
+static MagickPassFail ValidateTemporaryFileDirectory(const char *tempdir)
+{
+  assert(tempdir != (char *) NULL);
+
+  if (tempdir[0] == '\0')
+    return MagickFail;
+  if (access(tempdir,W_OK) != 0)
+    return MagickFail;
+  return MagickPass;
 }
 
 
@@ -222,39 +238,78 @@ MagickExport MagickPassFail AcquireTemporaryFileName(char *filename)
 */
 MagickExport int AcquireTemporaryFileDescriptor(char *filename)
 {
-  const char
-    *tempdir=0;
+  static const char *env_strings[] =
+    {
+      "MAGICK_TMPDIR",
+#if defined(POSIX)
+      "TMPDIR",
+#endif /* defined(POSIX) */
+#if defined(MSWINDOWS) || defined(__CYGWIN__)
+      "TMP",
+      "TEMP",
+#endif
+      NULL
+    };
+
+  static const char *fixed_strings[] =
+    {
+#if defined(P_tmpdir)
+      P_tmpdir,
+#endif
+      NULL
+    };
+
+  char
+    tempdir[MaxTextExtent];
+
+  unsigned int
+    i;
 
   int
     fd=-1;
 
   assert(filename != (char *) NULL);
   filename[0]='\0';
+  tempdir[0]='\0';
 
-  tempdir=getenv("MAGICK_TMPDIR");
-#if defined(POSIX)
-  if (!tempdir)
-    tempdir=getenv("TMPDIR");
-#endif /* POSIX */
-#if defined(MSWINDOWS)
-  if (!tempdir)
-    tempdir=getenv("TMP");
-  if (!tempdir)
-    tempdir=getenv("TEMP");
-#endif /* MSWINDOWS */
-#if defined(P_tmpdir)
-  if (!tempdir)
-    tempdir=P_tmpdir;
-#endif
-
-  if (tempdir)
+  for (i=0; i < sizeof(env_strings)/sizeof(env_strings[0]); i++)
     {
-      /*
-        Use our own temporary filename generator if the temporary
-        file directory is known.
+      const char
+        *env;
 
-        In practice, this method is virtually always used.
-      */
+      if (env_strings[i] == NULL)
+        break;
+      if ((env=getenv(env_strings[i])) != NULL)
+        {
+          const size_t copy_len = sizeof(tempdir)-16;
+          if (strlcpy(tempdir,env,copy_len) >= copy_len)
+            tempdir[0]='\0';
+          if ((tempdir[0] != '\0') &&
+              !ValidateTemporaryFileDirectory(tempdir))
+            tempdir[0]='\0';
+          if (tempdir[0] != '\0')
+            break;
+        }
+    }
+
+  if (tempdir[0] == '\0')
+    for (i=0; i < sizeof(fixed_strings)/sizeof(fixed_strings[0]); i++)
+      {
+        const size_t copy_len = sizeof(tempdir)-16;
+
+        if (fixed_strings[i] == NULL)
+          break;
+        if (strlcpy(tempdir,fixed_strings[i],copy_len) >= copy_len)
+          tempdir[0]='\0';
+        if ((tempdir[0] != '\0') &&
+            !ValidateTemporaryFileDirectory(tempdir))
+          tempdir[0]='\0';
+        if (tempdir[0] != '\0')
+          break;
+      }
+
+  if (tempdir[0] != '\0')
+    {
       char
         tempname[16];
       
@@ -282,87 +337,6 @@ MagickExport int AcquireTemporaryFileDescriptor(char *filename)
         }
     }
 
-#if HAVE_MKSTEMP
-  /*
-    Use mkstemp().
-    Mkstemp opens the the temporary file to assure that there is
-    no race condition between allocating the name and creating the
-    file. This helps improve security.  However, the other cases
-    also create the file in advance as well so there is not actually
-    much advantage.
-  */
-  {
-    (void) strcpy(filename,"gmXXXXXX");
-    fd=mkstemp(filename);
-    if (fd != -1)
-      {
-        AddTemporaryFileToList(filename);
-	return (fd);
-      }
-  }
-
-
-#elif HAVE_TEMPNAM
-  /*
-    Use tempnam().
-    Windows has _tempnam which works similar to Unix tempnam.
-    Note that Windows _tempnam only produces temporary file
-    names which are unique to the current process so we compute
-    a random part in the name ourselves. Windows _tempnam
-    is documented to place sequential numbers in the file
-    extension.
-  */
-  {
-    char
-      *name;
-
-    strcpy(filename,"gmXXXXXX");
-    ComposeTemporaryFileName(filename);
-    if ((name=tempnam(tempdir,filename)))
-      {
-        (void) remove(filename);
-        fd=open(name,O_RDWR | O_CREAT | O_BINARY | O_EXCL, S_MODE);
-        if (fd != -1)
-          {
-            (void) strlcpy(filename,name,MaxTextExtent);
-            AddTemporaryFileToList(filename);
-          }
-        else
-          {
-            char
-              path[MaxTextExtent];
-
-            /* Try to report a useful pathname for error reports */
-            (void) strlcpy(path,tempdir,MaxTextExtent);
-            if (tempdir[strlen(path)-1] != DirectorySeparator[0])
-              strlcat(path,DirectorySeparator,MaxTextExtent);
-            strlcat(path,filename,MaxTextExtent);
-            (void) strlcpy(filename,path,MaxTextExtent);
-          }
-
-        MagickFreeMemory(name);
-      }
-    if (fd != -1)
-      return (fd);
-  }
-
-#else
-  /*
-    Use ANSI C standard tmpnam
-  */
-  {
-    if ((tmpnam(filename) == filename))
-      {
-        (void) remove(filename);
-        fd=open(filename,O_RDWR | O_CREAT | O_BINARY | O_EXCL, S_MODE);
-        if (fd != -1)
-          {
-            AddTemporaryFileToList(filename);
-	    return (fd);
-          }
-      }
-  }
-#endif
   return fd;
 }
 

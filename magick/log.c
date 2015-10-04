@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -188,37 +188,6 @@ static MagickPassFail
   ReadLogConfigureFile(const char *,const unsigned int,ExceptionInfo *);
 
 /*
-  Allocate LogInfo structure populated with default values
-*/
-static void AllocateLogInfo( void )
-{
-  LockSemaphoreInfo(log_semaphore);
-  if (log_info == (LogInfo *) NULL)
-    {
-      log_info=MagickAllocateMemory(LogInfo *,sizeof(LogInfo));
-      if (log_info == (LogInfo *) NULL)
-        MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-                          UnableToAllocateLogInfo);
-      (void) memset((void *) log_info,0,sizeof(LogInfo));
-      log_info->path=AcquireString("(default)");
-      log_info->filename=AcquireString("Magick-%d.log");
-      log_info->generations=3;
-      log_info->limit=2000;
-      log_info->format=AcquireString("%t %r %u %p %m/%f/%l/%d:\n  %e");
-      log_info->file=(FILE *) NULL;
-      log_info->generation=0;
-      log_info->count=0;
-      log_info->events=NoEventsMask;
-#if defined(MSWINDOWS)
-      log_info->output_type=Win32EventlogOutput;
-#else
-      log_info->output_type=StderrOutput;
-#endif
-      GetTimerInfo(&log_info->timer);
-    }
-  UnlockSemaphoreInfo(log_semaphore);
-}
-/*
   Parse an event specification string and return the equivalent bits.
 */
 static LogEventType ParseEvents(const char *event_string)
@@ -272,6 +241,9 @@ static LogEventType ParseEvents(const char *event_string)
 */
 MagickExport void DestroyLogInfo(void)
 {
+
+  LockSemaphoreInfo(log_semaphore);
+
   if (log_info != (LogInfo *) NULL)
     {
       if (log_info->file != (FILE *) NULL)
@@ -279,6 +251,7 @@ MagickExport void DestroyLogInfo(void)
           {
             (void) fprintf(log_info->file,"</log>\n");
             (void) fclose(log_info->file);
+            log_info->file=(FILE *) NULL;
           }
       MagickFreeMemory(log_info->filename);
       MagickFreeMemory(log_info->path);
@@ -287,6 +260,9 @@ MagickExport void DestroyLogInfo(void)
     }
   log_info=(LogInfo *) NULL;
   log_configured=False;
+
+  UnlockSemaphoreInfo(log_semaphore);
+
   DestroySemaphoreInfo(&log_semaphore);
 }
 
@@ -301,7 +277,11 @@ MagickExport void DestroyLogInfo(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method InitializeLogInfo initializes the logging facility
+%  Method InitializeLogInfo initializes the logging facility.  This function
+%  is invoked by InitializeMagick(), which must be invoked before using any
+%  other APIs.  A memory-allocation failure in this function results in a
+%  fatal error for the whole program.  All of the allocations performed by
+%  this function are released by DestroyLogInfo().
 %
 %  The format of the InitializeLogInfo method is:
 %
@@ -312,8 +292,142 @@ MagickExport void DestroyLogInfo(void)
 MagickPassFail
 InitializeLogInfo(void)
 {
+  const char
+    *p;
+
+  /*
+    Initialize logging semaphore
+  */
   assert(log_semaphore == (SemaphoreInfo *) NULL);
   log_semaphore=AllocateSemaphoreInfo();
+
+  /*
+    Allocate LogInfo
+  */
+  assert(log_info == (LogInfo *) NULL);
+  log_info=MagickAllocateMemory(LogInfo *,sizeof(LogInfo));
+  if (log_info == (LogInfo *) NULL)
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                      UnableToAllocateLogInfo);
+  (void) memset((void *) log_info,0,sizeof(LogInfo));
+
+  /*
+    Lock for access (to make Coverity happy)
+  */
+  LockSemaphoreInfo(log_semaphore);
+
+  log_info->path=AcquireString("(default)");
+  log_info->filename=AcquireString("Magick-%d.log");
+  log_info->generations=3;
+  log_info->limit=2000;
+  log_info->format=AcquireString("%t %r %u %p %m/%f/%l/%d:\n  %e");
+  log_info->file=(FILE *) NULL;
+  log_info->generation=0;
+  log_info->count=0;
+  log_info->events=NoEventsMask;
+#if defined(MSWINDOWS)
+  log_info->output_type=Win32EventlogOutput;
+#else
+  log_info->output_type=StderrOutput;
+#endif
+  GetTimerInfo(&log_info->timer);
+
+
+  /*
+    Verify subordinate allocations.
+  */
+  if ((log_info->path == (char *) NULL) ||
+      (log_info->filename == (char *) NULL) ||
+      (log_info->format == (char *) NULL))
+    {
+      UnlockSemaphoreInfo(log_semaphore);
+      MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                        UnableToAllocateLogInfo);
+    }
+
+  UnlockSemaphoreInfo(log_semaphore);
+
+  /*
+    Set initial logging flags using the value of MAGICK_DEBUG if it is
+    set in the environment.  We do this here so it is possible to
+    debug the loading of the log configuration file.
+  */
+  if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
+    (void) SetLogEventMask(p);
+
+#if UseInstalledMagick
+  /*
+    Try to read the log configuration file.
+  */
+  {
+    ExceptionInfo
+      exception;
+
+    GetExceptionInfo(&exception);
+    (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
+    DestroyExceptionInfo(&exception);
+  }
+
+  /*
+    Set override logging flags using the value of MAGICK_DEBUG if it
+    is set in the environment.
+  */
+  if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
+    (void) SetLogEventMask(p);
+#endif /* UseInstalledMagick */
+
+  return MagickPass;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   I n i t i a l i z e L o g I n f o P o s t                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method InitializeLogInfoPost finishes initialization of the logging
+%  facility after the installation path is known.  This function
+%  is invoked by InitializeMagick(), which must be invoked before using any
+%  other APIs.  All of the allocations performed by this function are
+%  released by DestroyLogInfo().
+%
+%  The format of the InitializeLogInfoPost method is:
+%
+%      MagickPassFail InitializeLogInfoPost(void)
+%
+%
+*/
+MagickPassFail
+InitializeLogInfoPost(void)
+{
+  const char
+    *p;
+
+  /*
+    Try to read the log configuration file.
+  */
+  if (!log_configured)
+  {
+    ExceptionInfo
+      exception;
+
+    GetExceptionInfo(&exception);
+    (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
+    DestroyExceptionInfo(&exception);
+
+    /*
+      Set override logging flags using the value of MAGICK_DEBUG if it
+      is set in the environment.
+    */
+    if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
+      (void) SetLogEventMask(p);
+  }
+
   return MagickPass;
 }
 
@@ -426,7 +540,8 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
               if (((int) type >= eventmask_map[i].start_type) &&
                   ((int) type <= eventmask_map[i].end_type))
                 {
-                  if (((unsigned int) log_info->events) & ((unsigned int) eventmask_map[i].mask))
+                  if (((unsigned int) log_info->events) &
+                      ((unsigned int) eventmask_map[i].mask))
                     {
                       enabled=True;
                       break;
@@ -441,7 +556,8 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
               if ((((int) type % 100) >= eventmask_map[i].start_type) &&
                   (((int) type % 100) <= eventmask_map[i].end_type))
                 {
-                  if (((unsigned int) log_info->events) & ((unsigned int) eventmask_map[i].mask))
+                  if (((unsigned int) log_info->events) &
+                      ((unsigned int) eventmask_map[i].mask))
                     {
                       enabled=True;
                       break;
@@ -610,9 +726,12 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
             log_info->generation=0;
         }
         (void) fprintf(log_info->file,
-          "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s %.1024s %.1024s\n",
-            timestamp, (long) (elapsed_time/60.0), (long) ceil(fmod(elapsed_time,60.0)),
-              user_time, (long) getpid(), srcname, function, line, domain, severity, event);
+                       "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu"
+                       " %.1024s %.1024s %.1024s\n",
+                       timestamp, (long) (elapsed_time/60.0),
+                       (long) ceil(fmod(elapsed_time,60.0)),
+                       user_time, (long) getpid(), srcname, function, line, domain,
+                       severity, event);
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_semaphore);
       return(True);
@@ -624,9 +743,12 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         buffer[MaxTextExtent];
 
       FormatString(buffer,
-        "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s %.1024s %.1024s\n",
-          timestamp, (long) (elapsed_time/60.0), (long) ceil(fmod(elapsed_time,60.0)),
-            user_time, (long) getpid(), srcname, function, line, domain, severity, event);
+                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   " %.1024s %.1024s\n",
+                   timestamp, (long) (elapsed_time/60.0),
+                   (long) ceil(fmod(elapsed_time,60.0)),
+                   user_time, (long) getpid(), srcname, function, line,
+                   domain, severity, event);
       OutputDebugString(buffer);
     }
   if (log_info->output_type & Win32EventlogOutput)
@@ -642,9 +764,12 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         hSource;
 
       FormatString(buffer,
-        "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s %.1024s %.1024s\n",
-          timestamp, (long) (elapsed_time/60.0), (long) ceil(fmod(elapsed_time,60.0)),
-            user_time, (long) getpid(), srcname, function, line, domain, severity, event);
+                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   " %.1024s %.1024s\n",
+                   timestamp, (long) (elapsed_time/60.0),
+                   (long) ceil(fmod(elapsed_time,60.0)),
+                   user_time, (long) getpid(), srcname, function, line,
+                   domain, severity, event);
       hSource = RegisterEventSource(NULL, MagickPackageName);
       if (hSource != NULL)
         {
@@ -762,15 +887,19 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
       (void) fprintf(file,"\n");
       (void) fflush(file);
     }
-  if ((log_info->output_type & MethodOutput) && (log_info->method != (LogMethod) NULL))
+  if ((log_info->output_type & MethodOutput) &&
+      (log_info->method != (LogMethod) NULL))
     {
       char
         buffer[MaxTextExtent];
 
       FormatString(buffer,
-        "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s %.1024s %.1024s\n",
-          timestamp, (long) (elapsed_time/60.0), (long) ceil(fmod(elapsed_time,60.0)),
-            user_time, (long) getpid(), srcname, function, line, domain, severity, event);
+                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   " %.1024s %.1024s\n",
+                   timestamp, (long) (elapsed_time/60.0),
+                   (long) ceil(fmod(elapsed_time,60.0)),
+                   user_time, (long) getpid(), srcname, function, line,
+                   domain, severity, event);
       log_info->method(type,buffer);
     }
   UnlockSemaphoreInfo(log_semaphore);
@@ -840,10 +969,12 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
   MagickPassFail
     status=MagickPass;
 
+  assert(log_info != (LogInfo *) NULL);
+
   /*
     Read the log configure file.
   */
-  (void) strcpy(path,basename);
+  (void) strlcpy(path,basename,sizeof(path));
   if (depth == 0)
     {
       /*
@@ -920,9 +1051,6 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
       }
     if (LocaleCompare(keyword,"<magicklog>") == 0)
       {
-        if (log_info == (LogInfo *) NULL)
-          MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-            UnableToAllocateLogInfo);
         (void) CloneString(&log_info->path,path);
         continue;
       }
@@ -987,13 +1115,22 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
 
             for (i=0; output_map[i].name != 0; i++)
             {
-              if (LocaleNCompare(token,output_map[i].name,strlen(output_map[i].name)) == 0)
+              if (LocaleNCompare(token,output_map[i].name,
+                                 strlen(output_map[i].name)) == 0)
                 {
-                  /* We do not OR these flags despite the fact that they are bit masks
-                     because they are still mutually exclusive implementations. Asking for
-                     XML and TXT format files each use the file handle field and others to
-                     do their work, so they can not be used together */
+                  /* We do not OR these flags despite the fact that
+                     they are bit masks because they are still
+                     mutually exclusive implementations. Asking for
+                     XML and TXT format files each use the file handle
+                     field and others to do their work, so they can
+                     not be used together */
+
+                  LockSemaphoreInfo(log_semaphore);
+
                   log_info->output_type=output_map[i].mask;
+
+                  UnlockSemaphoreInfo(log_semaphore);
+
                   break;
                 }
             }
@@ -1044,9 +1181,6 @@ MagickExport unsigned long SetLogEventMask(const char *events)
   LogEventType
     event_flags=NoEventsMask;
 
-  if (log_info == (LogInfo *) NULL)
-    AllocateLogInfo();
-
   LockSemaphoreInfo(log_semaphore);
 
   if (events != NULL)
@@ -1055,25 +1189,8 @@ MagickExport unsigned long SetLogEventMask(const char *events)
       log_info->events=event_flags;
     }
 
-  if (log_configured == False)
-    {
-      ExceptionInfo
-        exception;
-
-      UnlockSemaphoreInfo(log_semaphore);
-      GetExceptionInfo(&exception);
-      (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
-      DestroyExceptionInfo(&exception);
-      LockSemaphoreInfo(log_semaphore);
-    }
-
-  /*
-    If events were specified, then override configuration file value.
-  */
-  if (events != NULL)
-    log_info->events=event_flags;
-
   event_flags=log_info->events;
+
   UnlockSemaphoreInfo(log_semaphore);
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
@@ -1108,22 +1225,10 @@ MagickExport unsigned long SetLogEventMask(const char *events)
 */
 MagickExport void SetLogFormat(const char *format)
 {
-  if (log_info == (LogInfo *) NULL)
-    AllocateLogInfo();
-
   LockSemaphoreInfo(log_semaphore);
 
-  if (log_configured == False)
-    {
-      ExceptionInfo
-        exception;
-
-      GetExceptionInfo(&exception);
-      (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
-      DestroyExceptionInfo(&exception);
-    }
-
   (void) CloneString(&log_info->format,format);
+
   UnlockSemaphoreInfo(log_semaphore);
 }
 
@@ -1154,22 +1259,11 @@ MagickExport void SetLogFormat(const char *format)
 */
 MagickExport void SetLogMethod(LogMethod method)
 {
-  if (log_info == (LogInfo *) NULL)
-    AllocateLogInfo();
-
   LockSemaphoreInfo(log_semaphore);
 
-  if (log_configured == False)
-    {
-      ExceptionInfo
-        exception;
-
-      GetExceptionInfo(&exception);
-      (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
-      DestroyExceptionInfo(&exception);
-    }
   log_info->output_type=(LogOutputType) (log_info->output_type |
     MethodOutput);
   log_info->method=method;
+
   UnlockSemaphoreInfo(log_semaphore);
 }

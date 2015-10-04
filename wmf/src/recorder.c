@@ -483,7 +483,7 @@ int wmf_canvas_set_font (wmfAPI * API, wmfCanvas * canvas, const char * name,
 			 unsigned short strike, unsigned short uscore, unsigned short encode,
 			 unsigned short pitch)
 {
-  int length;
+  size_t length;
 
   wmfConstruct * construct = (wmfConstruct *) canvas;
 
@@ -659,7 +659,7 @@ static int s_create_font (wmfAPI * API, wmfConstruct * construct)
 
   unsigned short i;
   unsigned short cc;
-  unsigned short length = (strlen (construct->font.name) + 1) / 2;
+  unsigned short length = (unsigned short)((strlen (construct->font.name) + 1) / 2);
 
   unsigned long Size = 3 + 9 + length;
 
@@ -1576,7 +1576,7 @@ int wmf_canvas_text (wmfAPI * API, wmfCanvas * canvas,
 
   if ((construct == 0) || (str == 0)) return -1;
 
-  length = (strlen (str) + 1) / 2; /* TODO: do conversion from UTF-8 to... ?? */
+  length = (unsigned short)((strlen (str) + 1) / 2); /* TODO: do conversion from UTF-8 to... ?? */
   if (length == 0) return 0;
 
   Size += length;

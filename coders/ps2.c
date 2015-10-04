@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -316,7 +316,7 @@ ModuleExport void UnregisterPS2Image(void)
 static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
 {
   static const char
-    *PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "%%%%BeginProlog",
       "%%",
@@ -450,9 +450,9 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       "  currentfile buffer readline pop",
       "  token pop /pointsize exch def pop",
       "  /Helvetica findfont pointsize scalefont setfont",
-      (char *) NULL
+      (const char *) NULL
     },
-    *PostscriptEpilog[]=
+    * const PostscriptEpilog[]=
     {
       "  x y scale",
       "  currentfile buffer readline pop",
@@ -466,7 +466,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       "  token pop /compression exch def pop",
       "  class 0 gt { PseudoClassImage } { DirectClassImage } ifelse",
       "  grestore",
-      (char *) NULL
+      (const char *) NULL
     };
 
   char
@@ -477,7 +477,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     **labels;
 
   const char
-    **q;
+    * const *q;
 
   CompressionType
     compression;
@@ -493,7 +493,8 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     y_resolution,
     y_scale;
 
-  ExtendedSignedIntegralType
+  magick_off_t
+    current,
     start,
     stop;
 
@@ -601,7 +602,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
           image->page.height,image->page.x,image->page.y);
       else
         if (LocaleCompare(image_info->magick,"PS2") == 0)
-          (void) strcpy(page_geometry,PSPageGeometry);
+          (void) strlcpy(page_geometry,PSPageGeometry,sizeof(page_geometry));
     (void) GetMagickGeometry(page_geometry,&geometry.x,&geometry.y,
        &geometry.width,&geometry.height);
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -615,7 +616,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     dx_resolution=72.0;
     dy_resolution=72.0;
     x_resolution=72.0;
-    (void) strcpy(density,PSDensityGeometry);
+    (void) strlcpy(density,PSDensityGeometry,sizeof(density));
     count=GetMagickDimension(density,&x_resolution,&y_resolution,NULL,NULL);
     if (count != 2)
       y_resolution=x_resolution;
@@ -765,10 +766,14 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
     if (LocaleCompare(image_info->magick,"PS2") != 0)
       (void) WriteBlobString(image,"userdict begin\n");
     start=TellBlob(image);
+    if (start < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
     FormatString(buffer,"%%%%BeginData:%13ld %s Bytes\n",0L,
       compression == NoCompression ? "ASCII" : "Binary");
     (void) WriteBlobString(image,buffer);
     stop=TellBlob(image);
+    if (stop < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
     (void) WriteBlobString(image,"DisplayImage\n");
     /*
       Output image data.
@@ -1175,13 +1180,20 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
           }
         }
     (void) WriteBlobByte(image,'\n');
-    length=TellBlob(image)-stop;
+    current=TellBlob(image);
+    if (current < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
+    length=current-stop;
     stop=TellBlob(image);
-    (void) SeekBlob(image,start,SEEK_SET);
+    if (stop < 0)
+      ThrowWriterException(BlobError,UnableToObtainOffset,image);
+    if (SeekBlob(image,start,SEEK_SET) != start)
+      ThrowWriterException(BlobError,UnableToSeekToOffset,image);
     FormatString(buffer,"%%%%BeginData:%13ld %s Bytes\n",(long) length,
       compression == NoCompression ? "ASCII" : "Binary");
     (void) WriteBlobString(image,buffer);
-    (void) SeekBlob(image,stop,SEEK_SET);
+    if (SeekBlob(image,stop,SEEK_SET) != stop)
+      ThrowWriterException(BlobError,UnableToSeekToOffset,image);
     (void) WriteBlobString(image,"%%EndData\n");
     if (LocaleCompare(image_info->magick,"PS2") != 0)
       (void) WriteBlobString(image,"end\n");

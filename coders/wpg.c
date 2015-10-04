@@ -468,17 +468,24 @@ static int UnpackWPGRaster(Image *image,int bpp)
    } \
 }
 
+#define FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff) \
+  do \
+    { \
+      MagickFreeMemory(BImgBuff); \
+      MagickFreeMemory(UpImgBuff); \
+    } while(0);
+
 /* WPG2 raster reader. */
-static int UnpackWPG2Raster(Image *image,int bpp)
+static int UnpackWPG2Raster(Image *image, int bpp)
 {
   unsigned int
     SampleSize=1;
 
   unsigned char
     bbuf,
-    *BImgBuff,		/* Buffer for a current line. */
-    *UpImgBuff,		/* Buffer for previous line. */
-    *tmpImgBuff,
+    *BImgBuff = (unsigned char *) NULL,	  /* Buffer for a current line. */
+    *UpImgBuff = (unsigned char *) NULL,  /* Buffer for previous line. */
+    *tmpImgBuff = (unsigned char *) NULL,
     RunCount,
     SampleBuffer[8];
 
@@ -493,6 +500,7 @@ static int UnpackWPG2Raster(Image *image,int bpp)
     ldblk;
 
   int XorMe = 0;
+  int c;
 
   x=0;
   y=0;
@@ -503,10 +511,11 @@ static int UnpackWPG2Raster(Image *image,int bpp)
   UpImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
   if(UpImgBuff==NULL)
   {
-    MagickFreeMemory(BImgBuff);
+    FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
     return(-2);
   }
   (void) memset(UpImgBuff,0,ldblk);
+  (void) memset(SampleBuffer,0,sizeof(SampleBuffer));
 
   while( y< image->rows)
     {
@@ -515,11 +524,22 @@ static int UnpackWPG2Raster(Image *image,int bpp)
       switch(bbuf)
         {
         case 0x7D:
-          SampleSize=ReadBlobByte(image);  /* DSZ */
+          if ((c = ReadBlobByte(image)) == EOF) /* DSZ */
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
+          SampleSize=c;
           if(SampleSize>8)
-            return(-2);
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-2);
+            }
           if(SampleSize<1)
-            return(-2);
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-2);
+            }
           break;
         case 0x7E:
           if(y==0)			   /* XOR */
@@ -527,25 +547,41 @@ static int UnpackWPG2Raster(Image *image,int bpp)
 	  XorMe=!XorMe; /* or XorMe=1 ?? */
           break;
         case 0x7F:
-          RunCount=ReadBlobByte(image);   /* BLK */
+          if ((c = ReadBlobByte(image)) == EOF) /* BLK */
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
+          RunCount=c;
           for(i=0; i < SampleSize*(RunCount+1); i++)
             {
               InsertByte6(0);
             }
           break;
         case 0xFD:
-	  RunCount=ReadBlobByte(image);   /* EXT */
+          if ((c = ReadBlobByte(image)) == EOF) /* EXT */
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
+	  RunCount=c;
 	  for(i=0; i<= RunCount;i++)
             for(bbuf=0; bbuf < SampleSize; bbuf++)
-              InsertByte6(SampleBuffer[bbuf]);          
+              InsertByte6(SampleBuffer[bbuf]);
           break;
         case 0xFE:
-          RunCount=ReadBlobByte(image);  /* RST */
+          if ((c = ReadBlobByte(image)) == EOF)  /* RST */
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
+          RunCount = c;
           if(x!=0)
             {
               (void) fprintf(stderr,
                              "\nUnsupported WPG2 unaligned token RST x=%lu, please report!\n"
                              ,x);
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
               return(-3);
             }
           {
@@ -559,7 +595,12 @@ static int UnpackWPG2Raster(Image *image,int bpp)
           }
           break;
         case 0xFF:
-          RunCount=ReadBlobByte(image);	 /* WHT */
+          if ((c = ReadBlobByte(image)) == EOF)	 /* WHT */
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
+          RunCount=c;
           for(i=0; i < SampleSize*(RunCount+1); i++)
             {
               InsertByte6(0xFF);
@@ -583,10 +624,14 @@ static int UnpackWPG2Raster(Image *image,int bpp)
                 InsertByte6(bbuf);
               }
           }
+          if (EOFBlob(image))
+            {
+              FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+              return(-4);
+            }
         }
     }
-  MagickFreeMemory(BImgBuff);
-  MagickFreeMemory(UpImgBuff);
+  FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
   return(0);
 }
 
@@ -606,17 +651,17 @@ unsigned Flags;
  (*CTM)[2][2]=1;
 
  Flags=ReadBlobLSBShort(image);
- if(Flags & LCK) x=ReadBlobLSBLong(image);	/*Edit lock*/
+ if(Flags & LCK) /*x=*/ (void) ReadBlobLSBLong(image);	/*Edit lock*/
  if(Flags & OID)
 	{
 	if(Precision==0)
-	  {x=ReadBlobLSBShort(image);}	/*ObjectID*/
+	  {/*x=*/ (void) ReadBlobLSBShort(image);}	/*ObjectID*/
 	else
-	  {x=ReadBlobLSBLong(image);}	/*ObjectID (Double precision)*/
+	  {/*x=*/ (void) ReadBlobLSBLong(image);}	/*ObjectID (Double precision)*/
 	}
  if(Flags & ROT)
 	{
-	x=ReadBlobLSBLong(image);	/*Rot Angle*/
+        x=ReadBlobLSBLong(image);	/*Rot Angle*/
 	if(Angle) *Angle=x/65536.0;
 	}
  if(Flags & (ROT|SCL))

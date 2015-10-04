@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2011 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -227,12 +227,12 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       readbufferpos = 0;
       tga_info.colormap_index=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.colormap_length=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
+      tga_info.colormap_length=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
       tga_info.colormap_size=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
       tga_info.x_origin=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
       tga_info.y_origin=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.width=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.height=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
+      tga_info.width=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
+      tga_info.height=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
       tga_info.bits_per_pixel=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
       tga_info.attributes=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
       assert(readbufferpos == headersize);
@@ -278,9 +278,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
             TrueColor Quantum Depth
           */
           image->depth=((tga_info.bits_per_pixel <= 8) ? 8 :
-                        (tga_info.bits_per_pixel <= 16) ? 5 :
-                        (tga_info.bits_per_pixel == 24) ? 8 :
-                        (tga_info.bits_per_pixel == 32) ? 8 : 8);
+                        (tga_info.bits_per_pixel <= 16) ? 5 : 8);
         }
       else
         {
@@ -288,9 +286,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ColorMapped Palette Entry Quantum Depth
           */
           image->depth=((tga_info.colormap_size <= 8) ? 8 :
-                        (tga_info.colormap_size <= 16) ? 5 :
-                        (tga_info.colormap_size == 24) ? 8 :
-                        (tga_info.colormap_size == 32) ? 8 : 8);
+                        (tga_info.colormap_size <= 16) ? 5 : 8);
         }
 
       image->storage_class=DirectClass;
@@ -328,10 +324,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colors=(0x01U << tga_info.bits_per_pixel);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Applying grayscale colormap with %u colors.",image->colors);
-              if (!AllocateImageColormap(image,image->colors))
-                ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                     image);
             }
+          if (!AllocateImageColormap(image,image->colors))
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
         }
 
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -358,9 +354,6 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             Read TGA raster colormap.
           */
-          if (!AllocateImageColormap(image,image->colors))
-            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                 image);
           for (i=0; i < (long) image->colors; i++)
             {
               switch (tga_info.colormap_size)
@@ -570,13 +563,19 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 indexes[x]=index;
               *q++=pixel;
             }
+          /*
+            FIXME: Need to research what case was expected to be
+            tested here.  This test case can never be true and so it
+            is commented out for the moment.
+
           if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 4)
             offset+=4;
           else
-            if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 2)
+          */
+          if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 2)
               offset+=2;
-            else
-              offset++;
+          else
+            offset++;
           if (offset >= image->rows)
             {
               base++;

@@ -11,6 +11,12 @@ Unable to create blob
 .
 
 MessageId       = +1
+SymbolicName    = BlobErrorUnableToObtainOffset
+Language        = English
+Unable to obtain current offset
+.
+
+MessageId       = +1
 SymbolicName    = BlobErrorUnableToOpenFile
 Language        = English
 Unable to open file
@@ -503,6 +509,12 @@ Unable to write MPEG parameters
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnableToWriteTemporaryFile
+Language        = English
+Unable to write to temporary file
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorUnableToZipCompressImage
 Language        = English
 Unable to zip-compress image
@@ -701,9 +713,9 @@ An error has occurred writing to file
 .
 
 MessageId       = +1
-SymbolicName    = ImageErrorColormapExceeds256Colors
+SymbolicName    = ImageErrorColormapExceedsColorsLimit
 Language        = English
-Colormap exceeded 256 colors
+Colormap exceeded colors limit
 .
 
 MessageId       = +1
@@ -721,7 +733,7 @@ Corrupt image
 MessageId       = +1
 SymbolicName    = ImageErrorImageFileDoesNotContainAnyImageData
 Language        = English
-Image file or does not contain any image data
+Image file or blob does not contain any image data
 .
 
 MessageId       = +1
@@ -2882,6 +2894,12 @@ MessageId       = +1
 SymbolicName    = LimitFatalErrorUnableToLockSemaphore
 Language        = English
 unable to lock semaphore
+.
+
+MessageId       = +1
+SymbolicName    = LimitFatalErrorUnableToObtainRandomEntropy
+Language        = English
+unable to obtain random bytes from operating system
 .
 
 MessageId       = +1

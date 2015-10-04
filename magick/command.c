@@ -132,8 +132,7 @@ typedef int (*CommandLineParser)(FILE *in, int acmax, char **av);
 typedef struct _BatchOptions {
   MagickBool        stop_on_error,
                     is_feedback_enabled,
-                    is_echo_enabled,
-                    is_safe_mode;
+                    is_echo_enabled;
   char              prompt[SIZE_OPTION_VALUE],
                     pass[SIZE_OPTION_VALUE],
                     fail[SIZE_OPTION_VALUE];
@@ -490,7 +489,8 @@ static void AnimateUsage(void)
       "-geometry geometry   preferred size and location of the Image window",
       "-help                print program options",
       "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-matte               store matte channel if the image has one",
       "-map type            display image using this Standard Colormap",
@@ -498,7 +498,7 @@ static void AnimateUsage(void)
       "-monochrome          transform image to black and white",
       "-noop                do not apply options to image",
       "-pause               seconds to pause before reanimating",
-      "-remote command      execute a command in an remote display process",
+      "-remote command      execute a command in a remote display process",
       "-rotate degrees      apply Paeth rotation to the image",
       "-sampling-factor HxV[,...]",
       "                     horizontal and vertical sampling factors",
@@ -1524,13 +1524,11 @@ static MagickBool BatchCommand(int argc, char **argv)
   result = ProcessBatchOptions(argc-1, argv+1, &batch_options);
 
   run_mode = BatchMode;
-  if (!batch_options.is_safe_mode) {
 #if defined(MSWINDOWS)
-    InitializeMagick((char *) NULL);
+  InitializeMagick((char *) NULL);
 #else
-    InitializeMagick(argv[0]);
+  InitializeMagick(argv[0]);
 #endif
-  }
 
   av[0] = argv[0];
   av[MAX_PARAM] = (char *)NULL;
@@ -1599,8 +1597,7 @@ static MagickBool BatchCommand(int argc, char **argv)
       (void) fputs("\n", stdout);
       (void) fflush(stdout);
     }
-  if (!batch_options.is_safe_mode)
-    DestroyMagick();
+  DestroyMagick();
   return(result);
 }
 
@@ -2838,7 +2835,8 @@ static void CompareUsage(void)
       "-highlight-style style",
       "                     pixel highlight style (assign, threshold, tint, xor)",
       "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-matte               store matte channel if the image has one",
       "-maximum-error       maximum total difference before returning error",
@@ -4116,7 +4114,8 @@ static void CompositeUsage(void)
       "-help                print program options",
       "-interlace type      None, Line, Plane, or Partition",
       "-label name          ssign a label to an image",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-matte               store matte channel if the image has one",
       "-monitor             show progress indication",
@@ -6149,6 +6148,7 @@ static void ConvertUsage(void)
       "-blur geometry       blur the image",
       "-border geometry     surround image with a border of color",
       "-bordercolor color   border color",
+      "-box color           set the color of the annotation bounding box",
       "-channel type        extract a particular color channel from image",
       "-charcoal radius     simulate a charcoal drawing",
       "-chop geometry       remove pixels from the image interior",
@@ -6162,6 +6162,7 @@ static void ConvertUsage(void)
       "-compose operator    composite operator",
       "-compress type       image compression type",
       "-contrast            enhance or reduce the image contrast",
+      "-convolve kernel     convolve image with the specified convolution kernel",
       "-crop geometry       preferred size and location of the cropped image",
       "-cycle amount        cycle the image colormap",
       "-debug events        display copious debugging information",
@@ -6194,7 +6195,7 @@ static void ConvertUsage(void)
       "-gaussian geometry   gaussian blur an image",
       "-geometry geometry   perferred size or location of the image",
       "-green-primary point chomaticity green primary point",
-      "-gravity type        horizontal and vertical text placement",
+      "-gravity type        horizontal and vertical text/object placement",
       "-hald-clut clut      apply a Hald CLUT to the image",
       "-help                print program options",
       "-implode amount      implode image pixels about the center",
@@ -6203,14 +6204,18 @@ static void ConvertUsage(void)
       "-label name          assign a label to an image",
       "-lat geometry        local adaptive thresholding",
       "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
-      "-list type           Color, Delegate, Format, Magic, Module, or Type",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
+      "-linewidth width     the line width for subsequent draw operations",
+      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
+      "                     or Type",
       "-log format          format of debugging information",
       "-loop iterations     add Netscape loop extension to your GIF animation",
       "-magnify             interpolate image to double size",
       "-map filename        transform image colors to match this set of colors",
       "-mask filename       set the image clip mask",
       "-matte               store matte channel if the image has one",
+      "-mattecolor color    specify the color to be used with the -frame option",
       "-median radius       apply a median filter to the image",
       "-minify              interpolate the image to half size",
       "-modulate value      vary the brightness, saturation, and hue",
@@ -6245,6 +6250,7 @@ static void ConvertUsage(void)
       "-red-primary point   chomaticity red primary point",
       "-region geometry     apply options to a portion of the image",
       "-render              render vector graphics",
+      "+render              disable rendering vector graphics",
       "-resample geometry   resample to horizontal and vertical resolution",
       "+repage              reset current page offsets to default",
       "-repage geometry     adjust current page offsets by geometry",
@@ -6555,7 +6561,8 @@ static void DisplayUsage(void)
       "-immutable           displayed image cannot be modified",
       "-interlace type      None, Line, Plane, or Partition",
       "-label name          assign a label to an image",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-map type            display image using this Standard Colormap",
       "-matte               store matte channel if the image has one",
@@ -8668,8 +8675,8 @@ static void IdentifyUsage(void)
       "-format \"string\"   output formatted image characteristics",
       "-help                print program options",
       "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
-
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-monitor             show progress indication",
       "-ping                efficiently determine image attributes",
@@ -13673,6 +13680,7 @@ static void MogrifyUsage(void)
       "-blur radius         blur the image",
       "-border geometry     surround image with a border of color",
       "-bordercolor color   border color",
+      "-box color           set the color of the annotation bounding box",
       "-channel type        extract a particular color channel from image",
       "-charcoal radius     simulate a charcoal drawing",
       "-chop geometry       remove pixels from the image interior",
@@ -13683,6 +13691,7 @@ static void MogrifyUsage(void)
       "-compose operator    composite operator",
       "-compress type       image compression type",
       "-contrast            enhance or reduce the image contrast",
+      "-convolve kernel     convolve image with the specified convolution kernel",
       "-create-directories  create output directories if required",
       "-crop geometry       preferred size and location of the cropped image",
       "-cycle amount        cycle the image colormap",
@@ -13714,6 +13723,7 @@ static void MogrifyUsage(void)
       "-gamma value         level of gamma correction",
       "-gaussian geometry   gaussian blur an image",
       "-geometry geometry   perferred size or location of the image",
+      "-gravity type        horizontal and vertical text/object placement",
       "-green-primary point chomaticity green primary point",
       "-implode amount      implode image pixels about the center",
       "-interlace type      None, Line, Plane, or Partition",
@@ -13722,14 +13732,18 @@ static void MogrifyUsage(void)
       "-label name          assign a label to an image",
       "-lat geometry        local adaptive thresholding",
       "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
-      "-list type           Color, Delegate, Format, Magic, Module, or Type",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
+      "-linewidth width     the line width for subsequent draw operations",
+      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
+      "                     or Type",
       "-log format          format of debugging information",
       "-loop iterations     add Netscape loop extension to your GIF animation",
       "-magnify             interpolate image to double size",
       "-map filename        transform image colors to match this set of colors",
       "-mask filename       set the image clip mask",
       "-matte               store matte channel if the image has one",
+      "-mattecolor color    specify the color to be used with the -frame option",
       "-median radius       apply a median filter to the image",
       "-minify              interpolate the image to half size",
       "-modulate value      vary the brightness, saturation, and hue",
@@ -13762,6 +13776,8 @@ static void MogrifyUsage(void)
       "-recolor matrix      apply a color translation matrix to image channels",
       "-red-primary point   chomaticity red primary point",
       "-region geometry     apply options to a portion of the image",
+      "-render              render vector graphics",
+      "+render              disable rendering vector graphics",
       "-resample geometry   resample to horizontal and vertical resolution",
       "+repage              reset current page offsets to default",
       "-repage geometry     adjust current page offsets by geometry",
@@ -13779,6 +13795,7 @@ static void MogrifyUsage(void)
       "+set attribute       unset image attribute",
       "-shade degrees       shade the image using a distant light source",
       "-sharpen radius      sharpen the image",
+      "-shave geometry      shave pixels from the image edges",
       "-shear geometry      slide one edge of the image along the X or Y axis",
       "-size geometry       width and height of image",
       "-solarize threshold  negate all pixels above the threshold level",
@@ -14988,7 +15005,11 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
       image=NewImageList();
       j=i;
     }
+  /*
+    FIXME: Overlapping memory detected here where memory should not be overlapping.
+   */
   (void) strlcpy(montage_info->filename,argv[argc-1],MaxTextExtent);
+  /* (void) memmove(montage_info->filename,argv[argc-1],strlen(argv[argc-1])+1); */
   montage_image=MontageImages(image_list,montage_info,exception);
   if (montage_image == (Image *) NULL)
     ThrowMontageException(OptionError,RequestDidNotReturnAnImage,(char *) NULL);
@@ -15091,7 +15112,8 @@ static void MontageUsage(void)
       "-help                print program options",
       "-interlace type      None, Line, Plane, or Partition",
       "-label name          assign a label to an image",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-matte               store matte channel if the image has one",
       "-mattecolor color    color to be used with the -frame option",
@@ -16096,7 +16118,8 @@ static void ImportUsage(void)
       "-interlace type      None, Line, Plane, or Partition",
       "-help                print program options",
       "-label name          assign a label to an image",
-      "-limit type value    Disk, Files, Map, Memory, or Pixels resource limit",
+      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
+      "                     Threads resource limit",
       "-log format          format of debugging information",
       "-monitor             show progress indication",
       "-monochrome          transform image to black and white",
@@ -16240,6 +16263,11 @@ static int ParseUnixCommandLine(FILE *in, int acmax, char **av)
 
           case '#':
             while ((c = fgetc(in)) != '\n');
+            /* Same handling as '\n' since we are at end of line */
+            *p = 0;
+            n = av[n][0] ? n+1 : n;
+            av[n] = (char *)NULL;
+            return n;
 
           case '\n':
             *p = 0;
@@ -16249,6 +16277,13 @@ static int ParseUnixCommandLine(FILE *in, int acmax, char **av)
 
           case '\\':
             c = fgetc(in);
+            if (p >= limit )
+              {
+                while ((c = fgetc(in)) != '\n');
+                return 0;
+              }
+            *p++ = c;
+            break;
 
           default:
             if (p >= limit )
@@ -16350,6 +16385,11 @@ static int ParseWindowsCommandLine(FILE *in, int acmax, char **av)
 
           case '#':
             while ((c = fgetc(in)) != '\n');
+            /* Same handling as '\n' since we are at end of line */
+            *p = 0;
+            n = av[n][0] ? n+1 : n;
+            av[n] = (char *)NULL;
+            return n;
 
           case '\n':
             *p = 0;
@@ -16416,9 +16456,11 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
         {
         case '\0':
           return i;
+
         case '-':
           if (p[2] == '\0')
             return i+1;
+          break;
 
         case 'e':
         case 'E':
@@ -16442,7 +16484,7 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
               char *value = NULL;
               status = GetOptionValue(option, argv[++i], &value);
               if (OptionSuccess == status)
-                strncpy(options->fail, value, SIZE_OPTION_VALUE);
+                strlcpy(options->fail, value, sizeof(options->fail));
             }
           break;
 
@@ -16464,13 +16506,15 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
               char *value = NULL;
               status = GetOptionValue(option, argv[++i], &value);
               if (OptionSuccess == status)
-                strncpy(options->pass, value, SIZE_OPTION_VALUE);
+                strlcpy(options->pass, value, sizeof(options->pass));
             }
           else if (LocaleCompare(option = "-prompt", p) == 0) {
               char *value = NULL;
               status = GetOptionValue(option, argv[++i], &value);
               if (OptionSuccess == status)
-                strncpy(options->prompt, LocaleCompare("off", value) == 0 ? "" : value, SIZE_OPTION_VALUE);
+                strlcpy(options->prompt,
+                        LocaleCompare("off", value) == 0 ? "" : value,
+                        sizeof(options->prompt));
             }
           break;
 
@@ -16478,8 +16522,6 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
         case 'S':
           if (LocaleCompare(option = "-stop-on-error", p) == 0)
             status = GetOnOffOptionValue(option, argv[++i], &options->stop_on_error);
-          else if (LocaleCompare(option = "-safe-mode", p) == 0)
-            status = GetOnOffOptionValue(option, argv[++i], &options->is_safe_mode);
           break;
         }
       if (status == OptionSuccess)
@@ -16702,13 +16744,6 @@ TimeImageCommand(ImageInfo *image_info,
   argc--;
   argv++;
   i=0;
-
-  if (argc < 1)
-    {
-      TimeUsage();
-      ThrowException(exception,OptionError,UsageError,NULL);
-      return MagickFail;
-    }
 
   (void) strlcpy(client_name,GetClientName(),sizeof(client_name));
   GetTimerInfo(&timer);
@@ -17027,6 +17062,12 @@ static unsigned int VersionCommand(ImageInfo *ARGUNUSED(image_info),
   (void) fprintf(stdout,"  MSVC Version:            %d\n", _MSC_VER);
 #  endif /* defined(_MSC_VER) */
 
+#  if defined(__CLR_VER)
+  (void) fprintf(stdout,"  CLR Version:             %d\n", __CLR_VER);
+#  endif /* defined(__CLR_VER) */
+
+  /* Defined for compilations that target x86 processors. This is not
+     defined for x64 processors. */
 #  if defined(_M_IX86)
   {
     const char
@@ -17225,10 +17266,10 @@ static MagickBool GMCommandSingle(int argc,char **argv)
   (void) setlocale(LC_ALL,"");
   (void) setlocale(LC_NUMERIC,"C");
 
-  if (run_mode == SingleMode || batch_options.is_safe_mode)
+  if (run_mode == SingleMode)
     {
 #if defined(MSWINDOWS)
-  InitializeMagick((char *) NULL);
+      InitializeMagick((char *) NULL);
 #else
       InitializeMagick(argv[0]);
 #endif
@@ -17306,7 +17347,7 @@ static MagickBool GMCommandSingle(int argc,char **argv)
     CatchException(&exception);
   DestroyImageInfo(image_info);
   DestroyExceptionInfo(&exception);
-  if (run_mode == SingleMode || batch_options.is_safe_mode)
+  if (run_mode == SingleMode)
     DestroyMagick();
 
   return (status);

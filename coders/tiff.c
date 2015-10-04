@@ -26,7 +26,7 @@
 %                                 July 1992                                   %
 %                     Re-Written For GraphicsMagick                           %
 %                             Bob Friesenhahn                                 %
-%                                2002-2009                                    %
+%                                2002-2015                                    %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -63,8 +63,22 @@
 #  include "tiff.h"
 #  include "tiffio.h"
 #  if !defined(COMPRESSION_ADOBE_DEFLATE)
-#    define COMPRESSION_ADOBE_DEFLATE  8
+#     define COMPRESSION_ADOBE_DEFLATE  8
 #  endif  /* !defined(COMPRESSION_ADOBE_DEFLATE) */
+
+/*
+  JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
+*/
+#  if !defined(_VISUALC_)
+#    if defined(HasJPEG)
+#      if defined(__MINGW32__)
+#         define XMD_H 1
+#      endif
+#      undef HAVE_STDLIB_H
+#      include <jpeglib.h>
+#    endif /* defined(HasJPEG) */
+#  endif /* !defined(_VISUALC_) */
+
 #if defined(TIFF_VERSION_BIG)
 #  define HasBigTIFF 1
 #endif /* defined(TIFF_BIGTIFF_VERSION) */
@@ -503,8 +517,12 @@ CompressionSupported(const CompressionType compression,
 #if defined(HAVE_TIFFISCODECCONFIGURED) || (TIFFLIB_VERSION > 20040919)
       if (compress_tag != COMPRESSION_NONE)
         {
-          if (TIFFIsCODECConfigured(compress_tag))
-	    status = MagickTrue;
+          /*
+            Returns 1 if the codec is configured and
+            working. Otherwise 0 will be returned.
+          */
+          if (!TIFFIsCODECConfigured(compress_tag))
+	    status = MagickFalse;
 	  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 				"TIFFIsCODECConfigured says support for %s "
 				"compression %s configured.",
@@ -1177,13 +1195,14 @@ InitializeImageColormap(Image *image, TIFF *tiff)
 */
 static MagickPassFail
 QuantumTransferMode(const Image *image,
-		    const uint16 photometric,
-		    const uint16 sample_format,
+                    const uint16 photometric,
+                    const uint16 compress_tag,
+                    const uint16 sample_format,
                     const unsigned int samples_per_pixel,
-		    const uint16 planar_config,
-		    const unsigned int plane,
-		    QuantumType *quantum_type,
-		    int *quantum_samples,
+                    const uint16 planar_config,
+                    const unsigned int plane,
+                    QuantumType *quantum_type,
+                    int *quantum_samples,
                     ExceptionInfo *exception)
 {
   ARG_NOT_USED(exception);
@@ -1207,8 +1226,8 @@ QuantumTransferMode(const Image *image,
                   case 0:
                     if (samples_per_pixel == 1)
                       *quantum_type=GrayQuantum;
-                    else
-                      *quantum_type=RedQuantum;
+                      else
+                        *quantum_type=RedQuantum;
                     break;
                   case 1:
                     *quantum_type=GreenQuantum;
@@ -1325,36 +1344,39 @@ QuantumTransferMode(const Image *image,
           }
         case PHOTOMETRIC_RGB:
           {
-            if (planar_config == PLANARCONFIG_SEPARATE)
+            if (compress_tag != COMPRESSION_OJPEG)
               {
-                switch (plane)
+                if (planar_config == PLANARCONFIG_SEPARATE)
                   {
-                  case 0:
-                    *quantum_type=RedQuantum;
-                    break;
-                  case 1:
-                    *quantum_type=GreenQuantum;
-                    break;
-                  case 2:
-                    *quantum_type=BlueQuantum;
-                    break;
-                  case 3:
-                    *quantum_type=AlphaQuantum;
-                    break;
-                  }
-                *quantum_samples=1;
-              }
-            else
-              {
-                if (image->matte)
-                  {
-                    *quantum_type=RGBAQuantum;
-                    *quantum_samples=4;
+                    switch (plane)
+                      {
+                      case 0:
+                        *quantum_type=RedQuantum;
+                        break;
+                      case 1:
+                        *quantum_type=GreenQuantum;
+                        break;
+                      case 2:
+                        *quantum_type=BlueQuantum;
+                        break;
+                      case 3:
+                        *quantum_type=AlphaQuantum;
+                        break;
+                      }
+                    *quantum_samples=1;
                   }
                 else
                   {
-                    *quantum_type=RGBQuantum;
-                    *quantum_samples=3;
+                    if (image->matte)
+                      {
+                        *quantum_type=RGBAQuantum;
+                        *quantum_samples=4;
+                      }
+                    else
+                      {
+                        *quantum_type=RGBQuantum;
+                        *quantum_samples=3;
+                      }
                   }
               }
             break;
@@ -1403,8 +1425,8 @@ QuantumTransferMode(const Image *image,
             /*
               This is here to support JPEGCOLORMODE_RGB which claims a
               YCbCr photometric, but passes RGB to libtiff.
-             */
-            if (samples_per_pixel == 3)
+            */
+            if ((compress_tag == COMPRESSION_JPEG) && (samples_per_pixel == 3))
               {
                 *quantum_type=RGBQuantum;
                 *quantum_samples=3;
@@ -1416,7 +1438,7 @@ QuantumTransferMode(const Image *image,
   /* fprintf(stderr,"Quantum Type: %d Quantum Samples: %d\n",(int) *quantum_type,*quantum_samples); */
   /* FIXME: Throw exception if there is an error */
   /* FIXME: We do need to support YCbCr! */
-  
+
   return (*quantum_samples != 0 ? MagickPass : MagickFail);
 }
 
@@ -2110,9 +2132,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         method=RGBAPuntMethod;
         quantum_type=UndefinedQuantum;
         quantum_samples=0;
-        if (QuantumTransferMode(image,photometric,sample_format,samples_per_pixel,
-                                planar_config,0,&quantum_type,&quantum_samples,
-                                exception)
+        if (QuantumTransferMode(image,photometric,compress_tag,sample_format,
+                                samples_per_pixel,planar_config,0,&quantum_type,
+                                &quantum_samples,exception)
             == MagickPass)
           {
             method=ScanLineMethod;
@@ -2173,7 +2195,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       if ((16 == bits_per_sample) || (32 == bits_per_sample) || (64 == bits_per_sample))
         import_options.endian=NativeEndian;
-      
+
       switch (method)
         {
         case ScanLineMethod:
@@ -2227,9 +2249,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             max_sample=1;
             if (planar_config == PLANARCONFIG_SEPARATE)
               {
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,PLANARCONFIG_CONTIG,0,
-                                        &quantum_type,&quantum_samples,exception)
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        PLANARCONFIG_CONTIG,0,
+                                        &quantum_type,&quantum_samples,
+                                        exception)
                     == MagickPass)
                   max_sample=quantum_samples;
               }
@@ -2262,9 +2286,12 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     /*
                       Determine quantum parse method.
                     */
-                    if (QuantumTransferMode(image,photometric,sample_format,
-                                            samples_per_pixel,planar_config,sample,
-                                            &quantum_type,&quantum_samples,exception)
+                    if (QuantumTransferMode(image,photometric,compress_tag,
+                                            sample_format,
+                                            samples_per_pixel,planar_config,
+                                            sample,
+                                            &quantum_type,&quantum_samples,
+                                            exception)
                         == MagickFail)
                       {
                         CopyException(exception,&image->exception);
@@ -2379,7 +2406,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             max_sample=1;
             if (planar_config == PLANARCONFIG_SEPARATE)
               {
-                if (QuantumTransferMode(image,photometric,sample_format,
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,
                                         samples_per_pixel,PLANARCONFIG_CONTIG,
                                         0,&quantum_type,&quantum_samples,
                                         exception)
@@ -2399,9 +2427,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 /*
                   Determine quantum parse method.
                 */
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,planar_config,sample,
-                                        &quantum_type,&quantum_samples,exception)
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        planar_config,sample,
+                                        &quantum_type,&quantum_samples,
+                                        exception)
                     == MagickFail)
                   {
                     CopyException(exception,&image->exception);
@@ -2576,9 +2606,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             max_sample=1;
             if (planar_config == PLANARCONFIG_SEPARATE)
               {
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,PLANARCONFIG_CONTIG,
-                                        0,&quantum_type,&quantum_samples,
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        PLANARCONFIG_CONTIG,0,&quantum_type,
+                                        &quantum_samples,
                                         exception)
                     == MagickPass)
                   max_sample=quantum_samples;
@@ -2596,10 +2627,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		/*
 		  Determine quantum parse method.
 		*/
-		if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,planar_config,
-                                        sample,&quantum_type,&quantum_samples,
-                                        exception)
+		if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        planar_config,sample,&quantum_type,
+                                        &quantum_samples,exception)
 		    == MagickFail)
 		  {
 		    CopyException(exception,&image->exception);
@@ -2979,7 +3010,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             uint32
               *pixels;
 
-            unsigned long
+            size_t
               number_pixels;
 
             if (logging)
@@ -2989,9 +3020,17 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert TIFF image to DirectClass MIFF image.
             */
-            number_pixels=(unsigned long) image->columns*image->rows;
-            pixels=MagickAllocateMemory(uint32 *,
-                                        (number_pixels+6*image->columns)*sizeof(uint32));
+            number_pixels=(size_t) image->columns*image->rows;
+            if ((image->columns == 0) ||
+                (number_pixels/image->columns != image->rows))
+              {
+                TIFFClose(tiff);
+                ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                     image);
+              }
+            pixels=MagickAllocateArray(uint32 *,
+                                       number_pixels+6*image->columns,
+                                       sizeof(uint32));
             if (pixels == (uint32 *) NULL)
               {
                 TIFFClose(tiff);
@@ -3000,7 +3039,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             if (!TIFFReadRGBAImage(tiff,(uint32) image->columns,
                                    (uint32) image->rows,
-                                   pixels+image->columns*sizeof(uint32),0))
+                                   pixels+image->columns,0))
               {
                 MagickFreeMemory(pixels);
                 TIFFClose(tiff);
@@ -3009,7 +3048,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert image to DirectClass pixel packets.
             */
-            p=pixels+number_pixels+image->columns*sizeof(uint32)-1;
+            p=pixels+number_pixels+image->columns-1;
             for (y=0; y < image->rows; y++)
               {
                 q=SetImagePixels(image,0,y,image->columns,1);
@@ -3530,6 +3569,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   pyramid_image=CloneImage(image,0,0,True,&image->exception);
   if (pyramid_image == (Image *) NULL)
     ThrowWriterException2(FileOpenError,image->exception.reason,image);
+  (void) SetImageAttribute(pyramid_image,"subfiletype","NONE");
   do
     {
       pyramid_image->next=ResizeImage(image,pyramid_image->columns/2,
@@ -3541,6 +3581,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
         (void) MapImage(pyramid_image->next,image,False);
       pyramid_image->next->x_resolution=pyramid_image->x_resolution/2;
       pyramid_image->next->y_resolution=pyramid_image->y_resolution/2;
+      (void) SetImageAttribute(pyramid_image->next,"subfiletype","REDUCEDIMAGE");
       pyramid_image->next->previous=pyramid_image;
       pyramid_image=pyramid_image->next;
     } while ((pyramid_image->columns > 64) && (pyramid_image->rows > 64));
@@ -3551,8 +3592,6 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   */
   clone_info=CloneImageInfo(image_info);
   clone_info->adjoin=True;
-  (void) strlcpy(clone_info->magick,"TIFF",MaxTextExtent);
-  (void) strlcpy(image->magick,"TIFF",MaxTextExtent);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Invoking \"%.1024s\" encoder, monochrome=%s, grayscale=%s",
                         "TIFF",
@@ -3829,9 +3868,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_BITSPERSAMPLE,
                                    &bits_per_sample);
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_SAMPLEFORMAT,&sample_format);
-      if (LocaleCompare(image_info->magick,"PTIF") == 0)
-        if (image->previous != (Image *) NULL)
-          (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_REDUCEDIMAGE);
       (void) TIFFSetField(tiff,TIFFTAG_IMAGELENGTH,(uint32) image->rows);
       (void) TIFFSetField(tiff,TIFFTAG_IMAGEWIDTH,(uint32) image->columns);
 
@@ -3970,8 +4006,43 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                             (characteristics.opaque ? 'y' : 'n'),
                             (characteristics.palette ? 'y' : 'n'));
 
+
       /*
-        Choose best photometric.
+        Some compression types do not work with a matte channel.
+        Disable matte channel for these types.
+      */
+      if (image->matte)
+        {
+          switch (compress_tag)
+            {
+            case COMPRESSION_CCITTFAX3:
+            case COMPRESSION_CCITTFAX4:
+            case COMPRESSION_JBIG:
+            case COMPRESSION_JPEG:
+              {
+                if (logging)
+                  {
+                    const char *
+                      compress_type;
+                    
+                    compress_type=CompressionTagToString(compress_tag);
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Disabled image matte channel since "
+                                          "%s compression not supported with "
+                                          "alpha channel.",
+                                          compress_type);
+                  }
+                image->matte=MagickFalse;
+                break;
+              }
+            default:
+              {
+              }
+            }
+        }
+
+      /*
+        Choose best photometric based on image properties.
       */
       if (characteristics.cmyk)
         {
@@ -3992,6 +4063,19 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else
         {
           photometric=PHOTOMETRIC_RGB;
+        }
+
+      /*
+        If optimization is requested, disable matte channel if image
+        is opaque.
+      */
+      if ((OptimizeType == image_info->type) &&
+          (characteristics.opaque && image->matte))
+        {
+          image->matte=MagickFalse;
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Disabled image matte channel since image is "
+                                "opaque.");
         }
 
       /*
@@ -4217,15 +4301,18 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       if (COMPRESSION_JPEG == compress_tag)
         {
           /*
-            JPEG compression can only use size specified by BITS_IN_JSAMPLE.
+            JPEG compression can only use size specified by
+            BITS_IN_JSAMPLE (except for MK1 JPEG) which supports two
+            sizes.
+
+            Maybe there is a tricky way to obtain this value from
+            libtiff or libtiff can be extended?
+
             FIXME
-          */
-#if BITS_IN_JSAMPLE == 12
-          depth=12;
-          bits_per_sample=12;
-#else
-          depth=8;
-          bits_per_sample=8;
+          */          
+#if defined(BITS_IN_JSAMPLE)
+          depth=BITS_IN_JSAMPLE;
+          bits_per_sample=BITS_IN_JSAMPLE;
 #endif
         }
 
@@ -4630,24 +4717,25 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 		Strip memory target for various compression preset levels.
 		Values are arbitrary.  LZMA is a memory and CPU pig.
 	      */
-	      static const long
+	      static const unsigned int
 		lzma_memory_mb[] =
-		{      /* Level  Compress  Decompress */
-		  1,   /*   1       2 MB      1 MB    */
-		  4 ,  /*   2      12 MB      2 MB    */
-		  4,   /*   3      12 MB      1 MB    */
-		  4,   /*   4      16 MB      2 MB    */
-		  6,   /*   5      26 MB      3 MB    */
-		  10,  /*   6      45 MB      5 MB    */
-		  18,  /*   7      83 MB      9 MB    */
-		  34,  /*   8     159 MB     17 MB    */
-		  66   /*   9     311 MB     33 MB    */
+		{       /* Level  Compress  Decompress */
+		  1U,  /*   1       2 MB      1 MB    */
+		  4U,  /*   2      12 MB      2 MB    */
+		  4U,  /*   3      12 MB      1 MB    */
+		  4U,  /*   4      16 MB      2 MB    */
+		  6U,  /*   5      26 MB      3 MB    */
+		  10U, /*   6      45 MB      5 MB    */
+		  18U, /*   7      83 MB      9 MB    */
+		  34U, /*   8     159 MB     17 MB    */
+		  66U  /*   9     311 MB     33 MB    */
 		};
 	      
-	      rows_per_strip = (uint32) ((lzma_memory_mb[lzma_preset-1]*1024*1024))/
-		(((bits_per_sample*samples_per_pixel)/8)*image->rows);
+	      rows_per_strip = (uint32) (((lzma_memory_mb[lzma_preset-1]*1024U*1024U))/
+                                         ((((unsigned long) bits_per_sample*samples_per_pixel)/
+                                           8U)*image->rows));
 	      if (rows_per_strip < 1)
-		rows_per_strip=1;
+		rows_per_strip=1U;
 	      if (rows_per_strip > image->rows)
 		rows_per_strip=image->rows;
 	    }
@@ -4888,30 +4976,51 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             WriteNewsProfile(tiff,profile_tag,profile_data,profile_length);
           }
       }
-      {
-        /*
-          Page and Page number tags.  Page is the current page number
-          (0 based) and pages is the total number of pages.
-	*/
+      attribute=GetImageAttribute(image,"subfiletype");
+      if (attribute != (const ImageAttribute *) NULL)
+        {
+          /*
+            Support "REDUCEDIMAGE", "PAGE", and "MASK".  Any other
+            value results in no subfile type tag applied.
+          */
+          if (LocaleCompare(attribute->value,"REDUCEDIMAGE") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_REDUCEDIMAGE);
+            }
+          else if (LocaleCompare(attribute->value,"PAGE") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
+            }
+          else if (LocaleCompare(attribute->value,"MASK") == 0)
+            {
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_MASK);
+            }
+        }
+      else
+        {
+          /*
+            Page and Page number tags.  Page is the current page number
+            (0 based) and pages is the total number of pages.
+          */
 
-        uint16
-          page,
-          pages;
+          uint16
+            page,
+            pages;
 
-        page=(uint16) scene;
-        pages=GetImageListLength(image);
+          page=(uint16) scene;
+          pages=GetImageListLength(image);
 
-        if (image_info->adjoin && pages > 1)
-          {
-            /*
-	      SubFileType = 2. LONG. The value 2 identifies a single
-	      page of a multi-page image.
-	    */
-            (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
-          }
+          if (image_info->adjoin && pages > 1)
+            {
+              /*
+                SubFileType = 2. LONG. The value 2 identifies a single
+                page of a multi-page image.
+              */
+              (void) TIFFSetField(tiff,TIFFTAG_SUBFILETYPE,FILETYPE_PAGE);
+            }
 
-        (void) TIFFSetField(tiff,TIFFTAG_PAGENUMBER,page,pages);
-      }
+          (void) TIFFSetField(tiff,TIFFTAG_PAGENUMBER,page,pages);
+        }
       attribute=GetImageAttribute(image,"artist");
       if (attribute != (const ImageAttribute *) NULL)
         (void) TIFFSetField(tiff,TIFFTAG_ARTIST,attribute->value);
@@ -5089,10 +5198,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             max_sample=1;
             if (planar_config == PLANARCONFIG_SEPARATE)
               {
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,PLANARCONFIG_CONTIG,
-                                        0,&quantum_type,&quantum_samples,
-                                        &image->exception)
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        PLANARCONFIG_CONTIG,0,&quantum_type,
+                                        &quantum_samples,&image->exception)
                     == MagickPass)
                   max_sample=quantum_samples;
               }
@@ -5104,10 +5213,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 /*
                   Determine quantum parse method.
                 */
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,planar_config,sample,
-                                        &quantum_type,&quantum_samples,
-                                        &image->exception)
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        planar_config,sample,&quantum_type,
+                                        &quantum_samples,&image->exception)
                     == MagickFail)
                   {
                     status=MagickFail;
@@ -5285,10 +5394,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             max_sample=1;
             if (planar_config == PLANARCONFIG_SEPARATE)
               {
-                if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,PLANARCONFIG_CONTIG,
-                                        0,&quantum_type,&quantum_samples,
-                                        &image->exception)
+                if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        PLANARCONFIG_CONTIG,0,&quantum_type,
+                                        &quantum_samples,&image->exception)
                     == MagickPass)
                   max_sample=quantum_samples;
               }
@@ -5305,10 +5414,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 		/*
 		  Determine quantum parse method.
 		*/
-		if (QuantumTransferMode(image,photometric,sample_format,
-                                        samples_per_pixel,planar_config,
-                                        sample,&quantum_type,&quantum_samples,
-                                        &image->exception)
+		if (QuantumTransferMode(image,photometric,compress_tag,
+                                        sample_format,samples_per_pixel,
+                                        planar_config,sample,&quantum_type,
+                                        &quantum_samples,&image->exception)
                     == MagickFail)
 		  {
 		    status=MagickFail;

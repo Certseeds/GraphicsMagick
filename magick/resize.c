@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1310,13 +1310,15 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   assert(((int) filter >= 0) && ((int) filter <= SincFilter));
-  if ((columns == 0) || (rows == 0))
-    {
-      ThrowImageException(ImageError,UnableToResizeImage,
-                          MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
-    }
+
+  if ((image->columns == 0UL) || (image->rows == 0UL) ||
+      (columns == 0UL) || (rows == 0UL))
+    ThrowImageException(ImageError,UnableToResizeImage,
+                        MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
+
   if ((columns == image->columns) && (rows == image->rows) && (blur == 1.0))
     return (CloneImage(image,0,0,True,exception));
+
   resize_image=CloneImage(image,columns,rows,True,exception);
   if (resize_image == (Image *) NULL)
     return ((Image *) NULL);
@@ -1481,9 +1483,13 @@ SampleImage(const Image *image,const unsigned long columns,
   pixels=MagickAllocateArray(PixelPacket *,image->columns,sizeof(PixelPacket));
   x_offset=MagickAllocateArray(double *,sample_image->columns,sizeof(double));
   y_offset=MagickAllocateArray(double *,sample_image->rows,sizeof(double));
-  if ((pixels == (PixelPacket *) NULL) || (x_offset == (double *) NULL) ||
+  if ((pixels == (PixelPacket *) NULL) ||
+      (x_offset == (double *) NULL) ||
       (y_offset == (double *) NULL))
     {
+      MagickFreeMemory(y_offset);
+      MagickFreeMemory(x_offset);
+      MagickFreeMemory(pixels);
       DestroyImage(sample_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToSampleImage);
@@ -1610,10 +1616,10 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
 
   DoublePixelPacket
     pixel,
-    *scale_scanline,
-    *scanline,
-    *x_vector,
-    *y_vector,
+    *scale_scanline = (DoublePixelPacket *) NULL,
+    *scanline = (DoublePixelPacket *) NULL,
+    *x_vector = (DoublePixelPacket *) NULL,
+    *y_vector = (DoublePixelPacket *) NULL,
     zero;
 
   Image
@@ -1648,8 +1654,13 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if ((columns == 0) || (rows == 0))
-    return((Image *) NULL);
+  if ((columns == 0) || (rows == 0) ||
+      (image->columns == 0) || (image->rows == 0))
+    {
+      ThrowImageException(ImageError,UnableToResizeImage,
+                          MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
+      return((Image *) NULL);
+    }
   scale_image=CloneImage(image,columns,rows,True,exception);
   if (scale_image == (Image *) NULL)
     return((Image *) NULL);
@@ -1658,6 +1669,9 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                         "Scaling image of size %lux%lu to %lux%lu",
                         image->columns,image->rows,scale_image->columns,
                         scale_image->rows);
+
+  if ((columns == image->columns) && (rows == image->rows))
+    return scale_image;
 
   scale_image->storage_class=DirectClass;
   /*
@@ -1678,6 +1692,10 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
       (x_vector == (DoublePixelPacket *) NULL) ||
       (y_vector == (DoublePixelPacket *) NULL))
     {
+      MagickFreeMemory(y_vector);
+      MagickFreeMemory(scale_scanline);
+      MagickFreeMemory(scanline);
+      MagickFreeMemory(x_vector);
       DestroyImage(scale_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToScaleImage);
@@ -1899,8 +1917,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   */
   MagickFreeMemory(y_vector);
   MagickFreeMemory(scale_scanline);
-  if (scale_image->rows != image->rows)
-    MagickFreeMemory(scanline);
+  MagickFreeMemory(scanline);
   MagickFreeMemory(x_vector);
   scale_image->is_grayscale=image->is_grayscale;
   return(scale_image);
@@ -2027,7 +2044,8 @@ MagickExport Image *ZoomImage(const Image *image,const unsigned long columns,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
   zoom_image=ResizeImage(image,columns,rows,image->filter,image->blur,
-    exception);
+                         exception);
   return(zoom_image);
 }

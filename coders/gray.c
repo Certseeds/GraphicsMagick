@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -49,6 +49,58 @@
 */
 static unsigned int
   WriteGRAYImage(const ImageInfo *,Image *);
+
+/*
+  Return an appropriate channel quantum type depending on the magick
+  format specifier.
+*/
+static QuantumType MagickToQuantumType(const char *magick,
+                                       const MagickBool gray_only)
+{
+  QuantumType
+    quantum_type=GrayQuantum;
+
+  /*
+    Reader returns GRAY or GRAYA images while writer writes GRAY or
+    GRAYA, or individual channels as GRAY.
+
+    For the reader, if all channels are treated as in the writer case,
+    then a color image would be returned, with only the specified
+    channel set.  However, that is not what is done here.
+  */
+  if (gray_only)
+    {
+      if (strcmp(magick,"GRAY") == 0)
+        quantum_type=GrayQuantum;
+      else if (strcmp(magick,"GRAYA") == 0)
+        quantum_type=GrayAlphaQuantum;
+    }
+  else
+    {
+      if (strcmp(magick,"GRAY") == 0)
+        quantum_type=GrayQuantum;
+      else if (strcmp(magick,"GRAYA") == 0)
+        quantum_type=GrayAlphaQuantum;
+      else if (strcmp(magick,"R") == 0)
+        quantum_type=RedQuantum;
+      else if (strcmp(magick,"G") == 0)
+        quantum_type=GreenQuantum;
+      else if (strcmp(magick,"B") == 0)
+        quantum_type=BlueQuantum;
+      else if (strcmp(magick,"O") == 0)
+        quantum_type=AlphaQuantum;
+      else if (strcmp(magick,"C") == 0)
+        quantum_type=CyanQuantum;
+      else if (strcmp(magick,"M") == 0)
+        quantum_type=MagentaQuantum;
+      else if (strcmp(magick,"Y") == 0)
+        quantum_type=YellowQuantum;
+      else if (strcmp(magick,"K") == 0)
+        quantum_type=BlackQuantum;
+    }
+
+  return quantum_type;
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,6 +116,13 @@ static unsigned int
 %  Method ReadGRAYImage reads an image of raw grayscale samples and returns
 %  it.  It allocates the memory necessary for the new Image structure and
 %   returns a pointer to the new image.
+%
+%  Gray with an alpha channel is supported via magick "CMYK".
+%  Red, Green, Blue, or Alpha from an RGB(A) image may be individually
+%  selected for input via magick specifiers "R", "G", "B", and "A".
+%  Cyan, Magenta, Yellow, Black, or Alpha from an CMYK(A) image may be
+%  individually selected for input via magick specifiers "C", "M", "Y",
+%  "K", and "A".
 %
 %  The format of the ReadGRAYImage method is:
 %
@@ -111,10 +170,17 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   unsigned int
     depth,
     quantum_size,
-    packet_size;
+    packet_size,
+    samples_per_pixel;
 
   ImportPixelAreaOptions
     import_options;
+
+  QuantumType
+    quantum_type;
+
+  MagickBool
+    is_grayscale;
 
   /*
     Open image file.
@@ -132,16 +198,12 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   for (i=0; i < image->offset; i++)
     {
       if (EOF == ReadBlobByte(image))
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                       image->filename);
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
 
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Tile %lux%lu%+ld%+ld",
-			  image->tile_info.width,image->tile_info.height,
-			  image->tile_info.x,image->tile_info.y);
-
+  quantum_type=MagickToQuantumType(image_info->magick,MagickTrue);
+  is_grayscale=((quantum_type == GrayQuantum) ||
+                (quantum_type == GrayAlphaQuantum));
   /*
     Support depth in multiples of 8 bits.
   */
@@ -160,8 +222,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     quantum_size=16;
   else
     quantum_size=32;
-
-  packet_size=quantum_size/8;
+  samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+  packet_size=(quantum_size*samples_per_pixel)/8;
   scanline=MagickAllocateArray(unsigned char *,packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -173,9 +235,19 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     import_options.endian=image_info->endian;
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Depth %u bits, Endian %s",
+			  "Depth: %u bits, "
+                          "Type: %s, "
+                          "Samples/Pixel: %u, "
+                          "Endian %s, "
+                          "Tile: %lux%lu%+ld%+ld",
 			  quantum_size,
-			  EndianTypeToString(import_options.endian));
+                          QuantumTypeToString(quantum_type),
+                          samples_per_pixel,
+			  EndianTypeToString(import_options.endian),
+                          image->tile_info.width,
+                          image->tile_info.height,
+                          image->tile_info.x,
+                          image->tile_info.y);
   /*
     Support starting at intermediate image frame.
   */
@@ -200,16 +272,23 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
         break;
     for (y=0; y < image->tile_info.y; y++)
       (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+    /*
+      Support GRAYA with matte channel
+    */
+    if (quantum_type == GrayAlphaQuantum)
+      image->matte=MagickTrue;
     for (y=0; y < (long) image->rows; y++)
     {
       if ((y > 0) || (image->previous == (Image *) NULL))
         (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
-      q=SetImagePixels(image,0,y,image->columns,1);
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
-      (void) ImportImagePixelArea(image,GrayQuantum,quantum_size,scanline+x,
-				  &import_options,0);
-      if (!SyncImagePixels(image))
+      if (!is_grayscale)
+        (void) memset(q,0,sizeof(PixelPacket)*image->columns);
+      (void) ImportImagePixelArea(image,quantum_type,quantum_size,scanline+x,
+        			  &import_options,0);
+      if (!SyncImagePixelsEx(image,exception))
         break;
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
@@ -218,7 +297,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
 				      image->columns,image->rows))
             break;
     }
-    image->is_grayscale=MagickTrue;
+    image->is_grayscale=is_grayscale;
     count=image->tile_info.height-image->rows-image->tile_info.y;
     for (j=0; j < (long) count; j++)
       (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -295,11 +374,19 @@ ModuleExport void RegisterGRAYImage(void)
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
 
+  entry=SetMagickInfo("GRAYA");
+  entry->decoder=(DecoderHandler) ReadGRAYImage;
+  entry->encoder=(EncoderHandler) WriteGRAYImage;
+  entry->raw=True;
+  entry->description="Raw gray samples + alpha";
+  entry->module="GRAY";
+  (void) RegisterMagickInfo(entry);
+
   entry=SetMagickInfo("R");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw red samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -307,8 +394,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("C");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw cyan samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -316,8 +403,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("G");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw green samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -325,8 +412,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("M");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw magenta samples";
   entry->module="GRAY";
 
@@ -334,8 +421,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("B");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw blue samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -343,8 +430,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("Y");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw yellow samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -352,8 +439,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("O");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw opacity samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -361,8 +448,8 @@ ModuleExport void RegisterGRAYImage(void)
   entry=SetMagickInfo("K");
   entry->decoder=(DecoderHandler) ReadGRAYImage;
   entry->encoder=(EncoderHandler) WriteGRAYImage;
-  entry->stealth=True;
   entry->raw=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->description="Raw black samples";
   entry->module="GRAY";
   (void) RegisterMagickInfo(entry);
@@ -390,6 +477,7 @@ ModuleExport void RegisterGRAYImage(void)
 ModuleExport void UnregisterGRAYImage(void)
 {
   (void) UnregisterMagickInfo("GRAY");
+  (void) UnregisterMagickInfo("GRAYA");
   (void) UnregisterMagickInfo("R");
   (void) UnregisterMagickInfo("C");
   (void) UnregisterMagickInfo("G");
@@ -412,7 +500,12 @@ ModuleExport void UnregisterGRAYImage(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method WriteGRAYImage writes an image to a file as gray scale intensity
-%  values.
+%  values.  Gray with an alpha channel is supported via magick "CMYK".
+%  Red, Green, Blue, or Alpha from an RGB(A) image may be individually
+%  selected for output via magick specifiers "R", "G", "B", and "A".
+%  Cyan, Magenta, Yellow, Black, or Alpha from an CMYK(A) image may be
+%  individually selected for output via magick specifiers "C", "M", "Y",
+%  "K", and "A".
 %
 %  The format of the WriteGRAYImage method is:
 %
@@ -430,6 +523,7 @@ ModuleExport void UnregisterGRAYImage(void)
 %
 %
 */
+
 static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
 {
   int
@@ -439,12 +533,13 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     *p;
 
   unsigned char
-    *scanline;
+    *scanline=0;
 
   unsigned int
     depth,
     quantum_size,
     packet_size,
+    samples_per_pixel,
     scene,
     status;
 
@@ -453,6 +548,9 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
 
   ExportPixelAreaInfo
     export_info;
+
+  QuantumType
+    quantum_type;
 
   /*
     Open output image file.
@@ -464,6 +562,9 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+
+  quantum_type=MagickToQuantumType(image_info->magick,MagickFalse);
+  
   /*
     Support depth in multiples of 8 bits.
   */
@@ -488,11 +589,35 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       quantum_size=16;
     else
       quantum_size=32;
-    (void) TransformColorspace(image,RGBColorspace);
-    packet_size=quantum_size/8;
+    samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+    packet_size=(quantum_size*samples_per_pixel)/8;
+    /*
+      Allocate scanline
+    */
     scanline=MagickAllocateArray(unsigned char *,packet_size,image->columns);
     if (scanline == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    /*
+      Transform to target color space
+    */
+    switch (quantum_type)
+      {
+      case CyanQuantum:
+      case MagentaQuantum:
+      case YellowQuantum:
+      case BlackQuantum:
+        {
+          (void) TransformColorspace(image,CMYKColorspace);
+          break;
+        }
+      default:
+        {
+          (void) TransformColorspace(image,RGBColorspace);
+        }
+      }
+    if (!(image->matte) &&
+        ((quantum_type == GrayAlphaQuantum) || (quantum_type == AlphaQuantum)))
+      (void) SetImageOpacity(image,OpaqueOpacity);
     /*
       Initialize export options.
     */
@@ -503,8 +628,14 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       export_options.endian=image_info->endian;
     if (image->logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "Depth %u bits, Endian %s",quantum_size,
-			    EndianTypeToString(export_options.endian));
+                            "Depth: %u bits, "
+                            "Type: %s, "
+                            "Samples/Pixel: %u, "
+                            "Endian %s",
+                            quantum_size,
+                            QuantumTypeToString(quantum_type),
+                            samples_per_pixel,
+                            EndianTypeToString(export_options.endian));
     /*
       Convert MIFF to GRAY raster scanline.
     */
@@ -513,7 +644,7 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
       if (p == (const PixelPacket *) NULL)
         break;
-      (void) ExportImagePixelArea(image,GrayQuantum,quantum_size,scanline,
+      (void) ExportImagePixelArea(image,quantum_type,quantum_size,scanline,
 				  &export_options,&export_info);
       (void) WriteBlob(image,export_info.bytes_exported,scanline);
       if (image->previous == (Image *) NULL)

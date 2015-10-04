@@ -7,6 +7,10 @@
 // system_page.h : header file
 //
 
+
+class CConfigureWizard;
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CSystemPage dialog
 
@@ -16,8 +20,12 @@ class CSystemPage : public CPropertyPage
 
 // Construction
 public:
-	CSystemPage();
+	CSystemPage(CConfigureWizard *IniWizard=NULL);
 	~CSystemPage();
+        void ReloadVcproj(void) ;
+        CConfigureWizard *m_Wizard;
+        unsigned m_projectType;
+        BOOL m_VisualStudio7;
 
 // Dialog Data
 	//{{AFX_DATA(CSystemPage)
@@ -48,8 +56,7 @@ protected:
 	afx_msg void OnOutputBinBrowse();
 	afx_msg void OnOutputLibBrowse();
 	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-
+	DECLARE_MESSAGE_MAP()        
 };
 
 //{{AFX_INSERT_LOCATION}}

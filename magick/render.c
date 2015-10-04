@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2012 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -134,6 +134,7 @@ static void
 #if 0
   DestroyGradientInfo(GradientInfo *),
 #endif
+  DestroyPolygonInfo(void *polygon_info_void),
   TraceArc(PrimitiveInfo *,const PointInfo,const PointInfo,const PointInfo),
   TraceArcPath(PrimitiveInfo *,const PointInfo,const PointInfo,const PointInfo,
     const double,const unsigned int,const unsigned int),
@@ -409,7 +410,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
   polygon_info->edges=
     MagickAllocateArray(EdgeInfo *,number_edges,sizeof(EdgeInfo));
   if (polygon_info->edges == (EdgeInfo *) NULL)
-    return((PolygonInfo *) NULL);
+    {
+      DestroyPolygonInfo(polygon_info);
+      return((PolygonInfo *) NULL);
+    }
   direction=0;
   edge=0;
   ghostline=MagickFalse;
@@ -434,7 +438,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
                 MagickReallocMemory(EdgeInfo *,polygon_info->edges,
                   number_edges*sizeof(EdgeInfo));
                 if (polygon_info->edges == (EdgeInfo *) NULL)
-                  return((PolygonInfo *) NULL);
+                  {
+                    DestroyPolygonInfo(polygon_info);
+                    return((PolygonInfo *) NULL);
+                  }
               }
             polygon_info->edges[edge].number_points=n;
             polygon_info->edges[edge].scanline=(-1.0);
@@ -457,7 +464,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
             points=
 	      MagickAllocateArray(PointInfo *,number_points,sizeof(PointInfo));
             if (points == (PointInfo *) NULL)
-              return((PolygonInfo *) NULL);
+              {
+                DestroyPolygonInfo(polygon_info);
+                return((PolygonInfo *) NULL);
+              }
           }
         ghostline=path_info[i].code == GhostlineCode ? MagickTrue : MagickFalse;
         point=path_info[i].point;
@@ -479,6 +489,11 @@ ConvertPathToPolygon(const PathInfo *path_info)
         /*
           New edge.
         */
+        if (points == (PointInfo *) NULL) /* PathInfo code logic error */
+          {
+            DestroyPolygonInfo(polygon_info);
+            return((PolygonInfo *) NULL);
+          }
         point=points[n-1];
         if (edge == number_edges)
           {
@@ -486,7 +501,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
             MagickReallocMemory(EdgeInfo *,polygon_info->edges,
               number_edges*sizeof(EdgeInfo));
             if (polygon_info->edges == (EdgeInfo *) NULL)
-              return((PolygonInfo *) NULL);
+              {
+                DestroyPolygonInfo(polygon_info);
+                return((PolygonInfo *) NULL);
+              }
           }
         polygon_info->edges[edge].number_points=n;
         polygon_info->edges[edge].scanline=(-1.0);
@@ -503,7 +521,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
         points=
 	  MagickAllocateArray(PointInfo *,number_points,sizeof(PointInfo));
         if (points == (PointInfo *) NULL)
-          return((PolygonInfo *) NULL);
+          {
+            DestroyPolygonInfo(polygon_info);
+            return((PolygonInfo *) NULL);
+          }
         n=1;
         ghostline=MagickFalse;
         points[0]=point;
@@ -519,7 +540,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
         number_points<<=1;
         MagickReallocMemory(PointInfo *,points,number_points*sizeof(PointInfo));
         if (points == (PointInfo *) NULL)
-          return((PolygonInfo *) NULL);
+          {
+            DestroyPolygonInfo(polygon_info);
+            return((PolygonInfo *) NULL);
+          }
       }
     point=path_info[i].point;
     points[n]=point;
@@ -543,7 +567,10 @@ ConvertPathToPolygon(const PathInfo *path_info)
               MagickReallocMemory(EdgeInfo *,polygon_info->edges,
                 number_edges*sizeof(EdgeInfo));
               if (polygon_info->edges == (EdgeInfo *) NULL)
-                return((PolygonInfo *) NULL);
+                {
+                  DestroyPolygonInfo(polygon_info);
+                  return((PolygonInfo *) NULL);
+                }
             }
           polygon_info->edges[edge].number_points=n;
           polygon_info->edges[edge].scanline=(-1.0);
@@ -867,13 +894,16 @@ DestroyPolygonInfo(void *polygon_info_void)
   PolygonInfo
     *polygon_info = (PolygonInfo *) polygon_info_void;
 
-  register long
-    i;
+  if (polygon_info != (PolygonInfo *) NULL)
+    {
+      register long
+        i;
 
-  for (i=0; i < polygon_info->number_edges; i++)
-    MagickFreeMemory(polygon_info->edges[i].points);
-  MagickFreeMemory(polygon_info->edges);
-  MagickFreeMemory(polygon_info);
+      for (i=0; i < polygon_info->number_edges; i++)
+        MagickFreeMemory(polygon_info->edges[i].points);
+      MagickFreeMemory(polygon_info->edges);
+      MagickFreeMemory(polygon_info);
+    }
 }
 
 /*
@@ -1094,7 +1124,7 @@ DrawAffineImage(Image *image,const Image *composite,
   inverse_affine=InverseAffineMatrix(affine);
   if (edge.y1 < 0)
     edge.y1=0.0;
-  if (edge.y2 >= image->rows)
+  if (edge.y2 > image->rows - 1)
     edge.y2=image->rows-1;
   y_min=(long) ceil(edge.y1-0.5);
   y_max=(long) floor(edge.y2+0.5);
@@ -1135,11 +1165,14 @@ DrawAffineImage(Image *image,const Image *composite,
         continue;
       if (inverse_edge.x1 < 0)
         inverse_edge.x1=0.0;
-      if (inverse_edge.x2 >= image->columns)
+      if (inverse_edge.x2 > image->columns-1)
         inverse_edge.x2=image->columns-1;
       start=(long) ceil(inverse_edge.x1-0.5);
       stop=(long) floor(inverse_edge.x2+0.5);
-      x=start;
+      if (stop >= start)
+        x=start;
+      else
+        x=stop;
       q=GetImagePixelsEx(image,x,y,stop-x+1,1,&image->exception);
       if (q == (PixelPacket *) NULL)
         thread_status=MagickFail;
@@ -1464,6 +1497,8 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
   assert(draw_info != (const DrawInfo *) NULL);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    begin draw-dash");
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+  if (clone_info == (DrawInfo *) NULL)
+    return(MagickFail);
   clone_info->miterlimit=0;
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
   number_vertices=i;
@@ -1471,7 +1506,10 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 				   (size_t) 2*number_vertices+1,
 				   sizeof(PrimitiveInfo));
   if (dash_polygon == (PrimitiveInfo *) NULL)
-    return(MagickFail);
+    {
+      DestroyDrawInfo(clone_info);
+      return(MagickFail);
+    }
   dash_polygon[0]=primitive_info[0];
   scale=ExpandAffine(&draw_info->affine);
   length=scale*draw_info->dash_pattern[0];
@@ -3363,35 +3401,40 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     PathInfo
       * restrict path_info;
 
-    if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info))
-        == (PathInfo *) NULL)
-      {
-        return(MagickFail);
-      }
-    else
-      {
-	unsigned int
-	  index;
+    unsigned int
+      index;
 
-	polygon_set=AllocateThreadViewDataSet(DestroyPolygonInfo,image,
-					      &image->exception);
-	if (polygon_set != (ThreadViewDataSet *) NULL)
-	  {
+    polygon_set=(ThreadViewDataSet *) NULL;
+    path_info=(PathInfo *) NULL;
+    if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info))
+        != (PathInfo *) NULL)
+      {
+	if ((polygon_set=AllocateThreadViewDataSet(DestroyPolygonInfo,image,
+                                                   &image->exception))
+            != (ThreadViewDataSet *) NULL)
+          {
+            /*
+              Assign polygon for each worker thread.
+            */
 	    for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
 	      AssignThreadViewData(polygon_set,index,(void *) ConvertPathToPolygon(path_info));
-	  }
+
+            /*
+              Verify worker thread allocations.
+            */
+            for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
+              if (AccessThreadViewDataById(polygon_set,index) == (void *) NULL)
+                {
+                  DestroyThreadViewDataSet(polygon_set);
+                  polygon_set=(ThreadViewDataSet *) NULL;
+                  break;
+                }
+          }
+
 	MagickFreeMemory(path_info);
-
-	for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
-	  if (AccessThreadViewDataById(polygon_set,index) == (void *) NULL)
-	    status=MagickFail;
-
-	if (status == MagickFail)
-	  {
-	    DestroyThreadViewDataSet(polygon_set);
-	    return status;
-	  }
       }
+    if (polygon_set == (ThreadViewDataSet *) NULL)
+      return MagickFail;
   }
 
   /*
@@ -4726,8 +4769,8 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
 
   PointInfo
     end={0,0},
-    points[4],
-    point,
+    points[4]={{0,0},{0,0},{0,0},{0,0}},
+    point={0,0},
     start={0,0};
 
   PrimitiveType
@@ -4744,8 +4787,6 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
     z_count;
 
   attribute=0;
-  point.x=0;
-  point.y=0;
   number_coordinates=0;
   z_count=0;
   primitive_type=primitive_info->primitive;
@@ -5283,13 +5324,23 @@ TraceStrokePolygon(const DrawInfo *draw_info,
   number_vertices=primitive_info->coordinates;
   max_strokes=2*number_vertices+6*BezierQuantum+360;
   path_p=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+  if (path_p == (PointInfo *) NULL)
+    return((PrimitiveInfo *) NULL);
   path_q=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+  if (path_q == (PointInfo *) NULL)
+    {
+      MagickFreeMemory(path_p);
+      return((PrimitiveInfo *) NULL);
+    }
   polygon_primitive=
     MagickAllocateArray(PrimitiveInfo *,(number_vertices+2),
 			sizeof(PrimitiveInfo));
-  if ((path_p == (PointInfo *) NULL) || (path_q == (PointInfo *) NULL) ||
-      (polygon_primitive == (PrimitiveInfo *) NULL))
-    return((PrimitiveInfo *) NULL);
+  if (polygon_primitive == (PrimitiveInfo *) NULL)
+    {
+      MagickFreeMemory(path_p);
+      MagickFreeMemory(path_q);
+      return((PrimitiveInfo *) NULL);
+    }
   (void) memcpy(polygon_primitive,primitive_info,number_vertices*
     sizeof(PrimitiveInfo));
   closed_path=
@@ -5449,6 +5500,8 @@ TraceStrokePolygon(const DrawInfo *draw_info,
          MagickReallocMemory(PointInfo *,path_q,max_strokes*sizeof(PointInfo));
          if ((path_p == (PointInfo *) NULL) || (path_q == (PointInfo *) NULL))
            {
+             MagickFreeMemory(path_p);
+             MagickFreeMemory(path_q);
              MagickFreeMemory(polygon_primitive);
              return((PrimitiveInfo *) NULL);
            }

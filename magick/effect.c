@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2012 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -211,7 +211,7 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
           if (p == (const PixelPacket *) NULL)
             {
               status = MagickFail;
-              break;
+              break; /* Breaks overall 'y' loop '*/
             }
 
           /*
@@ -261,6 +261,12 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
       for (x = 2; x < (image->columns + (width << 1)); x++)
         {
           LongPixelPacket * restrict current_pre;
+
+          if (p == (const PixelPacket *) NULL)
+            {
+              status = MagickFail;
+              break; /* Breaks only immediate 'x' loop */
+            }
 
           /* preprocess (x,y) */
           current_pre = &dyn_process[PRE(x, y)];
@@ -417,12 +423,14 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
                 q[x - width].green = q[x - width].blue = q[x - width].red;
             } /* if (y ... */
         } /* for (x ... */
+      if (status == MagickFail)
+        break; /* Breaks overall 'y' loop '*/
       if (q != (const PixelPacket *) NULL)
         {
           if (!SyncImagePixelsEx(threshold_image, exception))
             {
               status = MagickFail;
-              break;
+              break; /* Breaks overall 'y' loop '*/
             }
         }
       row_count++;
@@ -431,7 +439,7 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
                                     AdaptiveThresholdImageText, image->filename))
           {
             status = MagickFail;
-            break;
+            break; /* Breaks overall 'y' loop '*/
           }
     } /* for (y ... */
 
@@ -956,8 +964,11 @@ BlurImage(const Image *original_image,const double radius,
         }
     }
   if (width < 3)
-    ThrowImageException3(OptionError,UnableToBlurImage,
-                         KernelRadiusIsTooSmall);
+    {
+      MagickFreeMemory(kernel);
+      ThrowImageException3(OptionError,UnableToBlurImage,
+                           KernelRadiusIsTooSmall);
+    }
 
   blur_image=RotateImage(original_image,90,exception);
   if (blur_image == (Image *) NULL)
@@ -1561,7 +1572,7 @@ MagickExport Image *ConvolveImage(const Image *image,const unsigned int order,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Despeckle() reduces the speckle noise in an image while perserving the
+%  Despeckle() reduces the speckle noise in an image while preserving the
 %  edges of the original image.
 %
 %  The format of the DespeckleImage method is:
@@ -1694,8 +1705,6 @@ MagickExport Image *DespeckleImage(const Image *image,ExceptionInfo *exception)
       register PixelPacket
         *q;
 
-      MagickPassFail
-	status=MagickPass;
 
       /*
 	Export image channel
@@ -1972,7 +1981,8 @@ MagickExport Image *EmbossImage(const Image *image,const double radius,
   if (emboss_image != (Image *) NULL)
     (void) EqualizeImage(emboss_image);
   MagickFreeMemory(kernel);
-  emboss_image->is_grayscale=image->is_grayscale;
+  if (emboss_image != (Image *) NULL)
+    emboss_image->is_grayscale=image->is_grayscale;
   return(emboss_image);
 }
 

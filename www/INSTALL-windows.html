@@ -692,19 +692,25 @@ project.</li>
 </li>
 <li><p class="first">Build ImageMagickObject</p>
 <ol class="loweralpha simple">
+<li>Open Visual Studio Command Shell Window for WIN32 or WIN64</li>
+<li>Change to GraphicsMagick project directory <tt class="docutils literal">GM</tt></li>
 <li><tt class="docutils literal">cd GM\contrib\win32\ATL7\ImageMagickObject</tt></li>
 <li><tt class="docutils literal">BuildImageMagickObject clean</tt></li>
 <li><tt class="docutils literal">BuildImageMagickObject release</tt></li>
 <li><tt class="docutils literal">cd <span class="pre">..\..\..\..</span></tt></li>
 </ol>
 </li>
-<li><p class="first">Open Windows Command Shell Window</p>
+<li><p class="first">Build PerlMagick extension</p>
 <ol class="loweralpha">
+<li><p class="first">Open Visual Studio Command Shell Window for WIN32  or WIN64</p>
+</li>
+<li><p class="first">Change to GraphicsMagick project directory <tt class="docutils literal">GM</tt></p>
+</li>
 <li><p class="first"><tt class="docutils literal">cd GM\PerlMagick</tt></p>
 </li>
 <li><p class="first"><tt class="docutils literal">nmake clean</tt> (only if this is a rebuild)</p>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">C:\Perl32\perl</span> Makefile.nt</tt></p>
+<li><p class="first"><tt class="docutils literal"><span class="pre">C:\Perl32\bin\perl.exe</span> Makefile.nt</tt> (or Perl64)</p>
 <p>Note that if multiple Perl's are installed, then it may be
 necessary to specify the full path to perl.exe in order to use
 the correct Perl.</p>

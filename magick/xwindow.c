@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2013 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4960,8 +4960,7 @@ MagickXImportImage(const ImageInfo *image_info,
   crop_info.height=0;
   root=XRootWindow(display,XDefaultScreen(display));
   target=(Window) NULL;
-  if ((image_info->filename != (char *) NULL) &&
-      (*image_info->filename != '\0'))
+  if (image_info->filename[0] != '\0')
     {
       if (LocaleCompare(image_info->filename,"root") == 0)
         target=root;
@@ -5118,8 +5117,7 @@ MagickXImportImage(const ImageInfo *image_info,
       status=XGetWMName(display,target,&window_name);
       if (status == True)
         {
-          if ((image_info->filename != (char *) NULL) &&
-              (*image_info->filename == '\0'))
+          if (image_info->filename[0] == '\0')
             {
               /*
                 Initialize image filename.
@@ -5684,8 +5682,11 @@ MagickXMakeImage(Display *display,
 			     &segment_info[1],width,height);
       window->shared_memory &= (ximage != (XImage *) NULL);
 
-      shm_extent=MagickArraySize(ximage->height,ximage->bytes_per_line);
-      window->shared_memory &= (shm_extent != 0);
+      if (window->shared_memory)
+        {
+          shm_extent=MagickArraySize(ximage->height,ximage->bytes_per_line);
+          window->shared_memory &= (shm_extent != 0);
+        }
 
       if (window->shared_memory)
         segment_info[1].shmid=shmget(IPC_PRIVATE,shm_extent,IPC_CREAT | 0777);
@@ -5701,8 +5702,10 @@ MagickXMakeImage(Display *display,
             Clean up if there is an error.
           */
           if (ximage != (XImage *) NULL)
-            XDestroyImage(ximage);
-          ximage=(XImage *) NULL;
+            {
+              XDestroyImage(ximage);
+              ximage=(XImage *) NULL;
+            }
 
           if (segment_info[1].shmaddr)
             {
@@ -5743,12 +5746,9 @@ MagickXMakeImage(Display *display,
           window->shared_memory=False;
           if (shm_attached)
             (void) XShmDetach(display,&segment_info[1]);
-          if (ximage != (XImage *) NULL)
-            {
-              ximage->data=NULL;
-              XDestroyImage(ximage);
-              ximage=(XImage *) NULL;
-            }
+          ximage->data=NULL;
+          XDestroyImage(ximage);
+          ximage=(XImage *) NULL;
           if (segment_info[1].shmid >= 0)
             {
               if (segment_info[1].shmaddr != NULL)
@@ -5821,7 +5821,7 @@ MagickXMakeImage(Display *display,
       /*
         Destroy previous X image.
       */
-      length=(size_t) window->ximage->bytes_per_line*window->ximage->height;
+      /* length=(size_t) window->ximage->bytes_per_line*window->ximage->height; */
 #if defined(HasSharedMemory)
       if (window->segment_info != (XShmSegmentInfo *) NULL)
         {
@@ -8375,7 +8375,7 @@ MagickXMakeWindow(Display *display,Window parent,char **argv,
         if (!isspace((int) (*p)) && (*p != '%'))
           p++;
         else
-          (void) strcpy(p,p+1);
+          (void) memmove(p,p+1,strlen(p+1)+1);
       }
       flags=XWMGeometry(display,window_info->screen,geometry,default_geometry,
         window_info->border_width,size_hints,&size_hints->x,&size_hints->y,

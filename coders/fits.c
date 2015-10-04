@@ -585,8 +585,6 @@ ReadExtension:
     image=image->previous;  
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");  
-  if(image==NULL)
-    ThrowReaderException(CorruptImageError,ImageFileDoesNotContainAnyImageData,image);
   return(image);
 }
 
@@ -769,7 +767,10 @@ static unsigned int WriteFITSImage(const ImageInfo *image_info,Image *image)
   fits_info=MagickAllocateMemory(char *,FITS_BLOCK_SIZE);
   pixels=MagickAllocateMemory(unsigned char *,packet_size*image->columns);
   if ((fits_info == (char *) NULL) || (pixels == (unsigned char *) NULL))
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      MagickFreeMemory(fits_info);
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
 
   /*
     Initialize image header.

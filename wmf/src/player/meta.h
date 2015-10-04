@@ -2654,7 +2654,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		}
 
 		if (WMF_DC_TEXTALIGN (P->dc) & TA_UPDATECP)
-		{	if ((Record->size) < (1 + (length + 1) / 2))
+		{	if ((Record->size) < (1U + (length + 1U) / 2U))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -2663,7 +2663,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			l_pt = P->current;
 		}
 		else
-		{	if ((Record->size) < (3 + (length + 1) / 2))
+		{	if ((Record->size) < (3U + (length + 1U) / 2U))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -2839,14 +2839,14 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	{	/* */
 	}
 	else if (WMF_DC_TEXTALIGN (P->dc) & TA_BOTTOM)
-	{	d_pt.y = - drawtext.font_height / 3; /* This is only approximate... */
+	{	d_pt.y = (float) (- drawtext.font_height / 3); /* This is only approximate... */
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.pt.x += t_pt.x;
 		drawtext.pt.y += t_pt.y;
 	}
 	else /* if (WMF_DC_TEXTALIGN (P->dc) & TA_TOP) */
-	{	d_pt.y = drawtext.font_height;       /* This is only approximate... */
+	{	d_pt.y = (float) drawtext.font_height;       /* This is only approximate... */
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.pt.x += t_pt.x;
@@ -2855,7 +2855,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 
 	if (WMF_DC_TEXTALIGN (P->dc) & TA_CENTER)
 	{	d_pt.x = width / 2;
-		d_pt.y = - drawtext.font_height * 0.77;
+		d_pt.y = (float) (- drawtext.font_height * 0.77);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.TR.x = drawtext.pt.x + t_pt.x;
@@ -2867,7 +2867,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		D_Coord_Register (API,drawtext.bbox.BL,0);
 
 		d_pt.x = width / 2;
-		d_pt.y = drawtext.font_height * 0.23;
+		d_pt.y = (float) (drawtext.font_height * 0.23);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.BR.x = drawtext.pt.x + t_pt.x;
@@ -2885,14 +2885,14 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		drawtext.pt.y += t_pt.y;
 	}
 	else if (WMF_DC_TEXTALIGN (P->dc) & TA_RIGHT)
-	{	d_pt.y = - drawtext.font_height * 0.77;
+	{	d_pt.y = (float) (- drawtext.font_height * 0.77);
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.bbox.TR.x = drawtext.pt.x + t_pt.x;
 		drawtext.bbox.TR.y = drawtext.pt.y + t_pt.y;
 		D_Coord_Register (API,drawtext.bbox.TR,0);
 
-		d_pt.y = drawtext.font_height * 0.23;
+		d_pt.y = (float) (drawtext.font_height * 0.23);
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.bbox.BR.x = drawtext.pt.x + t_pt.x;
@@ -2900,7 +2900,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		D_Coord_Register (API,drawtext.bbox.BR,0);
 
 		d_pt.x = - width;
-		d_pt.y = - drawtext.font_height * 0.77;
+		d_pt.y = (float) (- drawtext.font_height * 0.77);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.TL.x = drawtext.pt.x + t_pt.x;
@@ -2908,7 +2908,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		D_Coord_Register (API,drawtext.bbox.TL,0);
 
 		d_pt.x = - width;
-		d_pt.y = drawtext.font_height * 0.23;
+		d_pt.y = (float) (drawtext.font_height * 0.23);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.BL.x = drawtext.pt.x + t_pt.x;
@@ -2928,14 +2928,14 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		}
 	}
 	else /* if (WMF_DC_TEXTALIGN (P->dc) & TA_LEFT) */
-	{	d_pt.y = - drawtext.font_height * 0.77;
+	{	d_pt.y = (float) (- drawtext.font_height * 0.77);
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.bbox.TL.x = drawtext.pt.x + t_pt.x;
 		drawtext.bbox.TL.y = drawtext.pt.y + t_pt.y;
 		D_Coord_Register (API,drawtext.bbox.TL,0);
 
-		d_pt.y = drawtext.font_height * 0.23;
+		d_pt.y = (float) (drawtext.font_height * 0.23);
 		t_pt.x = - d_pt.y * sin_theta;
 		t_pt.y =   d_pt.y * cos_theta;
 		drawtext.bbox.BL.x = drawtext.pt.x + t_pt.x;
@@ -2943,7 +2943,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		D_Coord_Register (API,drawtext.bbox.BL,0);
 
 		d_pt.x = width;
-		d_pt.y = - drawtext.font_height * 0.77;
+		d_pt.y = (float) (- drawtext.font_height * 0.77);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.TR.x = drawtext.pt.x + t_pt.x;
@@ -2951,7 +2951,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		D_Coord_Register (API,drawtext.bbox.TR,0);
 
 		d_pt.x = width;
-		d_pt.y = drawtext.font_height * 0.23;
+		d_pt.y = (float) (drawtext.font_height * 0.23);
 		t_pt.x = d_pt.x * cos_theta - d_pt.y * sin_theta;
 		t_pt.y = d_pt.x * sin_theta + d_pt.y * cos_theta;
 		drawtext.bbox.BR.x = drawtext.pt.x + t_pt.x;
@@ -3290,13 +3290,13 @@ static int meta_font_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	i = 0;
 	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
 
-	if (i == NUM_OBJECTS (API))
+	if ((i != (U16) i) || (i == NUM_OBJECTS (API)))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
 		return (changed);
 	}
 
-	oid_font = i;
+	oid_font = (U16) i;
 	obj_font = objects + oid_font;
 
 	obj_font->type = OBJ_FONT;

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2013 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -374,10 +374,13 @@ ReadMSBLong(unsigned char **p,size_t *length)
   int
     c;
 
-  long
-    value;
+  union
+  {
+    magick_uint32_t u;
+    magick_int32_t s;
+  } value;
 
-  register long
+  register unsigned int
     i;
 
   unsigned char
@@ -391,21 +394,26 @@ ReadMSBLong(unsigned char **p,size_t *length)
     (*length)--;
     buffer[i]=(unsigned char) c;
   }
-  value=buffer[0] << 24;
-  value|=buffer[1] << 16;
-  value|=buffer[2] << 8;
-  value|=buffer[3];
-  return(value);
+  value.u=(buffer[0] & 0xff) << 24;
+  value.u|=buffer[1] << 16;
+  value.u|=buffer[2] << 8;
+  value.u|=buffer[3];
+  return(value.s);
 }
 
 static int
 ReadMSBShort(unsigned char **p,size_t *length)
 {
   int
-    c,
-    value;
+    c;
 
-  register long
+  union
+  {
+    magick_uint32_t u;
+    magick_int32_t s;
+  } value;
+
+  register unsigned int
     i;
 
   unsigned char
@@ -419,9 +427,9 @@ ReadMSBShort(unsigned char **p,size_t *length)
     (*length)--;
     buffer[i]=(unsigned char) c;
   }
-  value=buffer[0] << 8;
-  value|=buffer[1];
-  return(value);
+  value.u=(buffer[0] & 0xff) << 8;
+  value.u|=buffer[1];
+  return(value.s);
 }
 
 /*
@@ -907,7 +915,7 @@ Generate8BIMAttribute(Image *image,const char *key)
   unsigned int
     status;
 
-  unsigned long
+  long
     count;
 
   const unsigned char
@@ -962,12 +970,13 @@ Generate8BIMAttribute(Image *image,const char *key)
       if (resource != (char *)NULL)
         MagickFreeMemory(resource);
       count=ReadByte(&info,&length);
-      if ((count != 0) && (count <= length))
+      if ((count > 0) && ((size_t) count <= length))
 	{
-	  resource=(char *) MagickAllocateMemory(char *,count+MaxTextExtent);
+	  resource=(char *) MagickAllocateMemory(char *,
+                                                 (size_t) count+MaxTextExtent);
 	  if (resource != (char *) NULL)
 	    {
-	      for (i=0; i < (long) count; i++)
+	      for (i=0; i < count; i++)
 		resource[i]=(char) ReadByte(&info,&length);
 	      resource[count]='\0';
 	    }
@@ -975,6 +984,15 @@ Generate8BIMAttribute(Image *image,const char *key)
       if (!(count & 0x01))
 	(void) ReadByte(&info,&length);
       count=ReadMSBLong(&info,&length);
+      /*
+        ReadMSBLong() can return negative values such as -1 or any
+        other negative value.  Make sure that it is in range.
+      */
+      if ((count < 0) || ((size_t) count > length))
+        {
+          length=0; /* Quit loop */
+          continue;
+        }
       if ((*name != '\0') && (*name != '#'))
 	{
 	  if ((resource == (char *) NULL) ||
@@ -1001,10 +1019,11 @@ Generate8BIMAttribute(Image *image,const char *key)
       /*
 	We have the resource of interest.
       */
-      attribute=(char *) MagickAllocateMemory(char *,count+MaxTextExtent);
+      attribute=(char *) MagickAllocateMemory(char *,
+                                              (size_t) count+MaxTextExtent);
       if (attribute != (char *) NULL)
 	{
-	  (void) memcpy(attribute,(char *) info,count);
+	  (void) memcpy(attribute,(char *) info,(size_t) count);
 	  attribute[count]='\0';
 	  info+=count;
 	  length-=count;
@@ -1059,6 +1078,7 @@ Generate8BIMAttribute(Image *image,const char *key)
 #define GPS_LATITUDE 0x0002
 #define GPS_LONGITUDE 0x0004
 #define GPS_TIMESTAMP 0x0007
+#define MAX_TAGS_PER_IFD 1024 /* Maximum tags allowed per IFD */
 
 typedef struct _TagInfo
 {
@@ -1541,6 +1561,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   MagickBool
     debug=MagickFalse;
 
+  assert((sizeof(format_bytes)/sizeof(format_bytes[0])-1) == EXIF_NUM_FORMATS);
+
   {
     const char *
       env_value;
@@ -1694,7 +1716,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   */
   ifdp=tiffp+offset;
   level=0;
-  de=0;
+  de=0U;
   do
     {
       /*
@@ -1708,10 +1730,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	}
       /*
 	Determine how many entries there are in the current IFD.
+        Limit the number of entries parsed to MAX_TAGS_PER_IFD.
       */
       if ((ifdp < tiffp) || (ifdp+2 > tiffp_max))
         goto generate_attribute_failure;
       nde=Read16u(morder,ifdp);
+      if (nde > MAX_TAGS_PER_IFD)
+        nde=MAX_TAGS_PER_IFD;
       for (; de < nde; de++)
 	{
 	  unsigned int
@@ -1722,16 +1747,21 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	    f,
 	    c;
 
-	  char
-	    *pde;
-
 	  unsigned char
-	    *pval;
+	    *pde,
+            *pval;
 
-	  pde=(char *) (ifdp+2+(12*de));
+	  pde=(unsigned char *) (ifdp+2+(12*de));
+          if (pde + 12 > tiffp + length)
+            {
+              if (debug)
+                fprintf(stderr, "EXIF: Invalid Exif, entry is beyond metadata limit.\n");
+              goto generate_attribute_failure;
+            }
 	  t=Read16u(morder,pde); /* get tag value */
 	  f=Read16u(morder,pde+2); /* get the format */
-	  if ((f-1) >= EXIF_NUM_FORMATS)
+          if ((f < 0) ||
+              ((size_t) f >= sizeof(format_bytes)/sizeof(format_bytes[0])))
 	    break;
 	  c=(long) Read32u(morder,pde+4); /* get number of components */
 	  n=c*format_bytes[f];
@@ -1984,7 +2014,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	    }
 	  if (t == GPS_OFFSET && (gpsoffset != 0))
 	    {
-	      if ((gpsoffset < length) || (level < (DE_STACK_SIZE-2)))
+	      if ((gpsoffset < length) && (level < (DE_STACK_SIZE-2)))
 		{
 		  /*
 		    Push our current directory state onto the stack.

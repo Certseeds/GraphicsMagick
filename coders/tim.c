@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -123,10 +123,12 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
-  unsigned long
+  size_t
     bytes_per_line,
+    image_size;
+
+  unsigned long
     height,
-    image_size,
     pixel_mode,
     width;
 
@@ -175,8 +177,8 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void)ReadBlobLSBLong(image);
         (void)ReadBlobLSBShort(image);
         (void)ReadBlobLSBShort(image);
-        width=ReadBlobLSBShort(image);
-        height=ReadBlobLSBShort(image);
+        /* width= */ (void)ReadBlobLSBShort(image);
+        /* height= */ (void)ReadBlobLSBShort(image);
         if (!AllocateImageColormap(image,pixel_mode == 1 ? 256 : 16))
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
             image);
@@ -203,11 +205,13 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (void) ReadBlobLSBLong(image);
     (void) ReadBlobLSBShort(image);
     (void) ReadBlobLSBShort(image);
+    if (EOFBlob(image))
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     width=ReadBlobLSBShort(image);
     height=ReadBlobLSBShort(image);
-    image_size=2*width*height;
-    bytes_per_line=width*2;
-    width=(width*16)/bits_per_pixel;
+    image_size=MagickArraySize(2,MagickArraySize(width,height));
+    bytes_per_line=MagickArraySize(width,2);
+    width=(unsigned long)(MagickArraySize(width,16))/bits_per_pixel;
     /*
       Initialize image structure.
     */
@@ -239,7 +243,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         for (y=(long) image->rows-1; y >= 0; y--)
         {
-          q=SetImagePixels(image,0,y,image->columns,1);
+          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
@@ -255,7 +259,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               indexes[x]=(*p >> 4) & 0xf;
               p++;
             }
-          if (!SyncImagePixels(image))
+          if (!SyncImagePixelsEx(image,exception))
             break;
           if (QuantumTick(y,image->rows))
             {
@@ -276,14 +280,14 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         for (y=(long) image->rows-1; y >= 0; y--)
         {
-          q=SetImagePixels(image,0,y,image->columns,1);
+          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
           p=tim_pixels+y*bytes_per_line;
           for (x=0; x < (long) image->columns; x++)
             indexes[x]=(*p++);
-          if (!SyncImagePixels(image))
+          if (!SyncImagePixelsEx(image,exception))
             break;
           if (QuantumTick(y,image->rows))
             {
@@ -305,7 +309,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         for (y=(long) image->rows-1; y >= 0; y--)
         {
           p=tim_pixels+y*bytes_per_line;
-          q=SetImagePixels(image,0,y,image->columns,1);
+          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
           if (q == (PixelPacket *) NULL)
             break;
           for (x=0; x < (long) image->columns; x++)
@@ -317,7 +321,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             q->red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1f));
             q++;
           }
-          if (!SyncImagePixels(image))
+          if (!SyncImagePixelsEx(image,exception))
             break;
           if (QuantumTick(y,image->rows))
             {
@@ -339,7 +343,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         for (y=(long) image->rows-1; y >= 0; y--)
         {
           p=tim_pixels+y*bytes_per_line;
-          q=SetImagePixels(image,0,y,image->columns,1);
+          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
           if (q == (PixelPacket *) NULL)
             break;
           for (x=0; x < (long) image->columns; x++)
@@ -349,7 +353,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             q->blue=ScaleCharToQuantum(*p++);
             q++;
           }
-          if (!SyncImagePixels(image))
+          if (!SyncImagePixelsEx(image,exception))
             break;
           if (QuantumTick(y,image->rows))
             {

@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2014
+// Copyright Bob Friesenhahn, 1999-2015
 //
 // Implementation of Image
 //
@@ -304,6 +304,22 @@ Magick::Image::~Image()
 // offset = constant to subtract from pixel neighborhood mean
 void Magick::Image::adaptiveThreshold ( const unsigned int width_,
                                         const unsigned int height_,
+                                        const double offset_ )
+{
+  ExceptionInfo exceptionInfo;
+  GetExceptionInfo( &exceptionInfo );
+  MagickLib::Image* newImage =
+    AdaptiveThresholdImage( constImage(), width_, height_, offset_, &exceptionInfo );
+  replaceImage( newImage );
+  throwImageException( exceptionInfo );
+}
+// Local adaptive threshold image
+// http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm
+// Width x height define the size of the pixel neighborhood
+// offset = constant to subtract from pixel neighborhood mean
+// This version is deprecated and subject to future deletion.
+void Magick::Image::adaptiveThreshold ( const unsigned int width_,
+                                        const unsigned int height_,
                                         const unsigned int offset_ )
 {
   ExceptionInfo exceptionInfo;
@@ -398,7 +414,8 @@ void Magick::Image::annotate ( const std::string &text_,
       }
     else
       {
-        strcpy( boundingArea, string(boundingArea_).c_str());
+        strlcpy( boundingArea, string(boundingArea_).c_str(),
+                 sizeof(boundingArea));
       }
     drawInfo->geometry = boundingArea;
   }
@@ -1642,6 +1659,16 @@ void Magick::Image::reduceNoise ( const double order_ )
   throwImageException( exceptionInfo );
 }
 
+void Magick::Image::repage()
+{
+  modifyImage();
+  options()->page(Geometry());
+  image()->page.width = 0U;
+  image()->page.height = 0U;
+  image()->page.x = 0;
+  image()->page.y = 0;
+}
+
 // Resize image, specifying geometry, filter, and blur
 void Magick::Image::resize ( const Geometry &geometry_,
                              const FilterTypes filterType_,
@@ -2481,7 +2508,8 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
   if( !imageptr->colormap )
     {
       // Allocate colormap
-      imageptr->colormap = MagickAllocateMemory(PixelPacket*,entries_*sizeof(PixelPacket));
+      imageptr->colormap = MagickAllocateMemory(PixelPacket*,
+                                                entries_*sizeof(PixelPacket));
       imageptr->colors = 0;
     }
   else if ( entries_ > imageptr->colors )
@@ -2491,9 +2519,13 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
                           (entries_)*sizeof(PixelPacket));
     }
 
+  if ( !imageptr->colormap )
+    throwExceptionExplicit( ResourceLimitError,
+			    "Failed to allocate colormap");
+
   // Initialize any new new colormap entries as all black
   Color black(0,0,0);
-  for( unsigned int i=imageptr->colors; i<(entries_-1); i++ )
+  for( unsigned int i=imageptr->colors; i< (entries_-1); i++ )
     (imageptr->colormap)[i] = black;
 
   imageptr->colors = entries_;
@@ -2864,7 +2896,9 @@ void Magick::Image::fontTypeMetrics ( const std::string &text_,
 {
   DrawInfo *drawInfo = options()->drawInfo();
   drawInfo->text = const_cast<char *>(text_.c_str());
-  GetTypeMetrics( image(), drawInfo, &(metrics->_typeMetric) );
+  if (GetTypeMetrics( image(), drawInfo, &(metrics->_typeMetric) )
+      != MagickPass)
+    throwImageException();
   drawInfo->text = 0;
 }
 
@@ -3406,8 +3440,11 @@ std::string Magick::Image::signature ( const bool force_ ) const
 
   const ImageAttribute * attribute =
     GetImageAttribute(constImage(), "Signature");
-
-  return std::string( attribute->value );
+  if ((attribute != (const ImageAttribute *) NULL) &&
+      (attribute->value != (const char *) NULL))
+    return std::string( attribute->value );
+  else
+    return std::string();
 }
 
 void Magick::Image::size ( const Geometry &geometry_ )
@@ -3773,10 +3810,10 @@ const Magick::PixelPacket* Magick::Image::getConstPixels
 {
   ExceptionInfo exceptionInfo;
   GetExceptionInfo( &exceptionInfo );
-  const PixelPacket* p = (*AcquireImagePixels)( constImage(),
-                                                x_, y_,
-                                                columns_, rows_,
-                                                &exceptionInfo );
+  const PixelPacket* p = AcquireImagePixels( constImage(),
+                                             x_, y_,
+                                             columns_, rows_,
+                                             &exceptionInfo );
   throwImageException( exceptionInfo );
   return p;
 }
@@ -3811,9 +3848,9 @@ Magick::PixelPacket* Magick::Image::getPixels ( const int x_, const int y_,
 						const unsigned int rows_ )
 {
   modifyImage();
-  PixelPacket* result = (*GetImagePixels)( image(),
-                                           x_, y_,
-                                           columns_, rows_ );
+  PixelPacket* result = GetImagePixels( image(),
+                                        x_, y_,
+                                        columns_, rows_ );
   if( !result )
     throwImageException();
 
@@ -3828,9 +3865,9 @@ Magick::PixelPacket* Magick::Image::setPixels ( const int x_, const int y_,
 						const unsigned int rows_ )
 {
   modifyImage();
-  PixelPacket* result = (*SetImagePixels)( image(),
-                                           x_, y_,
-                                           columns_, rows_ );
+  PixelPacket* result = SetImagePixels( image(),
+                                        x_, y_,
+                                        columns_, rows_ );
   if( !result )
     throwImageException();
 
@@ -3840,8 +3877,8 @@ Magick::PixelPacket* Magick::Image::setPixels ( const int x_, const int y_,
 // Transfers the image cache pixels to the image.
 void Magick::Image::syncPixels ( void )
 {
-  (*SyncImagePixels)( image() );
-  throwImageException();
+  if (SyncImagePixels( image() ) != MagickPass)
+    throwImageException();
 }
 
 // Transfers one or more pixel components from a buffer or file

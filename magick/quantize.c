@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2010 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1451,7 +1451,7 @@ static NodeInfo *GetNodeInfo(CubeInfo *cube_info,const unsigned int id,
 %      measure is normalized to a range between 0 and 1.  It is independent
 %      of the range of red, green, and blue values in the image.
 %
-%    o normalized_maximum_square_error:  Thsi value is the normalized
+%    o normalized_maximum_square_error:  This value is the normalized
 %      maximum quantization error for any single pixel in the image.  This
 %      distance measure is normalized to a range between 0 and 1.  It is
 %      independent of the range of red, green, and blue values in your image.
@@ -1679,7 +1679,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
           /*
             Allocate memory for colormap index
           */
-          colormap_index=MagickAllocateMemory(int *,MaxColormapSize*sizeof(int *));
+          colormap_index=MagickAllocateMemory(int *,MaxColormapSize*sizeof(int));
           if (colormap_index == (int *) NULL)
             {
               ThrowException3(&image->exception,ResourceLimitError,
@@ -1720,7 +1720,10 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
                   q++;
                 }
               if (!SyncImagePixels(image))
-                return;
+                {
+                  MagickFreeMemory(colormap_index);
+                  return;
+                }
             }
         }
       else
@@ -1759,7 +1762,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
       */
       if (colormap_index == (int *) NULL)
         {
-          colormap_index=MagickAllocateMemory(int *,MaxColormapSize*sizeof(int *));
+          colormap_index=MagickAllocateArray(int *,MaxColormapSize,sizeof(int));
           if (colormap_index == (int *) NULL)
             {
               ThrowException3(&image->exception,ResourceLimitError,
@@ -1792,6 +1795,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
         new_colormap=MagickAllocateMemory(PixelPacket *,image->colors*sizeof(PixelPacket));
         if (new_colormap == (PixelPacket *) NULL)
           {
+            MagickFreeMemory(colormap_index);
             ThrowException3(&image->exception,ResourceLimitError,
               MemoryAllocationFailed,UnableToSortImageColormap);
             return;

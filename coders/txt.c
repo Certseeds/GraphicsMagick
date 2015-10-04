@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2010 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -336,6 +336,12 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (txt_subformat != NO_TXT)
     {
+#define ThrowNOTXTReaderException(code_,reason_,image_)         \
+      do {                                                      \
+        MagickFreeMemory(BImgBuff);                             \
+        ThrowReaderException(code_,reason_,image_);             \
+      } while (0);
+
       unsigned
 	x,
 	y;
@@ -356,7 +362,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	NumOfPlanes;
 
       unsigned char
-	*BImgBuff;
+	*BImgBuff=0;
 
       magick_uint16_t
 	*WImgBuff;
@@ -462,7 +468,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		    (ch >= 'A' && ch <= 'Z'))
 		  {
 		  TXT_FAIL:			/* not a text data */
-		    ThrowReaderException(CoderError,ImageTypeNotSupported,image);
+		    ThrowNOTXTReaderException(CoderError,ImageTypeNotSupported,image);
 		  }
 	      }
 	    /* x,y: (R,G,B) */
@@ -594,13 +600,13 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       WImgBuff = (magick_uint16_t *)BImgBuff;
       DImgBuff = (magick_uint32_t *)BImgBuff;  
       if (BImgBuff == NULL) 
-	ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+	ThrowNOTXTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   
       image->columns = x+1;
       image->rows = y+1;
 
       if (CheckImagePixelLimits(image, exception) != MagickPass)
-        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+        ThrowNOTXTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
       (void) SeekBlob(image,NextImagePos,SEEK_SET);
       NextImagePos = 0;
@@ -806,6 +812,7 @@ FINISH:
 
 	    }
 	}
+    /* Note that DImgBuff and WImgBuff point to BImgBuff */
     MagickFreeMemory(BImgBuff);
     } while(!EOFBlob(image) && NextImagePos>0);	
 
@@ -825,7 +832,7 @@ FINISH:
       dy_resolution;
 
     Image
-      *texture;
+      *texture = (Image *) NULL;
 
     long
       count,
@@ -836,7 +843,7 @@ FINISH:
       pixels_per_line;
 
     DrawInfo
-      *draw_info;
+      *draw_info = (DrawInfo *) NULL;
     
     RectangleInfo
       page;
@@ -854,7 +861,7 @@ FINISH:
 	char
 	  density[MaxTextExtent];
 
-	(void) strcpy(density,PSDensityGeometry);
+	(void) strlcpy(density,PSDensityGeometry,sizeof(density));
 	count=GetMagickDimension(density,&image->x_resolution,
 				 &image->y_resolution,NULL,NULL);
 	if (count != 2)
@@ -906,7 +913,12 @@ FINISH:
     (void) CloneString(&draw_info->geometry,geometry);
     status=GetTypeMetrics(image,draw_info,&metrics);
     if (status == False)
-      ThrowReaderException(TypeError,UnableToGetTypeMetrics,image);
+      {
+        if (texture != (Image *) NULL)
+          DestroyImage(texture);
+        DestroyDrawInfo(draw_info);
+        ThrowReaderException(TypeError,UnableToGetTypeMetrics,image);
+      }
     if (logging)
       (void)LogMagickEvent(CoderEvent,GetMagickModule(),
 			   "Type metrics: ascent=%g descent=%g"
@@ -1214,7 +1226,7 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
 	      FormatString(buffer,"%ld,%ld: ",x,y);
 	      (void) WriteBlobString(image,buffer);
 	      GetColorTuple(p,depth,image->matte,MagickFalse,tuple);
-	      (void) strcat(tuple," ");
+	      (void) strlcat(tuple," ",sizeof(tuple));
 	      (void) WriteBlobString(image,tuple);
 	      /* (void) QueryColorname(image,p,SVGCompliance,tuple,&image->exception); */
 	      GetColorTuple(p,depth,image->matte,MagickTrue,tuple);

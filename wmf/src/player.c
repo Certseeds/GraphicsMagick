@@ -476,7 +476,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 			break;
 		}
 
-		for (i = 0; i < ((Size - 3) * 2); i++)
+		for (i = 0; i < (int)((Size - 3) * 2); i++)
 		{	byte = WMF_READ (API);
 			if (byte == (-1))
 			{	WMF_ERROR (API,"Unexpected EOF!");

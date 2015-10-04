@@ -732,6 +732,7 @@ LIB_WMF_DEPS
 LIB_WMF
 HasWMF_FALSE
 HasWMF_TRUE
+LIB_XML_DEPS
 LIB_XML
 HasXML_FALSE
 HasXML_TRUE
@@ -1056,7 +1057,6 @@ with_jbig
 with_webp
 with_jpeg
 with_jp2
-with_lcms
 with_lcms2
 with_lzma
 with_png
@@ -1768,7 +1768,6 @@ Optional Packages:
   --without-webp          disable WEBP support
   --without-jpeg          disable JPEG support
   --without-jp2           disable JPEG v2 support
-  --without-lcms          disable lcms (v1.1X) support
   --without-lcms2         disable lcms (v2.X) support
   --without-lzma          disable LZMA support
   --without-png           disable PNG support
@@ -3343,7 +3342,7 @@ rm -f conftest.file
 ac_config_headers="$ac_config_headers magick/magick_config.h magick/magick_config_api.h"
 
 
-am__api_version='1.15'
+am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3448,8 +3447,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# Expand $ac_aux_dir to an absolute path.
-am_aux_dir=`cd "$ac_aux_dir" && pwd`
+# expand $ac_aux_dir to an absolute path
+am_aux_dir=`cd $ac_aux_dir && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3468,7 +3467,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh+set}" != xset; then
+if test x"${install_sh}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3788,8 +3787,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target (and possibly the TAP driver).  The
-# system "awk" is bad on some platforms.
+# We need awk for the "check" target.  The system "awk" is bad on
+# some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3846,7 +3845,6 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-
 
 # Enable support for silent build rules
 # Check whether --enable-silent-rules was given.
@@ -19643,19 +19641,6 @@ if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
 fi
 
-# Disable LCMS.
-
-# Check whether --with-lcms was given.
-if test "${with_lcms+set}" = set; then :
-  withval=$with_lcms; with_lcms=$withval
-else
-  with_lcms='yes'
-fi
-
-if test "$with_lcms" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-lcms=$with_lcms "
-fi
-
 # Disable LCMS2.
 
 # Check whether --with-lcms2 was given.
@@ -20230,6 +20215,20 @@ _ACEOF
 fi
 
 done
+
+for ac_header in wincrypt.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "wincrypt.h" "ac_cv_header_wincrypt_h" "#include <windows.h>
+"
+if test "x$ac_cv_header_wincrypt_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_WINCRYPT_H 1
+_ACEOF
+
+fi
+
+done
+
 
 
 ########
@@ -21624,13 +21623,14 @@ $as_echo "#define HAVE_MMAP_FILEIO 1" >>confdefs.h
 fi
 rm -f conftest.mmap
 
-for ac_func in atoll ctime_r _exit fcntl fstatvfs ftime getexecname \
+for ac_func in atoll CryptGenRandom \
+  ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
-  mkstemp _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
+  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
   setrlimit sigemptyset sigaction spawnvp strerror strerror_r strlcat strlcpy \
-  strtoll sysconf tempnam tmpnam_r times telldir ulltostr vsprintf vsnprintf qsort_r
+  strtoll sysconf times telldir ulltostr vsprintf vsnprintf qsort_r
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -25654,132 +25654,8 @@ $as_echo "no" >&6; }
     fi
 fi
 
-#
-# Check for LCMS v1 (1.11 or later)
-#
-if test $have_lcms2 = 'yes'
-then
-  with_lcms='no'
-fi
 
-have_lcms='no'
-if test "$with_lcms" != 'no'
-then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lcms v1.1X support" >&5
-$as_echo_n "checking for lcms v1.1X support... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
-$as_echo "" >&6; }
-    failed=0
-    passed=0
-    have_lcms_header='no'
-
-    # Check for <lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      ac_fn_c_check_header_mongrel "$LINENO" "lcms.h" "ac_cv_header_lcms_h" "$ac_includes_default"
-if test "x$ac_cv_header_lcms_h" = xyes; then :
-  have_lcms_header='yes'
-fi
-
-
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-
-$as_echo "#define HAVE_LCMS_H 1" >>confdefs.h
-
-      fi
-    fi
-
-    # Check for <lcms/lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      ac_fn_c_check_header_mongrel "$LINENO" "lcms/lcms.h" "ac_cv_header_lcms_lcms_h" "$ac_includes_default"
-if test "x$ac_cv_header_lcms_lcms_h" = xyes; then :
-  have_lcms_header='yes'
-fi
-
-
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-
-$as_echo "#define HAVE_LCMS_LCMS_H 1" >>confdefs.h
-
-      fi
-    fi
-
-    # Failed to find lcms header?
-    if test "$have_lcms_header" != 'yes'
-    then
-      failed=`expr $failed + 1`
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cmsSetErrorHandler in -llcms" >&5
-$as_echo_n "checking for cmsSetErrorHandler in -llcms... " >&6; }
-if ${ac_cv_lib_lcms_cmsSetErrorHandler+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-llcms  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char cmsSetErrorHandler ();
-int
-main ()
-{
-return cmsSetErrorHandler ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_lcms_cmsSetErrorHandler=yes
-else
-  ac_cv_lib_lcms_cmsSetErrorHandler=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lcms_cmsSetErrorHandler" >&5
-$as_echo "$ac_cv_lib_lcms_cmsSetErrorHandler" >&6; }
-if test "x$ac_cv_lib_lcms_cmsSetErrorHandler" = xyes; then :
-  passed=`expr $passed + 1`
-else
-  failed=`expr $failed + 1`
-fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if LCMS package is complete" >&5
-$as_echo_n "checking if LCMS package is complete... " >&6; }
-    if test $passed -gt 0
-    then
-      if test $failed -gt 0
-      then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
-$as_echo "no -- some components failed test" >&6; }
-        have_lcms='no (failed tests)'
-      else
-        LIB_LCMS='-llcms'
-        LIBS="$LIB_LCMS $LIBS"
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        have_lcms='yes'
-      fi
-    else
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-    fi
-fi
-
- if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'; then
+ if test "$have_lcms2" = 'yes'; then
   HasLCMS_TRUE=
   HasLCMS_FALSE='#'
 else
@@ -25787,7 +25663,7 @@ else
   HasLCMS_FALSE=
 fi
 
-if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'
+if test "$have_lcms2" = 'yes'
 then
 
 $as_echo "#define HasLCMS 1" >>confdefs.h
@@ -26657,21 +26533,68 @@ fi
     fi
     if test -n "$freetype_config"
     then
-      freetype_prefix=`${freetype_config} --prefix`
-      freetype_exec_prefix=`${freetype_config} --exec-prefix`
-      LDFLAGS="$LDFLAGS -L${freetype_exec_prefix}/lib"
-      CPPFLAGS="$CPPFLAGS -I${freetype_prefix}/include/freetype2"
+      freetype_cflags=`${freetype_config} --cflags`
+      # freetype-config --cflags may output values such as
+      # -I/usr/local/include/freetype2 -I/usr/local/include
+      # Take only the first -I option since non-Freetype include
+      # directories (not needed by the FreeType API) may pollute
+      # the include path.
+      for flag in $freetype_cflags
+      do
+        case $flag in
+          -I*)
+            CPPFLAGS="$CPPFLAGS $flag"
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
+      # freetype-config --libs may output values such as
+      # -L/usr/local/lib -lfreetype -lz
+      #    or
+      # -L/usr/lib/x86_64-linux-gnu -lfreetype -lz -lpng12
+      #
+      # Problems will surely result if we have already successfully
+      # configured different dependency libraries than freetype was
+      # built against.  For this reason, we only take the first
+      # argument of each type, assuming that they are specific to
+      # Freetype.  In the future we may need to do something different
+      # if the FreeType library was to depend on some weird library
+      # that we don't normally test for.
+      freeype_libs=`${freetype_config}  --libs`
+      for flag in $freeype_libs
+      do
+        case $flag in
+          -L*)
+            LDFLAGS="$LDFLAGS $flag"
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
+      for flag in $freeype_libs
+      do
+        case $flag in
+          -l*)
+            LIB_TTF_BASE=`echo $flag | sed -e 's/^-l//'`
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
     fi
 
-    if test "$LIB_TTF" = ''
-    then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for FT_Init_FreeType in -lfreetype" >&5
-$as_echo_n "checking for FT_Init_FreeType in -lfreetype... " >&6; }
-if ${ac_cv_lib_freetype_FT_Init_FreeType+:} false; then :
+    as_ac_Lib=`$as_echo "ac_cv_lib_$LIB_TTF_BASE''_FT_Init_FreeType" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for FT_Init_FreeType in -l$LIB_TTF_BASE" >&5
+$as_echo_n "checking for FT_Init_FreeType in -l$LIB_TTF_BASE... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lfreetype  $LIBS"
+LIBS="-l$LIB_TTF_BASE  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -26691,27 +26614,29 @@ return FT_Init_FreeType ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_freetype_FT_Init_FreeType=yes
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_freetype_FT_Init_FreeType=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_freetype_FT_Init_FreeType" >&5
-$as_echo "$ac_cv_lib_freetype_FT_Init_FreeType" >&6; }
-if test "x$ac_cv_lib_freetype_FT_Init_FreeType" = xyes; then :
-  LIB_TTF='-lfreetype'
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
+  LIB_TTF="-l$LIB_TTF_BASE"
+else
+  LIB_TTF=''
 fi
 
-      if test "$LIB_TTF" != ''
-      then
-        passed=`expr $passed + 1`
-      else
-        failed=`expr $failed + 1`
-        LDFLAGS="$OLD_LDFLAGS"
-      fi
+    if test "$LIB_TTF" != ''
+    then
+      passed=`expr $passed + 1`
+    else
+      failed=`expr $failed + 1`
+      LDFLAGS="$OLD_LDFLAGS"
     fi
 
     # Modern Freetype2 installs require that <ft2build.h> be included
@@ -27288,6 +27213,8 @@ fi
 #
 have_xml='no'
 LIB_XML=''
+LIB_XML_DEPS=''
+LIB_XML2_BASE=''
 if test "$with_xml" != 'no'
 then
     OLD_LDFLAGS=$LDFLAGS
@@ -27338,16 +27265,86 @@ fi
 
     if test -n "$xml2_config"
     then
-        # Debian installs libxml headers under /usr/include/libxml2/libxml with
-        # the shared library installed under /usr/lib, whereas the package
-        # installs itself under $prefix/libxml and $prefix/lib.
-        xml2_prefix=`xml2-config --prefix`
-        if test -d "${xml2_prefix}/include/libxml2"
-        then
-          CPPFLAGS="$CPPFLAGS -I${xml2_prefix}/include/libxml2"
-        fi
-        LDFLAGS="$LDFLAGS -L${xml2_prefix}/lib"
-     fi
+        # Sample output from xml2-config --cflags:
+        # -I/usr/include/libxml2
+        # -I/usr/local/include/libxml2 -I/usr/local/include
+        xml2_cflags=`"$xml2_config" --cflags`
+        for flag in $xml2_cflags
+        do
+            case $flag in
+                -I*)
+                    # Add flag to CPPFLAGS if not already present
+                    add=yes;
+                    for test_flag in $CPPFLAGS
+                    do
+                        if test $flag = $test_flag
+                        then
+                            add=no
+                            break
+                        fi
+                    done
+                    if test $add = yes
+                    then
+                        CPPFLAGS="$CPPFLAGS $flag"
+                    fi
+                    break
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+        # Sample output from xml2-config --libs:
+        # -lxml2
+        # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
+        #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
+        xml2_libs=`$xml2_config  --libs`
+        for flag in $xml2_libs
+        do
+            case $flag in
+                -L*)
+                    # Add flag to LDFLAGS if not already present
+                    add=yes;
+                    for test_flag in $LDFLAGS
+                    do
+                        if test $flag = $test_flag
+                        then
+                            add=no
+                            break
+                        fi
+                    done
+                    if test $add = yes
+                    then
+                        LDFLAGS="$LDFLAGS $flag"
+                    fi
+                    break
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+        for flag in $xml2_libs
+        do
+            case $flag in
+                -l*)
+                    # The first library listed is assumed to be the
+                    # name of the library and all others are assumed
+                    # to be its dependencies.
+                    if test "x$LIB_XML2_BASE" = "x"
+                    then
+                        LIB_XML2_BASE=`echo $flag | sed -e 's/^-l//'`
+                    else
+                        LIB_XML_DEPS="$LIB_XML_DEPS $flag"
+                    fi
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+    fi
+    if test "x$LIB_XML2_BASE" = "x"
+    then
+        LIB_XML2_BASE=xml2
+    fi
     failed=0
     passed=0
     # Incantation tested with libxml2 2.7.8 configured with
@@ -27362,13 +27359,14 @@ else
 fi
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlSAXVersion in -lxml2" >&5
-$as_echo_n "checking for xmlSAXVersion in -lxml2... " >&6; }
-if ${ac_cv_lib_xml2_xmlSAXVersion+:} false; then :
+    as_ac_Lib=`$as_echo "ac_cv_lib_$LIB_XML2_BASE''_xmlSAXVersion" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlSAXVersion in -l$LIB_XML2_BASE" >&5
+$as_echo_n "checking for xmlSAXVersion in -l$LIB_XML2_BASE... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
+LIBS="-l$LIB_XML2_BASE $LIB_XML_DEPS $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27388,30 +27386,32 @@ return xmlSAXVersion ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_xml2_xmlSAXVersion=yes
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_xml2_xmlSAXVersion=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xml2_xmlSAXVersion" >&5
-$as_echo "$ac_cv_lib_xml2_xmlSAXVersion" >&6; }
-if test "x$ac_cv_lib_xml2_xmlSAXVersion" = xyes; then :
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
   passed=`expr $passed + 1`
 else
   failed=`expr $failed + 1`
 fi
 
     # Next two require --with-push to be enabled
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlParseChunk in -lxml2" >&5
-$as_echo_n "checking for xmlParseChunk in -lxml2... " >&6; }
-if ${ac_cv_lib_xml2_xmlParseChunk+:} false; then :
+    as_ac_Lib=`$as_echo "ac_cv_lib_$LIB_XML2_BASE''_xmlParseChunk" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlParseChunk in -l$LIB_XML2_BASE" >&5
+$as_echo_n "checking for xmlParseChunk in -l$LIB_XML2_BASE... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
+LIBS="-l$LIB_XML2_BASE $LIB_XML_DEPS $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27431,29 +27431,31 @@ return xmlParseChunk ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_xml2_xmlParseChunk=yes
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_xml2_xmlParseChunk=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xml2_xmlParseChunk" >&5
-$as_echo "$ac_cv_lib_xml2_xmlParseChunk" >&6; }
-if test "x$ac_cv_lib_xml2_xmlParseChunk" = xyes; then :
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
   passed=`expr $passed + 1`
 else
   failed=`expr $failed + 1`
 fi
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlCreatePushParserCtxt in -lxml2" >&5
-$as_echo_n "checking for xmlCreatePushParserCtxt in -lxml2... " >&6; }
-if ${ac_cv_lib_xml2_xmlCreatePushParserCtxt+:} false; then :
+    as_ac_Lib=`$as_echo "ac_cv_lib_$LIB_XML2_BASE''_xmlCreatePushParserCtxt" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlCreatePushParserCtxt in -l$LIB_XML2_BASE" >&5
+$as_echo_n "checking for xmlCreatePushParserCtxt in -l$LIB_XML2_BASE... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
+LIBS="-l$LIB_XML2_BASE $LIB_XML_DEPS $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27473,24 +27475,25 @@ return xmlCreatePushParserCtxt ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_xml2_xmlCreatePushParserCtxt=yes
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_xml2_xmlCreatePushParserCtxt=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xml2_xmlCreatePushParserCtxt" >&5
-$as_echo "$ac_cv_lib_xml2_xmlCreatePushParserCtxt" >&6; }
-if test "x$ac_cv_lib_xml2_xmlCreatePushParserCtxt" = xyes; then :
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
   passed=`expr $passed + 1`
 else
   failed=`expr $failed + 1`
 fi
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if XML package is complete" >&5
-$as_echo_n "checking if XML package is complete... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if XML package is complete " >&5
+$as_echo_n "checking if XML package is complete ... " >&6; }
     if test $passed -gt 0
     then
     if test $failed -gt 0
@@ -27501,8 +27504,24 @@ $as_echo "no -- some components failed test" >&6; }
         LDFLAGS="$OLD_LDFLAGS"
         CPPFLAGS="$OLD_CPPFLAGS"
     else
-	LIB_XML='-lxml2'
-	LIBS="$LIB_XML $LIBS"
+	LIB_XML="-l$LIB_XML2_BASE"
+        # Add lib to LIBS if not already present
+        for test_lib in $LIB_XML $LIB_XML_DEPS
+        do
+            add=yes;
+            for lib in $LIBS
+            do
+                if test $lib = $test_lib
+                then
+                    add=no
+                    break
+                fi
+            done
+            if test $add = yes
+            then
+                LIBS="$test_lib $LIBS"
+            fi
+        done
 
 $as_echo "#define HasXML 1" >>confdefs.h
 
@@ -27525,8 +27544,14 @@ fi
 
 
 
+
 #
 # Check for WMF
+#
+# We require libwmflite and now refuse to use full libwmf.  Typical
+# dependencies for libwmflite are '-lpthread -lm' (which we already
+# usually depend on) whereas full libwmf has a great many
+# dependencies.
 #
 
 have_wmf='no'
@@ -27535,26 +27560,25 @@ LIB_WMF_DEPS=''
 OLIBS="$LIBS"
 if test "$with_wmf" != 'no'
 then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WMF support " >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WMF support " >&5
 $as_echo_n "checking for WMF support ... " >&6; }
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
 
-  have_libwmf='no'
-  have_libwmflite='no'
-  have_libwmf_ipa_h='no'
+    have_libwmflite='no'
+    have_libwmf_ipa_h='no'
 
-  ac_fn_c_check_header_compile "$LINENO" "libwmf/ipa.h" "ac_cv_header_libwmf_ipa_h" "$FT2BUILD_H
+    ac_fn_c_check_header_compile "$LINENO" "libwmf/ipa.h" "ac_cv_header_libwmf_ipa_h" "$FT2BUILD_H
 "
 if test "x$ac_cv_header_libwmf_ipa_h" = xyes; then :
   have_libwmf_ipa_h='yes'
 fi
 
 
-  if test "$have_libwmf_ipa_h" = 'yes'
-  then
+    if test "$have_libwmf_ipa_h" = 'yes'
+    then
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wmf_lite_create in -lwmflite" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wmf_lite_create in -lwmflite" >&5
 $as_echo_n "checking for wmf_lite_create in -lwmflite... " >&6; }
 if ${ac_cv_lib_wmflite_wmf_lite_create+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -27594,92 +27618,33 @@ if test "x$ac_cv_lib_wmflite_wmf_lite_create" = xyes; then :
   have_libwmflite='yes'
 fi
 
-    if test "$have_libwmflite" = 'yes'
-    then
+        if test "$have_libwmflite" = 'yes'
+        then
 
 $as_echo "#define HasWMFlite 1" >>confdefs.h
 
 
-      LIB_WMF='-lwmflite'
-      LIBS="$LIB_WMF $LIBS"
-      have_wmf='yes'
-    else
-
-      LIB_WMF_DEPS=''
-      WMF_CONFIG_LIBS=`libwmf-config --libs`
-      for lib in xml2 expat freetype jpeg png z
-      do
-        testlib="-l${lib}"
-        echo "$WMF_CONFIG_LIBS" | grep -- "$testlib" > /dev/null && LIB_WMF_DEPS="$LIB_WMF_DEPS $testlib"
-      done
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wmf_api_create in -lwmf" >&5
-$as_echo_n "checking for wmf_api_create in -lwmf... " >&6; }
-if ${ac_cv_lib_wmf_wmf_api_create+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lwmf $LIB_WMF_DEPS $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char wmf_api_create ();
-int
-main ()
-{
-return wmf_api_create ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_wmf_wmf_api_create=yes
-else
-  ac_cv_lib_wmf_wmf_api_create=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_wmf_wmf_api_create" >&5
-$as_echo "$ac_cv_lib_wmf_wmf_api_create" >&6; }
-if test "x$ac_cv_lib_wmf_wmf_api_create" = xyes; then :
-  have_libwmf='yes'
-fi
-
-      if test "$have_libwmf" = 'yes'
-      then
-
-$as_echo "#define HasWMF 1" >>confdefs.h
-
-        LIB_WMF='-lwmf'
-        LIBS="$LIB_WMF $LIBS"
-        have_wmf='yes'
-      else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+            LIB_WMF='-lwmflite'
+            LIBS="$LIB_WMF $LIBS"
+            have_wmf='yes'
+        else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-        have_wmf='no (failed tests)'
-        have_wmflite='no (failed tests)'
-        LIBS="$OLIBS"
-        LIB_WMF=''
-      fi
+            have_wmf='no (failed tests)'
+            have_wmflite='no (failed tests)'
+            LIBS="$OLIBS"
+            LIB_WMF=''
+        fi
     fi
-  fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if WMF package is complete" >&5
-$as_echo_n "checking if WMF package is complete... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if WMF package is complete " >&5
+$as_echo_n "checking if WMF package is complete ... " >&6; }
 if test "$have_wmf" = 'yes'
 then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
  if test "$have_wmf" = 'yes'; then
@@ -29846,7 +29811,7 @@ GSColorAlphaDevice=pngalpha
 GSGrayDevice=pgmraw
 GSPaletteDevice=pcx256
 GSMonoDevice=pbmraw
-GSCMYKDevice=pam
+GSCMYKDevices="pamcmyk32 pam $GSColorDevice"
 GSPDFDevice=pdfwrite
 GSPSDevice=pswrite
 GSEPSDevice=epswrite
@@ -29865,14 +29830,14 @@ $as_echo_n "checking for Ghostscript version... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSVersion" >&5
 $as_echo "$GSVersion" >&6; }
 
-  # GSColorDevice
+  # GSColorDevice # AS_MESSAGE_LOG_FD
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs color device" >&5
 $as_echo_n "checking for gs color device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pnmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pnmraw -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSColorDevice=pnmraw
   else
-    if $PSDelegate -q -dBATCH -sDEVICE=ppmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+    if $PSDelegate -q -dBATCH -sDEVICE=ppmraw -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
     then
       GSColorDevice=ppmraw
     else
@@ -29885,7 +29850,7 @@ $as_echo "$GSColorDevice" >&6; }
   # GSColorAlphaDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs color+alpha device" >&5
 $as_echo_n "checking for gs color+alpha device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pngalpha -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pngalpha -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSColorAlphaDevice=pngalpha
   else
@@ -29897,7 +29862,7 @@ $as_echo "$GSColorAlphaDevice" >&6; }
   # GSGrayDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs gray device" >&5
 $as_echo_n "checking for gs gray device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pgmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pgmraw -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSGrayDevice=pgmraw
   else
@@ -29909,7 +29874,7 @@ $as_echo "$GSGrayDevice" >&6; }
   # GSPaletteDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs pallet device" >&5
 $as_echo_n "checking for gs pallet device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pcx256 -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pcx256 -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSPaletteDevice=pcx256
   else
@@ -29921,7 +29886,7 @@ $as_echo "$GSPaletteDevice" >&6; }
   # GSMonoDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs mono device" >&5
 $as_echo_n "checking for gs mono device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pbmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pbmraw -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSMonoDevice=pbmraw
   else
@@ -29933,19 +29898,22 @@ $as_echo "$GSMonoDevice" >&6; }
   # GSCMYKDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs CMYK device" >&5
 $as_echo_n "checking for gs CMYK device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pam -sOutputFile=/dev/null < /dev/null 2> /dev/null
-  then
-    GSCMYKDevice=pam
-  else
-    GSCMYKDevice=$GSColorDevice
-  fi
+  GSCMYKDevice=$GSColorDevice
+  for device in $GSCMYKDevices
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
+    then
+      GSCMYKDevice=$device
+      break
+    fi
+  done
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSCMYKDevice" >&5
 $as_echo "$GSCMYKDevice" >&6; }
 
   # GSPDFDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs PDF writing device" >&5
 $as_echo_n "checking for gs PDF writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pdfwrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pdfwrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSPDFDevice=pdfwrite
   else
@@ -29957,7 +29925,7 @@ $as_echo "$GSPDFDevice" >&6; }
   # GSPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs PS writing device" >&5
 $as_echo_n "checking for gs PS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSPSDevice=pswrite
   else
@@ -29969,7 +29937,7 @@ $as_echo "$GSPSDevice" >&6; }
   # GSEPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs EPS writing device" >&5
 $as_echo_n "checking for gs EPS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
   then
     GSEPSDevice=epswrite
   else
@@ -30241,7 +30209,7 @@ if test "$have_jpeg"   = 'yes' ; then
    DELEGATES="$DELEGATES jpeg"
    MAGICK_FEATURES="$MAGICK_FEATURES JPEG"
 fi
-if test "$have_lcms" = 'yes' || test "$have_lcms2" = 'yes' ; then
+if test "$have_lcms2" = 'yes' ; then
    DELEGATES="$DELEGATES lcms"
    MAGICK_FEATURES="$MAGICK_FEATURES LCMS"
 fi
@@ -30357,6 +30325,50 @@ else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 
+
+#
+# Deduplicate LDFLAGS
+#
+LDFLAGS_NEW=''
+for flag in $LDFLAGS
+do
+    add=yes
+    for test_flag in $LDFLAGS_NEW
+    do
+        if test $flag = $test_flag
+        then
+            add=no
+            break
+        fi
+    done
+    if test $add = yes
+    then
+        LDFLAGS_NEW="$LDFLAGS_NEW $flag"
+    fi
+done
+LDFLAGS=$LDFLAGS_NEW
+
+#
+# Deduplicate CFLAGS
+#
+CFLAGS_NEW=''
+for flag in $CFLAGS
+do
+    add=yes
+    for test_flag in $CFLAGS_NEW
+    do
+        if test $flag = $test_flag
+        then
+            add=no
+            break
+        fi
+    done
+    if test $add = yes
+    then
+        CFLAGS_NEW="$CFLAGS_NEW $flag"
+    fi
+done
+CFLAGS=$CFLAGS_NEW
 
 #
 # Remove extraneous spaces from output variables (asthetic)
@@ -33239,7 +33251,6 @@ echo "Ghostscript lib   --with-gslib=$with_gslib       	$have_gslib"
 echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
 echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
 echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"
-echo "LCMS v1           --with-lcms=$with_lcms        	$have_lcms"
 echo "LCMS v2           --with-lcms2=$with_lcms2        	$have_lcms2"
 # echo "MPEG v2           --with-mpeg2=$with_mpeg2      	$have_mpeg2"
 echo "LZMA              --with-lzma=$with_lzma        	$have_lzma"

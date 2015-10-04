@@ -421,7 +421,7 @@ int jas_seq2d_output(jas_matrix_t *matrix, FILE *out)
 	jas_seqent_t x;
 	char buf[MAXLINELEN + 1];
 	char sbuf[MAXLINELEN + 1];
-	int n;
+	size_t n;
 
 	fprintf(out, "%d %d\n", jas_seq2d_xstart(matrix),
 	  jas_seq2d_ystart(matrix));

@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2014 GraphicsMagick Group
+# Copyright (C) 2003-2015 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -662,16 +662,6 @@ if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
 fi
 
-# Disable LCMS.
-AC_ARG_WITH(lcms,
-	      AS_HELP_STRING([--without-lcms],
-                             [disable lcms (v1.1X) support]),
-	      [with_lcms=$withval],
-	      [with_lcms='yes'])
-if test "$with_lcms" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-lcms=$with_lcms "
-fi
-
 # Disable LCMS2.
 AC_ARG_WITH(lcms2,
 	      AS_HELP_STRING([--without-lcms2],
@@ -880,7 +870,9 @@ AC_HEADER_STDC
 AC_HEADER_DIRENT
 
 # Check additional headers 
-AC_CHECK_HEADERS(machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h)
+AC_CHECK_HEADERS([machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
+AC_CHECK_HEADERS([wincrypt.h],[],[],[#include <windows.h>])
+
 
 ########
 #
@@ -1166,13 +1158,14 @@ AC_SUBST(MAGICK_SSIZE_T_F)
 #
 ########
 GM_FUNC_MMAP_FILEIO
-AC_CHECK_FUNCS([atoll ctime_r _exit fcntl fstatvfs ftime getexecname \
+AC_CHECK_FUNCS([atoll CryptGenRandom \
+  ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
-  mkstemp _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
+  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
   setrlimit sigemptyset sigaction spawnvp strerror strerror_r strlcat strlcpy \
-  strtoll sysconf tempnam tmpnam_r times telldir ulltostr vsprintf vsnprintf qsort_r])
+  strtoll sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
 
 ########
 #
@@ -1888,74 +1881,11 @@ then
     fi
 fi
 
-#
-# Check for LCMS v1 (1.11 or later)
-#
-if test $have_lcms2 = 'yes'
+
+AM_CONDITIONAL(HasLCMS, test "$have_lcms2" = 'yes')
+if test "$have_lcms2" = 'yes'
 then
-  with_lcms='no'
-fi
-
-have_lcms='no'
-if test "$with_lcms" != 'no'
-then
-    AC_MSG_CHECKING([for lcms v1.1X support])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    have_lcms_header='no'
-
-    # Check for <lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      AC_CHECK_HEADER(lcms.h,have_lcms_header='yes',,)
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-        AC_DEFINE(HAVE_LCMS_H,1,Define if you have the <lcms.h> header file.)
-      fi
-    fi
-
-    # Check for <lcms/lcms.h>
-    if test "$have_lcms_header" != 'yes'
-    then
-      AC_CHECK_HEADER(lcms/lcms.h,have_lcms_header='yes',,)
-      if test "$have_lcms_header" = 'yes'
-      then
-        passed=`expr $passed + 1`
-        AC_DEFINE(HAVE_LCMS_LCMS_H,1,Define if you have the <lcms/lcms.h> header file.)
-      fi
-    fi
-
-    # Failed to find lcms header?
-    if test "$have_lcms_header" != 'yes'
-    then
-      failed=`expr $failed + 1`
-    fi
-
-    AC_CHECK_LIB(lcms,cmsSetErrorHandler,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if LCMS package is complete)
-    if test $passed -gt 0
-    then
-      if test $failed -gt 0
-      then
-        AC_MSG_RESULT(no -- some components failed test)
-        have_lcms='no (failed tests)'
-      else
-        LIB_LCMS='-llcms'
-        LIBS="$LIB_LCMS $LIBS"
-        AC_MSG_RESULT(yes)
-        have_lcms='yes'
-      fi
-    else
-      AC_MSG_RESULT(no)
-    fi
-fi
-
-AM_CONDITIONAL(HasLCMS, test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes')
-if test "$have_lcms2" = 'yes' -o "$have_lcms" = 'yes'
-then
-  AC_DEFINE(HasLCMS,1,[Define if you have LCMS (v1.11 or later) library])
+  AC_DEFINE(HasLCMS,1,[Define if you have LCMS (v2.0 or later) library])
 fi
 AC_SUBST(LIB_LCMS)
 
@@ -2276,23 +2206,68 @@ then
     fi
     if test -n "$freetype_config"
     then
-      freetype_prefix=`${freetype_config} --prefix`
-      freetype_exec_prefix=`${freetype_config} --exec-prefix`
-      LDFLAGS="$LDFLAGS -L${freetype_exec_prefix}/lib"
-      CPPFLAGS="$CPPFLAGS -I${freetype_prefix}/include/freetype2"
+      freetype_cflags=`${freetype_config} --cflags`
+      # freetype-config --cflags may output values such as
+      # -I/usr/local/include/freetype2 -I/usr/local/include
+      # Take only the first -I option since non-Freetype include
+      # directories (not needed by the FreeType API) may pollute
+      # the include path.
+      for flag in $freetype_cflags
+      do
+        case $flag in
+          -I*)
+            CPPFLAGS="$CPPFLAGS $flag"
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
+      # freetype-config --libs may output values such as
+      # -L/usr/local/lib -lfreetype -lz
+      #    or
+      # -L/usr/lib/x86_64-linux-gnu -lfreetype -lz -lpng12
+      #
+      # Problems will surely result if we have already successfully
+      # configured different dependency libraries than freetype was
+      # built against.  For this reason, we only take the first
+      # argument of each type, assuming that they are specific to
+      # Freetype.  In the future we may need to do something different
+      # if the FreeType library was to depend on some weird library
+      # that we don't normally test for.
+      freeype_libs=`${freetype_config}  --libs`
+      for flag in $freeype_libs
+      do
+        case $flag in
+          -L*)
+            LDFLAGS="$LDFLAGS $flag"
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
+      for flag in $freeype_libs
+      do
+        case $flag in
+          -l*)
+            LIB_TTF_BASE=`echo $flag | sed -e 's/^-l//'`
+            break
+            ;;
+          *)
+            ;;
+        esac
+      done
     fi
 
 dnl First see if there is a library
-    if test "$LIB_TTF" = ''
+    AC_CHECK_LIB([$LIB_TTF_BASE],[FT_Init_FreeType],[LIB_TTF="-l$LIB_TTF_BASE"],[LIB_TTF=''],[])
+    if test "$LIB_TTF" != ''
     then
-      AC_CHECK_LIB(freetype,FT_Init_FreeType,LIB_TTF='-lfreetype',,)
-      if test "$LIB_TTF" != ''
-      then
-        passed=`expr $passed + 1`
-      else
-        failed=`expr $failed + 1`
-        LDFLAGS="$OLD_LDFLAGS"
-      fi
+      passed=`expr $passed + 1`
+    else
+      failed=`expr $failed + 1`
+      LDFLAGS="$OLD_LDFLAGS"
     fi
 
 dnl Now test for the headers
@@ -2459,62 +2434,156 @@ AC_SUBST(LIB_WEBP)
 #
 have_xml='no'
 LIB_XML=''
+LIB_XML_DEPS=''
+LIB_XML2_BASE=''
 if test "$with_xml" != 'no'
 then
     OLD_LDFLAGS=$LDFLAGS
     OLD_CPPFLAGS=$CPPFLAGS
-    AC_MSG_CHECKING(for XML support )
-    AC_MSG_RESULT()
+    AC_MSG_CHECKING([for XML support ])
+    AC_MSG_RESULT([])
     xml2_config=''
-    AC_PATH_PROG(xml2_config,xml2-config,)dnl
+    AC_PATH_PROG([xml2_config],[xml2-config],[])dnl
     if test -n "$xml2_config"
     then
-        # Debian installs libxml headers under /usr/include/libxml2/libxml with
-        # the shared library installed under /usr/lib, whereas the package
-        # installs itself under $prefix/libxml and $prefix/lib.
-        xml2_prefix=`xml2-config --prefix`
-        if test -d "${xml2_prefix}/include/libxml2"
-        then
-          CPPFLAGS="$CPPFLAGS -I${xml2_prefix}/include/libxml2"
-        fi
-        LDFLAGS="$LDFLAGS -L${xml2_prefix}/lib"
-     fi
+        # Sample output from xml2-config --cflags:
+        # -I/usr/include/libxml2
+        # -I/usr/local/include/libxml2 -I/usr/local/include
+        xml2_cflags=`"$xml2_config" --cflags`
+        for flag in $xml2_cflags
+        do
+            case $flag in
+                -I*)
+                    # Add flag to CPPFLAGS if not already present
+                    add=yes;
+                    for test_flag in $CPPFLAGS
+                    do
+                        if test $flag = $test_flag
+                        then
+                            add=no
+                            break
+                        fi
+                    done
+                    if test $add = yes
+                    then
+                        CPPFLAGS="$CPPFLAGS $flag"
+                    fi
+                    break
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+        # Sample output from xml2-config --libs:
+        # -lxml2
+        # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
+        #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
+        xml2_libs=`$xml2_config  --libs`
+        for flag in $xml2_libs
+        do
+            case $flag in
+                -L*)
+                    # Add flag to LDFLAGS if not already present
+                    add=yes;
+                    for test_flag in $LDFLAGS
+                    do
+                        if test $flag = $test_flag
+                        then
+                            add=no
+                            break
+                        fi
+                    done
+                    if test $add = yes
+                    then
+                        LDFLAGS="$LDFLAGS $flag"
+                    fi
+                    break
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+        for flag in $xml2_libs
+        do
+            case $flag in
+                -l*)
+                    # The first library listed is assumed to be the
+                    # name of the library and all others are assumed
+                    # to be its dependencies.
+                    if test "x$LIB_XML2_BASE" = "x"
+                    then
+                        LIB_XML2_BASE=`echo $flag | sed -e 's/^-l//'`
+                    else
+                        LIB_XML_DEPS="$LIB_XML_DEPS $flag"
+                    fi
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+    fi
+    if test "x$LIB_XML2_BASE" = "x"
+    then
+        LIB_XML2_BASE=xml2
+    fi
     failed=0
     passed=0
     # Incantation tested with libxml2 2.7.8 configured with
     #   --with-minimum --with-http --with-ftp --with-push --with-zlib --with-sax1
     # Note that SAX1 interfaces don't seem to be directly used but parsers fail to work
     # as expected without SAX1 support compiled in.
-    AC_CHECK_HEADER(libxml/parser.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(xml2,xmlSAXVersion,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+    AC_CHECK_HEADER([libxml/parser.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlSAXVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
     # Next two require --with-push to be enabled
-    AC_CHECK_LIB(xml2,xmlParseChunk,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(xml2,xmlCreatePushParserCtxt,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if XML package is complete)
+    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlParseChunk],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
+    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlCreatePushParserCtxt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
+    AC_MSG_CHECKING([if XML package is complete ])
     if test $passed -gt 0
     then
     if test $failed -gt 0
     then
-	AC_MSG_RESULT(no -- some components failed test)
+	AC_MSG_RESULT([no -- some components failed test])
         have_xml='no (failed tests)'
         LDFLAGS="$OLD_LDFLAGS"
         CPPFLAGS="$OLD_CPPFLAGS"
     else
-	LIB_XML='-lxml2'
-	LIBS="$LIB_XML $LIBS"
-	AC_DEFINE(HasXML,1,Define if you have XML library)
-	AC_MSG_RESULT(yes)
+	LIB_XML="-l$LIB_XML2_BASE"
+        # Add lib to LIBS if not already present
+        for test_lib in $LIB_XML $LIB_XML_DEPS
+        do
+            add=yes;
+            for lib in $LIBS
+            do
+                if test $lib = $test_lib
+                then
+                    add=no
+                    break
+                fi
+            done
+            if test $add = yes
+            then
+                LIBS="$test_lib $LIBS"
+            fi
+        done
+	AC_DEFINE([HasXML],[1],[Define if you have XML library])
+	AC_MSG_RESULT([yes])
         have_xml='yes'
     fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasXML, test "$have_xml" = 'yes')
-AC_SUBST(LIB_XML)
+AM_CONDITIONAL([HasXML], [test "$have_xml" = 'yes'])
+AC_SUBST([LIB_XML])
+AC_SUBST([LIB_XML_DEPS])
 
 #
 # Check for WMF
+#
+# We require libwmflite and now refuse to use full libwmf.  Typical
+# dependencies for libwmflite are '-lpthread -lm' (which we already
+# usually depend on) whereas full libwmf has a great many
+# dependencies.
 #
 
 have_wmf='no'
@@ -2523,67 +2592,48 @@ LIB_WMF_DEPS=''
 OLIBS="$LIBS"
 if test "$with_wmf" != 'no'
 then
-  AC_MSG_CHECKING(for WMF support )
-  AC_MSG_RESULT()
+    AC_MSG_CHECKING([for WMF support ])
+    AC_MSG_RESULT([])
 
-  have_libwmf='no'
-  have_libwmflite='no'
-  have_libwmf_ipa_h='no'
+    have_libwmflite='no'
+    have_libwmf_ipa_h='no'
 
-  AC_CHECK_HEADER([libwmf/ipa.h],[have_libwmf_ipa_h='yes'],[],[$FT2BUILD_H])
-  if test "$have_libwmf_ipa_h" = 'yes'
-  then
-
-    AC_CHECK_LIB(wmflite,wmf_lite_create,have_libwmflite='yes',,)
-    if test "$have_libwmflite" = 'yes'
+    AC_CHECK_HEADER([libwmf/ipa.h],[have_libwmf_ipa_h='yes'],[],[$FT2BUILD_H])
+    if test "$have_libwmf_ipa_h" = 'yes'
     then
-      AC_DEFINE(HasWMFlite,1,Define if you have wmflite library)
 
-      LIB_WMF='-lwmflite'
-      LIBS="$LIB_WMF $LIBS"
-      have_wmf='yes'
-    else
+        AC_CHECK_LIB([wmflite],[wmf_lite_create],[have_libwmflite='yes'],[],[])
+        if test "$have_libwmflite" = 'yes'
+        then
+            AC_DEFINE([HasWMFlite],[1],[Define if you have wmflite library])
 
-      LIB_WMF_DEPS=''
-      WMF_CONFIG_LIBS=`libwmf-config --libs`
-      for lib in xml2 expat freetype jpeg png z
-      do
-        testlib="-l${lib}"
-        echo "$WMF_CONFIG_LIBS" | grep -- "$testlib" > /dev/null && LIB_WMF_DEPS="$LIB_WMF_DEPS $testlib"
-      done
-
-      AC_CHECK_LIB(wmf,wmf_api_create,have_libwmf='yes',,$LIB_WMF_DEPS)
-      if test "$have_libwmf" = 'yes'
-      then
-        AC_DEFINE(HasWMF,1,Define if you have wmf library)
-        LIB_WMF='-lwmf'
-        LIBS="$LIB_WMF $LIBS"
-        have_wmf='yes'
-      else
-	AC_MSG_RESULT(no -- some components failed test)
-        have_wmf='no (failed tests)'
-        have_wmflite='no (failed tests)'
-        LIBS="$OLIBS"
-        LIB_WMF=''
-      fi
+            LIB_WMF='-lwmflite'
+            LIBS="$LIB_WMF $LIBS"
+            have_wmf='yes'
+        else
+	    AC_MSG_RESULT([no -- some components failed test])
+            have_wmf='no (failed tests)'
+            have_wmflite='no (failed tests)'
+            LIBS="$OLIBS"
+            LIB_WMF=''
+        fi
     fi
-  fi
 fi
-AC_MSG_CHECKING(if WMF package is complete)
+AC_MSG_CHECKING([if WMF package is complete ])
 if test "$have_wmf" = 'yes'
 then
-  AC_MSG_RESULT(yes)
+    AC_MSG_RESULT([yes])
 else
-  AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
 fi
-AM_CONDITIONAL(HasWMF, test "$have_wmf" = 'yes')
-AC_SUBST(LIB_WMF)
-AC_SUBST(LIB_WMF_DEPS)
+AM_CONDITIONAL([HasWMF], [test "$have_wmf" = 'yes'])
+AC_SUBST([LIB_WMF])
+AC_SUBST([LIB_WMF_DEPS])
 
 #
 # Substitute compiler name to build/link PerlMagick
 #
-AC_SUBST(PERLMAINCC)
+AC_SUBST([PERLMAINCC])
 
 #
 # Configure install Paths
@@ -3027,7 +3077,7 @@ GSColorAlphaDevice=pngalpha
 GSGrayDevice=pgmraw
 GSPaletteDevice=pcx256
 GSMonoDevice=pbmraw
-GSCMYKDevice=pam
+GSCMYKDevices="pamcmyk32 pam $GSColorDevice"
 GSPDFDevice=pdfwrite
 GSPSDevice=pswrite
 GSEPSDevice=epswrite
@@ -3044,13 +3094,13 @@ then
   fi
   AC_MSG_RESULT($GSVersion)
 
-  # GSColorDevice
+  # GSColorDevice # AS_MESSAGE_LOG_FD 
   AC_MSG_CHECKING([for gs color device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pnmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pnmraw -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSColorDevice=pnmraw
   else
-    if $PSDelegate -q -dBATCH -sDEVICE=ppmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+    if $PSDelegate -q -dBATCH -sDEVICE=ppmraw -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
     then
       GSColorDevice=ppmraw
     else
@@ -3061,7 +3111,7 @@ then
 
   # GSColorAlphaDevice
   AC_MSG_CHECKING([for gs color+alpha device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pngalpha -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pngalpha -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSColorAlphaDevice=pngalpha
   else
@@ -3071,7 +3121,7 @@ then
 
   # GSGrayDevice
   AC_MSG_CHECKING([for gs gray device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pgmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pgmraw -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSGrayDevice=pgmraw
   else
@@ -3081,7 +3131,7 @@ then
 
   # GSPaletteDevice
   AC_MSG_CHECKING([for gs pallet device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pcx256 -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pcx256 -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSPaletteDevice=pcx256
   else
@@ -3091,7 +3141,7 @@ then
 
   # GSMonoDevice
   AC_MSG_CHECKING([for gs mono device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pbmraw -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pbmraw -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSMonoDevice=pbmraw
   else
@@ -3101,17 +3151,20 @@ then
 
   # GSCMYKDevice
   AC_MSG_CHECKING([for gs CMYK device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pam -sOutputFile=/dev/null < /dev/null 2> /dev/null
-  then
-    GSCMYKDevice=pam
-  else
-    GSCMYKDevice=$GSColorDevice
-  fi
+  GSCMYKDevice=$GSColorDevice
+  for device in $GSCMYKDevices
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+    then
+      GSCMYKDevice=$device
+      break
+    fi
+  done
   AC_MSG_RESULT($GSCMYKDevice)
 
   # GSPDFDevice
   AC_MSG_CHECKING([for gs PDF writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pdfwrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pdfwrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSPDFDevice=pdfwrite
   else
@@ -3121,7 +3174,7 @@ then
 
   # GSPSDevice
   AC_MSG_CHECKING([for gs PS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSPSDevice=pswrite
   else
@@ -3131,7 +3184,7 @@ then
 
   # GSEPSDevice
   AC_MSG_CHECKING([for gs EPS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 2> /dev/null
+  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
   then
     GSEPSDevice=epswrite
   else
@@ -3268,7 +3321,7 @@ if test "$have_jpeg"   = 'yes' ; then
    DELEGATES="$DELEGATES jpeg"
    MAGICK_FEATURES="$MAGICK_FEATURES JPEG"
 fi
-if test "$have_lcms" = 'yes' || test "$have_lcms2" = 'yes' ; then
+if test "$have_lcms2" = 'yes' ; then
    DELEGATES="$DELEGATES lcms"
    MAGICK_FEATURES="$MAGICK_FEATURES LCMS"
 fi
@@ -3384,6 +3437,50 @@ else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 AC_SUBST(MAGICK_DEP_LIBS)
+
+#
+# Deduplicate LDFLAGS
+#
+LDFLAGS_NEW=''
+for flag in $LDFLAGS
+do
+    add=yes
+    for test_flag in $LDFLAGS_NEW
+    do
+        if test $flag = $test_flag
+        then
+            add=no
+            break
+        fi
+    done
+    if test $add = yes
+    then
+        LDFLAGS_NEW="$LDFLAGS_NEW $flag"
+    fi
+done
+LDFLAGS=$LDFLAGS_NEW
+
+#
+# Deduplicate CFLAGS
+#
+CFLAGS_NEW=''
+for flag in $CFLAGS
+do
+    add=yes
+    for test_flag in $CFLAGS_NEW
+    do
+        if test $flag = $test_flag
+        then
+            add=no
+            break
+        fi
+    done
+    if test $add = yes
+    then
+        CFLAGS_NEW="$CFLAGS_NEW $flag"
+    fi
+done
+CFLAGS=$CFLAGS_NEW
 
 #
 # Remove extraneous spaces from output variables (asthetic)
@@ -3505,7 +3602,6 @@ echo "Ghostscript lib   --with-gslib=$with_gslib       	$have_gslib"
 echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
 echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
 echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"
-echo "LCMS v1           --with-lcms=$with_lcms        	$have_lcms"
 echo "LCMS v2           --with-lcms2=$with_lcms2        	$have_lcms2"
 # echo "MPEG v2           --with-mpeg2=$with_mpeg2      	$have_mpeg2"
 echo "LZMA              --with-lzma=$with_lzma        	$have_lzma"

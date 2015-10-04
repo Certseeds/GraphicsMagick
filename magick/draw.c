@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2012 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4085,6 +4085,7 @@ MagickExport void DrawPushGraphicContext(DrawContext context)
                   (context->index+1)*sizeof(DrawInfo *));
   if (context->graphic_context == (DrawInfo **) NULL)
     {
+      context->index--;
       ThrowDrawException3(ResourceLimitError,MemoryAllocationFailed,
         UnableToDrawOnImage)
     }
@@ -4874,6 +4875,8 @@ MagickExport void DrawSetStrokeDashArray(DrawContext context,
   assert(context != (DrawContext)NULL);
   assert(context->signature == MagickSignature);
 
+  if (dasharray == (const double *) NULL)
+    n_new = 0;
   q = CurrentContext->dash_pattern;
   if( q != (const double *) NULL )
     while( *q++ != 0.0)
@@ -4910,7 +4913,7 @@ MagickExport void DrawSetStrokeDashArray(DrawContext context,
       if(CurrentContext->dash_pattern != (double*)NULL)
         MagickFreeMemory(CurrentContext->dash_pattern);
 
-      if( n_new != 0)
+      if( n_new != 0 )
         {
           CurrentContext->dash_pattern = MagickAllocateArray(double *,
                                                              (n_new+1),

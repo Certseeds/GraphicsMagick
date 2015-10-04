@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -136,7 +136,7 @@ typedef struct _html_code
     val;
 } html_code;
 
-static html_code html_codes[] = {
+static html_code const html_codes[] = {
 #ifdef HANDLE_GT_LT
   { 4,"&lt;",'<' },
   { 4,"&gt;",'>' },
@@ -281,10 +281,10 @@ static long parse8BIM(Image *ifile, Image *ofile)
   char
     brkused,
     quoted,
-    *line,
-    *token,
-    *newstr,
-    *name;
+    *line = (char *) NULL,
+    *token = (char *) NULL,
+    *newstr = (char *) NULL,
+    *name = (char *) NULL;
 
   int
     state,
@@ -313,7 +313,8 @@ static long parse8BIM(Image *ifile, Image *ofile)
   dataset = 0;
   recnum = 0;
   line = MagickAllocateMemory(char *,inputlen);
-  name = token = (char *)NULL;
+  if (line == (char *) NULL)
+    goto parse8BIM_failure;
   savedpos = 0;
   while(super_fgets(&line,&inputlen,ifile)!=NULL)
   {
@@ -321,7 +322,11 @@ static long parse8BIM(Image *ifile, Image *ofile)
     next=0;
 
     token = MagickAllocateMemory(char *,inputlen);
+    if (token == (char *) NULL)
+      goto parse8BIM_failure;
     newstr = MagickAllocateMemory(char *,inputlen);
+    if (newstr == (char *) NULL)
+      goto parse8BIM_failure;
     while (Tokenizer(&token_info, 0, token, inputlen, line,
           (char *) "", (char *) "=",
       (char *) "\"", 0, &brkused,&next,&quoted)==0)
@@ -354,8 +359,9 @@ static long parse8BIM(Image *ifile, Image *ofile)
                 break;
               case 2:
                 name = MagickAllocateMemory(char *,strlen(newstr)+1);
-                if (name)
-                  (void) strcpy(name,newstr);
+                if (name == (char *) NULL)
+                  goto parse8BIM_failure;
+                (void) strcpy(name,newstr);
                 break;
             }
             state++;
@@ -400,6 +406,8 @@ static long parse8BIM(Image *ifile, Image *ofile)
                   {
                     long diff = outputlen - savedolen;
                     currentpos = TellBlob(ofile);
+                    if (currentpos < 0)
+                      goto parse8BIM_failure;
                     (void) SeekBlob(ofile,savedpos,SEEK_SET);
                     (void) WriteBlobMSBLong(ofile,diff);
                     (void) SeekBlob(ofile,currentpos,SEEK_SET);
@@ -445,6 +453,8 @@ static long parse8BIM(Image *ifile, Image *ofile)
                   {
                     /* patch in a fake length for now and fix it later */
                     savedpos = TellBlob(ofile);
+                    if (savedpos < 0)
+                      goto parse8BIM_failure;
                     (void) WriteBlobMSBLong(ofile,0xFFFFFFFFUL);
                     outputlen += 4;
                     savedolen = outputlen;
@@ -478,12 +488,22 @@ static long parse8BIM(Image *ifile, Image *ofile)
       long diff = outputlen - savedolen;
 
       currentpos = TellBlob(ofile);
+      if (currentpos < 0)
+        goto parse8BIM_failure;
+
       (void) SeekBlob(ofile,savedpos,SEEK_SET);
       (void) WriteBlobMSBLong(ofile,diff);
       (void) SeekBlob(ofile,currentpos,SEEK_SET);
       savedolen = 0L;
     }
   return outputlen;
+
+ parse8BIM_failure:
+  MagickFreeMemory(token);
+  MagickFreeMemory(newstr);
+  MagickFreeMemory(name);
+  MagickFreeMemory(line);
+  return 0L;
 }
 
 static char *super_fgets_w(char **b, size_t *blen, Image *file)
@@ -542,10 +562,10 @@ static long parse8BIMW(Image *ifile, Image *ofile)
   char
     brkused,
     quoted,
-    *line,
-    *token,
-    *newstr,
-    *name;
+    *line = (char *) NULL,
+    *token = (char *) NULL,
+    *newstr = (char *) NULL,
+    *name = (char *) NULL;
 
   int
     state,
@@ -574,6 +594,8 @@ static long parse8BIMW(Image *ifile, Image *ofile)
   dataset = 0;
   recnum = 0;
   line = MagickAllocateMemory(char *,inputlen);
+  if (line == (char *) NULL)
+    goto parse8BIMW_failure;
   name = token = (char *)NULL;
   savedpos = 0;
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -586,7 +608,11 @@ static long parse8BIMW(Image *ifile, Image *ofile)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "META CODER Parse8BIM: %s (%lu)",line, (unsigned long) inputlen);
     token = MagickAllocateMemory(char *,inputlen);
+    if (token == (char *) NULL)
+      goto parse8BIMW_failure;
     newstr = MagickAllocateMemory(char *,inputlen);
+    if (newstr == (char *) NULL)
+      goto parse8BIMW_failure;
     while (Tokenizer(&token_info, 0, token, inputlen, line,
           (char *) "", (char *) "=",
       (char *) "\"", 0, &brkused,&next,&quoted)==0)
@@ -619,8 +645,9 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                 break;
               case 2:
                 name = MagickAllocateMemory(char *,strlen(newstr)+1);
-                if (name)
-                  (void) strcpy(name,newstr);
+                if (name == (char *) NULL)
+                  goto parse8BIMW_failure;
+                (void) strcpy(name,newstr);
                 break;
             }
             state++;
@@ -665,6 +692,8 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                   {
                     long diff = outputlen - savedolen;
                     currentpos = TellBlob(ofile);
+                    if (currentpos < 0)
+                      goto parse8BIMW_failure;
                     (void) SeekBlob(ofile,savedpos,SEEK_SET);
                     (void) WriteBlobMSBLong(ofile,diff);
                     (void) SeekBlob(ofile,currentpos,SEEK_SET);
@@ -710,6 +739,8 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                   {
                     /* patch in a fake length for now and fix it later */
                     savedpos = TellBlob(ofile);
+                    if (savedpos < 0)
+                      goto parse8BIMW_failure;
                     (void) WriteBlobMSBLong(ofile,0xFFFFFFFFUL);
                     outputlen += 4;
                     savedolen = outputlen;
@@ -743,12 +774,21 @@ static long parse8BIMW(Image *ifile, Image *ofile)
       long diff = outputlen - savedolen;
 
       currentpos = TellBlob(ofile);
+      if (currentpos < 0)
+        goto parse8BIMW_failure;
       (void) SeekBlob(ofile,savedpos,SEEK_SET);
       (void) WriteBlobMSBLong(ofile,diff);
       (void) SeekBlob(ofile,currentpos,SEEK_SET);
       savedolen = 0L;
     }
   return outputlen;
+
+ parse8BIMW_failure:
+  MagickFreeMemory(token);
+  MagickFreeMemory(newstr);
+  MagickFreeMemory(name);
+  MagickFreeMemory(line);
+  return 0L;
 }
 
 /* some defines for the different JPEG block types */
@@ -908,8 +948,6 @@ static int jpeg_skip_till_marker(Image *ifile, int marker)
 }
 #endif
 
-static char psheader[] = "\xFF\xED\0\0Photoshop 3.0\08BIM\x04\x04\0\0\0\0";
-
 /* Embed binary IPTC data into a JPEG image. */
 static int jpeg_embed(Image *ifile, Image *ofile, Image *iptc)
 {
@@ -952,9 +990,12 @@ static int jpeg_embed(Image *ifile, Image *ofile, Image *iptc)
 
         if (iptc != (Image *)NULL)
           {
+            static const char psheader_base[] = "\xFF\xED\0\0Photoshop 3.0\08BIM\x04\x04\0\0\0\0";
+            char psheader[sizeof(psheader_base)];
             len=GetBlobSize(iptc);
             if (len & 1)
               len++; /* make the length even */
+            (void) strlcpy(psheader,psheader_base,sizeof(psheader));
             psheader[ 2 ] = (len+16)>>8;
             psheader[ 3 ] = (len+16)&0xff;
             for (inx = 0; inx < 18; inx++)
@@ -1741,64 +1782,64 @@ typedef struct _tag_spec
   short
     id;
 
-  char
+  const char
     *name;
 } tag_spec;
 
-static tag_spec tags[] = {
-  { 5, (char *) "Image Name" },
-  { 7, (char *) "Edit Status" },
-  { 10, (char *) "Priority" },
-  { 15, (char *) "Category" },
-  { 20, (char *) "Supplemental Category" },
-  { 22, (char *) "Fixture Identifier" },
-  { 25, (char *) "Keyword" },
-  { 30, (char *) "Release Date" },
-  { 35, (char *) "Release Time" },
-  { 40, (char *) "Special Instructions" },
-  { 45, (char *) "Reference Service" },
-  { 47, (char *) "Reference Date" },
-  { 50, (char *) "Reference Number" },
-  { 55, (char *) "Created Date" },
-  { 60, (char *) "Created Time" },
-  { 65, (char *) "Originating Program" },
-  { 70, (char *) "Program Version" },
-  { 75, (char *) "Object Cycle" },
-  { 80, (char *) "Byline" },
-  { 85, (char *) "Byline Title" },
-  { 90, (char *) "City" },
-  { 95, (char *) "Province State" },
-  { 100, (char *) "Country Code" },
-  { 101, (char *) "Country" },
-  { 103, (char *) "Original Transmission Reference" },
-  { 105, (char *) "Headline" },
-  { 110, (char *) "Credit" },
-  { 115, (char *) "Source" },
-  { 116, (char *) "Copyright String" },
-  { 120, (char *) "Caption" },
-  { 121, (char *) "Image Orientation" },
-  { 122, (char *) "Caption Writer" },
-  { 131, (char *) "Local Caption" },
-  { 200, (char *) "Custom Field 1" },
-  { 201, (char *) "Custom Field 2" },
-  { 202, (char *) "Custom Field 3" },
-  { 203, (char *) "Custom Field 4" },
-  { 204, (char *) "Custom Field 5" },
-  { 205, (char *) "Custom Field 6" },
-  { 206, (char *) "Custom Field 7" },
-  { 207, (char *) "Custom Field 8" },
-  { 208, (char *) "Custom Field 9" },
-  { 209, (char *) "Custom Field 10" },
-  { 210, (char *) "Custom Field 11" },
-  { 211, (char *) "Custom Field 12" },
-  { 212, (char *) "Custom Field 13" },
-  { 213, (char *) "Custom Field 14" },
-  { 214, (char *) "Custom Field 15" },
-  { 215, (char *) "Custom Field 16" },
-  { 216, (char *) "Custom Field 17" },
-  { 217, (char *) "Custom Field 18" },
-  { 218, (char *) "Custom Field 19" },
-  { 219, (char *) "Custom Field 20" }
+static const tag_spec tags[] = {
+  { 5, "Image Name" },
+  { 7, "Edit Status" },
+  { 10, "Priority" },
+  { 15, "Category" },
+  { 20, "Supplemental Category" },
+  { 22, "Fixture Identifier" },
+  { 25, "Keyword" },
+  { 30, "Release Date" },
+  { 35, "Release Time" },
+  { 40, "Special Instructions" },
+  { 45, "Reference Service" },
+  { 47, "Reference Date" },
+  { 50, "Reference Number" },
+  { 55, "Created Date" },
+  { 60, "Created Time" },
+  { 65, "Originating Program" },
+  { 70, "Program Version" },
+  { 75, "Object Cycle" },
+  { 80, "Byline" },
+  { 85, "Byline Title" },
+  { 90, "City" },
+  { 95, "Province State" },
+  { 100, "Country Code" },
+  { 101, "Country" },
+  { 103, "Original Transmission Reference" },
+  { 105, "Headline" },
+  { 110, "Credit" },
+  { 115, "Source" },
+  { 116, "Copyright String" },
+  { 120, "Caption" },
+  { 121, "Image Orientation" },
+  { 122, "Caption Writer" },
+  { 131, "Local Caption" },
+  { 200, "Custom Field 1" },
+  { 201, "Custom Field 2" },
+  { 202, "Custom Field 3" },
+  { 203, "Custom Field 4" },
+  { 204, "Custom Field 5" },
+  { 205, "Custom Field 6" },
+  { 206, "Custom Field 7" },
+  { 207, "Custom Field 8" },
+  { 208, "Custom Field 9" },
+  { 209, "Custom Field 10" },
+  { 210, "Custom Field 11" },
+  { 211, "Custom Field 12" },
+  { 212, "Custom Field 13" },
+  { 213, "Custom Field 14" },
+  { 214, "Custom Field 15" },
+  { 215, "Custom Field 16" },
+  { 216, "Custom Field 17" },
+  { 217, "Custom Field 18" },
+  { 218, "Custom Field 19" },
+  { 219, "Custom Field 20" }
 };
 
 static int formatIPTC(Image *ifile, Image *ofile)
@@ -1840,9 +1881,14 @@ static int formatIPTC(Image *ifile, Image *ofile)
     else
       {
         if (foundiptc)
-          return -1;
+          {
+            return -1;
+          }
         else
-          continue;
+          {
+            c = ReadBlobByte(ifile);
+            continue;
+          }
       }
 
     /* we found the 0x1c tag and now grab the dataset and record number tags */
@@ -1888,7 +1934,11 @@ static int formatIPTC(Image *ifile, Image *ofile)
     for (tagindx=0; tagindx<taglen; tagindx++)
     {
       c=ReadBlobByte(ifile);
-      if (c == EOF) return -1;
+      if (c == EOF)
+        {
+          MagickFreeMemory(str);
+          return -1;
+        }
       str[tagindx] = (unsigned char) c;
     }
     str[taglen] = 0;
@@ -2011,7 +2061,11 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
     for (tagindx=0; tagindx<taglen; tagindx++)
     {
       c = *s++; len--;
-      if (len < 0) return -1;
+      if (len < 0)
+        {
+          MagickFreeMemory(str);
+          return -1;
+        }
       str[tagindx] = (unsigned char) c;
     }
     str[ taglen ] = 0;
@@ -2030,6 +2084,13 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
   return tagsfound;
 }
 
+#define Format8BIMLiberate()                    \
+  do                                            \
+    {                                           \
+      MagickFreeMemory(PString);                \
+      MagickFreeMemory(str);                    \
+    } while(0);
+
 static int format8BIM(Image *ifile, Image *ofile)
 {
   char
@@ -2045,109 +2106,138 @@ static int format8BIM(Image *ifile, Image *ofile)
     c;
 
   unsigned char
-    *PString,
-    *str;
+    *PString=0,
+    *str=0;
 
   resCount = 0;
 
   c =ReadBlobByte(ifile);
   while (c != EOF)
-  {
-    if (c == '8')
-      {
-        unsigned char
-          buffer[5];
+    {
+      if (c == '8')
+        {
+          unsigned char
+            buffer[5];
 
-        buffer[0] = (unsigned char) c;
-        for (i=1; i<4; i++)
+          buffer[0] = (unsigned char) c;
+          for (i=1; i<4; i++)
+            {
+              c=ReadBlobByte(ifile);
+              if (c == EOF)
+                {
+                  Format8BIMLiberate();
+                  return -1;
+                }
+              buffer[i] = (unsigned char) c;
+            }
+          buffer[4] = 0;
+          if (strcmp((const char *)buffer, "8BIM") != 0)
+            continue;
+        }
+      else
         {
           c=ReadBlobByte(ifile);
-          if (c == EOF) return -1;
-          buffer[i] = (unsigned char) c;
-        }
-        buffer[4] = 0;
-        if (strcmp((const char *)buffer, "8BIM") != 0)
           continue;
-      }
-    else
-      {
-        c=ReadBlobByte(ifile);
-        continue;
-      }
+        }
 
-    /* we found the OSType (8BIM) and now grab the ID, PString, and Size fields */
-    ID = ReadBlobMSBShort(ifile);
-    if (ID < 0) return -1;
-    {
-      unsigned char
-        plen;
+      /* we found the OSType (8BIM) and now grab the ID, PString, and Size fields */
+      ID = ReadBlobMSBShort(ifile);
+      if (ID < 0)
+        {
+          Format8BIMLiberate();
+          return -1;
+        }
+      {
+        unsigned char
+          plen;
 
-      c=ReadBlobByte(ifile);
-      if (c == EOF) return -1;
-      plen = (unsigned char) c;
-      PString=MagickAllocateMemory(unsigned char *,(unsigned int) (plen+1));
-      if (PString == (unsigned char *) NULL)
-      {
-        (void) printf("MemoryAllocationFailed");
-        return 0;
-      }
-      for (i=0; i<plen; i++)
-      {
         c=ReadBlobByte(ifile);
-        if (c == EOF) return -1;
-        PString[i] = (unsigned char) c;
-      }
-      PString[ plen ] = 0;
-      if (!(plen&1))
-      {
-        c=ReadBlobByte(ifile);
-        if (c == EOF) return -1;
-      }
-    }
-    Size = ReadBlobMSBLong(ifile);
-    if (Size < 0) return -1;
-    /* make a buffer to hold the data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(size_t) Size);
-    if (str == (unsigned char *) NULL)
-      {
-        (void) printf("MemoryAllocationFailed");
-        return 0;
-      }
-    for (i=0; i<Size; i++)
-    {
-      c=ReadBlobByte(ifile);
-      if (c == EOF) return -1;
-      str[i] = (unsigned char) c;
-    }
-
-    /* we currently skip thumbnails, since it does not make
-     * any sense preserving them in a real world application
-     */
-    if (ID != THUMBNAIL_ID)
-      {
-        /* now finish up by formatting this binary data into
-         * ASCII equivalent
-         */
-        if (strlen((const char *) PString) != 0)
-          FormatString(temp, "8BIM#%d#%s=", ID, PString);
-        else
-          FormatString(temp, "8BIM#%d=", ID);
-        (void) WriteBlobString(ofile,temp);
-        if (ID == IPTC_ID)
+        if (c == EOF)
           {
-            formatString(ofile, "IPTC", 4);
-            (void) formatIPTCfromBuffer(ofile, (char *)str, (long) Size);
+            Format8BIMLiberate();
+            return -1;
           }
-        else
-          formatString(ofile, (char *)str, (long) Size);
+        plen = (unsigned char) c;
+        PString=MagickAllocateMemory(unsigned char *,(unsigned int) (plen+1));
+        if (PString == (unsigned char *) NULL)
+          {
+            (void) printf("MemoryAllocationFailed");
+            Format8BIMLiberate();
+            return 0;
+          }
+        for (i=0; i<plen; i++)
+          {
+            c=ReadBlobByte(ifile);
+            if (c == EOF)
+              {
+                Format8BIMLiberate();
+                return -1;
+              }
+            PString[i] = (unsigned char) c;
+          }
+        PString[ plen ] = 0;
+        if (!(plen&1))
+          {
+            c=ReadBlobByte(ifile);
+            if (c == EOF)
+              {
+                Format8BIMLiberate();
+                return -1;
+              }
+          }
       }
-    MagickFreeMemory(str);
-    MagickFreeMemory(PString);
+      Size = ReadBlobMSBLong(ifile);
+      if (Size < 0)
+        {
+          Format8BIMLiberate();
+          return -1;
+        }
+      /* make a buffer to hold the data and snag it from the input stream */
+      str=MagickAllocateMemory(unsigned char *,(size_t) Size);
+      if (str == (unsigned char *) NULL)
+        {
+          (void) printf("MemoryAllocationFailed");
+          Format8BIMLiberate();
+          return 0;
+        }
+      for (i=0; i<Size; i++)
+        {
+          c=ReadBlobByte(ifile);
+          if (c == EOF)
+            {
+              Format8BIMLiberate();
+              return -1;
+            }
+          str[i] = (unsigned char) c;
+        }
 
-    resCount++;
+      /* we currently skip thumbnails, since it does not make
+       * any sense preserving them in a real world application
+       */
+      if (ID != THUMBNAIL_ID)
+        {
+          /* now finish up by formatting this binary data into
+           * ASCII equivalent
+           */
+          if (strlen((const char *) PString) != 0)
+            FormatString(temp, "8BIM#%d#%s=", ID, PString);
+          else
+            FormatString(temp, "8BIM#%d=", ID);
+          (void) WriteBlobString(ofile,temp);
+          if (ID == IPTC_ID)
+            {
+              formatString(ofile, "IPTC", 4);
+              (void) formatIPTCfromBuffer(ofile, (char *)str, (long) Size);
+            }
+          else
+            formatString(ofile, (char *)str, (long) Size);
+        }
+      Format8BIMLiberate();
 
-    c=ReadBlobByte(ifile);
-  }
+      resCount++;
+
+      c=ReadBlobByte(ifile);
+    }
   return resCount;
 }
 

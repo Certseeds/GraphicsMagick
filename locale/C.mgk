@@ -17,6 +17,9 @@
       <Message name="UnableToSeekToOffset">
         Unable to seek to offset
       </Message>
+      <Message name="UnableToObtainOffset">
+        Unable to obtain current offset
+      </Message>
       <Message name="UnableToWriteBlob">
         Unable to write blob
       </Message>
@@ -318,6 +321,9 @@
       <Message name="WebPInvalidParameter">
         WebP failed: invalid parameter
       </Message>
+      <Message name="UnableToWriteTemporaryFile">
+        Unable to write to temporary file
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
@@ -383,8 +389,8 @@
         <Message name="AnErrorHasOccurredWritingToFile">
           An error has occurred writing to file
         </Message>
-        <Message name="ColormapExceeds256Colors">
-          Colormap exceeded 256 colors
+        <Message name="ColormapExceedsColorsLimit">
+          Colormap exceeded colors limit
         </Message>
         <Message name="CorruptImage">
           Corrupt image
@@ -393,7 +399,7 @@
           invalid file format version
         </Message>
         <Message name="ImageFileDoesNotContainAnyImageData">
-          Image file or does not contain any image data
+          Image file or blob does not contain any image data
         </Message>
         <Message name="ImageTypeNotSupported">
           Image type not supported
@@ -1565,6 +1571,9 @@
         </Message>
         <Message name="UnableToInterpretMSLImage">
           unable to interpret MSL image
+        </Message>
+        <Message name="UnableToObtainRandomEntropy">
+          unable to obtain random bytes from operating system
         </Message>
       </FatalError>
       <Warning>

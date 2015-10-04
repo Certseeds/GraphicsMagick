@@ -302,7 +302,7 @@ void wmf_write (wmfAPI * API, unsigned long Size, unsigned int Function, const c
 }
 
 void wmf_write_begin (wmfAPI * API, const char * filename)
-{	int length;
+{	size_t length;
 
 	wmfWriteFileInfo * WFI = (wmfWriteFileInfo *) wmf_malloc (API, sizeof(wmfWriteFileInfo));
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -90,6 +90,12 @@ const char
 
 const unsigned long
   DefaultCompressionQuality = 75;
+
+static MagickPassFail
+MagickParseSubImageSpecification(const char *subimage_spec,
+                                 unsigned long *subimage_ptr,
+                                 unsigned long *subrange_ptr,
+                                 MagickBool allow_geometry);
 
 /* Round floating value to an integer */
 #define RndToInt(value) ((int)((value)+0.5))
@@ -356,8 +362,10 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   allocate_image->logging=IsEventLogging();
   allocate_image->is_monochrome=MagickTrue;
   allocate_image->is_grayscale=MagickTrue;
-  allocate_image->reference_count=1;
   allocate_image->semaphore=AllocateSemaphoreInfo();
+  LockSemaphoreInfo((SemaphoreInfo *) allocate_image->semaphore);
+  allocate_image->reference_count=1;
+  UnlockSemaphoreInfo((SemaphoreInfo *) allocate_image->semaphore);
   allocate_image->signature=MagickSignature;
   allocate_image->default_views=AllocateThreadViewSet(allocate_image,
                                                       &allocate_image->exception);
@@ -955,8 +963,11 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
       length=image->colors*sizeof(PixelPacket);
       clone_image->colormap=MagickAllocateMemory(PixelPacket *,length);
       if (clone_image->colormap == (PixelPacket *) NULL)
-        ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
-          UnableToCloneImage);
+        {
+          DestroyImage(clone_image);
+          ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
+                               UnableToCloneImage);
+        }
       length=image->colors*sizeof(PixelPacket);
       (void) memcpy(clone_image->colormap,image->colormap,length);
     }
@@ -1010,7 +1021,9 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
     MaxTextExtent);
   (void) strlcpy(clone_image->magick,image->magick,MaxTextExtent);
   (void) strlcpy(clone_image->filename,image->filename,MaxTextExtent);
+  LockSemaphoreInfo((SemaphoreInfo *) clone_image->semaphore);
   clone_image->reference_count=1;
+  UnlockSemaphoreInfo((SemaphoreInfo *) clone_image->semaphore);
   clone_image->previous=(Image *) NULL;
   clone_image->list=(Image *) NULL;
   clone_image->next=(Image *) NULL;
@@ -1043,17 +1056,39 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
       clone_image->ping=image->ping;
       clone_image->cache=ReferenceCache(image->cache);
       clone_image->default_views=AllocateThreadViewSet(clone_image,exception);
+      if (((image->montage != (char *) NULL) &&
+           (clone_image->montage == ((char *) NULL))) ||
+          ((image->directory != (char *) NULL) &&
+           (clone_image->directory == (char *) NULL)) ||
+          ((image->clip_mask != (Image *) NULL) &&
+           (clone_image->clip_mask == (Image *) NULL)) ||
+          (clone_image->cache == (_CacheInfoPtr_) NULL) ||
+          (clone_image->default_views == (_ThreadViewSetPtr_) NULL))
+        {
+          DestroyImage(clone_image);
+          ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
+                               UnableToCloneImage);
+        }
       return(clone_image);
     }
   clone_image->page.width=columns;
   clone_image->page.height=rows;
-  clone_image->page.x=(long) columns*image->page.x/(long) clone_image->columns;
-  clone_image->page.y=(long) rows*image->page.y/(long) clone_image->rows;
+  if (clone_image->columns > 0)
+    clone_image->page.x=(long) columns*image->page.x/(long) clone_image->columns;
+  if (clone_image->rows > 0)
+    clone_image->page.y=(long) rows*image->page.y/(long) clone_image->rows;
   clone_image->columns=columns;
   clone_image->rows=rows;
   clone_image->ping=image->ping;
   GetCacheInfo(&clone_image->cache);
   clone_image->default_views=AllocateThreadViewSet(clone_image,exception);
+  if ((clone_image->cache == (_CacheInfoPtr_) NULL) ||
+      (clone_image->default_views == (_ThreadViewSetPtr_) NULL))
+    {
+      DestroyImage(clone_image);
+      ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
+                           UnableToCloneImage);
+    }
   return(clone_image);
 }
 
@@ -1647,45 +1682,42 @@ MagickExport void GetImageInfo(ImageInfo *image_info)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method IsSubimage returns True if the geometry is a valid subimage
-%  specification (e.g. [1], [1-9], [1,7,4]).
+%  Method IsSubimage returns True if the specification string is a valid
+%  subimage specification (e.g. [1], [1-9], [1,7,4]).  Subimage
+%  specifications may appear between brackets in filename specifications
+%  similar to filename[specification] and this function checks the
+%  validity of the specification part.
 %
 %  The format of the IsSubimage method is:
 %
-%      unsigned int IsSubimage(const char *geometry,const unsigned int pedantic)
+%      MagickBool IsSubimage(const char *specification,
+%                            const MagickBool allow_geometry)
 %
 %  A description of each parameter follows:
 %
 %    o status: Method IsSubimage returns True if the geometry is a valid
 %      subimage specification otherwise False is returned.
 %
-%    o geometry: This string is the geometry specification.
+%    o specification: Subimage specification string
 %
-%    o pedantic: A value other than 0 invokes a more restriction set of
-%      conditions for a valid specification (e.g. [1], [1-4], [4-1]).
+%    o allow_geometry: A value other than 0 also allows the
+$      specification to be in the form of a geometry string (WxH+x+y).
 %
 %
 */
-MagickExport unsigned int IsSubimage(const char *geometry,
-  const unsigned int pedantic)
+MagickExport MagickBool IsSubimage(const char *spec,
+                                   const MagickBool allow_geometry)
 {
-  long
-    x,
-    y;
-
-  unsigned int
-    flags;
-
   unsigned long
-    height,
-    width;
+    subimage,
+    subrange;
 
-  if (geometry == (const char *) NULL)
-    return(False);
-  flags=GetGeometry((char *) geometry,&x,&y,&width,&height);
-  if (pedantic)
-    return((flags != NoValue) && !(flags & HeightValue));
-  return(IsGeometry(geometry) && !(flags & HeightValue));
+  if (spec == (const char *) NULL)
+    return False;
+  return MagickParseSubImageSpecification(spec,
+                                          &subimage,
+                                          &subrange,
+                                          allow_geometry);
 }
 
 /*
@@ -1948,8 +1980,8 @@ ResetImagePage(Image *image,const char *page)
   page_geometry.y=0;
   page_geometry.width=0;
   page_geometry.height=0;
-  flags=GetMagickGeometry(page,&page_geometry.x,&page_geometry.y,
-			  &page_geometry.width,&page_geometry.height);
+  flags=GetGeometry(page,&page_geometry.x,&page_geometry.y,
+                    &page_geometry.width,&page_geometry.height);
 
   /* If no values were parsed, then return failed status */
   if (NoValue == flags)
@@ -2327,7 +2359,9 @@ MagickExport MagickPassFail SetImageClipMask(Image *image,const Image *clip_mask
 MagickExport MagickPassFail SetImageDepth(Image *image,const unsigned long depth)
 {
   MagickPassFail
-    status;
+    status=MagickPass;
+
+  assert(image != (Image *) NULL);
 
   status=QuantumOperatorImage(image,AllChannels,DepthQuantumOp,(double) depth,
                               &image->exception);
@@ -2410,13 +2444,136 @@ MagickExport MagickPassFail SetImageDepth(Image *image,const unsigned long depth
 %
 %
 */
-
 static MagickPassFail
-ParseSubImageSpecification(char *filename,
-			   char **tile_ptr,
-			   unsigned long *subimage_ptr,
-			   unsigned long *subrange_ptr,
-			   ExceptionInfo *exception)
+MagickParseSubImageSpecification(const char *subimage_spec,
+                                 unsigned long *subimage_ptr,
+                                 unsigned long *subrange_ptr,
+                                 MagickBool allow_geometry)
+{
+  char
+    spec[MaxTextExtent];
+
+  MagickPassFail
+    status=MagickPass;
+
+  /*
+    Example of supported formats (as per documentation):
+
+    4
+    2,7,4
+    4-7
+    320x256+50+50  (only if allow_geometry)
+  */
+
+  assert(subimage_spec != (const char *) NULL);
+  assert(subimage_ptr != (unsigned long *) NULL);
+  assert(subrange_ptr != (unsigned long *) NULL);
+
+  (void) strlcpy(spec,subimage_spec,sizeof(spec));
+  
+  do
+    {
+      const char
+        *digits;
+
+      char
+        *q;
+
+      unsigned long
+        subimage=0,
+        subrange=0;
+
+      unsigned long
+        first,
+        last;
+
+      long
+        value;
+
+      digits=spec;
+      q=0;
+      value=strtol(digits,&q,10);
+      if (q <= digits) /* Parse error */
+        {
+          status=MagickFail;
+          break;
+        }
+
+      subimage=value;
+      subrange=subimage;
+
+      for (q=spec; *q != '\0'; )
+        {
+          while (isspace((int)(unsigned char) *q) || (*q == ','))
+            q++;
+          digits=q;
+          value=strtol(digits,&q,10);
+          if (q <= digits) /* Parse error */
+            break;
+          first=value;
+          last=first;
+          while (isspace((int)(unsigned char) *q))
+            q++;
+          if (*q == '-')
+            {
+              digits=q+1;
+              value=strtol(digits,&q,10);
+              if (q <= digits) /* Parse error */
+                break;
+              last=value;
+            }
+          else if ((*q != ',') && (*q != '\0'))
+            {
+              break; /* Parse error */
+            }
+          if (first > last)
+            Swap(first,last);
+          if (first < subimage)
+            subimage=first;
+          if (last > subrange)
+            subrange=last;
+        }
+      if (*q == '\0')
+        {
+          subrange -= subimage-1;
+          *subimage_ptr=subimage;
+          *subrange_ptr=subrange;
+          status=MagickPass;
+        }
+      else if (allow_geometry)
+        {
+          long
+            x,
+            y;
+          
+          unsigned int
+            flags;
+          
+          unsigned long
+            height,
+            width;
+          
+          /* Require Width and Height */
+          flags=GetGeometry((char *) spec,&x,&y,&width,&height);
+          if ((flags & WidthValue) && (flags & HeightValue))
+            status=MagickPass;
+          else
+            status=MagickFail;
+        }
+      else
+        {
+          status=MagickFail;
+        }
+    } while (0);
+
+  return status;
+}
+static MagickPassFail
+ParseSubImageFileSpecification(char *filename,
+                               char **tile_ptr,
+                               unsigned long *subimage_ptr,
+                               unsigned long *subrange_ptr,
+                               ExceptionInfo *exception)
 {
   char
     *spec_start,
@@ -2441,101 +2598,38 @@ ParseSubImageSpecification(char *filename,
       (filename[filename_length-1] == ']') &&
       ((spec_start=strrchr(filename,'[')) != (const char *) NULL))
     {
-      const char
-	*digits;
-
       char
-	spec[MaxTextExtent],
-	*q;
+	spec[MaxTextExtent];
 
-      unsigned long
-	subimage=0,
-	subrange=0;
+      /*
+        Example of supported formats (as per documentation):
 
-      unsigned long
-	first,
-	last;
-
-      long
-	value;
+        4
+        2,7,4
+        4-7
+        320x256+50+50
+      */
 
       spec_end=&filename[filename_length-1];
       spec_start++;
       (void) strlcpy(spec,spec_start,sizeof(spec));
       spec[spec_end-spec_start]='\0';
-
-      /*
-	Example of supported formats (as per documentation):
-
-	4
-	2,7,4
-	4-7
-	320x256+50+50
-      */
-
-      digits=spec;
-      q=0;
-      value=strtol(digits,&q,10);
-      if (q <= digits) /* Parse error */
-	goto invalid_subimage_specification;
-
-      subimage=value;
-      subrange=subimage;
-      (void) CloneString(tile_ptr,spec);
-
-      for (q=spec; *q != '\0'; )
-	{
-	  while (isspace((int)(unsigned char) *q) || (*q == ','))
-	    q++;
-	  digits=q;
-	  value=strtol(digits,&q,10);
-	  if (q <= digits) /* Parse error */
-	    break;
-	  first=value;
-	  last=first;
-	  while (isspace((int)(unsigned char) *q))
-	    q++;
-	  if (*q == '-')
-	    {
-	      digits=q+1;
-	      value=strtol(digits,&q,10);
-	      if (q <= digits) /* Parse error */
-		break;
-	      last=value;
-	    }
-	  else if ((*q != ',') && (*q != '\0'))
-	    {
-	      break; /* Parse error */
-	    }
-	  if (first > last)
-	    Swap(first,last);
-	  if (first < subimage)
-	    subimage=first;
-	  if (last > subrange)
-	    subrange=last;
-	}
-      if (*q == '\0')
-	{
-	  subrange -= subimage-1;
-	  *subimage_ptr=subimage;
-	  *subrange_ptr=subrange;
-	  status=MagickPass;
-	}
-      else if (IsGeometry(spec))
-	{
-	  status=MagickPass;
-	}
+      if (MagickParseSubImageSpecification(spec,subimage_ptr,subrange_ptr,
+                                           MagickTrue))
+        {
+          status=MagickPass;
+        }
       else
-	{
-	invalid_subimage_specification:
-	  ThrowException(exception,OptionError,
+        {
+          status=MagickFail;
+          ThrowException(exception,OptionError,
 			 InvalidSubimageSpecification,spec);
-	  status=MagickFail;
-	}
+        }
       if (status == MagickPass)
 	{
 	  /* Truncate filename */
 	  *(spec_start-1)='\0';
+          (void) CloneString(tile_ptr,spec);
 	}
 #if 0
       fprintf(stderr,"subimage=%lu subrange=%lu tile=\"%s\"\n",
@@ -2634,11 +2728,11 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
       */
       if (*p == ']' && !IsAccessibleNoLogging(image_info->filename))
 	{
-	  (void) ParseSubImageSpecification(image_info->filename,
-					    &image_info->tile,
-					    &image_info->subimage,
-					    &image_info->subrange,
-					    exception);
+	  (void) ParseSubImageFileSpecification(image_info->filename,
+                                                &image_info->tile,
+                                                &image_info->subimage,
+                                                &image_info->subrange,
+                                                exception);
 	}
     }
 
@@ -2646,46 +2740,50 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
     Look for explicit 'format:image' in filename.
   */
   image_info->affirm=False;
-  p=image_info->filename;
-  while (isalnum((int) *p))
-    p++;
-  if ((*p == ':') && ((p-image_info->filename) < (long) sizeof(magic)))
+  if ((image_info->filename[0]) &&
+      (!IsAccessibleNoLogging(image_info->filename)))
     {
-      char
-        format[MaxTextExtent];
-
-      /*
-        User specified image format.
-      */
-      (void) strncpy(format,image_info->filename,p-image_info->filename);
-      format[p-image_info->filename]='\0';
-
-      /*
-        Backward compatability and interoperability namimg
-      */
-      if (LocaleCompare(format,"GRADATION") == 0)
-        (void) strcpy(format,"GRADIENT");
-
-      if (LocaleCompare(format,"MAGICK") == 0)
-        (void) strcpy(format,"IMAGE");
-
-      LocaleUpper(format);
-      if (!IsMagickConflict(format))
+      p=image_info->filename;
+      while (isalnum((int) *p))
+        p++;
+      if ((*p == ':') && ((p-image_info->filename) < (long) sizeof(magic)))
         {
+          char
+            format[MaxTextExtent];
+
           /*
-            Strip off image format prefix.
+            User specified image format.
           */
-          char base_filename[MaxTextExtent];
-          p++;
-          (void) strlcpy(base_filename,p,MaxTextExtent);
-          (void) strcpy(image_info->filename,base_filename);
-          (void) strlcpy(magic,format,MaxTextExtent);
-          (void) strlcpy(image_info->magick,magic,MaxTextExtent);
-          if (LocaleCompare(magic,"TMP") != 0)
-            image_info->affirm=MagickTrue;
-          else
-            /* input file will be automatically removed */
-            image_info->temporary=MagickTrue;
+          (void) strncpy(format,image_info->filename,p-image_info->filename);
+          format[p-image_info->filename]='\0';
+
+          /*
+            Backward compatability and interoperability namimg
+          */
+          if (LocaleCompare(format,"GRADATION") == 0)
+            (void) strcpy(format,"GRADIENT");
+
+          if (LocaleCompare(format,"MAGICK") == 0)
+            (void) strcpy(format,"IMAGE");
+
+          LocaleUpper(format);
+          if (!IsMagickConflict(format))
+            {
+              /*
+                Strip off image format prefix.
+              */
+              char base_filename[MaxTextExtent];
+              p++;
+              (void) strlcpy(base_filename,p,MaxTextExtent);
+              (void) strcpy(image_info->filename,base_filename);
+              (void) strlcpy(magic,format,MaxTextExtent);
+              (void) strlcpy(image_info->magick,magic,MaxTextExtent);
+              if (LocaleCompare(magic,"TMP") != 0)
+                image_info->affirm=MagickTrue;
+              else
+                /* input file will be automatically removed */
+                image_info->temporary=MagickTrue;
+            }
         }
     }
 

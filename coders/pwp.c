@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -134,7 +134,7 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register Image
     *p;
 
-  register long
+  register unsigned long
     i;
 
   size_t
@@ -197,13 +197,16 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowReaderTemporaryFileException(filename);
       }
     (void) fwrite("SFW94A",1,6,file);
-    filesize=65535L*magick[2]+256L*magick[1]+magick[0];
-    for (i=0; i < (long) filesize; i++)
+    filesize=(65535L*magick[2]+256L*magick[1]+magick[0]) & 0xFFFFFFFF;
+    for (i=0; i < filesize; i++)
     {
-      c=ReadBlobByte(pwp_image);
+      if ((c=ReadBlobByte(pwp_image)) == EOF)
+        break;
       (void) fputc(c,file);
     }
     (void) fclose(file);
+    if (c == EOF)
+      break;
     handler=SetMonitorHandler((MonitorHandler) NULL);
     next_image=ReadImage(clone_info,exception);
     (void) LiberateTemporaryFile(clone_info->filename);

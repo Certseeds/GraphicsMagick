@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003, 2006 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -428,6 +428,14 @@ UnlinkFile:
 %
 %
 */
+
+#define ThrowMATReaderException(code_,reason_,image_) \
+{ \
+  if (clone_info) \
+    DestroyImageInfo(clone_info);    \
+  ThrowReaderException(code_,reason_,image_); \
+}
+
 static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception)
 {
   Image *image, *image2=NULL,
@@ -469,15 +477,15 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
-    ThrowReaderException(FileOpenError, UnableToOpenFile, image);
+    ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);
   /*
      Read MATLAB image.
    */
   if(ReadBlob(image,124,&MATLAB_HDR.identific) != 124)
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);  
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);  
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
   if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   ImportPixelAreaOptionsInit(&import_options);
 
@@ -503,9 +511,11 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
     goto MATLAB_KO;    /* unsupported endian */
 
   if (strncmp(MATLAB_HDR.identific, "MATLAB", 6))
-MATLAB_KO: ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   filepos = TellBlob(image);
+  if (filepos < 0)
+      ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
@@ -563,15 +573,15 @@ MATLAB_KO: ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
       case  8: z2=z=1; break;			/* 2D matrix*/
       case 12: z2=z = ReadBlobXXXLong(image2);	/* 3D matrix RGB*/
 	       (void) ReadBlobXXXLong(image2);  /* Unknown6 */
-	       if(z!=3) ThrowReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
+	       if(z!=3) ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
                          image);
 	       break;
       case 16: z2=z = ReadBlobXXXLong(image2);	/* 4D matrix animation */
 	       if(z!=3 && z!=1)
-		 ThrowReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
+		 ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
                Frames = ReadBlobXXXLong(image2);
 	       break;
-      default: ThrowReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
+      default: ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
                          image);
     }  
 
@@ -591,7 +601,7 @@ MATLAB_KO: ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         MATLAB_HDR.StructureClass != mxUINT32_CLASS &&		/* uint32 + uint32 3D */
         MATLAB_HDR.StructureClass != mxINT64_CLASS &&
         MATLAB_HDR.StructureClass != mxUINT64_CLASS)		/* uint64 + uint64 3D */
-      ThrowReaderException(CoderError,UnsupportedCellTypeInTheMatrix,image);
+      ThrowMATReaderException(CoderError,UnsupportedCellTypeInTheMatrix,image);
 
     switch (MATLAB_HDR.NameFlag)
     {
@@ -660,7 +670,7 @@ NEXT_FRAME:
         import_options.sample_type = FloatQuantumSampleType;
 #if 0
       if (sizeof(float) != 4)
-        ThrowReaderException(CoderError, IncompatibleSizeOfFloat, image);
+        ThrowMATReaderException(CoderError, IncompatibleSizeOfFloat, image);
 #endif
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{					    /* complex float type cell */
@@ -672,14 +682,14 @@ NEXT_FRAME:
         image->depth = Min(QuantumDepth,32);        /* double type cell */
         import_options.sample_type = FloatQuantumSampleType;
         if (sizeof(double) != 8)
-          ThrowReaderException(CoderError, IncompatibleSizeOfDouble, image);
+          ThrowMATReaderException(CoderError, IncompatibleSizeOfDouble, image);
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{                         /* complex double type cell */        
 	}
         ldblk = (long) (8 * MATLAB_HDR.SizeX);
         break;
       default:
-        ThrowReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
+        ThrowMATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
     }
 
     image->columns = MATLAB_HDR.SizeX;
@@ -696,7 +706,7 @@ NEXT_FRAME:
 
       if (!AllocateImageColormap(image, image->colors))
       {
-NoMemory: ThrowReaderException(ResourceLimitError, MemoryAllocationFailed,
+NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed,
                            image)}
     }
 
@@ -932,7 +942,7 @@ done_reading:
   }
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   if(image==NULL)
-    ThrowReaderException(CorruptImageError,ImageFileDoesNotContainAnyImageData,image);
+    ThrowMATReaderException(CorruptImageError,ImageFileDoesNotContainAnyImageData,image);
   return (image);
 }
 
@@ -998,7 +1008,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
     Store MAT header.
   */
   (void) memset(MATLAB_HDR,' ',Min(sizeof(MATLAB_HDR),124));
-  FormatString(MATLAB_HDR,"MATLAB 5.0 MAT-file, Platform: %s, Created on: %s %s %2d %2d:%2d:%2d %d",
+  sprintf(MATLAB_HDR,"MATLAB 5.0 MAT-file, Platform: %.8s, Created on: %.3s %.3s %2d %2d:%2d:%2d %d",
     OsDesc,
     DayOfWTab[t->tm_wday],
     MonthsTab[t->tm_mon],
@@ -1085,7 +1095,7 @@ BreakAll:
     if(pixels) 
      {MagickFreeMemory(pixels);pixels=NULL;}
     if(image->next==NULL) break;
-    image=image->next;
+    image=SyncNextImageInList(image);
   }
 
   CloseBlob(image);

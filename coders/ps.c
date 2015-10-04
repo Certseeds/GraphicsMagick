@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -218,7 +218,7 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
   dy_resolution=72.0;
   if ((image->x_resolution == 0.0) || (image->y_resolution == 0.0))
     {
-      (void) strcpy(density,PSDensityGeometry);
+      (void) strlcpy(density,PSDensityGeometry,sizeof(density));
       count=GetMagickDimension(density,&image->x_resolution,&image->y_resolution,NULL,NULL);
       if (count != 2)
         image->y_resolution=image->x_resolution;
@@ -312,7 +312,8 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   {
     char
-      options[MaxTextExtent];
+      options[MaxTextExtent],
+      arg[MaxTextExtent];
     
     options[0]='\0';
     /*
@@ -324,7 +325,11 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Append bounding box.
     */
-    FormatString(options+strlen(options)," -g%s",geometry);
+    FormatString(arg,"-g%s",geometry);
+    if (options[0] != '\0')
+      (void) strlcat(options," ",sizeof(options));
+    (void) strlcat(options,arg,sizeof(options));
+
     (void) strlcpy(filename,image_info->filename,MaxTextExtent);
     if (image_info->temporary)
       (void) LiberateTemporaryFile((char *) image_info->filename);
@@ -370,6 +375,9 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
       clone_info->blob=(void *) NULL;
       clone_info->length=0;
       clone_info->magick[0]='\0';
+      clone_info->subimage=0;
+      clone_info->subrange=0;
+      MagickFreeMemory(clone_info->tile);
       image=ReadImage(clone_info,exception);
       DestroyImageInfo(clone_info);
     }
@@ -393,14 +401,24 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       do
 	{
-	  (void) strcpy(image->magick,"PS");
-	  (void) strlcpy(image->filename,filename,MaxTextExtent);
+	  (void) strlcpy(image->magick,"PS",sizeof(image->magick));
+	  (void) strlcpy(image->filename,filename,sizeof(image->filename));
 	  next_image=SyncNextImageInList(image);
 	  if (next_image != (Image *) NULL)
 	    image=next_image;
 	} while (next_image != (Image *) NULL);
       while (image->previous != (Image *) NULL)
 	image=image->previous;
+      if (image_info->subimage != 0)
+        {
+          unsigned long
+            scene = image_info->subimage;
+          
+          for (next_image=image;
+               next_image != (Image *) NULL;
+               next_image=next_image->next)
+            next_image->scene = scene++;
+        }
     }
   return(image);
 }
@@ -559,7 +577,7 @@ ModuleExport void UnregisterPSImage(void)
   bp=AppendHexVal(bp,Min(length,0xff)); \
 }
 
-static char* hexvals[] =
+static char* const hexvals[] =
   {
     "00","01","02","03","04","05","06","07","08","09","0A","0B",
     "0C","0D","0E","0F","10","11","12","13","14","15","16","17",
@@ -603,7 +621,7 @@ static inline char* AppendHexTriplet(char *q,
 static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
 {
   static const char
-    *PostscriptProlog[]=
+    * const PostscriptProlog[]=
     {
       "%%BeginProlog",
       "%",
@@ -843,9 +861,9 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
       "  currentfile buffer readline pop",
       "  token pop /pointsize exch def pop",
       "  /Times-Roman findfont pointsize scalefont setfont",
-      (char *) NULL
+      (const char *) NULL
     },
-    *PostscriptEpilog[]=
+    * const PostscriptEpilog[]=
     {
       "  x y scale",
       "  currentfile buffer readline pop",
@@ -857,7 +875,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
       "  token pop /compression exch def pop",
       "  class 0 gt { PseudoClassImage } { DirectClassImage } ifelse",
       "  grestore",
-      (char *) NULL
+      (const char *) NULL
     };
 
   char
@@ -869,7 +887,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
     page_geometry[MaxTextExtent];
 
   const char
-    **q;
+    * const *q;
 
   const ImageAttribute
     *attribute;
@@ -966,7 +984,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
           image->page.height,image->page.x,image->page.y);
       else
         if (LocaleCompare(image_info->magick,"PS") == 0)
-          (void) strcpy(page_geometry,PSPageGeometry);
+          (void) strlcpy(page_geometry,PSPageGeometry,sizeof(page_geometry));
     (void) GetMagickGeometry(page_geometry,&geometry.x,&geometry.y,
       &geometry.width,&geometry.height);
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -980,7 +998,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
     dx_resolution=72.0;
     dy_resolution=72.0;
     x_resolution=72.0;
-    (void) strcpy(density,PSDensityGeometry);
+    (void) strlcpy(density,PSDensityGeometry,sizeof(density));
     count=GetMagickDimension(density,&x_resolution,&y_resolution,NULL,NULL);
     if (count != 2)
       y_resolution=x_resolution;
@@ -1028,9 +1046,9 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
           Output Postscript header.
         */
         if (LocaleCompare(image_info->magick,"PS") == 0)
-          (void) strcpy(buffer,"%!PS-Adobe-3.0\n");
+          (void) strlcpy(buffer,"%!PS-Adobe-3.0\n",sizeof(buffer));
         else
-          (void) strcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n");
+          (void) strlcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
         (void) WriteBlobString(image,"%%Creator: (GraphicsMagick)\n");
         FormatString(buffer,"%%%%Title: (%.1024s)\n",image->filename);
@@ -1046,7 +1064,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
         bounds.x2=geometry.x+x_scale;
         bounds.y2=geometry.y+(geometry.height+text_size);
         if (image_info->adjoin && (image->next != (Image *) NULL))
-          (void) strcpy(buffer,"%%%%BoundingBox: (atend)\n");
+          (void) strlcpy(buffer,"%%%%BoundingBox: (atend)\n",sizeof(buffer));
         else
           FormatString(buffer,"%%%%BoundingBox: %g %g %g %g\n",
             floor(bounds.x1+0.5),floor(bounds.y1+0.5),ceil(bounds.x2-0.5),

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003 - 2015 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -510,8 +510,8 @@ MSLPushImage(MSLInfo *msl_info,Image *image)
       (msl_info->draw_info == (DrawInfo **) NULL) ||
       (msl_info->attributes == (Image **) NULL) ||
       (msl_info->image == (Image **) NULL))
-    ThrowException3(msl_info->exception,ResourceLimitFatalError,
-                    MemoryAllocationFailed,UnableToAllocateImage);
+    MagickFatalError3(ResourceLimitFatalError,
+                      MemoryAllocationFailed,UnableToAllocateImage);
   msl_info->image_info[n]=CloneImageInfo(msl_info->image_info[n-1]);
   msl_info->draw_info[n]=
     CloneDrawInfo(msl_info->image_info[n-1], msl_info->draw_info[n-1]);
@@ -1989,10 +1989,12 @@ MSLStartElement(void *context,const xmlChar *name,
                           Image
                             *next_image;
 
-                          (void) strcpy(msl_info->image_info[n]->filename,
-                                        "xc:");
-                          (void) strcat(msl_info->image_info[n]->filename,
-                                        value);
+                          (void) strlcpy(msl_info->image_info[n]->filename,
+                                         "xc:",
+                                         sizeof(msl_info->image_info[n]->filename));
+                          (void) strlcat(msl_info->image_info[n]->filename,
+                                         value,
+                                         sizeof(msl_info->image_info[n]->filename));
                           next_image=ReadImage(msl_info->image_info[n],
                                                &exception);
                           if (exception.severity != UndefinedException)
@@ -2531,8 +2533,9 @@ MSLStartElement(void *context,const xmlChar *name,
                           Image
                             *next_image;
 
-                          (void) strcpy(msl_info->image_info[n]->filename,
-                                        value);
+                          (void) strlcpy(msl_info->image_info[n]->filename,
+                                         value,
+                                         sizeof(msl_info->image_info[n]->filename));
                           next_image=ReadImage(msl_info->image_info[n],
                                                &exception);
                           if (exception.severity != UndefinedException)
@@ -3226,8 +3229,9 @@ MSLStartElement(void *context,const xmlChar *name,
                     {
                       if (LocaleCompare(keyword, "magick") == 0)
                         {
-                          (void) strcpy( msl_info->image_info[n]->magick,
-                                         value );
+                          (void) strlcpy( msl_info->image_info[n]->magick,
+                                          value,
+                                          sizeof(msl_info->image_info[n]->magick) );
                           break;
                         }
                       else if (LocaleCompare(keyword,"mattecolor") == 0)
@@ -3882,7 +3886,8 @@ MSLStartElement(void *context,const xmlChar *name,
                 Image
                   *next_image;
 
-                (void) strcpy(msl_info->image_info[n]->filename,"xc:white");
+                (void) strlcpy(msl_info->image_info[n]->filename,"xc:white",
+                               sizeof(msl_info->image_info[n]->filename));
                 next_image=ReadImage(msl_info->image_info[n],&exception);
                 if (exception.severity != UndefinedException)
                   CatchException(&exception);

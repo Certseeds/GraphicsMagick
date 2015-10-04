@@ -1787,16 +1787,19 @@ static void WriteXMPProfile(j_compress_ptr jpeg_info,
                             const size_t profile_length)
 {
   size_t
-    remaining,
     count,
     index,
-    header_length,
-    marker_length,
-    total_length;
+	header_length,
+	total_length;
+
+  unsigned int
+	marker_length,
+	remaining;
 
   header_length=strlen(xmp_std_header)+1; /* Include terminating null */
   total_length=header_length+profile_length;
-  remaining=total_length;
+  /* XMP profile must be no larger than range of 'unsigned int' */
+  remaining=(unsigned int) Min(UINT_MAX,total_length);
 
   marker_length=Min(remaining,JPEG_MARKER_MAX_SIZE);
   jpeg_write_m_header(jpeg_info,XML_MARKER,marker_length);
@@ -1904,8 +1907,12 @@ static void JPEGDestinationManager(j_compress_ptr cinfo,Image * image)
   destination->image=image;
 }
 
-static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 {
+  Image
+    * volatile imagev = imagep,  /* volatile to avoid "clobber" */
+    *image;
+
   ErrorManager
     error_manager;
 
@@ -1961,15 +1968,32 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *image)
   */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
-  assert(image != (Image *) NULL);
-  assert(image->signature == MagickSignature);
-  status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
+  assert(imagep != (Image *) NULL);
+  assert(imagep->signature == MagickSignature);
+  status=OpenBlob(image_info,imagev,WriteBinaryBlobMode,&imagev->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowWriterException(FileOpenError,UnableToOpenFile,imagev);
 
   (void) memset(&error_manager,0,sizeof(error_manager));
   (void) memset(&jpeg_info,0,sizeof(jpeg_info));
   (void) memset(&jpeg_error,0,sizeof(jpeg_error));
+
+  /*
+    Set initial longjmp based error handler.
+  */
+  jpeg_info.client_data=(void *) imagev;
+  jpeg_info.err=jpeg_std_error(&jpeg_error);
+  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
+  jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
+  error_manager.image=imagev;
+  jpeg_info.client_data=(void *) &error_manager;
+  if (setjmp(error_manager.error_recovery))
+    {
+      jpeg_destroy_compress(&jpeg_info);
+      CloseBlob(imagev);
+      return MagickFail ;
+    }
+  image=imagev;  /* Use 'image' after this point for optimization */
 
   /*
     Transform image to user-requested colorspace.
@@ -1999,22 +2023,6 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *image)
       CloseBlob(image);
       return MagickFail;
     }
-
-  /*
-    Set initial longjmp based error handler.
-  */
-  jpeg_info.client_data=(void *) image;
-  jpeg_info.err=jpeg_std_error(&jpeg_error);
-  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
-  jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
-  error_manager.image=image;
-  if (setjmp(error_manager.error_recovery))
-    {
-      jpeg_destroy_compress(&jpeg_info);
-      CloseBlob(image);
-      return MagickFail ;
-    }
-  jpeg_info.client_data=(void *) &error_manager;
 
   jpeg_create_compress(&jpeg_info);
   JPEGDestinationManager(&jpeg_info,image);

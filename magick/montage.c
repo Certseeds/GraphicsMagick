@@ -264,7 +264,7 @@ MagickExport Image *MontageImages(const Image *images,
 
   char
     tile_geometry[MaxTextExtent],
-    *title;
+    *title = 0;
 
   const ImageAttribute
     *attribute;
@@ -355,7 +355,7 @@ MagickExport Image *MontageImages(const Image *images,
     handler=SetMonitorHandler((MonitorHandler) NULL);
     image=image_list[i];
     SetGeometry(image,&geometry);
-    flags=GetMagickGeometry(montage_info->geometry,&geometry.x,&geometry.y,
+    /* flags= */ (void) GetMagickGeometry(montage_info->geometry,&geometry.x,&geometry.y,
       &geometry.width,&geometry.height);
     /*
       Use ThumbnailImage() rather than ZoomImage() to resize montage
@@ -410,7 +410,7 @@ MagickExport Image *MontageImages(const Image *images,
       x=0;
       y=0;
       tiles_per_column=number_images;
-      flags=GetGeometry(montage_info->tile,&x,&y,&tiles_per_row,
+      /* flags= */ (void) GetGeometry(montage_info->tile,&x,&y,&tiles_per_row,
         &tiles_per_column);
     }
   /*
@@ -779,6 +779,7 @@ MagickExport Image *MontageImages(const Image *images,
         number_images-=tiles_per_page;
       }
   }
+  MagickFreeMemory(title);
   DestroyImage(tile_image);
   if (texture != (Image *) NULL)
     DestroyImage(texture);
