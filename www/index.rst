@@ -27,7 +27,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.21 (Released February 28, 2015) `download release`__
+Current Release              1.3.22 (Released October 4, 2015) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -60,8 +60,8 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`valgrind` : http://www.valgrind.org/
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
-of 265K physical lines (according to David A. Wheeler's `SLOCCount`_)
-of source code in the base package (or 1,220K including 3rd party
+of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
+of source code in the base package (or 1,225K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
 over 88 major formats including important formats like DPX, GIF, JPEG,
