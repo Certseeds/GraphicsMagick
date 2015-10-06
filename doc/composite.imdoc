@@ -35,7 +35,8 @@ composite - composite images together.
 <sect NAME="comp-syno">Synopsis
 
 <p>
-<s>composite</s> <s>[</s> <i>options</i> <s>... ]</s> <i>change-image base-image</i>
+<s>gm composite</s> <s>[</s> <i>options</i> <s>... ]</s>
+<i>change-image base-image</i>
 <s>[</s> <i>mask-image</i> <s>]</s> <i>output-image</i>
 </p>
 

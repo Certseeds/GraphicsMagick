@@ -35,7 +35,7 @@ compare - compare two images.
 <sect NAME="comp-syno">Synopsis
 
 <p>
-<s>compare</s> <s>[</s> <i>options</i> <s>... ]</s> <i>reference-image</i>
+<s>gm compare</s> <s>[</s> <i>options</i> <s>... ]</s> <i>reference-image</i>
 <s>[</s> <i>options</i> <s>... ]</s> <i>compare-image</i>
 <s>[</s> <i>options</i> <s>... ]</s></p>
 

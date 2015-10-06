@@ -34,7 +34,7 @@ mogrify - mogrify an image
 
 <sect NAME="mog-syno">Synopsis
 <p>
-<s>mogrify</s> <s>[</s> <i>options</i> <s>... ]</s> <i>file ...</i>
+<s>gm mogrify</s> <s>[</s> <i>options</i> <s>... ]</s> <i>file ...</i>
 </p>
 </sect>
 <sect NAME="mog-desc">Description
