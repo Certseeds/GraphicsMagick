@@ -1,3 +1,9 @@
+2015-10-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Magick++/Image.rst (thumbnail): Paragraph heading fix.
+	Resolves SourceForge issue #321 "find tiny error in
+	Magick++/Image.html document".
+
 2015-10-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Remove CFLAGS and LDFLAGS deduplication code.
