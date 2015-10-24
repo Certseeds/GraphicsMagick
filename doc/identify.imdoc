@@ -64,7 +64,7 @@ identify - describe an image or image sequence.
 <sect NAME="ident-syno">Synopsis
 
 <p>
-<s>identify</s> <i>file</i> [ <i>file</i> ... ]
+<s>gm identify</s> <i>file</i> [ <i>file</i> ... ]
 </p>
 </sect>
 <sect NAME="ident-desc">Description

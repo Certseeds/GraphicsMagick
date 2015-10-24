@@ -40,7 +40,7 @@ montage - create a composite image by combining several separate images
 
 <sect NAME="mont-syno">Synopsis
 <p>
-<s>montage</s> <s>[</s> <i>options</i> <s>...]</s> <i>file</i> <s>[ [</s>
+<s>gm montage</s> <s>[</s> <i>options</i> <s>...]</s> <i>file</i> <s>[ [</s>
 <i>options</i> <s>...]</s> <i>file</i> <s>...]</s> <i>output_file</i>
 </p>
 </sect>

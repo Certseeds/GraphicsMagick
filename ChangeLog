@@ -4,6 +4,12 @@
 	Resolves SourceForge issue #321 "find tiny error in
 	Magick++/Image.html document".
 
+2015-10-06  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* docs/*.imdoc: Changed synopses in manpages to add "gm "
+	prefix to commands. Updated synopsis for "convert" to agree
+	with what's in the "gm" manpage.
+
 2015-10-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Remove CFLAGS and LDFLAGS deduplication code.

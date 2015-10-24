@@ -47,7 +47,7 @@
 
 <sect NAME="syno">Synopsis
 <p>
-<s>animate</s> <s>[</s> <i>options</i> <s>...]</s> <i>file</i> [ [
+<s>gm animate</s> <s>[</s> <i>options</i> <s>...]</s> <i>file</i> [ [
 <i>options</i> ...] <i>file</i> ...]
 </p>
 </sect>
