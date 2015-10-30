@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- shell-script -*-
 #
-# Copyright 2004-2012 Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
+# Copyright 2004-2015 Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
 #
 # This file is part of Magick++, the C++ API for GraphicsMagick and
 # ImageMagick.  Please see the file "COPYING" included with Magick++
@@ -15,7 +15,7 @@ SRCDIR=${top_srcdir}/${subdir}/
 export SRCDIR
 
 # Number of tests we plan to run
-test_plan_fn 24
+test_plan_fn 75
 
 cd ${subdir} || exit 1
 
@@ -27,8 +27,22 @@ test_command_fn "flip" ${MEMCHECK} ./flip
 test_command_fn "gravity" -F TTF ${MEMCHECK} ./gravity
 test_command_fn "piddle" -F TTF ${MEMCHECK} ./piddle
 test_command_fn "shapes" -F TTF ${MEMCHECK} ./shapes
+ORIG_WIDTH=`${GM} identify -format "%w" ${SRCDIR}/model.miff`
+ORIG_HEIGHT=`${GM} identify -format "%h" ${SRCDIR}/model.miff`
 for filter in bessel blackman box catrom cubic gaussian hamming hanning hermite lanczos mitchell point quadratic sample scale sinc triangle
 do
     test_command_fn "zoom ${filter}" ${MEMCHECK} ./zoom -filter $filter -geometry 600x600 ${SRCDIR}/model.miff  zoom_${filter}_out.miff
+done
+for filter in bessel blackman box catrom cubic gaussian hamming hanning hermite lanczos mitchell point quadratic sample scale sinc triangle
+do
+    test_command_fn "zoom ${filter} (Copy)" ${MEMCHECK} ./zoom -filter $filter -geometry "${ORIG_WIDTH}x${ORIG_HEIGHT}" ${SRCDIR}/model.miff  zoom_${filter}_nc_out.miff
+done
+for filter in bessel blackman box catrom cubic gaussian hamming hanning hermite lanczos mitchell point quadratic sample scale sinc triangle
+do
+    test_command_fn "zoom ${filter} (Width)" ${MEMCHECK} ./zoom -filter $filter -geometry "600x${ORIG_HEIGHT}!" ${SRCDIR}/model.miff  zoom_${filter}_cw_out.miff
+done
+for filter in bessel blackman box catrom cubic gaussian hamming hanning hermite lanczos mitchell point quadratic sample scale sinc triangle
+do
+    test_command_fn "zoom ${filter} (Height)" ${MEMCHECK} ./zoom -filter $filter -geometry "${ORIG_WIDTH}x600!" ${SRCDIR}/model.miff  zoom_${filter}_ch_out.miff
 done
 :
