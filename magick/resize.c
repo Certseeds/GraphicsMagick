@@ -1661,7 +1661,11 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                           MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
       return((Image *) NULL);
     }
-  scale_image=CloneImage(image,columns,rows,True,exception);
+  if ((columns == image->columns) && (rows == image->rows))
+    scale_image=CloneImage(image,0,0,True,exception);
+  else
+    scale_image=CloneImage(image,columns,rows,True,exception);
+
   if (scale_image == (Image *) NULL)
     return((Image *) NULL);
 

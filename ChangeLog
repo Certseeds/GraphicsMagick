@@ -1,3 +1,11 @@
+2015-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (ScaleImage): Fix regression introduced in
+	1.3.22 release which results in pixel cache not open if the scale
+	width and height match the original.  Patch by Troy Patteson.
+	Fixes part of SourceForge bug #323 "ScaleImage() issues in
+	v1.3.22".
+
 2015-10-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/Magick++/Image.rst (thumbnail): Paragraph heading fix.
