@@ -1696,10 +1696,12 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
       (x_vector == (DoublePixelPacket *) NULL) ||
       (y_vector == (DoublePixelPacket *) NULL))
     {
-      MagickFreeMemory(y_vector);
-      MagickFreeMemory(scale_scanline);
+      if (scanline == x_vector)
+        scanline=(DoublePixelPacket *) NULL;
       MagickFreeMemory(scanline);
+      MagickFreeMemory(scale_scanline);
       MagickFreeMemory(x_vector);
+      MagickFreeMemory(y_vector);
       DestroyImage(scale_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToScaleImage);
@@ -1919,10 +1921,12 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   /*
     Free allocated memory.
   */
-  MagickFreeMemory(y_vector);
-  MagickFreeMemory(scale_scanline);
+  if (scanline == x_vector)
+    scanline=(DoublePixelPacket *) NULL;
   MagickFreeMemory(scanline);
+  MagickFreeMemory(scale_scanline);
   MagickFreeMemory(x_vector);
+  MagickFreeMemory(y_vector);
   scale_image->is_grayscale=image->is_grayscale;
   return(scale_image);
 }
