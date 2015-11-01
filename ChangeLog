@@ -1,3 +1,11 @@
+2015-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/studio.h (MagickSleep): Provide the macro 'MagickSleep'
+	to call a function which delays for one second.  No longer provide
+	a macro 'sleep' in WIN32 compiles.  Resolves issue reported to
+	graphicsmagick-bugs mailing list on 2005-11-01 entitled "MinGW
+	build error when sleep re#defined as Sleep".
+
 2015-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/demo/demos.tap: Add zoom test cases to test resize to

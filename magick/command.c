@@ -16027,7 +16027,7 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
   image=(Image *) NULL;
   for (i=0; i < (long) Max(snapshots,1); i++)
   {
-    (void) sleep(resource_info.pause);
+    (void) MagickSleep(resource_info.pause);
     next_image=MagickXImportImage(image_info,&ximage_info);
     status&=next_image != (Image *) NULL;
     if (next_image == (Image *) NULL)
