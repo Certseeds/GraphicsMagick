@@ -1147,15 +1147,15 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   /* allocate space */
   if (length == 0)
     {
-      (void) ThrowException(&image->exception,CoderError,UnableToCopyProfile,
-                            "invalid profile length");
+      (void) ThrowException2(&image->exception,CoderWarning,
+                             "invalid profile length",(char *) NULL);
       return (MagickFail);
     }
   info=MagickAllocateMemory(unsigned char *,length);
   if (info == (unsigned char *) NULL)
     {
-      (void) ThrowException(&image->exception,ResourceLimitError,
-                            MemoryAllocationFailed,"unable to copy profile");
+      (void) ThrowException2(&image->exception,CoderWarning,
+                             "unable to copy profile",(char *) NULL);
       return (MagickFail);
     }
   /* copy profile, skipping white space and column 1 "=" signs */
@@ -6050,7 +6050,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                        const ImageInfo *image_info,Image *imagep)
 {
   Image
-    * volatile imagev = imagep,  /* Use only 'imagev' before setjmp() */
+    *imagev = imagep,  /* Use only 'imagev' before setjmp() */
     *image;                      /* Use only 'image' after setjmp() */
 
   /* Write one PNG image */
@@ -8533,7 +8533,9 @@ static unsigned int WriteMNGImage(const ImageInfo *image_info,Image *image)
     write_mng;
 
 #ifdef GMPNG_BUILD_PALETTE
-  if (mng_info->write_png8 || mng_info->write_png24 || mng_info->write_png32 ||
+  if (mng_info->write_png8)
+    build_palette=MagickTrue;
+  else if (mng_info->write_png24 || mng_info->write_png32 ||
       mng_info->write_png48 || mng_info->write_png64)
     build_palette=MagickFalse;
   else

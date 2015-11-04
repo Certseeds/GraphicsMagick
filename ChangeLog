@@ -1,3 +1,8 @@
+2015-11-03  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadRawProfile): Issue a warning instead of
+	an error when attempting to read a zero-length profile.
+
 2015-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/studio.h (MagickSleep): Provide the macro 'MagickSleep'
