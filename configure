@@ -29926,24 +29926,30 @@ $as_echo "$GSPDFDevice" >&6; }
   # GSPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs PS writing device" >&5
 $as_echo_n "checking for gs PS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
-  then
-    GSPSDevice=pswrite
-  else
-    GSPSDevice=nodevice
-  fi
+  GSPSDevice=nodevice
+  for device in ps2write pswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
+    then
+      GSPSDevice=$device
+      break
+    fi
+  done
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSPSDevice" >&5
 $as_echo "$GSPSDevice" >&6; }
 
   # GSEPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs EPS writing device" >&5
 $as_echo_n "checking for gs EPS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
-  then
-    GSEPSDevice=epswrite
-  else
-    GSEPSDevice=nodevice
-  fi
+  GSEPSDevice=nodevice
+  for device in eps2write epswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
+    then
+      GSEPSDevice=$device
+      break
+    fi
+  done
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSEPSDevice" >&5
 $as_echo "$GSEPSDevice" >&6; }
 

@@ -3174,22 +3174,28 @@ then
 
   # GSPSDevice
   AC_MSG_CHECKING([for gs PS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
-  then
-    GSPSDevice=pswrite
-  else
-    GSPSDevice=nodevice
-  fi
+  GSPSDevice=nodevice
+  for device in ps2write pswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+    then
+      GSPSDevice=$device
+      break
+    fi
+  done
   AC_MSG_RESULT($GSPSDevice)
 
   # GSEPSDevice
   AC_MSG_CHECKING([for gs EPS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
-  then
-    GSEPSDevice=epswrite
-  else
-    GSEPSDevice=nodevice
-  fi
+  GSEPSDevice=nodevice
+  for device in eps2write epswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+    then
+      GSEPSDevice=$device
+      break
+    fi
+  done
   AC_MSG_RESULT($GSEPSDevice)
 
 fi

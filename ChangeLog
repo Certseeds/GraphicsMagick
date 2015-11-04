@@ -1,3 +1,11 @@
+2015-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Add checks for 'ps2write' and 'eps2write' as
+	Ghostscript Postscript and Encapsulated Postscript
+	writers. Resolves issue reported to graphicsmagick-bugs mailing
+	list on 2015-11-01 entitled "Failure to detect pswrite and
+	epswrite Ghostscript devices".
+
 2015-11-03  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadRawProfile): Issue a warning instead of
