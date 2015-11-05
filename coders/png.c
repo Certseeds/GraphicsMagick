@@ -6050,7 +6050,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                        const ImageInfo *image_info,Image *imagep)
 {
   Image
-    *imagev = imagep,  /* Use only 'imagev' before setjmp() */
+    * volatile imagev = imagep,  /* Use only 'imagev' before setjmp() */
     *image;                      /* Use only 'image' after setjmp() */
 
   /* Write one PNG image */
