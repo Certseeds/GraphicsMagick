@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on October 4, 2015
+This file was last updated on November 7, 2015
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -14,6 +14,80 @@ ChangeLog file for full details.
 
 .. contents::
   :local:
+
+1.3.23 (November ?, 2015)
+==========================
+
+.. _`GCC bug 53967` : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53967
+
+Special Issues:
+
+* Due to `GCC bug 53967`_, several key agorithms (e.g. convolution)
+  may execute much faster (e.g. 2-3X) for x86-64 and/or when SSE is
+  enabled for floating point math (`-mfpmath=sse`) if the GCC option
+  `-frename-registers` is used. Default 32-bit builds do not
+  experience the problem since they use '387 math.  It is not clear in
+  what version of GCC this problem started but it was not noticed by
+  the developers until the GCC 4.6 timeframe.  Other compilers do not
+  suffer from this bug.  Please lobby the GCC project to fix this
+  embarrassing performance bug.
+
+
+Security Fixes:
+
+* ScaleImage(): While not strictly a security issue, requesting to
+  scale an image while retaining the original number of rows will lead
+  to a program crash or memory corruption due to double-free.
+
+Bug fixes:
+
+* ScaleImage(): Fix problem with new width/height match original
+  (regression added by 1.3.22).
+
+* ScaleImage(): Fix double-free when new rows matches original rows
+  (regression added by 1.3.22).
+
+* MinGW build fix related to eliminating a sleep() macro which
+  conflicts with a MinGW-provided inline sleep() function.
+
+* PNG: Issue a warning instead of an error when attempting to read a
+  PNG file containing a zero-length profile.  This allows the file to
+  be read.
+
+* identify: Fix problem in that `identify -format "%A"` (to test if
+  transparency is supported in image) does not always produce the
+  correct results.
+
+New Features:
+
+* None.
+
+Feature improvements:
+
+* None.
+
+Performance Improvements:
+
+* None.
+
+Windows Delegate Updates/Additions:
+
+* None.
+
+Build Changes:
+
+* Configure: Removed CFLAGS and LDFLAGS deduplication code which
+  caused problems for user-provided CFLAGS and LDFLAGS which added and
+  then removed compiler/linker options.  Specifically, this fixes a
+  problem with creating OS X universal builds.
+
+* Configure: Add tests for 'ps2write' and 'eps2write' which are
+  available in recent Ghostscript.
+
+Behavior Changes:
+
+* None
+
 
 1.3.22 (October 4, 2015)
 ==========================
