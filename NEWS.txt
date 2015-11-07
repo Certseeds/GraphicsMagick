@@ -15,7 +15,7 @@ ChangeLog file for full details.
 .. contents::
   :local:
 
-1.3.23 (November ?, 2015)
+1.3.23 (November 7, 2015)
 ==========================
 
 .. _`GCC bug 53967` : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53967
