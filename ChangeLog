@@ -1,3 +1,10 @@
+2015-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (IdentifyImageCommand): Fix problem that
+	identify with -format "%A" does not always report correct answer
+	due to insufficient analysis of image.  Fixes SourceForge bug #326
+	"gm identify: transparency detection bug ".
+
 2015-11-05  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (WriteOnePNGImage): Restored a "volatile"

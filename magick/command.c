@@ -8357,12 +8357,15 @@ MagickExport unsigned int IdentifyImageCommand(ImageInfo *image_info,
         (void) strlcpy(image_info->filename,argv[i],MaxTextExtent);
         if (format != (char *) NULL)
           for (q=strchr(format,'%'); q != (char *) NULL; q=strchr(q+1,'%'))
-            if ((*(q+1) == 'k') || (*(q+1) == 'q') || (*(q+1) == 'r') ||
-                (*(q+1) == '#'))
-              {
-                ping=False;
-                break;
-              }
+            {
+              const char c=*(q+1);
+              if ((c == 'A') || (c == 'k') || (c == 'q') || (c == 'r') ||
+                  (c == '#'))
+                {
+                  ping=False;
+                  break;
+                }
+            }
         if (image_info->verbose || !ping)
           image=ReadImage(image_info,exception);
         else
