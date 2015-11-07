@@ -1661,7 +1661,11 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                           MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
       return((Image *) NULL);
     }
-  scale_image=CloneImage(image,columns,rows,True,exception);
+  if ((columns == image->columns) && (rows == image->rows))
+    scale_image=CloneImage(image,0,0,True,exception);
+  else
+    scale_image=CloneImage(image,columns,rows,True,exception);
+
   if (scale_image == (Image *) NULL)
     return((Image *) NULL);
 
@@ -1692,10 +1696,12 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
       (x_vector == (DoublePixelPacket *) NULL) ||
       (y_vector == (DoublePixelPacket *) NULL))
     {
-      MagickFreeMemory(y_vector);
-      MagickFreeMemory(scale_scanline);
+      if (scanline == x_vector)
+        scanline=(DoublePixelPacket *) NULL;
       MagickFreeMemory(scanline);
+      MagickFreeMemory(scale_scanline);
       MagickFreeMemory(x_vector);
+      MagickFreeMemory(y_vector);
       DestroyImage(scale_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToScaleImage);
@@ -1915,10 +1921,12 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   /*
     Free allocated memory.
   */
-  MagickFreeMemory(y_vector);
-  MagickFreeMemory(scale_scanline);
+  if (scanline == x_vector)
+    scanline=(DoublePixelPacket *) NULL;
   MagickFreeMemory(scanline);
+  MagickFreeMemory(scale_scanline);
   MagickFreeMemory(x_vector);
+  MagickFreeMemory(y_vector);
   scale_image->is_grayscale=image->is_grayscale;
   return(scale_image);
 }

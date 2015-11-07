@@ -24,7 +24,7 @@ GraphicsMagick Change Logs
               software, AniMagick, Animagic, Magick++
 
 .. _GraphicsMagick : index.html
-.. _`This Year` : Changelog.html
+.. _2015 : Changelog.html
 .. _2014 : ChangeLog-2014.html
 .. _2013 : ChangeLog-2013.html
 .. _2012 : ChangeLog-2012.html
@@ -42,7 +42,7 @@ GraphicsMagick Change Logs
 
 The following are the ``GraphicsMagick`` change logs since 2001:
 
-  * `This Year`_ (1.3.21 released)
+  * 2015_ (1.3.21 - 1.3.23 released)
 
   * 2014_ (1.3.20 released)
 

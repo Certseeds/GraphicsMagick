@@ -2908,6 +2908,11 @@ else
     # prevent that translation?
     #
     #   reg query "HKLM\Software\GPL Ghostscript" /s
+    #
+    # This seems to work without translation:
+    #
+    #   cmd /c "reg query \"HKLM\Software\GPL Ghostscript\" /v GS_LIB /s"
+    #
     for font_dir in "c:\\Program Files\\gs\\fonts\\" "c:\\gs\\fonts\\"
     do
       if test -f "${font_dir}a010013l.pfb"
@@ -3174,22 +3179,28 @@ then
 
   # GSPSDevice
   AC_MSG_CHECKING([for gs PS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
-  then
-    GSPSDevice=pswrite
-  else
-    GSPSDevice=nodevice
-  fi
+  GSPSDevice=nodevice
+  for device in ps2write pswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+    then
+      GSPSDevice=$device
+      break
+    fi
+  done
   AC_MSG_RESULT($GSPSDevice)
 
   # GSEPSDevice
   AC_MSG_CHECKING([for gs EPS writing device])
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
-  then
-    GSEPSDevice=epswrite
-  else
-    GSEPSDevice=nodevice
-  fi
+  GSEPSDevice=nodevice
+  for device in eps2write epswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+    then
+      GSEPSDevice=$device
+      break
+    fi
+  done
   AC_MSG_RESULT($GSEPSDevice)
 
 fi
@@ -3437,50 +3448,6 @@ else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 AC_SUBST(MAGICK_DEP_LIBS)
-
-#
-# Deduplicate LDFLAGS
-#
-LDFLAGS_NEW=''
-for flag in $LDFLAGS
-do
-    add=yes
-    for test_flag in $LDFLAGS_NEW
-    do
-        if test $flag = $test_flag
-        then
-            add=no
-            break
-        fi
-    done
-    if test $add = yes
-    then
-        LDFLAGS_NEW="$LDFLAGS_NEW $flag"
-    fi
-done
-LDFLAGS=$LDFLAGS_NEW
-
-#
-# Deduplicate CFLAGS
-#
-CFLAGS_NEW=''
-for flag in $CFLAGS
-do
-    add=yes
-    for test_flag in $CFLAGS_NEW
-    do
-        if test $flag = $test_flag
-        then
-            add=no
-            break
-        fi
-    done
-    if test $add = yes
-    then
-        CFLAGS_NEW="$CFLAGS_NEW $flag"
-    fi
-done
-CFLAGS=$CFLAGS_NEW
 
 #
 # Remove extraneous spaces from output variables (asthetic)

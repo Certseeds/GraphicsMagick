@@ -1781,7 +1781,7 @@ MagickXAnimateImages(Display *display,
                       if (!(state & RepeatAnimationState))
                         state&=(~PlayAnimationState);
                       scene=first_scene;
-                      (void) sleep(resource_info->pause);
+                      (void) MagickSleep(resource_info->pause);
                     }
                 }
             }
@@ -1804,7 +1804,7 @@ MagickXAnimateImages(Display *display,
                     {
                       state|=ForwardAnimationState;
                       scene=first_scene;
-                      (void) sleep(resource_info->pause);
+                      (void) MagickSleep(resource_info->pause);
                     }
                   else
                     {

@@ -3342,7 +3342,7 @@ rm -f conftest.file
 ac_config_headers="$ac_config_headers magick/magick_config.h magick/magick_config_api.h"
 
 
-am__api_version='1.14'
+am__api_version='1.15'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3447,8 +3447,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3467,7 +3467,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3787,8 +3787,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3845,6 +3845,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 
 # Enable support for silent build rules
 # Check whether --enable-silent-rules was given.
@@ -29496,6 +29497,11 @@ else
     # prevent that translation?
     #
     #   reg query "HKLM\Software\GPL Ghostscript" /s
+    #
+    # This seems to work without translation:
+    #
+    #   cmd /c "reg query \"HKLM\Software\GPL Ghostscript\" /v GS_LIB /s"
+    #
     for font_dir in "c:\\Program Files\\gs\\fonts\\" "c:\\gs\\fonts\\"
     do
       if test -f "${font_dir}a010013l.pfb"
@@ -29925,24 +29931,30 @@ $as_echo "$GSPDFDevice" >&6; }
   # GSPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs PS writing device" >&5
 $as_echo_n "checking for gs PS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=pswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
-  then
-    GSPSDevice=pswrite
-  else
-    GSPSDevice=nodevice
-  fi
+  GSPSDevice=nodevice
+  for device in ps2write pswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
+    then
+      GSPSDevice=$device
+      break
+    fi
+  done
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSPSDevice" >&5
 $as_echo "$GSPSDevice" >&6; }
 
   # GSEPSDevice
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gs EPS writing device" >&5
 $as_echo_n "checking for gs EPS writing device... " >&6; }
-  if $PSDelegate -q -dBATCH -sDEVICE=epswrite -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
-  then
-    GSEPSDevice=epswrite
-  else
-    GSEPSDevice=nodevice
-  fi
+  GSEPSDevice=nodevice
+  for device in eps2write epswrite
+  do
+    if $PSDelegate -q -dBATCH -sDEVICE=$device -sOutputFile=/dev/null < /dev/null 1>&5 2>&5
+    then
+      GSEPSDevice=$device
+      break
+    fi
+  done
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSEPSDevice" >&5
 $as_echo "$GSEPSDevice" >&6; }
 
@@ -30325,50 +30337,6 @@ else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 
-
-#
-# Deduplicate LDFLAGS
-#
-LDFLAGS_NEW=''
-for flag in $LDFLAGS
-do
-    add=yes
-    for test_flag in $LDFLAGS_NEW
-    do
-        if test $flag = $test_flag
-        then
-            add=no
-            break
-        fi
-    done
-    if test $add = yes
-    then
-        LDFLAGS_NEW="$LDFLAGS_NEW $flag"
-    fi
-done
-LDFLAGS=$LDFLAGS_NEW
-
-#
-# Deduplicate CFLAGS
-#
-CFLAGS_NEW=''
-for flag in $CFLAGS
-do
-    add=yes
-    for test_flag in $CFLAGS_NEW
-    do
-        if test $flag = $test_flag
-        then
-            add=no
-            break
-        fi
-    done
-    if test $add = yes
-    then
-        CFLAGS_NEW="$CFLAGS_NEW $flag"
-    fi
-done
-CFLAGS=$CFLAGS_NEW
 
 #
 # Remove extraneous spaces from output variables (asthetic)

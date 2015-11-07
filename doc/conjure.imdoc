@@ -29,7 +29,7 @@ conjure - process a Magick Scripting Language (MSL) script
 
 <sect NAME="conj-syno">Synopsis
 <p>
-<s>conjure</s> <s>[</s> <i>options</i> <s>]</s> <i>script.msl</i>
+<s>gm conjure</s> <s>[</s> <i>options</i> <s>]</s> <i>script.msl</i>
 <s>[ [</s> <i>options</i> <s>]</s> <i>script.msl</i> <s>]</s>
 </p>
 </sect>
