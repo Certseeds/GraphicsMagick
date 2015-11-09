@@ -6066,13 +6066,15 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
     ping_bit_depth = 0,
     ping_colortype = 0,
     ping_interlace_method = 0,
-    ping_compression_method = 0,
+    ping_compression_method = 0;
+
+  volatile int
     ping_filter_method = 0,
     ping_num_trans = 0,
     ping_valid_trns = 0;
 
-  png_bytep
-     ping_trans_alpha = NULL;
+  volatile png_bytep
+    ping_trans_alpha = NULL;
 
   png_colorp
     palette;

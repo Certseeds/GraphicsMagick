@@ -1,3 +1,8 @@
+2015-11-05  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (WriteOnePNGImage): Added "volatile" to
+	several declarations to stop "might be clobbered" warnings.
+
 2015-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update NEWS for 1.3.23 release.
