@@ -15,10 +15,9 @@ GraphicsMagick Mercurial
                  sharpen, color reduce, or add special effects to an image and
                  save your completed work in the same or differing image format.
 
-   :keywords: GraphicsMagick, Image Magick, Image Magic, PerlMagick, Perl Magick,
-              Perl Magic, CineMagick, PixelMagick, Pixel Magic, WebMagick,
-              Web Magic, visualization, image processing, software development,
-              simulation, image, software, AniMagick, Animagic,  Magick++
+   :keywords: GraphicsMagick, PerlMagick, visualization, image
+              processing, software development, simulation, image,
+              software, Magick++
 
 .. _Mercurial : http://mercurial.selenic.com/
 .. _TortoiseHg : http://tortoisehg.bitbucket.org/
@@ -67,9 +66,9 @@ Selecting a version of the code
 By default the cloned directory is populated with files from the
 `default` (i.e. head) branch of the code.
 
-If you require a specific release of GraphicsMagick (e.g. 1.3.9), you may select it like::
+If you require a specific release of GraphicsMagick (e.g. 1.3.23), you may select it like::
 
-  hg update -r GraphicsMagick-1_3_9
+  hg update -r GraphicsMagick-1_3_23
 
 or if you require a specific branch of GraphicsMagick (e.g. 1.3), you may use::
 
