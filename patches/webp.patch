@@ -1,7 +1,6 @@
-Only in libwebp-0.4.3/m4: lt~obsolete.m4
-diff -r -u libwebp-0.4.3/src/utils/endian_inl.h webp/src/utils/endian_inl.h
---- libwebp-0.4.3/src/utils/endian_inl.h	2015-03-11 01:06:09.000000000 -0500
-+++ webp/src/utils/endian_inl.h	2015-05-09 09:14:11.781735854 -0500
+diff -r -u libwebp-0.4.4/src/utils/endian_inl.h webp/src/utils/endian_inl.h
+--- libwebp-0.4.4/src/utils/endian_inl.h	2015-10-23 15:20:40.000000000 -0500
++++ webp/src/utils/endian_inl.h	2015-11-28 17:10:28.518626048 -0600
 @@ -73,7 +73,7 @@
    uint32_t swapped_bytes;
    __asm__ volatile("bswap %0" : "=r"(swapped_bytes) : "0"(x));
@@ -11,9 +10,9 @@ diff -r -u libwebp-0.4.3/src/utils/endian_inl.h webp/src/utils/endian_inl.h
    return (uint32_t)_byteswap_ulong(x);
  #else
    return (x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) | (x << 24);
-diff -r -u libwebp-0.4.3/src/webp/types.h webp/src/webp/types.h
---- libwebp-0.4.3/src/webp/types.h	2015-03-11 01:06:09.000000000 -0500
-+++ webp/src/webp/types.h	2015-07-03 17:28:00.352112927 -0500
+diff -r -u libwebp-0.4.4/src/webp/types.h webp/src/webp/types.h
+--- libwebp-0.4.4/src/webp/types.h	2015-10-23 15:20:40.000000000 -0500
++++ webp/src/webp/types.h	2015-11-28 17:10:28.525461364 -0600
 @@ -36,6 +36,24 @@
  #define WEBP_INLINE __forceinline
  #endif  /* _MSC_VER */
