@@ -1,7 +1,6 @@
-Only in freetype-2.6/builds/amiga: makefile.os4
-diff -r -u freetype-2.6/include/config/ftoption.h ttf/include/config/ftoption.h
---- freetype-2.6/include/config/ftoption.h	2015-04-22 03:57:28.000000000 -0500
-+++ ttf/include/config/ftoption.h	2015-07-03 17:03:43.732494903 -0500
+diff -r -u freetype-2.6.2/include/freetype/config/ftoption.h ttf/include/freetype/config/ftoption.h
+--- freetype-2.6.2/include/freetype/config/ftoption.h	2015-11-28 12:08:52.000000000 -0600
++++ ttf/include/freetype/config/ftoption.h	2015-12-12 17:31:39.734846447 -0600
 @@ -283,6 +283,48 @@
  /* #define FT_EXPORT_DEF(x)  x */
  
@@ -51,5 +50,5 @@ diff -r -u freetype-2.6/include/config/ftoption.h ttf/include/config/ftoption.h
    /*************************************************************************/
    /*                                                                       */
    /* Glyph Postscript Names handling                                       */
-Only in freetype-2.6/src/base: ftdebug.c
+Only in freetype-2.6.2/src/base: ftdebug.c
 Only in ttf/src/base: ftdebug.c-renamed

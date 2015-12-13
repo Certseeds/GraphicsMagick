@@ -1,5 +1,7 @@
 2015-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* ttf: Update bundled freetype to release 2.6.2.
+
 	* libxml: Update bundled libxml2 to release 2.9.3.
 
 2015-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
