@@ -195,10 +195,12 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   int
     count;
 
-  long
+  unsigned long
     j,
+  none;
+
+  long
     k,
-    none,
     y;
 
   register char
@@ -329,8 +331,8 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read image colormap.
   */
   i=1;
-  none=(-1);
-  for (j=0; j < (long) image->colors; j++)
+  none=(~0U);
+  for (j=0; j < image->colors; j++)
   {
     p=textlist[i++];
     if (p == (char *) NULL)
@@ -365,7 +367,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (!QueryColorDatabase(target,&image->colormap[j],exception))
       break;
   }
-  if (j < (long) image->colors)
+  if (j < image->colors)
     ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
   image->depth=GetImageDepth(image,&image->exception);
   image->depth=NormalizeDepthToOctet(image->depth);
@@ -401,14 +403,15 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           key[k]='\0';
           if (strcmp(key,keys[j]) != 0)
-            for (j=0; j < (long) Max(image->colors-1,1); j++)
+            for (j=0; j < Max(image->colors-1,1); j++)
               if (strcmp(key,keys[j]) == 0)
                 break;
+          VerifyColormapIndex(image,j);
           if (image->storage_class == PseudoClass)
             indexes[x]=(IndexPacket) j;
           *r=image->colormap[j];
           r->opacity=(Quantum)
-            (j == (long) none ? TransparentOpacity : OpaqueOpacity);
+            (j == none ? TransparentOpacity : OpaqueOpacity);
           r++;
           p+=width;
         }
