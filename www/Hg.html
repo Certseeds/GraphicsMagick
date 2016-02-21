@@ -50,9 +50,10 @@
 <li><a class="reference internal" href="#updating-from-the-mercurial-repository" id="id5">Updating from the Mercurial Repository</a></li>
 <li><a class="reference internal" href="#mercurial-software" id="id6">Mercurial Software</a></li>
 <li><a class="reference internal" href="#mercurial-for-graphicsmagick-developers" id="id7">Mercurial for GraphicsMagick Developers</a></li>
-<li><a class="reference internal" href="#email-notifications" id="id8">Email Notifications</a></li>
-<li><a class="reference internal" href="#rsync-the-repository" id="id9">Rsync The Repository</a></li>
-<li><a class="reference internal" href="#mercurial-topics" id="id10">Mercurial Topics</a></li>
+<li><a class="reference internal" href="#ssh-public-keys-for-hg-graphicsmagick-org" id="id8">SSH Public Keys For hg.GraphicsMagick.org</a></li>
+<li><a class="reference internal" href="#email-notifications" id="id9">Email Notifications</a></li>
+<li><a class="reference internal" href="#rsync-the-repository" id="id10">Rsync The Repository</a></li>
+<li><a class="reference internal" href="#mercurial-topics" id="id11">Mercurial Topics</a></li>
 </ul>
 </div>
 <p>The GraphicsMagick source code is now available via <a class="reference external" href="http://mercurial.selenic.com/">Mercurial</a>.
@@ -222,15 +223,39 @@ Host hg.code.sf.net
   Compression yes
 </pre>
 </div>
+<div class="section" id="ssh-public-keys-for-hg-graphicsmagick-org">
+<h1><a class="toc-backref" href="#id8">SSH Public Keys For hg.GraphicsMagick.org</a></h1>
+<p>In December, 2015, the services provided by hg.GraphicsMagick.org
+(more formally known as src.GraphicsMagick.org) where moved to a new
+server (using OpenSSH 7.1.2 at the time), with new server keys.
+Developers accessing this server via ssh may be notified about a ssh
+key change.  For reference, these are the server's ssh public keys:</p>
+<p>DSS (DSA):</p>
+<pre class="literal-block">
+ssh-dss AAAAB3NzaC1kc3MAAACBANZAsDZ9fUWQNwUoRw8HoNl8aLLs97KmyiaA6mSPeM1NeQKrxk0PAFEXMR05CNcZHSyopUx6B8PuTWE4+4rDhFCw7J0JkfFS4uIG3bu3YCRqQrg2k4VsDw60zK9sNum5BcLEWd+qs8X7DrEff5fGmXkc8IdMXPgHTzaJWCT9YJU1AAAAFQCJaFq4/7FqHcHm5abhW5qJyH0RgQAAAIEAgv6s3gfB8p/Elf0ZcIZ5eITCpI9aZFaSLSeKHMmhYps1uMuZ9LtWjZ11cotcuOh0tlwGUixlu/5soZqX6VbnJAuyvfI+7WSUFuJmRjsbXJVCBuSPZ7YgMNuLYlLst7sZLCs5hU61jxnaR2zmkUjDWP4GWROC6AYZXlbJX1qRJ7YAAACBAMsIbVVgz/aP95yCPk1Pw0FjoL5t6C3BpxdA9aiIFBMg14ElaHh+gaXQoZfjAuafZ8pc5woYtQLLkzinCQnmvH/EqqYCe+Fu7jcsYU7oWUXG1O9ZBKI7QZkeCTaYMXIWBplgVD+tkRpH/gxn5iweNMM9e43qPB0b2JYObliqD1E9 root&#64;src
+</pre>
+<p>RSA:</p>
+<pre class="literal-block">
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA1IuJDYT85qz/w6+vn5hkpzM5Ju5dsMeJD9GnATj3op5dhBWyfbaJpS7yyK2Vhhz26GBUvUtO3LGm0dQvdj83P3DX3aUuzfnC3Bc9dWeARomQPtDy9MfDikD6kqjD9/Lemgvv8I4Na9vUEmYvXUpTrtawJ4S7A7IctPnvKLPGA5+qY5XzMSE0wcOSBdbeV1PAIDOXYH2hKakZwtxXlvfTv6CZphz/jG5nmf+/Zlkr4yopNvPFbtd3vbaaqSuCoGHXKfmpRko2gXf6EGF92wXzbsE1tW3AkSJ2xdhFHRNmQEu2y9F1l9zb8IETBtKMWRJWAsPPpUSkht0DRsTXt/f+Zw== root&#64;src
+</pre>
+<p>ECDSA:</p>
+<pre class="literal-block">
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOrGQ6tjmZvm8w+GP7yLFJ1/vkImKkpXv7kPNxA0+Sfx6WCqAjV0pWP5MVCraP8SNbphL8jiS/x3WADXlf+R2KQ= root&#64;src
+</pre>
+<p>ED25519:</p>
+<pre class="literal-block">
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAtwIcJEBiSUWsB2sydInR76gE84Jp1rxmc8lTGPg5cB root&#64;src
+</pre>
+</div>
 <div class="section" id="email-notifications">
-<h1><a class="toc-backref" href="#id8">Email Notifications</a></h1>
+<h1><a class="toc-backref" href="#id9">Email Notifications</a></h1>
 <p>An email notification is sent to the <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/graphicsmagick-commit">graphicsmagick-commit</a> mailing
 list at SourceForge whenever a change is submitted to the development
 (unstable) repository.  Subscribe to this list if you would like to be
 notified by email of changes when they occur.</p>
 </div>
 <div class="section" id="rsync-the-repository">
-<h1><a class="toc-backref" href="#id9">Rsync The Repository</a></h1>
+<h1><a class="toc-backref" href="#id10">Rsync The Repository</a></h1>
 <p>It is possible to use the <a class="reference external" href="http://rsync.samba.org/">rsync</a> program to make a copy of the
 GraphicsMagick Mercurial repository.  Using <a class="reference external" href="http://rsync.samba.org/">rsync</a> might be faster for
 the initial repository checkout, but the copied repository might not
@@ -250,7 +275,7 @@ hg update
 </pre>
 </div>
 <div class="section" id="mercurial-topics">
-<h1><a class="toc-backref" href="#id10">Mercurial Topics</a></h1>
+<h1><a class="toc-backref" href="#id11">Mercurial Topics</a></h1>
 <ul class="simple">
 <li><a class="reference external" href="http://mercurial.selenic.com/wiki/MergeToolConfiguration">Merge Tool Configuration</a></li>
 <li><a class="reference external" href="http://mercurial.selenic.com/wiki/TipsAndTricks#mergemineortheir">Keep &quot;My&quot; or &quot;Their&quot; files when doing a merge</a></li>

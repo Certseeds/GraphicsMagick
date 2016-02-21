@@ -196,6 +196,32 @@ site-by-site basis (e.g. via .ssh/config).  For example an entry in
   Host hg.code.sf.net
     Compression yes
 
+SSH Public Keys For hg.GraphicsMagick.org
+=========================================
+
+In December, 2015, the services provided by hg.GraphicsMagick.org
+(more formally known as src.GraphicsMagick.org) where moved to a new
+server (using OpenSSH 7.1.2 at the time), with new server keys.
+Developers accessing this server via ssh may be notified about a ssh
+key change.  For reference, these are the server's ssh public keys:
+
+DSS (DSA)::
+
+  ssh-dss AAAAB3NzaC1kc3MAAACBANZAsDZ9fUWQNwUoRw8HoNl8aLLs97KmyiaA6mSPeM1NeQKrxk0PAFEXMR05CNcZHSyopUx6B8PuTWE4+4rDhFCw7J0JkfFS4uIG3bu3YCRqQrg2k4VsDw60zK9sNum5BcLEWd+qs8X7DrEff5fGmXkc8IdMXPgHTzaJWCT9YJU1AAAAFQCJaFq4/7FqHcHm5abhW5qJyH0RgQAAAIEAgv6s3gfB8p/Elf0ZcIZ5eITCpI9aZFaSLSeKHMmhYps1uMuZ9LtWjZ11cotcuOh0tlwGUixlu/5soZqX6VbnJAuyvfI+7WSUFuJmRjsbXJVCBuSPZ7YgMNuLYlLst7sZLCs5hU61jxnaR2zmkUjDWP4GWROC6AYZXlbJX1qRJ7YAAACBAMsIbVVgz/aP95yCPk1Pw0FjoL5t6C3BpxdA9aiIFBMg14ElaHh+gaXQoZfjAuafZ8pc5woYtQLLkzinCQnmvH/EqqYCe+Fu7jcsYU7oWUXG1O9ZBKI7QZkeCTaYMXIWBplgVD+tkRpH/gxn5iweNMM9e43qPB0b2JYObliqD1E9 root@src
+
+RSA::
+
+  ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA1IuJDYT85qz/w6+vn5hkpzM5Ju5dsMeJD9GnATj3op5dhBWyfbaJpS7yyK2Vhhz26GBUvUtO3LGm0dQvdj83P3DX3aUuzfnC3Bc9dWeARomQPtDy9MfDikD6kqjD9/Lemgvv8I4Na9vUEmYvXUpTrtawJ4S7A7IctPnvKLPGA5+qY5XzMSE0wcOSBdbeV1PAIDOXYH2hKakZwtxXlvfTv6CZphz/jG5nmf+/Zlkr4yopNvPFbtd3vbaaqSuCoGHXKfmpRko2gXf6EGF92wXzbsE1tW3AkSJ2xdhFHRNmQEu2y9F1l9zb8IETBtKMWRJWAsPPpUSkht0DRsTXt/f+Zw== root@src
+
+ECDSA::
+
+  ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOrGQ6tjmZvm8w+GP7yLFJ1/vkImKkpXv7kPNxA0+Sfx6WCqAjV0pWP5MVCraP8SNbphL8jiS/x3WADXlf+R2KQ= root@src
+
+ED25519::
+
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAtwIcJEBiSUWsB2sydInR76gE84Jp1rxmc8lTGPg5cB root@src
+
+
 Email Notifications
 ===================
 
