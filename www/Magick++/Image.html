@@ -2093,6 +2093,13 @@ void            density ( const Geometry &amp;geomery_ )
 
 Geometry        density ( void ) const
 </pre>
+<p>Please note that the 'density' method suffers from a design problem in
+that the Geometry object only supports integer dimensions, but the
+underlying image resolution is a floating point value.  This results
+in rounding off the value.  Please see the xResolution() and
+yResolution() methods for a way to set and get the resolution in
+floating point.</p>
+<p>The resolution units may be obtained via the resolutionUnits() method.</p>
 </div>
 <div class="section" id="depth">
 <h2><a class="toc-backref" href="#id144">depth</a></h2>
@@ -2815,6 +2822,7 @@ std::string     x11Display ( void ) const
 <h2><a class="toc-backref" href="#id217">xResolution</a></h2>
 <p>x resolution of the image:</p>
 <pre class="literal-block">
+void            xResolution ( const double x_resolution )
 double          xResolution ( void ) const
 </pre>
 </div>
@@ -2822,6 +2830,7 @@ double          xResolution ( void ) const
 <h2><a class="toc-backref" href="#id218">yResolution</a></h2>
 <p>y resolution of the image:</p>
 <pre class="literal-block">
+void            yResolution ( const double y_resolution )
 double          yResolution ( void ) const
 </pre>
 </div>

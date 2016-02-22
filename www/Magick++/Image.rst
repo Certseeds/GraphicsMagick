@@ -1896,6 +1896,15 @@ Document page. Often used with `psPageSize`::
 
     Geometry        density ( void ) const
 
+Please note that the 'density' method suffers from a design problem in
+that the Geometry object only supports integer dimensions, but the
+underlying image resolution is a floating point value.  This results
+in rounding off the value.  Please see the xResolution() and
+yResolution() methods for a way to set and get the resolution in
+floating point.
+
+The resolution units may be obtained via the resolutionUnits() method.
+
 depth
 +++++
 
@@ -2622,6 +2631,7 @@ xResolution
 
 x resolution of the image::
 
+    void            xResolution ( const double x_resolution )
     double          xResolution ( void ) const
 
 yResolution
@@ -2629,6 +2639,7 @@ yResolution
 
 y resolution of the image::
 
+    void            yResolution ( const double y_resolution )
     double          yResolution ( void ) const
 
 

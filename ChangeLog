@@ -1,5 +1,10 @@
 2016-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Image.cpp (xResolution): New method to support
+	setting the horizontal resolution with double precision.
+	(yResolution): New method to support setting the vertical
+	resolution with double precision.
+
 	* www/Hg.rst: Document the ssh public keys for the server hosting
 	the development Mercurial repository.
 
