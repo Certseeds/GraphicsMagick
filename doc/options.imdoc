@@ -2001,10 +2001,11 @@ discarded.</pp>
 
 <pp>
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:</pp>
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:</pp>
 <pre>
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 </pre>
 <pp>
 This command reduces or expands a JPEG image to fit on an 800x600

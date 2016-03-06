@@ -1,3 +1,7 @@
+2016-03-07  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+	* doc/options.imdoc (-extent): Revised the example to
+	clarify the interaction of -gravity with the "geometry" offsets.
+
 2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Add support for --enable-broken-coders which
