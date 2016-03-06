@@ -60,7 +60,7 @@
 <li><a class="reference internal" href="#installing-from-source-code" id="id16">Installing From Source Code</a><ul>
 <li><a class="reference internal" href="#applicability" id="id17">Applicability</a></li>
 <li><a class="reference internal" href="#important-notes" id="id18">Important Notes</a></li>
-<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-9-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 9.0 Compilation</a></li>
+<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-14-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></li>
 <li><a class="reference internal" href="#environment-variables" id="id20">Environment Variables</a></li>
 <li><a class="reference internal" href="#windows-distribution-build-procedure" id="id21">Windows Distribution Build Procedure</a></li>
 </ul>
@@ -352,8 +352,8 @@ then adjust the settings for the module which failed and disable
 optimization, and the problem is likely to go away (but with less
 performance).</blockquote>
 </div>
-<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-9-0-compilation">
-<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 9.0 Compilation</a></h2>
+<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-14-0-compilation">
+<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></h2>
 <blockquote>
 <p>The Visual C++ distribution targeted at Windows 2000 through Windows
 8 does not provide any stock workspace (DSW) or project files (DSP)
@@ -442,6 +442,13 @@ Define to include a DllMain() function ensures that the GraphicsMagick
 DLL is properly initialized without participation from dependent
 applications. This avoids the requirement to invoke IntializeMagick()
 from dependent applications but only works for DLL builds.</blockquote>
+<p>EnableBrokenCoders (default undefined)</p>
+<blockquote>
+Define to enable broken/dangerous file format support.  Only
+enable this if you have complete control over the input files
+and not for arbitrary files such as uploaded from untrusted
+sources via the Internet.  Currently this must be enabled to
+enable Adobe Photoshop Format (PSD).</blockquote>
 </blockquote>
 <p>After creating your build environment you can proceed to open the DSW (or
 SLN) file that was generated in the VisualMagick directory and build

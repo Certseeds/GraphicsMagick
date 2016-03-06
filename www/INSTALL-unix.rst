@@ -200,6 +200,10 @@ Optional Features
 
     disable building an installed GraphicsMagick (default enabled)
 
+--enable-broken-coders
+
+    enable broken/dangerous file formats support
+
 --disable-largefile
 
     disable support for large (64 bit) file offsets
@@ -241,29 +245,9 @@ Optional Packages/Options
     number of bits in a pixel quantum (default 8).  Also see
     '--enable-quantum-library-names.'
 
---enable-ltdl-install
-
-    install libltdl
-
---with-included-ltdl
-
-    use the GNU ltdl sources included here
-
---with-ltdl-include=DIR
-
-    use the ltdl headers installed in DIR
-
---with-ltdl-lib=DIR
-
-    use the libltdl.la installed in DIR
-
 --with-modules
 
     enable building dynamically loadable modules
-
---with-cache
-
-    set pixel cache threshhold (defaults to available memory)
 
 --without-threads
 
@@ -399,21 +383,6 @@ compilation flags).
 
 Several configure options require special note:
 
---with-included-ltdl, --enable-ltdl-install
-
-  GraphicsMagick supports loadable coder and filter modules if
-  --enable-shared (see below) is specified in order to enable building
-  shared libraries. This is true even if --with-modules (see below) has
-  not been specified. The libldtl library is used to support this
-  feature. A copy of libltdl is included with GraphicsMagick. By default,
-  if a suitable libltdl is already installed on the system, it will be
-  used. If there is no suitable libltdl installed, then it may be
-  necessary to specify --with-included-ltdl to use libltdl as provided
-  with GraphicsMagick. The --enable-ltdl-install option enables building
-  libltdl locally and also formally installing it at time of 'make
-  install'. If your already installed libltdl is supported via a package
-  management system then you probably don't want to use this option.
-
 --enable-shared
 
   The shared libraries are built and support for loading coder and
@@ -481,6 +450,17 @@ Several configure options require special note:
   from the location specified by the MAGICK_HOME environment variable.
   The uninstalled configuration is ideal for binary distributions which
   are expected to extract and run in any location.
+
+--enable-broken-coders
+
+  The implementation of file format support for some formats is
+  incomplete or imperfectly implemented such that file corruption or a
+  security exploit might occur.  These formats are not included in the
+  build by default but may be enabled using
+  ``--enable-broken-coders``.  The existing implementation may still
+  have value in controlled circumstances so it remains but needs to be
+  enabled.  One of the formats currently controlled by this is Adobe
+  Photoshop bitmap format (PSD).
 
 --with-modules
 

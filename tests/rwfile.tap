@@ -352,8 +352,8 @@ done
 # PSD format
 for type in ${check_types}
 do
-  test_command_fn "PSD ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PSD
-  #test_command_fn "PSD ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PSD
+  test_command_fn "PSD ${type}" -F PSD ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PSD
+  #test_command_fn "PSD ${type} (stdio)" -F PSD ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PSD
 done
 
 # PTIF format

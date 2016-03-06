@@ -281,8 +281,8 @@ Important Notes
   optimization, and the problem is likely to go away (but with less
   performance).
 
-Windows XP, Vista, 7 Visual C++ 6.0 through 9.0 Compilation
------------------------------------------------------------
+Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
+------------------------------------------------------------
 
   The Visual C++ distribution targeted at Windows 2000 through Windows
   8 does not provide any stock workspace (DSW) or project files (DSP)
@@ -393,6 +393,14 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 9.0 Compilation
       DLL is properly initialized without participation from dependent
       applications. This avoids the requirement to invoke IntializeMagick()
       from dependent applications but only works for DLL builds.
+
+    EnableBrokenCoders (default undefined)
+
+      Define to enable broken/dangerous file format support.  Only
+      enable this if you have complete control over the input files
+      and not for arbitrary files such as uploaded from untrusted
+      sources via the Internet.  Currently this must be enabled to
+      enable Adobe Photoshop Format (PSD).
 
   After creating your build environment you can proceed to open the DSW (or
   SLN) file that was generated in the VisualMagick directory and build

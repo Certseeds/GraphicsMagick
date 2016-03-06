@@ -236,6 +236,10 @@ follows (execute 'configure --help' to see all options).</p>
 </tr>
 <tr><td>&nbsp;</td><td>disable building an installed GraphicsMagick (default enabled)</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable-broken-coders</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>enable broken/dangerous file formats support</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--disable-largefile</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>disable support for large (64 bit) file offsets</td></tr>
@@ -281,28 +285,9 @@ directory (only one can be used for development)</td></tr>
 </tr>
 <tr><td>&nbsp;</td><td>number of bits in a pixel quantum (default 8).  Also see
 '--enable-quantum-library-names.'</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable-ltdl-install</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>install libltdl</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--with-included-ltdl</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>use the GNU ltdl sources included here</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--with-ltdl-include=<var>DIR</var></span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>use the ltdl headers installed in DIR</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--with-ltdl-lib=<var>DIR</var></span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>use the libltdl.la installed in DIR</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--with-modules</span></kbd></td>
 <td>enable building dynamically loadable modules</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--with-cache</span></kbd></td>
-<td>set pixel cache threshhold (defaults to available memory)</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--without-threads</span></kbd></td>
 </tr>
@@ -424,21 +409,6 @@ compilation flags).</p>
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--with-included-ltdl</span>, <span class="option">--enable-ltdl-install</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>GraphicsMagick supports loadable coder and filter modules if
---enable-shared (see below) is specified in order to enable building
-shared libraries. This is true even if --with-modules (see below) has
-not been specified. The libldtl library is used to support this
-feature. A copy of libltdl is included with GraphicsMagick. By default,
-if a suitable libltdl is already installed on the system, it will be
-used. If there is no suitable libltdl installed, then it may be
-necessary to specify --with-included-ltdl to use libltdl as provided
-with GraphicsMagick. The --enable-ltdl-install option enables building
-libltdl locally and also formally installing it at time of 'make
-install'. If your already installed libltdl is supported via a package
-management system then you probably don't want to use this option.</td></tr>
-<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable-shared</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td><p class="first">The shared libraries are built and support for loading coder and
@@ -503,6 +473,17 @@ support files by computing an offset path from the executable (or
 from the location specified by the MAGICK_HOME environment variable.
 The uninstalled configuration is ideal for binary distributions which
 are expected to extract and run in any location.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable-broken-coders</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The implementation of file format support for some formats is
+incomplete or imperfectly implemented such that file corruption or a
+security exploit might occur.  These formats are not included in the
+build by default but may be enabled using
+<tt class="docutils literal"><span class="pre">--enable-broken-coders</span></tt>.  The existing implementation may still
+have value in controlled circumstances so it remains but needs to be
+enabled.  One of the formats currently controlled by this is Adobe
+Photoshop bitmap format (PSD).</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--with-modules</span></kbd></td>
 <td>Image coders and process modules are built as loadable modules which

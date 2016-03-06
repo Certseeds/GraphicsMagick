@@ -46,6 +46,7 @@
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
 #include "magick/utility.h"
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
 
 /*
   Forward declarations.
@@ -2026,3 +2027,4 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   CloseBlob(image);
   return(True);
 }
+#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */

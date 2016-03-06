@@ -833,6 +833,8 @@ MAGICK_COMPAT_TRUE
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
+ENABLE_BROKEN_CODERS_FALSE
+ENABLE_BROKEN_CODERS_TRUE
 WITH_MODULES_FALSE
 WITH_MODULES_TRUE
 WITH_SHARED_LIBS_FALSE
@@ -1037,6 +1039,7 @@ with_sysroot
 enable_libtool_lock
 with_modules
 enable_installed
+enable_broken_coders
 enable_maintainer_mode
 enable_prof
 enable_gprof
@@ -1724,6 +1727,7 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --disable-installed     disable building an installed GraphicsMagick
+  --enable-broken-coders  enable broken/dangerous file formats support
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
@@ -19359,6 +19363,30 @@ else
   DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-installed "
 fi
 
+# Enable broken/dangerous coders
+# EnableBrokenCoders CPP define and ENABLE_BROKEN_CODERS Automake conditional)
+# Check whether --enable-broken-coders was given.
+if test "${enable_broken_coders+set}" = set; then :
+  enableval=$enable_broken_coders; with_broken_coders=$enableval
+else
+  with_broken_coders='no'
+fi
+
+if test "$with_broken_coders" = 'yes'
+then
+
+$as_echo "#define EnableBrokenCoders 1" >>confdefs.h
+
+fi
+ if test "$with_broken_coders" != 'no'; then
+  ENABLE_BROKEN_CODERS_TRUE=
+  ENABLE_BROKEN_CODERS_FALSE='#'
+else
+  ENABLE_BROKEN_CODERS_TRUE='#'
+  ENABLE_BROKEN_CODERS_FALSE=
+fi
+
+
 # Add configure option --enable-maintainer-mode which enables dependency
 # checking and generation useful to package maintainers.  This is made an
 # option to avoid confusing end users.
@@ -30185,6 +30213,10 @@ fi
 # MAGICK_FEATURES is used to declare required features in the test suite
 DELEGATES=''
 MAGICK_FEATURES=''
+if test "$with_broken_coders" = yes; then
+   # Add the list of broken coders to feature options
+   MAGICK_FEATURES="$MAGICK_FEATURES PSD"
+fi
 if test "$have_bzlib"  = 'yes' ; then
    DELEGATES="$DELEGATES bzlib"
    MAGICK_FEATURES="$MAGICK_FEATURES BZLIB"
@@ -30604,6 +30636,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_MODULES_TRUE}" && test -z "${WITH_MODULES_FALSE}"; then
   as_fn_error $? "conditional \"WITH_MODULES\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_BROKEN_CODERS_TRUE}" && test -z "${ENABLE_BROKEN_CODERS_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_BROKEN_CODERS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then

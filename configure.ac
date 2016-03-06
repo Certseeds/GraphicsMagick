@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2015 GraphicsMagick Group
+# Copyright (C) 2003-2016 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -457,6 +457,19 @@ then
 else
   DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-installed "
 fi
+
+# Enable broken/dangerous coders
+# EnableBrokenCoders CPP define and ENABLE_BROKEN_CODERS Automake conditional)
+AC_ARG_ENABLE(broken-coders,
+	      AS_HELP_STRING([--enable-broken-coders],
+                             [enable broken/dangerous file formats support]),
+	      [with_broken_coders=$enableval],
+	      [with_broken_coders='no'])
+if test "$with_broken_coders" = 'yes'
+then
+  AC_DEFINE(EnableBrokenCoders,1,[Enable broken/dangerous file formats support])
+fi
+AM_CONDITIONAL(ENABLE_BROKEN_CODERS, test "$with_broken_coders" != 'no')
 
 # Add configure option --enable-maintainer-mode which enables dependency
 # checking and generation useful to package maintainers.  This is made an
@@ -3296,6 +3309,10 @@ AC_SUBST(MAGICKLIBDIR)
 # MAGICK_FEATURES is used to declare required features in the test suite
 DELEGATES=''
 MAGICK_FEATURES=''
+if test "$with_broken_coders" = yes; then
+   # Add the list of broken coders to feature options
+   MAGICK_FEATURES="$MAGICK_FEATURES PSD"
+fi
 if test "$have_bzlib"  = 'yes' ; then
    DELEGATES="$DELEGATES bzlib"
    MAGICK_FEATURES="$MAGICK_FEATURES BZLIB"

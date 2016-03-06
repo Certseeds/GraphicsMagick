@@ -1,5 +1,10 @@
 2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Add support for --enable-broken-coders which
+	determines if broken or hazardous file format support should be
+	enabled in the build.  Currently Adobe Photoshop (PSD) format is
+	included in this category.
+
 	* Rotate Changelog for new year.  Update documentation copyrights
 	for new year.
 

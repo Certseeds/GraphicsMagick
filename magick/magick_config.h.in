@@ -9,6 +9,9 @@
 /* Disable OpenMP for algorithms which sometimes run slower */
 #undef DisableSlowOpenMP
 
+/* Enable broken/dangerous file formats support */
+#undef EnableBrokenCoders
+
 /* C compiler used for compilation */
 #undef GM_BUILD_CC
 
