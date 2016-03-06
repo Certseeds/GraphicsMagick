@@ -1,4 +1,10 @@
-2016-03-07  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Fix SourceForge bug #335
+	"out-of-bounds read in coders/xpm.c:154 ".
+
+2016-03-06  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
 	* doc/options.imdoc (-extent): Revised the example to
 	clarify the interaction of -gravity with the "geometry" offsets.
 

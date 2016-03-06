@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -197,7 +197,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned long
     j,
-  none;
+    none;
 
   long
     k,
@@ -224,7 +224,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned long
     length,
-    width;
+    width; /* characters per pixel */
 
   /*
     Open image file.
@@ -276,10 +276,15 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     count=sscanf(p+1,"%lu %lu %u %lu",&image->columns,&image->rows,
       &image->colors,&width);
     if (count == 4)
-      break;
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Columns: %lu, Rows: %lu, Colors: %u, Char Per Pixel: %lu",
+                              image->columns, image->rows, image->colors, width);
+        break;
+      }
   }
   if ((count != 4) || (width > 2) || (image->columns == 0) ||
-      (image->rows == 0) || (image->colors == 0))
+      (image->rows == 0) || (image->colors == 0) || (width == 0))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
   image->depth=16;
   /*
