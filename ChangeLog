@@ -1,3 +1,9 @@
+2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tiff/libtiff/tif_config.h (HAVE_SNPRINTF): Define HAVE_SNPRINTF
+	when using Microsoft Visual C++ 14 (Visual Studio 2015) or later.
+	This is based on advice by Pablo Elpuro.
+
 2016-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Image.cpp (xResolution): New method to support
