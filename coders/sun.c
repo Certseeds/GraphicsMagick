@@ -927,15 +927,19 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
           *q;
 
         size_t
-          length;
+          length,
+          pad;
 
         unsigned char
           *pixels;
 
         /*
           Allocate memory for pixels.
+
+          Scanlines are padded to 16-bit boundary so account for padding.
         */
-        length=image->columns*sizeof(PixelPacket);
+        pad=(image->columns & 0x01 ? 1 : 0);
+        length=(image->columns + pad) *sizeof(PixelPacket);
         pixels=MagickAllocateMemory(unsigned char *,length);
         if (pixels == (unsigned char *) NULL)
           ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,

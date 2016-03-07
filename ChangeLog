@@ -1,5 +1,8 @@
 2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sun.c (WriteSUNImage): Fix SourceForge bug #343
+	"out-of-bounds write in coders/sun.c:962".
+
 	* coders/rle.c (ReadRLEImage): Fix SourceForge bug #344
 	"out-of-bounds write in coders/rle.c:524".
 
