@@ -1,4 +1,4 @@
-.TH gm 1 "2015/10/24" "GraphicsMagick"
+.TH gm 1 "2016/03/06" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -2094,10 +2094,11 @@ which falls outside the bounds of the new image dimensions is
 discarded.
 
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:
 
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \\
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 
 
 This command reduces or expands a JPEG image to fit on an 800x600

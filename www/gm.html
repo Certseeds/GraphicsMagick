@@ -2225,10 +2225,11 @@ which falls outside the bounds of the new image dimensions is
 discarded.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:</font></td></tr></table>
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:</font></td></tr></table>
 <pre>
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 </pre>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 This command reduces or expands a JPEG image to fit on an 800x600
