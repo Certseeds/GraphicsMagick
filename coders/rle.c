@@ -39,6 +39,7 @@
 #include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -215,7 +216,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   unsigned int
-	colormap_entries;
+    colormap_entries;
 
   unsigned int
     index;
@@ -239,7 +240,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   size_t
-    count;
+    count,
+    rle_bytes;
 
   unsigned int
     map_length;
@@ -397,6 +399,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                    Max(number_planes,4));
     if (rle_pixels == (unsigned char *) NULL)
       ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    rle_bytes=number_pixels*Max(number_planes,4);
     if ((rle_header.Flags & 0x01) && !(rle_header.Flags & 0x02))
       {
         int
@@ -491,8 +494,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             pixel=ReadBlobByte(image);
             if (pixel == EOF)
               ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            if ((y < image->rows) && ((x+i) < image->columns))
+            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
               *p=(unsigned char) pixel;
+            else
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p+=number_planes;
           }
           if (operand & 0x01)
@@ -520,8 +525,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             x*number_planes+plane;
           for (i=0; i < (unsigned int) operand; i++)
           {
-            if ((y < image->rows) && ((x+i) < image->columns))
+            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
               *p=pixel;
+            else
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p+=number_planes;
           }
           x+=operand;

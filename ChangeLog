@@ -1,5 +1,8 @@
 2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rle.c (ReadRLEImage): Fix SourceForge bug #344
+	"out-of-bounds write in coders/rle.c:524".
+
 	* coders/xpm.c (ReadXPMImage): Fix SourceForge bug #335
 	"out-of-bounds read in coders/xpm.c:154 ".
 
