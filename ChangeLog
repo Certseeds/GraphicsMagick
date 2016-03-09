@@ -1,3 +1,7 @@
+2016-03-09 Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Fixed huge image limitation.
+
 2016-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sun.c (WriteSUNImage): Fix SourceForge bug #343

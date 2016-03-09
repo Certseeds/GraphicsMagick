@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -695,8 +695,12 @@ NEXT_FRAME:
     image->columns = MATLAB_HDR.SizeX;
     image->rows = MATLAB_HDR.SizeY;    
     image->colors = 1l << image->depth;
-    if (image->columns == 0 || image->rows == 0)
+    if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
+    if(CheckImagePixelLimits(image, exception) != MagickPass)
+    {
+      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+    }
 
     /* ----- Create gray palette ----- */
 
