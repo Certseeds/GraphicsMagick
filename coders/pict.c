@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1568,7 +1568,9 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
     x;
 
   size_t
-    count;
+    bytes_per_line,
+    count,
+    row_bytes;
 
   unsigned char
     *buffer = (unsigned char *) NULL,
@@ -1579,12 +1581,10 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
     status;
 
   unsigned long
-    bytes_per_line,
     storage_class;
 
   unsigned short
     base_address,
-    row_bytes,
     transfer_mode;
 
   /*
@@ -1612,7 +1612,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   source_rectangle=size_rectangle;
   destination_rectangle=size_rectangle;
   base_address=0xff;
-  row_bytes=(unsigned short) (image->columns | 0x8000);
+  row_bytes=image->columns;
   bounds.top=0;
   bounds.left=0;
   bounds.bottom=(short) image->rows;
@@ -1640,7 +1640,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       pixmap.bits_per_pixel=32;
       pixmap.pack_type=0x04;
       transfer_mode=0x40;
-      row_bytes=(unsigned short) ((4*image->columns) | 0x8000);
+      row_bytes=4*image->columns;
     }
   /*
     Allocate memory.
