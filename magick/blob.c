@@ -3883,7 +3883,11 @@ MagickExport size_t ReadBlobMSBShorts(Image *image, size_t octets,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  ReadBlobString() reads characters from a blob or file until a newline
-%  character is read or an end-of-file condition is encountered.
+%  character is read or an end-of-file condition is encountered.  Any
+%  terminating newline ('\n') or carriage return ('\r') characters will be
+%  removed.  The string buffer is assured to be null terminated.  NULL
+%  is returned if zero bytes were read, otherwise a pointer to the string
+%  buffer is returned.
 %
 %  The format of the ReadBlobString method is:
 %
@@ -3896,7 +3900,8 @@ MagickExport size_t ReadBlobMSBShorts(Image *image, size_t octets,
 %
 %    o image: The image.
 %
-%    o string: The address of a character buffer.
+%    o string: The address of a character buffer, which must be at least
+%              MaxTextExtent bytes long.
 %
 %
 */

@@ -1,3 +1,8 @@
+2016-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Fix SourceForge bug #334
+	"heap-buffer-overflow in coders/xpm.c:150".
+
 2016-03-09 Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fixed huge image limitation.

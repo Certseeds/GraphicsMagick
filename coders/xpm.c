@@ -222,8 +222,10 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
+  size_t
+    length;
+
   unsigned long
-    length,
     width; /* characters per pixel */
 
   /*
@@ -254,7 +256,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if ((*p == '}') && (*(p+1) == ';'))
             break;
           p+=strlen(p);
-          if ((p-xpm_buffer+MaxTextExtent+1) < (long) length)
+          if (((size_t) (p-xpm_buffer)+MaxTextExtent+1) < length)
             continue;
           length<<=1;
           MagickReallocMemory(char *,xpm_buffer,length);
@@ -283,33 +285,35 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
       }
   }
-  if ((count != 4) || (width > 2) || (image->columns == 0) ||
-      (image->rows == 0) || (image->colors == 0) || (width == 0))
+  if ((count != 4) || (width == 0) || (width > 2) || (image->columns == 0) ||
+      (image->rows == 0) || (image->colors == 0))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
   image->depth=16;
   /*
     Remove unquoted characters.
   */
-  i=0;
-  for ( ; *p != '\0'; p++)
   {
-    if (*p != '"')
-      continue;
-    for (q=p+1; *q != '\0'; q++)
-      if (*q == '"')
-        break;
-    /* loop below equivalent to (void) strncpy(xpm_buffer+i,p+1,q-p-1); */
-    for ( k=0; k < (q-p-1); k++ )
+    MagickBool inquote = MagickFalse;
+    q=xpm_buffer;
+    while (*p != '\0')
       {
-        (xpm_buffer+i)[k]=(p+1)[k];
-        if ((p+1)[k] == '\0')
-          break;
+        if (*p++ == '"')
+          {
+            if (inquote)
+              *q++='\n';
+            inquote = !inquote;
+          }
+        if (inquote)
+          *q++=*p;
       }
-    i+=q-p-1;
-    xpm_buffer[i++]='\n';
-    p=q+1;
+    *q='\0';
+    if (inquote)
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Imbalanced quotes error");
+        ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
+      }
   }
-  xpm_buffer[i]='\0';
   textlist=StringToList(xpm_buffer);
   MagickFreeMemory(xpm_buffer);
   if (textlist == (char **) NULL)
