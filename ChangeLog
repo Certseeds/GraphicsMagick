@@ -1,5 +1,8 @@
 2016-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (WritePDBImage): Fix SourceForge bug #348
+	"heap-buffer-overflow in coders/pdb.c:949:26".
+
 	* coders/xpm.c (ReadXPMImage): Fix SourceForge bug #334
 	"heap-buffer-overflow in coders/xpm.c:150".
 

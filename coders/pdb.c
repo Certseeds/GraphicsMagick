@@ -886,7 +886,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   p=MagickAllocateMemory(unsigned char *,packets);
   if (p == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
-  buffer=MagickAllocateMemory(unsigned char *,256);
+  buffer=MagickAllocateMemory(unsigned char *,257);
   if (buffer == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
   packet_size=image->depth > 8 ? 2: 1;
