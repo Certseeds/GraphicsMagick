@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -139,8 +139,10 @@ static unsigned int DecodeImage(Image *image,const int channel)
                     q->red=ScaleCharToQuantum(pixel);
                     if (image->storage_class == PseudoClass)
                       {
-                        indexes[0]=(IndexPacket) pixel;
-                        *q=image->colormap[pixel];
+                        unsigned int colormap_index=(IndexPacket) pixel;
+                        VerifyColormapIndex(image,colormap_index);
+                        indexes[0]=colormap_index;
+                        *q=image->colormap[colormap_index];
                       }
                     break;
                   }
