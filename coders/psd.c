@@ -1432,7 +1432,10 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         q->red=(Quantum) pixel;
                         if (image->storage_class == PseudoClass)
                           {
-                            indexes[x]=(IndexPacket) ScaleQuantumToChar(pixel);
+                            unsigned int colormap_index=
+                              (IndexPacket) ScaleQuantumToChar(pixel);
+                            VerifyColormapIndex(image,colormap_index);
+                            indexes[x]=colormap_index;
                             *q=image->colormap[indexes[x]];
                           }
                         break;

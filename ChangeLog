@@ -1,5 +1,8 @@
 2016-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/psd.c (ReadPSDImage): Fix SourceForge bug #341
+	"out-of-bounds read in coders/psd.c:1435".
+
 	* coders/xcf.c (load_tile): Fix SourceForge bug #337
 	"heap-buffer-overflow in coders/xcf.c:373".
 
