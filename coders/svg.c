@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -316,25 +316,22 @@ static char **GetTransformTokens(void *context,const char *text,
     *p,
     *q;
 
-  register long
+  register size_t
     i;
 
   SVGInfo
     *svg_info;
 
+  size_t
+    alloc_tokens;
+
   svg_info=(SVGInfo *) context;
   *number_tokens=0;
   if (text == (const char *) NULL)
     return((char **) NULL);
-  /*
-    Determine the number of arguments.
-  */
-  for (p=text; *p != '\0'; p++)
-  {
-    if (*p == '(')
-      (*number_tokens)+=2;
-  }
-  tokens=MagickAllocateMemory(char **,(*number_tokens+2)*sizeof(*tokens));
+
+  alloc_tokens=8;
+  tokens=MagickAllocateMemory(char **,(alloc_tokens+2)*sizeof(*tokens));
   if (tokens == (char **) NULL)
     {
       ThrowException3(svg_info->exception,ResourceLimitError,
@@ -350,15 +347,28 @@ static char **GetTransformTokens(void *context,const char *text,
   {
     if ((*q != '(') && (*q != ')') && (*q != '\0'))
       continue;
+    if (i == alloc_tokens)
+      {
+        alloc_tokens <<= 1;
+        MagickReallocMemory(char **,tokens,(alloc_tokens+2)*sizeof(*tokens));
+        if (tokens == (char **) NULL)
+          {
+            ThrowException3(svg_info->exception,ResourceLimitError,
+                            MemoryAllocationFailed,UnableToConvertStringToTokens);
+            return((char **) NULL);
+          }
+      }
     tokens[i]=AllocateString(p);
     (void) strlcpy(tokens[i],p,q-p+1);
-    Strip(tokens[i++]);
+    Strip(tokens[i]);
+    i++;
     p=q+1;
   }
   tokens[i]=AllocateString(p);
   (void) strlcpy(tokens[i],p,q-p+1);
   Strip(tokens[i++]);
   tokens[i]=(char *) NULL;
+  *number_tokens=i;
   return(tokens);
 }
 
@@ -1177,18 +1187,20 @@ static void SVGStartElement(void *context,const xmlChar *name,
               IdentityAffine(&transform);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
               tokens=GetTransformTokens(context,value,&number_tokens);
-              for (j=0; j < (number_tokens-1); j+=2)
+              if ((tokens != (char **) NULL) && (number_tokens > 0))
               {
-                keyword=(char *) tokens[j];
-                if (keyword == (char *) NULL)
-                  continue;
-                value=(char *) tokens[j+1];
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                  "    %.1024s: %.1024s",keyword,value);
-                current=transform;
-                IdentityAffine(&affine);
-                switch (*keyword)
+                for (j=0; j < (number_tokens-1); j+=2)
                 {
+                  keyword=(char *) tokens[j];
+                  if (keyword == (char *) NULL)
+                    continue;
+                  value=(char *) tokens[j+1];
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "    %.1024s: %.1024s",keyword,value);
+                  current=transform;
+                  IdentityAffine(&affine);
+                  switch (*keyword)
+                  {
                   case 'M':
                   case 'm':
                   {
@@ -1293,22 +1305,23 @@ static void SVGStartElement(void *context,const xmlChar *name,
                   }
                   default:
                     break;
-                }
-                transform.sx=current.sx*affine.sx+current.ry*affine.rx;
-                transform.rx=current.rx*affine.sx+current.sy*affine.rx;
-                transform.ry=current.sx*affine.ry+current.ry*affine.sy;
-                transform.sy=current.rx*affine.ry+current.sy*affine.sy;
-                transform.tx=current.sx*affine.tx+current.ry*affine.ty+
-                  current.tx;
-                transform.ty=current.rx*affine.tx+current.sy*affine.ty+
-                  current.ty;
-              }
-              MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
-                transform.sx,transform.rx,transform.ry,transform.sy,
-                transform.tx,transform.ty);
-              for (j=0; tokens[j] != (char *) NULL; j++)
-                MagickFreeMemory(tokens[j]);
-              MagickFreeMemory(tokens);
+                  } /* end switch */
+                  transform.sx=current.sx*affine.sx+current.ry*affine.rx;
+                  transform.rx=current.rx*affine.sx+current.sy*affine.rx;
+                  transform.ry=current.sx*affine.ry+current.ry*affine.sy;
+                  transform.sy=current.rx*affine.ry+current.sy*affine.sy;
+                  transform.tx=current.sx*affine.tx+current.ry*affine.ty+
+                    current.tx;
+                  transform.ty=current.rx*affine.tx+current.sy*affine.ty+
+                    current.ty;
+                } /* end for */
+                MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
+                          transform.sx,transform.rx,transform.ry,transform.sy,
+                          transform.tx,transform.ty);
+                for (j=0; tokens[j] != (char *) NULL; j++)
+                  MagickFreeMemory(tokens[j]);
+                MagickFreeMemory(tokens);
+              } /* end if */
               break;
             }
           if (LocaleCompare(keyword,"gradientUnits") == 0)
@@ -1746,6 +1759,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
               IdentityAffine(&transform);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
               tokens=GetTransformTokens(context,value,&number_tokens);
+              if ((tokens != (char **) NULL) && (number_tokens > 0))
+                {
               for (j=0; j < (number_tokens-1); j+=2)
               {
                 keyword=(char *) tokens[j];
@@ -1873,8 +1888,10 @@ static void SVGStartElement(void *context,const xmlChar *name,
               MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
                 transform.sx,transform.rx,transform.ry,transform.sy,
                 transform.tx,transform.ty);
-              for (j=0; tokens[j] != (char *) NULL; j++)
-                MagickFreeMemory(tokens[j]);
+                }
+              if (number_tokens > 0)
+                for (j=0; tokens[j] != (char *) NULL; j++)
+                  MagickFreeMemory(tokens[j]);
               MagickFreeMemory(tokens);
               break;
             }

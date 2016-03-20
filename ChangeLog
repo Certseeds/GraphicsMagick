@@ -1,3 +1,10 @@
+2016-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c: Fix heap buffer overflow when reading file
+	"aaphrbkwwe.svg.4495884156523242589" from CVE-2016-2317 problem
+	files.  Partial fix for SourceForge bug #358 "CVE-2016-2317 - SVG
+	heap/stack buffer overflows".
+
 2016-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/psd.c (ReadPSDImage): Fix SourceForge bug #341

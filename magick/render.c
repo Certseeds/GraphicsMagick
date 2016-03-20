@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -436,7 +436,7 @@ ConvertPathToPolygon(const PathInfo *path_info)
               {
                 number_edges<<=1;
                 MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-                  number_edges*sizeof(EdgeInfo));
+                                    MagickArraySize(number_edges,sizeof(EdgeInfo)));
                 if (polygon_info->edges == (EdgeInfo *) NULL)
                   {
                     DestroyPolygonInfo(polygon_info);
@@ -499,7 +499,7 @@ ConvertPathToPolygon(const PathInfo *path_info)
           {
             number_edges<<=1;
             MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-              number_edges*sizeof(EdgeInfo));
+                                MagickArraySize(number_edges,sizeof(EdgeInfo)));
             if (polygon_info->edges == (EdgeInfo *) NULL)
               {
                 DestroyPolygonInfo(polygon_info);
@@ -538,7 +538,7 @@ ConvertPathToPolygon(const PathInfo *path_info)
     if (n == number_points)
       {
         number_points<<=1;
-        MagickReallocMemory(PointInfo *,points,number_points*sizeof(PointInfo));
+        MagickReallocMemory(PointInfo *,points,MagickArraySize(number_points,sizeof(PointInfo)));
         if (points == (PointInfo *) NULL)
           {
             DestroyPolygonInfo(polygon_info);
@@ -565,7 +565,7 @@ ConvertPathToPolygon(const PathInfo *path_info)
             {
               number_edges<<=1;
               MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-                number_edges*sizeof(EdgeInfo));
+                                  MagickArraySize(number_edges,sizeof(EdgeInfo)));
               if (polygon_info->edges == (EdgeInfo *) NULL)
                 {
                   DestroyPolygonInfo(polygon_info);
@@ -2347,7 +2347,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               {
                 n++;
                 MagickReallocMemory(DrawInfo **,graphic_context,
-                  (n+1)*sizeof(DrawInfo *));
+                                    MagickArraySize((n+1),sizeof(DrawInfo *)));
                 if (graphic_context == (DrawInfo **) NULL)
                   {
                     ThrowException3(&image->exception,ResourceLimitError,
@@ -2703,7 +2703,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         continue;
       number_points<<=1;
       MagickReallocMemory(PrimitiveInfo *,primitive_info,
-        number_points*sizeof(PrimitiveInfo));
+                          MagickArraySize(number_points,sizeof(PrimitiveInfo)));
       if (primitive_info == (PrimitiveInfo *) NULL)
         {
           ThrowException3(&image->exception,ResourceLimitError,
@@ -2809,7 +2809,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         number_points+=length+1;
         MagickReallocMemory(PrimitiveInfo *,primitive_info,
-          number_points*sizeof(PrimitiveInfo));
+                            MagickArraySize(number_points,sizeof(PrimitiveInfo)));
         if (primitive_info == (PrimitiveInfo *) NULL)
           {
             ThrowException3(&image->exception,ResourceLimitError,
@@ -5496,8 +5496,8 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     if (q >= (max_strokes-6*BezierQuantum-360))
       {
          max_strokes+=6*BezierQuantum+360;
-         MagickReallocMemory(PointInfo *,path_p,max_strokes*sizeof(PointInfo));
-         MagickReallocMemory(PointInfo *,path_q,max_strokes*sizeof(PointInfo));
+         MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes,sizeof(PointInfo)));
+         MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes,sizeof(PointInfo)));
          if ((path_p == (PointInfo *) NULL) || (path_q == (PointInfo *) NULL))
            {
              MagickFreeMemory(path_p);
