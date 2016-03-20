@@ -2,6 +2,8 @@
 
 	* coders/psd.c (ReadPSDImage): Fix SourceForge bug #341
 	"out-of-bounds read in coders/psd.c:1435".
+	(WriteWhiteBackground): Fix SourceForge bug #350 "SEGV in
+	coders/psd.c:1685".
 
 	* coders/xcf.c (load_tile): Fix SourceForge bug #337
 	"heap-buffer-overflow in coders/xcf.c:373".

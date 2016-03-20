@@ -1665,7 +1665,7 @@ static void WriteImageChannels( Image* image, Image* tmp_image, unsigned char *p
 
 /* Write white background, RLE-compressed */
 
-static void WriteWhiteBackground( Image* image )
+static MagickPassFail WriteWhiteBackground( Image* image )
 {
   long
     count,
@@ -1674,9 +1674,13 @@ static void WriteWhiteBackground( Image* image )
 
   char
     *d,
-    scanline[256];
+    *scanline;
 
   int numChannels = 3, i, bytecount, dim = (int) (image->rows*numChannels);
+
+  scanline=MagickAllocateMemory(char *,(image->columns/128)*2 + 2);
+  if (scanline == (char *) NULL)
+    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,NULL);
 
   (void) WriteBlobMSBShort( image, 1 ); /* RLE compressed */
 
@@ -1716,6 +1720,10 @@ static void WriteWhiteBackground( Image* image )
     {
       (void) WriteBlob( image, count, scanline );
     }
+
+  MagickFreeMemory(scanline);
+
+  return MagickPass;
 }
 
 static void WritePascalString (Image* inImage, const char *inString, int inPad)
