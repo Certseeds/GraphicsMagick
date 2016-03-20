@@ -6,6 +6,8 @@
 	coders/psd.c:1685".
 	(DecodeImage): Fix SourceForge bug #351 "heap-buffer-overflow in
 	coders/psd.c:142".
+	(ReadPSDImage): Fix SourceForge bug #342 "out-of-bounds write in
+	coders/psd.c:892"
 
 	* coders/xcf.c (load_tile): Fix SourceForge bug #337
 	"heap-buffer-overflow in coders/xcf.c:373".

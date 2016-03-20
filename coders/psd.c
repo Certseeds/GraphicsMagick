@@ -889,6 +889,12 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                             layer_info[i].page.width,
                                             layer_info[i].channels);
                     }
+                  if (layer_info[i].channels >= MaxPSDChannels)
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Number of channels exceeds limit");
+                      ThrowPSDReaderException(CorruptImageError,ImproperImageHeader,image);
+                    }
                   for (j=0; j < layer_info[i].channels; j++)
                     {
                       layer_info[i].channel_info[j].type=ReadBlobMSBShort(image);
