@@ -1,5 +1,8 @@
 2016-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xcf.c (load_tile): Fix SourceForge bug #337
+	"heap-buffer-overflow in coders/xcf.c:373".
+
 	* coders/pict.c (WritePICTImage): Fix SourceForge bug #340
 	"out-of-bounds write in coders/pict.c:1929".
 

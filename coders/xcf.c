@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -326,6 +326,31 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
 
   unsigned char
     *graydata;
+
+  /*
+    Validate that claimed data length is sufficent for tile.
+  */
+  {
+    size_t
+      expected_data_length=0;
+
+    if (inDocInfo->image_type == GIMP_GRAY)
+      {
+        expected_data_length=tile_image->columns*tile_image->rows*
+          sizeof(unsigned char);
+      }
+    else if (inDocInfo->image_type == GIMP_RGB)
+      {
+        expected_data_length=tile_image->columns*tile_image->rows*
+          sizeof(XCFPixelPacket);
+      }
+    if (expected_data_length && (expected_data_length > data_length))
+      {
+        ThrowException(&image->exception,CorruptImageError,CorruptImage,
+                       "Claimed tile data length is insufficient for tile data");
+        return MagickFail;
+      }
+  }
 
   xcfdata = xcfodata = MagickAllocateMemory(XCFPixelPacket *,data_length);
   graydata = (unsigned char *) xcfdata;  /* used by gray and indexed */
@@ -1592,8 +1617,11 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		  int
 		    j;
 
-		  for (j=0; j < (current_layer-first_layer); j++)
-		    DestroyImage(layer_info[j].image);
+		  for (j=0; j <= (current_layer-first_layer); j++)
+                    {
+                      if (layer_info[j].image)
+                        DestroyImage(layer_info[j].image);
+                    }
 		  MagickFreeMemory(layer_info);
 		  CopyException(exception,&image->exception);
 		  CloseBlob(image);
