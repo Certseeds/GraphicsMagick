@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -2547,7 +2547,9 @@ MagickExport void GetPathComponent(const char *path,PathType type,
 %  Method GetToken gets a token from the token stream.  A token is defined
 %  as sequence of characters delimited by whitespace (e.g. clip-path), a
 %  sequence delimited with quotes (.e.g "Quote me"), or a sequence enclosed
-%  in parenthesis (e.g. rgb(0,0,0)).
+%  in parenthesis (e.g. rgb(0,0,0)).  The output to token is constrained to
+%  not overflow a buffer of size MaxTextExtent so it should be allocated with
+%  that size.
 %
 %  The format of the GetToken method is:
 %
@@ -2565,106 +2567,7 @@ MagickExport void GetPathComponent(const char *path,PathType type,
 */
 MagickExport void GetToken(const char *start,char **end,char *token)
 {
-  register char
-    *p;
-
-  register long
-    i;
-
-  double
-    double_val;
-
-  assert(start != (const char *) NULL);
-  assert(token != (char *) NULL);
-
-  i=0;
-  p=(char *) start;
-
-  if (*p != '\0')
-  {
-    while (isspace((int)(unsigned char) (*p)) && (*p != '\0'))
-      p++;
-    switch (*p)
-    {
-      case '"':
-      case '\'':
-      case '{':
-      {
-        register char
-          escape;
-
-        escape=(*p);
-        if (escape == '{')
-          escape='}';
-        for (p++; *p != '\0'; p++)
-        {
-          if ((*p == '\\') && ((*(p+1) == escape) || (*(p+1) == '\\')))
-            p++;
-          else
-            if (*p == escape)
-              {
-                p++;
-                break;
-              }
-          token[i++]=(*p);
-        }
-        break;
-      }
-      default:
-      {
-        char
-          *q;
-
-        double_val=strtod(p,&q);
-        (void) double_val;
-        if (p != q)
-          {
-            for ( ; p < q; p++)
-              token[i++]=(*p);
-            if (*p == '%')
-              token[i++]=(*p++);
-            break;
-          }
-        if ((*p != '\0') && !isalpha((int) *p) && (*p != *DirectorySeparator) &&
-	    (*p != '#') && (*p != '<'))
-          {
-            token[i++]=(*p++);
-            break;
-          }
-        for ( ; *p != '\0'; p++)
-        {
-          if ((isspace((int)(unsigned char) *p) || (*p == '=')) && (*(p-1) != '\\'))
-            break;
-          token[i++]=(*p);
-          if (*p == '(')
-            for (p++; *p != '\0'; p++)
-            {
-              token[i++]=(*p);
-              if ((*p == ')') && (*(p-1) != '\\'))
-                break;
-            }
-        }
-        break;
-      }
-    }
-  }
-  token[i]='\0';
-  {
-    char
-      *r;
-
-    /*
-      Parse token in form "url(#%s)"
-    */
-    if ((LocaleNCompare(token,"url(#",5) == 0) &&
-        ((r = strrchr(token,')')) != NULL))
-    {
-      *r='\0';
-      (void) memmove(token,token+5,r-token+1);
-    }
-  }
-  if (end != (char **) NULL)
-    *end=p;
+  (void) MagickGetToken(start,end,token, MaxTextExtent);
 }
 
 /*
@@ -3695,6 +3598,166 @@ MagickExport void MagickFormatString(char *string,
   va_start(operands,format);
   MagickFormatStringList(string, length, format, operands);
   va_end(operands);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k G e t T o k e n                                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickGetToken gets a token from the token stream.  A token is defined
+%  as sequence of characters delimited by whitespace (e.g. clip-path), a
+%  sequence delimited with quotes (.e.g "Quote me"), or a sequence enclosed
+%  in parenthesis (e.g. rgb(0,0,0)).
+%
+%  The format of the MagickGetToken method is:
+%
+%      void MagickGetToken(const char *start,char **end,char *token,
+%                          const size_t buffer_length)
+%
+%  A description of each parameter follows:
+%
+%    o start: the start of the token sequence.
+%
+%    o end: point to the end of the token sequence (may be NULL).
+%
+%    o token: copy the token to this buffer.
+%
+%    o buffer_length: size of the token buffer.  If the token exceeds
+%             the buffer size, the token will be truncated, but the
+%             parser will still update the end pointer as if the
+%             truncation did not occur.
+%
+%    o returns: Size of the consumed token, not including a terminating
+%             null character.  If this is larger or equal to the buffer
+%             size then truncation has occured.
+%
+*/
+MagickExport size_t MagickGetToken(const char *start,char **end,char *token,
+                                   const size_t buffer_length)
+{
+  register char
+    *p;
+
+  register size_t
+    i;
+
+  register size_t
+    length = buffer_length - 1;
+
+  double
+    double_val;
+
+  assert(start != (const char *) NULL);
+  assert(token != (char *) NULL);
+
+  i=0;
+  p=(char *) start;
+
+  if (*p != '\0')
+  {
+    while (isspace((int)(unsigned char) (*p)) && (*p != '\0'))
+      p++;
+    switch (*p)
+    {
+      case '"':
+      case '\'':
+      case '{':
+      {
+        register char
+          escape;
+
+        escape=(*p);
+        if (escape == '{')
+          escape='}';
+        for (p++; *p != '\0'; p++)
+        {
+          if ((*p == '\\') && ((*(p+1) == escape) || (*(p+1) == '\\')))
+            p++;
+          else
+            if (*p == escape)
+              {
+                p++;
+                break;
+              }
+          if (i < length)
+            token[i++]=(*p);
+        }
+        break;
+      }
+      default:
+      {
+        char
+          *q;
+
+        double_val=strtod(p,&q);
+        (void) double_val;
+        if (p != q)
+          {
+            for ( ; p < q; p++)
+              if (i < length)
+                token[i++]=(*p);
+            if (*p == '%')
+              if (i < length)
+                {
+                  token[i++]=(*p);
+                  p++;
+                }
+            break;
+          }
+        if ((*p != '\0') && !isalpha((int) *p) && (*p != *DirectorySeparator) &&
+	    (*p != '#') && (*p != '<'))
+          {
+            if (i < length)
+              {
+                token[i++]=(*p);
+                p++;
+              }
+            break;
+          }
+        for ( ; *p != '\0'; p++)
+        {
+          if ((isspace((int)(unsigned char) *p) || (*p == '=')) && (*(p-1) != '\\'))
+            break;
+          if (i < length)
+            token[i++]=(*p);
+          if (*p == '(')
+            for (p++; *p != '\0'; p++)
+            {
+              if (i < length)
+                token[i++]=(*p);
+              if ((*p == ')') && (*(p-1) != '\\'))
+                break;
+            }
+        }
+        break;
+      }
+    }
+  }
+  token[i]='\0';
+  {
+    char
+      *r;
+
+    /*
+      Parse token in form "url(#%s)"
+    */
+    if ((LocaleNCompare(token,"url(#",5) == 0) &&
+        ((r = strrchr(token,')')) != NULL))
+    {
+      *r='\0';
+      (void) memmove(token,token+5,r-token+1);
+    }
+  }
+  if (end != (char **) NULL)
+    *end=p;
+  return (p-start+1);
 }
 
 /*
@@ -5209,7 +5272,7 @@ MagickExport int SystemCommand(const unsigned int verbose,const char *command)
     GetExceptionInfo(&exception);
     end=(char *) NULL;
     program[0]='\0';
-    GetToken(command,&end,program);
+    MagickGetToken(command,&end,program,MaxTextExtent);
     if (MagickConfirmAccess(FileExecuteConfirmAccessMode,program,&exception)
 	== MagickFail)
       {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1710,14 +1710,18 @@ ReadModuleConfigureFile(const char *basename,
       MagickBool
 	in_entry;
 
+      size_t
+        token_max_length;
+
       token=AcquireString(xml);
+      token_max_length=strlen(token);
       in_entry=MagickFalse;
       for (q=xml; *q != '\0'; )
 	{
 	  /*
 	    Interpret XML.
 	  */
-	  GetToken(q,&q,token);
+	  MagickGetToken(q,&q,token,token_max_length);
 	  if (*token == '\0')
 	    break;
 	  (void) strlcpy(keyword,token,sizeof(keyword));
@@ -1727,7 +1731,7 @@ ReadModuleConfigureFile(const char *basename,
 		Comment element.
 	      */
 	      while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
-		GetToken(q,&q,token);
+		MagickGetToken(q,&q,token,token_max_length);
 	      continue;
 	    }
 	  if (LocaleCompare(keyword,"<include") == 0)
@@ -1738,10 +1742,10 @@ ReadModuleConfigureFile(const char *basename,
 	      while ((*token != '>') && (*q != '\0'))
 		{
 		  (void) strlcpy(keyword,token,MaxTextExtent);
-		  GetToken(q,&q,token);
+		  MagickGetToken(q,&q,token,token_max_length);
 		  if (*token != '=')
 		    continue;
-		  GetToken(q,&q,token);
+		  MagickGetToken(q,&q,token,token_max_length);
 		  if (LocaleCompare(keyword,"file") == 0)
 		    {
 		      if (depth > 200)
@@ -1821,11 +1825,11 @@ ReadModuleConfigureFile(const char *basename,
 	    }
 	  if (module_list == (ModuleInfo *) NULL)
 	    continue;
-	  GetToken(q,(char **) NULL,token);
+	  MagickGetToken(q,(char **) NULL,token,token_max_length);
 	  if (*token != '=')
 	    continue;
-	  GetToken(q,&q,token);
-	  GetToken(q,&q,token);
+	  MagickGetToken(q,&q,token,token_max_length);
+	  MagickGetToken(q,&q,token,token_max_length);
 	  switch (*keyword)
 	    {
 	    case 'M':

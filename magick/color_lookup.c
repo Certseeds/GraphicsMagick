@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1477,17 +1477,21 @@ ReadColorConfigureFile(const char *basename,
 	*q,
 	*token;
 
+      size_t
+        token_max_length;
+
       MagickBool
 	in_entry;
 
       token=AcquireString(xml);
+      token_max_length=strlen(token);
       in_entry=MagickFalse;
       for (q=xml; *q != '\0'; )
 	{
 	  /*
 	    Interpret XML.
 	  */
-	  GetToken(q,&q,token);
+	  MagickGetToken(q,&q,token,token_max_length);
 	  if (*token == '\0')
 	    break;
 	  (void) strlcpy(keyword,token,sizeof(keyword));
@@ -1497,7 +1501,7 @@ ReadColorConfigureFile(const char *basename,
 		Comment element.
 	      */
 	      while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
-		GetToken(q,&q,token);
+		MagickGetToken(q,&q,token,token_max_length);
 	      continue;
 	    }
 	  if (LocaleCompare(keyword,"<include") == 0)
@@ -1508,10 +1512,10 @@ ReadColorConfigureFile(const char *basename,
 	      while ((*token != '>') && (*q != '\0'))
 		{
 		  (void) strlcpy(keyword,token,MaxTextExtent);
-		  GetToken(q,&q,token);
+		  MagickGetToken(q,&q,token,token_max_length);
 		  if (*token != '=')
 		    continue;
-		  GetToken(q,&q,token);
+		  MagickGetToken(q,&q,token,token_max_length);
 		  if (LocaleCompare(keyword,"file") == 0)
 		    {
 		      if (depth > 200)
@@ -1592,11 +1596,11 @@ ReadColorConfigureFile(const char *basename,
 	    }
 	  if (color_list == (ColorInfo *) NULL)
 	    continue;
-	  GetToken(q,(char **) NULL,token);
+	  MagickGetToken(q,(char **) NULL,token,token_max_length);
 	  if (*token != '=')
 	    continue;
-	  GetToken(q,&q,token);
-	  GetToken(q,&q,token);
+	  MagickGetToken(q,&q,token,token_max_length);
+	  MagickGetToken(q,&q,token,token_max_length);
 	  switch (*keyword)
 	    {
 	    case 'B':

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -120,7 +120,8 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     *p;
 
   size_t
-    length;
+    length,
+    token_max_length;
 
   /*
     Read the locale configure file.
@@ -131,12 +132,13 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     return(False);
   (void) strlcpy(locale,"/",sizeof(locale));
   token=AllocateString(xml);
+  token_max_length=strlen(token);
   for (q=xml; *q != '\0'; )
   {
     /*
       Interpret XML.
     */
-    GetToken(q,&q,token);
+    MagickGetToken(q,&q,token,token_max_length);
     if (*token == '\0')
       break;
     (void) strlcpy(keyword,token,MaxTextExtent);
@@ -150,7 +152,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         */
         p=q;
         while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
         length=Min(q-p-2,MaxTextExtent-1);
         (void) strncpy(comment,p+1,length);
         comment[length]='\0';
@@ -166,10 +168,10 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         while ((*token != '>') && (*q != '\0'))
         {
           (void) strlcpy(keyword,token,MaxTextExtent);
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (*token != '=')
             continue;
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (LocaleCompare(keyword,"file") == 0)
             {
               if (depth > 200)
@@ -198,10 +200,10 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         while ((*token != '>') && (*q != '\0'))
         {
           (void) strlcpy(keyword,token,MaxTextExtent);
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (*token != '=')
             continue;
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (LocaleCompare(keyword,"name") == 0)
             {
               (void) strlcpy(locale,token,MaxTextExtent);
@@ -228,10 +230,10 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         while ((*token != '>') && (*q != '\0'))
         {
           (void) strlcpy(keyword,token,MaxTextExtent);
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (*token != '=')
             continue;
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (LocaleCompare(keyword,"name") == 0)
             {
               (void) strlcat(locale,token,sizeof(locale));
@@ -275,7 +277,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         (void) strlcat(locale,"/",sizeof(locale));
         continue;
       }
-    GetToken(q,(char **) NULL,token);
+    MagickGetToken(q,(char **) NULL,token,token_max_length);
     if (*token != '=')
       continue;
   }

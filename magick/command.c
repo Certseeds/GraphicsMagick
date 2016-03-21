@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -9374,11 +9374,11 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             p=argv[++i];
             for (elements=0; *p != '\0'; elements++)
             {
-              GetToken(p,&p,token);
+              MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
               if (*token == ',')
-                GetToken(p,&p,token);
+                MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
             }
@@ -9399,11 +9399,11 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             p=argv[i];
             for (x=0; *p != '\0'; x++)
             {
-              GetToken(p,&p,token);
+              MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
               if (token[0] == ',')
-                GetToken(p,&p,token);
+                MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
               kernel[x]=MagickAtoF(token);
@@ -10472,11 +10472,11 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             p=argv[++i];
             for (elements=0; *p != '\0'; elements++)
             {
-              GetToken(p,&p,token);
+              MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
               if (token[0] == ',')
-                GetToken(p,&p,token);
+                MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
             }
@@ -10497,9 +10497,9 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             p=argv[i];
             for (x=0; *p != '\0'; x++)
             {
-              GetToken(p,&p,token);
+              MagickGetToken(p,&p,token,MaxTextExtent);
               if (token[0] == ',')
-                GetToken(p,&p,token);
+                MagickGetToken(p,&p,token,MaxTextExtent);
 	      if (token[0] == '\0')
 		break;
 	      matrix[x]=MagickAtoF(token);

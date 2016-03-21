@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -964,7 +964,8 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
     *xml;
 
   size_t
-    length=0;
+    length=0,
+    token_max_length;
 
   MagickPassFail
     status=MagickPass;
@@ -993,12 +994,13 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
   if (xml == (char *) NULL)
     return MagickFail;
   token=AllocateString(xml);
+  token_max_length=strlen(token);
   for (q=xml; *q != '\0'; )
   {
     /*
       Interpret Coder.
     */
-    GetToken(q,&q,token);
+    MagickGetToken(q,&q,token,token_max_length);
     if (*token == '\0')
       break;
     (void) strlcpy(keyword,token,MaxTextExtent);
@@ -1008,7 +1010,7 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
           Comment element.
         */
         while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
         continue;
       }
     if (LocaleCompare(keyword,"<include") == 0)
@@ -1019,10 +1021,10 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
         while ((*token != '>') && (*q != '\0'))
         {
           (void) strlcpy(keyword,token,MaxTextExtent);
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (*token != '=')
             continue;
-          GetToken(q,&q,token);
+          MagickGetToken(q,&q,token,token_max_length);
           if (LocaleCompare(keyword,"file") == 0)
             {
               if (depth > 200)
@@ -1056,11 +1058,11 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
       }
     if (log_info == (LogInfo *) NULL)
       continue;
-    GetToken(q,(char **) NULL,token);
+    MagickGetToken(q,(char **) NULL,token,token_max_length);
     if (*token != '=')
       continue;
-    GetToken(q,&q,token);
-    GetToken(q,&q,token);
+    MagickGetToken(q,&q,token,token_max_length);
+    MagickGetToken(q,&q,token,token_max_length);
     switch (*keyword)
     {
       case 'E':
