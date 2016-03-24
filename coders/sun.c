@@ -162,13 +162,13 @@ static unsigned int IsSUN(const unsigned char *magick,const size_t length)
 %
 %  The format of the DecodeImage method is:
 %
-%      unsigned int DecodeImage(const unsigned char *compressed_pixels,
+%      MagickPassFail DecodeImage(const unsigned char *compressed_pixels,
 %        const size_t length,unsigned char *pixels)
 %
 %  A description of each parameter follows:
 %
-%    o status:  Method DecodeImage returns True if all the pixels are
-%      uncompressed without error, otherwise False.
+%    o status:  Method DecodeImage returns True (MagickPass) if all the
+%      pixels are uncompressed without error, otherwise False (MagickFail).
 %
 %    o compressed_pixels:  The address of a byte (8 bits) array of compressed
 %      pixel data.
@@ -209,26 +209,37 @@ DecodeImage(const unsigned char *compressed_pixels,
   q=pixels;
   while (((size_t) (p-compressed_pixels) < compressed_size) &&
          ((size_t) (q-pixels) < pixels_size))
-  {
-    byte=(*p++);
-    if (byte != 128U)
-      *q++=byte;
-    else
-      {
-        /*
-          Runlength-encoded packet: <count><byte>
-        */
-        count=(*p++);
-        if (count > 0)
-          byte=(*p++);
-        while ((count >= 0) && ((size_t) (q-pixels) < pixels_size))
+    {
+      byte=(*p++);
+      if (byte != 128U)
         {
+          /*
+            Stand-alone byte
+          */
           *q++=byte;
-          count--;
         }
-     }
-  }
-  return (((size_t) (q-pixels) == pixels_size) ? MagickTrue : MagickFalse);
+      else
+        {
+          /*
+            Runlength-encoded packet: <count><byte>
+          */
+          if (((size_t) (p-compressed_pixels) >= compressed_size))
+            break;
+          count=(*p++);
+          if (count > 0)
+            {
+              if (((size_t) (p-compressed_pixels) >= compressed_size))
+                break;
+              byte=(*p++);
+            }
+          while ((count >= 0) && ((size_t) (q-pixels) < pixels_size))
+            {
+              *q++=byte;
+              count--;
+            }
+        }
+    }
+  return (((size_t) (q-pixels) == pixels_size) ? MagickPass : MagickFail);
 }
 
 /*

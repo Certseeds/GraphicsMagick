@@ -1,3 +1,8 @@
+2016-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sun.c (DecodeImage): Fix SourceForge bug #368
+	"out-of-bounds read in coders/sun.c:223:17".
+
 2016-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (GetUserSpaceCoordinateValue): Fix stack buffer
