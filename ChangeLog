@@ -1,7 +1,11 @@
 2016-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/shear.c (RotateImage): Fix SourceForge bug #375 "SIGABRT
+	in magick/image.c:1230".
+
 	* coders/sun.c (DecodeImage): Fix SourceForge bug #368
-	"out-of-bounds read in coders/sun.c:223:17".
+	"out-of-bounds read in coders/sun.c:223:17" and bug #363
+	"out-of-bounds read in coders/sun.c:221:16".
 
 2016-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
