@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1285,9 +1285,11 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     (void) ReadBlobByte(image);
 
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "id=\"%s\" version=%g class=%s compression=%s matte=%s "
+                          "id=\"%s\" version=%g class=%s colorspace=%s compression=%s matte=%s "
 			  "columns=%lu rows=%lu depth=%u",
-                          id,version,ClassTypeToString(image->storage_class),
+                          id,version,
+                          ClassTypeToString(image->storage_class),
+                          ColorspaceTypeToString(image->colorspace),
                           CompressionTypeToString(image->compression),
                           MagickBoolToString(image->matte),
                           image->columns, image->rows, image->depth);
@@ -1297,7 +1299,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     */
     if ((LocaleCompare(id,"ImageMagick") != 0) ||
         (image->storage_class == UndefinedClass) ||
-        (image->compression == UndefinedCompression) || (image->columns == 0) ||
+        (image->compression == UndefinedCompression) ||
+        (image->colorspace == UndefinedColorspace) ||
+        (image->columns == 0) ||
         (image->rows == 0))
       {
         if (image->previous)

@@ -1,5 +1,8 @@
 2016-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (ReadMIFFImage): Fix SourceForge bug #376 "SIGABRT
+	in magick/colorspace.c:1052".
+
 	* magick/shear.c (RotateImage): Fix SourceForge bug #375 "SIGABRT
 	in magick/image.c:1230".
 
