@@ -1,5 +1,9 @@
 2016-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (ReadDIBImage): Fix SourceForge bug #367
+	"out-of-bounds read in coders/dib.c:706:13" and bug #370
+	"out-of-bounds read in coders/dib.c:716:15".
+
 	* coders/pict.c (ReadPICTImage): Fix SourceForge bug #365
 	"out-of-bounds read in magick/image.c:1305:3"
 

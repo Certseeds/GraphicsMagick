@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -702,6 +702,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
           for (bit=0; bit < 8; bit++)
           {
             index=((*p) & (0x80 >> bit) ? 0x01 : 0x00);
+            VerifyColormapIndex(image,index);
             indexes[x+bit]=index;
             *q++=image->colormap[index];
           }
@@ -712,6 +713,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             for (bit=0; bit < (long) (image->columns % 8); bit++)
             {
               index=((*p) & (0x80 >> bit) ? 0x01 : 0x00);
+              VerifyColormapIndex(image,index);
               indexes[x+bit]=index;
               *q++=image->colormap[index];
             }
