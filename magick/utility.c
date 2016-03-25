@@ -2195,90 +2195,101 @@ MagickExport int GetMagickGeometry(const char *geometry,long *x,long *y,
 */
 MagickExport char *GetPageGeometry(const char *page_geometry)
 {
-  static const char
-    *PageSizes[][2]=
+#define PAGE_SIZE(name, geometry) { name, sizeof(name)-1, geometry }
+  static const struct
+  {
+    char
+      *name;
+
+    size_t
+       name_length;
+
+    char
+       *geometry;
+  }
+  PageSizes[] =
     {
-      { "4x6",  "288x432" },
-      { "5x7",  "360x504" },
-      { "7x9",  "504x648" },
-      { "8x10", "576x720" },
-      { "9x11",  "648x792" },
-      { "9x12",  "648x864" },
-      { "10x13",  "720x936" },
-      { "10x14",  "720x1008" },
-      { "11x17",  "792x1224" },
-      { "A0",  "2384x3370" },
-      { "A1",  "1684x2384" },
-      { "A10", "73x105" },
-      { "A2",  "1191x1684" },
-      { "A3",  "842x1191" },
-      { "A4",  "595x842" },
-      { "A4SMALL", "595x842" },
-      { "A5",  "420x595" },
-      { "A6",  "297x420" },
-      { "A7",  "210x297" },
-      { "A8",  "148x210" },
-      { "A9",  "105x148" },
-      { "ARCHA", "648x864" },
-      { "ARCHB", "864x1296" },
-      { "ARCHC", "1296x1728" },
-      { "ARCHD", "1728x2592" },
-      { "ARCHE", "2592x3456" },
-      { "B0",  "2920x4127" },
-      { "B1",  "2064x2920" },
-      { "B10", "91x127" },
-      { "B2",  "1460x2064" },
-      { "B3",  "1032x1460" },
-      { "B4",  "729x1032" },
-      { "B5",  "516x729" },
-      { "B6",  "363x516" },
-      { "B7",  "258x363" },
-      { "B8",  "181x258" },
-      { "B9",  "127x181" },
-      { "C0",  "2599x3676" },
-      { "C1",  "1837x2599" },
-      { "C2",  "1298x1837" },
-      { "C3",  "918x1296" },
-      { "C4",  "649x918" },
-      { "C5",  "459x649" },
-      { "C6",  "323x459" },
-      { "C7",  "230x323" },
-      { "EXECUTIVE", "540x720" },
-      { "FLSA", "612x936" },
-      { "FLSE", "612x936" },
-      { "FOLIO",  "612x936" },
-      { "HALFLETTER", "396x612" },
-      { "ISOB0", "2835x4008" },
-      { "ISOB1", "2004x2835" },
-      { "ISOB10", "88x125" },
-      { "ISOB2", "1417x2004" },
-      { "ISOB3", "1001x1417" },
-      { "ISOB4", "709x1001" },
-      { "ISOB5", "499x709" },
-      { "ISOB6", "354x499" },
-      { "ISOB7", "249x354" },
-      { "ISOB8", "176x249" },
-      { "ISOB9", "125x176" },
-      { "LEDGER",  "1224x792" },
-      { "LEGAL",  "612x1008" },
-      { "LETTER", "612x792" },
-      { "LETTERSMALL",  "612x792" },
-      { "QUARTO",  "610x780" },
-      { "STATEMENT",  "396x612" },
-      { "TABLOID",  "792x1224" },
-      { (char *) NULL, (char *) NULL }
+      PAGE_SIZE("4x6",  "288x432"),
+      PAGE_SIZE("5x7",  "360x504"),
+      PAGE_SIZE("7x9",  "504x648"),
+      PAGE_SIZE("8x10", "576x720"),
+      PAGE_SIZE("9x11",  "648x792"),
+      PAGE_SIZE("9x12",  "648x864"),
+      PAGE_SIZE("10x13",  "720x936"),
+      PAGE_SIZE("10x14",  "720x1008"),
+      PAGE_SIZE("11x17",  "792x1224"),
+      PAGE_SIZE("A0",  "2384x3370"),
+      PAGE_SIZE("A1",  "1684x2384"),
+      PAGE_SIZE("A10", "73x105"),
+      PAGE_SIZE("A2",  "1191x1684"),
+      PAGE_SIZE("A3",  "842x1191"),
+      PAGE_SIZE("A4",  "595x842"),
+      PAGE_SIZE("A4SMALL", "595x842"),
+      PAGE_SIZE("A5",  "420x595"),
+      PAGE_SIZE("A6",  "297x420"),
+      PAGE_SIZE("A7",  "210x297"),
+      PAGE_SIZE("A8",  "148x210"),
+      PAGE_SIZE("A9",  "105x148"),
+      PAGE_SIZE("ARCHA", "648x864"),
+      PAGE_SIZE("ARCHB", "864x1296"),
+      PAGE_SIZE("ARCHC", "1296x1728"),
+      PAGE_SIZE("ARCHD", "1728x2592"),
+      PAGE_SIZE("ARCHE", "2592x3456"),
+      PAGE_SIZE("B0",  "2920x4127"),
+      PAGE_SIZE("B1",  "2064x2920"),
+      PAGE_SIZE("B10", "91x127"),
+      PAGE_SIZE("B2",  "1460x2064"),
+      PAGE_SIZE("B3",  "1032x1460"),
+      PAGE_SIZE("B4",  "729x1032"),
+      PAGE_SIZE("B5",  "516x729"),
+      PAGE_SIZE("B6",  "363x516"),
+      PAGE_SIZE("B7",  "258x363"),
+      PAGE_SIZE("B8",  "181x258"),
+      PAGE_SIZE("B9",  "127x181"),
+      PAGE_SIZE("C0",  "2599x3676"),
+      PAGE_SIZE("C1",  "1837x2599"),
+      PAGE_SIZE("C2",  "1298x1837"),
+      PAGE_SIZE("C3",  "918x1296"),
+      PAGE_SIZE("C4",  "649x918"),
+      PAGE_SIZE("C5",  "459x649"),
+      PAGE_SIZE("C6",  "323x459"),
+      PAGE_SIZE("C7",  "230x323"),
+      PAGE_SIZE("EXECUTIVE", "540x720"),
+      PAGE_SIZE("FLSA", "612x936"),
+      PAGE_SIZE("FLSE", "612x936"),
+      PAGE_SIZE("FOLIO",  "612x936"),
+      PAGE_SIZE("HALFLETTER", "396x612"),
+      PAGE_SIZE("ISOB0", "2835x4008"),
+      PAGE_SIZE("ISOB1", "2004x2835"),
+      PAGE_SIZE("ISOB10", "88x125"),
+      PAGE_SIZE("ISOB2", "1417x2004"),
+      PAGE_SIZE("ISOB3", "1001x1417"),
+      PAGE_SIZE("ISOB4", "709x1001"),
+      PAGE_SIZE("ISOB5", "499x709"),
+      PAGE_SIZE("ISOB6", "354x499"),
+      PAGE_SIZE("ISOB7", "249x354"),
+      PAGE_SIZE("ISOB8", "176x249"),
+      PAGE_SIZE("ISOB9", "125x176"),
+      PAGE_SIZE("LEDGER",  "1224x792"),
+      PAGE_SIZE("LEGAL",  "612x1008"),
+      PAGE_SIZE("LETTER", "612x792"),
+      PAGE_SIZE("LETTERSMALL",  "612x792"),
+      PAGE_SIZE("QUARTO",  "610x780"),
+      PAGE_SIZE("STATEMENT",  "396x612"),
+      PAGE_SIZE("TABLOID",  "792x1224"),
     };
 
   char
-    *page;
+    page[MaxTextExtent];
 
-  register long
+  register size_t
     i;
 
   assert(page_geometry != (char *) NULL);
-  page=AllocateString(page_geometry);
-  for (i=0; *PageSizes[i] != (char *) NULL; i++)
-    if (LocaleNCompare(PageSizes[i][0],page,strlen(PageSizes[i][0])) == 0)
+  strlcpy(page,page_geometry,MaxTextExtent);
+  for (i=0; i < sizeof(PageSizes)/sizeof(PageSizes[0]); i++)
+    if (LocaleNCompare(PageSizes[i].name,page_geometry,
+                       PageSizes[i].name_length) == 0)
       {
         int
           flags;
@@ -2289,16 +2300,15 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
         /*
           Replace mneumonic with the equivalent size in dots-per-inch.
         */
-        (void) strlcpy(page,PageSizes[i][1],MaxTextExtent);
-        (void) strlcat(page,page_geometry+strlen(PageSizes[i][0]),
-          MaxTextExtent);
+        FormatString(page,"%s%.80s", PageSizes[i].geometry,
+                     page_geometry+PageSizes[i].name_length);
         flags=GetGeometry(page,&geometry.x,&geometry.y,&geometry.width,
           &geometry.height);
         if (!(flags & GreaterValue))
           (void) strcat(page,">");
         break;
       }
-  return(page);
+  return (AcquireString(page));
 }
 
 /*

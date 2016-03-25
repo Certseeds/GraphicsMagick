@@ -1,3 +1,8 @@
+2016-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (GetPageGeometry): Fix SourceForge bug #374
+	"out-of-bounds write in magick/utility.c:4355:7"
+
 2016-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ReadMIFFImage): Fix SourceForge bug #376 "SIGABRT
