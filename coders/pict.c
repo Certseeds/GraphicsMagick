@@ -1361,6 +1361,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         tile_image=ReadImage(clone_info,exception);
         (void) LiberateTemporaryFile(clone_info->filename);
         DestroyImageInfo(clone_info);
+        clone_info=(ImageInfo *) NULL;
         if (tile_image == (Image *) NULL)
           continue;
         FormatString(geometry,"%lux%lu",Max(image->columns,tile_image->columns),

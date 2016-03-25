@@ -1,5 +1,8 @@
 2016-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Fix SourceForge bug #365
+	"out-of-bounds read in magick/image.c:1305:3"
+
 	* magick/utility.c (GetPageGeometry): Fix SourceForge bug #374
 	"out-of-bounds write in magick/utility.c:4355:7"
 
