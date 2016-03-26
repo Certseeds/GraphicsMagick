@@ -1,3 +1,8 @@
+2016-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/rle.c (ReadRLEImage): Fix SourceForge bug #371
+	"out-of-bounds read in coders/rle.c:633:39".
+
 2016-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage): Fix SourceForge bug #367
