@@ -1,5 +1,9 @@
 2016-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sgi.c (ReadSGIImage): Fix SourceForge bug #366
+	"out-of-bounds write in coders/sgi.c:528:4" and bug #369
+	"out-of-bounds write in coders/sgi.c:535:4".
+
 	* coders/rle.c (ReadRLEImage): Fix SourceForge bug #371
 	"out-of-bounds read in coders/rle.c:633:39".
 

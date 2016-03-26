@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -296,9 +296,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
-  unsigned long
-    bytes_per_pixel,
-    number_pixels;
+  size_t
+    bytes_per_pixel;
 
   /*
     Open image file.
@@ -341,7 +340,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		      iris_info.dummy2);
 
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "    Header: Storage=%u, BPC=%u, Dimension=%u, XSize=%u, YSize=%u, ZSize=%u, PixMin=%u, PixMax=%u, image_name=\"%.79s\", color_map=%u",
+			    "    Header: Storage=%u, BPC=%u, Dimension=%u, "
+                            "XSize=%u, YSize=%u, ZSize=%u, PixMin=%u, "
+                            "PixMax=%u, image_name=\"%.79s\", color_map=%u",
 			    (unsigned int) iris_info.storage,
 			    (unsigned int) iris_info.bytes_per_pixel,
 			    (unsigned int) iris_info.dimension,
@@ -393,6 +394,10 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  /* Error */
 	  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 	}
+
+      /* We only support zsize up to 4. Code further on assumes that. */
+      if (iris_info.zsize > 4)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
       if (iris_info.dimension == 1)
 	{
@@ -490,11 +495,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	Allocate SGI pixels.
       */
       bytes_per_pixel=iris_info.bytes_per_pixel;
-      number_pixels=(unsigned long) iris_info.xsize*(unsigned long) iris_info.ysize;
-      if (4*bytes_per_pixel*number_pixels < number_pixels) /* Overflow? */
-	ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
-      iris_pixels=MagickAllocateMemory(unsigned char *,
-				       4*bytes_per_pixel*number_pixels);
+      iris_pixels=MagickAllocateArray(unsigned char *,
+                                      MagickArraySize(4,bytes_per_pixel),
+                                      MagickArraySize(iris_info.xsize,iris_info.ysize));
       if (iris_pixels == (unsigned char *) NULL)
 	ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       if (iris_info.storage != 0x01)
@@ -502,8 +505,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  /*
 	    Read standard image format.
 	  */
-	  scanline=MagickAllocateMemory(unsigned char *,
-					bytes_per_pixel*iris_info.xsize);
+	  scanline=MagickAllocateArray(unsigned char *,
+                                       bytes_per_pixel,iris_info.xsize);
 	  if (scanline == (unsigned char *) NULL)
 	    ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
