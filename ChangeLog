@@ -1,5 +1,11 @@
 2016-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image.c (DestroyImage): Simply return if image is NULL
+	since it is more user-friendly.
+
+	* magick/shear.c (RotateImage): Fix Coverity issue 124519
+	"Logically dead code".
+
 	* magick/effect.c (BlurImage): Fix Coverity issue 124520
 	"Dereference after null check".
 

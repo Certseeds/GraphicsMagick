@@ -1350,7 +1350,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store IPTC profile, size %" MAGICK_SIZE_T_F
-                            "u bytes",length);
+                            "u bytes",(MAGICK_SIZE_T) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
       DetachBlob(buff->blob);
       MagickFreeMemory(blob)

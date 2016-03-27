@@ -1729,8 +1729,6 @@ RotateImage(const Image *image,const double degrees,ExceptionInfo *exception)
 
  rotate_image_exception:
 
-  if (integral_image != (Image *) NULL)
-    DestroyImage(integral_image);
   if (rotate_image != (Image *) NULL)
     DestroyImage(rotate_image);
   return (Image *) NULL;
