@@ -1300,7 +1300,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
 
       DestroyImage(buff);
     }
-  if (LocaleCompare(image_info->magick,"IPTC") == 0)
+  if (LocaleNCompare(image_info->magick,"IPTC",4) == 0)
     {
       buff=AllocateImage((ImageInfo *) NULL);
       if (buff == (Image *) NULL)
@@ -1310,7 +1310,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
         {
           DestroyImage(buff);
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image)
+                               image);
         }
       AttachBlob(buff->blob,blob,length);
       /* write out the header - length field patched below */
@@ -1336,14 +1336,21 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
         }
 
       /* subtract off the length of the 8BIM stuff */
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
+      if ((blob == (const unsigned char *) NULL) || (GetBlobSize(buff) < 12))
+        {
+          DestroyImage(buff);
+          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                               image);
+        }
       length=GetBlobSize(buff)-12;
       blob[10]=(unsigned char) ((length >> 8) & 0xff);
       blob[11]=(unsigned char) (length & 0xff);
       blob=GetBlobStreamData(buff);
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Store IPTC profile, size %lu bytes",
-                            (unsigned long) length);
+                            "Store IPTC profile, size %" MAGICK_SIZE_T_F
+                            "u bytes",length);
       (void) SetImageProfile(image,"IPTC",blob,length);
       DetachBlob(buff->blob);
       MagickFreeMemory(blob)

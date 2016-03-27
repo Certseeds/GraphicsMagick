@@ -2,6 +2,8 @@
 
 	* coders/meta.c (convertHTMLcodes): Fix SourceForge bug #373
 	"out-of-bounds read in coders/meta.c:444:50"
+	(ReadMETAImage): Fix SourceForge bug #364 "out-of-bounds write in
+	coders/meta.c:1331:7".
 
 2016-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
