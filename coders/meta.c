@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -129,11 +129,13 @@ static unsigned int IsMETA(const unsigned char *magick,const size_t length)
 
 typedef struct _html_code
 {
-  short
+  unsigned short
     len;
+
   const char
     *code,
     val;
+
 } html_code;
 
 static html_code const html_codes[] = {
@@ -179,29 +181,36 @@ static int stringnicmp(const char *p,const char *q,size_t n)
   return(toupper((int) *p)-toupper((int) *q));
 }
 
-static int convertHTMLcodes(char *s, int len)
+static size_t convertHTMLcodes(char *s, const size_t len)
 {
-  if (len <=0 || s==(char*)NULL || *s=='\0')
+  int val;
+
+  if ((len == 0) || (s == (char*) NULL) || (*s=='\0'))
     return 0;
 
-  if (s[1] == '#')
-    {
-      int val, o;
+  /*
+    Check for hex or decimal character escape.
 
-      if (sscanf(s,"&#%d;",&val) == 1)
-      {
-        o = 3;
-        while (s[o] != ';')
+    e.g. hex: "&#xA0;", decimal "&#160;"
+
+    Note that scanf is expected to parse the number in hex or decimal
+    and that it does not require the terminating ';' to appear in
+    order to parse the numeric argument.
+  */
+  if ((len > 3) && (s[1] == '#') && (strchr(s,';') != (char *) NULL) &&
+      (sscanf(s,"&#%d;",&val) == 1))
+    {
+      size_t o = 3;
+      while (s[o] != ';')
         {
           o++;
           if (o > 5)
             break;
         }
-        if (o < 6)
-          (void) memmove(s+1,s+1+o,strlen(s+1+o)+1);
-        *s = val;
-        return o;
-      }
+      if (o < 6)
+        (void) memmove(s+1,s+1+o,strlen(s+1+o)+1);
+      *s = val;
+      return o;
     }
   else
     {
@@ -373,7 +382,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
             int
               next;
 
-            unsigned long
+            size_t
               len;
 
             char
@@ -390,7 +399,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                   char
                     *s = &token[next-1];
 
-                  len -= convertHTMLcodes(s, (int) strlen(s));
+                  len -= convertHTMLcodes(s, strlen(s));
                 }
             }
 
@@ -441,7 +450,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                     next=0;
                     outputlen += len;
                     while (len--)
-                      (void) WriteBlobByte(ofile,token[next++]);
+                      (void) WriteBlobByte(ofile,token[next++]); /* boom */
 
                     if (outputlen & 1)
                       {
@@ -659,7 +668,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
             int
               next;
 
-            unsigned long
+            size_t
               len;
 
             char
@@ -676,7 +685,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                   char
                     *s = &token[next-1];
 
-                  len -= convertHTMLcodes(s, (int) strlen(s));
+                  len -= convertHTMLcodes(s, strlen(s));
                 }
             }
 

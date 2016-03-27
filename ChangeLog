@@ -1,3 +1,8 @@
+2016-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (convertHTMLcodes): Fix SourceForge bug #373
+	"out-of-bounds read in coders/meta.c:444:50"
+
 2016-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sgi.c (ReadSGIImage): Fix SourceForge bug #366
