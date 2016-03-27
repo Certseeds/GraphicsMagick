@@ -1,5 +1,8 @@
 2016-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (WritePDBImage): Fix SourceForge bug #360
+	"out-of-bounds read in utilities/gm+0x80fcc71) (PDB reader)".
+
 	* coders/meta.c (convertHTMLcodes): Fix SourceForge bug #373
 	"out-of-bounds read in coders/meta.c:444:50"
 	(ReadMETAImage): Fix SourceForge bug #364 "out-of-bounds write in
