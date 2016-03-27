@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -973,7 +973,9 @@ BlurImage(const Image *original_image,const double radius,
   blur_image=RotateImage(original_image,90,exception);
   if (blur_image == (Image *) NULL)
     status=MagickFail;
-  blur_image->storage_class=DirectClass;
+
+  if (status != MagickFail)
+    blur_image->storage_class=DirectClass;
 
   if (status != MagickFail)
     status&=BlurImageScanlines(blur_image,kernel,width,BlurImageColumnsText,
@@ -1000,7 +1002,10 @@ BlurImage(const Image *original_image,const double radius,
 			       exception);
 
   MagickFreeMemory(kernel);
-  blur_image->is_grayscale=original_image->is_grayscale;
+
+  if (status != MagickFail)
+    blur_image->is_grayscale=original_image->is_grayscale;
+
   return(blur_image);
 }
 
