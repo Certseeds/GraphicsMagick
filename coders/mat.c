@@ -516,10 +516,11 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
   image->columns = HDR.nRows;
   image->rows = HDR.nCols;
   image->colors = 1l << image->depth;
-  if(image->columns == 0 || image->rows == 0) return 0;      
+  if(image->columns == 0 || image->rows == 0) return 0;
   if(CheckImagePixelLimits(image, exception) != MagickPass)
   {
-    ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+    return 0;
+    //ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   }
 
   /* If ping is true, then only set image size and colors without reading any image data. */
