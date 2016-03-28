@@ -1,3 +1,7 @@
+2016-03-28 Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Attempt to read Matlab V4 files.
+
 2016-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/image.c (DestroyImage): Simply return if image is NULL
