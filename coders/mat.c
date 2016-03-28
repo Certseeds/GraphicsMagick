@@ -406,11 +406,11 @@ UnlinkFile:
 
 
 typedef struct {
-	BYTE Type[4];
-	DWORD nRows;
-	DWORD nCols;
-	DWORD imagf;
-	DWORD nameLen;
+	unsigned char Type[4];
+	magick_uint32_t nRows;
+	magick_uint32_t nCols;
+	magick_uint32_t imagf;
+	magick_uint32_t nameLen;
 } MAT4_HDR;
 
 
