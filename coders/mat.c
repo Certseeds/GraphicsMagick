@@ -415,19 +415,18 @@ typedef struct {
 
 
 /* Load Matlab V4 file. */
-static int ReadMATImageV4(Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
+static int ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
 {
 MAT4_HDR HDR;
 char Depth;
 long ldblk;
 int sample_size;
-void *BImgBuff;
+void *BImgBuff = NULL;
 double MinVal;
 double MaxVal;
 int i;
 PixelPacket *q;
 magick_uint32_t (*ReadBlobXXXLong)(Image *image);
-magick_uint16_t (*ReadBlobXXXShort)(Image *image);
 size_t (*ReadBlobXXXDoubles)(Image * image, size_t len, double *data);
 size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
 
@@ -447,14 +446,12 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
 
   switch(HDR.Type[0])
   {
-    case 0: ReadBlobXXXLong = ReadBlobLSBLong;
-            ReadBlobXXXShort = ReadBlobLSBShort;
+    case 0: ReadBlobXXXLong = ReadBlobLSBLong;            
             ReadBlobXXXDoubles = ReadBlobLSBDoubles;
             ReadBlobXXXFloats = ReadBlobLSBFloats;
             import_options->endian = LSBEndian;
             break;
-    case 1: ReadBlobXXXLong = ReadBlobMSBLong;
-            ReadBlobXXXShort = ReadBlobMSBShort;
+    case 1: ReadBlobXXXLong = ReadBlobMSBLong;            
             ReadBlobXXXDoubles = ReadBlobMSBDoubles;
             ReadBlobXXXFloats = ReadBlobMSBFloats;
             import_options->endian = MSBEndian;
@@ -471,7 +468,6 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
   HDR.nameLen = ReadBlobXXXLong(image);
   if(HDR.nameLen>0xFFFF) return 0;
   (void)SeekBlob(image,HDR.nameLen,SEEK_CUR);	/* Skip a matrix name. */
-
 
   switch(HDR.Type[1])
   {
@@ -525,6 +521,15 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
   {
     ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   }
+
+  /* If ping is true, then only set image size and colors without reading any image data. */
+  if(image_info->ping)
+  {
+    unsigned long temp = image->columns;  /* The true image is rotater 90 degs. Do rotation without data. */
+    image->columns = image->rows;
+    image->rows = temp;
+    goto done_reading; /* !!!!!! BAD  !!!! */
+    }  
 
  /* ----- Load raster data ----- */
   BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
@@ -669,7 +674,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
-    if(ReadMATImageV4(image,&import_options,exception)) goto END_OF_READING;
+    if(ReadMATImageV4(image_info,image,&import_options,exception)) goto END_OF_READING;
     goto MATLAB_KO;
   }
 
@@ -703,7 +708,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   }
 
   filepos = TellBlob(image);
-  if (filepos < 0)
+  if(filepos < 0)
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
   while(!EOFBlob(image)) /* object parser loop */
   {
