@@ -1,5 +1,9 @@
 2016-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/features.pl.in: Provide a way that PerlMagick
+	feature tests can test if a feature is supported.  Use it to make
+	the PSD test optional.
+
 	* coders/Makefile.am: Only build PSD module if
 	ENABLE_BROKEN_CODERS is enabled.
 

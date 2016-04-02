@@ -243,11 +243,11 @@ CONFIG_CLEAN_FILES = GraphicsMagick.spec \
 	Magick++/bin/GraphicsMagick++-config \
 	Magick++/lib/GraphicsMagick++.pc PerlMagick/Magick.pm \
 	PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh \
-	config/delegates.mgk config/type-ghostscript.mgk \
-	config/type-solaris.mgk config/type-windows.mgk \
-	config/type.mgk magick/GraphicsMagick-config \
-	magick/GraphicsMagick.pc magick/magick_types.h \
-	magick/version.h common.shi rungm.sh \
+	PerlMagick/t/features.pl config/delegates.mgk \
+	config/type-ghostscript.mgk config/type-solaris.mgk \
+	config/type-windows.mgk config/type.mgk \
+	magick/GraphicsMagick-config magick/GraphicsMagick.pc \
+	magick/magick_types.h magick/version.h common.shi rungm.sh \
 	wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -2004,6 +2004,7 @@ am__DIST_COMMON = $(srcdir)/GraphicsMagick.spec.in \
 	$(top_srcdir)/PerlMagick/Magick.pm.in \
 	$(top_srcdir)/PerlMagick/Makefile.PL.in \
 	$(top_srcdir)/PerlMagick/PerlMagickCheck.sh.in \
+	$(top_srcdir)/PerlMagick/t/features.pl.in \
 	$(top_srcdir)/config/compile $(top_srcdir)/config/config.guess \
 	$(top_srcdir)/config/config.sub \
 	$(top_srcdir)/config/delegates.mgk.in \
@@ -4530,6 +4531,8 @@ PerlMagick/Magick.pm: $(top_builddir)/config.status $(top_srcdir)/PerlMagick/Mag
 PerlMagick/Makefile.PL: $(top_builddir)/config.status $(top_srcdir)/PerlMagick/Makefile.PL.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 PerlMagick/PerlMagickCheck.sh: $(top_builddir)/config.status $(top_srcdir)/PerlMagick/PerlMagickCheck.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+PerlMagick/t/features.pl: $(top_builddir)/config.status $(top_srcdir)/PerlMagick/t/features.pl.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 config/delegates.mgk: $(top_builddir)/config.status $(top_srcdir)/config/delegates.mgk.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

@@ -30460,7 +30460,7 @@ LIBS=$LIBS_USER
 
 
 
-ac_config_files="$ac_config_files GraphicsMagick.spec Magick++/bin/GraphicsMagick++-config Magick++/lib/GraphicsMagick++.pc Makefile PerlMagick/Magick.pm PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh config/delegates.mgk config/type-ghostscript.mgk config/type-solaris.mgk config/type-windows.mgk config/type.mgk magick/GraphicsMagick-config magick/GraphicsMagick.pc magick/magick_types.h magick/version.h common.shi rungm.sh wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc"
+ac_config_files="$ac_config_files GraphicsMagick.spec Magick++/bin/GraphicsMagick++-config Magick++/lib/GraphicsMagick++.pc Makefile PerlMagick/Magick.pm PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh PerlMagick/t/features.pl config/delegates.mgk config/type-ghostscript.mgk config/type-solaris.mgk config/type-windows.mgk config/type.mgk magick/GraphicsMagick-config magick/GraphicsMagick.pc magick/magick_types.h magick/version.h common.shi rungm.sh wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc"
 
 
 # Set configured scripts to executable.
@@ -31757,6 +31757,7 @@ do
     "PerlMagick/Magick.pm") CONFIG_FILES="$CONFIG_FILES PerlMagick/Magick.pm" ;;
     "PerlMagick/Makefile.PL") CONFIG_FILES="$CONFIG_FILES PerlMagick/Makefile.PL" ;;
     "PerlMagick/PerlMagickCheck.sh") CONFIG_FILES="$CONFIG_FILES PerlMagick/PerlMagickCheck.sh" ;;
+    "PerlMagick/t/features.pl") CONFIG_FILES="$CONFIG_FILES PerlMagick/t/features.pl" ;;
     "config/delegates.mgk") CONFIG_FILES="$CONFIG_FILES config/delegates.mgk" ;;
     "config/type-ghostscript.mgk") CONFIG_FILES="$CONFIG_FILES config/type-ghostscript.mgk" ;;
     "config/type-solaris.mgk") CONFIG_FILES="$CONFIG_FILES config/type-solaris.mgk" ;;

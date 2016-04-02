@@ -16,7 +16,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 
-BEGIN { $| = 1; $test=1; print "1..33\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..33\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -158,10 +158,14 @@ testReadWrite( 'PPM:input_p6.ppm',
 
 print("Adobe Photoshop bitmap file ...\n");
 ++$test;
-testReadWrite( 'PSD:input.psd',
-  'PSD:output.psd',
-  q//,
-  '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f' );
+if (featureSupported("PSD")) {
+    testReadWrite( 'PSD:input.psd',
+                   'PSD:output.psd',
+                   q//,
+                   '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f' );
+} else {
+    print "ok $test # skip PSD not supported\n";
+}
 
 print("Irix RGB image file ...\n");
 ++$test;

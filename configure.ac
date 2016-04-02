@@ -3528,6 +3528,7 @@ AC_CONFIG_FILES(\
         PerlMagick/Magick.pm \
         PerlMagick/Makefile.PL \
 	PerlMagick/PerlMagickCheck.sh \
+        PerlMagick/t/features.pl \
         config/delegates.mgk \
         config/type-ghostscript.mgk \
         config/type-solaris.mgk \

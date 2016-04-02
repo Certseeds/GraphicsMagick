@@ -1,4 +1,4 @@
-# Copyright (C) 2003 GraphicsMagick Group
+# Copyright (C) 2003-2016 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1999 E. I. du Pont de Nemours and Company
 #
@@ -10,6 +10,17 @@
 #
 # Contributed by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
 #
+
+require 't/features.pl';
+
+# Function which returns true if named feature is supported.
+sub featureSupported {
+    my ($feature) = @_;
+
+    #return ($feature ~~ @MAGICK_FEATURES);
+    #return (any {$_ eq $feature} @MAGICK_FEATURES)
+    return (grep {$_ eq $feature} @MAGICK_FEATURES)
+}
 
 #
 # Retrieve quantum depth
