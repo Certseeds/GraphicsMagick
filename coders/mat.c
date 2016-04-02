@@ -415,7 +415,7 @@ typedef struct {
 
 
 /* Load Matlab V4 file. */
-static int ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
+static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
 {
 MAT4_HDR HDR;
 Image *rotated_image;
@@ -464,10 +464,10 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
   HDR.nCols = ReadBlobXXXLong(image);
 
   HDR.imagf = ReadBlobXXXLong(image);
-  if(HDR.imagf!=0 && HDR.imagf!=1) return 0;
+  if(HDR.imagf!=0 && HDR.imagf!=1) return NULL;
 
   HDR.nameLen = ReadBlobXXXLong(image);
-  if(HDR.nameLen>0xFFFF) return 0;
+  if(HDR.nameLen>0xFFFF) return NULL;
   (void)SeekBlob(image,HDR.nameLen,SEEK_CUR);	/* Skip a matrix name. */
 
   switch(HDR.Type[1])
@@ -475,7 +475,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     case 0: sample_size = 64;				/* double-precision (64-bit) floating point numbers */             
             image->depth = Min(QuantumDepth,32);        /* double type cell */
             import_options->sample_type = FloatQuantumSampleType;
-            if(sizeof(double) != 8) return 0;		/* incompatible double size */          
+            if(sizeof(double) != 8) return NULL;	/* incompatible double size */          
             ldblk = (long) (8 * HDR.nRows);
             break;
 
@@ -508,13 +508,13 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
             ldblk = (long) HDR.nRows;
             break;
 	
-    default: return 0;
+    default: return NULL;
   }     
 
   image->columns = HDR.nRows;
   image->rows = HDR.nCols;
   image->colors = 1l << image->depth;
-  if(image->columns == 0 || image->rows == 0) return 0;
+  if(image->columns == 0 || image->rows == 0) return NULL;
   if(CheckImagePixelLimits(image, exception) != MagickPass)
   {
     return 0;
@@ -581,30 +581,31 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
         //    "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
 	goto ExitLoop;
     }
+  }
 
 	/*  Rotate image. */
-    rotated_image = RotateImage(image, 90.0, exception);
-    if(rotated_image != (Image *) NULL)
-    {
+  rotated_image = RotateImage(image, 90.0, exception);
+  if(rotated_image != (Image *) NULL)
+  {
         /* Remove page offsets added by RotateImage */
-      rotated_image->page.x=0;
-      rotated_image->page.y=0;
+    rotated_image->page.x=0;
+    rotated_image->page.y=0;
 
-      blob = rotated_image->blob;
-      rotated_image->blob = image->blob;
-      rotated_image->colors = image->colors;
-      image->blob = blob;      
-      AppendImageToList(&image,rotated_image);
-      DeleteImageFromList(&image);      
-    }
+    blob = rotated_image->blob;
+    rotated_image->blob = image->blob;
+    rotated_image->colors = image->colors;
+    image->blob = blob;      
+    AppendImageToList(&image,rotated_image);
+    DeleteImageFromList(&image);
+    image = rotated_image;
   }
-  
+    
 ImportImagePixelAreaFailed:
 ExitLoop:
 done_reading:
 
   MagickFreeMemory(BImgBuff);
-  return 1;
+  return image;
 }
 
 
@@ -689,8 +690,10 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
-    if(ReadMATImageV4(image_info,image,&import_options,exception)) goto END_OF_READING;
-    goto MATLAB_KO;
+    image2 = ReadMATImageV4(image_info,image,&import_options,exception);
+    if(image2==NULL) goto MATLAB_KO;
+    image = image2;
+    goto END_OF_READING;    
   }
 
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
