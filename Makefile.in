@@ -34,7 +34,7 @@
 #
 #
 
-# Copyright (C) 2004-2010 GraphicsMagick Group
+# Copyright (C) 2004-2016 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -839,7 +839,9 @@ coders_psd_la_OBJECTS = $(am_coders_psd_la_OBJECTS)
 coders_psd_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_psd_la_LDFLAGS) $(LDFLAGS) -o $@
-@WITH_MODULES_TRUE@am_coders_psd_la_rpath = -rpath $(codersdir)
+@ENABLE_BROKEN_CODERS_TRUE@@WITH_MODULES_TRUE@am_coders_psd_la_rpath =  \
+@ENABLE_BROKEN_CODERS_TRUE@@WITH_MODULES_TRUE@	-rpath \
+@ENABLE_BROKEN_CODERS_TRUE@@WITH_MODULES_TRUE@	$(codersdir)
 coders_pwp_la_DEPENDENCIES = $(LIBMAGICK)
 am_coders_pwp_la_OBJECTS = coders/coders_pwp_la-pwp.lo
 coders_pwp_la_OBJECTS = $(am_coders_pwp_la_OBJECTS)
@@ -1176,15 +1178,15 @@ am__magick_libGraphicsMagick_la_SOURCES_DIST =  \
 	coders/palm.c coders/pcd.c coders/pcl.c coders/pcx.c \
 	coders/pdb.c coders/pdf.c coders/pict.c coders/pix.c \
 	coders/plasma.c coders/pnm.c coders/preview.c coders/ps.c \
-	coders/ps2.c coders/ps3.c coders/psd.c coders/pwp.c \
-	coders/rgb.c coders/rla.c coders/rle.c coders/sct.c \
-	coders/sfw.c coders/sgi.c coders/stegano.c coders/sun.c \
-	coders/svg.c coders/tga.c coders/tile.c coders/tim.c \
-	coders/topol.c coders/ttf.c coders/txt.c coders/uil.c \
-	coders/url.c coders/uyvy.c coders/vicar.c coders/vid.c \
-	coders/viff.c coders/wbmp.c coders/wmf.c coders/wpg.c \
-	coders/xbm.c coders/xc.c coders/xcf.c coders/xpm.c \
-	coders/yuv.c coders/dps.c coders/clipboard.c coders/emf.c \
+	coders/ps2.c coders/ps3.c coders/pwp.c coders/rgb.c \
+	coders/rla.c coders/rle.c coders/sct.c coders/sfw.c \
+	coders/sgi.c coders/stegano.c coders/sun.c coders/svg.c \
+	coders/tga.c coders/tile.c coders/tim.c coders/topol.c \
+	coders/ttf.c coders/txt.c coders/uil.c coders/url.c \
+	coders/uyvy.c coders/vicar.c coders/vid.c coders/viff.c \
+	coders/wbmp.c coders/wmf.c coders/wpg.c coders/xbm.c \
+	coders/xc.c coders/xcf.c coders/xpm.c coders/yuv.c \
+	coders/psd.c coders/dps.c coders/clipboard.c coders/emf.c \
 	coders/fpx.c coders/jbig.c coders/jnx.c coders/jpeg.c \
 	coders/jp2.c coders/ept.c coders/tiff.c coders/x.c \
 	coders/xwd.c coders/webp.c filters/analyze.c
@@ -1273,27 +1275,28 @@ am__objects_2 = magick/magick_libGraphicsMagick_la-analyze.lo \
 @WIN32_NATIVE_BUILD_TRUE@	magick/magick_libGraphicsMagick_la-nt_feature.lo
 @HasPNG_TRUE@am__objects_4 =  \
 @HasPNG_TRUE@	coders/magick_libGraphicsMagick_la-png.lo
-@HasDPS_TRUE@am__objects_5 =  \
+@ENABLE_BROKEN_CODERS_TRUE@am__objects_5 = coders/magick_libGraphicsMagick_la-psd.lo
+@HasDPS_TRUE@am__objects_6 =  \
 @HasDPS_TRUE@	coders/magick_libGraphicsMagick_la-dps.lo
-@HasWINGDI32_TRUE@am__objects_6 = coders/magick_libGraphicsMagick_la-clipboard.lo \
+@HasWINGDI32_TRUE@am__objects_7 = coders/magick_libGraphicsMagick_la-clipboard.lo \
 @HasWINGDI32_TRUE@	coders/magick_libGraphicsMagick_la-emf.lo
-@HasFPX_TRUE@am__objects_7 =  \
+@HasFPX_TRUE@am__objects_8 =  \
 @HasFPX_TRUE@	coders/magick_libGraphicsMagick_la-fpx.lo
-@HasJBIG_TRUE@am__objects_8 =  \
+@HasJBIG_TRUE@am__objects_9 =  \
 @HasJBIG_TRUE@	coders/magick_libGraphicsMagick_la-jbig.lo
-@HasJPEG_TRUE@am__objects_9 =  \
+@HasJPEG_TRUE@am__objects_10 =  \
 @HasJPEG_TRUE@	coders/magick_libGraphicsMagick_la-jnx.lo \
 @HasJPEG_TRUE@	coders/magick_libGraphicsMagick_la-jpeg.lo
-@HasJP2_TRUE@am__objects_10 =  \
+@HasJP2_TRUE@am__objects_11 =  \
 @HasJP2_TRUE@	coders/magick_libGraphicsMagick_la-jp2.lo
-@HasTIFF_TRUE@am__objects_11 =  \
+@HasTIFF_TRUE@am__objects_12 =  \
 @HasTIFF_TRUE@	coders/magick_libGraphicsMagick_la-ept.lo \
 @HasTIFF_TRUE@	coders/magick_libGraphicsMagick_la-tiff.lo
-@HasX11_TRUE@am__objects_12 = coders/magick_libGraphicsMagick_la-x.lo \
+@HasX11_TRUE@am__objects_13 = coders/magick_libGraphicsMagick_la-x.lo \
 @HasX11_TRUE@	coders/magick_libGraphicsMagick_la-xwd.lo
-@HasWEBP_TRUE@am__objects_13 =  \
+@HasWEBP_TRUE@am__objects_14 =  \
 @HasWEBP_TRUE@	coders/magick_libGraphicsMagick_la-webp.lo
-am__objects_14 = $(am__objects_4) \
+am__objects_15 = $(am__objects_4) \
 	coders/magick_libGraphicsMagick_la-art.lo \
 	coders/magick_libGraphicsMagick_la-avs.lo \
 	coders/magick_libGraphicsMagick_la-bmp.lo \
@@ -1349,7 +1352,6 @@ am__objects_14 = $(am__objects_4) \
 	coders/magick_libGraphicsMagick_la-ps.lo \
 	coders/magick_libGraphicsMagick_la-ps2.lo \
 	coders/magick_libGraphicsMagick_la-ps3.lo \
-	coders/magick_libGraphicsMagick_la-psd.lo \
 	coders/magick_libGraphicsMagick_la-pwp.lo \
 	coders/magick_libGraphicsMagick_la-rgb.lo \
 	coders/magick_libGraphicsMagick_la-rla.lo \
@@ -1382,11 +1384,11 @@ am__objects_14 = $(am__objects_4) \
 	coders/magick_libGraphicsMagick_la-yuv.lo $(am__objects_5) \
 	$(am__objects_6) $(am__objects_7) $(am__objects_8) \
 	$(am__objects_9) $(am__objects_10) $(am__objects_11) \
-	$(am__objects_12) $(am__objects_13)
-am__objects_15 = filters/magick_libGraphicsMagick_la-analyze.lo
+	$(am__objects_12) $(am__objects_13) $(am__objects_14)
+am__objects_16 = filters/magick_libGraphicsMagick_la-analyze.lo
 @WITH_MODULES_FALSE@am_magick_libGraphicsMagick_la_OBJECTS =  \
 @WITH_MODULES_FALSE@	$(am__objects_2) $(am__objects_3) \
-@WITH_MODULES_FALSE@	$(am__objects_14) $(am__objects_15)
+@WITH_MODULES_FALSE@	$(am__objects_15) $(am__objects_16)
 @WITH_MODULES_TRUE@am_magick_libGraphicsMagick_la_OBJECTS =  \
 @WITH_MODULES_TRUE@	$(am__objects_2) $(am__objects_3)
 magick_libGraphicsMagick_la_OBJECTS =  \
@@ -1397,11 +1399,11 @@ magick_libGraphicsMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(LDFLAGS) -o $@
 wand_libGraphicsMagickWand_la_DEPENDENCIES = $(LIBMAGICK) \
 	$(am__DEPENDENCIES_1)
-am__objects_16 = wand/wand_libGraphicsMagickWand_la-drawing_wand.lo \
+am__objects_17 = wand/wand_libGraphicsMagickWand_la-drawing_wand.lo \
 	wand/wand_libGraphicsMagickWand_la-magick_compat.lo \
 	wand/wand_libGraphicsMagickWand_la-magick_wand.lo \
 	wand/wand_libGraphicsMagickWand_la-pixel_wand.lo
-am_wand_libGraphicsMagickWand_la_OBJECTS = $(am__objects_16)
+am_wand_libGraphicsMagickWand_la_OBJECTS = $(am__objects_17)
 wand_libGraphicsMagickWand_la_OBJECTS =  \
 	$(am_wand_libGraphicsMagickWand_la_OBJECTS)
 wand_libGraphicsMagickWand_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -2523,6 +2525,8 @@ codersdir = $(MagickCoderModulesPath)
 @HasX11_TRUE@MAGICK_X11_CODER_SRCS = coders/x.c coders/xwd.c
 @HasWEBP_TRUE@MAGICK_WEBP_MODULES = coders/webp.la
 @HasWEBP_TRUE@MAGICK_WEBP_SRCS = coders/webp.c
+@ENABLE_BROKEN_CODERS_TRUE@MAGICK_BROKEN_MODULES = coders/psd.la
+@ENABLE_BROKEN_CODERS_TRUE@MAGICK_BROKEN_SRCS = coders/psd.c
 MAGICK_CODER_CPPFLAGS = \
 	$(MODULECOMMONCPPFLAGS) \
 	$(MODULE_EXTRA_CPPFLAGS)
@@ -2584,7 +2588,6 @@ MAGICK_CODER_SRCS = \
 	coders/ps.c \
 	coders/ps2.c \
 	coders/ps3.c \
-	coders/psd.c \
 	coders/pwp.c \
 	coders/rgb.c \
 	coders/rla.c \
@@ -2615,6 +2618,7 @@ MAGICK_CODER_SRCS = \
 	coders/xcf.c \
 	coders/xpm.c \
 	coders/yuv.c \
+	$(MAGICK_BROKEN_SRCS) \
 	$(MAGICK_DPS_SRCS) \
 	$(MAGICK_GDI32_SRCS) \
 	$(MAGICK_FPX_SRCS) \
@@ -2682,7 +2686,6 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/ps.la \
 @WITH_MODULES_TRUE@	coders/ps2.la \
 @WITH_MODULES_TRUE@	coders/ps3.la \
-@WITH_MODULES_TRUE@	coders/psd.la \
 @WITH_MODULES_TRUE@	coders/pwp.la \
 @WITH_MODULES_TRUE@	coders/rgb.la \
 @WITH_MODULES_TRUE@	coders/rla.la \
@@ -2713,6 +2716,7 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/xcf.la \
 @WITH_MODULES_TRUE@	coders/xpm.la \
 @WITH_MODULES_TRUE@	coders/yuv.la \
+@WITH_MODULES_TRUE@	$(MAGICK_BROKEN_MODULES) \
 @WITH_MODULES_TRUE@	$(MAGICK_DPS_MODULES) $(MAGICK_FPX_MODULES) $(MAGICK_GDI32_MODULES) \
 @WITH_MODULES_TRUE@	$(MAGICK_JBIG_MODULES) $(MAGICK_JPEG_MODULES) $(MAGICK_JP2_MODULES) \
 @WITH_MODULES_TRUE@	$(MAGICK_PNG_MODULES) $(MAGICK_TIFF_MODULES) $(MAGICK_X11_CODER_MODULES) \
@@ -5522,8 +5526,6 @@ coders/magick_libGraphicsMagick_la-ps2.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-ps3.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
-coders/magick_libGraphicsMagick_la-psd.lo: coders/$(am__dirstamp) \
-	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-pwp.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-rgb.lo: coders/$(am__dirstamp) \
@@ -5583,6 +5585,8 @@ coders/magick_libGraphicsMagick_la-xcf.lo: coders/$(am__dirstamp) \
 coders/magick_libGraphicsMagick_la-xpm.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-yuv.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
+coders/magick_libGraphicsMagick_la-psd.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-dps.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
@@ -7988,13 +7992,6 @@ coders/magick_libGraphicsMagick_la-ps3.lo: coders/ps3.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-ps3.lo `test -f 'coders/ps3.c' || echo '$(srcdir)/'`coders/ps3.c
 
-coders/magick_libGraphicsMagick_la-psd.lo: coders/psd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-psd.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Tpo -c -o coders/magick_libGraphicsMagick_la-psd.lo `test -f 'coders/psd.c' || echo '$(srcdir)/'`coders/psd.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Tpo coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/psd.c' object='coders/magick_libGraphicsMagick_la-psd.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-psd.lo `test -f 'coders/psd.c' || echo '$(srcdir)/'`coders/psd.c
-
 coders/magick_libGraphicsMagick_la-pwp.lo: coders/pwp.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-pwp.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-pwp.Tpo -c -o coders/magick_libGraphicsMagick_la-pwp.lo `test -f 'coders/pwp.c' || echo '$(srcdir)/'`coders/pwp.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/magick_libGraphicsMagick_la-pwp.Tpo coders/$(DEPDIR)/magick_libGraphicsMagick_la-pwp.Plo
@@ -8204,6 +8201,13 @@ coders/magick_libGraphicsMagick_la-yuv.lo: coders/yuv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/yuv.c' object='coders/magick_libGraphicsMagick_la-yuv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-yuv.lo `test -f 'coders/yuv.c' || echo '$(srcdir)/'`coders/yuv.c
+
+coders/magick_libGraphicsMagick_la-psd.lo: coders/psd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-psd.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Tpo -c -o coders/magick_libGraphicsMagick_la-psd.lo `test -f 'coders/psd.c' || echo '$(srcdir)/'`coders/psd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Tpo coders/$(DEPDIR)/magick_libGraphicsMagick_la-psd.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/psd.c' object='coders/magick_libGraphicsMagick_la-psd.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-psd.lo `test -f 'coders/psd.c' || echo '$(srcdir)/'`coders/psd.c
 
 coders/magick_libGraphicsMagick_la-dps.lo: coders/dps.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-dps.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-dps.Tpo -c -o coders/magick_libGraphicsMagick_la-dps.lo `test -f 'coders/dps.c' || echo '$(srcdir)/'`coders/dps.c

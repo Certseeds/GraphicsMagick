@@ -1,5 +1,8 @@
 2016-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/Makefile.am: Only build PSD module if
+	ENABLE_BROKEN_CODERS is enabled.
+
 	* magick/module.c (UnloadModule): Only invoke the module
 	unregister function if it is defined.  The module register
 	function is not defined if either the register or unregister
