@@ -2185,7 +2185,6 @@ UnloadModule(const CoderInfo *coder_info,ExceptionInfo *exception)
     status=True;
 
   assert(coder_info != (const CoderInfo *) NULL);
-  assert(coder_info->unregister_function != (void (*)(void)) NULL);
   assert(exception != (ExceptionInfo *) NULL);
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
@@ -2194,7 +2193,8 @@ UnloadModule(const CoderInfo *coder_info,ExceptionInfo *exception)
   /*
     Invoke module unregister (UnregisterFORMATImage) function
   */
-  coder_info->unregister_function();
+  if (coder_info->unregister_function != (void (*)(void)) NULL)
+    coder_info->unregister_function();
 
   /*
     Close module.  Don't close JP2 module since it uses atexit().

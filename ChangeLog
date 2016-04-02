@@ -1,3 +1,10 @@
+2016-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/module.c (UnloadModule): Only invoke the module
+	unregister function if it is defined.  The module register
+	function is not defined if either the register or unregister
+	functions were not found in the module which was loaded.
+
 2016-04-02 Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Matlab V4 files are also rotated.
