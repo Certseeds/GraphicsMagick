@@ -418,17 +418,18 @@ typedef struct {
 static int ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
 {
 MAT4_HDR HDR;
-char Depth;
+Image *rotated_image;
 long ldblk;
 int sample_size;
 void *BImgBuff = NULL;
 double MinVal;
 double MaxVal;
 int i;
+BlobInfo *blob;
 PixelPacket *q;
 magick_uint32_t (*ReadBlobXXXLong)(Image *image);
-size_t (*ReadBlobXXXDoubles)(Image * image, size_t len, double *data);
-size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
+size_t (*ReadBlobXXXDoubles)(Image *image, size_t len, double *data);
+size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
   (void)SeekBlob(image,0,SEEK_SET);
 
@@ -471,16 +472,14 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
 
   switch(HDR.Type[1])
   {
-    case 0:					/* double-precision (64-bit) floating point numbers */
-            sample_size = 64; 
+    case 0: sample_size = 64;				/* double-precision (64-bit) floating point numbers */             
             image->depth = Min(QuantumDepth,32);        /* double type cell */
             import_options->sample_type = FloatQuantumSampleType;
             if(sizeof(double) != 8) return 0;		/* incompatible double size */          
             ldblk = (long) (8 * HDR.nRows);
             break;
 
-    case 1:				/* single-precision (32-bit) floating point numbers */
-            sample_size = 32;
+    case 1: sample_size = 32;				/* single-precision (32-bit) floating point numbers */            
             image->depth = Min(QuantumDepth,32);        /* double type cell */
             import_options->sample_type = FloatQuantumSampleType;
 #if 0
@@ -490,8 +489,7 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
             ldblk = (long) (4 * HDR.nRows);
             break;
 
-    case 2: Depth = 32; break;		/* 32-bit signed integers */
-            sample_size = 32;
+    case 2: sample_size = 32;				/* 32-bit signed integers */            
             image->depth = Min(QuantumDepth,32);        /* Dword type cell */
             ldblk = (long) (4 * HDR.nRows);      
             import_options->sample_type = UnsignedQuantumSampleType;      
@@ -582,7 +580,23 @@ size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
 	//if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
         //    "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
 	goto ExitLoop;
-    }    
+    }
+
+	/*  Rotate image. */
+    rotated_image = RotateImage(image, 90.0, exception);
+    if(rotated_image != (Image *) NULL)
+    {
+        /* Remove page offsets added by RotateImage */
+      rotated_image->page.x=0;
+      rotated_image->page.y=0;
+
+      blob = rotated_image->blob;
+      rotated_image->blob = image->blob;
+      rotated_image->colors = image->colors;
+      image->blob = blob;      
+      AppendImageToList(&image,rotated_image);
+      DeleteImageFromList(&image);      
+    }
   }
   
 ImportImagePixelAreaFailed:
@@ -649,8 +663,8 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   
   magick_uint32_t (*ReadBlobXXXLong)(Image *image);
   magick_uint16_t (*ReadBlobXXXShort)(Image *image);
-  size_t (*ReadBlobXXXDoubles)(Image * image, size_t len, double *data);
-  size_t (*ReadBlobXXXFloats)(Image * image, size_t len, float *data);
+  size_t (*ReadBlobXXXDoubles)(Image *image, size_t len, double *data);
+  size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -1041,7 +1055,7 @@ ExitLoop:
 
       /*  Rotate image. */
     rotated_image = RotateImage(image, 90.0, exception);
-    if (rotated_image != (Image *) NULL)
+    if(rotated_image != (Image *) NULL)
     {
         /* Remove page offsets added by RotateImage */
       rotated_image->page.x=0;
@@ -1063,7 +1077,7 @@ done_reading:
     AllocateNextImage(image_info,image);
     if (image->next == (Image *) NULL) break;                
     image=SyncNextImageInList(image);
-    image->columns=image->rows=0;
+    image->columns = image->rows = 0;
     image->colors=0;
 
       /* row scan buffer is no longer needed */
@@ -1338,9 +1352,9 @@ ModuleExport void RegisterMATImage(void)
   entry->seekable_stream = True;
   entry->description =
 #if defined(HasZLIB)
-                        "MATLAB Level 5.0-7.0 image formats";
+                        "MATLAB Level 4.0-7.0 image formats";
 #else
-			"MATLAB Level 5.0-6.0 image formats";
+			"MATLAB Level 4.0-6.0 image formats";
 #endif
   entry->module = "MAT";
   entry->blob_support=False;
