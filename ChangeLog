@@ -1,3 +1,11 @@
+2016-04-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/common.h: Update for GCC 5.
+
+	* PerlMagick/MANIFEST: Update PerlMagick manifest.
+
+	* PerlMagick/t/{read.t, write.t}: Add tests for MAT v4.
+
 2016-04-03 Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Matlab V4 attempt to read complex part of data.
