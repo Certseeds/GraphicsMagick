@@ -422,8 +422,7 @@ Image *rotated_image;
 long ldblk;
 int sample_size;
 void *BImgBuff = NULL;
-double MinVal;
-double MaxVal;
+double MinVal_c, MaxVal_c;
 int i;
 BlobInfo *blob;
 PixelPacket *q;
@@ -517,7 +516,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
   if(image->columns == 0 || image->rows == 0) return NULL;
   if(CheckImagePixelLimits(image, exception) != MagickPass)
   {
-    return 0;
+    return NULL;
     //ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   }
 
@@ -533,9 +532,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
  /* ----- Load raster data ----- */
   BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
   if(BImgBuff == NULL) return 0;
-      
-  MinVal = MaxVal = 0;
-  if(HDR.Type[1]==0)		/* Find Min and Max Values for floats */
+   
+  if(HDR.Type[1]==0)		/* Find Min and Max Values for doubles */
   {
     (void)MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
                                       HDR.nCols, DoublePixel, ldblk, BImgBuff,
@@ -580,6 +578,35 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 	//if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
         //    "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
 	goto ExitLoop;
+    }
+  }
+
+	/* Read complex part of data. */
+  if(HDR.imagf==1)
+  {
+    MinVal_c = MaxVal_c = 0;
+    if(HDR.Type[1]==0)		/* Find Min and Max Values for doubles */
+    {
+      (void)MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
+                                        HDR.nCols, DoublePixel, ldblk, BImgBuff,
+                                        &MinVal_c, &MaxVal_c);
+      for(i=0; i<(long)HDR.nCols; i++)
+      {
+        ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff);
+        InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);      	
+      }
+    }
+
+    if(HDR.Type[1]==1)		/* Find Min and Max Values for floats */
+    {
+      (void)MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
+                                      HDR.nCols, FloatPixel, ldblk, BImgBuff,
+                                      &MinVal_c, &MaxVal_c);
+      for(i=0; i<(long)HDR.nCols; i++)
+      {
+        ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff);
+        InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
+      }    
     }
   }
 
@@ -943,8 +970,6 @@ NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed,
     if (BImgBuff == NULL)
       goto NoMemory;
 
-    MinVal_c = 0;
-    MaxVal_c = 0;
     if (CellType==miDOUBLE)        /* Find Min and Max Values for floats */
     {
       (void) MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR.SizeX,
@@ -1015,6 +1040,7 @@ ExitLoop:
     /* Read complex part of numbers here */
     if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
     {        /* Find Min and Max Values for complex parts of floats */
+      MinVal_c = MaxVal_c = 0;
       CellType = ReadBlobXXXLong(image2);    /* Additional object type */
       i = ReadBlobXXXLong(image2);           /* size of a complex part - toss away*/
 
@@ -1053,7 +1079,7 @@ ExitLoop:
     if(image->is_monochrome)
       image->colorspace=GRAYColorspace;
 
-    if(image2==image) 
+    if(image2==image)		/* image2 is either native image or dezompressed block. */
         image2 = NULL;		/* Remove shadow copy to an image before rotation. */
 
       /*  Rotate image. */

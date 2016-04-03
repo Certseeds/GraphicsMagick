@@ -1,3 +1,7 @@
+2016-04-03 Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Matlab V4 attempt to read complex part of data.
+
 2016-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/t/features.pl.in: Provide a way that PerlMagick
