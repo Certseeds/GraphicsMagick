@@ -17,3 +17,8 @@ Makefile.old$
 ^blib/
 ^pm_to_blib$
 ~$
+\.orig$
+Makefile.aperl
+PerlMagickCheck.log
+PerlMagickCheck.trs
+\.o$
