@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003 - 2016 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
  
   This program is covered by multiple licenses, which are described in
@@ -351,6 +351,9 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #define MagickEpsilon  1.0e-12
 #define MagickPI  3.14159265358979323846264338327950288419716939937510
 #define MagickSQ2PI 2.50662827463100024161235523934010416269302368164062
+#if !defined(INFINITY) /* C'99 provides INFINITY but C'89 does not */
+#  define INFINITY (log(0))
+#endif
 #define Max(x,y)  (((x) > (y)) ? (x) : (y))
 #define Min(x,y)  (((x) < (y)) ? (x) : (y))
 #define NumberOfObjectsInArray(octets,size) ((octets+size-1)/size)

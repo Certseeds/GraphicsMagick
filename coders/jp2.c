@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1119,25 +1119,42 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
           {
             if(LocaleCompare(*option_name,"rate") == 0)
               rate_specified=True;
-            FormatString(option_keyval,"%s=%.1024s ",*option_name,value);
-            ConcatenateString(&options,option_keyval);
+            /*
+              It is documented that a rate specification of 1.0 should
+              result in lossless compression.  However, Jasper only
+              provides lossless compression if rate was not specified
+              at all.  Support lossless compression as documented.
+            */
+            {
+              double
+                rate;
+
+              rate=atof(value);
+              if (rate < 1.0-MagickEpsilon)
+                {
+                  FormatString(option_keyval,"%s=%.1024s ",*option_name,value);
+                  ConcatenateString(&options,option_keyval);
+                }
+            }
           }
       }
   }
   /*
-    Provide an emulation of IJG JPEG "quality" by default.
+    Provide an emulation of IJG JPEG "quality" by default if rate was
+    not specified.
   */
   if (rate_specified == False)
     {
       double
-        rate=1.0;
+        rate=INFINITY;
       
       /*
         A rough approximation to JPEG v1 quality using JPEG-2000.
         Default "quality" 75 results in a request for 16:1 compression, which
         results in image sizes approximating that of JPEG v1.
       */
-      if ((image_info->quality < 99.5) && (image->rows*image->columns > 2500))
+      if ((image_info->quality < 100.0-MagickEpsilon) &&
+          (MagickArraySize(image->rows,image->columns) > 2500U))
         {
           double
             header_size,
@@ -1155,9 +1172,9 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
             number_components;
           target_size=(current_size*rate)+header_size;
           rate=target_size/current_size;
+          FormatString(option_keyval,"%s=%g ","rate",rate);
+          ConcatenateString(&options,option_keyval);
         }
-      FormatString(option_keyval,"%s=%g ","rate",rate);
-      ConcatenateString(&options,option_keyval);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Compression rate: %g (%3.2f:1)",rate,1.0/rate);
     }

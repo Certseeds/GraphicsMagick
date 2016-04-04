@@ -1,3 +1,10 @@
+2016-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jp2.c (WriteJP2Image): Fix SourceForge issue #378 "jp2:
+	impossible to create lossless jpeg-2000".  With this fix,
+	specifying 'define jp2:rate=1.0' or '-quality 100' results in a
+	lossless JP2 file.
+
 2016-04-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/common.h: Update for GCC 5.
