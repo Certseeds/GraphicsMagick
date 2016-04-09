@@ -2992,10 +2992,10 @@ GraphicsMagick support services:
 
   * Master web site at "http://www.GraphicsMagick.org/".
   * Mailing lists, bug tracking, and forums available via
-    "http://sourceforge.net/projects/graphicsmagick/".
-  * CVSWeb via "http://cvs.graphicsmagick.org/cgi-bin/cvsweb.cgi/".
-  * CVS via cvs.graphicsmagick.org (find instructions at
-    "http://www.graphicsmagick.org/www/cvs.html").
+    "https://sourceforge.net/projects/graphicsmagick/".
+  * Mercurial Web via "http://hg.code.sf.net/p/graphicsmagick/code/".
+  * Mercurial mirror via SourceForge (find instructions at
+    "http://www.graphicsmagick.org/Hg.html").
   * FTP via "ftp://ftp.graphicsmagick.org/pub/GraphicsMagick".
 
 Project maintenance improvements:
