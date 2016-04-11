@@ -1,3 +1,8 @@
+2016-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfo): Simplify LogInfo structure and
+	its allocation in order to lessen the amount of fixed overhead.
+
 2016-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jp2.c (WriteJP2Image): Fix SourceForge issue #378 "jp2:
