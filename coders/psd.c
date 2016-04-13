@@ -1093,7 +1093,10 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (layer_info[i].image == (Image *) NULL)
                     {
                       for (j=0; j < i; j++)
-                        DestroyImage(layer_info[j].image);
+                        {
+                          DestroyImage(layer_info[j].image);
+                          layer_info[j].image = (Image *) NULL;
+                        }
 
                       if (logging)
                         {
