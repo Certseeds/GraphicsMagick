@@ -491,7 +491,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     case 2: sample_size = 32;				/* 32-bit signed integers */            
             image->depth = Min(QuantumDepth,32);        /* Dword type cell */
             ldblk = (long) (4 * HDR.nRows);      
-            import_options->sample_type = UnsignedQuantumSampleType;      
+            import_options->sample_type = UnsignedQuantumSampleType;
+            break;
 
     case 3:				/* 16-bit signed integers */
     case 4:				/* 16-bit unsigned integers */
@@ -1079,7 +1080,7 @@ ExitLoop:
     if(image->is_monochrome)
       image->colorspace=GRAYColorspace;
 
-    if(image2==image)		/* image2 is either native image or dezompressed block. */
+    if(image2==image)		/* image2 is either native image or decompressed block. */
         image2 = NULL;		/* Remove shadow copy to an image before rotation. */
 
       /*  Rotate image. */
