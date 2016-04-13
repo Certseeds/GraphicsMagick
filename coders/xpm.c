@@ -318,6 +318,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(xpm_buffer);
   if (textlist == (char **) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+#if 0
   if (image->logging)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -326,6 +327,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "    %lu: %s", i, textlist[i]);
     }
+#endif
   
   /*
     Initialize image structure.
@@ -341,10 +343,17 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   i=1;
   none=(~0U);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Parsing colormap...");
   for (j=0; j < image->colors; j++)
   {
     p=textlist[i++];
-    if (p == (char *) NULL)
+    if ((p == (char *) NULL) || (p[0] == '\0'))
+      break;
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "    %lu: %s", i-1, textlist[i-1]);
+    if (strlen(p) < width)
       break;
     keys[j]=MagickAllocateMemory(char *,width+1);
     if (keys[j] == (char *) NULL)
@@ -387,11 +396,16 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read image pixels.
       */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Parsing pixels...");
       for (y=0; y < (long) image->rows; y++)
       {
         p=textlist[i++];
-        if (p == (char *) NULL)
+        if ((p == (char *) NULL) || (p[0] == '\0'))
           break;
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    %lu: %s", i-1, textlist[i-1]);
         r=SetImagePixelsEx(image,0,y,image->columns,1,exception);
         if (r == (PixelPacket *) NULL)
           break;

@@ -1,3 +1,11 @@
+2016-04-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Fix SourceForge issue #361
+	"out-of-bounds read in coders/xpm.c:150:24"
+
+	* coders/psd.c (ReadPSDImage): Add some defensive code to assure
+	that image layers are not freed twice.
+
 2016-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (InitializeLogInfo): Simplify LogInfo structure and
