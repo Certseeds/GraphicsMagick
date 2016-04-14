@@ -724,6 +724,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
               "  Number of colors: %lu",bmp_info.number_colors);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+              "  Important colors: %lu",bmp_info.colors_important);
           }
 
         bmp_info.red_mask=ReadBlobLSBLong(image);
@@ -862,12 +864,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (bmp_info.bits_per_pixel != 8) && (bmp_info.bits_per_pixel != 16) &&
         (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32))
       ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
-    if (bmp_info.number_colors > (1UL << bmp_info.bits_per_pixel))
-    {
-      if (bmp_info.bits_per_pixel<24)
-        ThrowBMPReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
-      bmp_info.number_colors = 0;
-    }
+    if (bmp_info.bits_per_pixel < 16)
+      {
+        if (bmp_info.number_colors > (1UL << bmp_info.bits_per_pixel))
+          ThrowBMPReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
+      }
     if (bmp_info.compression > 3)
       ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
     if ((bmp_info.compression == 1) && (bmp_info.bits_per_pixel != 8))
@@ -901,12 +902,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->matte=((bmp_info.alpha_mask != 0)
                   || ((bmp_info.compression == BI_RGB)
                       && (bmp_info.bits_per_pixel == 32)));
-    if ((bmp_info.number_colors != 0) || (bmp_info.bits_per_pixel < 16))
+    if (bmp_info.bits_per_pixel < 16)
       {
-        image->storage_class=PseudoClass;
-        image->colors=bmp_info.number_colors;
-        if (image->colors == 0)
+        if (bmp_info.number_colors == 0)
           image->colors=1L << bmp_info.bits_per_pixel;
+        else
+          image->colors=bmp_info.number_colors;
+        image->storage_class=PseudoClass;
       }
     if (image->storage_class == PseudoClass)
       {
