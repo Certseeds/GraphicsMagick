@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1622,6 +1622,14 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "Returned from \"%.1024s\" decoder, returned image is NULL!",
                               magick_info->name);
+      
+      /*
+        Enforce that returned images do not have open blobs.
+      */
+      if (image != (Image *) NULL)
+        {
+          assert(!GetBlobIsOpen(image));
+        }
 
       /*
         Deal with errors in the image which were not properly reported
@@ -1723,6 +1731,14 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "Returned from \"%.1024s\" decoder: returned image is NULL!",
                               magick_info->name);
+
+      /*
+        Enforce that returned images do not have open blobs.
+      */
+      if (image != (Image *) NULL)
+        {
+          assert(!GetBlobIsOpen(image));
+        }
 
       /*
         Deal with errors in the image which were not properly reported

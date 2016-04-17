@@ -1361,6 +1361,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
                     }
 
+                  CloseBlob(returnImage);
                   return(returnImage);
                 }
             }
@@ -1507,6 +1508,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
         }
     }
+  
   CloseBlob(image);
 
   if(logging)

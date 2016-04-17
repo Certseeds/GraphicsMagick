@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4648,6 +4648,8 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MagickFreeMemory(msl_info.attributes);
   MagickFreeMemory(msl_info.image);
   MagickFreeMemory(msl_info.group_info);
+
+  CloseBlob(*image);
 
   return((*image != (Image *) NULL) && 
          ((*image)->exception.severity == UndefinedException));

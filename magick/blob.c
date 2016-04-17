@@ -782,6 +782,9 @@ MagickExport BlobInfo *CloneBlobInfo(const BlobInfo *blob_info)
   BlobInfo
     *clone_info;
 
+  SemaphoreInfo
+    *semaphore;
+
   clone_info=MagickAllocateMemory(BlobInfo *,sizeof(BlobInfo));
   if (clone_info == (BlobInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
@@ -789,19 +792,9 @@ MagickExport BlobInfo *CloneBlobInfo(const BlobInfo *blob_info)
   GetBlobInfo(clone_info);
   if (blob_info == (BlobInfo *) NULL)
     return(clone_info);
-  clone_info->length=blob_info->length;
-  clone_info->extent=blob_info->extent;
-  clone_info->quantum=blob_info->quantum;
-  clone_info->mapped=blob_info->mapped;
-  clone_info->eof=blob_info->eof;
-  clone_info->offset=blob_info->offset;
-  clone_info->size=blob_info->size;
-  clone_info->exempt=blob_info->exempt;
-  clone_info->status=blob_info->status;
-  clone_info->temporary=blob_info->temporary;
-  clone_info->type=blob_info->type;
-  clone_info->handle=blob_info->handle;
-  clone_info->data=blob_info->data;
+  semaphore=clone_info->semaphore;
+  (void) memcpy(clone_info,blob_info,sizeof(BlobInfo));
+  clone_info->semaphore=semaphore;
   LockSemaphoreInfo(clone_info->semaphore);
   clone_info->reference_count=1;
   UnlockSemaphoreInfo(clone_info->semaphore);
