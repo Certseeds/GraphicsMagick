@@ -1,3 +1,7 @@
+2016-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c: Improve blob tracing.
+
 2016-04-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix reading 24-bit Microsoft BMP

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -854,9 +854,9 @@ MagickExport void CloseBlob(Image *image)
 
   if (image->logging)
     (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                          "Closing %sStream blob %p",
+                          "Closing %sStream blob: image %p, blob %p, ref %lu",
                           BlobStreamTypeToString(image->blob->type),
-                          &image->blob);
+                          image,image->blob,image->blob->reference_count);
 
   status=0;
   switch (image->blob->type)
@@ -988,11 +988,13 @@ MagickExport void DestroyBlob(Image *image)
         destroy;
 
       assert(image->blob->signature == MagickSignature);
+      LockSemaphoreInfo(image->blob->semaphore);
       if (image->logging)
         (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                              "Destroy blob, image=%p, filename=\"%s\"",
-                              image,image->filename);
-      LockSemaphoreInfo(image->blob->semaphore);
+                              "Destroy blob (ref counted): image %p, blob %p,"
+                              " ref %lu, filename \"%s\"",
+                              image,image->blob,image->blob->reference_count,
+                              image->filename);
       image->blob->reference_count--;
       assert(image->blob->reference_count >= 0);
       destroy=(image->blob->reference_count > 0 ? MagickFalse : MagickTrue);
@@ -1002,6 +1004,12 @@ MagickExport void DestroyBlob(Image *image)
           /*
             Destroy blob object.
           */
+          if (image->logging)
+            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                  "Destroy blob (real): image %p, blob %p,"
+                                  " ref %lu, filename \"%s\"",
+                                  image,image->blob,
+                                  image->blob->reference_count,image->filename);
           if (image->blob->type != UndefinedStream)
             CloseBlob(image);
           if (image->blob->mapped)
@@ -1051,6 +1059,9 @@ MagickExport void DestroyBlobInfo(BlobInfo *blob)
 
       assert(blob->signature == MagickSignature);
       LockSemaphoreInfo(blob->semaphore);
+      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                            "Destroy blob info: blob %p, ref %lu",
+                            blob,blob->reference_count);
       blob->reference_count--;
       assert(blob->reference_count >= 0);
       destroy=(blob->reference_count > 0 ? MagickFalse : MagickTrue);
@@ -1091,7 +1102,10 @@ MagickExport void DestroyBlobInfo(BlobInfo *blob)
 */
 MagickExport void DetachBlob(BlobInfo *blob_info)
 {
-  assert(blob_info != (BlobInfo *) NULL);
+  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                        "Detach blob: blob %p, ref %lu",
+                        blob_info,blob_info->reference_count);
+ assert(blob_info != (BlobInfo *) NULL);
   if (blob_info->mapped)
     {
       (void) UnmapBlob(blob_info->data,blob_info->length);
@@ -2463,7 +2477,8 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
   assert(image->signature == MagickSignature);
   if (image->logging)
     (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                          "Opening Blob for image %p using %s mode ...",image,
+                          "Opening blob stream: image %p, blob %p,"
+                          " mode %s ...", image, image->blob,
                           BlobModeToString(mode));
   /*
     Cache I/O block size
@@ -2478,7 +2493,11 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
       AttachBlob(image->blob,image_info->blob,image_info->length);
       if (image->logging)
         (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                              "  attached image_info->blob to blob %p",&image->blob);
+                              "  attached data blob (addr %p, len %"
+                              MAGICK_SIZE_T_F "u) to image %p, blob %p",
+                              image_info->blob,
+                              (MAGICK_SIZE_T) image_info->length,
+                              image,image->blob);
       return(MagickPass);
     }
   /*
@@ -2509,16 +2528,18 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
           image->blob->handle.std=stdin;
           if (image->logging)
             (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                  "  using stdin as StandardStream blob %p",
-                                  &image->blob);
+                                  "  using stdin as StandardStream image"
+                                  " %p, blob %p",
+                                  image,image->blob);
         }
       else
         {
           image->blob->handle.std=stdout;
           if (image->logging)
             (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                  "  using stdout as StandardStream blob %p",
-                                  &image->blob);
+                                  "  using stdout as StandardStream image"
+                                  " %p, blob %p",
+                                  image,image->blob);
         }
 #if defined(MSWINDOWS)
       if (strchr(type,'b') != (char *) NULL)
@@ -2552,8 +2573,9 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
             image->blob->type=PipeStream;
             if (image->logging)
               (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                    "  popened \"%s\" as PipeStream blob %p",
-                                    filename+1,&image->blob);
+                                    "  popened \"%s\" as PipeStream image"
+                                    " %p, blob %p",
+                                    filename+1,image,image->blob);
           }
       }
     else
@@ -2586,8 +2608,9 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                 image->blob->type=ZipStream;
                 if (image->logging)
                   (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                        "  opened file %s as ZipStream blob %p",
-                                        filename,&image->blob);
+                                        "  opened file %s as ZipStream image"
+                                        " %p, blob %p",
+                                        filename,image,image->blob);
               }
           }
         else
@@ -2606,8 +2629,9 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                   image->blob->type=BZipStream;
                   if (image->logging)
                     (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                          "  opened file %s as BZipStream blob %p",
-                                          filename,&image->blob);
+                                          "  opened file %s as BZipStream image"
+                                          " %p, blob %p",
+                                          filename,image,image->blob);
                 }
             }
           else
@@ -2619,8 +2643,9 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                 image->blob->exempt=MagickTrue;
                 if (image->logging)
                   (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                        "  opened image_info->file (%d) as FileStream blob %p",
-                                        fileno(image_info->file),&image->blob);
+                                        "  opened image_info->file (%d) as"
+                                        " FileStream image %p, blob %p",
+                                        fileno(image_info->file),image,image->blob);
               }
             else
               {
@@ -2680,8 +2705,8 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                     image->blob->type=FileStream;
                     if (image->logging)
                       (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                            "  opened file \"%s\" as FileStream blob %p",
-                                            filename,&image->blob);
+                                            "  opened file \"%s\" as FileStream image %p, blob %p",
+                                            filename,image,image->blob);
 
 		    if ((ReadBlobMode == mode) || (ReadBinaryBlobMode == mode))
 		      {
@@ -2720,8 +2745,8 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
 				if (image->logging)
 				  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
 							"  reopened file \"%s\""
-                                                        "as ZipStream blob %p",
-							filename,&image->blob);
+                                                        "as ZipStream image %p, blob %p",
+							filename,image,image->blob);
 			      }
 			  }
 #endif
@@ -2736,8 +2761,8 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
 				if (image->logging)
 				  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
 							"  reopened file %s as"
-                                                        " BZipStream blob %p",
-							filename,&image->blob);
+                                                        " BZipStream image %p, blob %p",
+							filename,image,image->blob);
 			      }
 			  }
 #endif
@@ -3962,6 +3987,9 @@ MagickExport BlobInfo *ReferenceBlob(BlobInfo *blob)
   assert(blob->signature == MagickSignature);
   LockSemaphoreInfo(blob->semaphore);
   blob->reference_count++;
+  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                        "Reference blob: blob %p, ref %lu",
+                        blob,blob->reference_count);
   UnlockSemaphoreInfo(blob->semaphore);
   return(blob);
 }
@@ -4980,6 +5008,10 @@ MagickExport void DisassociateBlob(Image *image)
   assert(image->blob->signature == MagickSignature);
   clone=MagickFalse;
   LockSemaphoreInfo(image->blob->semaphore);
+  if (image->logging)
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Disassociate blob: image=%p, blob=%p, ref=%lu",
+                          image,image->blob,image->blob->reference_count);
   assert(image->blob->reference_count >= 0);
   if (image->blob->reference_count > 1)
     clone=MagickTrue;

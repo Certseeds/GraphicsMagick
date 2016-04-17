@@ -49,7 +49,7 @@ extern "C" {
   /*
     Deallocate memory associated with the BlobInfo structure.
   */
-  extern MagickExport void DestroyBlobInfo(BlobInfo *blob);
+  extern MagickExport void DestroyBlobInfo(BlobInfo *blob) MAGICK_FUNC_DEPRECATED;
 
   /*
     If BLOB is a memory mapping then unmap it. Reset BlobInfo structure
