@@ -1,5 +1,7 @@
 2016-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated with latest changes.
+
 	* magick/constitute.c (ReadImage): Added asserts to check that the
 	I/O blob is not still open in the returned image since this causes
 	problems.
