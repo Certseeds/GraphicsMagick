@@ -1359,7 +1359,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             DestroyImageList(image);
             return((Image *) NULL);
           }
-	DestroyBlobInfo(flipped_image->blob);
+	DestroyBlob(flipped_image);
 	flipped_image->blob=ReferenceBlob(image->blob);
         ReplaceImageInList(&image,flipped_image);
       }

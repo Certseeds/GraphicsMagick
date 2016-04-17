@@ -979,7 +979,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
           DestroyImageList(image);
           return((Image *) NULL);
         }
-      DestroyBlobInfo(flipped_image->blob);
+      DestroyBlob(flipped_image);
       flipped_image->blob=ReferenceBlob(image->blob);
       DestroyImage(image);
       image=flipped_image;
