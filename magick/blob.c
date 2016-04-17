@@ -1006,7 +1006,7 @@ MagickExport void DestroyBlob(Image *image)
           */
           if (image->logging)
             (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                  "Destroy blob (real): image %p, blob %p,"
+                                  "  Destroy blob (real): image %p, blob %p,"
                                   " ref %lu, filename \"%s\"",
                                   image,image->blob,
                                   image->blob->reference_count,image->filename);
@@ -1103,7 +1103,7 @@ MagickExport void DestroyBlobInfo(BlobInfo *blob)
 MagickExport void DetachBlob(BlobInfo *blob_info)
 {
   (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                        "Detach blob: blob %p, ref %lu",
+                        "Detach (reset) blob: blob %p, ref %lu",
                         blob_info,blob_info->reference_count);
  assert(blob_info != (BlobInfo *) NULL);
   if (blob_info->mapped)

@@ -855,7 +855,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
           else
             {
-              layer_info=MagickAllocateMemory(LayerInfo *,number_layers*sizeof(LayerInfo));
+              layer_info=MagickAllocateArray(LayerInfo *,number_layers,sizeof(LayerInfo));
               if (layer_info == (LayerInfo *) NULL)
                 {
                   if (logging)
@@ -866,7 +866,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     }
                   ThrowPSDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                 }
-              (void) memset(layer_info,0,number_layers*sizeof(LayerInfo));
+              (void) memset(layer_info,0,MagickArraySize(number_layers,sizeof(LayerInfo)));
               for (i=0; i < number_layers; i++)
                 {
                   if (logging)
@@ -1084,12 +1084,6 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   layer_info[i].image=CloneImage(image,layer_info[i].page.width,
                                                  layer_info[i].page.height,
                                                  True,&image->exception);
-                  if (layer_info[i].image->blob)
-                    {
-                      DestroyBlob(layer_info[i].image);
-                      layer_info[i].image->blob=0;
-                    }
-                  layer_info[i].image->blob=ReferenceBlob(image->blob);
                   if (layer_info[i].image == (Image *) NULL)
                     {
                       for (j=0; j < i; j++)
@@ -1108,6 +1102,8 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       ThrowPSDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                               image);
                     }
+                  DestroyBlob(layer_info[i].image);
+                  layer_info[i].image->blob=ReferenceBlob(image->blob);
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1808,8 +1804,10 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   packet_size=image->depth > 8 ? 6 : 3;
   if (image->matte)
     packet_size+=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateMemory(unsigned char *,
-                              packet_size*image->columns*sizeof(PixelPacket));
+  pixels=MagickAllocateArray(unsigned char *,
+                             packet_size,
+                             MagickArraySize(image->columns,
+                                             sizeof(PixelPacket)));
   if (pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) WriteBlob(image,4,"8BPS");

@@ -1,5 +1,9 @@
 2016-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/psd.c (ReadPSDImage): Assure that allocated image is not
+	dereferenced before checking if it is NULL.  Check some memory
+	calculations for overflow.
+
 	* coders/dib.c (ReadDIBImage): Use DestroyBlob() rather than
 	DestroyBlobInfo().
 
