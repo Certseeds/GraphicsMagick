@@ -265,4 +265,4 @@ Mercurial Topics
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2012 - 2015
+Copyright |copy| GraphicsMagick Group 2012 - 2016

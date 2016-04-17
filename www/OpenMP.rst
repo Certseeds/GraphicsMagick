@@ -1482,7 +1482,7 @@ The following shows the performance boost for a Q16 build:
 
 --------------------------------------------------------------------------
 
-| Copyright (C) 2008 - 2015 GraphicsMagick Group
+| Copyright (C) 2008 - 2016 GraphicsMagick Group
 
 This program is covered by multiple licenses, which are described in
 Copyright.txt. You should have received a copy of Copyright.txt with this
