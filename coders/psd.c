@@ -874,24 +874,8 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                             "  reading layer #%ld", i+1);
                     }
-                  {
-#if 1
-                    typedef union
-                    {
-                      magick_uint32_t u;
-                      magick_int32_t s;
-                    } ul_to_s;
-                    /* magick_uint32_t x_32=ReadBlobMSBLong(image); */
-                    /* magick_uint32_t y_32=ReadBlobMSBLong(image); */
-                    /* layer_info[i].page.y=*((magick_int32_t *) &x_32); */
-                    /* layer_info[i].page.x=*((magick_int32_t *) &y_32); */
-                    layer_info[i].page.y=((ul_to_s) ReadBlobMSBLong(image)).s;
-                    layer_info[i].page.x=((ul_to_s) ReadBlobMSBLong(image)).s;
-#else
-                    layer_info[i].page.y=(long) ReadBlobMSBLong(image);
-                    layer_info[i].page.x=(long) ReadBlobMSBLong(image);
-#endif
-                  }
+                  layer_info[i].page.y=(long) ReadBlobMSBLong(image);
+                  layer_info[i].page.x=(long) ReadBlobMSBLong(image);
                   layer_info[i].page.height=(ReadBlobMSBLong(image)-layer_info[i].page.y);
                   layer_info[i].page.width=(ReadBlobMSBLong(image)-layer_info[i].page.x);
                   layer_info[i].channels=ReadBlobMSBShort(image);
