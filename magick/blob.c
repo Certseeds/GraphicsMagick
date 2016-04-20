@@ -146,6 +146,26 @@ struct _BlobInfo
     signature;          /* Numeric value used to evaluate structure integrity. */
 };
 
+typedef union _MagickInt32Union
+{
+  magick_uint32_t
+    uint32;
+
+  magick_int32_t
+    int32;
+
+} MagickInt32Union;
+
+typedef union _MagickInt16Union
+{
+  magick_uint16_t
+    uint16;
+
+  magick_int16_t
+    int16;
+
+} MagickInt16Union;
+
 /*
   Forward Declarations
 */
@@ -3340,6 +3360,57 @@ MagickExport magick_uint32_t ReadBlobLSBLong(Image *image)
 %                                                                             %
 %                                                                             %
 %                                                                             %
++  R e a d B l o b L S B S i g n e d L o n g                                  %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method ReadBlobLSBSignedLong reads an signed 32 bit value in least-significant
+%  byte first order.  If insufficient octets are available to compose the
+%  value, then zero is returned, and EOFBlob() may be used to detect that
+%  the input is in EOF state.
+%
+%  The format of the ReadBlobLSBSignedLong method is:
+%
+%      magick_uint32_t ReadBlobLSBSignedLong(Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o value:  Method ReadBlobLSBSignedLong returns an signed 32-bit value from
+%      the file.  Zero is returned if insufficient data is available.
+%
+%    o image: The image.
+%
+%
+*/
+MagickExport magick_int32_t ReadBlobLSBSignedLong(Image *image)
+{
+  unsigned char
+    buffer[4];
+
+  MagickInt32Union
+    value;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+
+  if (ReadBlob(image,4,buffer) != 4)
+    return(0U);
+
+  value.uint32=buffer[3] << 24;
+  value.uint32|=buffer[2] << 16;
+  value.uint32|=buffer[1] << 8;
+  value.uint32|=buffer[0];
+  value.uint32&=0xffffffff;
+  return value.int32;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 +  R e a d B l o b L S B L o n g s                                            %
 %                                                                             %
 %                                                                             %
@@ -3405,7 +3476,7 @@ MagickExport size_t ReadBlobLSBLongs(Image *image, size_t octets,
 %
 %  The format of the ReadBlobLSBShort method is:
 %
-%      unsigned short ReadBlobLSBShort(Image *image)
+%      magick_uint16_t ReadBlobLSBShort(Image *image)
 %
 %  A description of each parameter follows.
 %
@@ -3433,6 +3504,55 @@ MagickExport magick_uint16_t ReadBlobLSBShort(Image *image)
   value=buffer[1] << 8;
   value|=buffer[0];
   return(value & 0xffff);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++  R e a d B l o b L S B S i g n e d S h o r t                                %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method ReadBlobLSBSignedShort reads a 16-bit signed value in
+%  least-significant byte first order.  If insufficient octets are available
+%  to compose the value, then zero is returned, and EOFBlob() may be used to
+%  detect that the input is in EOF state.
+%
+%  The format of the ReadBlobLSBSignedShort method is:
+%
+%      magick_int16_t ReadBlobLSBSignedShort(Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o value:  Method ReadBlobLSBSignedShort returns an signed 16-bit value
+%      read from the file.  Zero is returned if insufficient data is available.
+%
+%    o image: The image.
+%
+%
+*/
+MagickExport magick_int16_t ReadBlobLSBSignedShort(Image *image)
+{
+  unsigned char
+    buffer[2];
+
+  MagickInt16Union
+    value;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+
+  if (ReadBlob(image,2,buffer) != 2)
+    return(0U);
+
+  value.uint16=buffer[1] << 8;
+  value.uint16|=buffer[0];
+  value.uint16&=0xffff;
+  return value.int16;
 }
 
 /*
@@ -3794,6 +3914,58 @@ MagickExport magick_uint32_t ReadBlobMSBLong(Image *image)
 %                                                                             %
 %                                                                             %
 %                                                                             %
++  R e a d B l o b M S B S i g n e d L o n g                                  %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  ReadBlobMSBSignedLong() reads a 32 bit signed value in most-significant byte
+%  first order.  If insufficient octets are available to compose the value,
+%  then zero is returned, and EOFBlob() may be used to detect that the input
+%  is in EOF state.
+%
+%  The format of the ReadBlobMSBSignedLong method is:
+%
+%      magick_int32_t ReadBlobMSBSignedLong(Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o value:  Method ReadBlobMSBSignedLong returns a signed 32-bit value
+%      read from the file.  Zero is returned if insufficient data is available.
+%
+%    o image: The image.
+%
+%
+%
+*/
+MagickExport magick_int32_t ReadBlobMSBSignedLong(Image *image)
+{
+  unsigned char
+    buffer[4];
+
+  MagickInt32Union
+    value;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+
+  if (ReadBlob(image,4,buffer) != 4)
+    return(0);
+
+  value.uint32=buffer[0] << 24;
+  value.uint32|=buffer[1] << 16;
+  value.uint32|=buffer[2] << 8;
+  value.uint32|=buffer[3];
+  value.uint32&=0xffffffff;
+  return value.int32;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 +  R e a d B l o b M S B S h o r t                                            %
 %                                                                             %
 %                                                                             %
@@ -3835,6 +4007,55 @@ MagickExport magick_uint16_t ReadBlobMSBShort(Image *image)
   value=buffer[0] << 8;
   value|=buffer[1];
   return(value & 0xffff);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++  R e a d B l o b M S B S i g n e d S h o r t                                %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method ReadBlobMSBSignedShort reads a 16 bit signed value in
+%  most-significant byte first order.  If insufficient octets are available
+%  to compose the value, then zero is returned, and EOFBlob() may be used
+%  to detect that the input is in EOF state.
+%
+%  The format of the ReadBlobMSBSignedShort method is:
+%
+%      magick_uint16_t ReadBlobMSBSignedShort(Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o value:  Method ReadBlobMSBSignedShort returns an signed 16-bit value read
+%      from the file.  Zero is returned if insufficient data is available.
+%
+%    o image: The image.
+%
+%
+*/
+MagickExport magick_int16_t ReadBlobMSBSignedShort(Image *image)
+{
+  unsigned char
+    buffer[2];
+
+  MagickInt16Union
+    value;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+
+  if (ReadBlob(image,2,buffer) != 2)
+    return(0U);
+
+  value.uint16=buffer[0] << 8;
+  value.uint16|=buffer[1];
+  value.uint16&=0xffff;
+  return value.int16;
 }
 
 /*
@@ -4671,7 +4892,8 @@ MagickExport MagickPassFail WriteBlobFile(Image *image,const char *filename)
 %
 %  A description of each parameter follows.
 %
-%    o count: Method WriteBlobLSBLong returns the number of bytes written.
+%    o count: Method WriteBlobLSBLong returns the number of bytes written
+%             (should be 4).
 %
 %    o image: The image.
 %
@@ -4698,6 +4920,53 @@ MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
 %                                                                             %
 %                                                                             %
 %                                                                             %
++  W r i t e B l o b L S B S i g n e d L o n g                                %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method WriteBlobLSBSignedLong writes a 32 bit signed quantity in
+%  least-significant byte first order.
+%
+%  The format of the WriteBlobLSBSignedLong method is:
+%
+%      size_t WriteBlobLSBSignedLong(Image *image,const magick_int32_t value)
+%
+%  A description of each parameter follows.
+%
+%    o count: Method WriteBlobLSBLong returns the number of bytes written
+%             (should be 4).
+%
+%    o image: The image.
+%
+%    o value: Specifies the value to write.
+%
+%
+*/
+MagickExport size_t WriteBlobLSBSignedLong(Image *image,const magick_int32_t value)
+{
+  unsigned char
+    buffer[4];
+
+  MagickInt32Union
+    uvalue;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  uvalue.int32=value;
+  buffer[0]=(unsigned char) uvalue.uint32;
+  buffer[1]=(unsigned char) (uvalue.uint32 >> 8);
+  buffer[2]=(unsigned char) (uvalue.uint32 >> 16);
+  buffer[3]=(unsigned char) (uvalue.uint32 >> 24);
+  return(WriteBlob(image,4,buffer));
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 +   W r i t e B l o b L S B S h o r t                                         %
 %                                                                             %
 %                                                                             %
@@ -4713,7 +4982,8 @@ MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
 %
 %  A description of each parameter follows.
 %
-%    o count: Method WriteBlobLSBShort returns the number of bytes written.
+%    o count: Method WriteBlobLSBShort returns the number of bytes written
+%             (should be 2).
 %
 %    o image: The image.
 %
@@ -4730,6 +5000,51 @@ MagickExport size_t WriteBlobLSBShort(Image *image,const magick_uint16_t value)
   assert(image->signature == MagickSignature);
   buffer[0]=(unsigned char) value;
   buffer[1]=(unsigned char) (value >> 8);
+  return(WriteBlob(image,2,buffer));
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   W r i t e B l o b L S B S i g n e d S h o r t                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method WriteBlobLSBSignedShort writes a 16 bit signed value in
+%  least-significant byte first order.
+%
+%  The format of the WriteBlobLSBSignedShort method is:
+%
+%      size_t WriteBlobLSBSignedShort(Image *image,const magick_int16_t value)
+%
+%  A description of each parameter follows.
+%
+%    o count: Method WriteBlobLSBSignedShort returns the number of bytes written
+%             (should be 2).
+%
+%    o image: The image.
+%
+%    o value:  Specifies the value to write.
+%
+%
+*/
+MagickExport size_t WriteBlobLSBSignedShort(Image *image,const magick_int16_t value)
+{
+  unsigned char
+    buffer[2];
+
+  MagickInt16Union
+    uvalue;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  uvalue.int16=value;
+  buffer[0]=(unsigned char) uvalue.uint16;
+  buffer[1]=(unsigned char) (uvalue.uint16 >> 8);
   return(WriteBlob(image,2,buffer));
 }
 
@@ -4840,6 +5155,61 @@ MagickExport size_t WriteBlobMSBLong(Image *image,const magick_uint32_t value)
 %                                                                             %
 %                                                                             %
 %                                                                             %
++  W r i t e B l o b M S B S i g n e d L o n g                                %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method WriteBlobMSBSignedLong writes a 32 bit signed value in
+%  most-significant byte first order.
+%
+%  The format of the WriteBlobMSBSignedLong method is:
+%
+%      size_t WriteBlobMSBSignedLong(Image *image,const magick_int32_t value)
+%
+%  A description of each parameter follows.
+%
+%    o count: Method WriteBlobMSBLong returns the number of bytes written
+%             (should be 4).
+%
+%    o value:  Specifies the value to write.
+%
+%    o image: The image.
+%
+%
+*/
+MagickExport size_t WriteBlobMSBSignedLong(Image *image,const magick_int32_t value)
+{
+  size_t
+    count;
+
+  unsigned char
+    buffer[4];
+
+  MagickInt32Union
+    uvalue;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  uvalue.int32=value;
+  buffer[0]=(unsigned char) (uvalue.uint32 >> 24);
+  buffer[1]=(unsigned char) (uvalue.uint32 >> 16);
+  buffer[2]=(unsigned char) (uvalue.uint32 >> 8);
+  buffer[3]=(unsigned char) uvalue.uint32;
+
+  if (image->blob->type == BlobStream)
+    count=WriteBlobStream(image,4,buffer);
+  else
+    count=WriteBlob(image,4,buffer);
+  return count;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 +  R e a d B l o b M S B L o n g s                                            %
 %                                                                             %
 %                                                                             %
@@ -4907,7 +5277,8 @@ MagickExport size_t ReadBlobMSBLongs(Image *image, size_t octets,
 %
 %  A description of each parameter follows.
 %
-%    o count: Method WriteBlobMSBShort returns the number of bytes written.
+%    o count: Method WriteBlobMSBShort returns the number of bytes written
+%             (should be 2).
 %
 %   o  value:  Specifies the value to write.
 %
@@ -4924,6 +5295,51 @@ MagickExport size_t WriteBlobMSBShort(Image *image,const magick_uint16_t value)
   assert(image->signature == MagickSignature);
   buffer[0]=(unsigned char) (value >> 8);
   buffer[1]=(unsigned char) value;
+  return(WriteBlob(image,2,buffer));
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++  W r i t e B l o b M S B S i g n e d S h o r t                              %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method WriteBlobMSBSignedShort writes a 16 bit signed value in
+%  most-significant byte first order.
+%
+%  The format of the WriteBlobMSBSignedShort method is:
+%
+%      size_t WriteBlobMSBSignedShort(Image *image,const magick_int16_t value)
+%
+%  A description of each parameter follows.
+%
+%    o count: Method WriteBlobMSBSignedShort returns the number of bytes written
+%             (should be 2).
+%
+%   o  value:  Specifies the value to write.
+%
+%   o  file:  Specifies the file to write the data to.
+%
+%
+*/
+MagickExport size_t WriteBlobMSBSignedShort(Image *image,const magick_int16_t value)
+{
+  unsigned char
+    buffer[2];
+
+  MagickInt16Union
+    uvalue;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  uvalue.int16=value;
+  buffer[0]=(unsigned char) (uvalue.uint16 >> 8);
+  buffer[1]=(unsigned char) uvalue.uint16;
   return(WriteBlob(image,2,buffer));
 }
 

@@ -1,3 +1,13 @@
+2016-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c: Added ReadBlobLSBSignedShort(),
+	ReadBlobMSBSignedShort(),
+	ReadBlobLSBSignedLong(),ReadBlobMSBSignedLong(),
+	WriteBlobLSBSignedShort(), WriteBlobLSBSignedLong(),
+	WriteBlobMSBSignedLong(), WriteBlobMSBSignedShort() for doing I/O
+	on signed integer types without the need for dangerous casts or
+	unexpected values due to signed/unsigned conversion.
+
 2016-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated with latest changes.
