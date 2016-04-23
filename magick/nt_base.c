@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -36,6 +36,8 @@
 /*
   Include declarations.
 */
+#include <sys/types.h>
+#include <sys/utime.h>
 #include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/utility.h"
@@ -255,6 +257,89 @@ MagickExport void Exit(int status)
 MagickExport long MagickGetMMUPageSize()
 {
   return 4096;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k G e t F i l e A t t r i b u t e s                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickGetFileAttributes() returns the file attributes for a specified
+%  file in a structure of type MagickStatStruct_t.
+%
+%  The format of the MagickGetFileAttributes method is:
+%
+%      int MagickGetFileAttributes(const char *filename,
+%                                  MagickStatStruct_t *statbuf)
+%
+%  A description of each parameter follows:
+%
+%    o filename:  Path to the file
+%
+%    o statbuf: A structure of type MagickStatStruct_t to populate.
+%
+%
+*/
+MagickExport int MagickGetFileAttributes(const char *filename,
+                                         MagickStatStruct_t *statbuf)
+{
+  if (MagickStat(filename, statbuf) != 0)
+    return -1;
+
+  return 0;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k S e t F i l e A t t r i b u t e s                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickSetFileAttributes() sets the access and modification time file
+%  attributes based on values provided via in a structure of type
+%  MagickStatStruct_t.
+%
+%  The format of the MagickGetFileAttributes method is:
+%
+%      int MagickSetFileAttributes(const char *filename,
+%                                  const MagickStatStruct_t *statbuf)
+%
+%  A description of each parameter follows:
+%
+%    o filename:  Path to the file
+%
+%    o statbuf: A structure of type MagickStatStruct_t to populate.
+%
+%
+*/
+MagickExport int MagickSetFileAttributes(const char *filename,
+                                         const MagickStatStruct_t *statbuf)
+{
+  /*
+    Setting file timestamps on Windows is actually almost the same as on POSIX systems.
+    https://msdn.microsoft.com/en-us/library/4wacf567.aspx
+   */
+  struct _utimbuf
+    ut;
+
+  ut.actime = statbuf->st_atime;
+  ut.modtime = statbuf->st_mtime;
+
+  if (_utime(filename, &ut) == -1)
+    return -1;
+
+  return 0;
 }
 
 /*

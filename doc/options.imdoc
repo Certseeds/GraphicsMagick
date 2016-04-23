@@ -4395,6 +4395,23 @@ invalid data.</pp>
 
 
 
+
+<!-- ------------ -preserve-timestamp ------------------------------------------ -->
+
+<utils apps=mogrify>
+<dopt>-preserve-timestamp</opt>
+
+<abs>preserve the original timestamps of the file</abs>
+
+<pp>
+Use this option to preserve the original modification and access
+timestamps of the file, even if it has been modified.</pp>
+
+</utils>
+
+
+
+
 <!-- ------------ -progress ------------------------------------------ -->
 
 <utils apps=display>

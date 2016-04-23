@@ -1,3 +1,11 @@
+2016-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImageCommand): Added mogrify
+	-preserve-timestamp option to preserve file access and
+	modification timestamps.  Contributed by Niko Rosvall via
+	SourceForge patch #45 "preserve-timestamp option for mogrify
+	command."
+
 2016-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c: Added ReadBlobLSBSignedShort(),

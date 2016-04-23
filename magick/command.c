@@ -11663,6 +11663,7 @@ typedef struct _TransmogrifyOptions
   const char *output_directory;
   MagickBool create_directories;
   MagickBool global_colormap;
+  MagickBool preserve_file_attr;
   MagickPassFail status;
   ExceptionInfo exception;
 } TransmogrifyOptions;
@@ -11676,6 +11677,12 @@ static MagickPassFail* TransmogrifyImage(TransmogrifyOptions *options)
 
   MagickPassFail
     status = MagickPass;
+
+  int
+    fileatt_error = -1;
+
+  MagickStatStruct_t
+    statbuf;
 
   assert(options != (TransmogrifyOptions *) NULL);
   assert(options->input_filename != (char *) NULL);
@@ -11717,11 +11724,11 @@ static MagickPassFail* TransmogrifyImage(TransmogrifyOptions *options)
         }
       if (status == MagickFail)
         break;
-          
+
       /*
         Write transmogrified image to disk.
       */
-              
+
       (void) strlcpy(temporary_filename,"",MaxTextExtent);
 
       /*
@@ -11751,6 +11758,10 @@ static MagickPassFail* TransmogrifyImage(TransmogrifyOptions *options)
           AppendImageFormat(options->output_format,output_filename);
           (void) strlcpy(image->magick,options->output_format,MaxTextExtent);
         }
+
+      if (options->preserve_file_attr)
+        fileatt_error = MagickGetFileAttributes(image->filename, &statbuf);
+
       if (options->create_directories)
         {
           /*
@@ -11806,6 +11817,18 @@ static MagickPassFail* TransmogrifyImage(TransmogrifyOptions *options)
       */
       (void) strlcpy(image->filename,output_filename,MaxTextExtent);
       status = WriteImages(image_info,image,image->filename,&options->exception);
+
+      if (options->preserve_file_attr)
+        {
+          if (fileatt_error == 0)
+            {
+              if (MagickSetFileAttributes(image->filename, &statbuf) != 0)
+                {
+                  fprintf(stderr, "Error preserving file timestamps\n");
+                }
+            }
+        }
+
       if ((status != MagickFail) && (temporary_filename[0] != 0))
         {
           /*
@@ -11907,7 +11930,8 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
 
   MagickBool
     create_directories,
-    global_colormap;
+    global_colormap,
+    preserve_file_attr;
 
   unsigned int
     status;
@@ -11939,6 +11963,7 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
   output_directory[0]='\0';
   create_directories=MagickFalse;
   global_colormap=MagickFalse;
+  preserve_file_attr=MagickFalse;
   status=True;
 
   /*
@@ -11971,6 +11996,7 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
         transmogrify_options.output_directory=output_directory;
         transmogrify_options.create_directories=create_directories;
         transmogrify_options.global_colormap=global_colormap;
+        transmogrify_options.preserve_file_attr=preserve_file_attr;
         transmogrify_options.status=MagickPass;
         GetExceptionInfo(&transmogrify_options.exception);
         status &= *TransmogrifyImage(&transmogrify_options);
@@ -13105,6 +13131,11 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
               }
             break;
           }
+        if (LocaleCompare("preserve-timestamp", option+1) == 0)
+          {
+            preserve_file_attr = MagickTrue;
+            break;
+          }
         if (LocaleCompare("profile",option+1) == 0)
           {
             i++;
@@ -13772,6 +13803,7 @@ static void MogrifyUsage(void)
       "-fill color           color for annotating or changing opaque color",
       "-pointsize value     font point size",
       "-profile filename    add ICM or IPTC information profile to image",
+      "-preserve-timestamp  preserve original timestamps of the file",
       "-quality value       JPEG/MIFF/PNG compression level",
       "-raise value         lighten/darken image edges to create a 3-D effect",
       "-random-threshold channeltype LOWxHIGH",
