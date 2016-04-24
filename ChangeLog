@@ -1,3 +1,9 @@
+2016-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix segmentation violation when
+	reading aaphrbkwwe.svg.-1114777018469422437 from CVE-2016-2317
+	test cases.  This resolves CVE-2016-2317 completely.
+
 2016-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MogrifyImageCommand): Added mogrify

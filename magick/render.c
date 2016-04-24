@@ -1738,6 +1738,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     return(MagickFail);
   primitive_extent=strlen(primitive);
   (void) SetImageAttribute(image,"[MVG]",primitive);
+  if (getenv("MAGICK_SKIP_RENDERING") != NULL)
+    return MagickPass;
   n=0;
   /*
     Allocate primitive info memory.
@@ -2751,12 +2753,24 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       }
       case RoundRectanglePrimitive:
       {
-        length*=8*BezierQuantum+5;
+        /*
+          Round rectangle is rectangle plus elipse
+        */
+        double
+          alpha,
+          beta,
+          radius;
+
+        alpha=bounds.x2-bounds.x1;
+        beta=bounds.y2-bounds.y1;
+        radius=hypot((double) alpha,(double) beta);
+        length*=5;
+        length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
         break;
       }
       case BezierPrimitive:
       {
-        if (primitive_info[j].coordinates > 109)
+        if (primitive_info[j].coordinates > 107)
           (void) ThrowException(&image->exception,DrawError,
                                 TooManyCoordinates,token);
         length=primitive_info[j].coordinates*BezierQuantum;
@@ -2806,7 +2820,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       default:
         break;
     }
-
     if ((size_t) (i+length) >= number_points)
       {
         number_points+=length+1;
@@ -2850,25 +2863,74 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       }
       case RectanglePrimitive:
       {
+        /*
+          Rectangle requires 2 primitives.
+        */
         if (primitive_info[j].coordinates != 2)
           {
             status=MagickFail;
             break;
           }
-        TraceRectangle(primitive_info+j,primitive_info[j].point,
+        /*
+          Negative width is an error
+        */
+        if ((primitive_info[j+1].point.x - primitive_info[j].point.x) < 0.0)
+          {
+            status=MagickFail;
+            break;
+          }
+        /*
+          Negative height is an error
+        */
+        if ((primitive_info[j+1].point.y - primitive_info[j].point.y) < 0.0)
+          {
+            status=MagickFail;
+            break;
+          }
+        TraceRectangle(/*start*/primitive_info+j,
+                       /*end*/primitive_info[j].point,
           primitive_info[j+1].point);
         i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case RoundRectanglePrimitive:
       {
+        /*
+          Round rectangle requires 3 primitives.
+        */
         if (primitive_info[j].coordinates != 3)
           {
             status=MagickFail;
             break;
           }
-        TraceRoundRectangle(primitive_info+j,primitive_info[j].point,
-          primitive_info[j+1].point,primitive_info[j+2].point);
+        /*
+          Negative radius values are an error.
+        */
+        if ((primitive_info[j+2].point.x < 0.0) || (primitive_info[j+2].point.y < 0.0))
+          {
+            status=MagickFail;
+            break;
+          }
+        /*
+          Negative width is an error
+        */
+        if ((primitive_info[j+1].point.x - primitive_info[j].point.x) < 0.0)
+          {
+            status=MagickFail;
+            break;
+          }
+        /*
+          Negative height is an error
+        */
+        if ((primitive_info[j+1].point.y - primitive_info[j].point.y) < 0.0)
+          {
+            status=MagickFail;
+            break;
+          }
+        TraceRoundRectangle(primitive_info+j,
+                            /*start*/primitive_info[j].point,
+                            /*end*/primitive_info[j+1].point,
+                            /*arc*/primitive_info[j+2].point);
         i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -5024,8 +5086,8 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           }
           if (strchr("CcSs",last_attribute) == (char *) NULL)
             {
-              points[0]=points[2];
-              points[1]=points[3];
+              points[0]=point;
+              points[1]=point;
             }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
@@ -5062,8 +5124,8 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           }
           if (strchr("QqTt",last_attribute) == (char *) NULL)
             {
-              points[0]=points[2];
-              points[1]=points[3];
+              points[0]=point;
+              points[1]=point;
             }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
