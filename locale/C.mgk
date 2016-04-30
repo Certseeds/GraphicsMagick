@@ -622,6 +622,15 @@
       <Message name="TooManyCoordinates">
         too many coordinates
       </Message>
+      <Message name="FloatValueConversionError">
+        text value does not convert to float
+      </Message>
+      <Message name="IntegerValueConversionError">
+        text value does not convert to integer
+      </Message>
+      <Message name="VectorPathTruncated">
+        vector path truncated
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

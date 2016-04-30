@@ -35,10 +35,18 @@
 <div class="document">
 
 
+<p>2016-04-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Make SVG path and other primitive
+parsing more robust.  Fixes SEGV when reading files provided by
+CVE-2016-2318 test cases.  Fixes CVE-2016-2318 completely.</li>
+</ul>
+</blockquote>
 <p>2016-04-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>magick/render.c (DrawImage): Fix segmentation violation when
+<li>magick/render.c (DrawImage): Fix heap buffer overflow when
 reading aaphrbkwwe.svg.-1114777018469422437 from CVE-2016-2317
 test cases.  This resolves CVE-2016-2317 completely.</li>
 </ul>

@@ -1,6 +1,18 @@
+2016-04-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/locale.c (ReadLOCALEImage): Make sure to close blob
+	before returning.
+
+	* coders/svg.c ("C"): Provide a hack work-around for double-quoted
+	font-family argument.
+
+	* magick/render.c (DrawImage): Make SVG path and other primitive
+	parsing more robust.  Fixes SEGV when reading files provided by
+	CVE-2016-2318 test cases.  Fixes CVE-2016-2318 completely.
+
 2016-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* magick/render.c (DrawImage): Fix segmentation violation when
+	* magick/render.c (DrawImage): Fix heap buffer overflow when
 	reading aaphrbkwwe.svg.-1114777018469422437 from CVE-2016-2317
 	test cases.  This resolves CVE-2016-2317 completely.
 

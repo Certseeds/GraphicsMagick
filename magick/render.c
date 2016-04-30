@@ -128,7 +128,7 @@ static MagickPassFail
   DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static unsigned long
-  TracePath(PrimitiveInfo *,const char *);
+  TracePath(Image *image, PrimitiveInfo *,const char *);
 
 static void
 #if 0
@@ -147,6 +147,41 @@ static void
   TraceRoundRectangle(PrimitiveInfo *,const PointInfo,const PointInfo,
     PointInfo),
   TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
+
+static inline MagickPassFail MagickAtoFChk(const char *str, double *value)
+{
+  char *estr=0;
+  *value=strtod(str,&estr);
+  return (str == estr ? MagickFail : MagickPass);
+}
+#if 0
+static inline MagickPassFail MagickAtoIChk(const char *str, int *value)
+{
+  char *estr=0;
+  *value=(int) strtol(str,&estr, 10);
+  return (str == estr ? MagickFail : MagickPass);
+}
+#endif
+static inline MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
+{
+  char *estr=0;
+  *value=(unsigned int) strtol(str,&estr, 10);
+  return (str == estr ? MagickFail : MagickPass);
+}
+#if 0
+static inline MagickPassFail MagickAtoLChk(const char *str, long *value)
+{
+  char *estr=0;
+  *value=strtol(str,&estr, 10);
+  return (str == estr ? MagickFail : MagickPass);
+}
+#endif
+static inline MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
+{
+  char *estr=0;
+  *value=(unsigned long) strtol(str,&estr, 10);
+  return (str == estr ? MagickFail : MagickPass);
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1774,7 +1809,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     /*
       Interpret graphic primitive.
     */
-    MagickGetToken(q,&q,keyword,MaxTextExtent);
+    if (MagickGetToken(q,&q,keyword,MaxTextExtent) < 1)
+      break;
     if (*keyword == '\0')
       break;
     if (*keyword == '#')
@@ -1799,28 +1835,54 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("affine",keyword) == 0)
           {
-            MagickGetToken(q,&q,token,token_max_length);
-            affine.sx=MagickAtoF(token);
-            MagickGetToken(q,&q,token,token_max_length);
-            if (*token == ',')
-              MagickGetToken(q,&q,token,token_max_length);
-            affine.rx=MagickAtoF(token);
-            MagickGetToken(q,&q,token,token_max_length);
-            if (*token == ',')
-              MagickGetToken(q,&q,token,token_max_length);
-            affine.ry=MagickAtoF(token);
-            MagickGetToken(q,&q,token,token_max_length);
-            if (*token == ',')
-              MagickGetToken(q,&q,token,token_max_length);
-            affine.sy=MagickAtoF(token);
-            MagickGetToken(q,&q,token,token_max_length);
-            if (*token == ',')
-              MagickGetToken(q,&q,token,token_max_length);
-            affine.tx=MagickAtoF(token);
-            MagickGetToken(q,&q,token,token_max_length);
-            if (*token == ',')
-              MagickGetToken(q,&q,token,token_max_length);
-            affine.ty=MagickAtoF(token);
+            MagickBool affine_args_good = MagickFalse;
+            do
+              {
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (MagickAtoFChk(token,&affine.sx) != MagickPass)
+                  break;
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (*token == ',')
+                  if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                    break;
+                if (MagickAtoFChk(token,&affine.rx) != MagickPass)
+                  break;
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (*token == ',')
+                  if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                    break;
+                if (MagickAtoFChk(token,&affine.ry) != MagickPass)
+                  break;
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (*token == ',')
+                  if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                    break;
+                if (MagickAtoFChk(token,&affine.sy) != MagickPass)
+                  break;
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (*token == ',')
+                  if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                    break;
+                if (MagickAtoFChk(token,&affine.tx) != MagickPass)
+                  break;
+                if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                  break;
+                if (*token == ',')
+                  if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                    break;
+                if (MagickAtoFChk(token,&affine.ty) != MagickPass)
+                  break;
+                affine_args_good=MagickTrue;
+              } while (0);
+            if (affine_args_good != MagickTrue)
+              {
+                status=MagickFail;
+              }
             break;
           }
         if (LocaleCompare("arc",keyword) == 0)
@@ -1850,7 +1912,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             /*
               Create clip mask.
             */
-            MagickGetToken(q,&q,token,token_max_length);
+            if (MagickGetToken(q,&q,token,token_max_length) < 1)
+              {
+                status=MagickFail;
+                break;
+              }
             (void) CloneString(&graphic_context[n]->clip_path,token);
             (void) DrawClipPath(image,graphic_context[n],
               graphic_context[n]->clip_path);
@@ -1948,7 +2014,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("encoding",keyword) == 0)
           {
-            MagickGetToken(q,&q,token,token_max_length);
+            if (MagickGetToken(q,&q,token,token_max_length) < 1)
+              {
+                status=MagickFail;
+                break;
+              }
             (void) CloneString(&graphic_context[n]->encoding,token);
             break;
           }
@@ -2008,6 +2078,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("font-family",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
+            fprintf(stderr,"%s\n",token);
+            if ((token[0] == '\'') && (token[strlen(token)-1] == '\''))
+              fprintf(stderr,"==== Hit \n");
             (void) CloneString(&graphic_context[n]->family,token);
             break;
           }
@@ -2057,20 +2130,29 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("font-weight",keyword) == 0)
           {
-            MagickGetToken(q,&q,token,token_max_length);
-            graphic_context[n]->weight=MagickAtoL(token);
+            if (MagickGetToken(q,&q,token,token_max_length) < 1)
+              {
+                status=MagickFail;
+                break;
+              }
             if (LocaleCompare(token,"all") == 0)
               graphic_context[n]->weight=0;
-            if (LocaleCompare(token,"bold") == 0)
+            else if (LocaleCompare(token,"bold") == 0)
               graphic_context[n]->weight=700;
-            if (LocaleCompare(token,"bolder") == 0)
-              if (graphic_context[n]->weight <= 800)
-                graphic_context[n]->weight+=100;
-            if (LocaleCompare(token,"lighter") == 0)
-              if (graphic_context[n]->weight >= 100)
-                graphic_context[n]->weight-=100;
-            if (LocaleCompare(token,"normal") == 0)
+            else if (LocaleCompare(token,"bolder") == 0)
+              {
+                if (graphic_context[n]->weight <= 800)
+                  graphic_context[n]->weight+=100;
+              }
+            else if (LocaleCompare(token,"lighter") == 0)
+              {
+                if (graphic_context[n]->weight >= 100)
+                  graphic_context[n]->weight-=100;
+              }
+            else if (LocaleCompare(token,"normal") == 0)
               graphic_context[n]->weight=400;
+            else if (MagickAtoULChk(token,&graphic_context[n]->weight) != MagickPass)
+              status=MagickFail;
             break;
           }
         status=MagickFail;
@@ -3006,7 +3088,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       }
       case PathPrimitive:
       {
-        i=(long) (j+TracePath(primitive_info+j,token));
+        i=(long) (j+TracePath(image,primitive_info+j,token));
         break;
       }
       case ColorPrimitive:
@@ -4814,8 +4896,50 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
   primitive_info->coordinates=2;
 }
 
+/*
+  Special wrapper macros around strtod(), strtol(), and
+  MagickGetToken() to support TracePath() parsing error detection and
+  reporting.
+*/
+#define MagickTracePathAtoF(str,value)                          \
+  do {                                                          \
+    if (MagickAtoFChk(str,value) != MagickPass)                \
+      {                                                         \
+        ThrowException(&image->exception,DrawError,FloatValueConversionError,str); \
+        return 0;                                               \
+      }                                                         \
+  } while(0)
+
+#define MagickTracePathAtoI(str,value)                       \
+  do {                                                       \
+    if (MagickAtoIChk(str,value) != MagickPass)              \
+      {                                                      \
+        ThrowException(&image->exception,DrawError,IntegerValueConversionError,str); \
+        return 0;                                            \
+      }                                                      \
+  } while(0)
+
+#define MagickTracePathAtoUI(str,value)                       \
+  do {                                                       \
+    if (MagickAtoUIChk(str,value) != MagickPass)              \
+      {                                                      \
+        ThrowException(&image->exception,DrawError,IntegerValueConversionError,str); \
+        return 0;                                            \
+      }                                                      \
+  } while(0)
+
+#define MagickGetTracePathToken(p,ep,token,extent)        \
+  do {                                                    \
+    if (MagickGetToken(p,ep,token,extent) < 1)            \
+      {                                                   \
+        ThrowException(&image->exception,DrawError,VectorPathTruncated,p); \
+        return 0;                        \
+      }                                                   \
+  } while(0)
+
+
 static unsigned long
-TracePath(PrimitiveInfo *primitive_info,const char *path)
+TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
 {
   char
     token[MaxTextExtent];
@@ -4869,48 +4993,48 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
       case 'A':
       {
         MagickBool
-          large_arc,
-          sweep;
+          large_arc = MagickFalse,
+          sweep = MagickFalse;
 
         double
-          angle;
+          angle = 0.0;
 
         PointInfo
-          arc;
+          arc = {0,0};
 
         /*
           Compute arc points.
         */
         do
         {
-          MagickGetToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          arc.x=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&arc.x);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          arc.y=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&arc.y);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          angle=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&angle);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          large_arc=MagickAtoI(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoUI(token,&large_arc);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          sweep=MagickAtoI(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoUI(token,&sweep);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          x=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&x);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          y=MagickAtoF(token);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&y);
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
           TraceArcPath(q,point,end,arc,angle,large_arc,sweep);
@@ -4934,14 +5058,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           points[0]=point;
           for (i=1; i < 4; i++)
           {
-            MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            x=MagickAtoF(token);
-            MagickGetToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&x);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            y=MagickAtoF(token);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&y);
             end.x=attribute == 'C' ? x : point.x+x;
             end.y=attribute == 'C' ? y : point.y+y;
             points[i]=end;
@@ -4959,10 +5083,10 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
       {
         do
         {
-          MagickGetToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          x=MagickAtoF(token);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&x);
           point.x=attribute == 'H' ? x: point.x+x;
           TracePoint(q,point);
           q+=q->coordinates;
@@ -4974,14 +5098,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
       {
         do
         {
-          MagickGetToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          x=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&x);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          y=MagickAtoF(token);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&y);
           point.x=attribute == 'L' ? x : point.x+x;
           point.y=attribute == 'L' ? y : point.y+y;
           TracePoint(q,point);
@@ -5001,14 +5125,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
         i=0;
         do
         {
-          MagickGetToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          x=MagickAtoF(token);
-          MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&x);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          y=MagickAtoF(token);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&y);
           point.x=attribute == 'M' ? x : point.x+x;
           point.y=attribute == 'M' ? y : point.y+y;
           if (i == 0)
@@ -5035,14 +5159,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           points[0]=point;
           for (i=1; i < 3; i++)
           {
-            MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            x=MagickAtoF(token);
-            MagickGetToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&x);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            y=MagickAtoF(token);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&y);
             if (*p == ',')
               p++;
             end.x=attribute == 'Q' ? x : point.x+x;
@@ -5070,14 +5194,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           points[1].y=2.0*points[3].y-points[2].y;
           for (i=2; i < 4; i++)
           {
-            MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            x=MagickAtoF(token);
-            MagickGetToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&x);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            y=MagickAtoF(token);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&y);
             if (*p == ',')
               p++;
             end.x=attribute == 'S' ? x : point.x+x;
@@ -5110,14 +5234,14 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
           points[1].y=2.0*points[2].y-points[1].y;
           for (i=2; i < 3; i++)
           {
-            MagickGetToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            x=MagickAtoF(token);
-            MagickGetToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&x);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
             if (*token == ',')
-              MagickGetToken(p,&p,token,MaxTextExtent);
-            y=MagickAtoF(token);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickTracePathAtoF(token,&y);
             end.x=attribute == 'T' ? x : point.x+x;
             end.y=attribute == 'T' ? y : point.y+y;
             points[i]=end;
@@ -5140,10 +5264,10 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
       {
         do
         {
-          MagickGetToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           if (*token == ',')
-            MagickGetToken(p,&p,token,MaxTextExtent);
-          y=MagickAtoF(token);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickTracePathAtoF(token,&y);
           point.y=attribute == 'V' ? y : point.y+y;
           TracePoint(q,point);
           q+=q->coordinates;
@@ -5170,6 +5294,7 @@ TracePath(PrimitiveInfo *primitive_info,const char *path)
       }
     }
   }
+
   primitive_info->coordinates=q-primitive_info;
   number_coordinates+=primitive_info->coordinates;
   for (i=0; i < (long) number_coordinates; i++)

@@ -1121,6 +1121,18 @@ Already pushing pattern definition
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorFloatValueConversionError
+Language        = English
+text value does not convert to float
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorIntegerValueConversionError
+Language        = English
+text value does not convert to integer
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorNonconformingDrawingPrimitiveDefinition
 Language        = English
 Non-conforming drawing primitive definition
@@ -1142,6 +1154,12 @@ MessageId       = +1
 SymbolicName    = DrawErrorUnbalancedGraphicContextPushPop
 Language        = English
 unbalanced graphic context push-pop
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorVectorPathTruncated
+Language        = English
+vector path truncated
 .
 
 MessageId       = +1
