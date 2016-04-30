@@ -1147,7 +1147,22 @@ static void SVGStartElement(void *context,const xmlChar *name,
             }
           if (LocaleCompare(keyword,"font-family") == 0)
             {
-              MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+              /*
+                Deal with Adobe Illustrator 10.0 which double-quotes
+                font-family.  Maybe we need a generalized solution for
+                this.
+              */
+              if ((value[0] == '\'') && (value[strlen(value)-1] == '\''))
+                {
+                  char nvalue[MaxTextExtent];
+                  (void) strlcpy(nvalue,value+1,sizeof(nvalue));
+                  nvalue[strlen(nvalue)-1]='\0';
+                  MVGPrintf(svg_info->file,"font-family '%s'\n",nvalue);
+                }
+              else
+                {
+                  MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+                }
               break;
             }
           if (LocaleCompare(keyword,"font-stretch") == 0)
