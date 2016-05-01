@@ -1,3 +1,9 @@
+2016-05-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/import.c (ImportViewPixelArea): Fix assertion while
+	reading TIFF file gkkxrilssm.tiff.105123337066 provided by Gustavo
+	Grieco.
+
 2016-04-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/locale.c (ReadLOCALEImage): Make sure to close blob

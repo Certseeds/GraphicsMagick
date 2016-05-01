@@ -324,6 +324,9 @@
       <Message name="UnableToWriteTemporaryFile">
         Unable to write to temporary file
       </Message>
+      <Message name="UnsupportedBitsPerSample">
+        Unsupported bits per sample
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
@@ -499,6 +502,9 @@
         </Message>
         <Message name="UnrecognizedNumberOfColors">
           Unrecognized number of colors
+        </Message>
+        <Message name="UnsupportedBitsPerSample">
+          Unsupported bits per sample
         </Message>
       </Error>
       <FatalError>

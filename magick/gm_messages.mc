@@ -521,6 +521,12 @@ Unable to zip-compress image
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedBitsPerSample
+Language        = English
+Unsupported bits per sample
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedCellTypeInTheMatrix
 Language        = English
 Unsupported cell type in the matrix
@@ -932,6 +938,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorUnrecognizedXWDHeader
 Language        = English
 Unrecognized XWD header
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnsupportedBitsPerSample
+Language        = English
+Unsupported bits per sample
 .
 
 MessageId       = +1
