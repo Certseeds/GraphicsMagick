@@ -40,8 +40,14 @@
 <ul class="simple">
 <li>magick/render.c (DrawPolygonPrimitive): Fix divide by zero
 exception encountered while reading file &quot;sigfpe.svg&quot; posted by
-Gustavo Grieco to the oss-security mailing list with subject &quot;CVE
-request: DoS in multiple versions of GraphicsMagick&quot;.</li>
+Gustavo Grieco on May 1, 2016 to the oss-security mailing list
+with subject &quot;CVE request: DoS in multiple versions of
+GraphicsMagick&quot;.
+(DrawDashPolygon): Fix endless loop problem caused by negative
+stroke-dasharray arguments.  Resolves problem observed while
+reading file &quot;circular.svg&quot; posted by Gustavo Grieco on May 1,
+2016 to the oss-security mailing list with subject &quot;CVE request:
+DoS in multiple versions of GraphicsMagick&quot;.</li>
 <li>magick/import.c (ImportViewPixelArea): Fix assertion while
 reading TIFF file gkkxrilssm.tiff.105123337066 provided by Gustavo
 Grieco.</li>

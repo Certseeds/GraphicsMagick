@@ -1574,7 +1574,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
   status=MagickPass;
   maximum_length=0.0;
   total_length=0.0;
-  for (i=1; i < number_vertices; i++)
+  for (i=1; (i < number_vertices) && (length >= 0.0); i++)
   {
     dx=primitive_info[i].point.x-primitive_info[i-1].point.x;
     dy=primitive_info[i].point.y-primitive_info[i-1].point.y;
@@ -1586,7 +1586,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
           n=0;
         length=scale*draw_info->dash_pattern[n];
       }
-    for (total_length=0.0; maximum_length >= (length+total_length); )
+    for (total_length=0.0; (length >= 0.0) && (maximum_length >= (length+total_length)); )
     {
       total_length+=length;
       if (n & 0x01)
@@ -2539,8 +2539,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("stroke-dasharray",keyword) == 0)
           {
-            if (graphic_context[n]->dash_pattern != (double *) NULL)
-              MagickFreeMemory(graphic_context[n]->dash_pattern);
+            MagickFreeMemory(graphic_context[n]->dash_pattern);
             if (IsPoint(q))
               {
                 char
@@ -2570,7 +2569,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   if (*token == ',')
                     MagickGetToken(q,&q,token,token_max_length);
                   graphic_context[n]->dash_pattern[j]=MagickAtoF(token);
+                  if (graphic_context[n]->dash_pattern[j] < 0.0)
+                    status=MagickFail;
                 }
+                if (status == MagickFail)
+                  {
+                    MagickFreeMemory(graphic_context[n]->dash_pattern);
+                    break;
+                  }
                 if (x & 0x01)
                   for ( ; j < (2*x); j++)
                     graphic_context[n]->dash_pattern[j]=

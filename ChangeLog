@@ -2,8 +2,14 @@
 
 	* magick/render.c (DrawPolygonPrimitive): Fix divide by zero
 	exception encountered while reading file "sigfpe.svg" posted by
-	Gustavo Grieco to the oss-security mailing list with subject "CVE
-	request: DoS in multiple versions of GraphicsMagick".
+	Gustavo Grieco on May 1, 2016 to the oss-security mailing list
+	with subject "CVE request: DoS in multiple versions of
+	GraphicsMagick".
+	(DrawDashPolygon): Fix endless loop problem caused by negative
+	stroke-dasharray arguments.  Resolves problem observed while
+	reading file "circular.svg" posted by Gustavo Grieco on May 1,
+	2016 to the oss-security mailing list with subject "CVE request:
+	DoS in multiple versions of GraphicsMagick".
 
 	* magick/import.c (ImportViewPixelArea): Fix assertion while
 	reading TIFF file gkkxrilssm.tiff.105123337066 provided by Gustavo
