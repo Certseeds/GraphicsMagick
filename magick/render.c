@@ -3793,7 +3793,9 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 		      if (stroke_opacity < 0.99)
 			stroke_opacity=0.0;
 		    }
-		  if (fill_pattern != (Image *) NULL)
+		  if ((fill_pattern != (Image *) NULL) &&
+                      (fill_pattern->columns != 0) &&
+                      (fill_pattern->rows != 0))
 		    (void) AcquireOnePixelByReference
 		      (fill_pattern,&fill_color,
 		       (long) (x-fill_pattern->tile_info.x) % fill_pattern->columns,
@@ -3804,7 +3806,9 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 		  AlphaCompositePixel(q,&fill_color,fill_opacity,q,
 				      (q->opacity == TransparentOpacity)
 				      ? OpaqueOpacity : q->opacity);
-		  if (stroke_pattern != (Image *) NULL)
+		  if ((stroke_pattern != (Image *) NULL) &&
+                      (stroke_pattern->columns != 0) &&
+                      (stroke_pattern->rows != 0))
 		    (void) AcquireOnePixelByReference
 		      (stroke_pattern,&stroke_color,
 		       (long) (x-stroke_pattern->tile_info.x) % stroke_pattern->columns,

@@ -1,5 +1,10 @@
 2016-05-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawPolygonPrimitive): Fix divide by zero
+	exception encountered while reading file "sigfpe.svg" posted by
+	Gustavo Grieco to the oss-security mailing list with subject "CVE
+	request: DoS in multiple versions of GraphicsMagick".
+
 	* magick/import.c (ImportViewPixelArea): Fix assertion while
 	reading TIFF file gkkxrilssm.tiff.105123337066 provided by Gustavo
 	Grieco.
