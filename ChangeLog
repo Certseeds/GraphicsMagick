@@ -1,3 +1,8 @@
+2016-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (ReadImages): Avoid possible infinite
+	ReadImage() recursion.
+
 2016-05-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawPolygonPrimitive): Fix divide by zero

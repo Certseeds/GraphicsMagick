@@ -1474,7 +1474,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
   assert(image_info->filename != (char *) NULL);
   assert(exception != (ExceptionInfo *) NULL);
   /* SetExceptionInfo(exception,UndefinedException); */
-  if (*image_info->filename == '@')
+  if ((*image_info->filename == '@') && (!IsAccessibleNoLogging(image_info->filename)))
     return(ReadImages(image_info,exception));
   clone_info=CloneImageInfo(image_info);
 
@@ -1977,6 +1977,10 @@ static Image *ReadImages(const ImageInfo *image_info,ExceptionInfo *exception)
   for (i=1; i < number_images; i++)
   {
     (void) strlcpy(clone_info->filename,images[i],MaxTextExtent);
+    if ((image_info->filename[0] == '@') &&
+        (clone_info->filename[0] == '@') &&
+        (strcmp(clone_info->filename+1,image_info->filename+1) == 0))
+      continue;
     next=ReadImage(clone_info,exception);
     if (next == (Image *) NULL)
       continue;
@@ -1996,7 +2000,7 @@ static Image *ReadImages(const ImageInfo *image_info,ExceptionInfo *exception)
       }
   }
   DestroyImageInfo(clone_info);
-  for (i=1; i < number_images; i++)
+  for (i=0; i < number_images; i++)
     MagickFreeMemory(images[i]);
   MagickFreeMemory(images);
   return(image);
