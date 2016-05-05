@@ -37,13 +37,17 @@
 
 <p>2016-05-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-<ul class="simple">
-<li>config/delegates.mgk.in: Gnuplot files are inherently insecure.
-Remove delegates support for reading them.
-Added -dSAFER to Ghostscript invokations in delegates.mgk for more
-secure execution.</li>
-<li>magick/constitute.c (ReadImages): Avoid possible infinite
-ReadImage() recursion.</li>
+<ul>
+<li><p class="first">config/delegates.mgk.in: Gnuplot files are inherently insecure.
+Remove delegates support for reading them.  Reported by John
+Lightsey via private email.</p>
+<p>Added -dSAFER to Ghostscript invokations in delegates.mgk for more
+secure execution.  Reported by David Chan via SourceForge bug
+&quot;#386 ghostscript delegates should explicitly use -dSAFER.&quot;.</p>
+</li>
+<li><p class="first">magick/constitute.c (ReadImages): Avoid possible infinite
+ReadImage() recursion.</p>
+</li>
 </ul>
 </blockquote>
 <p>2016-05-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

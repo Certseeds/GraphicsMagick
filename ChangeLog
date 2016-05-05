@@ -1,9 +1,12 @@
 2016-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* config/delegates.mgk.in: Gnuplot files are inherently insecure.
-	Remove delegates support for reading them.
+	Remove delegates support for reading them.  Reported by John
+	Lightsey via private email.
+	
 	Added -dSAFER to Ghostscript invokations in delegates.mgk for more
-	secure execution.
+	secure execution.  Reported by David Chan via SourceForge bug
+	"#386 ghostscript delegates should explicitly use -dSAFER.".
 
 	* magick/constitute.c (ReadImages): Avoid possible infinite
 	ReadImage() recursion.
