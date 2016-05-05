@@ -171,13 +171,6 @@ building under Microsoft Windows:
 
   to perform ICC CMS color management.
 
-* GraphicsMagick requires gnuplot available from
-
-     http://gnuplot.sourceforge.net/
-
-  to read GNUPLOT plot files (with extension gplt).  Ghostscript (see
-  above) is also required.
-
 * GraphicsMagick requires Graphviz available from
 
      http://www.graphviz.org/
