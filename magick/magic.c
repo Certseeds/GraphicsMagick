@@ -90,7 +90,6 @@ StaticMagic[] =
   MAGIC("FITS", 0, "SIMPLE"),
   MAGIC("FPX", 0, "\320\317\021\340"),
   MAGIC("GIF", 0, "GIF8"),
-  MAGIC("GPLT", 0, "#!/usr/local/bin/gnuplot"),
   MAGIC("HDF", 1, "HDF"),
   MAGIC("HPGL", 0, "IN;"),
   MAGIC("HPGL", 0, "\033E\033"),

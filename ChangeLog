@@ -1,5 +1,8 @@
 2016-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* config/delegates.mgk.in: Gnuplot files are inherently insecure.
+	Remove delegates support for reading them.
+
 	* magick/constitute.c (ReadImages): Avoid possible infinite
 	ReadImage() recursion.
 
