@@ -1,9 +1,14 @@
+2016-05-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcx.c (ReadPCXImage): Limit the number of PCX image
+	planes allowed.  Fixes an unreasonable memory allocation in a
+	sample file provided by Hanno Böck on May 5, 2016.
+
 2016-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* config/delegates.mgk.in: Gnuplot files are inherently insecure.
 	Remove delegates support for reading them.  Reported by John
 	Lightsey via private email.
-	
 	Added -dSAFER to Ghostscript invokations in delegates.mgk for more
 	secure execution.  Reported by David Chan via SourceForge bug
 	"#386 ghostscript delegates should explicitly use -dSAFER.".

@@ -506,7 +506,10 @@
         <Message name="UnsupportedBitsPerSample">
           Unsupported bits per sample
         </Message>
-      </Error>
+        <Message name="UnsupportedNumberOfPlanes">
+          Unsupported number of planes
+        </Message>
+     </Error>
       <FatalError>
         <Message name="UnableToPersistKey">
           Unable to persist key

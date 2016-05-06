@@ -947,6 +947,12 @@ Unsupported bits per sample
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnsupportedNumberOfPlanes
+Language        = English
+Unsupported number of planes
+.
+
+MessageId       = +1
 SymbolicName    = ImageFatalErrorUnableToPersistKey
 Language        = English
 Unable to persist key

@@ -398,21 +398,36 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
          (pcx_info.bits_per_pixel != 8)))
       ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
 
+    if (CheckImagePixelLimits(image, exception) != MagickPass)
+      ThrowPCXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
     /*
       Validate bytes per line.  It is ok to have more bytes per line
       than the total bits suggest, but not less.
     */
     {
-      unsigned long bytes_per_line;
+      size_t bytes_per_line;
 
-      bytes_per_line = (image->columns*pcx_info.bits_per_pixel + 7)/8;
+      bytes_per_line = MagickArraySize(image->columns,pcx_info.bits_per_pixel);
+      if (bytes_per_line)
+        bytes_per_line += 7U;
+      if (bytes_per_line)
+        bytes_per_line /= 8U;
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Bytes per line: reqire >= %lu, have %u",
                               bytes_per_line, pcx_info.bytes_per_line);
-      if (pcx_info.bytes_per_line < bytes_per_line)
+      if ((bytes_per_line == 0) || (pcx_info.bytes_per_line < bytes_per_line))
         ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
     }
+    /*
+      Validate number of planes.  We only support 1, 2, 3, 4 but some
+      files might have extra planes (which we ignore).
+    */
+    if (pcx_info.planes == 0)
+      ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
+    if (pcx_info.planes > 6)
+      ThrowPCXReaderException(CorruptImageError,UnsupportedNumberOfPlanes,image);
 
     if ((pcx_info.bits_per_pixel != 8) || (pcx_info.planes == 1))
       if ((pcx_info.version == 3) || (pcx_info.version == 5) ||
