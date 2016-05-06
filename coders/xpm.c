@@ -285,8 +285,9 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
       }
   }
-  if ((count != 4) || (width == 0) || (width > 2) || (image->columns == 0) ||
-      (image->rows == 0) || (image->colors == 0))
+  if ((count != 4) || (width == 0) || (width > 2) ||
+      (image->columns == 0) || (image->rows == 0) ||
+      (image->colors == 0) || (image->colors > MaxColormapSize))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
   image->depth=16;
   /*
@@ -333,10 +334,12 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Initialize image structure.
   */
   keys=MagickAllocateArray(char **,image->colors,sizeof(char *));
-  if (!AllocateImageColormap(image,image->colors) || (keys == (char **) NULL))
+  if (keys == (char **) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   for (i=0; i < (long) image->colors; i++)
     keys[i]=(char *) NULL;
+  if (!AllocateImageColormap(image,image->colors))
+    ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   /*
     Read image colormap.

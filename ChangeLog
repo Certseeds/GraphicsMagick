@@ -1,5 +1,10 @@
 2016-05-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c (ReadXPMImage): Limit the number of XPM colors and
+	assure array initialization.  Fixes bad behavior with a sample
+	file provided by Hanno Böck on May 5, 2016 with subject "Invalid
+	free in ReadXPMImage".
+
 	* coders/pcx.c (ReadPCXImage): Limit the number of PCX image
 	planes allowed.  Fixes an unreasonable memory allocation in a
 	sample file provided by Hanno Böck on May 5, 2016.
