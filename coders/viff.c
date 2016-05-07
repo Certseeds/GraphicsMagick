@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2014 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -127,7 +127,7 @@ static void LogVIFFInfo(const ViffInfo *viff_info)
                         "    Release:            0x%02X\n"
                         "    Version:            0x%02X\n"
                         "    MachineDep:         0x%02X\n"
-                        "    Comment:            \"%.512s\"\n"
+                        "    Comment:            \"%.60s\"\n" /* 512 bytes */
                         "    NumberOfRows:       %u\n"
                         "    NumberOfColumns:    %u\n"
                         "    LengthOfSubrow:     %u\n"
@@ -139,10 +139,10 @@ static void LogVIFFInfo(const ViffInfo *viff_info)
                         "    LocationDim:        0x%04X\n"
                         "    NumberOfImages:     %u\n"
                         "    NumberOfBands:      %u\n"
-                        "    DataStorageType:    0x%04X\n"
-                        "    DataEncodingScheme: 0x%04X\n"
-                        "    MapScheme:          0x%04X\n"
-                        "    MapStorageType:     0x%04X\n"
+                        "    DataStorageType:    0x%04X (%s)\n"
+                        "    DataEncodingScheme: 0x%04X (%s)\n"
+                        "    MapScheme:          0x%04X (%s)\n"
+                        "    MapStorageType:     0x%04X (%s)\n"
                         "    MapRowSize:         %u\n"
                         "    MapColumnSize:      %u\n"
                         "    MapSubrowSize:      %u\n"
@@ -167,9 +167,39 @@ static void LogVIFFInfo(const ViffInfo *viff_info)
                         viff_info->number_of_images,
                         viff_info->number_data_bands,
                         viff_info->data_storage_type,
+                        viff_info->data_storage_type == 0x00 ? "Bit" :
+                        viff_info->data_storage_type == 0x01 ? "BYTE" :
+                        viff_info->data_storage_type == 0x02 ? "WORD" :
+                        viff_info->data_storage_type == 0x04 ? "DWORD" :
+                        viff_info->data_storage_type == 0x05 ? "Single-precision float" :
+                        viff_info->data_storage_type == 0x06 ? "Complex float" :
+                        viff_info->data_storage_type == 0x09 ? "Double-precision float" :
+                        viff_info->data_storage_type == 0x0A ? "Complex double" :
+                        "???",
                         viff_info->data_encode_scheme,
+                        viff_info->data_encode_scheme == 0x00 ? "No compression" :
+                        viff_info->data_encode_scheme == 0x01 ? "ALZ" :
+                        viff_info->data_encode_scheme == 0x02 ? "RLE" :
+                        viff_info->data_encode_scheme == 0x03 ? "Transform-based" :
+                        viff_info->data_encode_scheme == 0x04 ? "CCITT" :
+                        viff_info->data_encode_scheme == 0x05 ? "ADPCM" :
+                        viff_info->data_encode_scheme == 0x06 ? "User-defined" :
+                        "???",
                         viff_info->map_scheme,
+                        viff_info->map_scheme == 0x01 ? "Bands use distinct map" :
+                        viff_info->map_scheme == 0x02 ? "Cycle maps" :
+                        viff_info->map_scheme == 0x03 ? "Share maps" :
+                        viff_info->map_scheme == 0x04 ? "Bands grouped to one map" :
+                        "???",
                         viff_info->map_storage_type,
+                        viff_info->map_storage_type == 0x00 ? "No data type" :
+                        viff_info->map_storage_type == 0x01 ? "Unsigned CHAR" :
+                        viff_info->map_storage_type == 0x02 ? "Short INT" :
+                        viff_info->map_storage_type == 0x04 ? "INT" :
+                        viff_info->map_storage_type == 0x05 ? "Single-precision float" :
+                        viff_info->map_storage_type == 0x06 ? "Complex float" :
+                        viff_info->map_storage_type == 0x07 ? "Double-precision float" :
+                        "???",
                         viff_info->map_rows,
                         viff_info->map_columns,
                         viff_info->map_subrows,
@@ -299,6 +329,8 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     lsb_first;
 
   size_t
+    alloc_size,
+    blob_size,
     max_packets,
     number_pixels;
 
@@ -557,9 +589,41 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
       default: bytes_per_pixel=1; break;
     }
     if (viff_info.data_storage_type == VFF_TYP_BIT)
-      max_packets=MagickArraySize(((image->columns+7) >> 3),image->rows);
+      {
+        max_packets=MagickArraySize(((image->columns+7) >> 3),image->rows);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Alloc Bytes: %" MAGICK_SIZE_T_F "u, "
+                              "Max Packets: %" MAGICK_SIZE_T_F "u, "
+                              "Columns: %" MAGICK_SIZE_T_F "u ,"
+                              "Rows: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) MagickArraySize(((image->columns+7) >> 3),
+                                                              image->rows),
+                              (MAGICK_SIZE_T) max_packets,
+                              (MAGICK_SIZE_T) image->columns,
+                              (MAGICK_SIZE_T) image->rows);
+      }
     else
-      max_packets=MagickArraySize(number_pixels,viff_info.number_data_bands);
+      {
+        max_packets=MagickArraySize(number_pixels,viff_info.number_data_bands);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Alloc Bytes: %" MAGICK_SIZE_T_F "u, "
+                              "Max Packets: %" MAGICK_SIZE_T_F "u, "
+                              "Number Pixels: %" MAGICK_SIZE_T_F "u, "
+                              "Columns: %" MAGICK_SIZE_T_F "u, "
+                              "Rows: %" MAGICK_SIZE_T_F "u, "
+                              "Number Data Bands: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) MagickArraySize(number_pixels,
+                                                              viff_info.number_data_bands),
+                              (MAGICK_SIZE_T) max_packets,
+                              (MAGICK_SIZE_T) number_pixels,
+                              (MAGICK_SIZE_T) image->columns,
+                              (MAGICK_SIZE_T) image->rows,
+                              (MAGICK_SIZE_T) viff_info.number_data_bands);
+      }
+    alloc_size=MagickArraySize(bytes_per_pixel,max_packets);
+    blob_size=GetBlobSize(image);
+    if ((blob_size != 0) && (alloc_size > blob_size))
+      ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     viff_pixels=MagickAllocateArray(unsigned char *,
                                     MagickArraySize(bytes_per_pixel,
                                                     max_packets),

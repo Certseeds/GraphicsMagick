@@ -38,6 +38,9 @@
 <p>2016-05-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/viff.c (ReadVIFFImage): Fix problem with a very large
+malloc in sample file provided by Hanno Böck on May 7, 2016 with
+subject &quot;large malloc in ReadVIFFImage&quot;.</li>
 <li>coders/mvg.c (RegisterMVGImage): Do not auto-detect MVG format
 based on file extension.  MVG files can then only be read by
 adding a &quot;MVG:&quot; prefix to the file name. There is already no
