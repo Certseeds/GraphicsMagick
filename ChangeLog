@@ -2,7 +2,7 @@
 
 	* coders/xpm.c (ReadXPMImage): Limit the number of XPM colors and
 	assure array initialization.  Fixes bad behavior with a sample
-	file provided by Hanno Böck on May 5, 2016 with subject "Invalid
+	file provided by Hanno Böck on May 6, 2016 with subject "Invalid
 	free in ReadXPMImage".
 
 	* coders/pcx.c (ReadPCXImage): Limit the number of PCX image
