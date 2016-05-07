@@ -1,5 +1,9 @@
 2016-05-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Fix heap overflow with file
+	"gkkxrilssm.tiff.-4678010562506843336" provided by Gustavo Grieco
+	on February 8, 2006 via private email.
+
 	* coders/viff.c (ReadVIFFImage): Fix problem with a very large
 	malloc in sample file provided by Hanno Böck on May 7, 2016 with
 	subject "large malloc in ReadVIFFImage".

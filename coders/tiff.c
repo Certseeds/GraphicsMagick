@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2230,6 +2230,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickFail;
                 break;
               }
+            /*
+              Scale up to size of 32-bit word.
+            */
+            scanline_size=RoundUpToAlignment(scanline_size,sizeof(magick_int32_t));
 
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -2383,6 +2387,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Allocate memory for one strip.
             */
             strip_size_max=TIFFStripSize(tiff);
+            /*
+              Scale up to size of 32-bit word.
+            */
+            strip_size_max=RoundUpToAlignment(strip_size_max,sizeof(magick_int32_t));
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Maximum strip size %" MAGICK_SIZE_T_F "u",
@@ -2573,6 +2581,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Obtain the maximum number of bytes required to contain a tile.
             */
             tile_size_max=TIFFTileSize(tiff);
+            /*
+              Scale up to size of 32-bit word.
+            */
+            tile_size_max=RoundUpToAlignment(tile_size_max,sizeof(magick_int32_t));
             if (0 == tile_size_max)
               {
                 status=MagickFail;
@@ -2755,7 +2767,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
         case RGBAStrippedMethod:
           {
-            unsigned long
+            size_t
               number_pixels;
 
             uint32
@@ -2771,15 +2783,14 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert stripped TIFF image to DirectClass MIFF image.
             */
-            number_pixels=(unsigned long) image->columns*rows_per_strip;
-            if ((number_pixels*sizeof(uint32)) != (size_t)
-                (number_pixels*sizeof(uint32)))
+            number_pixels=MagickArraySize(image->columns,rows_per_strip);
+            if (0 == number_pixels)
               {
                 TIFFClose(tiff);
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                      image);
               }
-            strip_pixels=MagickAllocateMemory(uint32 *, (number_pixels*sizeof(uint32)));
+            strip_pixels=MagickAllocateArray(uint32 *,number_pixels,sizeof(uint32));
             if (strip_pixels == (uint32 *) NULL)
               {
                 TIFFClose(tiff);
@@ -2858,7 +2869,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               tile_columns,
               tile_rows;
         
-            unsigned long
+            size_t
               tile_total_pixels;
         
             if (logging)
@@ -2874,7 +2885,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 TIFFClose(tiff);
                 ThrowReaderException(CoderError,ImageIsNotTiled,image);
               }
-            tile_total_pixels=tile_columns*tile_rows;
+            tile_total_pixels=MagickArraySize(tile_columns,tile_rows);
             if (logging)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading TIFF tiles ...");
@@ -2886,7 +2897,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Allocate tile buffer
             */
-            tile_pixels=MagickAllocateMemory(uint32*,tile_columns*tile_rows*sizeof (uint32));
+            tile_pixels=MagickAllocateArray(uint32*,MagickArraySize(tile_columns,tile_rows),
+                                                                    sizeof (uint32));
             if (tile_pixels == (uint32 *) NULL)
               {
                 TIFFClose(tiff);
