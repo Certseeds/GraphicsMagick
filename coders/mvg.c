@@ -234,6 +234,7 @@ ModuleExport void RegisterMVGImage(void)
   entry->seekable_stream=True;
   entry->description="Magick Vector Graphics";
   entry->module="MVG";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 }
 

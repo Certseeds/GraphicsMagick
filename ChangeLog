@@ -1,3 +1,10 @@
+2016-05-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mvg.c (RegisterMVGImage): Do not auto-detect MVG format
+	based on file extension.  MVG files can then only be read by
+	adding a "MVG:" prefix to the file name. There is already no
+	auto-detection of MVG based on content.
+
 2016-05-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c (ReadXPMImage): Limit the number of XPM colors and
