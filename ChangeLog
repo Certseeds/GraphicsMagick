@@ -1,5 +1,8 @@
 2016-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawPrimitive): Sanity check the image file
+	path or URL before passing it to ReadImage().
+
 	* config/delegates.mgk.in: Pare down delegates.mgk to reduce
 	security exposure due to external programs not under our control.
 

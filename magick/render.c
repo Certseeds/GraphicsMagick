@@ -2078,9 +2078,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("font-family",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            fprintf(stderr,"%s\n",token);
-            if ((token[0] == '\'') && (token[strlen(token)-1] == '\''))
-              fprintf(stderr,"==== Hit \n");
             (void) CloneString(&graphic_context[n]->family,token);
             break;
           }
@@ -4252,6 +4249,24 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           &image->exception);
       else
         {
+          /*
+            Sanity check URL/path before passing it to ReadImage()
+
+            This is a temporary fix until suitable flags can be passed
+            to keep SetImageInfo() from doing potentially dangerous
+            magick things.
+          */
+#define VALID_PREFIX(str,url) (LocaleNCompare(str,url,sizeof(str)-1) == 0)
+          if (!VALID_PREFIX("http://", primitive_info->text) &&
+              !VALID_PREFIX("https://", primitive_info->text) &&
+              !VALID_PREFIX("ftp://", primitive_info->text)  &&
+              !(IsAccessibleNoLogging(primitive_info->text))
+              )
+            {
+              ThrowException(&image->exception,FileOpenError,UnableToOpenFile,primitive_info->text);
+              status=MagickFail;
+              break;
+            }
           (void) strlcpy(clone_info->filename,primitive_info->text,
             MaxTextExtent);
           composite_image=ReadImage(clone_info,&image->exception);
