@@ -245,26 +245,6 @@ building under Microsoft Windows:
   to read or write the PNG, MNG, or JNG image formats.  LIBPNG depends
   upon the ZLIB library (see below).
 
-* GraphicsMagick requires ra_ppm from Greg Ward's Radiance software
-  available from
-
-     http://radsite.lbl.gov/radiance/HOME.html
-
-  to read the Radiance image format.
-
-* GraphicsMagick requires rawtorle from the Utah Raster Toolkit
-  available via anonymous FTP as
-
-     ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/delegates/urt-3.1b.tar.Z
-
-  to write the RLE image format.
-
-* GraphicsMagick requires scanimage from
-
-     http://www.sane-project.org/
-							 
-  to import an image from a scanner device.
-
 * GraphicsMagick requires Sam Leffler's TIFF software available via
   anonymous FTP at
 
