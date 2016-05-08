@@ -2890,9 +2890,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading TIFF tiles ...");
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "TIFF tile geometry %ux%u, %lu pixels",
+                                      "TIFF tile geometry %ux%u, %" MAGICK_SIZE_T_F "u pixels",
                                       (unsigned int)tile_columns,
-                                      (unsigned int)tile_rows, tile_total_pixels);
+                                      (unsigned int)tile_rows,
+                                      (MAGICK_SIZE_T) tile_total_pixels);
               }
             /*
               Allocate tile buffer
