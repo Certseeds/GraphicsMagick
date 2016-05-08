@@ -140,5 +140,5 @@
   <delegate decode="txt" encode="ps" mode="bi" command='"@TXTDelegate@" -o "%o" "%i"' />
   <!-- Render WMF file using wmf2eps (fallback in case libwmf not available) -->
   <delegate decode="wmf" command='"@WMFDecodeDelegate@" -o "%o" "%i"' />
-  <delegate encode="show" stealth="True" command='"@GMDelegate@" display -immutable -delay 0 -window_group %g -title "%l of %f" "tmp:%o" &' />
+  <delegate encode="show" stealth="True" command='"@GMDelegate@" display -immutable -delay 0 -window_group %g -title "%l of %f" "%o" &' />
 </delegatemap>

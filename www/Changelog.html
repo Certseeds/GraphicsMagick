@@ -35,9 +35,28 @@
 <div class="document">
 
 
+<p>2016-05-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mat.c (DecompressBlock): Don't hang on a corrupt deflate
+stream when reading matlab v4 file.  Fixes problem reported by
+Hanno Böck on May 8, 2016 via private email entitled &quot;hang of
+matlab input file&quot;.</li>
+</ul>
+</blockquote>
 <p>2016-05-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/image.c (SetImageInfo): Undocumented &quot;TMP&quot; magick prefix
+no longer removes the argument file after it has been read. This
+functionality is only used to support the &quot;show&quot; delegate which is
+used by options in the 'display' program which need to display a
+generated image in a new instance of 'display'.  The &quot;show&quot;
+delegate is used by writing a temporary file to be viewed, and
+which should be removed before the program quits.  Since the &quot;TMP&quot;
+feature was originally implemented, GraphicsMagick added a
+temporary file management subsystem which assures that temporary
+files are removed so this feature is not needed.</li>
 <li>coders/tiff.c (ReadTIFFImage): Fix heap overflow with file
 &quot;gkkxrilssm.tiff.-4678010562506843336&quot; provided by Gustavo Grieco
 on February 8, 2006 via private email.</li>

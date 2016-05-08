@@ -317,6 +317,7 @@ z_stream zip_info;
 FILE *mat_file;
 size_t magick_size;
 int status;
+ int zip_status;
 
   if(clone_info==NULL) return NULL;
   if(clone_info->file)		/* Close file opened from previous transaction. */
@@ -340,14 +341,22 @@ int status;
   {
     MagickFreeMemory(cache_block);
     MagickFreeMemory(decompress_block);
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Gannot create file stream for PS image");
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Cannot create file stream for PS image");
     return NULL;
   }
 
   zip_info.zalloc = ZLIBAllocFunc;
   zip_info.zfree = ZLIBFreeFunc;
   zip_info.opaque = (voidpf) NULL;
-  inflateInit(&zip_info);
+  zip_status = inflateInit(&zip_info);
+  if (zip_status != Z_OK)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Failed to initialize zlib");
+      ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
+      MagickFreeMemory(cache_block);
+      MagickFreeMemory(decompress_block);
+      return NULL;
+    }
   /* zip_info.next_out = 8*4; */
 
   zip_info.avail_in = 0;
@@ -362,10 +371,19 @@ int status;
     {
       zip_info.avail_out = 4096;    
       zip_info.next_out = decompress_block;
-      status = inflate(&zip_info,Z_NO_FLUSH);      
+      zip_status = inflate(&zip_info,Z_NO_FLUSH);
+      if ((zip_status != Z_OK) && (zip_status != Z_STREAM_END))
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Corrupt inflate stream");
+          ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
+          MagickFreeMemory(cache_block);
+          MagickFreeMemory(decompress_block);
+          inflateEnd(&zip_info);
+          return NULL;
+        }
       fwrite(decompress_block, 4096-zip_info.avail_out, 1, mat_file);
 
-      if(status == Z_STREAM_END) goto DblBreak;
+      if(zip_status == Z_STREAM_END) goto DblBreak;
     }
 
     Size -= magick_size;

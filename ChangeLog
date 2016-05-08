@@ -1,4 +1,22 @@
+2016-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (DecompressBlock): Don't hang on a corrupt deflate
+	stream when reading matlab v4 file.  Fixes problem reported by
+	Hanno Böck on May 8, 2016 via private email entitled "hang of
+	matlab input file".
+
 2016-05-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (SetImageInfo): Undocumented "TMP" magick prefix
+	no longer removes the argument file after it has been read. This
+	functionality is only used to support the "show" delegate which is
+	used by options in the 'display' program which need to display a
+	generated image in a new instance of 'display'.  The "show"
+	delegate is used by writing a temporary file to be viewed, and
+	which should be removed before the program quits.  Since the "TMP"
+	feature was originally implemented, GraphicsMagick added a
+	temporary file management subsystem which assures that temporary
+	files are removed so this feature is not needed.
 
 	* coders/tiff.c (ReadTIFFImage): Fix heap overflow with file
 	"gkkxrilssm.tiff.-4678010562506843336" provided by Gustavo Grieco

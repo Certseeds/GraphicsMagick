@@ -2782,9 +2782,6 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
               (void) strlcpy(image_info->magick,magic,MaxTextExtent);
               if (LocaleCompare(magic,"TMP") != 0)
                 image_info->affirm=MagickTrue;
-              else
-                /* input file will be automatically removed */
-                image_info->temporary=MagickTrue;
             }
         }
     }
