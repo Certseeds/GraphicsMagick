@@ -341,7 +341,7 @@ int status;
   {
     MagickFreeMemory(cache_block);
     MagickFreeMemory(decompress_block);
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Cannot create file stream for PS image");
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Cannot create file stream for decompressed image");
     return NULL;
   }
 
