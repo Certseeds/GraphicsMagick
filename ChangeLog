@@ -3,8 +3,14 @@
 	* config/delegates.mgk.in: Pare down delegates.mgk to reduce
 	security exposure due to external programs not under our control.
 
+2016-05-08  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Typo fix - matrix has nothing to do with PostScript.
+
+2016-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
 	* coders/mat.c (DecompressBlock): Don't hang on a corrupt deflate
-	stream when reading matlab file.  Fixes problem reported by
+	stream when reading matlab v6 file.  Fixes problem reported by
 	Hanno Böck on May 8, 2016 via private email entitled "hang of
 	matlab input file".
 
