@@ -1,5 +1,11 @@
 2016-05-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/msl.c (RegisterMSLImage): Ignore the file extension on
+	MSL files.  The only way to read an image from a MSL file (as
+	opposed to explicitly running a MSL script with 'conjure') is by
+	reading using a filename specification like "msl:filename".  This
+	is done for security reasons.
+
 	* magick/render.c (DrawPrimitive): Fix Coverity issue 126378
 	"Resource leak".
 

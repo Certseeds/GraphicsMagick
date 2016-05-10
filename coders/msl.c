@@ -4709,6 +4709,7 @@ RegisterMSLImage(void)
   entry->encoder=(EncoderHandler) WriteMSLImage;
   entry->description="Magick Scripting Language";
   entry->module="MSL";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 #endif /* defined(HasXML) */
 }
