@@ -1,5 +1,8 @@
 2016-05-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (DecompressBlock): Fix Coverity issue 126379
+	"Resource leak".
+
 	* magick/render.c (DrawImage): Fix Coverity issue 126380 "Resource
 	leak".
 

@@ -355,6 +355,8 @@ int status;
       ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
       MagickFreeMemory(cache_block);
       MagickFreeMemory(decompress_block);
+      (void)fclose(mat_file);
+      LiberateTemporaryFile(clone_info->filename);
       return NULL;
     }
   /* zip_info.next_out = 8*4; */
@@ -379,6 +381,8 @@ int status;
           MagickFreeMemory(cache_block);
           MagickFreeMemory(decompress_block);
           inflateEnd(&zip_info);
+          (void)fclose(mat_file);
+          LiberateTemporaryFile(clone_info->filename);
           return NULL;
         }
       fwrite(decompress_block, 4096-zip_info.avail_out, 1, mat_file);
@@ -405,7 +409,7 @@ EraseFile:
     fclose(clone_info->file);
     clone_info->file = NULL;
 UnlinkFile:
-    (void) unlink(clone_info->filename);
+    LiberateTemporaryFile(clone_info->filename);
     return NULL; 
   }
 
