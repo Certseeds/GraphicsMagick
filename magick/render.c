@@ -1774,7 +1774,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   primitive_extent=strlen(primitive);
   (void) SetImageAttribute(image,"[MVG]",primitive);
   if (getenv("MAGICK_SKIP_RENDERING") != NULL)
-    return MagickPass;
+    {
+      MagickFreeMemory(primitive);
+      return MagickPass;
+    }
   n=0;
   /*
     Allocate primitive info memory.
