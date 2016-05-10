@@ -4239,7 +4239,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         affine;
 
       Image
-        *composite_image;
+        *composite_image=(Image *) NULL;
 
       ImageInfo
         *clone_info;
@@ -4268,11 +4268,13 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             {
               ThrowException(&image->exception,FileOpenError,UnableToOpenFile,primitive_info->text);
               status=MagickFail;
-              break;
             }
-          (void) strlcpy(clone_info->filename,primitive_info->text,
-            MaxTextExtent);
-          composite_image=ReadImage(clone_info,&image->exception);
+          else
+            {
+              (void) strlcpy(clone_info->filename,primitive_info->text,
+                             MaxTextExtent);
+              composite_image=ReadImage(clone_info,&image->exception);
+            }
         }
       if (image->exception.severity != UndefinedException)
         MagickError2(image->exception.severity,image->exception.reason,
