@@ -485,8 +485,11 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
-  unsigned long
+  size_t
     bytes_per_line;
+
+  magick_off_t
+    file_size;
 
   /*
     Open image file.
@@ -499,6 +502,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  file_size=GetBlobSize(image);
   /*
     Determine if this is a DIB file.
   */
@@ -518,8 +522,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     origin in the upper-left corner.  The meaning of negative values
     is not defined for width.
   */
-  dib_info.width=(magick_int32_t) ReadBlobLSBLong(image);
-  dib_info.height=(magick_int32_t) ReadBlobLSBLong(image);
+  dib_info.width=ReadBlobLSBSignedLong(image);
+  dib_info.height=ReadBlobLSBSignedLong(image);
   dib_info.planes=ReadBlobLSBShort(image);
   dib_info.bits_per_pixel=ReadBlobLSBShort(image);
   dib_info.compression=ReadBlobLSBLong(image);
@@ -531,6 +535,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (EOFBlob(image))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   LogDIBInfo(&dib_info);
+  if (dib_info.planes != 1)
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if ((dib_info.bits_per_pixel != 1) &&
       (dib_info.bits_per_pixel != 4) &&
       (dib_info.bits_per_pixel != 8) &&
@@ -559,6 +565,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (dib_info.colors_important > 256)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if ((dib_info.image_size != 0U) && (dib_info.image_size > file_size))
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if ((dib_info.number_colors != 0) || (dib_info.bits_per_pixel < 16))
     {
       image->storage_class=PseudoClass;
@@ -566,7 +574,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->colors == 0)
         image->colors=1L << dib_info.bits_per_pixel;
     }
-  if(image_info->size)
+  if (image_info->size)
     {
       int
         flags;
@@ -632,14 +640,42 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   if (dib_info.compression == 2)
     dib_info.bits_per_pixel<<=1;
-  bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+
+  /*
+     Below emulates:
+     bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+  */
+  bytes_per_line=MagickArraySize(image->columns,dib_info.bits_per_pixel);
+  if (bytes_per_line)
+    bytes_per_line += 31;
+  bytes_per_line /= 32;
+  bytes_per_line=MagickArraySize(4,bytes_per_line);
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "%" MAGICK_SIZE_T_F "u bytes per line",
+                        (MAGICK_SIZE_T) bytes_per_line);
+  /*
+    Validate that file data size is suitable for claimed dimensions.
+  */
+  {
+    size_t
+      maximum_image_size;
+
+    maximum_image_size=MagickArraySize(bytes_per_line,image->rows);
+    if ((maximum_image_size == 0) ||
+        (maximum_image_size >
+         ((size_t) file_size * ((dib_info.compression == 1 ? 256 :
+                                 dib_info.compression == 2 ? 8 : 1)))))
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  }
+
   /*
     FIXME: Need to add support for compression=3 images.  Size
     calculations are wrong and there is no support for applying the
     masks.
   */
-  length=bytes_per_line*image->rows;
-  if ((bytes_per_line != 0) && (image->rows != length/bytes_per_line))
+  length=MagickArraySize(bytes_per_line,image->rows);
+  if (length == 0)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   pixels=MagickAllocateArray(unsigned char *,
                              image->rows,

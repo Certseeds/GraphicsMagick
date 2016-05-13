@@ -1,3 +1,10 @@
+2016-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dib.c (ReadDIBImage): Verify that DIB file data is
+	sufficient to meet claims made by file header.  Validate image
+	planes.  Fixes Fixes problem reported by Hanno Böck on May 8th,
+	2016 via private email entitled "malloc issue in ReadDIBImage".
+
 2016-05-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/msl.c (RegisterMSLImage): Ignore the file extension on

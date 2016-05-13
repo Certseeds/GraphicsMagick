@@ -1102,6 +1102,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       ThrowPSDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                               image);
                     }
+                  FormatString(layer_info[i].image->filename,"Layer-%ld",i);
                   DestroyBlob(layer_info[i].image);
                   layer_info[i].image->blob=ReferenceBlob(image->blob);
                   if (logging)
