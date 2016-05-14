@@ -647,6 +647,7 @@ static void SVGStartDocument(void *context)
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.startDocument()");
   svg_info=(SVGInfo *) context;
+  DestroyExceptionInfo(svg_info->exception);
   GetExceptionInfo(svg_info->exception);
   parser=svg_info->parser;
   svg_info->document=xmlNewDoc(parser->version);
@@ -686,19 +687,19 @@ static void SVGStartElement(void *context,const xmlChar *name,
   const xmlChar **attributes)
 {
   char
-    *color,
+    *color = NULL,
     id[MaxTextExtent],
-    *p,
+    *p = NULL,
     token[MaxTextExtent],
     **tokens,
-    *units;
+    *units = NULL;
 
   const char
-    *keyword,
-    *value;
+    *keyword = NULL,
+    *value = NULL;
 
   int
-    number_tokens;
+    number_tokens = 0;
 
   SVGInfo
     *svg_info;
@@ -712,6 +713,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
     "  SAX.startElement(%.1024s",name);
+  id[0]='\0';
+  token[0]='\0';
   svg_info=(SVGInfo *) context;
   svg_info->n++;
   MagickReallocMemory(double *,svg_info->scale,(svg_info->n+1)*sizeof(double));
@@ -726,7 +729,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
   if (attributes != (const xmlChar **) NULL)
-    for (i=0; (attributes[i] != (const xmlChar *) NULL); i+=2)
+    for (i=0; (svg_info->exception->severity < ErrorException) &&
+           (attributes[i] != (const xmlChar *) NULL); i+=2)
     {
       keyword=(const char *) attributes[i];
       value=(const char *) attributes[i+1];
@@ -773,6 +777,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
             {
               svg_info->bounds.height=
                 GetUserSpaceCoordinateValue(svg_info,-1,value);
+              if (svg_info->bounds.height <= 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,(char *) NULL);
+                  goto svg_start_element_error;
+                }
               break;
             }
           break;
@@ -805,6 +815,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
             {
               svg_info->bounds.width=
                 GetUserSpaceCoordinateValue(svg_info,1,value);
+              if (svg_info->bounds.width <= 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,(char *) NULL);
+                  goto svg_start_element_error;
+                }
               break;
             }
           break;
@@ -1354,6 +1370,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
             {
               svg_info->bounds.height=
                 GetUserSpaceCoordinateValue(svg_info,-1,value);
+              if (svg_info->bounds.height <= 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,(char *) NULL);
+                  goto svg_start_element_error;
+                }
               break;
             }
           if (LocaleCompare(keyword,"href") == 0)
@@ -1933,12 +1955,20 @@ static void SVGStartElement(void *context,const xmlChar *name,
               if (*token == ',')
                 (void) MagickGetToken(p,&p,token,MaxTextExtent);
               svg_info->view_box.width=MagickAtoF(token);
-              if (svg_info->bounds.width == 0)
-                svg_info->bounds.width=svg_info->view_box.width;
               (void) MagickGetToken(p,&p,token,MaxTextExtent);
               if (*token == ',')
                 (void) MagickGetToken(p,&p,token,MaxTextExtent);
               svg_info->view_box.height=MagickAtoF(token);
+              if (svg_info->view_box.width < 0.0 ||
+                  svg_info->view_box.height < 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,
+                                 svg_info->image->filename);
+                  goto svg_start_element_error;
+                }
+              if (svg_info->bounds.width == 0)
+                svg_info->bounds.width=svg_info->view_box.width;
               if (svg_info->bounds.height == 0)
                 svg_info->bounds.height=svg_info->view_box.height;
               break;
@@ -1952,6 +1982,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
             {
               svg_info->bounds.width=
                 GetUserSpaceCoordinateValue(svg_info,1,value);
+              if (svg_info->bounds.width <= 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,(char *) NULL);
+                  goto svg_start_element_error;
+                }
               break;
             }
           break;
@@ -2069,9 +2105,21 @@ static void SVGStartElement(void *context,const xmlChar *name,
             sx,
             sy;
 
+          if (svg_info->bounds.width < 0.0 || svg_info->bounds.height < 0.0)
+            {
+              ThrowException(svg_info->exception,CorruptImageError,
+                             NegativeOrZeroImageSize,(char *) NULL);
+              goto svg_start_element_error;
+            }
           if ((svg_info->view_box.width == 0.0) ||
               (svg_info->view_box.height == 0.0))
             svg_info->view_box=svg_info->bounds;
+          if (svg_info->view_box.width < 0.0 || svg_info->view_box.height < 0.0)
+            {
+              ThrowException(svg_info->exception,CorruptImageError,
+                             NegativeOrZeroImageSize,(char *) NULL);
+              goto svg_start_element_error;
+            }
           SetGeometry(svg_info->image,&page);
           page.width=(unsigned long) svg_info->bounds.width;
           page.height=(unsigned long) svg_info->bounds.height;
@@ -2113,10 +2161,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
         }
     }
 #endif
+  /* Error dispatch point */
+ svg_start_element_error:;
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  )");
   MagickFreeMemory(units);
-  if (color != (char *) NULL)
-    MagickFreeMemory(color);
+  MagickFreeMemory(color);
 }
 
 static void SVGEndElement(void *context,const xmlChar *name)
@@ -2517,7 +2567,7 @@ static void SVGWarning(void *context,const char *format,...)
 #else
   (void) vsnprintf(reason,MaxTextExtent,format,operands);
 #endif
-  ThrowException2(svg_info->exception,DelegateWarning,reason,(char *) NULL);
+  ThrowException2(svg_info->exception,CoderWarning,reason,(char *) NULL);
   va_end(operands);
 }
 
@@ -2802,6 +2852,7 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) SetImageAttribute(image,"comment",svg_info.comment);
       MagickFreeMemory(svg_info.comment);
     }
+  (void) memset(&svg_info,0,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
   return(image);
 }

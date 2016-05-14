@@ -43,23 +43,24 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 GraphicsMagick Vulnerabilities
 ==============================
 
-Search the CVE site at MITRE for `GraphicsMagick`__ vulnerabilities.
+Search the CVE site at MITRE for `GraphicsMagick`__ vulnerabilities (seems to be stale).
 
 .. _CVE_GraphicsMagick : http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=GraphicsMagick
 
 __ CVE_GraphicsMagick_
-
-Search Secunia for `GraphicsMagick`__ vulnerabilities.
-
-.. _Secunia_GraphicsMagick : http://secunia.com/advisories/search/?search=GraphicsMagick
-
-__ Secunia_GraphicsMagick_
 
 Seach SecurityFocus Bugtraq for `GraphicsMagick`__ vulnerabilities (select Vendor 'GraphicsMagick').
 
 __ Bugtraq_GraphicsMagick_
 
 .. _Bugtraq_GraphicsMagick : http://www.securityfocus.com/bid
+
+Debian vulnerabilities in `GraphicsMagick`__.
+
+.. _Debian_GraphicsMagick : https://security-tracker.debian.org/tracker/source-package/graphicsmagick
+
+__ Debian_GraphicsMagick_
+
 
 
 Image Processing Topics
