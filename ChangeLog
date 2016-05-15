@@ -1,3 +1,10 @@
+2016-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fixed segmentation violation while
+	reading file "275077586554139424.lqxdgqxtfs.svg" provided via
+	private email from Gustavo Grieco on May 15, 2016.  This is due to
+	another CVE-2016-2317 related issue.
+
 2016-05-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c ("C"): Fixed problems while reading files

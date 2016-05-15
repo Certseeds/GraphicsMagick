@@ -2852,7 +2852,8 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) SetImageAttribute(image,"comment",svg_info.comment);
       MagickFreeMemory(svg_info.comment);
     }
-  (void) memset(&svg_info,0,sizeof(SVGInfo));
+
+  (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
   return(image);
 }
