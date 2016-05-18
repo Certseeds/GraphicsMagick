@@ -1,3 +1,8 @@
+2016-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPathToPolygon): Make sure that first
+	edge is initialized.  Make sure that points is not null.
+
 2016-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fixed segmentation violation while

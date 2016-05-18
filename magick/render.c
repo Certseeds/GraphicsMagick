@@ -467,6 +467,14 @@ ConvertPathToPolygon(const PathInfo *path_info)
   points=(PointInfo *) NULL;
   (void) memset(&point,0,sizeof(PointInfo));
   (void) memset(&bounds,0,sizeof(SegmentInfo));
+  polygon_info->edges[edge].number_points=n;
+  polygon_info->edges[edge].scanline=0.0;
+  polygon_info->edges[edge].highwater=0;
+  polygon_info->edges[edge].ghostline=ghostline;
+  polygon_info->edges[edge].direction=direction;
+  polygon_info->edges[edge].points=points;
+  polygon_info->edges[edge].bounds=bounds;
+  polygon_info->number_edges=0;
   for (i=0; path_info[i].code != EndCode; i++)
   {
     if ((path_info[i].code == MoveToCode) || (path_info[i].code == OpenCode) ||
@@ -529,16 +537,12 @@ ConvertPathToPolygon(const PathInfo *path_info)
     next_direction=((path_info[i].point.y > point.y) ||
       ((path_info[i].point.y == point.y) &&
        (path_info[i].point.x > point.x))) ? 1 : -1;
-    if (direction && (direction != next_direction))
+    if ((points != (PointInfo *) NULL) && (direction != 0) &&
+        (direction != next_direction))
       {
         /*
           New edge.
         */
-        if (points == (PointInfo *) NULL) /* PathInfo code logic error */
-          {
-            DestroyPolygonInfo(polygon_info);
-            return((PolygonInfo *) NULL);
-          }
         point=points[n-1];
         if (edge == number_edges)
           {
