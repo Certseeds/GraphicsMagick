@@ -140,68 +140,81 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else if (LocaleCompare(image_info->magick,"file") == 0)
     access_mode=URLGetFileConfirmAccessMode;
 
+ 
+  /* Attempt to re-compose original URL */
   (void) strlcpy(filename,image_info->magick,MaxTextExtent);
-  (void) strlcat(filename,":",MaxTextExtent);
   LocaleLower(filename);
+  (void) strlcat(filename,":",MaxTextExtent);
   (void) strlcat(filename,image_info->filename,MaxTextExtent);
-
+ 
   if (MagickConfirmAccess(access_mode,filename,exception)
       == MagickFail)
     return image;
 
   clone_info=CloneImageInfo(image_info);
-  clone_info->blob=(void *) NULL;
-  clone_info->length=0;
-  file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
-  if (file == (FILE *) NULL)
+  if (LocaleCompare(clone_info->magick,"file") == 0)
     {
-      (void) strcpy(filename,clone_info->filename);
-      DestroyImageInfo(clone_info);
-      ThrowReaderTemporaryFileException(filename)
-    }
-  if (LocaleCompare(clone_info->magick,"ftp") != 0)
-    {
-      char
-        *type;
-
-      int
-        bytes;
-
-      type=(char *) NULL;
-      context=xmlNanoHTTPOpen(filename,&type);
-      if (context != (void *) NULL)
-        {
-          while ((bytes=xmlNanoHTTPRead(context,buffer,MaxBufferExtent)) > 0)
-            (void) fwrite(buffer,bytes,1,file);
-          xmlNanoHTTPClose(context);
-          xmlFree(type);
-          xmlNanoHTTPCleanup();
-        }
-    }
-  else
-    {
-      xmlNanoFTPInit();
-      context=xmlNanoFTPNewCtxt(filename);
-      if (context != (void *) NULL)
-        {
-          if (xmlNanoFTPConnect(context) >= 0)
-            (void) xmlNanoFTPGet(context,GetFTPData,(void *) file,
-              (char *) NULL);
-          (void) xmlNanoFTPClose(context);
-        }
-    }
-  (void) fclose(file);
-  if (!IsAccessibleAndNotEmpty(clone_info->filename))
-    {
-      (void) LiberateTemporaryFile(clone_info->filename);
-      ThrowException(exception,CoderError,NoDataReturned,filename);
-    }
-  else
-    {
-      *clone_info->magick='\0';
+      /* Skip over "//" at start of parsed filename */
+      (void) strlcpy(clone_info->filename,image_info->filename+2,
+                     sizeof(clone_info->filename));
+      clone_info->magick[0]='\'';
       image=ReadImage(clone_info,exception);
     }
-  (void) LiberateTemporaryFile(clone_info->filename);
+  else
+    {
+      clone_info->blob=(void *) NULL;
+      clone_info->length=0;
+      file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
+      if (file == (FILE *) NULL)
+        {
+          (void) strlcpy(filename,clone_info->filename,sizeof(filename));
+          DestroyImageInfo(clone_info);
+          ThrowReaderTemporaryFileException(filename);
+        }
+      if (LocaleCompare(clone_info->magick,"http") == 0)
+        {
+          char
+            *type;
+
+          int
+            bytes;
+
+          type=(char *) NULL;
+          context=xmlNanoHTTPOpen(filename,&type);
+          if (context != (void *) NULL)
+            {
+              while ((bytes=xmlNanoHTTPRead(context,buffer,MaxBufferExtent)) > 0)
+                (void) fwrite(buffer,bytes,1,file);
+              xmlNanoHTTPClose(context);
+              xmlFree(type);
+              xmlNanoHTTPCleanup();
+            }
+        }
+      else if (LocaleCompare(clone_info->magick,"ftp") == 0)
+        {
+          xmlNanoFTPInit();
+          context=xmlNanoFTPNewCtxt(filename);
+          if (context != (void *) NULL)
+            {
+              if (xmlNanoFTPConnect(context) >= 0)
+                (void) xmlNanoFTPGet(context,GetFTPData,(void *) file,
+                                     (char *) NULL);
+              (void) xmlNanoFTPClose(context);
+            }
+        }
+      (void) fclose(file);
+      if (!IsAccessibleAndNotEmpty(clone_info->filename))
+        {
+          (void) LiberateTemporaryFile(clone_info->filename);
+          ThrowException(exception,CoderError,NoDataReturned,filename);
+        }
+      else
+        {
+          *clone_info->magick='\0';
+          image=ReadImage(clone_info,exception);
+        }
+      (void) LiberateTemporaryFile(clone_info->filename);
+    }
   DestroyImageInfo(clone_info);
   return(image);
 }
