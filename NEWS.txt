@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on April 17, 2016
+This file was last updated on May 21, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -22,6 +22,14 @@ ChangeLog file for full details.
 
 Special Issues:
 
+* A shell exploit was discovered associated with the gnuplot delegate
+  and which is triggered by the 'gplt' entry in delegates.mgk.  A
+  remote exploit is possible if the attacker can cause a provided SVG
+  or MVG file to be rendered (or the user opens a provided file).  The
+  gnuplot program must be installed in order for the exploit to be
+  successful.  It is strongly recommended to remove this entry in all
+  delegates.mgk files.
+
 * Due to `GCC bug 53967`_, several key agorithms (e.g. convolution)
   may execute much faster (e.g. 2-3X) for x86-64 and/or when SSE is
   enabled for floating point math (`-mfpmath=sse`) if the GCC option
@@ -34,50 +42,94 @@ Special Issues:
 
 Security Fixes:
 
-* DIB: Fixed out of bounds reads.
+* DIB: Fixed out of bounds reads.  Added more header validations.
 
-* MAT: Fixed denial of service opportunity.
+* JNG: File size limits are enforced.
+
+* MAT: Fixed denial of service opportunity.  Fix hang on corrupt deflate stream.
 
 * META: Fixed out of bounds reads and writes.
 
 * MIFF: Fixed thrown assertion.
 
+* MSL: Ignore the file extension on MSL files.  It is necessary to add
+  a "msl:" prefix to MSL files to read the as an image.
+
+* MVG: No longer assume that files ending with extension ".mvg" are
+  MVG files.  MVG parsing does more validity checking on its input.
+
+* PCX: Fixed unreasonable memory allocation due to intentionally
+  corrupt file.
+
 * PDB: Fixed a heap buffer overflow and out of bounds read.
 
 * PICT: Fixed an out of bounds write.
+
+* PS: Ghostscript is now always run with -dSAFER for safer execution.
 
 * PSD: Fixed segmentation violations, heap buffer overflows, and out
   of bounds writes.
 
 * RLE: Fixed out of bounds reads and writes.
 
+* ReadImages(): Fixed a possible infinite recursion due to a crafted input file.
+
+* RotateImage(): Fixed thrown assertion.
+
 * SGI: Fixed out of bounds writes.
 
 * SUN: Fixed out of bounds reads and writes.
 
-* SVG: Fixed heap and stack buffer overflows (CVE-2016-2317).
+* SVG: Fixed heap and stack buffer overflows, as well as segmentation
+  violations (CVE-2016-2317 and CVE-2016-2318).  Also fixed endless
+  loop, unexpectedly large memory allocation, and divide by zero
+  issues.
+
+* TIFF: Fixed an assertion while reading.  Fixed benign heap overflow.
+
+* TMP: Adding a "tmp:" prefix to a filename no longer removes the file
+  since this seems dangerous.
+
+* VIFF: Fix excessive memory allocation with intentionally corrupted input file.
 
 * XCF: Fixed a heap buffer overflow.
 
 * XPM: Fixed several heap buffer overflows, and out of bound
-  reads/writes.
+  reads/writes.  Also fixed a case of excessive memory allocation.
 
-* shear: Fixed thrown assertion.
+* delegate.mgk: The default delegate.mgk file has been pared down in
+  order to reduce security exposure.
+
+* gnuplot ('gplt' delegate in delegates.mgk): Support for rendering
+  gnuplot files is removed since the format is inherently insecure.
+
 
 Bug fixes:
 
 * BMP: Fix reading 24-bit Microsoft BMP which claims to have a
   colormap.
 
+* FILE: `file://` URLs are properly supported now (they never worked
+  before).
+
 * JP2: It is now possible to write lossless JPEG 2000 "JP2" format.
 
 New Features:
+
+* Blob I/O C APIs: Added signed versions of short and long Read/Write
+  functions.
+
+* FILE: `file://` URLs are properly supported now (they never worked
+  before).
 
 * MAT: Matlab V4 is now partially supported.
 
 * Magick++: Added double-precision xResolution() and yResolution()
   methods to support setting the horizontal and vertical resolution
   with double floating point precision.
+
+* Mogrify now supports a -preserve-timestamp option to preserve file
+  access and modification timestamps.
 
 Feature improvements:
 
@@ -95,11 +147,14 @@ Build Changes:
 
 * Added ``--enable-broken-coders`` configure option to enable file
   format support which may be broken or cause security issues.  The
-  PSD format is now classified as "broken".
+  PSD format is now classified as "broken" (until it is fixed).
 
 Behavior Changes:
 
 * PSD format is not included in the build by default.
+
+* Files ending with ".mvg" and ".msl" are not assumed to be image
+  files by default.
 
 1.3.23 (November 7, 2015)
 ==========================
