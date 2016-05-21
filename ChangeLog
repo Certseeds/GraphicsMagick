@@ -1,3 +1,8 @@
+2016-05-21  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Respect JPEG limits (65535x65535) and user width
+	and height limits from "-limit" while reading or writing JNG files.
+
 2016-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/url.c: Don't hide HTTP, FTP, and FILE URL support from
