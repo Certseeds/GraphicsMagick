@@ -1,3 +1,9 @@
+2016-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/url.c: Don't hide HTTP, FTP, and FILE URL support from
+	'-list format' output.  Ignore HTTP, FTP, and FILE as a useful
+	file extension for determing the file format.
+
 2016-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (ConvertPathToPolygon): Make sure that first

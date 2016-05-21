@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003, 2009 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -240,7 +240,7 @@ ModuleExport void RegisterURLImage(void)
   entry->decoder=(DecoderHandler) ReadURLImage;
   entry->description="Uniform Resource Locator (http://)";
   entry->module="URL";
-  entry->stealth=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -248,15 +248,15 @@ ModuleExport void RegisterURLImage(void)
   entry->decoder=(DecoderHandler) ReadURLImage;
   entry->description="Uniform Resource Locator (ftp://)";
   entry->module="URL";
-  entry->stealth=True;
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("FILE");
   entry->decoder=(DecoderHandler) ReadURLImage;
   entry->description="Uniform Resource Locator (file://)";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->module="URL";
-  entry->stealth=True;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
 #endif /* defined(HasXML) */
