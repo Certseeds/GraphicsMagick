@@ -148,51 +148,6 @@ static void
     PointInfo),
   TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
 
-static MagickPassFail MagickAtoFChk(const char *str, double *value)
-{
-  char *estr=0;
-  *value=strtod(str,&estr);
-  if (str == estr)
-    *value=0.0;
-  return (str == estr ? MagickFail : MagickPass);
-}
-#if 0
-static MagickPassFail MagickAtoIChk(const char *str, int *value)
-{
-  char *estr=0;
-  *value=(int) strtol(str,&estr, 10);
-  if (str == estr)
-    *value=0;
-  return (str == estr ? MagickFail : MagickPass);
-}
-#endif
-static MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
-{
-  char *estr=0;
-  *value=(unsigned int) strtol(str,&estr, 10);
-  if (str == estr)
-    *value=0U;
-  return (str == estr ? MagickFail : MagickPass);
-}
-#if 0
-static MagickPassFail MagickAtoLChk(const char *str, long *value)
-{
-  char *estr=0;
-  *value=strtol(str,&estr, 10);
-  if (str == estr)
-    *value=0L;
-  return (str == estr ? MagickFail : MagickPass);
-}
-#endif
-static MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
-{
-  char *estr=0;
-  *value=(unsigned long) strtol(str,&estr, 10);
-  if (str == estr)
-    *value=0L;
-  return (str == estr ? MagickFail : MagickPass);
-}
-
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -2082,7 +2037,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (graphic_context[n]->fill.opacity != TransparentOpacity)
               {
                 double opacity;
-                (void) MagickAtoFChk(token,&opacity);
+                if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
+                    (opacity < 0.0))
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 graphic_context[n]->fill.opacity=(Quantum)
                   ((double) MaxRGB*(1.0-factor*opacity));
               }
@@ -2105,7 +2065,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("font-size",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&graphic_context[n]->pointsize);
+            if (MagickAtoFChk(token,&graphic_context[n]->pointsize)
+                != MagickPass)
+              {
+                status=MagickFail;
+              }
             break;
           }
         if (LocaleCompare("font-stretch",keyword) == 0)
@@ -2246,7 +2210,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
-            (void) MagickAtoFChk(token,&opacity);
+            if (MagickAtoFChk(token,&opacity) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
             graphic_context[n]->opacity=(Quantum) ((double) MaxRGB*(1.0-((1.0-
               graphic_context[n]->opacity/MaxRGB)*factor*opacity))+0.5);
             graphic_context[n]->fill.opacity=graphic_context[n]->opacity;
@@ -2417,22 +2385,40 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(name,token,MaxTextExtent);
                 MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&ordinate);
+                if (MagickAtoFChk(token,&ordinate) == MagickFail)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 bounds.x=(long) ceil(ordinate-0.5);
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&ordinate);
+                if (MagickAtoFChk(token,&ordinate) == MagickFail)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 bounds.y=(long) ceil(ordinate-0.5);
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&ordinate);
+                if ((MagickAtoFChk(token,&ordinate) == MagickFail) ||
+                    (ordinate < 0.0))
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 bounds.width=(unsigned long) floor(ordinate+0.5);
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&ordinate);
+                if ((MagickAtoFChk(token,&ordinate) == MagickFail) ||
+                    (ordinate < 0.0))
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 bounds.height=(unsigned long) floor(ordinate+0.5);
                 for (p=q; *q != '\0'; )
                 {
@@ -2489,7 +2475,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("rotate",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&angle);
+            if (MagickAtoFChk(token,&angle) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
             affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
             affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
             affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
@@ -2510,24 +2500,37 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("scale",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&affine.sx);
+            if (MagickAtoFChk(token,&affine.sx) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
             MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
               MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&affine.sy);
+            if (MagickAtoFChk(token,&affine.sy) != MagickPass)
+              status=MagickFail;
             break;
           }
         if (LocaleCompare("skewX",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&angle);
+            if (MagickAtoFChk(token,&angle) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
             affine.ry=tan(DegreesToRadians(fmod(angle,360.0)));
             break;
           }
         if (LocaleCompare("skewY",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&angle);
+            if (MagickAtoFChk(token,&angle) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
             affine.rx=tan(DegreesToRadians(fmod(angle,360.0)));
             break;
           }
@@ -2560,7 +2563,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-antialias",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            graphic_context[n]->stroke_antialias=MagickAtoI(token);
+            if (MagickAtoUIChk(token,&graphic_context[n]->stroke_antialias)
+                != MagickPass)
+              {
+                status=MagickFail;
+              }
             break;
           }
         if (LocaleCompare("stroke-dasharray",keyword) == 0)
@@ -2594,8 +2601,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   MagickGetToken(q,&q,token,token_max_length);
                   if (*token == ',')
                     MagickGetToken(q,&q,token,token_max_length);
-                  (void) MagickAtoFChk(token,&graphic_context[n]->dash_pattern[j]);
-                  if (graphic_context[n]->dash_pattern[j] < 0.0)
+                  if ((MagickAtoFChk(token,&graphic_context[n]->dash_pattern[j])
+                       == MagickFail) ||
+                      (graphic_context[n]->dash_pattern[j] < 0.0))
                     status=MagickFail;
                 }
                 if (status == MagickFail)
@@ -2616,7 +2624,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-dashoffset",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&graphic_context[n]->dash_offset);
+            if (MagickAtoFChk(token,&graphic_context[n]->dash_offset)
+                == MagickFail)
+              status=MagickFail;
             break;
           }
         if (LocaleCompare("stroke-linecap",keyword) == 0)
@@ -2664,7 +2674,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-miterlimit",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            graphic_context[n]->miterlimit=MagickAtoL(token);
+            if (MagickAtoULChk(token,&graphic_context[n]->miterlimit)
+                != MagickPass)
+              status=MagickFail;
             break;
           }
         if (LocaleCompare("stroke-opacity",keyword) == 0)
@@ -2674,7 +2686,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (graphic_context[n]->stroke.opacity != TransparentOpacity)
               {
                 double opacity;
-                (void) MagickAtoFChk(token,&opacity);
+                if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
+                    opacity < 0.0)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 graphic_context[n]->stroke.opacity=(Quantum)
                   ((double) MaxRGB*(1.0-factor*opacity));
               }
@@ -2683,7 +2700,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-width",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&graphic_context[n]->stroke_width);
+            if ((MagickAtoFChk(token,&graphic_context[n]->stroke_width)
+                 == MagickFail) ||
+                (graphic_context[n]->stroke_width < 0.0))
+              status=MagickFail;
             break;
           }
         status=MagickFail;
@@ -5651,7 +5671,7 @@ TraceStrokePolygon(const DrawInfo *draw_info,
         slope.p=dy.p/dx.p;
         inverse_slope.p=(-1.0/slope.p);
       }
-  mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
+  mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;/* FIXME: 'mid' BLOWS UP  */
   miterlimit=draw_info->miterlimit*draw_info->miterlimit*mid*mid;
   if ((draw_info->linecap == SquareCap) && !closed_path)
     TraceSquareLinecap(polygon_primitive,number_vertices,mid);
