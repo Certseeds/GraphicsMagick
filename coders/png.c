@@ -2784,7 +2784,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   long
     y;
 
-  png_uint_32
+  unsigned long
     jng_height,
     jng_width;
 
@@ -2952,10 +2952,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "    jng_width:      %16lu",
-                                        (unsigned long)jng_width);
+                                        jng_width);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "    jng_height:     %16lu",
-                                        (unsigned long)jng_height);
+                                        jng_height);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "    jng_color_type: %16d",
                                         jng_color_type);
@@ -2986,14 +2986,12 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             MagickFreeMemory(chunk);
 
           if (jng_width > 65535 || jng_height > 65535 ||
-              (unsigned long) jng_width >
-                              GetMagickResourceLimit(WidthResource) ||
-              (unsigned long) jng_height >
-                              GetMagickResourceLimit(HeightResource))
+               (long) jng_width > GetMagickResourceLimit(WidthResource) ||
+               (long) jng_height > GetMagickResourceLimit(HeightResource))
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                  "    JNG width or height too large: (%lu x %lu)",
-                 (unsigned long) jng_width,(unsigned long) jng_height);
+                  jng_width, jng_height);
               ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               return (MagickFail);
             }
@@ -3818,9 +3816,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
               UnlockSemaphoreInfo(png_semaphore);
 #endif
-             if ((unsigned long) mng_info->mng_width >
+             if ((long) mng_info->mng_width >
                  GetMagickResourceLimit(WidthResource) ||
-                (unsigned long) mng_info->mng_height >
+                 (long) mng_info->mng_height >
                  GetMagickResourceLimit(HeightResource))
               {
                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
