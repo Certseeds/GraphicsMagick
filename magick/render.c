@@ -1658,6 +1658,60 @@ IsPoint(const char *point)
   return(p != point);
 }
 
+static const char *recursion_key ="[DrawImageRecursion]";
+static long DrawImageGetCurrentRecurseLevel(Image *image)
+{
+  const ImageAttribute
+    *attribute;
+
+  long
+    recurse_level=0;
+
+  if ((attribute=GetImageAttribute(image,recursion_key)) != (ImageAttribute *) NULL)
+    recurse_level=MagickAtoL(attribute->value);
+
+  return recurse_level;
+}
+static void DrawImageSetCurrentRecurseLevel(Image *image,const long recurse_level)
+{
+  char
+    recursion_str[MaxTextExtent];
+
+  FormatString(recursion_str,"%ld",recurse_level);
+  (void) SetImageAttribute(image,recursion_key,NULL);
+  (void) SetImageAttribute(image,recursion_key,recursion_str);
+}
+static MagickPassFail DrawImageRecurseIn(Image *image)
+{
+  long
+    recurse_level;
+
+  recurse_level=DrawImageGetCurrentRecurseLevel(image);
+  recurse_level++;
+  DrawImageSetCurrentRecurseLevel(image,recurse_level);
+
+  if ((recurse_level < 0) || (recurse_level > 100))
+    {
+      char
+        recursion_str[MaxTextExtent];
+      FormatString(recursion_str,"%ld",recurse_level);
+      ThrowException(&image->exception,DrawError,DrawingRecursionDetected,
+                     recursion_str);
+      return MagickFail;
+    }
+
+  return MagickPass;
+}
+static void DrawImageRecurseOut(Image *image)
+{
+  long
+    recurse_level=0;
+
+  recurse_level=DrawImageGetCurrentRecurseLevel(image);
+  recurse_level--;
+  DrawImageSetCurrentRecurseLevel(image,recurse_level);
+}
+
 MagickExport MagickPassFail
 DrawImage(Image *image,const DrawInfo *draw_info)
 {
@@ -1730,6 +1784,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   assert(draw_info != (DrawInfo *) NULL);
   assert(draw_info->signature == MagickSignature);
   assert(draw_info->primitive != (char *) NULL);
+  /*
+    Check for DrawImage recursion
+  */
+  if (DrawImageRecurseIn(image) == MagickFail)
+    return MagickFail;
+
   if (*draw_info->primitive == '\0')
     return(MagickFail);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"begin draw-image");
@@ -3263,6 +3323,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   /*
     Free resources.
   */
+  DrawImageRecurseOut(image);
   MagickFreeMemory(token);
   MagickFreeMemory(primitive_info);
   MagickFreeMemory(primitive);

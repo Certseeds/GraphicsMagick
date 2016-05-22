@@ -1,5 +1,8 @@
 2016-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Added DrawImage() recursion
+	detection/prevention.
+
 	* coders/svg.c (ReadSVGImage): Add basic primitive argument
 	validation.
 

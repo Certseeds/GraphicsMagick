@@ -1139,6 +1139,12 @@ Already pushing pattern definition
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorDrawingRecursionDetected
+Language        = English
+drawing recursion detected
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorFloatValueConversionError
 Language        = English
 text value does not convert to float

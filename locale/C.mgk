@@ -643,6 +643,9 @@
       <Message name="InvalidPrimitiveArgument">
         invalid primitive argument
       </Message>
+      <Message name="DrawingRecursionDetected">
+        drawing recursion detected
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
