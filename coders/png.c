@@ -2986,8 +2986,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             MagickFreeMemory(chunk);
 
           if (jng_width > 65535 || jng_height > 65535 ||
-              jng_width > GetMagickResourceLimit(WidthResource) ||
-              jng_height > GetMagickResourceLimit(HeightResource))
+              (unsigned long) jng_width >
+                              GetMagickResourceLimit(WidthResource) ||
+              (unsigned long) jng_height >
+                              GetMagickResourceLimit(HeightResource))
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                  "    JNG width or height too large: (%lu x %lu)",
@@ -3816,8 +3818,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
               UnlockSemaphoreInfo(png_semaphore);
 #endif
-             if (mng_info->mng_width > GetMagickResourceLimit(WidthResource) ||
-                mng_info->mng_height > GetMagickResourceLimit(HeightResource))
+             if ((unsigned long) mng_info->mng_width >
+                 GetMagickResourceLimit(WidthResource) ||
+                (unsigned long) mng_info->mng_height >
+                 GetMagickResourceLimit(HeightResource))
               {
                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                      "   MNG width or height too large: %lu, %lu",
