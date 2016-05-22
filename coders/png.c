@@ -2993,7 +2993,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                  "    JNG width or height too large: (%lu x %lu)",
-                 jng_width,jng_height);
+                 (unsigned long) jng_width,(unsigned long) jng_height);
               ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               return (MagickFail);
             }
