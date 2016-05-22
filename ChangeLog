@@ -1,5 +1,7 @@
 2016-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated NEWS.txt to reflect latest changes.
+
 	* magick/render.c (DrawImage): Added DrawImage() recursion
 	detection/prevention.
 

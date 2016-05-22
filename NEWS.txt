@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on May 21, 2016
+This file was last updated on May 22, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -82,8 +82,8 @@ Security Fixes:
 
 * SVG: Fixed heap and stack buffer overflows, as well as segmentation
   violations (CVE-2016-2317 and CVE-2016-2318).  Also fixed endless
-  loop, unexpectedly large memory allocation, and divide by zero
-  issues.
+  loop, unexpectedly large memory allocation, divide by zero, and
+  recursion issues.
 
 * TIFF: Fixed an assertion while reading.  Fixed benign heap overflow.
 
