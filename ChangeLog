@@ -1,3 +1,11 @@
+2016-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (ReadSVGImage): Add basic primitive argument
+	validation.
+
+	* magick/render.c (DrawImage): Add basic primitive argument
+	validation.
+
 2016-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/url.c (ReadURLImage): Reading "file://" URLs was not

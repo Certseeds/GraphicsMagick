@@ -180,6 +180,12 @@ extern MagickExport size_t
 extern double MagickFmin(const double x, const double y) MAGICK_FUNC_CONST;
 extern double MagickFmax(const double x, const double y) MAGICK_FUNC_CONST;
 
+extern MagickExport MagickPassFail MagickAtoFChk(const char *str, double *value);
+extern MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value);
+extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value);
+extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
+extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
+
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)

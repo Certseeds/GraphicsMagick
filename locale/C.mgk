@@ -640,6 +640,9 @@
       <Message name="VectorPathTruncated">
         vector path truncated
       </Message>
+      <Message name="InvalidPrimitiveArgument">
+        invalid primitive argument
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

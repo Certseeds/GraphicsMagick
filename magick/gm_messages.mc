@@ -1151,6 +1151,12 @@ text value does not convert to integer
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorInvalidPrimitiveArgument
+Language        = English
+invalid primitive argument
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorNonconformingDrawingPrimitiveDefinition
 Language        = English
 Non-conforming drawing primitive definition

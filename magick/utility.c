@@ -3487,6 +3487,59 @@ MagickExport void LocaleUpper(char *string)
     *q=(char) toupper((int) *q);
 }
 
+MagickExport MagickPassFail MagickAtoFChk(const char *str, double *value)
+{
+  char *estr=0;
+  *value=strtod(str,&estr);
+  if (str == estr)
+    *value=0.0;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((int) lvalue != lvalue))
+    lvalue=0;
+  *value=(int) lvalue;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
+    lvalue=0U;
+  *value=(unsigned int) lvalue;
+  return (((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
+          ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
+{
+  char *estr=0;
+  *value=strtol(str,&estr, 10);
+  if (str == estr)
+    *value=0L;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((long) ((unsigned long) lvalue) != lvalue))
+    lvalue=0L;
+  *value=(unsigned long) lvalue;
+  return (((str == estr) || ((long) ((unsigned long) lvalue) != lvalue)) ?
+          MagickFail : MagickPass);
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
