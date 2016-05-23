@@ -2932,55 +2932,54 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                  "   bad length of JHDR chunk (should be 16): %lu",length);
-           // ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               return (MagickFail);
             }
 
-              jng_width=(unsigned long) ((p[0] << 24) | (p[1] << 16) |
-                                         (p[2] << 8) | p[3]);
-              jng_height=(unsigned long) ((p[4] << 24) | (p[5] << 16) |
-                                          (p[6] << 8) | p[7]);
-              jng_color_type=p[8];
-              jng_image_sample_depth=p[9];
-              jng_image_compression_method=p[10];
-              jng_image_interlace_method=p[11];
-              jng_alpha_sample_depth=p[12];
-              jng_alpha_compression_method=p[13];
-              jng_alpha_filter_method=p[14];
-              jng_alpha_interlace_method=p[15];
-              if (logging)
-                {
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_width:      %16lu",
-                                        jng_width);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_height:     %16lu",
-                                        jng_height);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_color_type: %16d",
-                                        jng_color_type);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_image_sample_depth:      %3d",
-                                        jng_image_sample_depth);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_image_compression_method:%3d",
-                                        jng_image_compression_method);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_image_interlace_method:  %3d",
-                                        jng_image_interlace_method);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_alpha_sample_depth:      %3d",
-                                        jng_alpha_sample_depth);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_alpha_compression_method:%3d",
-                                        jng_alpha_compression_method);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_alpha_filter_method:     %3d",
-                                        jng_alpha_filter_method);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    jng_alpha_interlace_method:  %3d",
-                                        jng_alpha_interlace_method);
-                }
+          jng_width=(unsigned long) ((p[0] << 24) | (p[1] << 16) |
+                                     (p[2] << 8) | p[3]);
+          jng_height=(unsigned long) ((p[4] << 24) | (p[5] << 16) |
+                                      (p[6] << 8) | p[7]);
+          jng_color_type=p[8];
+          jng_image_sample_depth=p[9];
+          jng_image_compression_method=p[10];
+          jng_image_interlace_method=p[11];
+          jng_alpha_sample_depth=p[12];
+          jng_alpha_compression_method=p[13];
+          jng_alpha_filter_method=p[14];
+          jng_alpha_interlace_method=p[15];
+          if (logging)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_width:      %16lu",
+                                    jng_width);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_height:     %16lu",
+                                    jng_height);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_color_type: %16d",
+                                    jng_color_type);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_image_sample_depth:      %3d",
+                                    jng_image_sample_depth);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_image_compression_method:%3d",
+                                    jng_image_compression_method);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_image_interlace_method:  %3d",
+                                    jng_image_interlace_method);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_alpha_sample_depth:      %3d",
+                                jng_alpha_sample_depth);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_alpha_compression_method:%3d",
+                                    jng_alpha_compression_method);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_alpha_filter_method:     %3d",
+                                    jng_alpha_filter_method);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    jng_alpha_interlace_method:  %3d",
+                                    jng_alpha_interlace_method);
+            }
 
           if (length)
             MagickFreeMemory(chunk);
@@ -3415,7 +3414,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
       DestroyImage(alpha_image);
     }
   if (alpha_image_info != (ImageInfo *)NULL)
-      DestroyImageInfo(alpha_image_info);
+    DestroyImageInfo(alpha_image_info);
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3723,10 +3722,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (count < 4)
             {
               if (logging)
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "  Reading MNG chunk, count: %"
-                                        MAGICK_SIZE_T_F  "u",
-                                        (MAGICK_SIZE_T) count);
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "  Reading MNG chunk, count: %"
+                                      MAGICK_SIZE_T_F  "u",
+                                      (MAGICK_SIZE_T) count);
               MngInfoFreeStruct(mng_info,&have_mng_structure);
               ThrowReaderException(CorruptImageError,CorruptImage,image);
             }
@@ -3816,18 +3815,18 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
               UnlockSemaphoreInfo(png_semaphore);
 #endif
-             if ((long) mng_info->mng_width >
-                 GetMagickResourceLimit(WidthResource) ||
-                 (long) mng_info->mng_height >
-                 GetMagickResourceLimit(HeightResource))
-              {
-                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                     "   MNG width or height too large: %lu, %lu",
-                     mng_info->mng_width,mng_info->mng_height);
-                 ThrowReaderException(CorruptImageError,ImproperImageHeader,
-                     image);
-                 return (MagickFail);
-              }
+              if ((long) mng_info->mng_width >
+                  GetMagickResourceLimit(WidthResource) ||
+                  (long) mng_info->mng_height >
+                  GetMagickResourceLimit(HeightResource))
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "   MNG width or height too large: %lu, %lu",
+                      mng_info->mng_width,mng_info->mng_height);
+                  ThrowReaderException(CorruptImageError,ImproperImageHeader,
+                      image);
+                  return (MagickFail);
+                }
 
               p+=8;
               mng_info->ticks_per_second=mng_get_long(p);
@@ -3897,7 +3896,6 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               int
                 repeat=0;
-
 
               if (length)
                 repeat=p[0];
@@ -7903,6 +7901,7 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
                               "  JNG dimensions too large");
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                              image);
+      return (MagickFail);
     }
 
   blob=(char *) NULL;
