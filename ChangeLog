@@ -1,3 +1,7 @@
+2016-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c ("C"): Support font-size "medium".
+
 2016-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated NEWS.txt to reflect latest changes.

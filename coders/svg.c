@@ -1614,8 +1614,11 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       }
                     if (LocaleCompare(keyword,"font-size") == 0)
                       {
-                        svg_info->pointsize=
-                          GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
+                        if (LocaleCompare(value,"medium") == 0)
+                          svg_info->pointsize=12;
+                        else
+                          svg_info->pointsize=
+                            GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
                         MVGPrintf(svg_info->file,"font-size %g\n",
                           svg_info->pointsize);
                         break;
