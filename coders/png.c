@@ -1167,10 +1167,9 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
         {
           if (*sp == '\0')
             {
+              MagickFreeMemory(info);
               (void) ThrowException(&image->exception,CoderError,
                                     UnableToCopyProfile,"ran out of data");
-              MagickFreeMemory(info);
-              return (MagickFail);
             }
           sp++;
         }
@@ -1207,7 +1206,6 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       MagickFreeMemory(info);
       (void) ThrowException(&image->exception,ResourceLimitError,
                             MemoryAllocationFailed,"unable to copy profile");
-      return (MagickFail);
     }
   MagickFreeMemory(info);
   return MagickTrue;
@@ -2930,8 +2928,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           if (length != 16)
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                 "   bad length of JHDR chunk (should be 16): %lu",length);
+              (void) ThrowException2(&image->exception,CoderWarning,
+                             "Invalid JHDR chunk length",(char *) NULL);
               return (MagickFail);
             }
 
@@ -2992,7 +2990,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                  "    JNG width or height too large: (%lu x %lu)",
                   jng_width, jng_height);
               ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-              return (MagickFail);
             }
 
           continue;
@@ -3825,7 +3822,6 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       mng_info->mng_width,mng_info->mng_height);
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,
                       image);
-                  return (MagickFail);
                 }
 
               p+=8;
@@ -7901,7 +7897,6 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
                               "  JNG dimensions too large");
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                              image);
-      return (MagickFail);
     }
 
   blob=(char *) NULL;
