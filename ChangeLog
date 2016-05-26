@@ -1,3 +1,9 @@
+2016-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c: Fix problem while reading file
+	"pxypjhfdxf.svg.308008972284643989" provided via private email
+	from Gustavo Grieco on May 24, 2016.
+
 2016-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c ("C"): Support font-size "medium".

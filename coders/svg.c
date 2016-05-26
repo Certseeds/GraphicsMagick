@@ -985,6 +985,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
     {
       if (LocaleCompare((char *) name,"radialGradient") == 0)
         {
+          if (svg_info->element.angle < 0.0)
+            {
+              errno=0;
+              ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                             value);
+              break;
+            }
           MVGPrintf(svg_info->file,"push gradient '%s' radial %g,%g %g,%g %g\n",
             id,svg_info->element.cx,svg_info->element.cy,
             svg_info->element.major,svg_info->element.minor,
@@ -1517,7 +1524,17 @@ static void SVGStartElement(void *context,const xmlChar *name,
             }
           if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
             {
-              MVGPrintf(svg_info->file,"stroke-miterlimit '%s'\n",value);
+              double stroke_miterlimit;
+              if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || 
+                  stroke_miterlimit < 1.0)
+                {
+                  errno=0;
+                  ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                                 value);
+                  break;
+                }
+              MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",
+                        (long) stroke_miterlimit);
               break;
             }
           if (LocaleCompare(keyword,"stroke-opacity") == 0)
@@ -1694,8 +1711,17 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       }
                     if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
                       {
-                        MVGPrintf(svg_info->file,"stroke-miterlimit '%s'\n",
-                          value);
+                        double stroke_miterlimit;
+                        if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) ||
+                            stroke_miterlimit < 1.0)
+                          {
+                            errno=0;
+                            ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                                           value);
+                            break;
+                          }
+                        MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",
+                                  (long) stroke_miterlimit);
                         break;
                       }
                     if (LocaleCompare(keyword,"stroke-opacity") == 0)

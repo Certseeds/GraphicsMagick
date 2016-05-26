@@ -2734,8 +2734,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-miterlimit",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            if (MagickAtoULChk(token,&graphic_context[n]->miterlimit)
-                != MagickPass)
+            if ((MagickAtoULChk(token,&graphic_context[n]->miterlimit)
+                 != MagickPass) || (graphic_context[n]->miterlimit < 1))
               status=MagickFail;
             break;
           }
