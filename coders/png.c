@@ -1168,8 +1168,9 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
           if (*sp == '\0')
             {
               MagickFreeMemory(info);
-              (void) ThrowException(&image->exception,CoderError,
-                                    UnableToCopyProfile,"ran out of data");
+              (void) ThrowException2(&image->exception,CoderWarning,
+                                     "ran out of profile data",(char *) NULL);
+              return (MagickFail);
             }
           sp++;
         }
@@ -2505,7 +2506,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                                 "    Reading PNG text chunk");
         if (strlen(text[i].key) > 16 &&
             !memcmp(text[i].key, "Raw profile type ",17))
-          (void) png_read_raw_profile(image,image_info,text,(int) i);
+          {
+            if (png_read_raw_profile(image,image_info,text,(int) i) ==
+              MagickFail)
+            break;
+          }
         else
           {
             char
