@@ -2372,28 +2372,47 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 SegmentInfo
                   segment;
 
+                magick_int64_t
+                  gradient_width,
+                  gradient_height;
+
                 MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(name,token,MaxTextExtent);
                 MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(type,token,MaxTextExtent);
                 MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&segment.x1);
+                if (MagickAtoFChk(token,&segment.x1) != MagickPass)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 MagickGetToken(q,&q,token,token_max_length);
 
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&segment.y1);
+                if (MagickAtoFChk(token,&segment.y1) != MagickPass)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 MagickGetToken(q,&q,token,token_max_length);
 
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&segment.x2);
+                if (MagickAtoFChk(token,&segment.x2) != MagickPass)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 MagickGetToken(q,&q,token,token_max_length);
 
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
-                (void) MagickAtoFChk(token,&segment.y2);
-
+                if (MagickAtoFChk(token,&segment.y2) != MagickPass)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 if (LocaleCompare(type,"radial") == 0)
                   {
                     MagickGetToken(q,&q,token,token_max_length);
@@ -2424,6 +2443,24 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 bounds.y2=graphic_context[n]->affine.rx*segment.x2+
                   graphic_context[n]->affine.sy*segment.y2+
                   graphic_context[n]->affine.ty;
+                /*
+                  Validate gradient image size
+                */
+                gradient_width=(magick_int64_t) Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
+                gradient_height=(magick_int64_t) Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
+                if ((gradient_width > GetMagickResourceLimit(WidthResource)) ||
+                    (gradient_height > GetMagickResourceLimit(HeightResource)) ||
+                    (gradient_width*gradient_height > GetMagickResourceLimit(PixelsResource)))
+                  {
+                    status=MagickFail;
+                    break;
+                  }
+                if ((gradient_width > (long) image->columns*4) ||
+                    (gradient_height > (long) image->rows*4))
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 FormatString(key,"[%.1024s]",name);
                 (void) SetImageAttribute(image,key,token);
                 FormatString(key,"[%.1024s-geometry]",name);

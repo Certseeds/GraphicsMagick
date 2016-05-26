@@ -1,5 +1,9 @@
 2016-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Fix problem while reading file
+	"pxypjhfdxf.svg.7406476585885697806" provided via via private
+	email from Gustavo Grieco on May 24, 2016.
+
 	* coders/svg.c: Fix problem while reading file
 	"pxypjhfdxf.svg.308008972284643989" provided via private email
 	from Gustavo Grieco on May 24, 2016.
