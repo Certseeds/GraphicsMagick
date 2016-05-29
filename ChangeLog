@@ -1,3 +1,10 @@
+2016-05-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Compute a Bézier quantum which
+	takes image dimensions into account.  This should help address
+	CVE-2016-2317 "Heap buffer overflow".  This resolves SourceForge
+	issue #275 "Applying Clipping Path to high resolution JPG".
+
 2016-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix problem while reading file

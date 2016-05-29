@@ -1712,6 +1712,51 @@ static void DrawImageRecurseOut(Image *image)
   DrawImageSetCurrentRecurseLevel(image,recurse_level);
 }
 
+/*
+  Compute a worst-case Cubic Bézier quantum based on image size.  This
+  is used when computing the number of PointInfo elements to allocate
+  for a given path.
+*/
+static size_t ComputeBezierQuantum(const Image* image)
+{
+  double
+    alpha;
+
+  const size_t
+    number_coordinates=4;
+
+  size_t
+    i,
+    j,
+    quantum;
+
+  PointInfo points[4];
+  points[0].x=0;
+  points[0].y=image->rows;
+  points[1].x=image->columns/10;
+  points[1].y=0;
+  points[2].x=image->columns-(image->columns/10);
+  points[2].y=0;
+  points[3].x=image->columns;
+  points[3].y=image->rows;
+
+  quantum=number_coordinates;
+  for (i=0; i < number_coordinates; i++)
+    {
+      for (j=i+1; j < number_coordinates; j++)
+        {
+          alpha=fabs(points[j].x-points[i].x);
+          if (alpha > quantum)
+            quantum=alpha;
+          alpha=fabs(points[j].y-points[i].y);
+          if (alpha > quantum)
+            quantum=alpha;
+        }
+    }
+  quantum=Min(quantum/number_coordinates,BezierQuantum);
+  return quantum;
+}
+
 MagickExport MagickPassFail
 DrawImage(Image *image,const DrawInfo *draw_info)
 {
@@ -1774,6 +1819,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     status;
 
   size_t
+    bezier_quantum,
     number_points;
 
   /*
@@ -1807,6 +1853,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       MagickFreeMemory(primitive);
       return MagickPass;
     }
+  bezier_quantum=ComputeBezierQuantum(image);
   n=0;
   /*
     Allocate primitive info memory.
@@ -2915,6 +2962,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     j=0;
     primitive_info[0].point.x=0.0;
     primitive_info[0].point.y=0.0;
+    primitive_info[0].coordinates=0;
     primitive_info[0].method=FloodfillMethod;
     for (x=0; *q != '\0'; x++)
     {
@@ -3000,7 +3048,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         beta=bounds.y2-bounds.y1;
         radius=hypot((double) alpha,(double) beta);
         length*=5;
-        length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
+        length+=2*((size_t) ceil((double) MagickPI*radius))+6*bezier_quantum+360;
         break;
       }
       case BezierPrimitive:
@@ -3008,7 +3056,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (primitive_info[j].coordinates > 107)
           (void) ThrowException(&image->exception,DrawError,
                                 TooManyCoordinates,token);
-        length=primitive_info[j].coordinates*BezierQuantum;
+        length=primitive_info[j].coordinates*bezier_quantum;
         break;
       }
       case PathPrimitive:
@@ -3034,7 +3082,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             }
           length++;
         }
-        length=length*BezierQuantum/2;
+        length=length*bezier_quantum;
         break;
       }
       case CirclePrimitive:
@@ -3049,7 +3097,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         alpha=bounds.x2-bounds.x1;
         beta=bounds.y2-bounds.y1;
         radius=hypot(alpha,beta);
-        length=2*(ceil(MagickPI*radius))+6*BezierQuantum+360;
+        length=2*(ceil(MagickPI*radius))+6*bezier_quantum+360;
         break;
       }
       default:
@@ -3070,6 +3118,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 
     assert(j < (long) number_points);
 
+    /*
+      Trace points
+    */
     switch (primitive_type)
     {
       case PointPrimitive:
@@ -5182,6 +5233,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
     attribute=(*p++);
     switch (attribute)
     {
+      /*
+        Elliptical arc
+      */
       case 'a':
       case 'A':
       {
@@ -5240,6 +5294,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p) != MagickFalse);
         break;
       }
+      /*
+        Cubic Bézier curve
+      */
       case 'c':
       case 'C':
       {
@@ -5286,6 +5343,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Line to
+      */
       case 'l':
       case 'L':
       {
@@ -5306,6 +5366,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Move to
+      */
       case 'M':
       case 'm':
       {
@@ -5341,6 +5404,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Quadratic Bézier curve
+      */
       case 'q':
       case 'Q':
       {
@@ -5374,6 +5440,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Cubic Bézier curve
+      */
       case 's':
       case 'S':
       {
@@ -5414,6 +5483,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Quadratic Bézier curve
+      */
       case 't':
       case 'T':
       {
@@ -5452,6 +5524,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Line to
+      */
       case 'v':
       case 'V':
       {
@@ -5467,6 +5542,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         } while (IsPoint(p));
         break;
       }
+      /*
+        Close path
+      */
       case 'z':
       case 'Z':
       {
