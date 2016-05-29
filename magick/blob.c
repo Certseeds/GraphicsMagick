@@ -2433,8 +2433,7 @@ MagickExport void MSBOrderShort(unsigned char *p,const size_t length)
 %  OpenBlob() opens a file associated with the image.  A file name of '-' sets
 %  the file to stdin for type 'r' and stdout for type 'w'.  If the filename
 %  suffix is '.gz' or '.Z', the image is decompressed for type 'r' and
-%  compressed for type 'w'.  If the filename prefix is '|', it is piped to or
-%  from a system command.
+%  compressed for type 'w'.
 %
 %  The format of the OpenBlob method is:
 %
@@ -2478,7 +2477,7 @@ static void FormMultiPartFilename(Image *image, const ImageInfo *image_info)
 }
 
 MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
-  const BlobMode mode,ExceptionInfo *exception)
+                                     const BlobMode mode,ExceptionInfo *exception)
 {
   char
     filename[MaxTextExtent],
@@ -2562,296 +2561,265 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
       image->blob->exempt=True;
     }
   else
-#if defined(HAVE_POPEN)
-    if (*filename == '|')
-      {
-        char
-          mode_string[MaxTextExtent];
-
-        /*
-          Pipe image to ("w") or from ("r") a system command.
-        */
-#if !defined(MSWINDOWS)
-        if (*type == 'w')
-          (void) signal(SIGPIPE,SIG_IGN);
-#endif
-        (void) strlcpy(mode_string,type,sizeof(mode_string));
-        mode_string[1]='\0';
-	image->blob->handle.std=(FILE *) NULL;
-	if (MagickConfirmAccess(FileExecuteConfirmAccessMode,filename+1,
-				exception) != MagickFail)
-	  image->blob->handle.std=(FILE *) popen(filename+1,mode_string);
-        if (image->blob->handle.std != (FILE *) NULL)
-          {
-            image->blob->type=PipeStream;
-            if (image->logging)
-              (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                    "  popened \"%s\" as PipeStream image"
-                                    " %p, blob %p",
-                                    filename+1,image,image->blob);
-          }
-      }
-    else
-#endif /* defined(HAVE_POPEN) */
-      {
-        if (*type == 'w')
-          {
-            /*
-              Form filename for multi-part images.
-            */
-	    if (!image_info->adjoin)
-	      FormMultiPartFilename(image,image_info);
-            (void) strcpy(filename,image->filename);
-          }
+    {
+      if (*type == 'w')
+        {
+          /*
+            Form filename for multi-part images.
+          */
+          if (!image_info->adjoin)
+            FormMultiPartFilename(image,image_info);
+          (void) strcpy(filename,image->filename);
+        }
 #if defined(HasZLIB)
-        if (((strlen(filename) > 2) &&
-             (LocaleCompare(filename+strlen(filename)-2,".Z") == 0)) ||
-            ((strlen(filename) > 3) &&
-             (LocaleCompare(filename+strlen(filename)-3,".gz") == 0)) ||
-            ((strlen(filename) > 5) &&
-             (LocaleCompare(filename+strlen(filename)-5,".svgz") == 0)))
+      if (((strlen(filename) > 2) &&
+           (LocaleCompare(filename+strlen(filename)-2,".Z") == 0)) ||
+          ((strlen(filename) > 3) &&
+           (LocaleCompare(filename+strlen(filename)-3,".gz") == 0)) ||
+          ((strlen(filename) > 5) &&
+           (LocaleCompare(filename+strlen(filename)-5,".svgz") == 0)))
+        {
+          image->blob->handle.gz=(gzFile) NULL;
+          if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
+                                   FileWriteConfirmAccessMode),filename,
+                                  exception) != MagickFail)
+            image->blob->handle.gz=gzopen(filename,type);
+          if (image->blob->handle.gz != (gzFile) NULL)
+            {
+              image->blob->type=ZipStream;
+              if (image->logging)
+                (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                      "  opened file %s as ZipStream image"
+                                      " %p, blob %p",
+                                      filename,image,image->blob);
+            }
+        }
+      else
+#endif
+#if defined(HasBZLIB)
+        if ((strlen(filename) > 4) &&
+            (LocaleCompare(filename+strlen(filename)-4,".bz2") == 0))
           {
-	    image->blob->handle.gz=(gzFile) NULL;
-	    if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
-				     FileWriteConfirmAccessMode),filename,
-				    exception) != MagickFail)
-	      image->blob->handle.gz=gzopen(filename,type);
-            if (image->blob->handle.gz != (gzFile) NULL)
+            image->blob->handle.bz=(BZFILE *) NULL;
+            if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
+                                     FileWriteConfirmAccessMode),filename,
+                                    exception) != MagickFail)
+              image->blob->handle.bz=(BZFILE *) BZ2_bzopen(filename,type);
+            if (image->blob->handle.bz != (BZFILE *) NULL)
               {
-                image->blob->type=ZipStream;
+                image->blob->type=BZipStream;
                 if (image->logging)
                   (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                        "  opened file %s as ZipStream image"
+                                        "  opened file %s as BZipStream image"
                                         " %p, blob %p",
                                         filename,image,image->blob);
               }
           }
         else
 #endif
-#if defined(HasBZLIB)
-          if ((strlen(filename) > 4) &&
-              (LocaleCompare(filename+strlen(filename)-4,".bz2") == 0))
+          if (image_info->file != (FILE *) NULL)
             {
-	      image->blob->handle.bz=(BZFILE *) NULL;
-	      if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
-				       FileWriteConfirmAccessMode),filename,
-				      exception) != MagickFail)
-		image->blob->handle.bz=(BZFILE *) BZ2_bzopen(filename,type);
-              if (image->blob->handle.bz != (BZFILE *) NULL)
-                {
-                  image->blob->type=BZipStream;
-                  if (image->logging)
-                    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                          "  opened file %s as BZipStream image"
-                                          " %p, blob %p",
-                                          filename,image,image->blob);
-                }
+              image->blob->handle.std=image_info->file;
+              image->blob->type=FileStream;
+              image->blob->exempt=MagickTrue;
+              if (image->logging)
+                (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                      "  opened image_info->file (%d) as"
+                                      " FileStream image %p, blob %p",
+                                      fileno(image_info->file),image,image->blob);
             }
           else
-#endif
-            if (image_info->file != (FILE *) NULL)
-              {
-                image->blob->handle.std=image_info->file;
-                image->blob->type=FileStream;
-                image->blob->exempt=MagickTrue;
-                if (image->logging)
-                  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                        "  opened image_info->file (%d) as"
-                                        " FileStream image %p, blob %p",
-                                        fileno(image_info->file),image,image->blob);
-              }
-            else
-              {
-		image->blob->handle.std=(FILE *) NULL;
-		if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
-					 FileWriteConfirmAccessMode),filename,
-					exception) != MagickFail)
-		  image->blob->handle.std=(FILE *) fopen(filename,type);
-                if (image->blob->handle.std != (FILE *) NULL)
-                  {
-                    char
-                      *env = NULL;
+            {
+              image->blob->handle.std=(FILE *) NULL;
+              if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
+                                       FileWriteConfirmAccessMode),filename,
+                                      exception) != MagickFail)
+                image->blob->handle.std=(FILE *) fopen(filename,type);
+              if (image->blob->handle.std != (FILE *) NULL)
+                {
+                  char
+                    *env = NULL;
 
-                    unsigned char
-                      magick[MaxTextExtent];
+                  unsigned char
+                    magick[MaxTextExtent];
 
-                    size_t
-                      count;
+                  size_t
+                    count;
 
-                    size_t
-                      vbuf_size;
+                  size_t
+                    vbuf_size;
 
-		    vbuf_size=image->blob->block_size;
-                    if (0 != vbuf_size)
-                      {
-                        if (setvbuf(image->blob->handle.std,NULL,_IOFBF,vbuf_size) != 0)
-                          {
-                            if (image->logging)
-                              (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                                    "  setvbuf of %" MAGICK_SIZE_T_F
-                                                    "u bytes returns failure!",
-                                                    (MAGICK_SIZE_T) vbuf_size);
-                          }
-                        else
-                          {
-                            if (image->logging)
-                              (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                                    "  I/O buffer set to %"
-                                                    MAGICK_SIZE_T_F "u bytes",
-                                                    (MAGICK_SIZE_T) vbuf_size);
-                          }
-                      }
-                    /*
-                      Enable fsync-on-close mode if requested.
-                    */
-                    if (((WriteBlobMode == mode) || (WriteBinaryBlobMode == mode)) &&
-                        (env = getenv("MAGICK_IO_FSYNC")))
-                      {
-                        if (LocaleCompare(env,"TRUE") == 0)
-                          {
-                            image->blob->fsync=MagickTrue;
-                            if (image->logging)
-                              (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                                    "  fsync() on close requested");
-                          }
-                      }
-                    image->blob->type=FileStream;
-                    if (image->logging)
-                      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                            "  opened file \"%s\" as FileStream image %p, blob %p",
-                                            filename,image,image->blob);
+                  vbuf_size=image->blob->block_size;
+                  if (0 != vbuf_size)
+                    {
+                      if (setvbuf(image->blob->handle.std,NULL,_IOFBF,vbuf_size) != 0)
+                        {
+                          if (image->logging)
+                            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                                  "  setvbuf of %" MAGICK_SIZE_T_F
+                                                  "u bytes returns failure!",
+                                                  (MAGICK_SIZE_T) vbuf_size);
+                        }
+                      else
+                        {
+                          if (image->logging)
+                            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                                  "  I/O buffer set to %"
+                                                  MAGICK_SIZE_T_F "u bytes",
+                                                  (MAGICK_SIZE_T) vbuf_size);
+                        }
+                    }
+                  /*
+                    Enable fsync-on-close mode if requested.
+                  */
+                  if (((WriteBlobMode == mode) || (WriteBinaryBlobMode == mode)) &&
+                      (env = getenv("MAGICK_IO_FSYNC")))
+                    {
+                      if (LocaleCompare(env,"TRUE") == 0)
+                        {
+                          image->blob->fsync=MagickTrue;
+                          if (image->logging)
+                            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                                  "  fsync() on close requested");
+                        }
+                    }
+                  image->blob->type=FileStream;
+                  if (image->logging)
+                    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                          "  opened file \"%s\" as FileStream image %p, blob %p",
+                                          filename,image,image->blob);
 
-		    if ((ReadBlobMode == mode) || (ReadBinaryBlobMode == mode))
-		      {
-			/*
-			  Read file header and check magick bytes.
-			*/
-			(void) memset((void *) magick,0,MaxTextExtent);
-                        count=fread(magick,1,MaxTextExtent,image->blob->handle.std);
-                        (void) MagickFseek(image->blob->handle.std,
-                                           -(magick_off_t) count,SEEK_CUR);
+                  if ((ReadBlobMode == mode) || (ReadBinaryBlobMode == mode))
+                    {
+                      /*
+                        Read file header and check magick bytes.
+                      */
+                      (void) memset((void *) magick,0,MaxTextExtent);
+                      count=fread(magick,1,MaxTextExtent,image->blob->handle.std);
+                      (void) MagickFseek(image->blob->handle.std,
+                                         -(magick_off_t) count,SEEK_CUR);
 #if defined(POSIX)
-                        /*
-                          Discard any buffered input and adjust the
-                          file pointer such that the next input
-                          operation accesses the byte after the last
-                          one read. This avoids possible problems if
-                          the fseek()/rewind() implementations do not
-                          implicitly empty the stdio input buffer.
-                         */
-                        (void) fflush(image->blob->handle.std);
+                      /*
+                        Discard any buffered input and adjust the
+                        file pointer such that the next input
+                        operation accesses the byte after the last
+                        one read. This avoids possible problems if
+                        the fseek()/rewind() implementations do not
+                        implicitly empty the stdio input buffer.
+                      */
+                      (void) fflush(image->blob->handle.std);
 #endif /* defined(POSIX) */
-			if (image->logging)
-			  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-						"  read %" MAGICK_SIZE_T_F
-                                                "u magic header bytes",
-						(MAGICK_SIZE_T) count);
+                      if (image->logging)
+                        (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                              "  read %" MAGICK_SIZE_T_F
+                                              "u magic header bytes",
+                                              (MAGICK_SIZE_T) count);
 #if defined(HasZLIB)
-			if ((magick[0] == 0x1FU) && (magick[1] == 0x8BU) &&
-			    (magick[2] == 0x08U))
-			  {
-			    (void) fclose(image->blob->handle.std);
-			    image->blob->handle.gz=gzopen(filename,type);
-			    if (image->blob->handle.gz != (gzFile) NULL)
-			      {
-				image->blob->type=ZipStream;
-				if (image->logging)
-				  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-							"  reopened file \"%s\""
-                                                        "as ZipStream image %p, blob %p",
-							filename,image,image->blob);
-			      }
-			  }
+                      if ((magick[0] == 0x1FU) && (magick[1] == 0x8BU) &&
+                          (magick[2] == 0x08U))
+                        {
+                          (void) fclose(image->blob->handle.std);
+                          image->blob->handle.gz=gzopen(filename,type);
+                          if (image->blob->handle.gz != (gzFile) NULL)
+                            {
+                              image->blob->type=ZipStream;
+                              if (image->logging)
+                                (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                                      "  reopened file \"%s\""
+                                                      "as ZipStream image %p, blob %p",
+                                                      filename,image,image->blob);
+                            }
+                        }
 #endif
 #if defined(HasBZLIB)
-			if (strncmp((char *) magick,"BZh",3) == 0)
-			  {
-			    (void) fclose(image->blob->handle.std);
-			    image->blob->handle.bz=BZ2_bzopen(filename,type);
-			    if (image->blob->handle.bz != (BZFILE *) NULL)
-			      {
-				image->blob->type=BZipStream;
-				if (image->logging)
-				  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-							"  reopened file %s as"
-                                                        " BZipStream image %p, blob %p",
-							filename,image,image->blob);
-			      }
-			  }
+                      if (strncmp((char *) magick,"BZh",3) == 0)
+                        {
+                          (void) fclose(image->blob->handle.std);
+                          image->blob->handle.bz=BZ2_bzopen(filename,type);
+                          if (image->blob->handle.bz != (BZFILE *) NULL)
+                            {
+                              image->blob->type=BZipStream;
+                              if (image->logging)
+                                (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                                      "  reopened file %s as"
+                                                      " BZipStream image %p, blob %p",
+                                                      filename,image,image->blob);
+                            }
+                        }
 #endif
-		      }
-                  }
-              }
-        if (image->blob->type == FileStream)
-          {
-            const char* env_val;
+                    }
+                }
+            }
+      if (image->blob->type == FileStream)
+        {
+          const char* env_val;
 
-            if (*type == 'r')
-              {
-                /*
-                  Support reading from a file using memory mapping.
+          if (*type == 'r')
+            {
+              /*
+                Support reading from a file using memory mapping.
                   
-                  This code was used for years and definitely speeds
-                  re-reading of the same file, but it has been
-                  discovered that some operating systems (e.g. FreeBSD
-                  and Apple's OS-X) fail to perform automatic
-                  read-ahead for network files.  It will be disabled
-                  by default until we add a way to force read-ahead.
-                */
-                if (((env_val = getenv("MAGICK_MMAP_READ")) != NULL) &&
-                    (LocaleCompare(env_val,"TRUE") == 0))
-                  {
-                    const MagickInfo
-                      *magick_info;
+                This code was used for years and definitely speeds
+                re-reading of the same file, but it has been
+                discovered that some operating systems (e.g. FreeBSD
+                and Apple's OS-X) fail to perform automatic
+                read-ahead for network files.  It will be disabled
+                by default until we add a way to force read-ahead.
+              */
+              if (((env_val = getenv("MAGICK_MMAP_READ")) != NULL) &&
+                  (LocaleCompare(env_val,"TRUE") == 0))
+                {
+                  const MagickInfo
+                    *magick_info;
                 
-                    MagickStatStruct_t
-                      attributes;
+                  MagickStatStruct_t
+                    attributes;
 
-                    magick_info=GetMagickInfo(image_info->magick,&image->exception);
-                    if ((magick_info != (const MagickInfo *) NULL) &&
-                        magick_info->blob_support)
-                      {
-                        if ((MagickFstat(fileno(image->blob->handle.std),&attributes) >= 0) &&
-                            (attributes.st_size > MinBlobExtent) &&
-                            (attributes.st_size == (off_t) ((size_t) attributes.st_size)))
-                          {
-                            size_t
-                              length;
+                  magick_info=GetMagickInfo(image_info->magick,&image->exception);
+                  if ((magick_info != (const MagickInfo *) NULL) &&
+                      magick_info->blob_support)
+                    {
+                      if ((MagickFstat(fileno(image->blob->handle.std),&attributes) >= 0) &&
+                          (attributes.st_size > MinBlobExtent) &&
+                          (attributes.st_size == (off_t) ((size_t) attributes.st_size)))
+                        {
+                          size_t
+                            length;
                       
-                            void
-                              *blob;
+                          void
+                            *blob;
                       
-                            length=(size_t) attributes.st_size;
+                          length=(size_t) attributes.st_size;
 
-                            if (AcquireMagickResource(MapResource,length))
-                              {
-                                blob=MapBlob(fileno(image->blob->handle.std),ReadMode,0,length);
-                                if (blob != (void *) NULL)
-                                  {
-                                    /*
-                                      Format supports blobs-- use memory-mapped I/O.
-                                    */
-                                    if (image_info->file != (FILE *) NULL)
-                                      image->blob->exempt=MagickFalse;
-                                    else
-                                      {
-                                        (void) fclose(image->blob->handle.std);
-                                        image->blob->handle.std=(FILE *) NULL;
-                                      }
-                                    AttachBlob(image->blob,blob,length);
-                                    image->blob->mapped=True;
-                                  }
-                                else
-                                  {
-                                    LiberateMagickResource(MapResource,length);
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
+                          if (AcquireMagickResource(MapResource,length))
+                            {
+                              blob=MapBlob(fileno(image->blob->handle.std),ReadMode,0,length);
+                              if (blob != (void *) NULL)
+                                {
+                                  /*
+                                    Format supports blobs-- use memory-mapped I/O.
+                                  */
+                                  if (image_info->file != (FILE *) NULL)
+                                    image->blob->exempt=MagickFalse;
+                                  else
+                                    {
+                                      (void) fclose(image->blob->handle.std);
+                                      image->blob->handle.std=(FILE *) NULL;
+                                    }
+                                  AttachBlob(image->blob,blob,length);
+                                  image->blob->mapped=True;
+                                }
+                              else
+                                {
+                                  LiberateMagickResource(MapResource,length);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
   image->blob->status=MagickFalse;
   if (image->blob->type != UndefinedStream)
     image->blob->size=GetBlobSize(image);

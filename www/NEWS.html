@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated on May 22, 2016</p>
+<p>This file was last updated on May 29, 2016</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file for full details.</p>
@@ -97,6 +97,10 @@ embarrassing performance bug.</li>
 </ul>
 <p>Security Fixes:</p>
 <ul class="simple">
+<li>BLOB: Remove support for reading input from a shell command, or
+writing output to a shell command, by prefixing the specified
+filename (containing the command) with a '|'.  This feature provided
+a remote shell execution opportunity.</li>
 <li>DIB: Fixed out of bounds reads.  Added more header validations.</li>
 <li>JNG: File size limits are enforced.</li>
 <li>MAT: Fixed denial of service opportunity.  Fix hang on corrupt deflate stream.</li>
@@ -105,7 +109,9 @@ embarrassing performance bug.</li>
 <li>MSL: Ignore the file extension on MSL files.  It is necessary to add
 a &quot;msl:&quot; prefix to MSL files to read the as an image.</li>
 <li>MVG: No longer assume that files ending with extension &quot;.mvg&quot; are
-MVG files.  MVG parsing does more validity checking on its input.</li>
+MVG files.  MVG parsing does more validity checking on its input.
+Assure that enough PrimitiveInfo structures are allocated in advance
+to support a given vector path (heap overflow problem).</li>
 <li>PCX: Fixed unreasonable memory allocation due to intentionally
 corrupt file.</li>
 <li>PDB: Fixed a heap buffer overflow and out of bounds read.</li>
@@ -141,6 +147,7 @@ colormap.</li>
 <li>FILE: <cite>file://</cite> URLs are properly supported now (they never worked
 before).</li>
 <li>JP2: It is now possible to write lossless JPEG 2000 &quot;JP2&quot; format.</li>
+<li>SVG: Support font-size &quot;medium&quot;.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
@@ -174,6 +181,8 @@ PSD format is now classified as &quot;broken&quot; (until it is fixed).</li>
 <li>PSD format is not included in the build by default.</li>
 <li>Files ending with &quot;.mvg&quot; and &quot;.msl&quot; are not assumed to be image
 files by default.</li>
+<li>File names starting with '|' are no longer treated as shell
+commands.</li>
 </ul>
 </div>
 <div class="section" id="november-7-2015">
