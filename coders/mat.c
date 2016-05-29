@@ -842,6 +842,8 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 	       if(z!=3 && z!=1)
 		 ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
                Frames = ReadBlobXXXLong(image2);
+               if (Frames == 0)
+                 ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image2);
 	       break;
       default: ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
                          image);
