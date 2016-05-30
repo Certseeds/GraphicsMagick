@@ -521,6 +521,12 @@ Unable to zip-compress image
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedBitsPerSample
+Language        = English
+Unsupported bits per sample
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedCellTypeInTheMatrix
 Language        = English
 Unsupported cell type in the matrix
@@ -935,6 +941,18 @@ Unrecognized XWD header
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnsupportedBitsPerSample
+Language        = English
+Unsupported bits per sample
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnsupportedNumberOfPlanes
+Language        = English
+Unsupported number of planes
+.
+
+MessageId       = +1
 SymbolicName    = ImageFatalErrorUnableToPersistKey
 Language        = English
 Unable to persist key
@@ -1121,6 +1139,30 @@ Already pushing pattern definition
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorDrawingRecursionDetected
+Language        = English
+drawing recursion detected
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorFloatValueConversionError
+Language        = English
+text value does not convert to float
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorIntegerValueConversionError
+Language        = English
+text value does not convert to integer
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorInvalidPrimitiveArgument
+Language        = English
+invalid primitive argument
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorNonconformingDrawingPrimitiveDefinition
 Language        = English
 Non-conforming drawing primitive definition
@@ -1142,6 +1184,12 @@ MessageId       = +1
 SymbolicName    = DrawErrorUnbalancedGraphicContextPushPop
 Language        = English
 unbalanced graphic context push-pop
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorVectorPathTruncated
+Language        = English
+vector path truncated
 .
 
 MessageId       = +1

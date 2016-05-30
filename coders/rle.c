@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -39,6 +39,7 @@
 #include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -215,7 +216,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   unsigned int
-	colormap_entries;
+    colormap_entries;
 
   unsigned int
     index;
@@ -239,7 +240,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   size_t
-    count;
+    count,
+    rle_bytes;
 
   unsigned int
     map_length;
@@ -306,8 +308,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->matte=rle_header.Flags & 0x04;
     number_planes=rle_header.Ncolors;
     number_colormaps=rle_header.Ncmap;
-    map_length=(1 << rle_header.Cmaplen);
+    map_length=(1U << rle_header.Cmaplen);
 
+    (void) memset(background_color,0,sizeof(background_color));
     if (rle_header.Flags & 0x02)
       {
         /*
@@ -337,17 +340,18 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (number_colormaps != 0)
       {
         /*
-          Read image colormaps.
+          Read image colormaps.  Color map values are stored as 16 bit
+          quantities, left justified in the word.
         */
         colormap=MagickAllocateArray(unsigned char *,number_colormaps,
                                      map_length);
         if (colormap == (unsigned char *) NULL)
           ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
             image);
-        p=colormap;
+        p=colormap; /* unsigned char * */
         for (i=0; i < number_colormaps; i++)
           for (x=0; x < map_length; x++)
-            *p++=ScaleShortToQuantum(ReadBlobLSBShort(image));
+            *p++=(ReadBlobLSBShort(image) >> 8);
         colormap_entries=number_colormaps*map_length;
       }
     if (rle_header.Flags & 0x08)
@@ -397,6 +401,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                    Max(number_planes,4));
     if (rle_pixels == (unsigned char *) NULL)
       ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    rle_bytes=MagickArraySize(number_pixels,Max(number_planes,4));
+    (void) memset(rle_pixels,0,rle_bytes);
     if ((rle_header.Flags & 0x01) && !(rle_header.Flags & 0x02))
       {
         int
@@ -491,8 +497,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             pixel=ReadBlobByte(image);
             if (pixel == EOF)
               ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            if ((y < image->rows) && ((x+i) < image->columns))
+            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
               *p=(unsigned char) pixel;
+            else
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p+=number_planes;
           }
           if (operand & 0x01)
@@ -520,8 +528,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             x*number_planes+plane;
           for (i=0; i < (unsigned int) operand; i++)
           {
-            if ((y < image->rows) && ((x+i) < image->columns))
+            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
               *p=pixel;
+            else
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p+=number_planes;
           }
           x+=operand;
@@ -623,7 +633,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               image->colormap[i].red=ScaleCharToQuantum(*p);
               image->colormap[i].green=ScaleCharToQuantum(*(p+map_length));
-              image->colormap[i].blue=ScaleCharToQuantum(*(p+map_length*2));
+              if (number_colormaps > 2)
+                image->colormap[i].blue=ScaleCharToQuantum(*(p+map_length*2));
+              else
+                image->colormap[i].blue=0U;
               p++;
             }
         p=rle_pixels;

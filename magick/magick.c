@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -417,7 +417,7 @@ GetMagickInfoEntryLocked(const char *name)
   return p;
 }
 MagickExport const MagickInfo *
-GetMagickInfo(const char *name,ExceptionInfo *ARGUNUSED(exception))
+GetMagickInfo(const char *name,ExceptionInfo *exception)
 {
   const MagickInfo
     *magick_info=(const MagickInfo *) NULL;
@@ -448,6 +448,8 @@ GetMagickInfo(const char *name,ExceptionInfo *ARGUNUSED(exception))
 	}
       UnlockSemaphoreInfo(module_semaphore);
     }
+#else
+  ARG_NOT_USED(exception);
 #endif /* #if defined(SupportMagickModules) */
 
   /*

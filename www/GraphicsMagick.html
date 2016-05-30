@@ -478,11 +478,6 @@ respectively.
 If <em>output_file</em> has the extension <strong>.Z</strong> or <strong>.gz</strong>,
 the file is compressed using with <em>compress</em> or <em>gzip</em> respectively.
 <p>
-Finally, when running on platforms that allow it, precede the image file name
-with <strong>|</strong> to pipe to or from a system command (this feature is not
-available on VMS, Win32 and Macintosh platforms). Use a backslash or
-quotation marks to prevent your shell from interpreting the <strong>|</strong>.
-<p>
 Use an optional index enclosed in brackets after an input file name to
 specify a desired subimage of a multi-resolution image format like
 Photo CD (e.g. <tt>"img0001.pcd[4]"</tt>) or a range for MPEG images
@@ -2262,10 +2257,11 @@ which falls outside the bounds of the new image dimensions is
 discarded.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:</font></td></tr></table>
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:</font></td></tr></table>
 <pre>
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 </pre>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 This command reduces or expands a JPEG image to fit on an 800x600
@@ -4354,6 +4350,20 @@ in the <em>APP1</em> profile), use
 reflect changes made to the image, e.g., rotation from portrait to landscape
 orientation, so it is possible that the preserved profile may contain
 invalid data.</font></td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a name="details-preserve-timestamp"></a>-preserve-timestamp
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>preserve the original timestamps of the file</td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+Use this option to preserve the original modification and access
+timestamps of the file, even if it has been modified.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 

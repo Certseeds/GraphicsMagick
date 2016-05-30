@@ -3742,9 +3742,20 @@ std::string Magick::Image::x11Display ( void ) const
   return constOptions()->x11Display( );
 }
 
+void Magick::Image::xResolution ( const double x_resolution )
+{
+  modifyImage();
+  image()->x_resolution = x_resolution;
+}
 double Magick::Image::xResolution ( void ) const
 {
   return constImage()->x_resolution;
+}
+
+void Magick::Image::yResolution ( const double y_resolution )
+{
+  modifyImage();
+  image()->y_resolution = y_resolution;
 }
 double Magick::Image::yResolution ( void ) const
 {

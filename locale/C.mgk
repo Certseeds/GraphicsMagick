@@ -324,6 +324,9 @@
       <Message name="UnableToWriteTemporaryFile">
         Unable to write to temporary file
       </Message>
+      <Message name="UnsupportedBitsPerSample">
+        Unsupported bits per sample
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
@@ -500,7 +503,13 @@
         <Message name="UnrecognizedNumberOfColors">
           Unrecognized number of colors
         </Message>
-      </Error>
+        <Message name="UnsupportedBitsPerSample">
+          Unsupported bits per sample
+        </Message>
+        <Message name="UnsupportedNumberOfPlanes">
+          Unsupported number of planes
+        </Message>
+     </Error>
       <FatalError>
         <Message name="UnableToPersistKey">
           Unable to persist key
@@ -621,6 +630,21 @@
       </Message>
       <Message name="TooManyCoordinates">
         too many coordinates
+      </Message>
+      <Message name="FloatValueConversionError">
+        text value does not convert to float
+      </Message>
+      <Message name="IntegerValueConversionError">
+        text value does not convert to integer
+      </Message>
+      <Message name="VectorPathTruncated">
+        vector path truncated
+      </Message>
+      <Message name="InvalidPrimitiveArgument">
+        invalid primitive argument
+      </Message>
+      <Message name="DrawingRecursionDetected">
+        drawing recursion detected
       </Message>
     </Error>
     <FatalError>

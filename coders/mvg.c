@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003, 2004 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -234,6 +234,7 @@ ModuleExport void RegisterMVGImage(void)
   entry->seekable_stream=True;
   entry->description="Magick Vector Graphics";
   entry->module="MVG";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 }
 

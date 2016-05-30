@@ -1,4 +1,4 @@
-.TH gm 1 "2015/10/24" "GraphicsMagick"
+.TH gm 1 "2016/05/29" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -380,11 +380,6 @@ file is uncompressed with \fBuncompress\fP or \fBgunzip\fP
 respectively.
 If \fIoutput_file\fP has the extension \fB.Z\fP or \fB.gz\fP,
 the file is compressed using with \fIcompress\fP or \fIgzip\fP respectively.
-
-Finally, when running on platforms that allow it, precede the image file name
-with \fB|\fP to pipe to or from a system command (this feature is not
-available on VMS, Win32 and Macintosh platforms). Use a backslash or
-quotation marks to prevent your shell from interpreting the \fB|\fP.
 
 Use an optional index enclosed in brackets after an input file name to
 specify a desired subimage of a multi-resolution image format like
@@ -2094,10 +2089,11 @@ which falls outside the bounds of the new image dimensions is
 discarded.
 
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:
 
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \\
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 
 
 This command reduces or expands a JPEG image to fit on an 800x600
@@ -3740,6 +3736,12 @@ Note that GraphicsMagick does not attempt to update any profile to
 reflect changes made to the image, e.g., rotation from portrait to landscape
 orientation, so it is possible that the preserved profile may contain
 invalid data.
+.TP
+.B "-preserve-timestamp"
+\fRpreserve the original timestamps of the file
+
+Use this option to preserve the original modification and access
+timestamps of the file, even if it has been modified.
 .TP
 .B "+progress"
 \fRdisable progress monitor and busy cursor
@@ -9843,6 +9845,9 @@ Options, above.
 .TP
 .B "-profile \fI<filename>"\fP
 \fRadd ICM, IPTC, or generic profile  to image
+.TP
+.B "-preserve-timestamp"
+\fRpreserve the original timestamps of the file
 .TP
 .B "-quality \fI<value>"\fP
 \fRJPEG/MIFF/PNG/TIFF compression level

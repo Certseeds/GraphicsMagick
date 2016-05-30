@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -420,7 +420,7 @@ MagickExport TypeInfo* NTGetTypeList( void )
 
         for (q=value_name; *q != '\0'; )
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,MaxTextExtent);
             if (*token == '\0')
               break;
 

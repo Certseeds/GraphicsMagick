@@ -105,8 +105,12 @@
 #define HOST_FILLORDER FILLORDER_LSB2MSB
 
 /* Visual Studio 2015 / VC 14 / MSVC 19.00 finally has snprintf() */
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#define snprintf _snprintf
+#if defined(_MSC_VER)
+#  if _MSC_VER < 1900
+#    define snprintf _snprintf
+#  else
+#    define HAVE_SNPRINTF 1
+#  endif
 #endif
 
 /* Define to 1 if your processor stores words with the most significant byte

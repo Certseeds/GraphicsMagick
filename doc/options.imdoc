@@ -2001,10 +2001,11 @@ discarded.</pp>
 
 <pp>
 For example, this command creates a thumbnail of an image, and centers
-it on a red color backdrop image:</pp>
+it on a red color backdrop image, offsetting the canvas ten pixels to
+the left and five pixels up, with respect to the thumbnail:</pp>
 <pre>
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \
-              -extent 140x100 outfile.jpg
+              -extent 140x100-10-5 outfile.jpg
 </pre>
 <pp>
 This command reduces or expands a JPEG image to fit on an 800x600
@@ -4388,6 +4389,23 @@ in the <i>APP1</i> profile), use
 reflect changes made to the image, e.g., rotation from portrait to landscape
 orientation, so it is possible that the preserved profile may contain
 invalid data.</pp>
+
+</utils>
+
+
+
+
+
+<!-- ------------ -preserve-timestamp ------------------------------------------ -->
+
+<utils apps=mogrify>
+<dopt>-preserve-timestamp</opt>
+
+<abs>preserve the original timestamps of the file</abs>
+
+<pp>
+Use this option to preserve the original modification and access
+timestamps of the file, even if it has been modified.</pp>
 
 </utils>
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2010 GraphicsMagick Group
+# Copyright (C) 2004-2016 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -59,6 +59,11 @@ endif
 if HasWEBP
 MAGICK_WEBP_MODULES = coders/webp.la
 MAGICK_WEBP_SRCS = coders/webp.c
+endif
+
+if ENABLE_BROKEN_CODERS
+MAGICK_BROKEN_MODULES = coders/psd.la
+MAGICK_BROKEN_SRCS = coders/psd.c
 endif
 
 MAGICK_CODER_CPPFLAGS = \
@@ -122,7 +127,6 @@ MAGICK_CODER_SRCS = \
 	coders/ps.c \
 	coders/ps2.c \
 	coders/ps3.c \
-	coders/psd.c \
 	coders/pwp.c \
 	coders/rgb.c \
 	coders/rla.c \
@@ -153,6 +157,7 @@ MAGICK_CODER_SRCS = \
 	coders/xcf.c \
 	coders/xpm.c \
 	coders/yuv.c \
+	$(MAGICK_BROKEN_SRCS) \
 	$(MAGICK_DPS_SRCS) \
 	$(MAGICK_GDI32_SRCS) \
 	$(MAGICK_FPX_SRCS) \
@@ -220,7 +225,6 @@ coders_LTLIBRARIES = \
 	coders/ps.la \
 	coders/ps2.la \
 	coders/ps3.la \
-	coders/psd.la \
 	coders/pwp.la \
 	coders/rgb.la \
 	coders/rla.la \
@@ -251,6 +255,7 @@ coders_LTLIBRARIES = \
 	coders/xcf.la \
 	coders/xpm.la \
 	coders/yuv.la \
+	$(MAGICK_BROKEN_MODULES) \
 	$(MAGICK_DPS_MODULES) $(MAGICK_FPX_MODULES) $(MAGICK_GDI32_MODULES) \
 	$(MAGICK_JBIG_MODULES) $(MAGICK_JPEG_MODULES) $(MAGICK_JP2_MODULES) \
 	$(MAGICK_PNG_MODULES) $(MAGICK_TIFF_MODULES) $(MAGICK_X11_CODER_MODULES) \

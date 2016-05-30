@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -205,8 +205,10 @@ static unsigned int
 %
 */
 
-static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,int type,
-  const char *string)
+static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,
+                                          int type,
+                                          const char *string,
+                                          MagickBool positive)
 {
   char
     *p,
@@ -217,8 +219,14 @@ static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,int type,
 
   assert(string != (const char *) NULL);
   p=(char *) string;
-  GetToken(p,&p,token);
-  value=MagickAtoF(token);
+  (void) MagickGetToken(p,&p,token,MaxTextExtent);
+  if ((MagickAtoFChk(token,&value) == MagickFail) ||
+      (((positive) && value < 0.0)))
+    {
+      errno=0;
+      ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                     string);
+    }
   if (strchr(token,'%') != (char *) NULL)
     {
       double
@@ -233,7 +241,7 @@ static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,int type,
       beta=value-svg_info->view_box.height;
       return(sqrt(alpha*alpha+beta*beta)/sqrt(2.0)/100.0);
     }
-  GetToken(p,&p,token);
+  (void) MagickGetToken(p,&p,token,MaxTextExtent);
   if (LocaleNCompare(token,"cm",2) == 0)
     return(72.0*svg_info->scale[0]/2.54*value);
   if (LocaleNCompare(token,"em",2) == 0)
@@ -316,25 +324,22 @@ static char **GetTransformTokens(void *context,const char *text,
     *p,
     *q;
 
-  register long
+  register size_t
     i;
 
   SVGInfo
     *svg_info;
 
+  size_t
+    alloc_tokens;
+
   svg_info=(SVGInfo *) context;
   *number_tokens=0;
   if (text == (const char *) NULL)
     return((char **) NULL);
-  /*
-    Determine the number of arguments.
-  */
-  for (p=text; *p != '\0'; p++)
-  {
-    if (*p == '(')
-      (*number_tokens)+=2;
-  }
-  tokens=MagickAllocateMemory(char **,(*number_tokens+2)*sizeof(*tokens));
+
+  alloc_tokens=8;
+  tokens=MagickAllocateMemory(char **,(alloc_tokens+2)*sizeof(*tokens));
   if (tokens == (char **) NULL)
     {
       ThrowException3(svg_info->exception,ResourceLimitError,
@@ -350,15 +355,28 @@ static char **GetTransformTokens(void *context,const char *text,
   {
     if ((*q != '(') && (*q != ')') && (*q != '\0'))
       continue;
+    if (i == alloc_tokens)
+      {
+        alloc_tokens <<= 1;
+        MagickReallocMemory(char **,tokens,(alloc_tokens+2)*sizeof(*tokens));
+        if (tokens == (char **) NULL)
+          {
+            ThrowException3(svg_info->exception,ResourceLimitError,
+                            MemoryAllocationFailed,UnableToConvertStringToTokens);
+            return((char **) NULL);
+          }
+      }
     tokens[i]=AllocateString(p);
     (void) strlcpy(tokens[i],p,q-p+1);
-    Strip(tokens[i++]);
+    Strip(tokens[i]);
+    i++;
     p=q+1;
   }
   tokens[i]=AllocateString(p);
   (void) strlcpy(tokens[i],p,q-p+1);
   Strip(tokens[i++]);
   tokens[i]=(char *) NULL;
+  *number_tokens=i;
   return(tokens);
 }
 
@@ -637,6 +655,7 @@ static void SVGStartDocument(void *context)
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.startDocument()");
   svg_info=(SVGInfo *) context;
+  DestroyExceptionInfo(svg_info->exception);
   GetExceptionInfo(svg_info->exception);
   parser=svg_info->parser;
   svg_info->document=xmlNewDoc(parser->version);
@@ -676,19 +695,19 @@ static void SVGStartElement(void *context,const xmlChar *name,
   const xmlChar **attributes)
 {
   char
-    *color,
+    *color = NULL,
     id[MaxTextExtent],
-    *p,
+    *p = NULL,
     token[MaxTextExtent],
     **tokens,
-    *units;
+    *units = NULL;
 
   const char
-    *keyword,
-    *value;
+    *keyword = NULL,
+    *value = NULL;
 
   int
-    number_tokens;
+    number_tokens = 0;
 
   SVGInfo
     *svg_info;
@@ -702,6 +721,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
     "  SAX.startElement(%.1024s",name);
+  id[0]='\0';
+  token[0]='\0';
   svg_info=(SVGInfo *) context;
   svg_info->n++;
   MagickReallocMemory(double *,svg_info->scale,(svg_info->n+1)*sizeof(double));
@@ -716,7 +737,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
   if (attributes != (const xmlChar **) NULL)
-    for (i=0; (attributes[i] != (const xmlChar *) NULL); i+=2)
+    for (i=0; (svg_info->exception->severity < ErrorException) &&
+           (attributes[i] != (const xmlChar *) NULL); i+=2)
     {
       keyword=(const char *) attributes[i];
       value=(const char *) attributes[i+1];
@@ -728,13 +750,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"cx") == 0)
             {
               svg_info->element.cx=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"cy") == 0)
             {
               svg_info->element.cy=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -745,13 +767,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"fx") == 0)
             {
               svg_info->element.major=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"fy") == 0)
             {
               svg_info->element.minor=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -762,7 +784,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"height") == 0)
             {
               svg_info->bounds.height=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickTrue);
               break;
             }
           break;
@@ -783,7 +805,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"r") == 0)
             {
               svg_info->element.angle=
-                GetUserSpaceCoordinateValue(svg_info,0,value);
+                GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
               break;
             }
           break;
@@ -794,7 +816,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"width") == 0)
             {
               svg_info->bounds.width=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue);
               break;
             }
           break;
@@ -804,19 +826,19 @@ static void SVGStartElement(void *context,const xmlChar *name,
         {
           if (LocaleCompare(keyword,"x") == 0)
             {
-              svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value);
+              svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"x1") == 0)
             {
               svg_info->segment.x1=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"x2") == 0)
             {
               svg_info->segment.x2=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           break;
@@ -826,19 +848,19 @@ static void SVGStartElement(void *context,const xmlChar *name,
         {
           if (LocaleCompare(keyword,"y") == 0)
             {
-              svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value);
+              svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"y1") == 0)
             {
               svg_info->segment.y1=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"y2") == 0)
             {
               svg_info->segment.y2=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -847,6 +869,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
           break;
       }
     }
+  if (svg_info->exception->severity >= ErrorException)
+      goto svg_start_element_error;
   if (strchr((char *) name,':') != (char *) NULL)
     {
       /*
@@ -961,6 +985,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
     {
       if (LocaleCompare((char *) name,"radialGradient") == 0)
         {
+          if (svg_info->element.angle < 0.0)
+            {
+              errno=0;
+              ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                             value);
+              break;
+            }
           MVGPrintf(svg_info->file,"push gradient '%s' radial %g,%g %g,%g %g\n",
             id,svg_info->element.cx,svg_info->element.cy,
             svg_info->element.major,svg_info->element.minor,
@@ -1028,7 +1059,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
       break;
   }
   if (attributes != (const xmlChar **) NULL)
-    for (i=0; (attributes[i] != (const xmlChar *) NULL); i+=2)
+    for (i=0; (svg_info->exception->severity < ErrorException) &&
+           (attributes[i] != (const xmlChar *) NULL); i+=2)
     {
       keyword=(const char *) attributes[i];
       value=(const char *) attributes[i+1];
@@ -1042,7 +1074,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"angle") == 0)
             {
               MVGPrintf(svg_info->file,"angle %g\n",
-                GetUserSpaceCoordinateValue(svg_info,0,value));
+                GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse));
               break;
             }
           break;
@@ -1074,13 +1106,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"cx") == 0)
             {
               svg_info->element.cx=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"cy") == 0)
             {
               svg_info->element.cy=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -1096,13 +1128,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"dx") == 0)
             {
               svg_info->bounds.x+=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"dy") == 0)
             {
               svg_info->bounds.y+=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -1137,7 +1169,22 @@ static void SVGStartElement(void *context,const xmlChar *name,
             }
           if (LocaleCompare(keyword,"font-family") == 0)
             {
-              MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+              /*
+                Deal with Adobe Illustrator 10.0 which double-quotes
+                font-family.  Maybe we need a generalized solution for
+                this.
+              */
+              if ((value[0] == '\'') && (value[strlen(value)-1] == '\''))
+                {
+                  char nvalue[MaxTextExtent];
+                  (void) strlcpy(nvalue,value+1,sizeof(nvalue));
+                  nvalue[strlen(nvalue)-1]='\0';
+                  MVGPrintf(svg_info->file,"font-family '%s'\n",nvalue);
+                }
+              else
+                {
+                  MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+                }
               break;
             }
           if (LocaleCompare(keyword,"font-stretch") == 0)
@@ -1153,7 +1200,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"font-size") == 0)
             {
               svg_info->pointsize=
-                GetUserSpaceCoordinateValue(svg_info,0,value);
+                GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
               MVGPrintf(svg_info->file,"font-size %g\n",svg_info->pointsize);
               break;
             }
@@ -1177,45 +1224,47 @@ static void SVGStartElement(void *context,const xmlChar *name,
               IdentityAffine(&transform);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
               tokens=GetTransformTokens(context,value,&number_tokens);
-              for (j=0; j < (number_tokens-1); j+=2)
+              if ((tokens != (char **) NULL) && (number_tokens > 0))
               {
-                keyword=(char *) tokens[j];
-                if (keyword == (char *) NULL)
-                  continue;
-                value=(char *) tokens[j+1];
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                  "    %.1024s: %.1024s",keyword,value);
-                current=transform;
-                IdentityAffine(&affine);
-                switch (*keyword)
+                for (j=0; j < (number_tokens-1); j+=2)
                 {
+                  keyword=(char *) tokens[j];
+                  if (keyword == (char *) NULL)
+                    continue;
+                  value=(char *) tokens[j+1];
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "    %.1024s: %.1024s",keyword,value);
+                  current=transform;
+                  IdentityAffine(&affine);
+                  switch (*keyword)
+                  {
                   case 'M':
                   case 'm':
                   {
                     if (LocaleCompare(keyword,"matrix") == 0)
                       {
                         p=(char *) value;
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.sx=MagickAtoF(value);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.rx=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.ry=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.sy=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.tx=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.ty=MagickAtoF(token);
                         break;
                       }
@@ -1229,7 +1278,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         double
                           angle;
 
-                        angle=GetUserSpaceCoordinateValue(svg_info,0,value);
+                        angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                         affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                         affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
                         affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
@@ -1246,11 +1295,11 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         for (p=(char *) value; *p != '\0'; p++)
                           if (isspace((int) (*p)) || (*p == ','))
                             break;
-                        affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value);
+                        affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                         affine.sy=affine.sx;
                         if (*p != '\0')
                           affine.sy=
-                            GetUserSpaceCoordinateValue(svg_info,-1,p+1);
+                            GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
                         svg_info->scale[svg_info->n]=ExpandAffine(&affine);
                         break;
                       }
@@ -1258,7 +1307,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       {
                         affine.sx=svg_info->affine.sx;
                         affine.ry=tan(DegreesToRadians(fmod(
-                          GetUserSpaceCoordinateValue(svg_info,1,value),
+                          GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
                           360.0)));
                         affine.sy=svg_info->affine.sy;
                         break;
@@ -1267,7 +1316,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       {
                         affine.sx=svg_info->affine.sx;
                         affine.rx=tan(DegreesToRadians(fmod(
-                          GetUserSpaceCoordinateValue(svg_info,-1,value),
+                          GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
                           360.0)));
                         affine.sy=svg_info->affine.sy;
                         break;
@@ -1282,33 +1331,34 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         for (p=(char *) value; *p != '\0'; p++)
                           if (isspace((int) (*p)) || (*p == ','))
                             break;
-                        affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value);
+                        affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                         affine.ty=affine.tx;
                         if (*p != '\0')
                           affine.ty=
-                            GetUserSpaceCoordinateValue(svg_info,-1,p+1);
+                            GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
                         break;
                       }
                     break;
                   }
                   default:
                     break;
-                }
-                transform.sx=current.sx*affine.sx+current.ry*affine.rx;
-                transform.rx=current.rx*affine.sx+current.sy*affine.rx;
-                transform.ry=current.sx*affine.ry+current.ry*affine.sy;
-                transform.sy=current.rx*affine.ry+current.sy*affine.sy;
-                transform.tx=current.sx*affine.tx+current.ry*affine.ty+
-                  current.tx;
-                transform.ty=current.rx*affine.tx+current.sy*affine.ty+
-                  current.ty;
-              }
-              MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
-                transform.sx,transform.rx,transform.ry,transform.sy,
-                transform.tx,transform.ty);
-              for (j=0; tokens[j] != (char *) NULL; j++)
-                MagickFreeMemory(tokens[j]);
-              MagickFreeMemory(tokens);
+                  } /* end switch */
+                  transform.sx=current.sx*affine.sx+current.ry*affine.rx;
+                  transform.rx=current.rx*affine.sx+current.sy*affine.rx;
+                  transform.ry=current.sx*affine.ry+current.ry*affine.sy;
+                  transform.sy=current.rx*affine.ry+current.sy*affine.sy;
+                  transform.tx=current.sx*affine.tx+current.ry*affine.ty+
+                    current.tx;
+                  transform.ty=current.rx*affine.tx+current.sy*affine.ty+
+                    current.ty;
+                } /* end for */
+                MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
+                          transform.sx,transform.rx,transform.ry,transform.sy,
+                          transform.tx,transform.ty);
+                for (j=0; tokens[j] != (char *) NULL; j++)
+                  MagickFreeMemory(tokens[j]);
+                MagickFreeMemory(tokens);
+              } /* end if */
               break;
             }
           if (LocaleCompare(keyword,"gradientUnits") == 0)
@@ -1325,7 +1375,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"height") == 0)
             {
               svg_info->bounds.height=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickTrue);
               break;
             }
           if (LocaleCompare(keyword,"href") == 0)
@@ -1341,13 +1391,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"major") == 0)
             {
               svg_info->element.major=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"minor") == 0)
             {
               svg_info->element.minor=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -1388,9 +1438,9 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"r") == 0)
             {
               svg_info->element.major=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               svg_info->element.minor=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"rotate") == 0)
@@ -1398,7 +1448,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
               double
                 angle;
 
-              angle=GetUserSpaceCoordinateValue(svg_info,0,value);
+              angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
               MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,
                 svg_info->bounds.y);
               svg_info->bounds.x=0;
@@ -1410,20 +1460,20 @@ static void SVGStartElement(void *context,const xmlChar *name,
             {
               if (LocaleCompare((char *) name,"ellipse") == 0)
                 svg_info->element.major=
-                  GetUserSpaceCoordinateValue(svg_info,1,value);
+                  GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               else
                 svg_info->radius.x=
-                  GetUserSpaceCoordinateValue(svg_info,1,value);
+                  GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"ry") == 0)
             {
               if (LocaleCompare((char *) name,"ellipse") == 0)
                 svg_info->element.minor=
-                  GetUserSpaceCoordinateValue(svg_info,-1,value);
+                  GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               else
                 svg_info->radius.y=
-                  GetUserSpaceCoordinateValue(svg_info,-1,value);
+                  GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -1474,7 +1524,17 @@ static void SVGStartElement(void *context,const xmlChar *name,
             }
           if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
             {
-              MVGPrintf(svg_info->file,"stroke-miterlimit '%s'\n",value);
+              double stroke_miterlimit;
+              if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || 
+                  stroke_miterlimit < 1.0)
+                {
+                  errno=0;
+                  ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                                 value);
+                  break;
+                }
+              MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",
+                        (long) stroke_miterlimit);
               break;
             }
           if (LocaleCompare(keyword,"stroke-opacity") == 0)
@@ -1485,7 +1545,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"stroke-width") == 0)
             {
               MVGPrintf(svg_info->file,"stroke-width %g\n",
-                GetUserSpaceCoordinateValue(svg_info,1,value));
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue));
               break;
             }
           if (LocaleCompare(keyword,"style") == 0)
@@ -1571,8 +1631,11 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       }
                     if (LocaleCompare(keyword,"font-size") == 0)
                       {
-                        svg_info->pointsize=
-                          GetUserSpaceCoordinateValue(svg_info,0,value);
+                        if (LocaleCompare(value,"medium") == 0)
+                          svg_info->pointsize=12;
+                        else
+                          svg_info->pointsize=
+                            GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
                         MVGPrintf(svg_info->file,"font-size %g\n",
                           svg_info->pointsize);
                         break;
@@ -1590,7 +1653,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                     if (LocaleCompare(keyword,"offset") == 0)
                       {
                         MVGPrintf(svg_info->file,"offset %g\n",
-                          GetUserSpaceCoordinateValue(svg_info,1,value));
+                          GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse));
                         break;
                       }
                     if (LocaleCompare(keyword,"opacity") == 0)
@@ -1648,8 +1711,17 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       }
                     if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
                       {
-                        MVGPrintf(svg_info->file,"stroke-miterlimit '%s'\n",
-                          value);
+                        double stroke_miterlimit;
+                        if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) ||
+                            stroke_miterlimit < 1.0)
+                          {
+                            errno=0;
+                            ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,
+                                           value);
+                            break;
+                          }
+                        MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",
+                                  (long) stroke_miterlimit);
                         break;
                       }
                     if (LocaleCompare(keyword,"stroke-opacity") == 0)
@@ -1660,7 +1732,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                     if (LocaleCompare(keyword,"stroke-width") == 0)
                       {
                         MVGPrintf(svg_info->file,"stroke-width %g\n",
-                          GetUserSpaceCoordinateValue(svg_info,1,value));
+                          GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue));
                         break;
                       }
                     break;
@@ -1746,6 +1818,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
               IdentityAffine(&transform);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
               tokens=GetTransformTokens(context,value,&number_tokens);
+              if ((tokens != (char **) NULL) && (number_tokens > 0))
+                {
               for (j=0; j < (number_tokens-1); j+=2)
               {
                 keyword=(char *) tokens[j];
@@ -1762,27 +1836,27 @@ static void SVGStartElement(void *context,const xmlChar *name,
                     if (LocaleCompare(keyword,"matrix") == 0)
                       {
                         p=(char *) value;
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.sx=MagickAtoF(value);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.rx=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.ry=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.sy=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.tx=MagickAtoF(token);
-                        GetToken(p,&p,token);
+                        (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         if (*token == ',')
-                          GetToken(p,&p,token);
+                          (void) MagickGetToken(p,&p,token,MaxTextExtent);
                         affine.ty=MagickAtoF(token);
                         break;
                       }
@@ -1796,7 +1870,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         double
                           angle;
 
-                        angle=GetUserSpaceCoordinateValue(svg_info,0,value);
+                        angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                         affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                         affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
                         affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
@@ -1813,11 +1887,11 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         for (p=(char *) value; *p != '\0'; p++)
                           if (isspace((int) (*p)) || (*p == ','))
                             break;
-                        affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value);
+                        affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                         affine.sy=affine.sx;
                         if (*p != '\0')
                           affine.sy=
-                            GetUserSpaceCoordinateValue(svg_info,-1,p+1);
+                            GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
                         svg_info->scale[svg_info->n]=ExpandAffine(&affine);
                         break;
                       }
@@ -1825,7 +1899,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       {
                         affine.sx=svg_info->affine.sx;
                         affine.ry=tan(DegreesToRadians(fmod(
-                          GetUserSpaceCoordinateValue(svg_info,1,value),
+                          GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
                           360.0)));
                         affine.sy=svg_info->affine.sy;
                         break;
@@ -1834,7 +1908,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       {
                         affine.sx=svg_info->affine.sx;
                         affine.rx=tan(DegreesToRadians(fmod(
-                          GetUserSpaceCoordinateValue(svg_info,-1,value),
+                          GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
                           360.0)));
                         affine.sy=svg_info->affine.sy;
                         break;
@@ -1849,11 +1923,11 @@ static void SVGStartElement(void *context,const xmlChar *name,
                         for (p=(char *) value; *p != '\0'; p++)
                           if (isspace((int) (*p)) || (*p == ','))
                             break;
-                        affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value);
+                        affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                         affine.ty=affine.tx;
                         if (*p != '\0')
                           affine.ty=
-                            GetUserSpaceCoordinateValue(svg_info,-1,p+1);
+                            GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
                         break;
                       }
                     break;
@@ -1873,8 +1947,10 @@ static void SVGStartElement(void *context,const xmlChar *name,
               MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
                 transform.sx,transform.rx,transform.ry,transform.sy,
                 transform.tx,transform.ty);
-              for (j=0; tokens[j] != (char *) NULL; j++)
-                MagickFreeMemory(tokens[j]);
+                }
+              if (number_tokens > 0)
+                for (j=0; tokens[j] != (char *) NULL; j++)
+                  MagickFreeMemory(tokens[j]);
               MagickFreeMemory(tokens);
               break;
             }
@@ -1891,22 +1967,30 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"viewBox") == 0)
             {
               p=(char *) value;
-              GetToken(p,&p,token);
+              (void) MagickGetToken(p,&p,token,MaxTextExtent);
               svg_info->view_box.x=MagickAtoF(token);
-              GetToken(p,&p,token);
+              (void) MagickGetToken(p,&p,token,MaxTextExtent);
               if (*token == ',')
-                GetToken(p,&p,token);
+                (void) MagickGetToken(p,&p,token,MaxTextExtent);
               svg_info->view_box.y=MagickAtoF(token);
-              GetToken(p,&p,token);
+              (void) MagickGetToken(p,&p,token,MaxTextExtent);
               if (*token == ',')
-                GetToken(p,&p,token);
+                (void) MagickGetToken(p,&p,token,MaxTextExtent);
               svg_info->view_box.width=MagickAtoF(token);
+              (void) MagickGetToken(p,&p,token,MaxTextExtent);
+              if (*token == ',')
+                (void) MagickGetToken(p,&p,token,MaxTextExtent);
+              svg_info->view_box.height=MagickAtoF(token);
+              if (svg_info->view_box.width < 0.0 ||
+                  svg_info->view_box.height < 0.0)
+                {
+                  ThrowException(svg_info->exception,CorruptImageError,
+                                 NegativeOrZeroImageSize,
+                                 svg_info->image->filename);
+                  goto svg_start_element_error;
+                }
               if (svg_info->bounds.width == 0)
                 svg_info->bounds.width=svg_info->view_box.width;
-              GetToken(p,&p,token);
-              if (*token == ',')
-                GetToken(p,&p,token);
-              svg_info->view_box.height=MagickAtoF(token);
               if (svg_info->bounds.height == 0)
                 svg_info->bounds.height=svg_info->view_box.height;
               break;
@@ -1919,7 +2003,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"width") == 0)
             {
               svg_info->bounds.width=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue);
               break;
             }
           break;
@@ -1929,7 +2013,7 @@ static void SVGStartElement(void *context,const xmlChar *name,
         {
           if (LocaleCompare(keyword,"x") == 0)
             {
-              svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value);
+              svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"xlink:href") == 0)
@@ -1940,13 +2024,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
           if (LocaleCompare(keyword,"x1") == 0)
             {
               svg_info->segment.x1=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"x2") == 0)
             {
               svg_info->segment.x2=
-                GetUserSpaceCoordinateValue(svg_info,1,value);
+                GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
               break;
             }
           break;
@@ -1956,19 +2040,19 @@ static void SVGStartElement(void *context,const xmlChar *name,
         {
           if (LocaleCompare(keyword,"y") == 0)
             {
-              svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value);
+              svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"y1") == 0)
             {
               svg_info->segment.y1=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           if (LocaleCompare(keyword,"y2") == 0)
             {
               svg_info->segment.y2=
-                GetUserSpaceCoordinateValue(svg_info,-1,value);
+                GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
               break;
             }
           break;
@@ -1977,6 +2061,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
           break;
       }
     }
+  if (svg_info->exception->severity >= ErrorException)
+      goto svg_start_element_error;
 #ifdef BROKEN_SIZE_OPTION
   if (LocaleCompare((char *) name,"svg") == 0)
     {
@@ -2037,9 +2123,21 @@ static void SVGStartElement(void *context,const xmlChar *name,
             sx,
             sy;
 
+          if (svg_info->bounds.width < 0.0 || svg_info->bounds.height < 0.0)
+            {
+              ThrowException(svg_info->exception,CorruptImageError,
+                             NegativeOrZeroImageSize,(char *) NULL);
+              goto svg_start_element_error;
+            }
           if ((svg_info->view_box.width == 0.0) ||
               (svg_info->view_box.height == 0.0))
             svg_info->view_box=svg_info->bounds;
+          if (svg_info->view_box.width < 0.0 || svg_info->view_box.height < 0.0)
+            {
+              ThrowException(svg_info->exception,CorruptImageError,
+                             NegativeOrZeroImageSize,(char *) NULL);
+              goto svg_start_element_error;
+            }
           SetGeometry(svg_info->image,&page);
           page.width=(unsigned long) svg_info->bounds.width;
           page.height=(unsigned long) svg_info->bounds.height;
@@ -2081,10 +2179,12 @@ static void SVGStartElement(void *context,const xmlChar *name,
         }
     }
 #endif
+  /* Error dispatch point */
+ svg_start_element_error:;
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  )");
   MagickFreeMemory(units);
-  if (color != (char *) NULL)
-    MagickFreeMemory(color);
+  MagickFreeMemory(color);
 }
 
 static void SVGEndElement(void *context,const xmlChar *name)
@@ -2485,7 +2585,7 @@ static void SVGWarning(void *context,const char *format,...)
 #else
   (void) vsnprintf(reason,MaxTextExtent,format,operands);
 #endif
-  ThrowException2(svg_info->exception,DelegateWarning,reason,(char *) NULL);
+  ThrowException2(svg_info->exception,CoderWarning,reason,(char *) NULL);
   va_end(operands);
 }
 
@@ -2757,6 +2857,7 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Free resources.
   */
+  MagickFreeMemory(svg_info.size);
   if (svg_info.title != (char *) NULL)
     {
       if (image != (Image *) NULL)
@@ -2769,6 +2870,8 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) SetImageAttribute(image,"comment",svg_info.comment);
       MagickFreeMemory(svg_info.comment);
     }
+
+  (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
   return(image);
 }
@@ -3099,7 +3202,8 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
     i;
 
   size_t
-    length;
+    length,
+    token_max_length;
 
   SVGInfo
     svg_info;
@@ -3146,6 +3250,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   IdentityAffine(&affine);
   token=AllocateString(attribute->value);
+  token_max_length=strlen(token);
   active=False;
   n=0;
   status=True;
@@ -3154,7 +3259,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
     /*
       Interpret graphic primitive.
     */
-    GetToken(q,&q,keyword);
+    MagickGetToken(q,&q,keyword,MaxTextExtent);
     if (*keyword == '\0')
       break;
     if (*keyword == '#')
@@ -3190,33 +3295,33 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("affine",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             affine.sx=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.rx=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.ry=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.sy=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.tx=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.ty=MagickAtoF(token);
             break;
           }
         if (LocaleCompare("angle",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             affine.rx=MagickAtoF(token);
             affine.ry=MagickAtoF(token);
             break;
@@ -3245,21 +3350,21 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("clip-path",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"clip-path:url(#%.1024s);",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("clip-rule",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"clip-rule:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("clip-units",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"clipPathUnits=%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3282,7 +3387,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("decorate",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"text-decoration:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3306,56 +3411,56 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("fill",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"fill:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("fill-rule",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"fill-rule:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("fill-opacity",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"fill-opacity:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("font-family",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"font-family:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("font-stretch",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"font-stretch:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("font-style",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"font-style:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("font-size",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"font-size:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("font-weight",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"font-weight:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3368,19 +3473,19 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("gradient-units",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             break;
           }
         if (LocaleCompare("text-align",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"text-align %.1024s ",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("text-anchor",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"text-anchor %.1024s ",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3393,7 +3498,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("image",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             primitive_type=ImagePrimitive;
             break;
           }
@@ -3427,7 +3532,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("opacity",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"opacity %.1024s ",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3460,7 +3565,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("pop",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (LocaleCompare("clip-path",token) == 0)
               {
                 (void) WriteBlobString(image,"</clipPath>\n");
@@ -3496,10 +3601,10 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("push",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (LocaleCompare("clip-path",token) == 0)
               {
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 FormatString(message,"<clipPath id=\"%s\">\n",token);
                 (void) WriteBlobString(image,message);
                 break;
@@ -3511,26 +3616,26 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
               }
             if (LocaleCompare("gradient",token) == 0)
               {
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(name,token,MaxTextExtent);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(type,token,MaxTextExtent);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 svg_info.segment.x1=MagickAtoF(token);
                 svg_info.element.cx=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.segment.y1=MagickAtoF(token);
                 svg_info.element.cy=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.segment.x2=MagickAtoF(token);
                 svg_info.element.major=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.segment.y2=MagickAtoF(token);
                 svg_info.element.minor=MagickAtoF(token);
                 FormatString(message,"<%sGradient id=\"%s\" x1=\"%g\" "
@@ -3539,9 +3644,9 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
                   svg_info.segment.y2);
                 if (LocaleCompare(type,"radial") == 0)
                   {
-                    GetToken(q,&q,token);
+                    MagickGetToken(q,&q,token,token_max_length);
                     if (*token == ',')
-                      GetToken(q,&q,token);
+                      MagickGetToken(q,&q,token,token_max_length);
                     svg_info.element.angle=MagickAtoF(token);
                     FormatString(message,"<%sGradient id=\"%s\" cx=\"%g\" "
                       "cy=\"%g\" r=\"%g\" fx=\"%g\" fy=\"%g\">\n",type,name,
@@ -3565,21 +3670,21 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
               }
             if (LocaleCompare("pattern",token) == 0)
               {
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 (void) strlcpy(name,token,MaxTextExtent);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 svg_info.bounds.x=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.bounds.y=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.bounds.width=MagickAtoF(token);
-                GetToken(q,&q,token);
+                MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                 svg_info.bounds.height=MagickAtoF(token);
                 FormatString(message,"<pattern id=\"%s\" x=\"%g\" y=\"%g\" "
                   "width=\"%g\" height=\"%g\">\n",name,svg_info.bounds.x,
@@ -3608,7 +3713,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("rotate",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"rotate(%.1024s) ",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3621,24 +3726,24 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("scale",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             affine.sx=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.sy=MagickAtoF(token);
             break;
           }
         if (LocaleCompare("skewX",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"skewX(%.1024s) ",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("skewY",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"skewY(%.1024s) ",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3648,9 +3753,9 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
             char
               color[MaxTextExtent];
 
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             (void) strlcpy(color,token,MaxTextExtent);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,
               "  <stop offset=\"%s\" stop-color=\"%s\" />\n",token,color);
             (void) WriteBlobString(image,message);
@@ -3658,14 +3763,14 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("stroke",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-antialias",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-antialias:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3678,62 +3783,62 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
                   k;
 
                 p=q;
-                GetToken(p,&p,token);
+                (void) MagickGetToken(p,&p,token,MaxTextExtent);
                 for (k=0; IsPoint(token); k++)
-                  GetToken(p,&p,token);
+                  (void) MagickGetToken(p,&p,token,MaxTextExtent);
                 (void) WriteBlobString(image,"stroke-dasharray:");
                 for (j=0; j < k; j++)
                 {
-                  GetToken(q,&q,token);
+                  MagickGetToken(q,&q,token,token_max_length);
                   FormatString(message,"%.1024s ",token);
                   (void) WriteBlobString(image,message);
                 }
                 (void) WriteBlobString(image,";");
                 break;
               }
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-dasharray:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-dashoffset",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-dashoffset:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-linecap",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-linecap:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-linejoin",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-linejoin:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-miterlimit",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-miterlimit:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-opacity",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-opacity:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
           }
         if (LocaleCompare("stroke-width",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"stroke-width:%.1024s;",token);
             (void) WriteBlobString(image,message);
             continue;
@@ -3751,7 +3856,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("text-antialias",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             FormatString(message,"text-antialias:%.1024s;",token);
             (void) WriteBlobString(image,message);
             break;
@@ -3763,11 +3868,11 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
           }
         if (LocaleCompare("translate",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             affine.tx=MagickAtoF(token);
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
             affine.ty=MagickAtoF(token);
             break;
           }
@@ -3779,16 +3884,16 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       {
         if (LocaleCompare("viewbox",keyword) == 0)
           {
-            GetToken(q,&q,token);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
-            GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
-            GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
+            MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
-              GetToken(q,&q,token);
-            GetToken(q,&q,token);
+              MagickGetToken(q,&q,token,token_max_length);
+            MagickGetToken(q,&q,token,token_max_length);
             break;
           }
         status=False;
@@ -3816,15 +3921,15 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
       */
       if (!IsPoint(q))
         break;
-      GetToken(q,&q,token);
+      MagickGetToken(q,&q,token,token_max_length);
       point.x=MagickAtoF(token);
-      GetToken(q,&q,token);
+      MagickGetToken(q,&q,token,token_max_length);
       if (*token == ',')
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
       point.y=MagickAtoF(token);
-      GetToken(q,(char **) NULL,token);
+      MagickGetToken(q,(char **) NULL,token,token_max_length);
       if (*token == ',')
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
       primitive_info[i].primitive=primitive_type;
       primitive_info[i].point=point;
       primitive_info[i].coordinates=0;
@@ -4019,7 +4124,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
         int
           number_attributes;
 
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
         number_attributes=1;
         for (p=token; *p != '\0'; p++)
           if (isalpha((int) *p))
@@ -4049,7 +4154,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
             status=False;
             break;
           }
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
         if (LocaleCompare("point",token) == 0)
           primitive_info[j].method=PointMethod;
         if (LocaleCompare("replace",token) == 0)
@@ -4072,7 +4177,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
             status=False;
             break;
           }
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
         (void) FormatString(message,"  <text x=\"%g\" y=\"%g\">",
           primitive_info[j].point.x,primitive_info[j].point.y);
         (void) WriteBlobString(image,message);
@@ -4094,7 +4199,7 @@ static unsigned int WriteSVGImage(const ImageInfo *image_info,Image *image)
             status=False;
             break;
           }
-        GetToken(q,&q,token);
+        MagickGetToken(q,&q,token,token_max_length);
         (void) FormatString(message,"  <image x=\"%g\" y=\"%g\" "
           "width=\"%g\" height=\"%g\" xlink:href=\"%.1024s\"/>\n",
           primitive_info[j].point.x,primitive_info[j].point.y,

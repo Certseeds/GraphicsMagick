@@ -20,6 +20,7 @@
 #include "magick/floats.h"
 #include "magick/magick.h"
 #include "magick/pixel_cache.h"
+#include "magick/utility.h"
 
 /*
   Type definitions
@@ -3499,10 +3500,19 @@ ImportViewPixelArea(ViewInfo *view,
 
   assert(view != (ViewInfo *) NULL);
   assert(source != (const unsigned char *) NULL);
-  assert(quantum_size > 0U);
-  assert((quantum_size <= 32U) || (quantum_size == 64U));
   assert((options == (const ImportPixelAreaOptions *) NULL) ||
          (options->signature == MagickSignature));
+
+  if ((quantum_size == 0U) ||
+      ((quantum_size > 32U) && (quantum_size != 64U)))
+    {
+      char quantum_size_str[MaxTextExtent];
+      FormatString(quantum_size_str,"%u",quantum_size);
+      status=0;
+      ThrowException(&GetCacheViewImage(view)->exception,CoderError,
+                     UnsupportedBitsPerSample,quantum_size_str);
+      return MagickFail;
+    }
 
   /*
     Transfer any special options.

@@ -71,6 +71,18 @@ Clip-path syntax
   pop defs
   clip-path url(#%s)
 
+Using 'image' primitive with inlined image
+------------------------------------------
+
+The 'filename' argument of the 'image' primitive may be a
+base64-encoded version of the encoded image prefixed with a MIME-type
+declaration similar to the following:
+
+  image Copy 0,0 1024,106.09 'data:image/x-dib;base64,
+  KAAAANACAAAuAAAAAQAYAAAAAAAghAEAjQEAAI0BAAAAAAAAAAAAAGOb9FaP5k6L3FGQ3Fea42ap
+  ...
+  hy9cii9ciixaiCpYhiVYhSZZhiRbiCdeiyVciSRbiCZbiChdii1gjSxfjCpaiCZWhA=='
+
 Individual Drawing Primitives
 =============================
 

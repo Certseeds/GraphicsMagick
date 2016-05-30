@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1729,8 +1729,8 @@ RotateImage(const Image *image,const double degrees,ExceptionInfo *exception)
 
  rotate_image_exception:
 
-  DestroyImage(integral_image);
-  DestroyImage(rotate_image);
+  if (rotate_image != (Image *) NULL)
+    DestroyImage(rotate_image);
   return (Image *) NULL;
 }
 

@@ -27,7 +27,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.23 (Released November 7, 2015) `download release`__
+Current Release              1.3.24 (Released May 30, 2016) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -165,4 +165,4 @@ Here are just a few examples of what GraphicsMagick can do:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2015
+Copyright |copy| GraphicsMagick Group 2002 - 2016

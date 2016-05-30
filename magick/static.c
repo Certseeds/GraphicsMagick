@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2014 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -218,7 +218,9 @@ MagickExport void RegisterStaticModules(void)
   RegisterPSImage();
   RegisterPS2Image();
   RegisterPS3Image();
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
   RegisterPSDImage();
+#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
   RegisterPWPImage();
   RegisterRGBImage();
   RegisterRLAImage();
@@ -375,7 +377,9 @@ MagickExport void UnregisterStaticModules(void)
   UnregisterPSImage();
   UnregisterPS2Image();
   UnregisterPS3Image();
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
   UnregisterPSDImage();
+#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
   UnregisterPWPImage();
   UnregisterRGBImage();
   UnregisterRLAImage();

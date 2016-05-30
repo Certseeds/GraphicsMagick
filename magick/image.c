@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1224,10 +1224,12 @@ MagickExport void DestroyImage(Image *image)
   int
     destroy;
 
+  if (image == (Image *) NULL)
+    return;
+
   /*
     Dereference image.
   */
-  assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   destroy=False;
   LockSemaphoreInfo((SemaphoreInfo *) image->semaphore);
@@ -2780,9 +2782,6 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
               (void) strlcpy(image_info->magick,magic,MaxTextExtent);
               if (LocaleCompare(magic,"TMP") != 0)
                 image_info->affirm=MagickTrue;
-              else
-                /* input file will be automatically removed */
-                image_info->temporary=MagickTrue;
             }
         }
     }

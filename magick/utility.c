@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -2195,90 +2195,101 @@ MagickExport int GetMagickGeometry(const char *geometry,long *x,long *y,
 */
 MagickExport char *GetPageGeometry(const char *page_geometry)
 {
-  static const char
-    *PageSizes[][2]=
+#define PAGE_SIZE(name, geometry) { name, sizeof(name)-1, geometry }
+  static const struct
+  {
+    char
+      *name;
+
+    size_t
+       name_length;
+
+    char
+       *geometry;
+  }
+  PageSizes[] =
     {
-      { "4x6",  "288x432" },
-      { "5x7",  "360x504" },
-      { "7x9",  "504x648" },
-      { "8x10", "576x720" },
-      { "9x11",  "648x792" },
-      { "9x12",  "648x864" },
-      { "10x13",  "720x936" },
-      { "10x14",  "720x1008" },
-      { "11x17",  "792x1224" },
-      { "A0",  "2384x3370" },
-      { "A1",  "1684x2384" },
-      { "A10", "73x105" },
-      { "A2",  "1191x1684" },
-      { "A3",  "842x1191" },
-      { "A4",  "595x842" },
-      { "A4SMALL", "595x842" },
-      { "A5",  "420x595" },
-      { "A6",  "297x420" },
-      { "A7",  "210x297" },
-      { "A8",  "148x210" },
-      { "A9",  "105x148" },
-      { "ARCHA", "648x864" },
-      { "ARCHB", "864x1296" },
-      { "ARCHC", "1296x1728" },
-      { "ARCHD", "1728x2592" },
-      { "ARCHE", "2592x3456" },
-      { "B0",  "2920x4127" },
-      { "B1",  "2064x2920" },
-      { "B10", "91x127" },
-      { "B2",  "1460x2064" },
-      { "B3",  "1032x1460" },
-      { "B4",  "729x1032" },
-      { "B5",  "516x729" },
-      { "B6",  "363x516" },
-      { "B7",  "258x363" },
-      { "B8",  "181x258" },
-      { "B9",  "127x181" },
-      { "C0",  "2599x3676" },
-      { "C1",  "1837x2599" },
-      { "C2",  "1298x1837" },
-      { "C3",  "918x1296" },
-      { "C4",  "649x918" },
-      { "C5",  "459x649" },
-      { "C6",  "323x459" },
-      { "C7",  "230x323" },
-      { "EXECUTIVE", "540x720" },
-      { "FLSA", "612x936" },
-      { "FLSE", "612x936" },
-      { "FOLIO",  "612x936" },
-      { "HALFLETTER", "396x612" },
-      { "ISOB0", "2835x4008" },
-      { "ISOB1", "2004x2835" },
-      { "ISOB10", "88x125" },
-      { "ISOB2", "1417x2004" },
-      { "ISOB3", "1001x1417" },
-      { "ISOB4", "709x1001" },
-      { "ISOB5", "499x709" },
-      { "ISOB6", "354x499" },
-      { "ISOB7", "249x354" },
-      { "ISOB8", "176x249" },
-      { "ISOB9", "125x176" },
-      { "LEDGER",  "1224x792" },
-      { "LEGAL",  "612x1008" },
-      { "LETTER", "612x792" },
-      { "LETTERSMALL",  "612x792" },
-      { "QUARTO",  "610x780" },
-      { "STATEMENT",  "396x612" },
-      { "TABLOID",  "792x1224" },
-      { (char *) NULL, (char *) NULL }
+      PAGE_SIZE("4x6",  "288x432"),
+      PAGE_SIZE("5x7",  "360x504"),
+      PAGE_SIZE("7x9",  "504x648"),
+      PAGE_SIZE("8x10", "576x720"),
+      PAGE_SIZE("9x11",  "648x792"),
+      PAGE_SIZE("9x12",  "648x864"),
+      PAGE_SIZE("10x13",  "720x936"),
+      PAGE_SIZE("10x14",  "720x1008"),
+      PAGE_SIZE("11x17",  "792x1224"),
+      PAGE_SIZE("A0",  "2384x3370"),
+      PAGE_SIZE("A1",  "1684x2384"),
+      PAGE_SIZE("A10", "73x105"),
+      PAGE_SIZE("A2",  "1191x1684"),
+      PAGE_SIZE("A3",  "842x1191"),
+      PAGE_SIZE("A4",  "595x842"),
+      PAGE_SIZE("A4SMALL", "595x842"),
+      PAGE_SIZE("A5",  "420x595"),
+      PAGE_SIZE("A6",  "297x420"),
+      PAGE_SIZE("A7",  "210x297"),
+      PAGE_SIZE("A8",  "148x210"),
+      PAGE_SIZE("A9",  "105x148"),
+      PAGE_SIZE("ARCHA", "648x864"),
+      PAGE_SIZE("ARCHB", "864x1296"),
+      PAGE_SIZE("ARCHC", "1296x1728"),
+      PAGE_SIZE("ARCHD", "1728x2592"),
+      PAGE_SIZE("ARCHE", "2592x3456"),
+      PAGE_SIZE("B0",  "2920x4127"),
+      PAGE_SIZE("B1",  "2064x2920"),
+      PAGE_SIZE("B10", "91x127"),
+      PAGE_SIZE("B2",  "1460x2064"),
+      PAGE_SIZE("B3",  "1032x1460"),
+      PAGE_SIZE("B4",  "729x1032"),
+      PAGE_SIZE("B5",  "516x729"),
+      PAGE_SIZE("B6",  "363x516"),
+      PAGE_SIZE("B7",  "258x363"),
+      PAGE_SIZE("B8",  "181x258"),
+      PAGE_SIZE("B9",  "127x181"),
+      PAGE_SIZE("C0",  "2599x3676"),
+      PAGE_SIZE("C1",  "1837x2599"),
+      PAGE_SIZE("C2",  "1298x1837"),
+      PAGE_SIZE("C3",  "918x1296"),
+      PAGE_SIZE("C4",  "649x918"),
+      PAGE_SIZE("C5",  "459x649"),
+      PAGE_SIZE("C6",  "323x459"),
+      PAGE_SIZE("C7",  "230x323"),
+      PAGE_SIZE("EXECUTIVE", "540x720"),
+      PAGE_SIZE("FLSA", "612x936"),
+      PAGE_SIZE("FLSE", "612x936"),
+      PAGE_SIZE("FOLIO",  "612x936"),
+      PAGE_SIZE("HALFLETTER", "396x612"),
+      PAGE_SIZE("ISOB0", "2835x4008"),
+      PAGE_SIZE("ISOB1", "2004x2835"),
+      PAGE_SIZE("ISOB10", "88x125"),
+      PAGE_SIZE("ISOB2", "1417x2004"),
+      PAGE_SIZE("ISOB3", "1001x1417"),
+      PAGE_SIZE("ISOB4", "709x1001"),
+      PAGE_SIZE("ISOB5", "499x709"),
+      PAGE_SIZE("ISOB6", "354x499"),
+      PAGE_SIZE("ISOB7", "249x354"),
+      PAGE_SIZE("ISOB8", "176x249"),
+      PAGE_SIZE("ISOB9", "125x176"),
+      PAGE_SIZE("LEDGER",  "1224x792"),
+      PAGE_SIZE("LEGAL",  "612x1008"),
+      PAGE_SIZE("LETTER", "612x792"),
+      PAGE_SIZE("LETTERSMALL",  "612x792"),
+      PAGE_SIZE("QUARTO",  "610x780"),
+      PAGE_SIZE("STATEMENT",  "396x612"),
+      PAGE_SIZE("TABLOID",  "792x1224"),
     };
 
   char
-    *page;
+    page[MaxTextExtent];
 
-  register long
+  register size_t
     i;
 
   assert(page_geometry != (char *) NULL);
-  page=AllocateString(page_geometry);
-  for (i=0; *PageSizes[i] != (char *) NULL; i++)
-    if (LocaleNCompare(PageSizes[i][0],page,strlen(PageSizes[i][0])) == 0)
+  strlcpy(page,page_geometry,MaxTextExtent);
+  for (i=0; i < sizeof(PageSizes)/sizeof(PageSizes[0]); i++)
+    if (LocaleNCompare(PageSizes[i].name,page_geometry,
+                       PageSizes[i].name_length) == 0)
       {
         int
           flags;
@@ -2289,16 +2300,15 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
         /*
           Replace mneumonic with the equivalent size in dots-per-inch.
         */
-        (void) strlcpy(page,PageSizes[i][1],MaxTextExtent);
-        (void) strlcat(page,page_geometry+strlen(PageSizes[i][0]),
-          MaxTextExtent);
+        FormatString(page,"%s%.80s", PageSizes[i].geometry,
+                     page_geometry+PageSizes[i].name_length);
         flags=GetGeometry(page,&geometry.x,&geometry.y,&geometry.width,
           &geometry.height);
         if (!(flags & GreaterValue))
           (void) strcat(page,">");
         break;
       }
-  return(page);
+  return (AcquireString(page));
 }
 
 /*
@@ -2547,7 +2557,9 @@ MagickExport void GetPathComponent(const char *path,PathType type,
 %  Method GetToken gets a token from the token stream.  A token is defined
 %  as sequence of characters delimited by whitespace (e.g. clip-path), a
 %  sequence delimited with quotes (.e.g "Quote me"), or a sequence enclosed
-%  in parenthesis (e.g. rgb(0,0,0)).
+%  in parenthesis (e.g. rgb(0,0,0)).  The output to token is constrained to
+%  not overflow a buffer of size MaxTextExtent so it should be allocated with
+%  that size.
 %
 %  The format of the GetToken method is:
 %
@@ -2565,106 +2577,7 @@ MagickExport void GetPathComponent(const char *path,PathType type,
 */
 MagickExport void GetToken(const char *start,char **end,char *token)
 {
-  register char
-    *p;
-
-  register long
-    i;
-
-  double
-    double_val;
-
-  assert(start != (const char *) NULL);
-  assert(token != (char *) NULL);
-
-  i=0;
-  p=(char *) start;
-
-  if (*p != '\0')
-  {
-    while (isspace((int)(unsigned char) (*p)) && (*p != '\0'))
-      p++;
-    switch (*p)
-    {
-      case '"':
-      case '\'':
-      case '{':
-      {
-        register char
-          escape;
-
-        escape=(*p);
-        if (escape == '{')
-          escape='}';
-        for (p++; *p != '\0'; p++)
-        {
-          if ((*p == '\\') && ((*(p+1) == escape) || (*(p+1) == '\\')))
-            p++;
-          else
-            if (*p == escape)
-              {
-                p++;
-                break;
-              }
-          token[i++]=(*p);
-        }
-        break;
-      }
-      default:
-      {
-        char
-          *q;
-
-        double_val=strtod(p,&q);
-        (void) double_val;
-        if (p != q)
-          {
-            for ( ; p < q; p++)
-              token[i++]=(*p);
-            if (*p == '%')
-              token[i++]=(*p++);
-            break;
-          }
-        if ((*p != '\0') && !isalpha((int) *p) && (*p != *DirectorySeparator) &&
-	    (*p != '#') && (*p != '<'))
-          {
-            token[i++]=(*p++);
-            break;
-          }
-        for ( ; *p != '\0'; p++)
-        {
-          if ((isspace((int)(unsigned char) *p) || (*p == '=')) && (*(p-1) != '\\'))
-            break;
-          token[i++]=(*p);
-          if (*p == '(')
-            for (p++; *p != '\0'; p++)
-            {
-              token[i++]=(*p);
-              if ((*p == ')') && (*(p-1) != '\\'))
-                break;
-            }
-        }
-        break;
-      }
-    }
-  }
-  token[i]='\0';
-  {
-    char
-      *r;
-
-    /*
-      Parse token in form "url(#%s)"
-    */
-    if ((LocaleNCompare(token,"url(#",5) == 0) &&
-        ((r = strrchr(token,')')) != NULL))
-    {
-      *r='\0';
-      (void) memmove(token,token+5,r-token+1);
-    }
-  }
-  if (end != (char **) NULL)
-    *end=p;
+  (void) MagickGetToken(start,end,token, MaxTextExtent);
 }
 
 /*
@@ -3574,6 +3487,59 @@ MagickExport void LocaleUpper(char *string)
     *q=(char) toupper((int) *q);
 }
 
+MagickExport MagickPassFail MagickAtoFChk(const char *str, double *value)
+{
+  char *estr=0;
+  *value=strtod(str,&estr);
+  if (str == estr)
+    *value=0.0;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((int) lvalue != lvalue))
+    lvalue=0;
+  *value=(int) lvalue;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
+    lvalue=0U;
+  *value=(unsigned int) lvalue;
+  return (((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
+          ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
+{
+  char *estr=0;
+  *value=strtol(str,&estr, 10);
+  if (str == estr)
+    *value=0L;
+  return (str == estr ? MagickFail : MagickPass);
+}
+
+MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
+{
+  char *estr=0;
+  long lvalue;
+  lvalue=strtol(str,&estr, 10);
+  if ((str == estr) || ((long) ((unsigned long) lvalue) != lvalue))
+    lvalue=0L;
+  *value=(unsigned long) lvalue;
+  return (((str == estr) || ((long) ((unsigned long) lvalue) != lvalue)) ?
+          MagickFail : MagickPass);
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -3695,6 +3661,166 @@ MagickExport void MagickFormatString(char *string,
   va_start(operands,format);
   MagickFormatStringList(string, length, format, operands);
   va_end(operands);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k G e t T o k e n                                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickGetToken gets a token from the token stream.  A token is defined
+%  as sequence of characters delimited by whitespace (e.g. clip-path), a
+%  sequence delimited with quotes (.e.g "Quote me"), or a sequence enclosed
+%  in parenthesis (e.g. rgb(0,0,0)).
+%
+%  The format of the MagickGetToken method is:
+%
+%      void MagickGetToken(const char *start,char **end,char *token,
+%                          const size_t buffer_length)
+%
+%  A description of each parameter follows:
+%
+%    o start: the start of the token sequence.
+%
+%    o end: point to the end of the token sequence (may be NULL).
+%
+%    o token: copy the token to this buffer.
+%
+%    o buffer_length: size of the token buffer.  If the token exceeds
+%             the buffer size, the token will be truncated, but the
+%             parser will still update the end pointer as if the
+%             truncation did not occur.
+%
+%    o returns: Size of the consumed token, not including a terminating
+%             null character.  If this is larger or equal to the buffer
+%             size then truncation has occured.
+%
+*/
+MagickExport size_t MagickGetToken(const char *start,char **end,char *token,
+                                   const size_t buffer_length)
+{
+  register char
+    *p;
+
+  register size_t
+    i;
+
+  register size_t
+    length = buffer_length - 1;
+
+  double
+    double_val;
+
+  assert(start != (const char *) NULL);
+  assert(token != (char *) NULL);
+
+  i=0;
+  p=(char *) start;
+
+  if (*p != '\0')
+  {
+    while (isspace((int)(unsigned char) (*p)) && (*p != '\0'))
+      p++;
+    switch (*p)
+    {
+      case '"':
+      case '\'':
+      case '{':
+      {
+        register char
+          escape;
+
+        escape=(*p);
+        if (escape == '{')
+          escape='}';
+        for (p++; *p != '\0'; p++)
+        {
+          if ((*p == '\\') && ((*(p+1) == escape) || (*(p+1) == '\\')))
+            p++;
+          else
+            if (*p == escape)
+              {
+                p++;
+                break;
+              }
+          if (i < length)
+            token[i++]=(*p);
+        }
+        break;
+      }
+      default:
+      {
+        char
+          *q;
+
+        double_val=strtod(p,&q);
+        (void) double_val;
+        if (p != q)
+          {
+            for ( ; p < q; p++)
+              if (i < length)
+                token[i++]=(*p);
+            if (*p == '%')
+              if (i < length)
+                {
+                  token[i++]=(*p);
+                  p++;
+                }
+            break;
+          }
+        if ((*p != '\0') && !isalpha((int) *p) && (*p != *DirectorySeparator) &&
+	    (*p != '#') && (*p != '<'))
+          {
+            if (i < length)
+              {
+                token[i++]=(*p);
+                p++;
+              }
+            break;
+          }
+        for ( ; *p != '\0'; p++)
+        {
+          if ((isspace((int)(unsigned char) *p) || (*p == '=')) && (*(p-1) != '\\'))
+            break;
+          if (i < length)
+            token[i++]=(*p);
+          if (*p == '(')
+            for (p++; *p != '\0'; p++)
+            {
+              if (i < length)
+                token[i++]=(*p);
+              if ((*p == ')') && (*(p-1) != '\\'))
+                break;
+            }
+        }
+        break;
+      }
+    }
+  }
+  token[i]='\0';
+  {
+    char
+      *r;
+
+    /*
+      Parse token in form "url(#%s)"
+    */
+    if ((LocaleNCompare(token,"url(#",5) == 0) &&
+        ((r = strrchr(token,')')) != NULL))
+    {
+      *r='\0';
+      (void) memmove(token,token+5,r-token+1);
+    }
+  }
+  if (end != (char **) NULL)
+    *end=p;
+  return (p-start+1);
 }
 
 /*
@@ -5209,7 +5335,7 @@ MagickExport int SystemCommand(const unsigned int verbose,const char *command)
     GetExceptionInfo(&exception);
     end=(char *) NULL;
     program[0]='\0';
-    GetToken(command,&end,program);
+    MagickGetToken(command,&end,program,MaxTextExtent);
     if (MagickConfirmAccess(FileExecuteConfirmAccessMode,program,&exception)
 	== MagickFail)
       {

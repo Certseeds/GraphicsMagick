@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -46,6 +46,7 @@
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
 #include "magick/utility.h"
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
 
 /*
   Forward declarations.
@@ -138,8 +139,10 @@ static unsigned int DecodeImage(Image *image,const int channel)
                     q->red=ScaleCharToQuantum(pixel);
                     if (image->storage_class == PseudoClass)
                       {
-                        indexes[0]=(IndexPacket) pixel;
-                        *q=image->colormap[pixel];
+                        unsigned int colormap_index=(IndexPacket) pixel;
+                        VerifyColormapIndex(image,colormap_index);
+                        indexes[0]=colormap_index;
+                        *q=image->colormap[colormap_index];
                       }
                     break;
                   }
@@ -852,7 +855,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
           else
             {
-              layer_info=MagickAllocateMemory(LayerInfo *,number_layers*sizeof(LayerInfo));
+              layer_info=MagickAllocateArray(LayerInfo *,number_layers,sizeof(LayerInfo));
               if (layer_info == (LayerInfo *) NULL)
                 {
                   if (logging)
@@ -863,7 +866,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     }
                   ThrowPSDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                 }
-              (void) memset(layer_info,0,number_layers*sizeof(LayerInfo));
+              (void) memset(layer_info,0,MagickArraySize(number_layers,sizeof(LayerInfo)));
               for (i=0; i < number_layers; i++)
                 {
                   if (logging)
@@ -885,6 +888,12 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                             layer_info[i].page.height,
                                             layer_info[i].page.width,
                                             layer_info[i].channels);
+                    }
+                  if (layer_info[i].channels >= MaxPSDChannels)
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Number of channels exceeds limit");
+                      ThrowPSDReaderException(CorruptImageError,ImproperImageHeader,image);
                     }
                   for (j=0; j < layer_info[i].channels; j++)
                     {
@@ -1075,16 +1084,13 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   layer_info[i].image=CloneImage(image,layer_info[i].page.width,
                                                  layer_info[i].page.height,
                                                  True,&image->exception);
-                  if (layer_info[i].image->blob)
-                    {
-                      DestroyBlob(layer_info[i].image);
-                      layer_info[i].image->blob=0;
-                    }
-                  layer_info[i].image->blob=ReferenceBlob(image->blob);
                   if (layer_info[i].image == (Image *) NULL)
                     {
                       for (j=0; j < i; j++)
-                        DestroyImage(layer_info[j].image);
+                        {
+                          DestroyImage(layer_info[j].image);
+                          layer_info[j].image = (Image *) NULL;
+                        }
 
                       if (logging)
                         {
@@ -1096,6 +1102,8 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       ThrowPSDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                               image);
                     }
+                  DestroyBlob(layer_info[i].image);
+                  layer_info[i].image->blob=ReferenceBlob(image->blob);
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1353,6 +1361,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
                     }
 
+                  CloseBlob(returnImage);
                   return(returnImage);
                 }
             }
@@ -1431,7 +1440,10 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         q->red=(Quantum) pixel;
                         if (image->storage_class == PseudoClass)
                           {
-                            indexes[x]=(IndexPacket) ScaleQuantumToChar(pixel);
+                            unsigned int colormap_index=
+                              (IndexPacket) ScaleQuantumToChar(pixel);
+                            VerifyColormapIndex(image,colormap_index);
+                            indexes[x]=colormap_index;
                             *q=image->colormap[indexes[x]];
                           }
                         break;
@@ -1496,6 +1508,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
         }
     }
+  
   CloseBlob(image);
 
   if(logging)
@@ -1661,7 +1674,7 @@ static void WriteImageChannels( Image* image, Image* tmp_image, unsigned char *p
 
 /* Write white background, RLE-compressed */
 
-static void WriteWhiteBackground( Image* image )
+static MagickPassFail WriteWhiteBackground( Image* image )
 {
   long
     count,
@@ -1670,9 +1683,13 @@ static void WriteWhiteBackground( Image* image )
 
   char
     *d,
-    scanline[256];
+    *scanline;
 
   int numChannels = 3, i, bytecount, dim = (int) (image->rows*numChannels);
+
+  scanline=MagickAllocateMemory(char *,(image->columns/128)*2 + 2);
+  if (scanline == (char *) NULL)
+    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,NULL);
 
   (void) WriteBlobMSBShort( image, 1 ); /* RLE compressed */
 
@@ -1712,6 +1729,10 @@ static void WriteWhiteBackground( Image* image )
     {
       (void) WriteBlob( image, count, scanline );
     }
+
+  MagickFreeMemory(scanline);
+
+  return MagickPass;
 }
 
 static void WritePascalString (Image* inImage, const char *inString, int inPad)
@@ -1785,8 +1806,10 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   packet_size=image->depth > 8 ? 6 : 3;
   if (image->matte)
     packet_size+=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateMemory(unsigned char *,
-                              packet_size*image->columns*sizeof(PixelPacket));
+  pixels=MagickAllocateArray(unsigned char *,
+                             packet_size,
+                             MagickArraySize(image->columns,
+                                             sizeof(PixelPacket)));
   if (pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) WriteBlob(image,4,"8BPS");
@@ -2026,3 +2049,4 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   CloseBlob(image);
   return(True);
 }
+#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
