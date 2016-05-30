@@ -1,3 +1,7 @@
+2016-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated NEWS to reflect fixes and issues.
+
 2016-05-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated with latest news.
@@ -5,7 +9,8 @@
 	* magick/blob.c (OpenBlob): Remove support for reading input from
 	a shell command, or writing output to a shell command, by
 	prefixing the specified filename (containing the command) with a
-	'|'.  This feature provided a remote shell execution opportunity.
+	'|'.  This feature provided a remote shell execution opportunity
+	(CVE-2016-5118).
 
 	* coders/mat.c (ReadMATImage): Validate that MAT frames is not
 	zero.

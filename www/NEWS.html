@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated on May 29, 2016</p>
+<p>This file was last updated on May 30, 2016</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file for full details.</p>
@@ -78,6 +78,13 @@ ChangeLog file for full details.</p>
 <h1><a class="toc-backref" href="#id3">1.3.24 (???)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
+<li>A shell exploit (CVE-2016-5118) was discovered associated with a
+filename syntax where file names starting with '|' are intepreted as
+shell commands executed via popen().  Insufficient sanitization in
+the SVG and MVG renderers allows such filenames to be passed through
+from potentially untrusted files.  There might be other ways for
+untrusted inputs to produce such filenames.  Due to this issue,
+support for the feature is removed entirely.</li>
 <li>A shell exploit was discovered associated with the gnuplot delegate
 and which is triggered by the 'gplt' entry in delegates.mgk.  A
 remote exploit is possible if the attacker can cause a provided SVG
@@ -139,6 +146,8 @@ reads/writes.  Also fixed a case of excessive memory allocation.</li>
 order to reduce security exposure.</li>
 <li>gnuplot ('gplt' delegate in delegates.mgk): Support for rendering
 gnuplot files is removed since the format is inherently insecure.</li>
+<li>File names: File names starting with a '|' character are no longer
+interpreted as shell commands to be executed as input or output.</li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
@@ -183,6 +192,8 @@ PSD format is now classified as &quot;broken&quot; (until it is fixed).</li>
 files by default.</li>
 <li>File names starting with '|' are no longer treated as shell
 commands.</li>
+<li>Gnuplot and POV delegate support is removed from the default
+delegate.mgk file.</li>
 </ul>
 </div>
 <div class="section" id="november-7-2015">

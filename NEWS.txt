@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on May 29, 2016
+This file was last updated on May 30, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -21,6 +21,14 @@ ChangeLog file for full details.
 .. _`GCC bug 53967` : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53967
 
 Special Issues:
+
+* A shell exploit (CVE-2016-5118) was discovered associated with a
+  filename syntax where file names starting with '|' are intepreted as
+  shell commands executed via popen().  Insufficient sanitization in
+  the SVG and MVG renderers allows such filenames to be passed through
+  from potentially untrusted files.  There might be other ways for
+  untrusted inputs to produce such filenames.  Due to this issue,
+  support for the feature is removed entirely.
 
 * A shell exploit was discovered associated with the gnuplot delegate
   and which is triggered by the 'gplt' entry in delegates.mgk.  A
@@ -110,6 +118,9 @@ Security Fixes:
 * gnuplot ('gplt' delegate in delegates.mgk): Support for rendering
   gnuplot files is removed since the format is inherently insecure.
 
+* File names: File names starting with a '|' character are no longer
+  interpreted as shell commands to be executed as input or output.
+
 
 Bug fixes:
 
@@ -167,6 +178,9 @@ Behavior Changes:
 
 * File names starting with '|' are no longer treated as shell
   commands.
+
+* Gnuplot and POV delegate support is removed from the default
+  delegate.mgk file.
 
 1.3.23 (November 7, 2015)
 ==========================

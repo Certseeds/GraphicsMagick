@@ -35,6 +35,12 @@
 <div class="document">
 
 
+<p>2016-05-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Updated NEWS to reflect fixes and issues.</li>
+</ul>
+</blockquote>
 <p>2016-05-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -42,7 +48,8 @@
 <li>magick/blob.c (OpenBlob): Remove support for reading input from
 a shell command, or writing output to a shell command, by
 prefixing the specified filename (containing the command) with a
-'|'.  This feature provided a remote shell execution opportunity.</li>
+'|'.  This feature provided a remote shell execution opportunity
+(CVE-2016-5118).</li>
 <li>coders/mat.c (ReadMATImage): Validate that MAT frames is not
 zero.</li>
 </ul>
