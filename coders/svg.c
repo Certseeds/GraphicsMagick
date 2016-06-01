@@ -2819,8 +2819,9 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SAXHandler=(&SAXModules);
   svg_info.parser=xmlCreatePushParserCtxt(SAXHandler,&svg_info,(char *) NULL,0,
     image->filename);
-  while ((n=ReadBlob(image,MaxTextExtent,message)) != 0)
+  while ((n=ReadBlob(image,MaxTextExtent-1,message)) != 0)
   {
+    message[n]='\0';
     status=xmlParseChunk(svg_info.parser,message,(int) n,False);
     if (status != 0)
       break;

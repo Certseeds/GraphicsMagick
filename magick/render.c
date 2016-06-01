@@ -1734,6 +1734,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   double
     angle,
     factor,
+    points_length,
     primitive_extent;
 
   DrawInfo
@@ -2321,6 +2322,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 if (n <= 0)
                   {
                     ThrowException(&image->exception,DrawError,UnbalancedGraphicContextPushPop,token);
+                    status=MagickFail;
                     break;
                   }
                 if (graphic_context[n]->clip_path != (char *) NULL)
@@ -2689,6 +2691,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 		  MagickAllocateArray(double *,(2*x+1),sizeof(double));
                 if (graphic_context[n]->dash_pattern == (double *) NULL)
                   {
+                    status=MagickFail;
                     ThrowException3(&image->exception,ResourceLimitError,
                       MemoryAllocationFailed,UnableToDrawOnImage);
                     break;
@@ -2979,12 +2982,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     /*
       Estimate how many points will be required for the primitive.
     */
-    length=primitive_info[j].coordinates;
+    points_length=primitive_info[j].coordinates;
     switch (primitive_type)
     {
       case RectanglePrimitive:
       {
-        length*=5;
+        points_length*=5;
         break;
       }
       case RoundRectanglePrimitive:
@@ -3000,8 +3003,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         alpha=bounds.x2-bounds.x1;
         beta=bounds.y2-bounds.y1;
         radius=hypot((double) alpha,(double) beta);
-        length*=5;
-        length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
+        points_length*=5;
+        points_length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
         break;
       }
       case BezierPrimitive:
@@ -3009,7 +3012,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (primitive_info[j].coordinates > 107)
           (void) ThrowException(&image->exception,DrawError,
                                 TooManyCoordinates,token);
-        length=primitive_info[j].coordinates*BezierQuantum;
+        points_length=primitive_info[j].coordinates*BezierQuantum;
         break;
       }
       case PathPrimitive:
@@ -3019,7 +3022,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           *t;
 
         MagickGetToken(q,&q,token,token_max_length);
-        length=1;
+        points_length=1;
         t=token;
         for (s=token; *s != '\0'; s=t)
         {
@@ -3033,9 +3036,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               t++;
               continue;
             }
-          length++;
+          points_length++;
         }
-        length=length*BezierQuantum;
+        points_length=points_length*BezierQuantum;
         break;
       }
       case CirclePrimitive:
@@ -3050,19 +3053,40 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         alpha=bounds.x2-bounds.x1;
         beta=bounds.y2-bounds.y1;
         radius=hypot(alpha,beta);
-        length=2*(ceil(MagickPI*radius))+6*BezierQuantum+360;
+        points_length=2*(ceil(MagickPI*radius))+6*BezierQuantum+360;
         break;
       }
       default:
         break;
     }
-    if ((size_t) (i+length) >= number_points)
+
+    if (((size_t) points_length) < points_length)
       {
-        number_points+=length+1;
+        status=MagickFail;
+        ThrowException(&image->exception,DrawError,
+                       PrimitiveArithmeticOverflow,keyword);
+      }
+
+    if (status == MagickFail)
+      break;
+
+    if ((i+points_length) >= number_points)
+      {
+        double new_number_points = ceil(number_points+points_length+1);
+        if (((size_t) new_number_points) != new_number_points)
+          {
+            status=MagickFail;
+            ThrowException3(&image->exception,ResourceLimitError,
+                            MemoryAllocationFailed,UnableToDrawOnImage);
+            break;
+          }
+
+        number_points=new_number_points;
         MagickReallocMemory(PrimitiveInfo *,primitive_info,
                             MagickArraySize(number_points,sizeof(PrimitiveInfo)));
         if (primitive_info == (PrimitiveInfo *) NULL)
           {
+            status=MagickFail;
             ThrowException3(&image->exception,ResourceLimitError,
               MemoryAllocationFailed,UnableToDrawOnImage);
             break;
@@ -3306,6 +3330,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         break;
       }
     }
+
     if (primitive_info == (PrimitiveInfo *) NULL)
       break;
     (void) LogMagickEvent(RenderEvent,GetMagickModule(),"  %.*s",(int) (q-p),p);

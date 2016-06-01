@@ -646,6 +646,9 @@
       <Message name="DrawingRecursionDetected">
         drawing recursion detected
       </Message>
+      <Message name="PrimitiveArithmeticOverflow">
+        primitive arithmetic overflow
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

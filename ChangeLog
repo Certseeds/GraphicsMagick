@@ -1,3 +1,13 @@
+2016-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix problem while reading file
+	"tnamkejarz.svg.2532308010849170049" provided via private email
+	from Gustavo Grieco on May 31, 2016.
+
+	* magick/utility.c (MagickGetToken): Fix problem while reading
+	file "vqxwatmqmi.svg.-3669039972557308254" provided via private
+	email from Gustavo Grieco on May 31, 2016.
+
 2016-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update for 1.3.24 release.
