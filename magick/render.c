@@ -3120,7 +3120,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         TraceLine(primitive_info+j,primitive_info[j].point,
-          primitive_info[j+1].point);
+                  primitive_info[j+1].point);
         i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -3792,7 +3792,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     polygon_info=(const PolygonInfo *) AccessThreadViewData(polygon_set);
     bounds=polygon_info->edges[0].bounds;
 
-    if (0) /* FIXME ??? */
+    if (0) /* DEBUG ??? */
       DrawBoundingRectangles(image,draw_info,polygon_info);
     
     for (i=1; i < polygon_info->number_edges; i++)
@@ -4202,14 +4202,11 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   {
     case PointPrimitive:
     {
-      q=GetImagePixels(image,x,y,1,1);
-      if (q == (PixelPacket *) NULL)
+      if ((q=GetImagePixels(image,x,y,1,1)) != (PixelPacket *) NULL)
         {
-          status=MagickFail;
-          break;
+          *q=draw_info->fill;
+          status&=SyncImagePixels(image);
         }
-      *q=draw_info->fill;
-      status&=SyncImagePixels(image);
       break;
     }
     case ColorPrimitive:
@@ -4219,14 +4216,11 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         case PointMethod:
         default:
         {
-          q=GetImagePixels(image,x,y,1,1);
-          if (q == (PixelPacket *) NULL)
+          if ((q=GetImagePixels(image,x,y,1,1)) != (PixelPacket *) NULL)
             {
-              status=MagickFail;
-              break;
+              *q=draw_info->fill;
+              status&=SyncImagePixels(image);
             }
-          *q=draw_info->fill;
-          status&=SyncImagePixels(image);
           break;
         }
         case ReplaceMethod:
@@ -4239,19 +4233,15 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             target;
 
           color=draw_info->fill;
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
             break;
           pattern=draw_info->fill_pattern;
           for (y=0; y < (long) image->rows; y++)
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
             {
               if (!FuzzyColorMatch(q,&target,image->fuzz))
@@ -4261,11 +4251,10 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
                 }
               if (pattern != (Image *) NULL)
                 {
-                  status&=AcquireOnePixelByReference(pattern,&color,
+                  if (AcquireOnePixelByReference(pattern,&color,
                      (long) (x-pattern->tile_info.x) % pattern->columns,
                      (long) (y-pattern->tile_info.y) % pattern->rows,
-                     &image->exception);
-                  if (status == MagickFail)
+                                                 &image->exception) == MagickFail)
                     break;
                   if (!pattern->matte)
                     color.opacity=OpaqueOpacity;
@@ -4287,9 +4276,8 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             border_color,
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
             break;
           if (primitive_info->method == FillToBorderMethod)
             {
@@ -4306,10 +4294,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
             {
               *q=draw_info->fill;
@@ -4335,10 +4320,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         {
           q=GetImagePixels(image,x,y,1,1);
           if (q == (PixelPacket *) NULL)
-            {
-              status=MagickFail;
-              break;
-            }
+            break;
           q->opacity=TransparentOpacity;
           status&=SyncImagePixels(image);
           break;
@@ -4348,10 +4330,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           PixelPacket
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
-              break;
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
+            break;
           status&=TransparentImage(image,target,TransparentOpacity);
           break;
         }
@@ -4362,10 +4343,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             border_color,
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
-              break;
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
+            break;
           if (primitive_info->method == FillToBorderMethod)
             {
               border_color=draw_info->border_color;
@@ -4381,10 +4361,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
               {
                 q->opacity=draw_info->fill.opacity;

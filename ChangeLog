@@ -1,3 +1,10 @@
+2016-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPrimitive): Over-aggressive error reporting
+	was causing failures when elements were "drawn" off-image.
+	Resolves SourceForge issue #389 "Non-conforming drawing primitive
+	definition (line)".
+
 2016-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix problem while reading file
