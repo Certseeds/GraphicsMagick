@@ -1,5 +1,7 @@
 2016-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated NEWS with changes since last release.
+
 	* www/security.rst: Add a page about GraphicsMagick security.
 
 2016-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

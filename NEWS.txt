@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on May 30, 2016
+This file was last updated on June 11, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -14,6 +14,35 @@ ChangeLog file for full details.
 
 .. contents::
   :local:
+
+1.3.25 (???)
+==========================
+
+Special Issues:
+
+Security Fixes:
+
+* Fix another case of CVE-2016-2317 (heap buffer overflow) in the MVG
+  rendering code (also impacts SVG).
+
+Bug fixes:
+
+* GetToken(): Fix obscure bug (read beyond end of string buffer)
+  noticed while parsing a MVG file.
+
+* MVG rendering: Fix undesired hard errors when some objects were
+  drawn outside of the image bounds.  Requests to draw objects
+  entirely outside of the image should be silently ignored.
+
+New Features:
+
+Feature improvements:
+
+Windows Delegate Updates/Additions:
+
+Build Changes:
+
+Behavior Changes:
 
 1.3.24 (May 30, 2016)
 ==========================
