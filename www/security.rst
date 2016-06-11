@@ -14,10 +14,11 @@ very important consideration for GraphicsMagick.  GraphicsMagick may
 be used to open files produced by an untrusted party.  Given a
 suitable weakness (which we make every effort to prevent), an
 intentionally constructed file might be able to cause the software to
-crash, leak memory, or in the worst case execute arbitrary code,
-including shell code.  GraphicsMagick is very powerful and complex
-software supporting many capabilities and so untrusted parties should
-never be allowed to submit arbitrary requests into it.
+crash, leak memory, request huge amounts memory, run forever, or in
+the worst case execute arbitrary code, including shell code.
+GraphicsMagick is very powerful and complex software supporting many
+capabilities and so untrusted parties should never be allowed to
+submit arbitrary requests into it.
 
 The GraphicsMagick project is continually striving to eliminate
 conditions in the software which might pose a risk for its users.
