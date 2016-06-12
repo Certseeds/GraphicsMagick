@@ -73,11 +73,13 @@ risk.  These are steps which can be taken:
    Zone`_, or `chrooted`_ environment such that it can not cause harm
    to the system running it.
 
-4. Normalize input file names or any other external inputs so that
+4. Execute the software as a least-privileged user (e.g. 'nobody').
+
+5. Normalize input file names or any other external inputs so that
    they are under your control and not controlled by an untrusted
    party.
 
-5. Enforce that uploaded files are passed to the expected reader.  For
+6. Enforce that uploaded files are passed to the expected reader.  For
    example, the uploaded file "file.jpg" is forced to be read by the
    JPEG reader (rather than a reader selected based on header magic
    testing) by using the file name "jpg:file.jpg".  If the file is not
@@ -92,7 +94,12 @@ risk.  These are steps which can be taken:
    different types, but the first type which matches while testing the
    header will be selected.
 
-6. Consider using the `MAGICK_CODER_STABILITY` environment variable to
+7. Apply resource limits via the `-limit` option or the
+   `MAGICK_LIMIT_*` environment variables (e.g. `export
+   MAGICK_LIMIT_PIXELS=30Mp`, `export MAGICK_LIMIT_MEMORY=500Mb`).
+   Also consider setting resource limits using the `ulimit` command.
+
+8. Consider using the `MAGICK_CODER_STABILITY` environment variable to
    constrain the supported file formats to the subsets selected by
    `PRIMARY` or `STABLE`.  After setting this environment variable
    (e.g. `export MAGICK_CODER_STABILITY=PRIMARY`), use `gm

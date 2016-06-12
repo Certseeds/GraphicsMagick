@@ -87,6 +87,8 @@ require that you compile GraphicsMagick yourself from source code.</li>
 Zone</a>, or <a class="reference external" href="https://en.wikipedia.org/wiki/Chroot">chrooted</a> environment such that it can not cause harm
 to the system running it.</p>
 </li>
+<li><p class="first">Execute the software as a least-privileged user (e.g. 'nobody').</p>
+</li>
 <li><p class="first">Normalize input file names or any other external inputs so that
 they are under your control and not controlled by an untrusted
 party.</p>
@@ -104,6 +106,11 @@ header testing may not be sufficient since it is possible to
 construct valid files with a header which appears to be several
 different types, but the first type which matches while testing the
 header will be selected.</p>
+</li>
+<li><p class="first">Apply resource limits via the <cite>-limit</cite> option or the
+<cite>MAGICK_LIMIT_*</cite> environment variables (e.g. <cite>export
+MAGICK_LIMIT_PIXELS=30Mp</cite>, <cite>export MAGICK_LIMIT_MEMORY=500Mb</cite>).
+Also consider setting resource limits using the <cite>ulimit</cite> command.</p>
 </li>
 <li><p class="first">Consider using the <cite>MAGICK_CODER_STABILITY</cite> environment variable to
 constrain the supported file formats to the subsets selected by
