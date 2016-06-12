@@ -22,8 +22,8 @@ Special Issues:
 
 Security Fixes:
 
-* Fix another case of CVE-2016-2317 (heap buffer overflow) in the MVG
-  rendering code (also impacts SVG).
+* SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
+  the MVG rendering code (also impacts SVG).
 
 Bug fixes:
 

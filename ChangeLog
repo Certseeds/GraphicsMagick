@@ -1,3 +1,8 @@
+2016-06-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (ReadSVGImage): Assure that SVGInfo data is freed
+	when XMP parsing is aborted due to an error.
+
 2016-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated NEWS with changes since last release.

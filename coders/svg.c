@@ -2768,10 +2768,12 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.image_info=image_info;
   svg_info.text=AllocateString("");
   svg_info.scale=MagickAllocateMemory(double *,sizeof(double));
-  if (svg_info.scale == (double *) NULL)
+  if ((svg_info.text == (char *) NULL) || (svg_info.scale == (double *) NULL))
     {
       (void) fclose(file);
       (void) LiberateTemporaryFile(filename);
+      MagickFreeMemory(svg_info.text);
+      MagickFreeMemory(svg_info.scale);
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   IdentityAffine(&svg_info.affine);
@@ -2827,6 +2829,11 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       break;
   }
   (void) xmlParseChunk(svg_info.parser,message,0,True);
+  /*
+    Assure that our private context is freed, even if we abort before
+    seeing the document end.
+  */
+  SVGEndDocument(&svg_info);
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
   xmlCleanupParser();

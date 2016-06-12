@@ -1239,10 +1239,10 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
     glyph.origin=origin;
     glyph.image=0;
     ft_status=FT_Load_Glyph(face,glyph.id,FT_LOAD_DEFAULT);
-    if (ft_status != False)
+    if (ft_status != False) /* 0 means success */
       continue;
     ft_status=FT_Get_Glyph(face->glyph,&glyph.image);
-    if (ft_status != False)
+    if (ft_status != False) /* 0 means success */
       continue;
 #if 0
     /*
