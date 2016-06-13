@@ -43,6 +43,12 @@ the software won't suffer from the problem.
 Safe Use Of The Software
 ------------------------
 
+.. _`graphicsmagick-announce` : https://lists.sourceforge.net/lists/listinfo/graphicsmagick-announce
+.. _`Container` : https://en.wikipedia.org/wiki/Operating-system-level_virtualization
+.. _`FreeBSD Jail` : https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/jails.html
+.. _`Solaris Zone` : https://illumos.org/man/5/zones
+.. _`chrooted` : https://en.wikipedia.org/wiki/Chroot
+
 You are the first line of defense when it comes to GraphicsMagick
 security!
 
@@ -51,8 +57,6 @@ untrusted users, or delivered via a network protocol such as http,
 ftp, or email, then you should take steps to assure that a problem
 with opening/processing the file does not place the whole server at
 risk.  These are steps which can be taken:
-
-.. _`graphicsmagick-announce` : https://lists.sourceforge.net/lists/listinfo/graphicsmagick-announce
 
 1. Subscribe to the `graphicsmagick-announce`_ mailing list so that
    you are informed about new GraphicsMagick releases or special
@@ -63,11 +67,6 @@ risk.  These are steps which can be taken:
    your operating system vendor are kept up to date or are updated to
    include security fixes.  Keeping GraphicsMagick up to date might
    require that you compile GraphicsMagick yourself from source code.
-
-.. _`Container` : https://en.wikipedia.org/wiki/Operating-system-level_virtualization
-.. _`FreeBSD Jail` : https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/jails.html
-.. _`Solaris Zone` : https://illumos.org/man/5/zones
-.. _`chrooted` : https://en.wikipedia.org/wiki/Chroot
 
 3. Execute the software in a `Container`_, `FreeBSD Jail`_, `Solaris
    Zone`_, or `chrooted`_ environment such that it can not cause harm
