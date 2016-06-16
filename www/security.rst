@@ -9,10 +9,12 @@ GraphicsMagick Security
 Background
 ----------
 
+.. _`SSRF` : https://cwe.mitre.org/data/definitions/918.html
+
 Although GraphicsMagick is image processing software, security is a
 very important consideration for GraphicsMagick.  GraphicsMagick may
-be used to open files produced by an untrusted party.  Given a
-suitable weakness (which we make every effort to prevent), an
+be used to open files and URLs produced by an untrusted party.  Given
+a suitable weakness (which we make every effort to prevent), an
 intentionally constructed file might be able to cause the software to
 crash, leak memory, request huge amounts memory, run forever, or in
 the worst case execute arbitrary code, including shell code.
@@ -20,8 +22,19 @@ GraphicsMagick is very powerful and complex software supporting many
 capabilities and so untrusted parties should never be allowed to
 submit arbitrary requests into it.
 
+GraphicsMagick includes the ability to access arbitrary http and ftp
+URLs as well as local image, font, and SVG files.  The SVG renderer
+supports read access to http and ftp URLs as well as local files
+according to the SVG specification.  Since URLs and local file paths
+may be included in SVG files, untrusted SVG files may create a Server
+Side Request Forgery (`SSRF`_) vulnerability since URL requests are
+done by the computer executing the SVG, which may be in a realm of
+trust (e.g. inside the firewall and able to access "localhost"
+addresses).
+
 The GraphicsMagick project is continually striving to eliminate
-conditions in the software which might pose a risk for its users.
+conditions in the software which might pose a risk for its users while
+not constraining what its users may do with the software.
 
 Reporting Issues
 ----------------
@@ -103,7 +116,9 @@ risk.  These are steps which can be taken:
    `PRIMARY` or `STABLE`.  After setting this environment variable
    (e.g. `export MAGICK_CODER_STABILITY=PRIMARY`), use `gm
    convert -list format` and verify that the format support you need
-   is enabled.
+   is enabled.  Selecting the `PRIMARY` or `STABLE` options blocks
+   access of http and ftp URLs (`SSRF`_ vulnerability), but does not
+   block SVG renderer access to read local image files.
 
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN

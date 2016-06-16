@@ -42,16 +42,26 @@
 <h1>Background</h1>
 <p>Although GraphicsMagick is image processing software, security is a
 very important consideration for GraphicsMagick.  GraphicsMagick may
-be used to open files produced by an untrusted party.  Given a
-suitable weakness (which we make every effort to prevent), an
+be used to open files and URLs produced by an untrusted party.  Given
+a suitable weakness (which we make every effort to prevent), an
 intentionally constructed file might be able to cause the software to
 crash, leak memory, request huge amounts memory, run forever, or in
 the worst case execute arbitrary code, including shell code.
 GraphicsMagick is very powerful and complex software supporting many
 capabilities and so untrusted parties should never be allowed to
 submit arbitrary requests into it.</p>
+<p>GraphicsMagick includes the ability to access arbitrary http and ftp
+URLs as well as local image, font, and SVG files.  The SVG renderer
+supports read access to http and ftp URLs as well as local files
+according to the SVG specification.  Since URLs and local file paths
+may be included in SVG files, untrusted SVG files may create a Server
+Side Request Forgery (<a class="reference external" href="https://cwe.mitre.org/data/definitions/918.html">SSRF</a>) vulnerability since URL requests are
+done by the computer executing the SVG, which may be in a realm of
+trust (e.g. inside the firewall and able to access &quot;localhost&quot;
+addresses).</p>
 <p>The GraphicsMagick project is continually striving to eliminate
-conditions in the software which might pose a risk for its users.</p>
+conditions in the software which might pose a risk for its users while
+not constraining what its users may do with the software.</p>
 </div>
 <div class="section" id="reporting-issues">
 <h1>Reporting Issues</h1>
@@ -117,7 +127,9 @@ constrain the supported file formats to the subsets selected by
 <cite>PRIMARY</cite> or <cite>STABLE</cite>.  After setting this environment variable
 (e.g. <cite>export MAGICK_CODER_STABILITY=PRIMARY</cite>), use <cite>gm
 convert -list format</cite> and verify that the format support you need
-is enabled.</p>
+is enabled.  Selecting the <cite>PRIMARY</cite> or <cite>STABLE</cite> options blocks
+access of http and ftp URLs (<a class="reference external" href="https://cwe.mitre.org/data/definitions/918.html">SSRF</a> vulnerability), but does not
+block SVG renderer access to read local image files.</p>
 </li>
 </ol>
 <p>Copyright © GraphicsMagick Group 2002 - 2016</p>

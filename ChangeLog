@@ -1,3 +1,8 @@
+2016-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/security.rst: Add discussion of SVG format and SSRF
+	vulnerability.
+
 2016-06-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (ReadSVGImage): Assure that SVGInfo data is freed
