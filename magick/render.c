@@ -2471,8 +2471,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 */
                 if (gradient_width*gradient_height > 10000*10000)
                   {
-                    fprintf(stderr,"Fail %d gradient_width=%ld, gradient_height=%ld, image->columns=%lu, image->rows=%lu\n",
-                            __LINE__, gradient_width, gradient_height, image->columns, image->rows);
                     status=MagickFail;
                     break;
                   }
