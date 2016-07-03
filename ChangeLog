@@ -1,3 +1,10 @@
+2016-07-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix absolute and arbitrary gradient
+	dimension sanity checks which caused gradient requests to fail.
+	Resolves SourceForge issue #392 "SVG 'push defs' fails (Debian
+	bugs 829063 and 828120)".
+
 2016-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/security.rst: Add discussion of SVG format and SSRF

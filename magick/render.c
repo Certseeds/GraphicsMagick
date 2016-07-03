@@ -2450,16 +2450,29 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 */
                 gradient_width=(magick_int64_t) Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
                 gradient_height=(magick_int64_t) Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
-                if ((gradient_width > GetMagickResourceLimit(WidthResource)) ||
-                    (gradient_height > GetMagickResourceLimit(HeightResource)) ||
-                    (gradient_width*gradient_height > GetMagickResourceLimit(PixelsResource)))
+                {
+                  const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
+                  const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
+                  const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
+                  if (((width_resource_limit > 0) && (gradient_width > width_resource_limit)) ||
+                      ((hight_resource_limit > 0) && (gradient_height > hight_resource_limit)) ||
+                      ((pixels_resource_limit > 0) && (gradient_width*gradient_height > pixels_resource_limit)))
+                    {
+                      fprintf(stderr,"Fail %d\n", __LINE__);
+                      status=MagickFail;
+                      break;
+                    }
+                }
+                /*
+                  Apply an arbitrary limit to gradient size requests
+                  since gradient images can take a lot of memory.
+                  Some tiny SVGs request huge gradients.  This is here
+                  to avoid denial of service.
+                */
+                if (gradient_width*gradient_height > 10000*10000)
                   {
-                    status=MagickFail;
-                    break;
-                  }
-                if ((gradient_width > (long) image->columns*4) ||
-                    (gradient_height > (long) image->rows*4))
-                  {
+                    fprintf(stderr,"Fail %d gradient_width=%ld, gradient_height=%ld, image->columns=%lu, image->rows=%lu\n",
+                            __LINE__, gradient_width, gradient_height, image->columns, image->rows);
                     status=MagickFail;
                     break;
                   }
