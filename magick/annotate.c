@@ -1479,34 +1479,46 @@ static unsigned int RenderFreetype(Image *image,const DrawInfo *draw_info,
 %
 */
 
-static char *EscapeParenthesis(const char *text)
+static char *EscapeParenthesis(const char *source)
 {
   char
-    *buffer;
+    *destination;
 
   register char
+    *q;
+
+  register const char
     *p;
 
-  register long
-    i;
+  size_t
+    length;
 
-  unsigned long
-    escapes;
+  assert(source != (const char *) NULL);
 
-  escapes=0;
-  buffer=AllocateString(text);
-  p=buffer;
-  for (i=0; i < (long) Min(strlen(text),(MaxTextExtent-escapes-1)); i++)
-  {
-    if ((text[i] == '(') || (text[i] == ')'))
-      {
-        *p++='\\';
-        escapes++;
-      }
-    *p++=text[i];
-  }
-  *p='\0';
-  return(buffer);
+  /*
+    Use dry-run method to compute required string length.
+  */
+  length=0;
+  for (p=source; *p; p++)
+    {
+      if ((*p == '(') || (*p == ')'))
+        length++;
+      length++;
+    }
+  destination=MagickAllocateMemory(char *,length+1);
+  if (destination == (char *) NULL)
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+      UnableToEscapeString);
+  *destination='\0';
+  q=destination;
+  for (p=source; *p; p++)
+    {
+      if ((*p == '(') || (*p == ')'))
+        *q++= '\\';
+      *q++=(*p);
+    }
+  *q=0;
+  return(destination);
 }
 
 static MagickPassFail RenderPostscript(Image *image,const DrawInfo *draw_info,

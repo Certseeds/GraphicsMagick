@@ -765,11 +765,17 @@ MagickExport char *EscapeString(const char *source,const char escape)
 
   assert(source != (const char *) NULL);
 
-  length=strlen(source)+1;
+  /*
+    Use dry-run method to compute required string length.
+  */
+  length=0;
   for (p=source; *p; p++)
-    if ((*p == '\\') || (*p == escape))
+    {
+      if ((*p == '\\') || (*p == escape))
+        length++;
       length++;
-  destination=MagickAllocateMemory(char *,length);
+    }
+  destination=MagickAllocateMemory(char *,length+1);
   if (destination == (char *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToEscapeString);
