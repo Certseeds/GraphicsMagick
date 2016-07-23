@@ -1,3 +1,11 @@
+2016-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Reject abnormally absurd gradient
+	size requests (many absurd requests are still allowed).  Provide
+	detailed error reports when a gradient is rejected.
+
+	* coders/svg.c: Support units for 'stroke-dashoffset'.
+
 2016-07-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/annotate.c (EscapeParenthesis): In private email on

@@ -2451,14 +2451,31 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 gradient_width=(magick_int64_t) Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
                 gradient_height=(magick_int64_t) Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
                 {
+                  char resource_str[MaxTextExtent];
                   const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
                   const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
                   const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
-                  if (((width_resource_limit > 0) && (gradient_width > width_resource_limit)) ||
-                      ((hight_resource_limit > 0) && (gradient_height > hight_resource_limit)) ||
-                      ((pixels_resource_limit > 0) && (gradient_width*gradient_height > pixels_resource_limit)))
+                  if ((width_resource_limit > 0) && (gradient_width > width_resource_limit))
                     {
-                      fprintf(stderr,"Fail %d\n", __LINE__);
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", width_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelWidthLimitExceeded,resource_str);
+                      status=MagickFail;
+                      break;
+                    }
+                  if ((hight_resource_limit > 0) && (gradient_height > hight_resource_limit))
+                    {
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", hight_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelHeightLimitExceeded,resource_str);
+                      status=MagickFail;
+                      break;
+                    }
+                  if ((pixels_resource_limit > 0) && (gradient_width*gradient_height > pixels_resource_limit))
+                    {
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", pixels_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelLimitExceeded,resource_str);
                       status=MagickFail;
                       break;
                     }
@@ -2469,8 +2486,13 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   Some tiny SVGs request huge gradients.  This is here
                   to avoid denial of service.
                 */
-                if (gradient_width*gradient_height > 10000*10000)
+                if (gradient_width*gradient_height > 5000*5000 /*10000*10000*/)
                   {
+                    char gradient_size_str[MaxTextExtent];
+                    FormatString(gradient_size_str,"%" MAGICK_INT64_F "dx%" MAGICK_INT64_F "d",
+                                 gradient_width,gradient_height);
+                    ThrowException(&image->exception,DrawError,
+                                   UnreasonableGradientSize,gradient_size_str);
                     status=MagickFail;
                     break;
                   }

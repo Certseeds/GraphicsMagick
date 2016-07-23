@@ -1193,6 +1193,12 @@ unbalanced graphic context push-pop
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorUnreasonableGradientSize
+Language        = English
+unreasonable gradient image size
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorVectorPathTruncated
 Language        = English
 vector path truncated
