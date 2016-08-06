@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on June 11, 2016
+This file was last updated on August 6, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -20,29 +20,60 @@ ChangeLog file for full details.
 
 Special Issues:
 
+* None
+
 Security Fixes:
 
 * SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
   the MVG rendering code (also impacts SVG).
 
+* EscapeParenthesis(): I was notified by Gustavo Grieco of a heap
+  overflow in EscapeParenthesis() used in the text annotation code.
+  While not being able to reproduce the issue, the implementation of
+  this function is completely redone.
+
 Bug fixes:
 
 * GetToken(): Fix obscure bug (read beyond end of string buffer)
-  noticed while parsing a MVG file.
+  noticed while parsing a MVG file.  This problem was reported by
+  Gustavo Grieco.
 
 * MVG rendering: Fix undesired hard errors when some objects were
   drawn outside of the image bounds.  Requests to draw objects
   entirely outside of the image should be silently ignored.
 
+* MVG/SVG rendering: Fix gradient size sanity checks which were
+  causing gradient requests to fail.  Due to a design weakness in that
+  gradient images allocate resources rather than being computations at
+  point of use, the maximum gradient image size is now hard-limited to
+  5000x5000 pixels until the design problem is fixed.  Some SVG icons
+  (as small as 8x8 pixels) authored using Inkscape request absurdly
+  huge gradients.  Gradient sizes as large as 20,000x20,000 have been
+  observed in SVG icon files delivered by packages on an Ubuntu Linux
+  system.
+
+* SVG: Fix some memory leaks which occur on parsing error.
+
 New Features:
+
+* None
 
 Feature improvements:
 
+* None
+
 Windows Delegate Updates/Additions:
+
+* None
 
 Build Changes:
 
+* None
+
 Behavior Changes:
+
+* SVG: Some SVG files may be rejected due to absurdly large gradient
+  requests.
 
 1.3.24 (May 30, 2016)
 ==========================
