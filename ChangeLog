@@ -1,5 +1,14 @@
 2016-08-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/yuv.c (WriteYUVImage): Fix benign clang compiler warning
+	regarding "variable 'x' is incremented both in the loop header and
+	in the loop body".
+
+	* configure.ac: Fixes to use clang's OpenMP runtime library
+	(-lomp) for clang 3.8 and later.  Specifically tested with clang
+	3.8 on Ubuntu 16.04 'xenial'.  Problem was reported by Holger
+	Hoffstätte via private email.
+
 	* NEWS.txt: Bring up to date with latest changes.
 
 2016-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

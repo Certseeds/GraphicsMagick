@@ -68,7 +68,8 @@ Windows Delegate Updates/Additions:
 
 Build Changes:
 
-* None
+* OpenMP is properly configured for clang 3.8 using its own '-lomp'
+  rather than '-lgomp'.
 
 Behavior Changes:
 

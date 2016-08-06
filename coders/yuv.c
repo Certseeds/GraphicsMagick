@@ -632,7 +632,7 @@ static unsigned int WriteYUVImage(const ImageInfo *image_info,Image *image)
             &chroma_image->exception);
           if (s == (const PixelPacket *) NULL)
             break;
-          for (x=0; x < (long) yuv_image->columns; x++)
+          for (x=0; x < (long) yuv_image->columns; )
           {
             (void) WriteBlobByte(image,ScaleQuantumToChar(s->green));
             (void) WriteBlobByte(image,ScaleQuantumToChar(p->red));
@@ -641,6 +641,7 @@ static unsigned int WriteYUVImage(const ImageInfo *image_info,Image *image)
             (void) WriteBlobByte(image,ScaleQuantumToChar(p->red));
             p++;
             s++;
+            x++;
             x++;
           }
           if (image->previous == (Image *) NULL)
