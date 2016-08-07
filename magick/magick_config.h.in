@@ -51,6 +51,12 @@
 /* define if bool is a built-in type */
 #undef HAVE_BOOL
 
+/* Define to 1 if you have the `clock_getres' function. */
+#undef HAVE_CLOCK_GETRES
+
+/* Define to 1 if you have the `clock_gettime' function. */
+#undef HAVE_CLOCK_GETTIME
+
 /* define if the compiler supports const_cast<> */
 #undef HAVE_CONST_CAST
 

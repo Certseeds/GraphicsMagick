@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003,2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -41,7 +41,21 @@
   Define declarations.
 */
 #if !defined(CLK_TCK)
-#define CLK_TCK  sysconf(_SC_CLK_TCK)
+#  define CLK_TCK  sysconf(_SC_CLK_TCK)
+#endif
+#if defined(HAVE_CLOCK_GETTIME)
+#  define NANOSECONDS_PER_SECOND 1000000000.0
+#  if defined(CLOCK_HIGHRES) /* Solaris */
+#    define CLOCK_ID CLOCK_HIGHRES
+#  elif defined(CLOCK_MONOTONIC_RAW) /* Linux */
+#    define CLOCK_ID CLOCK_MONOTONIC_RAW
+#  elif defined(CLOCK_MONOTONIC_PRECISE) /* FreeBSD */
+#    define CLOCK_ID CLOCK_MONOTONIC_PRECISE
+#  elif defined(CLOCK_MONOTONIC) /* Linux & FreeBSD */
+#    define CLOCK_ID CLOCK_MONOTONIC
+#  else
+#    define CLOCK_ID CLOCK_REALTIME /* Fallback */
+#  endif
 #endif
 
 /*
@@ -114,7 +128,12 @@ MagickExport unsigned int ContinueTimer(TimerInfo *time_info)
 */
 static double ElapsedTime(void)
 {
-#if defined(HAVE_TIMES)
+#if defined(HAVE_CLOCK_GETTIME)
+  struct timespec timer;
+  (void) clock_gettime(CLOCK_ID, &timer);
+
+  return((double) timer.tv_sec + timer.tv_nsec/NANOSECONDS_PER_SECOND);
+#elif defined(HAVE_TIMES)
   struct tms
     timer;
 
@@ -221,7 +240,12 @@ MagickExport void GetTimerInfo(TimerInfo *time_info)
 */
 MagickExport double GetTimerResolution(void)
 {
-#if defined(MSWINDOWS)
+#if defined(HAVE_CLOCK_GETRES)
+  struct timespec timer;
+  (void) clock_getres(CLOCK_ID, &timer);
+
+  return((double) timer.tv_sec + (double) timer.tv_nsec/NANOSECONDS_PER_SECOND);
+#elif defined(MSWINDOWS)
   return (0.02);
 #else
   return (1.0/CLK_TCK);

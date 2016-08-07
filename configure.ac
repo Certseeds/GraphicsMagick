@@ -1172,7 +1172,7 @@ AC_SUBST(MAGICK_SSIZE_T_F)
 ########
 GM_FUNC_MMAP_FILEIO
 AC_CHECK_FUNCS([atoll CryptGenRandom \
-  ctime_r _exit fcntl fstatvfs ftime getexecname \
+  clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \

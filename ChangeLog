@@ -1,3 +1,8 @@
+2016-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/timer.c (ElapsedTime): Use clock_gettime() (when
+	available with default linkage) to obtain elapsed time.
+
 2016-08-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/yuv.c (WriteYUVImage): Fix benign clang compiler warning
