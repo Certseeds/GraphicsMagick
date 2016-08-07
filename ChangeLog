@@ -1,5 +1,8 @@
 2016-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/describe.c (DescribeImage): Include milliseconds
+	resolution in elapsed time output.
+
 	* magick/timer.c (ElapsedTime): Use clock_gettime() (when
 	available with default linkage) to obtain elapsed time.
 
