@@ -1,3 +1,10 @@
+2016-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/describe.c (DescribeImage): The 'identify' and 'info'
+	functionality only shows the pixel read rate if image was not read
+	in 'ping' mode.  Provide seconds timing with 6 digits of precision
+	since that is what is needed.
+
 2016-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/describe.c (DescribeImage): Include milliseconds
