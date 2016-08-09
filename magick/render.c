@@ -647,7 +647,7 @@ LogPathInfo(const PathInfo *path_info)
 }
 
 static PathInfo *
-ConvertPrimitiveToPath(const DrawInfo *ARGUNUSED(draw_info),
+ConvertPrimitiveToPath(const DrawInfo *draw_info,
                        const PrimitiveInfo *primitive_info)
 {
   PathInfo
@@ -667,6 +667,8 @@ ConvertPrimitiveToPath(const DrawInfo *ARGUNUSED(draw_info),
   long
     coordinates,
     start;
+
+  ARG_NOT_USED(draw_info);
 
   /*
     Converts a PrimitiveInfo structure into a vector path structure.

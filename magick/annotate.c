@@ -1436,11 +1436,14 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
 }
 #else
 static unsigned int RenderFreetype(Image *image,const DrawInfo *draw_info,
-  const char * ARGUNUSED(encoding),const PointInfo * ARGUNUSED(offset),
-  TypeMetric * ARGUNUSED(metrics))
+  const char *encoding,const PointInfo *offset,
+  TypeMetric *metrics)
 {
   ThrowBinaryException(MissingDelegateError,FreeTypeLibraryIsNotAvailable,
-    draw_info->font)
+                       draw_info->font);
+  ARG_NOT_USED(encoding);
+  ARG_NOT_USED(offset);
+  ARG_NOT_USED(metrics);
 }
 #endif
 

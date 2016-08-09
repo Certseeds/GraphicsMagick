@@ -629,12 +629,14 @@ static void SVGUnparsedEntityDeclaration(void *context,const xmlChar *name,
 
 }
 
-static void SVGSetDocumentLocator(void *ARGUNUSED(context),
-                                  xmlSAXLocatorPtr ARGUNUSED(location))
+static void SVGSetDocumentLocator(void *context,
+                                  xmlSAXLocatorPtr location)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
+  ARG_NOT_USED(location);
   /*
     Receive the document locator at startup, actually xmlDefaultSAXLocator.
   */
@@ -2518,11 +2520,12 @@ static void SVGReference(void *context,const xmlChar *name)
     (void) xmlAddChild(parser->node,xmlNewReference(svg_info->document,name));
 }
 
-static void SVGIgnorableWhitespace(void *ARGUNUSED(context),const xmlChar *c,int length)
+static void SVGIgnorableWhitespace(void *context,const xmlChar *c,int length)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
   /*
     Receiving some ignorable whitespaces from the parser.
   */
@@ -2531,12 +2534,13 @@ static void SVGIgnorableWhitespace(void *ARGUNUSED(context),const xmlChar *c,int
 /*   svg_info=(SVGInfo *) context; */
 }
 
-static void SVGProcessingInstructions(void *ARGUNUSED(context),const xmlChar *target,
+static void SVGProcessingInstructions(void *context,const xmlChar *target,
   const xmlChar *data)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
   /*
     A processing instruction has been parsed.
   */

@@ -1,5 +1,7 @@
 2016-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders, magick: Compile clean using GCC with -std=c90.
+
 	* magick/describe.c (DescribeImage): The 'identify' and 'info'
 	functionality only shows the pixel read rate if image was not read
 	in 'ping' mode.  Provide seconds timing with 6 digits of precision

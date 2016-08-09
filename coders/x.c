@@ -74,11 +74,12 @@ static unsigned int
 %
 */
 static Image *ReadXImage(const ImageInfo *image_info,
-                         ExceptionInfo *ARGUNUSED(exception))
+                         ExceptionInfo *exception)
 {
   MagickXImportInfo
     ximage_info;
 
+  ARG_NOT_USED(exception);
   MagickXGetImportInfo(&ximage_info);
   return(MagickXImportImage(image_info,&ximage_info));
 }

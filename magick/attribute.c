@@ -438,8 +438,8 @@ ReadMSBShort(unsigned char **p,size_t *length)
 */
 static char *
 TracePSClippingPath(unsigned char *blob,size_t length,
-		    unsigned long ARGUNUSED(columns),
-		    unsigned long ARGUNUSED(rows))
+		    unsigned long columns,
+		    unsigned long rows)
 {
   char
     *path,
@@ -463,6 +463,9 @@ TracePSClippingPath(unsigned char *blob,size_t length,
 
   unsigned int
     in_subpath;
+
+  ARG_NOT_USED(columns);
+  ARG_NOT_USED(rows);
 
   first[0].x=first[0].y=first[1].x=first[1].y=0;
   last[1].x=last[1].y=last[2].x=last[2].y=0;

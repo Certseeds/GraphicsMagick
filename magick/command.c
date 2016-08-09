@@ -8181,10 +8181,13 @@ static void GMUsage(void)
 %
 %
 */
-static unsigned int HelpCommand(ImageInfo *ARGUNUSED(image_info),
-  int argc,char **argv,char **ARGUNUSED(metadata),
-  ExceptionInfo *ARGUNUSED(exception))
+static unsigned int HelpCommand(ImageInfo *image_info,
+  int argc,char **argv,char **metadata,
+  ExceptionInfo *exception)
 {
+  ARG_NOT_USED(image_info);
+  ARG_NOT_USED(metadata);
+  ARG_NOT_USED(exception);
   if (argc > 1)
     {
       int
@@ -16864,15 +16867,21 @@ static void PrintFeature(const char* feature,MagickBool support)
 {
   PrintFeatureTextual(feature,support, NULL);
 }
-static unsigned int VersionCommand(ImageInfo *ARGUNUSED(image_info),
-				   int ARGUNUSED(argc),char **ARGUNUSED(argv),char **ARGUNUSED(metadata),
-				   ExceptionInfo *ARGUNUSED(exception))
+static unsigned int VersionCommand(ImageInfo *image_info,
+				   int argc,char **argv,char **metadata,
+				   ExceptionInfo *exception)
 {
   MagickBool
     supported;
 
   char
     text[MaxTextExtent];
+
+  ARG_NOT_USED(image_info);
+  ARG_NOT_USED(argc);
+  ARG_NOT_USED(argv);
+  ARG_NOT_USED(metadata);
+  ARG_NOT_USED(exception);
 
   PrintVersionAndCopyright();
 

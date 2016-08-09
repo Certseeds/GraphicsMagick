@@ -321,7 +321,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
                     *q++=image->colormap[index];
                   }
               }
-            //p++;
+            /* p++; */
           }       
         RetVal = MagickPass;
         break;

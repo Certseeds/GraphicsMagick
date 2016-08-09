@@ -8537,11 +8537,12 @@ MagickXMakeWindow(Display *display,Window parent,char **argv,
 MagickExport unsigned int
 MagickXMagickMonitor(const char *task,
 		     const magick_int64_t quantum,const magick_uint64_t span,
-		     ExceptionInfo *ARGUNUSED(exception))
+		     ExceptionInfo *exception)
 {
   MagickXWindows
     *windows;
 
+  ARG_NOT_USED(exception);
   windows=MagickXSetWindows((MagickXWindows *) ~0);
   if (windows == (MagickXWindows *) NULL)
     return(True);
@@ -9391,7 +9392,7 @@ MagickXVisualClassName(const int visual_class)
 %
 */
 MagickExport void
-MagickXWarning(const ExceptionType ARGUNUSED(warning),
+MagickXWarning(const ExceptionType warning,
 	       const char *reason,const char *description)
 {
   char
@@ -9400,6 +9401,7 @@ MagickXWarning(const ExceptionType ARGUNUSED(warning),
   MagickXWindows
     *windows;
 
+  ARG_NOT_USED(warning);
   if (reason == (char *) NULL)
     return;
   (void) strlcpy(text,reason,MaxTextExtent);

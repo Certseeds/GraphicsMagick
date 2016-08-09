@@ -893,9 +893,9 @@ TIFFGetBlobSize(thandle_t image_handle)
 
 /* Unmap BLOB memory */
 static void
-TIFFUnmapBlob(thandle_t ARGUNUSED(image),
-              tdata_t ARGUNUSED(base),
-              toff_t ARGUNUSED(size))
+TIFFUnmapBlob(thandle_t image,
+              tdata_t base,
+              toff_t size)
 {
 #if LOG_TIFF_BLOB_IO
   Image
@@ -905,6 +905,10 @@ TIFFUnmapBlob(thandle_t ARGUNUSED(image),
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 			  "TIFF unmap blob: base=0x%p size=%" MAGICK_OFF_F "d",
 			  base,(magick_off_t) size);
+#else
+  ARG_NOT_USED(image);
+  ARG_NOT_USED(base);
+  ARG_NOT_USED(size);
 #endif  /* LOG_TIFF_BLOB_IO */
 }
 
