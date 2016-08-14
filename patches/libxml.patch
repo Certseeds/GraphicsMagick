@@ -1,7 +1,7 @@
 Only in libxml: config.h
-diff -r -u libxml2-2.9.3/dict.c libxml/dict.c
---- libxml2-2.9.3/dict.c	2015-11-19 21:18:02.000000000 -0600
-+++ libxml/dict.c	2015-12-12 16:04:52.536651494 -0600
+diff -u -r libxml2-2.9.4/dict.c libxml/dict.c
+--- libxml2-2.9.4/dict.c	2016-05-21 20:49:02.000000000 -0500
++++ libxml/dict.c	2016-08-14 16:54:52.529789995 -0500
 @@ -48,7 +48,7 @@
  #else
  #ifdef HAVE_INTTYPES_H
@@ -29,9 +29,9 @@ diff -r -u libxml2-2.9.3/dict.c libxml/dict.c
  	    goto found_pool;
  	if (pool->size > size) size = pool->size;
          limit += pool->size;
-diff -r -u libxml2-2.9.3/encoding.c libxml/encoding.c
---- libxml2-2.9.3/encoding.c	2015-11-03 01:28:08.000000000 -0600
-+++ libxml/encoding.c	2015-12-12 16:04:52.538108664 -0600
+diff -u -r libxml2-2.9.4/encoding.c libxml/encoding.c
+--- libxml2-2.9.4/encoding.c	2016-05-23 02:25:25.000000000 -0500
++++ libxml/encoding.c	2016-08-14 16:54:52.531400267 -0500
 @@ -2402,6 +2402,7 @@
   *     -2 if the transcoding fails (for *in is not valid utf8 string or
   *        the result of transformation can't fit into the encoding we want), or
@@ -49,9 +49,9 @@ diff -r -u libxml2-2.9.3/encoding.c libxml/encoding.c
  /**
   * xmlCharEncCloseFunc:
   * @handler:	char enconding transformation data structure
-diff -r -u libxml2-2.9.3/include/libxml/xmlversion.h libxml/include/libxml/xmlversion.h
---- libxml2-2.9.3/include/libxml/xmlversion.h	2015-11-20 03:49:39.000000000 -0600
-+++ libxml/include/libxml/xmlversion.h	2015-12-12 16:04:52.545913148 -0600
+diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlversion.h
+--- libxml2-2.9.4/include/libxml/xmlversion.h	2016-05-23 03:00:40.000000000 -0500
++++ libxml/include/libxml/xmlversion.h	2016-08-14 16:54:52.539661426 -0500
 @@ -10,6 +10,13 @@
  #ifndef __XML_VERSION_H__
  #define __XML_VERSION_H__
@@ -309,9 +309,9 @@ diff -r -u libxml2-2.9.3/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_LZMA_ENABLED
  #endif
  
-diff -r -u libxml2-2.9.3/include/win32config.h libxml/include/win32config.h
---- libxml2-2.9.3/include/win32config.h	2015-11-03 01:28:08.000000000 -0600
-+++ libxml/include/win32config.h	2015-12-12 16:04:52.553231759 -0600
+diff -u -r libxml2-2.9.4/include/win32config.h libxml/include/win32config.h
+--- libxml2-2.9.4/include/win32config.h	2016-02-09 04:17:32.000000000 -0600
++++ libxml/include/win32config.h	2016-08-14 16:54:52.539875261 -0500
 @@ -101,7 +101,9 @@
  #define snprintf _snprintf
  #endif
@@ -323,10 +323,10 @@ diff -r -u libxml2-2.9.3/include/win32config.h libxml/include/win32config.h
  #endif
  #elif defined(__MINGW32__)
  #define mkdir(p,m) _mkdir(p)
-diff -r -u libxml2-2.9.3/libxml.h libxml/libxml.h
---- libxml2-2.9.3/libxml.h	2015-05-06 07:04:36.000000000 -0500
-+++ libxml/libxml.h	2015-12-12 16:04:52.558919832 -0600
-@@ -106,7 +106,7 @@
+diff -u -r libxml2-2.9.4/libxml.h libxml/libxml.h
+--- libxml2-2.9.4/libxml.h	2016-05-23 02:25:25.000000000 -0500
++++ libxml/libxml.h	2016-08-14 16:54:52.540076398 -0500
+@@ -109,7 +109,7 @@
  #endif
  #endif
  #endif
@@ -335,9 +335,10 @@ diff -r -u libxml2-2.9.3/libxml.h libxml/libxml.h
  #  define LIBXML_STATIC
  #endif
  #endif /* ! __XML_LIBXML_H__ */
-diff -r -u libxml2-2.9.3/nanohttp.c libxml/nanohttp.c
---- libxml2-2.9.3/nanohttp.c	2015-11-03 01:28:08.000000000 -0600
-+++ libxml/nanohttp.c	2015-12-12 16:04:52.566606322 -0600
+Only in libxml: libxml.h.orig
+diff -u -r libxml2-2.9.4/nanohttp.c libxml/nanohttp.c
+--- libxml2-2.9.4/nanohttp.c	2016-02-09 04:17:33.000000000 -0600
++++ libxml/nanohttp.c	2016-08-14 16:54:52.540751638 -0500
 @@ -1038,16 +1038,18 @@
  static SOCKET
  xmlNanoHTTPConnectHost(const char *host, int port)
@@ -359,9 +360,9 @@ diff -r -u libxml2-2.9.3/nanohttp.c libxml/nanohttp.c
      SOCKET s;
  
      memset (&sockin, 0, sizeof(sockin));
-diff -r -u libxml2-2.9.3/parser.c libxml/parser.c
---- libxml2-2.9.3/parser.c	2015-11-20 01:56:41.000000000 -0600
-+++ libxml/parser.c	2015-12-12 16:04:52.570433850 -0600
+diff -u -r libxml2-2.9.4/parser.c libxml/parser.c
+--- libxml2-2.9.4/parser.c	2016-05-23 02:25:25.000000000 -0500
++++ libxml/parser.c	2016-08-14 16:54:52.544666831 -0500
 @@ -33,7 +33,7 @@
  #define IN_LIBXML
  #include "libxml.h"
@@ -371,9 +372,9 @@ diff -r -u libxml2-2.9.3/parser.c libxml/parser.c
  #define XML_DIR_SEP '\\'
  #else
  #define XML_DIR_SEP '/'
-diff -r -u libxml2-2.9.3/parserInternals.c libxml/parserInternals.c
---- libxml2-2.9.3/parserInternals.c	2015-11-20 01:18:21.000000000 -0600
-+++ libxml/parserInternals.c	2015-12-12 16:04:52.571188365 -0600
+diff -u -r libxml2-2.9.4/parserInternals.c libxml/parserInternals.c
+--- libxml2-2.9.4/parserInternals.c	2016-05-23 02:25:25.000000000 -0500
++++ libxml/parserInternals.c	2016-08-14 16:54:52.545515759 -0500
 @@ -10,7 +10,7 @@
  #define IN_LIBXML
  #include "libxml.h"
@@ -383,9 +384,9 @@ diff -r -u libxml2-2.9.3/parserInternals.c libxml/parserInternals.c
  #define XML_DIR_SEP '\\'
  #else
  #define XML_DIR_SEP '/'
-diff -r -u libxml2-2.9.3/save.h libxml/save.h
---- libxml2-2.9.3/save.h	2015-05-06 07:04:36.000000000 -0500
-+++ libxml/save.h	2015-12-12 16:04:52.574886866 -0600
+diff -u -r libxml2-2.9.4/save.h libxml/save.h
+--- libxml2-2.9.4/save.h	2016-02-09 04:17:34.000000000 -0600
++++ libxml/save.h	2016-08-14 16:54:52.550073411 -0500
 @@ -25,8 +25,8 @@
  void xmlBufDumpElementDecl(xmlBufPtr buf, xmlElementPtr elem);
  void xmlBufDumpAttributeDecl(xmlBufPtr buf, xmlAttributePtr attr);
@@ -396,9 +397,9 @@ diff -r -u libxml2-2.9.3/save.h libxml/save.h
  
  #ifdef __cplusplus
  }
-diff -r -u libxml2-2.9.3/timsort.h libxml/timsort.h
---- libxml2-2.9.3/timsort.h	2015-11-03 02:13:42.000000000 -0600
-+++ libxml/timsort.h	2015-12-12 16:04:52.575148423 -0600
+diff -u -r libxml2-2.9.4/timsort.h libxml/timsort.h
+--- libxml2-2.9.4/timsort.h	2016-02-09 04:17:34.000000000 -0600
++++ libxml/timsort.h	2016-08-14 16:54:52.550326647 -0500
 @@ -24,7 +24,7 @@
  #else
  #ifdef HAVE_INTTYPES_H
