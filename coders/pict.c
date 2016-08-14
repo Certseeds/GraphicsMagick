@@ -1232,8 +1232,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               if ((code == 0x9a) || (code == 0x9b) ||
                   (bytes_per_line & 0x8000))
                 (void) CompositeImage(image,CopyCompositeOp,tile_image,
-                   destination.left,destination.top);
-                DestroyImage(tile_image);
+                                      destination.left,destination.top);
+            DestroyImage(tile_image);
             if (destination.bottom != (long) image->rows)
               if (!MagickMonitorFormatted(destination.bottom,image->rows,&image->exception,
                                           LoadImageText,image->filename,
