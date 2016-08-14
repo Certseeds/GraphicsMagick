@@ -1,5 +1,7 @@
 2016-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* png: Update bundled libpng to release 1.6.24.
+
 	* coders/jpeg.c (ReadJPEGImage): Log setting resolution and
 	resolution units due to JFIF marker.
 
