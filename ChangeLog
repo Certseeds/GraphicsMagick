@@ -1,5 +1,7 @@
 2016-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* webp: Updated bundled libwebp to release 0.5.1.
+
 	* libxml: Updated bundled libxml2 to release 2.9.4.
 
 	* lcms: Updated bundled lcms2 to release 2.8.
