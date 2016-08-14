@@ -1,3 +1,11 @@
+2016-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Log setting resolution and
+	resolution units due to JFIF marker.
+
+	* coders/sgi.c (SGIDecode): Fix integer overflow of size type in
+	Win64 build where sizeof(long) < sizeof(size_t).
+
 2016-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders, magick: Compile clean using GCC with -std=c90.

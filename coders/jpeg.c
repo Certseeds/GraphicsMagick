@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2013 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -44,6 +44,7 @@
 #include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/enum_strings.h"
 #include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
@@ -1098,6 +1099,12 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
             image->units=PixelsPerInchResolution;
           if (jpeg_info.density_unit == 2)
             image->units=PixelsPerCentimeterResolution;
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Image resolution set to %gx%g %s",
+                                  image->x_resolution,
+                                  image->y_resolution,
+                                  ResolutionTypeToString(image->units));
         }
     }
   /*
