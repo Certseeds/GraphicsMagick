@@ -1,3 +1,10 @@
+2016-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* lcms/src/cmstypes.c (Type_MLU_Read): "Added an extra check to
+	MLU bounds", change based on github mm2/Little-CMS commit
+	5ca71a7bc18b6897ab21d815d15e218e204581e2 and announced to the
+	oss-security list by Ibrahim M. El-Sayed on Mon, 15 Aug 2016.
+
 2016-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* webp: Updated bundled libwebp to release 0.5.1.
