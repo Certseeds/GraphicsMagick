@@ -1,3 +1,10 @@
+2016-08-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
+	overflow.  TIFF sized attibutes were not being properly copied to
+	a null-terminated string if the value was not null terminated.
+	Problem was reported by Agostino Sarubbo on August 18, 2016.
+
 2016-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* lcms/src/cmstypes.c (Type_MLU_Read): "Added an extra check to
