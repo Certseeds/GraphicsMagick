@@ -1,3 +1,9 @@
+2016-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/rle.c (ReadRLEImage): Reject truncated/absurd Utah RLE
+	files. Problem was reported by Agostino Sarubbo on August 19,
+	2016.
+
 2016-08-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
