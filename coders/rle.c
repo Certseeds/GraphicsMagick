@@ -339,6 +339,22 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (EOFBlob(image))
       ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
+    if (image->matte)
+      number_planes++;
+
+    /*
+      Rationalize pixels with file size
+    */
+    if ((file_size == 0) ||
+        ((((double) image->columns*image->rows*number_planes*
+           rle_header.Pixelbits/8)/file_size) > 254.0))
+      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                              image);
+
+    if ((double) number_colormaps*map_length > file_size)
+      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                              image);
+
     colormap=(unsigned char *) NULL;
     colormap_entries=0;
     if (number_colormaps != 0)
@@ -355,7 +371,12 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         p=colormap; /* unsigned char * */
         for (i=0; i < number_colormaps; i++)
           for (x=0; x < map_length; x++)
-            *p++=(ReadBlobLSBShort(image) >> 8);
+            {
+              if (EOFBlob(image))
+                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                        image);
+              *p++=(ReadBlobLSBShort(image) >> 8);
+            }
         colormap_entries=number_colormaps*map_length;
       }
     if (rle_header.Flags & 0x08)
@@ -391,18 +412,6 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowRLEReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-
-    if (image->matte)
-      number_planes++;
-
-    /*
-      Rationalize pixels with file size
-    */
-    if ((file_size == 0) ||
-        ((((double) image->columns*image->rows*number_planes*
-           rle_header.Pixelbits/8)/file_size) > 254.0))
-      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
-                              image);
 
     /*
       Allocate RLE pixels.
