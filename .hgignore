@@ -140,6 +140,8 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/bin/IM_MOD.+
 ^VisualMagick/bin/analyze\.dll
 ^VisualMagick/lib/analyze\.exp
+^VisualMagick/Release/.*
+^VisualMagick/Debug/.*
 
 ^PerlMagick/Graphics-Magick\.ppd
 ^PerlMagick/Graphics-Magick\.tar\.gz
