@@ -107,6 +107,7 @@ www/Magick\+\+/ChangeLog.rst
 # Microsoft Visual Studio
 ^wmf/wmfconfig\.h
 ^VisualMagick/All/All.vcproj
+^VisualMagick/All/All.vcxproj
 ^VisualMagick/.*/BuildLog.htm
 ^VisualMagick/.*CORE_DB_.+_\.dll
 ^VisualMagick/.*CORE_DB_.+_\.exp
@@ -129,6 +130,7 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/.+\.res
 ^VisualMagick/.+\.rsp
 ^VisualMagick/.+\.sln
+^VisualMagick/.+\.vcxproj\.filters
 ^VisualMagick/UpgradeLog.*\.XML
 ^VisualMagick/_UpgradeReport_Files
 ^VisualMagick/bin/CORE_.+
