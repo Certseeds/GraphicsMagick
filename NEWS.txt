@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on August 6, 2016
+This file was last updated on August 21, 2016
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -24,13 +24,21 @@ Special Issues:
 
 Security Fixes:
 
-* SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
-  the MVG rendering code (also impacts SVG).
-
 * EscapeParenthesis(): I was notified by Gustavo Grieco of a heap
   overflow in EscapeParenthesis() used in the text annotation code.
   While not being able to reproduce the issue, the implementation of
   this function is completely redone.
+
+* Utah RLE: Reject truncated/absurd files which caused huge memory
+  allocations and/or consumed huge CPU.  Problem was reported by
+  Agostino Sarubbo based on testing with AFL.
+
+* SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
+  the MVG rendering code (also impacts SVG).
+
+* TIFF: Fix heap buffer read overflow while copying sized TIFF
+  attributes.  Problem was reported by Agostino Sarubbo based on
+  testing with AFL.
 
 Bug fixes:
 
@@ -60,11 +68,22 @@ New Features:
 
 Feature improvements:
 
-* None
+* ElapsedTime(): Use clock_gettime() (when available with default
+  linkage) to obtain elapsed time.
+
+* DescribeImage(): Provide 6 digits of seconds precision in in elapsed
+  time output.  Previously the resolution was rounded up to a full
+  second.
 
 Windows Delegate Updates/Additions:
 
-* None
+* webp: Updated bundled libwebp to release 0.5.1.
+
+* libxml: Updated bundled libxml2 to release 2.9.4.
+
+* lcms: Updated bundled lcms2 to release 2.8.
+
+* png: Update bundled libpng to release 1.6.24.
 
 Build Changes:
 
@@ -75,6 +94,10 @@ Behavior Changes:
 
 * SVG: Some SVG files may be rejected due to absurdly large gradient
   requests.
+
+* The 'identify' and 'info' functionality only shows the pixel read
+  rate if image was not read in 'ping' mode. Provide 6 digits of
+  seconds precision in in elapsed time output.
 
 1.3.24 (May 30, 2016)
 ==========================

@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated on August 6, 2016</p>
+<p>This file was last updated on August 21, 2016</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file for full details.</p>
@@ -83,12 +83,18 @@ ChangeLog file for full details.</p>
 </ul>
 <p>Security Fixes:</p>
 <ul class="simple">
-<li>SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
-the MVG rendering code (also impacts SVG).</li>
 <li>EscapeParenthesis(): I was notified by Gustavo Grieco of a heap
 overflow in EscapeParenthesis() used in the text annotation code.
 While not being able to reproduce the issue, the implementation of
 this function is completely redone.</li>
+<li>Utah RLE: Reject truncated/absurd files which caused huge memory
+allocations and/or consumed huge CPU.  Problem was reported by
+Agostino Sarubbo based on testing with AFL.</li>
+<li>SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
+the MVG rendering code (also impacts SVG).</li>
+<li>TIFF: Fix heap buffer read overflow while copying sized TIFF
+attributes.  Problem was reported by Agostino Sarubbo based on
+testing with AFL.</li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
@@ -115,11 +121,18 @@ system.</li>
 </ul>
 <p>Feature improvements:</p>
 <ul class="simple">
-<li>None</li>
+<li>ElapsedTime(): Use clock_gettime() (when available with default
+linkage) to obtain elapsed time.</li>
+<li>DescribeImage(): Provide 6 digits of seconds precision in in elapsed
+time output.  Previously the resolution was rounded up to a full
+second.</li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
-<li>None</li>
+<li>webp: Updated bundled libwebp to release 0.5.1.</li>
+<li>libxml: Updated bundled libxml2 to release 2.9.4.</li>
+<li>lcms: Updated bundled lcms2 to release 2.8.</li>
+<li>png: Update bundled libpng to release 1.6.24.</li>
 </ul>
 <p>Build Changes:</p>
 <ul class="simple">
@@ -130,6 +143,9 @@ rather than '-lgomp'.</li>
 <ul class="simple">
 <li>SVG: Some SVG files may be rejected due to absurdly large gradient
 requests.</li>
+<li>The 'identify' and 'info' functionality only shows the pixel read
+rate if image was not read in 'ping' mode. Provide 6 digits of
+seconds precision in in elapsed time output.</li>
 </ul>
 </div>
 <div class="section" id="may-30-2016">
