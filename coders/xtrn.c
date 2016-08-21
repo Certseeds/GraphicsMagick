@@ -141,7 +141,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
         **image_info_ptr;
 #endif
 
-      (void) sscanf(clone_info->filename,"%lx,%lx",&param1,&param2);
+      (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x",(MAGICK_SIZE_T *) &param1, (MAGICK_SIZE_T *) &param2);
       image_ptr=(Image **) param2;
       if (*image_ptr != (Image *)NULL)
         image=CloneImage(*image_ptr,0,0,False,&(*image_ptr)->exception);
@@ -162,7 +162,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
       char
         filename[MaxTextExtent];
 
-      (void) sscanf(clone_info->filename,"%lx,%lx,%s",&param1,&param2,&filename);
+      (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x,%s", (MAGICK_SIZE_T *)&param1, (MAGICK_SIZE_T *)&param2,&filename);
       blob_data=(char **) param1;
       blob_length=(size_t *) param2;
       image=BlobToImage(clone_info,*blob_data,*blob_length,exception);
@@ -191,7 +191,8 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
         filename[MaxTextExtent];
 
       filename[0] = '\0';
-      (void) sscanf(clone_info->filename,"%lx,%s",&param1,&filename);
+
+      (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%s", (MAGICK_SIZE_T *)&param1,&filename);
       hr = S_OK;
       pSafeArray = (SAFEARRAY *) param1;
       if (pSafeArray)
@@ -428,7 +429,7 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
       clone_info=CloneImageInfo(image_info);
       if (clone_info->filename[0])
         {
-          (void) sscanf(clone_info->filename,"%lx,%lx",&param1,&param2);
+          (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x", (MAGICK_SIZE_T *)&param1, (MAGICK_SIZE_T *)&param2);
           image_info_ptr=(ImageInfo **) param1;
           image_ptr=(Image **) param2;
           if ((image_info_ptr != (ImageInfo **) NULL) &&
@@ -456,8 +457,8 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
       clone_info=CloneImageInfo(image_info);
       if (clone_info->filename[0])
         {
-          (void) sscanf(clone_info->filename,"%lx,%lx,%s",
-			&param1,&param2,&filename);
+          (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x,%s",
+	      (MAGICK_SIZE_T *)&param1, (MAGICK_SIZE_T *)&param2,&filename);
 
           blob_data=(char **) param1;
           blob_length=(size_t *) param2;
@@ -499,8 +500,8 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
       clone_info=CloneImageInfo(image_info);
       if (clone_info->filename[0])
         {
-          (void) sscanf(clone_info->filename,"%lx,%s",
-			&param1,&filename);
+          (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%s",
+	      (MAGICK_SIZE_T *)&param1,&filename);
 
           image->client_data=param1;
 

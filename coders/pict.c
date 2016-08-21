@@ -1813,7 +1813,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlobMSBShort(image,PictPixmapOp);
       (void) WriteBlobMSBLong(image,(unsigned long) base_address);
     }
-  (void) WriteBlobMSBShort(image,row_bytes | 0x8000);
+  (void) WriteBlobMSBShort(image,(unsigned short) (row_bytes | 0x8000));
   (void) WriteBlobMSBShort(image,bounds.top);
   (void) WriteBlobMSBShort(image,bounds.left);
   (void) WriteBlobMSBShort(image,bounds.bottom);
