@@ -261,7 +261,7 @@ static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,
   return(value);
 }
 
-static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
+static char **GetStyleTokens(void *context,const char *text,size_t *number_tokens)
 {
   char
     **tokens;
@@ -270,7 +270,7 @@ static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
     *p,
     *q;
 
-  register long
+  register size_t
     i;
 
   SVGInfo
@@ -315,7 +315,7 @@ static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
 }
 
 static char **GetTransformTokens(void *context,const char *text,
-  int *number_tokens)
+  size_t *number_tokens)
 {
   char
     **tokens;
@@ -708,13 +708,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
     *keyword = NULL,
     *value = NULL;
 
-  int
+  size_t
     number_tokens = 0;
 
   SVGInfo
     *svg_info;
 
-  register long
+  size_t
     i,
     j;
 
