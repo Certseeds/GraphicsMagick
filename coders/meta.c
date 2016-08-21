@@ -308,7 +308,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
   size_t
     inputlen = BUFFER_SZ;
 
-  long
+  ssize_t
     savedolen = 0L,
     outputlen = 0L;
 
@@ -589,7 +589,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
   size_t
     inputlen = BUFFER_SZ;
 
-  long
+  ssize_t
     savedolen = 0L,
     outputlen = 0L;
 

@@ -30,6 +30,9 @@
 # pragma warning(disable : 4133)
 # pragma warning(disable : 4146)
 # pragma warning(disable : 4305)
+#if defined(WIN64)
+#  pragma warning(disable : 4267) /* conversion from 'size_t' to 'foo', possible loss of data */
+#endif
 #endif
 
 #ifndef _GNU_SOURCE

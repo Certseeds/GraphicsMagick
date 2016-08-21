@@ -127,5 +127,14 @@ static int isnan (double d) {
 #define TRUE (!(FALSE))
 #endif
 
+/* Will libxml2 ever address 64-bit compilation under Windows where sizeof(size_t) > sizeof(long)? */
+#if defined(WIN64)
+#  if defined(_MSC_VER)
+#    pragma warning(disable : 4267) /* conversion from 'size_t' to 'foo', possible loss of data */
+#    pragma warning(disable : 4244) /* conversion from __int64' to 'foo', possible loss of data */
+#    pragma warning(disable : 4312) /* conversion from 'long' to 'void *' of greater size */
+#  endif
+#endif
+
 #endif /* __LIBXML_WIN32_CONFIG__ */
 
