@@ -130,6 +130,7 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/.+\.res
 ^VisualMagick/.+\.rsp
 ^VisualMagick/.+\.sln
+^VisualMagick/.+\.vcxproj
 ^VisualMagick/.+\.vcxproj\.filters
 ^VisualMagick/UpgradeLog.*\.XML
 ^VisualMagick/_UpgradeReport_Files
