@@ -1,3 +1,9 @@
+2016-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/studio.h (MAGICK_CACHE_LINE_SIZE): Apply patch from
+	Gentoo Linux to increase MAGICK_CACHE_LINE_SIZE to 128 when
+	__powerpc__ is defined.
+
 2016-08-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated with latest changes.
