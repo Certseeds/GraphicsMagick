@@ -7,8 +7,8 @@
 //
 // Configure.cpp : Defines the class behaviors for the application.
 //
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_NONSTDC_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#define _CRT_NONSTDC_NO_WARNINGS 1
 
 #include "stdafx.h"
 #include "configure.h"
