@@ -27,7 +27,7 @@ GraphicsMagick Programming Interfaces
 .. _`Lua` : http://github.com/clementfarabet/graphicsmagick
 .. _PHP : http://pecl.php.net/package/gmagick
 .. _Perl : perl.html
-.. _Python: https://bitbucket.org/hhatto/pgmagick/
+.. _Python: https://github.com/hhatto/pgmagick
 .. _Ruby : http://rmagick.rubyforge.org/
 .. _Tcl/Tk : http://www.graphicsmagick.org/TclMagick/doc/
 .. _Windows OLE : ImageMagickObject.html

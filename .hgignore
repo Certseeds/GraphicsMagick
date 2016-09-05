@@ -107,6 +107,7 @@ www/Magick\+\+/ChangeLog.rst
 # Microsoft Visual Studio
 ^wmf/wmfconfig\.h
 ^VisualMagick/All/All.vcproj
+^VisualMagick/All/All.vcxproj
 ^VisualMagick/.*/BuildLog.htm
 ^VisualMagick/.*CORE_DB_.+_\.dll
 ^VisualMagick/.*CORE_DB_.+_\.exp
@@ -126,18 +127,27 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/.+\.idb
 ^VisualMagick/.+\.intermediate\.manifest
 ^VisualMagick/.+\.ncb
+^VisualMagick/.+\.pch
 ^VisualMagick/.+\.res
 ^VisualMagick/.+\.rsp
 ^VisualMagick/.+\.sln
-^VisualMagick/UpgradeLog.*\.XML
-^VisualMagick/_UpgradeReport_Files
+^VisualMagick/.+\.vcxproj
+^VisualMagick/.+\.vcxproj\.filters
+^VisualMagick/.*UpgradeLog.*\..*
+^VisualMagick/.*UpgradeReport.*
+^VisualMagick/.+\.VC\.db
 ^VisualMagick/bin/CORE_.+
 ^VisualMagick/bin/IM_MOD.+
 ^VisualMagick/bin/analyze\.dll
 ^VisualMagick/lib/analyze\.exp
+^VisualMagick/Release/.*
+^VisualMagick/Debug/.*
+^VisualMagick/configure/Release/.*
+^VisualMagick/configure/Debug/.*
 
 ^PerlMagick/Graphics-Magick\.ppd
 ^PerlMagick/Graphics-Magick\.tar\.gz
+^PerlMagick/MYMETA\.yml
 ^PerlMagick/Magick\.bs
 ^PerlMagick/Magick\.c
 ^PerlMagick/Magick\.def

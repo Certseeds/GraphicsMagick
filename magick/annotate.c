@@ -1239,10 +1239,10 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
     glyph.origin=origin;
     glyph.image=0;
     ft_status=FT_Load_Glyph(face,glyph.id,FT_LOAD_DEFAULT);
-    if (ft_status != False)
+    if (ft_status != False) /* 0 means success */
       continue;
     ft_status=FT_Get_Glyph(face->glyph,&glyph.image);
-    if (ft_status != False)
+    if (ft_status != False) /* 0 means success */
       continue;
 #if 0
     /*
@@ -1436,11 +1436,14 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
 }
 #else
 static unsigned int RenderFreetype(Image *image,const DrawInfo *draw_info,
-  const char * ARGUNUSED(encoding),const PointInfo * ARGUNUSED(offset),
-  TypeMetric * ARGUNUSED(metrics))
+  const char *encoding,const PointInfo *offset,
+  TypeMetric *metrics)
 {
   ThrowBinaryException(MissingDelegateError,FreeTypeLibraryIsNotAvailable,
-    draw_info->font)
+                       draw_info->font);
+  ARG_NOT_USED(encoding);
+  ARG_NOT_USED(offset);
+  ARG_NOT_USED(metrics);
 }
 #endif
 
@@ -1479,34 +1482,46 @@ static unsigned int RenderFreetype(Image *image,const DrawInfo *draw_info,
 %
 */
 
-static char *EscapeParenthesis(const char *text)
+static char *EscapeParenthesis(const char *source)
 {
   char
-    *buffer;
+    *destination;
 
   register char
+    *q;
+
+  register const char
     *p;
 
-  register long
-    i;
+  size_t
+    length;
 
-  unsigned long
-    escapes;
+  assert(source != (const char *) NULL);
 
-  escapes=0;
-  buffer=AllocateString(text);
-  p=buffer;
-  for (i=0; i < (long) Min(strlen(text),(MaxTextExtent-escapes-1)); i++)
-  {
-    if ((text[i] == '(') || (text[i] == ')'))
-      {
-        *p++='\\';
-        escapes++;
-      }
-    *p++=text[i];
-  }
-  *p='\0';
-  return(buffer);
+  /*
+    Use dry-run method to compute required string length.
+  */
+  length=0;
+  for (p=source; *p; p++)
+    {
+      if ((*p == '(') || (*p == ')'))
+        length++;
+      length++;
+    }
+  destination=MagickAllocateMemory(char *,length+1);
+  if (destination == (char *) NULL)
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+      UnableToEscapeString);
+  *destination='\0';
+  q=destination;
+  for (p=source; *p; p++)
+    {
+      if ((*p == '(') || (*p == ')'))
+        *q++= '\\';
+      *q++=(*p);
+    }
+  *q=0;
+  return(destination);
 }
 
 static MagickPassFail RenderPostscript(Image *image,const DrawInfo *draw_info,
@@ -1898,8 +1913,10 @@ static MagickPassFail RenderX11(Image *image,const DrawInfo *draw_info,
 }
 #else
 static MagickPassFail RenderX11(Image *image,const DrawInfo *draw_info,
-  const PointInfo *ARGUNUSED(offset),TypeMetric *ARGUNUSED(metrics))
+  const PointInfo *offset,TypeMetric *metrics)
 {
+  ARG_NOT_USED(offset);
+  ARG_NOT_USED(metrics);
   ThrowBinaryException(MissingDelegateError,XWindowLibraryIsNotAvailable,
     draw_info->font);
 }

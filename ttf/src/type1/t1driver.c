@@ -27,6 +27,15 @@
 #include "t1afm.h"
 #endif
 
+/* Mask warnings for WIN64 */
+#if defined(WIN64)
+#  if defined(_MSC_VER)
+#    pragma warning(disable : 4267) /* conversion from 'size_t' to 'foo', possible loss of data */
+#    pragma warning(disable : 4244) /* conversion from __int64' to 'foo', possible loss of data */
+#    pragma warning(disable : 4312) /* conversion from 'long' to 'void *' of greater size */
+#  endif
+#endif
+
 #include FT_INTERNAL_DEBUG_H
 #include FT_INTERNAL_STREAM_H
 

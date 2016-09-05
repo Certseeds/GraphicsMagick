@@ -257,6 +257,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     number_pixels,
     number_planes;
 
+  magick_off_t
+    file_size;
+
   /*
     Open image file.
   */
@@ -275,6 +278,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   count=ReadBlob(image,2,(char *) &rle_header.Magic);
   if ((count != 2) || (memcmp(&rle_header.Magic,"\122\314",2) != 0))
     ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
+  file_size=GetBlobSize(image);
   do
   {
     /*
@@ -335,6 +339,22 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (EOFBlob(image))
       ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
+    if (image->matte)
+      number_planes++;
+
+    /*
+      Rationalize pixels with file size
+    */
+    if ((file_size == 0) ||
+        ((((double) image->columns*image->rows*number_planes*
+           rle_header.Pixelbits/8)/file_size) > 254.0))
+      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                              image);
+
+    if ((double) number_colormaps*map_length > file_size)
+      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                              image);
+
     colormap=(unsigned char *) NULL;
     colormap_entries=0;
     if (number_colormaps != 0)
@@ -351,7 +371,12 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         p=colormap; /* unsigned char * */
         for (i=0; i < number_colormaps; i++)
           for (x=0; x < map_length; x++)
-            *p++=(ReadBlobLSBShort(image) >> 8);
+            {
+              if (EOFBlob(image))
+                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                        image);
+              *p++=(ReadBlobLSBShort(image) >> 8);
+            }
         colormap_entries=number_colormaps*map_length;
       }
     if (rle_header.Flags & 0x08)
@@ -391,8 +416,6 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Allocate RLE pixels.
     */
-    if (image->matte)
-      number_planes++;
     number_pixels=image->columns*image->rows;
     if ((image->columns != 0) &&
         (image->rows != number_pixels/image->columns))

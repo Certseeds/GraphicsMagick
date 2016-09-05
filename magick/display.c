@@ -10426,11 +10426,12 @@ static unsigned int MagickXSaveImage(Display *display,MagickXResourceInfo *resou
 extern "C" {
 #endif
 
-static int MagickXPredicate(Display *ARGUNUSED(display),XEvent *event,char *data)
+static int MagickXPredicate(Display *display,XEvent *event,char *data)
 {
   register MagickXWindows
     *windows;
 
+  ARG_NOT_USED(display);
   windows=(MagickXWindows *) data;
   if ((event->type == ClientMessage) &&
       (event->xclient.window == windows->image.id))

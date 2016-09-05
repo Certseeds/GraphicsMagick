@@ -1232,8 +1232,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               if ((code == 0x9a) || (code == 0x9b) ||
                   (bytes_per_line & 0x8000))
                 (void) CompositeImage(image,CopyCompositeOp,tile_image,
-                   destination.left,destination.top);
-                DestroyImage(tile_image);
+                                      destination.left,destination.top);
+            DestroyImage(tile_image);
             if (destination.bottom != (long) image->rows)
               if (!MagickMonitorFormatted(destination.bottom,image->rows,&image->exception,
                                           LoadImageText,image->filename,
@@ -1813,7 +1813,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlobMSBShort(image,PictPixmapOp);
       (void) WriteBlobMSBLong(image,(unsigned long) base_address);
     }
-  (void) WriteBlobMSBShort(image,row_bytes | 0x8000);
+  (void) WriteBlobMSBShort(image,(unsigned short) (row_bytes | 0x8000));
   (void) WriteBlobMSBShort(image,bounds.top);
   (void) WriteBlobMSBShort(image,bounds.left);
   (void) WriteBlobMSBShort(image,bounds.bottom);

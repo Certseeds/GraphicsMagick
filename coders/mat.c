@@ -540,7 +540,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
   if(CheckImagePixelLimits(image, exception) != MagickPass)
   {
     return NULL;
-    //ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+    /* ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image); */
   }
 
   /* If ping is true, then only set image size and colors without reading any image data. */
@@ -578,15 +578,15 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     q = SetImagePixels(image, 0, HDR.nCols-i-1, image->columns, 1);
     if(q == (PixelPacket *)NULL)
     {
-       //if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-       //       "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1));
+      /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
+      /*        "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
       goto done_reading;		/* Skip image rotation, when cannot set image pixels */	  
     }
 
     if(ReadBlob(image,ldblk,(char *)BImgBuff) != (size_t)ldblk)
     {
-      //if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-      //        "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
+      /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
+      /*         "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
       goto ExitLoop;
     }
 
@@ -598,8 +598,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
     if(!SyncImagePixels(image))
     {
-	//if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-        //    "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
+	/* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
+        /*     "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
 	goto ExitLoop;
     }
   }

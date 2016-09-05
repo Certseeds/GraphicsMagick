@@ -1172,7 +1172,7 @@ AC_SUBST(MAGICK_SSIZE_T_F)
 ########
 GM_FUNC_MMAP_FILEIO
 AC_CHECK_FUNCS([atoll CryptGenRandom \
-  ctime_r _exit fcntl fstatvfs ftime getexecname \
+  clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
@@ -1454,6 +1454,12 @@ then
     if test "x$LIB_OMP" = x ; then
       if $CC --version 2>&1 | grep Open64 > /dev/null ; then
         AC_CHECK_LIB(openmp,omp_get_num_procs,LIB_OMP="-lopenmp",,)
+      fi
+    fi
+    # Clang (passes for GCC but uses different OpenMP implementation)
+    if test "x$LIB_OMP" = x ; then
+      if $CC --version 2>&1 | grep clang > /dev/null ; then
+        AC_CHECK_LIB(omp,GOMP_parallel_start,LIB_OMP="-lomp",,)
       fi
     fi
     # GCC

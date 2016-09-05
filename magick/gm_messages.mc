@@ -1169,6 +1169,12 @@ Non-conforming drawing primitive definition
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorPrimitiveArithmeticOverflow
+Language        = English
+primitive arithmetic overflow
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorTooManyCoordinates
 Language        = English
 too many coordinates
@@ -1184,6 +1190,12 @@ MessageId       = +1
 SymbolicName    = DrawErrorUnbalancedGraphicContextPushPop
 Language        = English
 unbalanced graphic context push-pop
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorUnreasonableGradientSize
+Language        = English
+unreasonable gradient image size
 .
 
 MessageId       = +1

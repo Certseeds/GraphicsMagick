@@ -960,7 +960,7 @@ ModuleExport void UnregisterPCDImage(void)
 %
 */
 
-static unsigned int WritePCDTile(const ImageInfo *ARGUNUSED(image_info),
+static unsigned int WritePCDTile(const ImageInfo *image_info,
   Image *image,char *page_geometry,char *tile_geometry)
 {
   Image
@@ -980,6 +980,8 @@ static unsigned int WritePCDTile(const ImageInfo *ARGUNUSED(image_info),
   register long
     i,
     x;
+
+  ARG_NOT_USED(image_info);
 
   /*
     Scale image to tile size.

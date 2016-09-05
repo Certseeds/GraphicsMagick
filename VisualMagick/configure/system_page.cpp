@@ -1,5 +1,7 @@
 // system_page.cpp : implementation file
 //
+#define _CRT_SECURE_NO_WARNINGS 1
+#define _CRT_NONSTDC_NO_WARNINGS 1
 
 #include "stdafx.h"
 #include "configure.h"

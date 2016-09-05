@@ -165,15 +165,16 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
           FormatSize(GetBlobSize(image),format);
           (void) fprintf(file,"%.1024s ",format);
         }
-      (void) fprintf(file,"%0.3fu %ld:%02ld",user_time,
+      (void) fprintf(file,"%0.3fu %ldm:%.6fs",
+                     user_time,
                      (long) (elapsed_time/60.0),
-                     (long) ceil(fmod(elapsed_time,60.0)));
+                     fmod(elapsed_time,60.0));
       /*
         Only display pixel read rate if the time accumulated is at
         least six times the timer's resolution (typically 0.01 on
         Unix).
       */
-      if (elapsed_time >= GetTimerResolution()*6)
+      if (!(image->ping) && (elapsed_time >= GetTimerResolution()*6))
         {
           pixels_per_second=(magick_int64_t) ((double) rows*columns/
                                               elapsed_time);
@@ -889,11 +890,11 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
   */
   if (user_time >= GetTimerResolution())
     (void) fprintf(file,"  User Time: %0.3fu\n",user_time);
-  if (elapsed_time >= GetTimerResolution())
+  if (!(image->ping) && (elapsed_time >= GetTimerResolution()))
     {
-      (void) fprintf(file,"  Elapsed Time: %ld:%02ld\n",
+      (void) fprintf(file,"  Elapsed Time: %ldm:%.6fs\n",
                      (long) (elapsed_time/60.0),
-                     (long) ceil(fmod(elapsed_time,60.0)));
+                     fmod(elapsed_time,60.0));
       pixels_per_second=(magick_int64_t) ((double) image->rows*
                                           image->columns/
                                           (elapsed_time > GetTimerResolution() ?

@@ -394,7 +394,7 @@ Magick::Geometry Magick::Options::page ( void ) const
   if ( _imageInfo->page )
     return Geometry( _imageInfo->page );
 
-    return Geometry();
+  return Geometry();
 }
 
 void Magick::Options::quality ( unsigned int quality_ )

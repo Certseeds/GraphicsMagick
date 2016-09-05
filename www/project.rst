@@ -19,6 +19,9 @@ GraphicsMagick Project Information
 .. _`Mission` : mission.html
 .. _News : NEWS.html
 .. _`Source Control` : Hg.html
+.. _`Security` : security.html
+
+`Security`_ - GraphicsMagick security (and how to report issues).
 
 `Change Logs`_ - Read the detailed change logs to see what changed.
 

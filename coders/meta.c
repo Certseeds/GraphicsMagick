@@ -308,7 +308,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
   size_t
     inputlen = BUFFER_SZ;
 
-  long
+  ssize_t
     savedolen = 0L,
     outputlen = 0L;
 
@@ -589,7 +589,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
   size_t
     inputlen = BUFFER_SZ;
 
-  long
+  ssize_t
     savedolen = 0L,
     outputlen = 0L;
 
@@ -884,11 +884,12 @@ static int jpeg_skip_variable(Image *ifile, Image *ofile)
   return 0;
 }
 
-static int jpeg_skip_variable2(Image *ifile, Image *ARGUNUSED(ofile))
+static int jpeg_skip_variable2(Image *ifile, Image *ofile)
 {
   unsigned int  length;
   int c1,c2;
 
+  ARG_NOT_USED(ofile);
   if ((c1 = ReadBlobByte(ifile)) == EOF) return M_EOI;
   if ((c2 = ReadBlobByte(ifile)) == EOF) return M_EOI;
 

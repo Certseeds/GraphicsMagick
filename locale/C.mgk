@@ -646,6 +646,12 @@
       <Message name="DrawingRecursionDetected">
         drawing recursion detected
       </Message>
+      <Message name="PrimitiveArithmeticOverflow">
+        primitive arithmetic overflow
+      </Message>
+      <Message name="UnreasonableGradientSize">
+        unreasonable gradient image size
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

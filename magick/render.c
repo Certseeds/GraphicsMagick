@@ -647,7 +647,7 @@ LogPathInfo(const PathInfo *path_info)
 }
 
 static PathInfo *
-ConvertPrimitiveToPath(const DrawInfo *ARGUNUSED(draw_info),
+ConvertPrimitiveToPath(const DrawInfo *draw_info,
                        const PrimitiveInfo *primitive_info)
 {
   PathInfo
@@ -667,6 +667,8 @@ ConvertPrimitiveToPath(const DrawInfo *ARGUNUSED(draw_info),
   long
     coordinates,
     start;
+
+  ARG_NOT_USED(draw_info);
 
   /*
     Converts a PrimitiveInfo structure into a vector path structure.
@@ -1734,6 +1736,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   double
     angle,
     factor,
+    points_length,
     primitive_extent;
 
   DrawInfo
@@ -2321,6 +2324,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 if (n <= 0)
                   {
                     ThrowException(&image->exception,DrawError,UnbalancedGraphicContextPushPop,token);
+                    status=MagickFail;
                     break;
                   }
                 if (graphic_context[n]->clip_path != (char *) NULL)
@@ -2448,16 +2452,49 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 */
                 gradient_width=(magick_int64_t) Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
                 gradient_height=(magick_int64_t) Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
-                if ((gradient_width > GetMagickResourceLimit(WidthResource)) ||
-                    (gradient_height > GetMagickResourceLimit(HeightResource)) ||
-                    (gradient_width*gradient_height > GetMagickResourceLimit(PixelsResource)))
+                {
+                  char resource_str[MaxTextExtent];
+                  const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
+                  const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
+                  const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
+                  if ((width_resource_limit > 0) && (gradient_width > width_resource_limit))
+                    {
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", width_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelWidthLimitExceeded,resource_str);
+                      status=MagickFail;
+                      break;
+                    }
+                  if ((hight_resource_limit > 0) && (gradient_height > hight_resource_limit))
+                    {
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", hight_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelHeightLimitExceeded,resource_str);
+                      status=MagickFail;
+                      break;
+                    }
+                  if ((pixels_resource_limit > 0) && (gradient_width*gradient_height > pixels_resource_limit))
+                    {
+                      FormatString(resource_str,"%" MAGICK_INT64_F "d", pixels_resource_limit);
+                      ThrowException(&image->exception,ResourceLimitError,
+                                     ImagePixelLimitExceeded,resource_str);
+                      status=MagickFail;
+                      break;
+                    }
+                }
+                /*
+                  Apply an arbitrary limit to gradient size requests
+                  since gradient images can take a lot of memory.
+                  Some tiny SVGs request huge gradients.  This is here
+                  to avoid denial of service.
+                */
+                if (gradient_width*gradient_height > 5000*5000 /*10000*10000*/)
                   {
-                    status=MagickFail;
-                    break;
-                  }
-                if ((gradient_width > (long) image->columns*4) ||
-                    (gradient_height > (long) image->rows*4))
-                  {
+                    char gradient_size_str[MaxTextExtent];
+                    FormatString(gradient_size_str,"%" MAGICK_INT64_F "dx%" MAGICK_INT64_F "d",
+                                 gradient_width,gradient_height);
+                    ThrowException(&image->exception,DrawError,
+                                   UnreasonableGradientSize,gradient_size_str);
                     status=MagickFail;
                     break;
                   }
@@ -2689,6 +2726,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 		  MagickAllocateArray(double *,(2*x+1),sizeof(double));
                 if (graphic_context[n]->dash_pattern == (double *) NULL)
                   {
+                    status=MagickFail;
                     ThrowException3(&image->exception,ResourceLimitError,
                       MemoryAllocationFailed,UnableToDrawOnImage);
                     break;
@@ -2979,12 +3017,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     /*
       Estimate how many points will be required for the primitive.
     */
-    length=primitive_info[j].coordinates;
+    points_length=primitive_info[j].coordinates;
     switch (primitive_type)
     {
       case RectanglePrimitive:
       {
-        length*=5;
+        points_length*=5;
         break;
       }
       case RoundRectanglePrimitive:
@@ -3000,8 +3038,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         alpha=bounds.x2-bounds.x1;
         beta=bounds.y2-bounds.y1;
         radius=hypot((double) alpha,(double) beta);
-        length*=5;
-        length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
+        points_length*=5;
+        points_length+=2*((size_t) ceil((double) MagickPI*radius))+6*BezierQuantum+360;
         break;
       }
       case BezierPrimitive:
@@ -3009,7 +3047,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (primitive_info[j].coordinates > 107)
           (void) ThrowException(&image->exception,DrawError,
                                 TooManyCoordinates,token);
-        length=primitive_info[j].coordinates*BezierQuantum;
+        points_length=primitive_info[j].coordinates*BezierQuantum;
         break;
       }
       case PathPrimitive:
@@ -3019,7 +3057,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           *t;
 
         MagickGetToken(q,&q,token,token_max_length);
-        length=1;
+        points_length=1;
         t=token;
         for (s=token; *s != '\0'; s=t)
         {
@@ -3033,9 +3071,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               t++;
               continue;
             }
-          length++;
+          points_length++;
         }
-        length=length*BezierQuantum;
+        points_length=points_length*BezierQuantum;
         break;
       }
       case CirclePrimitive:
@@ -3050,19 +3088,40 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         alpha=bounds.x2-bounds.x1;
         beta=bounds.y2-bounds.y1;
         radius=hypot(alpha,beta);
-        length=2*(ceil(MagickPI*radius))+6*BezierQuantum+360;
+        points_length=2*(ceil(MagickPI*radius))+6*BezierQuantum+360;
         break;
       }
       default:
         break;
     }
-    if ((size_t) (i+length) >= number_points)
+
+    if (((size_t) points_length) < points_length)
       {
-        number_points+=length+1;
+        status=MagickFail;
+        ThrowException(&image->exception,DrawError,
+                       PrimitiveArithmeticOverflow,keyword);
+      }
+
+    if (status == MagickFail)
+      break;
+
+    if ((i+points_length) >= number_points)
+      {
+        double new_number_points = ceil(number_points+points_length+1);
+        if (((size_t) new_number_points) != new_number_points)
+          {
+            status=MagickFail;
+            ThrowException3(&image->exception,ResourceLimitError,
+                            MemoryAllocationFailed,UnableToDrawOnImage);
+            break;
+          }
+
+        number_points=new_number_points;
         MagickReallocMemory(PrimitiveInfo *,primitive_info,
                             MagickArraySize(number_points,sizeof(PrimitiveInfo)));
         if (primitive_info == (PrimitiveInfo *) NULL)
           {
+            status=MagickFail;
             ThrowException3(&image->exception,ResourceLimitError,
               MemoryAllocationFailed,UnableToDrawOnImage);
             break;
@@ -3096,7 +3155,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         TraceLine(primitive_info+j,primitive_info[j].point,
-          primitive_info[j+1].point);
+                  primitive_info[j+1].point);
         i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -3306,6 +3365,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         break;
       }
     }
+
     if (primitive_info == (PrimitiveInfo *) NULL)
       break;
     (void) LogMagickEvent(RenderEvent,GetMagickModule(),"  %.*s",(int) (q-p),p);
@@ -3767,7 +3827,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     polygon_info=(const PolygonInfo *) AccessThreadViewData(polygon_set);
     bounds=polygon_info->edges[0].bounds;
 
-    if (0) /* FIXME ??? */
+    if (0) /* DEBUG ??? */
       DrawBoundingRectangles(image,draw_info,polygon_info);
     
     for (i=1; i < polygon_info->number_edges; i++)
@@ -4177,14 +4237,11 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   {
     case PointPrimitive:
     {
-      q=GetImagePixels(image,x,y,1,1);
-      if (q == (PixelPacket *) NULL)
+      if ((q=GetImagePixels(image,x,y,1,1)) != (PixelPacket *) NULL)
         {
-          status=MagickFail;
-          break;
+          *q=draw_info->fill;
+          status&=SyncImagePixels(image);
         }
-      *q=draw_info->fill;
-      status&=SyncImagePixels(image);
       break;
     }
     case ColorPrimitive:
@@ -4194,14 +4251,11 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         case PointMethod:
         default:
         {
-          q=GetImagePixels(image,x,y,1,1);
-          if (q == (PixelPacket *) NULL)
+          if ((q=GetImagePixels(image,x,y,1,1)) != (PixelPacket *) NULL)
             {
-              status=MagickFail;
-              break;
+              *q=draw_info->fill;
+              status&=SyncImagePixels(image);
             }
-          *q=draw_info->fill;
-          status&=SyncImagePixels(image);
           break;
         }
         case ReplaceMethod:
@@ -4214,19 +4268,15 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             target;
 
           color=draw_info->fill;
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
             break;
           pattern=draw_info->fill_pattern;
           for (y=0; y < (long) image->rows; y++)
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
             {
               if (!FuzzyColorMatch(q,&target,image->fuzz))
@@ -4236,11 +4286,10 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
                 }
               if (pattern != (Image *) NULL)
                 {
-                  status&=AcquireOnePixelByReference(pattern,&color,
+                  if (AcquireOnePixelByReference(pattern,&color,
                      (long) (x-pattern->tile_info.x) % pattern->columns,
                      (long) (y-pattern->tile_info.y) % pattern->rows,
-                     &image->exception);
-                  if (status == MagickFail)
+                                                 &image->exception) == MagickFail)
                     break;
                   if (!pattern->matte)
                     color.opacity=OpaqueOpacity;
@@ -4262,9 +4311,8 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             border_color,
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
             break;
           if (primitive_info->method == FillToBorderMethod)
             {
@@ -4281,10 +4329,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
             {
               *q=draw_info->fill;
@@ -4310,10 +4355,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         {
           q=GetImagePixels(image,x,y,1,1);
           if (q == (PixelPacket *) NULL)
-            {
-              status=MagickFail;
-              break;
-            }
+            break;
           q->opacity=TransparentOpacity;
           status&=SyncImagePixels(image);
           break;
@@ -4323,10 +4365,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           PixelPacket
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
-              break;
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
+            break;
           status&=TransparentImage(image,target,TransparentOpacity);
           break;
         }
@@ -4337,10 +4378,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
             border_color,
             target;
 
-          status&=AcquireOnePixelByReference(image,&target,x,y,
-                                             &image->exception);
-          if (status == MagickFail)
-              break;
+          if (AcquireOnePixelByReference(image,&target,x,y,
+                                         &image->exception) == MagickFail)
+            break;
           if (primitive_info->method == FillToBorderMethod)
             {
               border_color=draw_info->border_color;
@@ -4356,10 +4396,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           {
             q=GetImagePixels(image,0,y,image->columns,1);
             if (q == (PixelPacket *) NULL)
-              {
-                status=MagickFail;
-                break;
-              }
+              break;
             for (x=0; x < (long) image->columns; x++)
               {
                 q->opacity=draw_info->fill.opacity;

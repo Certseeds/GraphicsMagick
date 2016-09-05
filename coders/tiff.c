@@ -893,9 +893,9 @@ TIFFGetBlobSize(thandle_t image_handle)
 
 /* Unmap BLOB memory */
 static void
-TIFFUnmapBlob(thandle_t ARGUNUSED(image),
-              tdata_t ARGUNUSED(base),
-              toff_t ARGUNUSED(size))
+TIFFUnmapBlob(thandle_t image,
+              tdata_t base,
+              toff_t size)
 {
 #if LOG_TIFF_BLOB_IO
   Image
@@ -905,6 +905,10 @@ TIFFUnmapBlob(thandle_t ARGUNUSED(image),
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 			  "TIFF unmap blob: base=0x%p size=%" MAGICK_OFF_F "d",
 			  base,(magick_off_t) size);
+#else
+  ARG_NOT_USED(image);
+  ARG_NOT_USED(base);
+  ARG_NOT_USED(size);
 #endif  /* LOG_TIFF_BLOB_IO */
 }
 
@@ -1571,6 +1575,19 @@ DisassociateAlphaRegion(Image *image)
 }
 #endif
 
+/*
+  Copy a possibly unterminated sized string to an image attribute.
+*/
+#define CopySizedFieldToAttribute(key,count,text)                     \
+  do                                                                  \
+    {                                                                 \
+      char _attribute[MaxTextExtent];                                 \
+      (void) memcpy(_attribute,text,Min(sizeof(_attribute),count));   \
+      _attribute[Min(sizeof(_attribute)-1,count)]='\0';                \
+      (void) SetImageAttribute(image,key,_attribute);                 \
+    } while(0);
+    
+
 typedef enum
 {
   ScanLineMethod,            /* Scanline method */
@@ -1630,6 +1647,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     units;
 
   uint32
+    count,
     height,
     rows_per_strip,
     width;
@@ -2033,34 +2051,17 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (TIFFGetField(tiff,TIFFTAG_SOFTWARE,&text) == 1)
         (void) SetImageAttribute(image,"software",text);
 
-      {
-	/*
-	  "Unsupported" tags return two arguments.
-	*/
-
-	uint32
-	  count;
-
-	char attribute[MaxTextExtent];
-
-	if (TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1)
-	  {
-	    (void) strlcpy(attribute,text,Min(sizeof(attribute),(count+1)));
-	    (void) SetImageAttribute(image,"imageid",attribute);
-	  }
-	
-	if (TIFFGetField(tiff,33423,&count,&text) == 1)
-	  {
-	    (void) strlcpy(attribute,text,Min(sizeof(attribute),(count+1)));
-	    (void) SetImageAttribute(image,"kodak-33423",attribute);
-	  }
-	
-	if (TIFFGetField(tiff,36867,&count,&text) == 1)
-	  {
-	    (void) strlcpy(attribute,text,Min(sizeof(attribute),(count+1)));
-	    (void) SetImageAttribute(image,"kodak-36867",attribute);
-	  }
-      }
+      /*
+        "Unsupported" tags return two arguments.
+      */
+      if (TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1)
+        CopySizedFieldToAttribute("imageid",count,text);
+      
+      if (TIFFGetField(tiff,33423,&count,&text) == 1)
+        CopySizedFieldToAttribute("kodak-33423",count,text);
+      
+      if (TIFFGetField(tiff,36867,&count,&text) == 1)
+        CopySizedFieldToAttribute("kodak-36867",count,text);
 
       if ((photometric == PHOTOMETRIC_PALETTE) ||
           ((photometric == PHOTOMETRIC_MINISWHITE ||

@@ -1553,7 +1553,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 	    i=0;
 	    j=0;
 
-            value=(depth <=8 ? 255 : depth <= 16 ? 65535 : 4294967295);
+            value=(depth <=8 ? 255U : depth <= 16 ? 65535U : 4294967295U);
 
 	    j += sprintf(&buffer[j],"%u\n",value);
 	    for (y=0; y < image->rows; y++)
@@ -1643,7 +1643,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 	    i=0;
 	    j=0;
 
-            value=(depth <=8 ? 255 : (depth <= 16 ? 65535 : 4294967295));
+            value=(depth <=8 ? 255U : (depth <= 16 ? 65535U : 4294967295U));
 
 	    j += sprintf(&buffer[j],"%u\n",value);
 	    for (y=0; y < image->rows; y++)

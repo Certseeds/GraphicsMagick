@@ -1,6 +1,148 @@
-2016-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+2016-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* version.sh (PACKAGE_VERSION): Released 1.3.24.
+	* www/index.rst: Update for 1.3.25 release.
+
+	* version.sh: Update library versioning for 1.3.25 release.
+
+	* NEWS.txt: Make sure is up to date.
+
+	* Various fixes for minor issues noticed when compiling under
+	Visual Studio.
+
+2016-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/studio.h (MAGICK_CACHE_LINE_SIZE): Apply patch from
+	Gentoo Linux to increase MAGICK_CACHE_LINE_SIZE to 128 when
+	__powerpc__ is defined.
+
+2016-08-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated with latest changes.
+
+2016-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/rle.c (ReadRLEImage): Reject truncated/absurd Utah RLE
+	files. Problem was reported by Agostino Sarubbo on August 19,
+	2016.
+
+2016-08-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
+	overflow.  TIFF sized attibutes were not being properly copied to
+	a null-terminated string if the value was not null terminated.
+	Problem was reported by Agostino Sarubbo on August 18, 2016.
+
+2016-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* lcms/src/cmstypes.c (Type_MLU_Read): "Added an extra check to
+	MLU bounds", change based on github mm2/Little-CMS commit
+	5ca71a7bc18b6897ab21d815d15e218e204581e2 and announced to the
+	oss-security list by Ibrahim M. El-Sayed on Mon, 15 Aug 2016.
+
+2016-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* webp: Updated bundled libwebp to release 0.5.1.
+
+	* libxml: Updated bundled libxml2 to release 2.9.4.
+
+	* lcms: Updated bundled lcms2 to release 2.8.
+
+	* png: Update bundled libpng to release 1.6.24.
+
+	* coders/jpeg.c (ReadJPEGImage): Log setting resolution and
+	resolution units due to JFIF marker.
+
+	* coders/sgi.c (SGIDecode): Fix integer overflow of size type in
+	Win64 build where sizeof(long) < sizeof(size_t).
+
+2016-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders, magick: Compile clean using GCC with -std=c90.
+
+	* magick/describe.c (DescribeImage): The 'identify' and 'info'
+	functionality only shows the pixel read rate if image was not read
+	in 'ping' mode.  Provide seconds timing with 6 digits of precision
+	since that is what is needed.
+
+2016-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/describe.c (DescribeImage): Include milliseconds
+	resolution in elapsed time output.
+
+	* magick/timer.c (ElapsedTime): Use clock_gettime() (when
+	available with default linkage) to obtain elapsed time.
+
+2016-08-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/yuv.c (WriteYUVImage): Fix benign clang compiler warning
+	regarding "variable 'x' is incremented both in the loop header and
+	in the loop body".
+
+	* configure.ac: Fixes to use clang's OpenMP runtime library
+	(-lomp) for clang 3.8 and later.  Specifically tested with clang
+	3.8 on Ubuntu 16.04 'xenial'.  Problem was reported by Holger
+	Hoffstätte via private email.
+
+	* NEWS.txt: Bring up to date with latest changes.
+
+2016-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Reject abnormally absurd gradient
+	size requests (many absurd requests are still allowed).  Provide
+	detailed error reports when a gradient is rejected.
+
+	* coders/svg.c: Support units for 'stroke-dashoffset'.
+
+2016-07-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/annotate.c (EscapeParenthesis): In private email on
+	2016-07-07, Gustavo Grieco notified us of a heap overflow in
+	EscapeParenthesis().  I was not able to reproduce the issue but
+	changed the implementation with the suspicion that the
+	implementation has a bug, and due to noticing arbitary limits and
+	inefficiency.
+
+2016-07-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix absolute and arbitrary gradient
+	dimension sanity checks which caused gradient requests to fail.
+	Resolves SourceForge issue #392 "SVG 'push defs' fails (Debian
+	bugs 829063 and 828120)".
+
+2016-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/security.rst: Add discussion of SVG format and SSRF
+	vulnerability.
+
+2016-06-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (ReadSVGImage): Assure that SVGInfo data is freed
+	when XMP parsing is aborted due to an error.
+
+2016-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated NEWS with changes since last release.
+
+	* www/security.rst: Add a page about GraphicsMagick security.
+
+2016-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPrimitive): Over-aggressive error reporting
+	was causing failures when elements were "drawn" off-image.
+	Resolves SourceForge issue #389 "Non-conforming drawing primitive
+	definition (line)".
+
+2016-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix problem while reading file
+	"tnamkejarz.svg.2532308010849170049" provided via private email
+	from Gustavo Grieco on May 31, 2016.
+
+	* magick/utility.c (MagickGetToken): Fix problem while reading
+	file "vqxwatmqmi.svg.-3669039972557308254" provided via private
+	email from Gustavo Grieco on May 31, 2016.
+
+2016-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update for 1.3.24 release.
 

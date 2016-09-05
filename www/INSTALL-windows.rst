@@ -625,7 +625,16 @@ Windows Distribution Build Procedure
     c. Download and install ActiveState ActivePerl
        <"http://www.activestate.com/activeperl/downloads/">.
 
-  2. Build `GM\VisualMagick\configure\configure.exe` (if
+  2. Disable automatic indexing and virus scanning for the
+     GraphicsMagick source tree.  In particular, "Windows Defender" in
+     Windows 10 (and similar software in earlier Windows releases) has
+     been observed to cause Visual Studio builds to fail since the
+     virus scanner opens built libraries and executables to inspect
+     whem while Visual Studio is still using them.  Indexing and
+     scanning also cause significant slowdowns since there are many
+     megabytes of files to index.
+
+  3. Build `GM\VisualMagick\configure\configure.exe` (if
      missing/outdated)
 
      a. Open workspace `GM\VisualMagick\configure\configure.dsp` by
@@ -637,7 +646,7 @@ Windows Distribution Build Procedure
 
      d. Close the project.
 
-  3. Configure Initial GraphicsMagick Visual Studio Workspace
+  4. Configure Initial GraphicsMagick Visual Studio Workspace
 
      a. Use Windows Explorer to navigate to `GM\VisualMagick\configure`.
 
@@ -651,7 +660,7 @@ Windows Distribution Build Procedure
 
      f. `File` -> `Close Workspace`.
 
-  2. Open Workspace, set build configuration, build GraphicsMagick software.
+  5. Open Workspace, set build configuration, build GraphicsMagick software.
 
      a. Open workspace `GM\VisualMagick\configure\configure.sln` by
         double-clicking from Windows Explorer.
@@ -690,7 +699,7 @@ Windows Distribution Build Procedure
 
      l. File -> `Close Workspace`
 
-  3. Build ImageMagickObject
+  6. Build ImageMagickObject
 
      a. Open Visual Studio Command Shell Window for WIN32 or WIN64
 
@@ -704,7 +713,7 @@ Windows Distribution Build Procedure
 
      f. ``cd ..\..\..\..``
 
-  4. Build PerlMagick extension
+  7. Build PerlMagick extension
 
      a. Open Visual Studio Command Shell Window for WIN32  or WIN64
 
@@ -727,7 +736,7 @@ Windows Distribution Build Procedure
   Visual Studio provides a batch script in VC98\Bin called VCVARS32.BAT
   that can be used to do this manually after you open up a command prompt.
 
-  5. Open `GM\VisualMagick\installer\gm-win32-Q8-dll-full.iss` (or
+  8. Open `GM\VisualMagick\installer\gm-win32-Q8-dll-full.iss` (or
      `gm-win32-Q16-dll-full.iss` if QuantumDepth=16) by
      double-clicking from Windows Explorer.
 
@@ -735,13 +744,13 @@ Windows Distribution Build Procedure
 
      b. Test install by clicking on green triangle
 
-  6. Test PerlMagick.
+  9. Test PerlMagick.
 
      a. ``cd PerlMagick``
 
      b. ``nmake test`` (All tests must pass!)
 
-  7. Test file format read and write.
+  10. Test file format read and write.
 
      a. ``cd VisualMagick\tests``
 
@@ -749,13 +758,13 @@ Windows Distribution Build Procedure
 
      c. ``run_rwblob.bat`` (All tests must pass!)
 
-  8. Run Magick++ test programs.
+  11. Run Magick++ test programs.
 
      a. ``cd Magick++/tests``
 
      b. ``run_tests.bat`` (All tests must pass!)
 
-  9. Run Magick++ demo programs.
+  12. Run Magick++ demo programs.
 
      a. ``cd Magick++/demo``
 
@@ -763,7 +772,7 @@ Windows Distribution Build Procedure
 
      c. Use *gmdisplay* to visually inspect all output files.
 
-  10. Distribution package is available named similar to
+  13. Distribution package is available named similar to
       ``GM\VisualMagick\bin\GraphicsMagick-1.3-Q8-dll.exe``
 
 

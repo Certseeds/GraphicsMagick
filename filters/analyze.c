@@ -58,7 +58,7 @@
 */
 #define PRECISION "%.0f"
 ModuleExport unsigned int AnalyzeImage(Image **image,
-  const int ARGUNUSED(argc),char **ARGUNUSED(argv))
+  const int argc,char **argv)
 {
   double
     bsumX = 0.0,
@@ -87,6 +87,9 @@ ModuleExport unsigned int AnalyzeImage(Image **image,
 
   char
     text[MaxTextExtent];
+
+  ARG_NOT_USED(argc);
+  ARG_NOT_USED(argv);
 
   assert(image != (Image **) NULL);
   assert(*image != (Image *) NULL);

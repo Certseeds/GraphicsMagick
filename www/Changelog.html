@@ -35,10 +35,174 @@
 <div class="document">
 
 
+<p>2016-09-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>www/index.rst: Update for 1.3.25 release.</li>
+<li>version.sh: Update library versioning for 1.3.25 release.</li>
+<li>NEWS.txt: Make sure is up to date.</li>
+<li>Various fixes for minor issues noticed when compiling under
+Visual Studio.</li>
+</ul>
+</blockquote>
+<p>2016-08-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/studio.h (MAGICK_CACHE_LINE_SIZE): Apply patch from
+Gentoo Linux to increase MAGICK_CACHE_LINE_SIZE to 128 when
+__powerpc__ is defined.</li>
+</ul>
+</blockquote>
+<p>2016-08-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Updated with latest changes.</li>
+</ul>
+</blockquote>
+<p>2016-08-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/rle.c (ReadRLEImage): Reject truncated/absurd Utah RLE
+files. Problem was reported by Agostino Sarubbo on August 19,
+2016.</li>
+</ul>
+</blockquote>
+<p>2016-08-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
+overflow.  TIFF sized attibutes were not being properly copied to
+a null-terminated string if the value was not null terminated.
+Problem was reported by Agostino Sarubbo on August 18, 2016.</li>
+</ul>
+</blockquote>
+<p>2016-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>lcms/src/cmstypes.c (Type_MLU_Read): &quot;Added an extra check to
+MLU bounds&quot;, change based on github mm2/Little-CMS commit
+5ca71a7bc18b6897ab21d815d15e218e204581e2 and announced to the
+oss-security list by Ibrahim M. El-Sayed on Mon, 15 Aug 2016.</li>
+</ul>
+</blockquote>
+<p>2016-08-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>webp: Updated bundled libwebp to release 0.5.1.</li>
+<li>libxml: Updated bundled libxml2 to release 2.9.4.</li>
+<li>lcms: Updated bundled lcms2 to release 2.8.</li>
+<li>png: Update bundled libpng to release 1.6.24.</li>
+<li>coders/jpeg.c (ReadJPEGImage): Log setting resolution and
+resolution units due to JFIF marker.</li>
+<li>coders/sgi.c (SGIDecode): Fix integer overflow of size type in
+Win64 build where sizeof(long) &lt; sizeof(size_t).</li>
+</ul>
+</blockquote>
+<p>2016-08-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders, magick: Compile clean using GCC with -std=c90.</li>
+<li>magick/describe.c (DescribeImage): The 'identify' and 'info'
+functionality only shows the pixel read rate if image was not read
+in 'ping' mode.  Provide seconds timing with 6 digits of precision
+since that is what is needed.</li>
+</ul>
+</blockquote>
+<p>2016-08-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/describe.c (DescribeImage): Include milliseconds
+resolution in elapsed time output.</li>
+<li>magick/timer.c (ElapsedTime): Use clock_gettime() (when
+available with default linkage) to obtain elapsed time.</li>
+</ul>
+</blockquote>
+<p>2016-08-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/yuv.c (WriteYUVImage): Fix benign clang compiler warning
+regarding &quot;variable 'x' is incremented both in the loop header and
+in the loop body&quot;.</li>
+<li>configure.ac: Fixes to use clang's OpenMP runtime library
+(-lomp) for clang 3.8 and later.  Specifically tested with clang
+3.8 on Ubuntu 16.04 'xenial'.  Problem was reported by Holger
+Hoffstätte via private email.</li>
+<li>NEWS.txt: Bring up to date with latest changes.</li>
+</ul>
+</blockquote>
+<p>2016-07-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Reject abnormally absurd gradient
+size requests (many absurd requests are still allowed).  Provide
+detailed error reports when a gradient is rejected.</li>
+<li>coders/svg.c: Support units for 'stroke-dashoffset'.</li>
+</ul>
+</blockquote>
+<p>2016-07-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/annotate.c (EscapeParenthesis): In private email on
+2016-07-07, Gustavo Grieco notified us of a heap overflow in
+EscapeParenthesis().  I was not able to reproduce the issue but
+changed the implementation with the suspicion that the
+implementation has a bug, and due to noticing arbitary limits and
+inefficiency.</li>
+</ul>
+</blockquote>
+<p>2016-07-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Fix absolute and arbitrary gradient
+dimension sanity checks which caused gradient requests to fail.
+Resolves SourceForge issue #392 &quot;SVG 'push defs' fails (Debian
+bugs 829063 and 828120)&quot;.</li>
+</ul>
+</blockquote>
+<p>2016-06-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>www/security.rst: Add discussion of SVG format and SSRF
+vulnerability.</li>
+</ul>
+</blockquote>
+<p>2016-06-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (ReadSVGImage): Assure that SVGInfo data is freed
+when XMP parsing is aborted due to an error.</li>
+</ul>
+</blockquote>
+<p>2016-06-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Updated NEWS with changes since last release.</li>
+<li>www/security.rst: Add a page about GraphicsMagick security.</li>
+</ul>
+</blockquote>
+<p>2016-06-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawPrimitive): Over-aggressive error reporting
+was causing failures when elements were &quot;drawn&quot; off-image.
+Resolves SourceForge issue #389 &quot;Non-conforming drawing primitive
+definition (line)&quot;.</li>
+</ul>
+</blockquote>
+<p>2016-05-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Fix problem while reading file
+&quot;tnamkejarz.svg.2532308010849170049&quot; provided via private email
+from Gustavo Grieco on May 31, 2016.</li>
+<li>magick/utility.c (MagickGetToken): Fix problem while reading
+file &quot;vqxwatmqmi.svg.-3669039972557308254&quot; provided via private
+email from Gustavo Grieco on May 31, 2016.</li>
+</ul>
+</blockquote>
 <p>2016-05-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>version.sh (PACKAGE_VERSION): Released 1.3.24.</li>
 <li>NEWS.txt: Update for 1.3.24 release.</li>
 <li>www/Changes.rst: Mention 1.3.24 release.</li>
 <li>www/index.rst: Update for 1.3.24 release.</li>

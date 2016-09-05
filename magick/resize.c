@@ -640,22 +640,25 @@ MagickExport Image *MinifyImage(const Image *image,ExceptionInfo *exception)
 %
 */
 
-static double Bessel(const double x,const double ARGUNUSED(support))
+static double Bessel(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x == 0.0)
     return(MagickPI/4.0);
   return(BesselOrderOne(MagickPI*x)/(2.0*x));
 }
 
-static double Sinc(const double x,const double ARGUNUSED(support))
+static double Sinc(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x == 0.0)
     return(1.0);
   return(sin(MagickPI*x)/(MagickPI*x));
 }
 
-static double Blackman(const double x,const double ARGUNUSED(support))
+static double Blackman(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   return(0.42+0.5*cos(MagickPI*x)+0.08*cos(2*MagickPI*x));
 }
 
@@ -669,8 +672,9 @@ static double BlackmanSinc(const double x,const double support)
   return(Blackman(x/support,support)*Sinc(x,support));
 }
 
-static double Box(const double x,const double ARGUNUSED(support))
+static double Box(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -0.5)
     return(0.0);
   if (x < 0.5)
@@ -678,8 +682,9 @@ static double Box(const double x,const double ARGUNUSED(support))
   return(0.0);
 }
 
-static double Catrom(const double x,const double ARGUNUSED(support))
+static double Catrom(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -2.0)
     return(0.0);
   if (x < -1.0)
@@ -693,8 +698,9 @@ static double Catrom(const double x,const double ARGUNUSED(support))
   return(0.0);
 }
 
-static double Cubic(const double x,const double ARGUNUSED(support))
+static double Cubic(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -2.0)
     return(0.0);
   if (x < -1.0)
@@ -708,23 +714,27 @@ static double Cubic(const double x,const double ARGUNUSED(support))
   return(0.0);
 }
 
-static double Gaussian(const double x,const double ARGUNUSED(support))
+static double Gaussian(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   return(exp(-2.0*x*x)*sqrt(2.0/MagickPI));
 }
 
-static double Hanning(const double x,const double ARGUNUSED(support))
+static double Hanning(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   return(0.5+0.5*cos(MagickPI*x));
 }
 
-static double Hamming(const double x,const double ARGUNUSED(support))
+static double Hamming(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   return(0.54+0.46*cos(MagickPI*x));
 }
 
-static double Hermite(const double x,const double ARGUNUSED(support))
+static double Hermite(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -1.0)
     return(0.0);
   if (x < 0.0)
@@ -745,7 +755,7 @@ static double Lanczos(const double x,const double support)
   return(0.0);
 }
 
-static double Mitchell(const double x,const double ARGUNUSED(support))
+static double Mitchell(const double x,const double support)
 {
 #define B   (1.0/3.0)
 #define C   (1.0/3.0)
@@ -757,6 +767,7 @@ static double Mitchell(const double x,const double ARGUNUSED(support))
 #define Q2  ((       6.0*B+30.0*C)/6.0)
 #define Q3  ((     - 1.0*B- 6.0*C)/6.0)
 
+  ARG_NOT_USED(support);
   if (x < -2.0)
     return(0.0);
   if (x < -1.0)
@@ -770,8 +781,9 @@ static double Mitchell(const double x,const double ARGUNUSED(support))
   return(0.0);
 }
 
-static double Quadratic(const double x,const double ARGUNUSED(support))
+static double Quadratic(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -1.5)
     return(0.0);
   if (x < -0.5)
@@ -783,8 +795,9 @@ static double Quadratic(const double x,const double ARGUNUSED(support))
   return(0.0);
 }
 
-static double Triangle(const double x,const double ARGUNUSED(support))
+static double Triangle(const double x,const double support)
 {
+  ARG_NOT_USED(support);
   if (x < -1.0)
     return(0.0);
   if (x < 0.0)

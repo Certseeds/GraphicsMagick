@@ -1069,8 +1069,9 @@ MagickMapRemoveEntry(MagickMap map,const char *key)
 %
 */
 MagickExport void *
-MagickMapCopyString(const void *string, const size_t ARGUNUSED(size))
+MagickMapCopyString(const void *string, const size_t size)
 {
+  ARG_NOT_USED(size);
   if (string)
     return (void *) AcquireString((const char *)string);
   return 0;

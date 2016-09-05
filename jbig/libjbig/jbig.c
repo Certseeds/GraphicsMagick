@@ -2663,7 +2663,7 @@ int jbg_dec_in(struct jbg_dec_state *s, unsigned char *data, size_t len,
 	*cnt += s->comment_skip;
 	s->comment_skip = 0;
       } else {
-	s->comment_skip -= len - *cnt;
+	s->comment_skip -= (unsigned long) (len - *cnt);
 	*cnt = len;
       }
       continue;

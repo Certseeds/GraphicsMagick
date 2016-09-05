@@ -575,8 +575,9 @@ static void ipa_bmp_read(wmfAPI * API, wmfBMP_Read_t * bmp_read) {
     }
 }
 
-static void ipa_bmp_free(wmfAPI * ARGUNUSED(API), wmfBMP * bmp)
+static void ipa_bmp_free(wmfAPI * API, wmfBMP * bmp)
 {
+  ARG_NOT_USED(API);
   DestroyImageList((Image*)bmp->data);
   bmp->data = (void*) 0;
   bmp->width = (U16) 0;
@@ -1481,26 +1482,34 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
 
 }
 
-static void ipa_udata_init(wmfAPI * ARGUNUSED(API), wmfUserData_t * ARGUNUSED(userdata))
+static void ipa_udata_init(wmfAPI *API, wmfUserData_t *userdata)
 {
+  ARG_NOT_USED(API);
+  ARG_NOT_USED(userdata);
   /* wmf_magick_t* ddata = WMF_MAGICK_GetData (API); */
 
 }
 
-static void ipa_udata_copy(wmfAPI * ARGUNUSED(API), wmfUserData_t * ARGUNUSED(userdata))
+static void ipa_udata_copy(wmfAPI *API, wmfUserData_t *userdata)
 {
+  ARG_NOT_USED(API);
+  ARG_NOT_USED(userdata);
   /* wmf_magick_t* ddata = WMF_MAGICK_GetData (API); */
 
 }
 
-static void ipa_udata_set(wmfAPI * ARGUNUSED(API), wmfUserData_t * ARGUNUSED(userdata))
+static void ipa_udata_set(wmfAPI *API, wmfUserData_t *userdata)
 {
+  ARG_NOT_USED(API);
+  ARG_NOT_USED(userdata);
   /* wmf_magick_t* ddata = WMF_MAGICK_GetData (API); */
 
 }
 
-static void ipa_udata_free(wmfAPI * ARGUNUSED(API), wmfUserData_t * ARGUNUSED(userdata))
+static void ipa_udata_free(wmfAPI *API, wmfUserData_t *userdata)
 {
+  ARG_NOT_USED(API);
+  ARG_NOT_USED(userdata);
   /* wmf_magick_t* ddata = WMF_MAGICK_GetData (API); */
 
 }
@@ -2291,11 +2300,12 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
 }
 
 /* Initialize API font structures */
-static void lite_font_init( wmfAPI* API, wmfAPI_Options* ARGUNUSED(options))
+static void lite_font_init( wmfAPI* API, wmfAPI_Options* options)
 {
   wmfFontData
     *font_data;
 
+  ARG_NOT_USED(options);
   API->fonts = 0;
 
   /* Allocate wmfFontData data structure */

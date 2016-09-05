@@ -3330,7 +3330,7 @@ rm -f conftest.file
 ac_config_headers="$ac_config_headers magick/magick_config.h magick/magick_config_api.h"
 
 
-am__api_version='1.15'
+am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3435,8 +3435,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# Expand $ac_aux_dir to an absolute path.
-am_aux_dir=`cd "$ac_aux_dir" && pwd`
+# expand $ac_aux_dir to an absolute path
+am_aux_dir=`cd $ac_aux_dir && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3455,7 +3455,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh+set}" != xset; then
+if test x"${install_sh}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3775,8 +3775,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target (and possibly the TAP driver).  The
-# system "awk" is bad on some platforms.
+# We need awk for the "check" target.  The system "awk" is bad on
+# some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3833,7 +3833,6 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-
 
 # Enable support for silent build rules
 # Check whether --enable-silent-rules was given.
@@ -21637,7 +21636,7 @@ fi
 rm -f conftest.mmap
 
 for ac_func in atoll CryptGenRandom \
-  ctime_r _exit fcntl fstatvfs ftime getexecname \
+  clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
@@ -23333,6 +23332,51 @@ fi
 $as_echo "$ac_cv_lib_openmp_omp_get_num_procs" >&6; }
 if test "x$ac_cv_lib_openmp_omp_get_num_procs" = xyes; then :
   LIB_OMP="-lopenmp"
+fi
+
+      fi
+    fi
+    # Clang (passes for GCC but uses different OpenMP implementation)
+    if test "x$LIB_OMP" = x ; then
+      if $CC --version 2>&1 | grep clang > /dev/null ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GOMP_parallel_start in -lomp" >&5
+$as_echo_n "checking for GOMP_parallel_start in -lomp... " >&6; }
+if ${ac_cv_lib_omp_GOMP_parallel_start+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lomp  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char GOMP_parallel_start ();
+int
+main ()
+{
+return GOMP_parallel_start ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_omp_GOMP_parallel_start=yes
+else
+  ac_cv_lib_omp_GOMP_parallel_start=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_omp_GOMP_parallel_start" >&5
+$as_echo "$ac_cv_lib_omp_GOMP_parallel_start" >&6; }
+if test "x$ac_cv_lib_omp_GOMP_parallel_start" = xyes; then :
+  LIB_OMP="-lomp"
 fi
 
       fi

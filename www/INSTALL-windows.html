@@ -647,9 +647,19 @@ release packages:</p>
 &lt;&quot;<a class="reference external" href="http://www.activestate.com/activeperl/downloads/">http://www.activestate.com/activeperl/downloads/</a>&quot;&gt;.</li>
 </ol>
 </blockquote>
-<ol class="arabic simple" start="2">
-<li>Build <cite>GMVisualMagickconfigureconfigure.exe</cite> (if
-missing/outdated)<ol class="loweralpha">
+<ol class="arabic" start="2">
+<li><p class="first">Disable automatic indexing and virus scanning for the
+GraphicsMagick source tree.  In particular, &quot;Windows Defender&quot; in
+Windows 10 (and similar software in earlier Windows releases) has
+been observed to cause Visual Studio builds to fail since the
+virus scanner opens built libraries and executables to inspect
+whem while Visual Studio is still using them.  Indexing and
+scanning also cause significant slowdowns since there are many
+megabytes of files to index.</p>
+</li>
+<li><p class="first">Build <cite>GMVisualMagickconfigureconfigure.exe</cite> (if
+missing/outdated)</p>
+<ol class="loweralpha simple">
 <li>Open workspace <cite>GMVisualMagickconfigureconfigure.dsp</cite> by
 double-clicking from Windows Explorer.</li>
 <li>Upgrade Visual Studio project (as required)</li>
@@ -657,7 +667,8 @@ double-clicking from Windows Explorer.</li>
 <li>Close the project.</li>
 </ol>
 </li>
-<li>Configure Initial GraphicsMagick Visual Studio Workspace<ol class="loweralpha">
+<li><p class="first">Configure Initial GraphicsMagick Visual Studio Workspace</p>
+<ol class="loweralpha simple">
 <li>Use Windows Explorer to navigate to <cite>GMVisualMagickconfigure</cite>.</li>
 <li>Double-click on <cite>configure.exe</cite> to run configure program.</li>
 <li>Select desired build options: DLL build, Quantum Depth, 64-bit, OpenMP)</li>
@@ -666,8 +677,6 @@ double-clicking from Windows Explorer.</li>
 <li><cite>File</cite> -&gt; <cite>Close Workspace</cite>.</li>
 </ol>
 </li>
-</ol>
-<ol class="arabic" start="2">
 <li><p class="first">Open Workspace, set build configuration, build GraphicsMagick software.</p>
 <ol class="loweralpha simple">
 <li>Open workspace <cite>GMVisualMagickconfigureconfigure.sln</cite> by
@@ -731,7 +740,7 @@ the correct Perl.</p>
 how the install of Visual Studio was done, this may not be the case.
 Visual Studio provides a batch script in VC98Bin called VCVARS32.BAT
 that can be used to do this manually after you open up a command prompt.</p>
-<ol class="arabic simple" start="5">
+<ol class="arabic simple" start="8">
 <li>Open <cite>GMVisualMagickinstallergm-win32-Q8-dll-full.iss</cite> (or
 <cite>gm-win32-Q16-dll-full.iss</cite> if QuantumDepth=16) by
 double-clicking from Windows Explorer.<ol class="loweralpha">
@@ -744,23 +753,35 @@ double-clicking from Windows Explorer.<ol class="loweralpha">
 <li><tt class="docutils literal">nmake test</tt> (All tests must pass!)</li>
 </ol>
 </li>
-<li>Test file format read and write.<ol class="loweralpha">
+<li>Test file format read and write.</li>
+</ol>
+<blockquote>
+<ol class="loweralpha simple">
 <li><tt class="docutils literal">cd VisualMagick\tests</tt></li>
 <li><tt class="docutils literal">run_rwfile.bat</tt> (All tests must pass!)</li>
 <li><tt class="docutils literal">run_rwblob.bat</tt> (All tests must pass!)</li>
 </ol>
-</li>
-<li>Run Magick++ test programs.<ol class="loweralpha">
+</blockquote>
+<ol class="arabic simple" start="11">
+<li>Run Magick++ test programs.</li>
+</ol>
+<blockquote>
+<ol class="loweralpha simple">
 <li><tt class="docutils literal">cd <span class="pre">Magick++/tests</span></tt></li>
 <li><tt class="docutils literal">run_tests.bat</tt> (All tests must pass!)</li>
 </ol>
-</li>
-<li>Run Magick++ demo programs.<ol class="loweralpha">
+</blockquote>
+<ol class="arabic simple" start="12">
+<li>Run Magick++ demo programs.</li>
+</ol>
+<blockquote>
+<ol class="loweralpha simple">
 <li><tt class="docutils literal">cd <span class="pre">Magick++/demo</span></tt></li>
 <li><tt class="docutils literal">run_demos.bat</tt></li>
 <li>Use <em>gmdisplay</em> to visually inspect all output files.</li>
 </ol>
-</li>
+</blockquote>
+<ol class="arabic simple" start="13">
 <li>Distribution package is available named similar to
 <tt class="docutils literal"><span class="pre">GM\VisualMagick\bin\GraphicsMagick-1.3-Q8-dll.exe</span></tt></li>
 </ol>

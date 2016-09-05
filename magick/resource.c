@@ -806,10 +806,12 @@ MagickExport void LiberateMagickResource(const ResourceType type,
 %
 */
 MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
-  ExceptionInfo *ARGUNUSED(exception))
+  ExceptionInfo *exception)
 {
   unsigned int
     index;
+
+  ARG_NOT_USED(exception);
   
   LockSemaphoreInfo(resource_semaphore);
   if (file == (const FILE *) NULL)

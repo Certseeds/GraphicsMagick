@@ -261,7 +261,7 @@ static double GetUserSpaceCoordinateValue(const SVGInfo *svg_info,
   return(value);
 }
 
-static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
+static char **GetStyleTokens(void *context,const char *text,size_t *number_tokens)
 {
   char
     **tokens;
@@ -270,7 +270,7 @@ static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
     *p,
     *q;
 
-  register long
+  register size_t
     i;
 
   SVGInfo
@@ -315,7 +315,7 @@ static char **GetStyleTokens(void *context,const char *text,int *number_tokens)
 }
 
 static char **GetTransformTokens(void *context,const char *text,
-  int *number_tokens)
+  size_t *number_tokens)
 {
   char
     **tokens;
@@ -629,12 +629,14 @@ static void SVGUnparsedEntityDeclaration(void *context,const xmlChar *name,
 
 }
 
-static void SVGSetDocumentLocator(void *ARGUNUSED(context),
-                                  xmlSAXLocatorPtr ARGUNUSED(location))
+static void SVGSetDocumentLocator(void *context,
+                                  xmlSAXLocatorPtr location)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
+  ARG_NOT_USED(location);
   /*
     Receive the document locator at startup, actually xmlDefaultSAXLocator.
   */
@@ -706,13 +708,13 @@ static void SVGStartElement(void *context,const xmlChar *name,
     *keyword = NULL,
     *value = NULL;
 
-  int
+  size_t
     number_tokens = 0;
 
   SVGInfo
     *svg_info;
 
-  register long
+  size_t
     i,
     j;
 
@@ -1509,7 +1511,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
             }
           if (LocaleCompare(keyword,"stroke-dashoffset") == 0)
             {
-              MVGPrintf(svg_info->file,"stroke-dashoffset %s\n",value);
+              double dashoffset=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+              MVGPrintf(svg_info->file,"stroke-dashoffset %g\n",dashoffset);
               break;
             }
           if (LocaleCompare(keyword,"stroke-linecap") == 0)
@@ -1694,8 +1697,8 @@ static void SVGStartElement(void *context,const xmlChar *name,
                       }
                     if (LocaleCompare(keyword,"stroke-dashoffset") == 0)
                       {
-                        MVGPrintf(svg_info->file,"stroke-dashoffset %s\n",
-                          value);
+                        double dashoffset=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                        MVGPrintf(svg_info->file,"stroke-dashoffset %g\n",dashoffset);
                         break;
                       }
                     if (LocaleCompare(keyword,"stroke-linecap") == 0)
@@ -2517,11 +2520,12 @@ static void SVGReference(void *context,const xmlChar *name)
     (void) xmlAddChild(parser->node,xmlNewReference(svg_info->document,name));
 }
 
-static void SVGIgnorableWhitespace(void *ARGUNUSED(context),const xmlChar *c,int length)
+static void SVGIgnorableWhitespace(void *context,const xmlChar *c,int length)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
   /*
     Receiving some ignorable whitespaces from the parser.
   */
@@ -2530,12 +2534,13 @@ static void SVGIgnorableWhitespace(void *ARGUNUSED(context),const xmlChar *c,int
 /*   svg_info=(SVGInfo *) context; */
 }
 
-static void SVGProcessingInstructions(void *ARGUNUSED(context),const xmlChar *target,
+static void SVGProcessingInstructions(void *context,const xmlChar *target,
   const xmlChar *data)
 {
 /*   SVGInfo */
 /*     *svg_info; */
 
+  ARG_NOT_USED(context);
   /*
     A processing instruction has been parsed.
   */
@@ -2768,10 +2773,12 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.image_info=image_info;
   svg_info.text=AllocateString("");
   svg_info.scale=MagickAllocateMemory(double *,sizeof(double));
-  if (svg_info.scale == (double *) NULL)
+  if ((svg_info.text == (char *) NULL) || (svg_info.scale == (double *) NULL))
     {
       (void) fclose(file);
       (void) LiberateTemporaryFile(filename);
+      MagickFreeMemory(svg_info.text);
+      MagickFreeMemory(svg_info.scale);
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   IdentityAffine(&svg_info.affine);
@@ -2819,13 +2826,19 @@ static Image *ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SAXHandler=(&SAXModules);
   svg_info.parser=xmlCreatePushParserCtxt(SAXHandler,&svg_info,(char *) NULL,0,
     image->filename);
-  while ((n=ReadBlob(image,MaxTextExtent,message)) != 0)
+  while ((n=ReadBlob(image,MaxTextExtent-1,message)) != 0)
   {
+    message[n]='\0';
     status=xmlParseChunk(svg_info.parser,message,(int) n,False);
     if (status != 0)
       break;
   }
   (void) xmlParseChunk(svg_info.parser,message,0,True);
+  /*
+    Assure that our private context is freed, even if we abort before
+    seeing the document end.
+  */
+  SVGEndDocument(&svg_info);
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
   xmlCleanupParser();

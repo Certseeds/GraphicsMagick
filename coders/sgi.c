@@ -160,11 +160,11 @@ static unsigned int IsSGI(const unsigned char *magick,const size_t length)
 %
 */
 
-static int SGIDecode(const unsigned long bytes_per_pixel,
+static int SGIDecode(const size_t bytes_per_pixel,
 		     unsigned char *max_packets,unsigned char *pixels,
-		     unsigned long npackets,unsigned long npixels)
+		     size_t npackets,size_t npixels)
 {
-  unsigned long
+  size_t
     count;
 
   register unsigned char
