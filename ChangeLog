@@ -1,3 +1,10 @@
+2016-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Make sure is up to date.
+
+	* Various fixes for minor issues noticed when compiling under
+	Visual Studio.
+
 2016-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/studio.h (MAGICK_CACHE_LINE_SIZE): Apply patch from
