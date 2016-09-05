@@ -127,13 +127,13 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/.+\.idb
 ^VisualMagick/.+\.intermediate\.manifest
 ^VisualMagick/.+\.ncb
+^VisualMagick/.+\.pch
 ^VisualMagick/.+\.res
 ^VisualMagick/.+\.rsp
 ^VisualMagick/.+\.sln
 ^VisualMagick/.+\.vcxproj
 ^VisualMagick/.+\.vcxproj\.filters
-^VisualMagick/UpgradeLog.*\.XML
-^VisualMagick/UpgradeLog.*\.htm
+^VisualMagick/.*UpgradeLog.*\..*
 ^VisualMagick/.*UpgradeReport.*
 ^VisualMagick/.+\.VC\.db
 ^VisualMagick/bin/CORE_.+
@@ -142,6 +142,8 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/lib/analyze\.exp
 ^VisualMagick/Release/.*
 ^VisualMagick/Debug/.*
+^VisualMagick/configure/Release/.*
+^VisualMagick/configure/Debug/.*
 
 ^PerlMagick/Graphics-Magick\.ppd
 ^PerlMagick/Graphics-Magick\.tar\.gz
