@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -251,6 +251,9 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   size_t
     pcx_packets;
 
+  magick_off_t
+    file_size;
+
   /*
     Open image file.
   */
@@ -292,6 +295,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (SeekBlob(image,(ExtendedSignedIntegralType) page_table[0],SEEK_SET)
         == -1)
       ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
+  file_size=GetBlobSize(image);
   count=ReadBlob(image,1,(char *) &pcx_info.identifier);
   for (id=1; id < 1024; id++)
   {
@@ -454,6 +458,34 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+
+    /*
+      Check that filesize is reasonable given header
+    */
+    {
+      double
+        uncompressed_size;
+      
+      uncompressed_size=((double) image->rows*pcx_info.bytes_per_line*pcx_info.planes);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Uncompressed size: %.0f", uncompressed_size);
+      if (pcx_info.encoding == 0)
+        {
+          /* Not compressed */
+          if (uncompressed_size > file_size)
+            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                   image);
+        }
+      else
+        {
+          /* RLE compressed */
+          if (uncompressed_size > file_size*254.0)
+            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                 image);
+        }
+    }
+
 
     /*
       Read image data.

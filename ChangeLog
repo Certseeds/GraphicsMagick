@@ -1,5 +1,10 @@
 2016-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (ReadPCXImage): Check that filesize is reasonable
+	given header.  Fixes excessive memory allocation followed by
+	eventual file truncation error for corrupt file.  Problem was
+	reported via email by Agostino Sarubbo on 2016-09-10.
+
 	* coders/sgi.c (ReadSGIImage): Check that filesize is reasonable
 	given header.  Fixes excessive memory allocation followed by
 	eventual file truncation error for corrupt file.  Problem was
