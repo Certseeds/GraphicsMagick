@@ -299,6 +299,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
   size_t
     bytes_per_pixel;
 
+  magick_off_t
+    file_size;
+
   /*
     Open image file.
   */
@@ -314,6 +317,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read SGI raster header.
   */
   iris_info.magic=ReadBlobMSBShort(image);
+  file_size=GetBlobSize(image);
   do
     {
       /*
@@ -342,7 +346,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 			    "    Header: Storage=%u, BPC=%u, Dimension=%u, "
                             "XSize=%u, YSize=%u, ZSize=%u, PixMin=%u, "
-                            "PixMax=%u, image_name=\"%.79s\", color_map=%u",
+                            "PixMax=%u, image_name=\"%.79s\", color_map=%u, "
+                            "file_size=%" MAGICK_OFF_F "d",
 			    (unsigned int) iris_info.storage,
 			    (unsigned int) iris_info.bytes_per_pixel,
 			    (unsigned int) iris_info.dimension,
@@ -352,7 +357,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 			    iris_info.pix_min,
 			    iris_info.pix_max,
 			    iris_info.image_name,
-			    iris_info.color_map);
+			    iris_info.color_map,
+                            file_size);
 
       /*
 	Validate image header and set image attributes.
@@ -490,6 +496,33 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       if (CheckImagePixelLimits(image, exception) != MagickPass)
         ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+      /*
+        Check that filesize is reasonable given header
+      */
+      {
+        double
+          uncompressed_size;
+
+        uncompressed_size=((double) (iris_info.dimension == 3 ? iris_info.zsize : 1)*
+                           image->columns*image->rows*iris_info.bytes_per_pixel);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Uncompressed size: %.0f", uncompressed_size);
+        if (iris_info.storage != 0x01)
+          {
+            /* Not compressed */
+            if (uncompressed_size > file_size)
+              ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                   image);
+          }
+        else
+          {
+            /* RLE compressed */
+            if (uncompressed_size > file_size*254.0)
+              ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                   image);
+          }
+      }
 
       /*
 	Allocate SGI pixels.

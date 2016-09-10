@@ -38,6 +38,10 @@
 <p>2016-09-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/sgi.c (ReadSGIImage): Check that filesize is reasonable
+given header.  Fixes excessive memory allocation followed by
+eventual file truncation error for corrupt file.  Problem was
+reported via email by Agostino Sarubbo on 2016-09-09.</li>
 <li>coders/sct.c (ReadSCTImage): Fix stack-buffer read overflow
 while reading SCT header.  Problem was reported via email by
 Agostino Sarubbo on 2016-09-09.</li>

@@ -1,5 +1,10 @@
 2016-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sgi.c (ReadSGIImage): Check that filesize is reasonable
+	given header.  Fixes excessive memory allocation followed by
+	eventual file truncation error for corrupt file.  Problem was
+	reported via email by Agostino Sarubbo on 2016-09-09.
+
 	* coders/sct.c (ReadSCTImage): Fix stack-buffer read overflow
 	while reading SCT header.  Problem was reported via email by
 	Agostino Sarubbo on 2016-09-09.
