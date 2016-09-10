@@ -1,5 +1,9 @@
 2016-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sct.c (ReadSCTImage): Fix stack-buffer read overflow
+	while reading SCT header.  Problem was reported via email by
+	Agostino Sarubbo on 2016-09-09.
+
 	* coders/svg.c: Fix Coverity issue 135772 "RESOURCE_LEAK" and
 	issue 135829 "Null pointer dereferences".  None of these issues
 	were new, but Coverity noticed them now.  Reflowed source to GNU C

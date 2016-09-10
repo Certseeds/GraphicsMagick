@@ -188,9 +188,11 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
       if (ReadBlob(image,14,(char *) buffer) != 14)
         break;
+      buffer[14]='\0';
       image->rows=MagickAtoL(buffer) & 0x7FFFFFFF;
       if (ReadBlob(image,14,(char *) buffer) != 14)
         break;
+      buffer[14]='\0';
       image->columns=MagickAtoL(buffer) & 0x7FFFFFFF;
       if (ReadBlob(image,196,(char *) buffer) != 196)
         break;
