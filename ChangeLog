@@ -1,3 +1,7 @@
+2016-09-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/MANIFEST: Fix content of PerlMagick MANIFEST.
+
 2016-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcx.c (ReadPCXImage): Check that filesize is reasonable
