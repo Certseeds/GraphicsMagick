@@ -43,6 +43,10 @@ Jaroslav Fojtik
                 build testing/fixes for many versions of Microsoft
                 Visual Studio.
 
+
+Former GraphicsMagick Contributors
+==================================
+
 Kenneth Xu
                 Contributed the implementation of 'gm batch', a simple
                 batch mode for GraphicsMagick.
@@ -70,10 +74,6 @@ Dirk Lemstra
 
 Roman Hiestand
                 Contributed WebP coder improvements.
-
-
-Former GraphicsMagick Contributors
-==================================
 
 Mike Chiarappa
 		Created and maintains the Borland C++ Builder 6.0 build
@@ -185,44 +185,6 @@ Milan Votava
 Mike Edmonds
 		Contributed the median filter algorithm.
 
-Additional Acknowledgements
-===========================
-
-David Pensak, E. I. du Pont de Nemours and Company
-		For providing the computing environment that made
-		developing ImageMagick possible.
-
-Alexander Zimmermann
-		Responsible for the ImageMagick Linux binary
-		distributions for many years. His efforts are very much
-		appreciated.
-
-Paul Heckbert, Carnegie Mellon University
-		Image resizing is based on Paul Heckbert's Zoom program.
-
-Paul Raveling, USC Information Sciences Institute
-		The spatial subdivision color reduction algorithm is
-		based on his Img software.		
-
-Michael Halle, Spatial Imaging Group at MIT
-		For the initial implementation of Alan Paeth's image
-		rotation algorithm.
-
-Peder Langlo, Hewlett Packard
-		Made hundreds of suggestions and bug reports. Without
-		Peder, this software would not be nearly as useful as it
-		is today.
-
-Rod Bogart and John W. Peterson, University of Utah
-		Image compositing is loosely based on rlecomp of the
-		Utah Raster Toolkit.
-
-Alvy Ray Smith and Eric Ray Lyons
-		HWB color transform and algorithm.
-
-Thomas R Crimmins
-		Inventor of the eight hull algorithm used for speckle
-		reduction.
 
 ---------------------------------------------------------------------------
 

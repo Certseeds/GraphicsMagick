@@ -94,9 +94,10 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/process.html \
 	$(WWWDIR)/programming.html \
 	$(WWWDIR)/project.html \
+	$(WWWDIR)/quantize.html \
 	$(WWWDIR)/reference.html \
 	$(WWWDIR)/security.html \
-	$(WWWDIR)/quantize.html \
+	$(WWWDIR)/thanks.html \
 	$(WWWDIR)/tools.html \
 	$(WWWDIR)/utilities.html \
 	$(WWWDIR)/wand/wand.html
@@ -139,9 +140,10 @@ WWW_RST_FILES = \
 	$(WWWDIR)/process.rst \
 	$(WWWDIR)/programming.rst \
 	$(WWWDIR)/project.rst \
+	$(WWWDIR)/quantize.rst \
 	$(WWWDIR)/reference.rst \
 	$(WWWDIR)/security.rst \
-	$(WWWDIR)/quantize.rst \
+	$(WWWDIR)/thanks.rst \
 	$(WWWDIR)/tools.rst \
 	$(WWWDIR)/utilities.rst
 
@@ -219,11 +221,12 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/motion-picture.html \
 	$(WWWDIR)/perl.html \
 	$(WWWDIR)/process.html \
-	$(WWWDIR)/project.html \
-	$(WWWDIR)/reference.html \
 	$(WWWDIR)/programming.html \
-	$(WWWDIR)/security.html \
+	$(WWWDIR)/project.html \
 	$(WWWDIR)/quantize.html \
+	$(WWWDIR)/reference.html \
+	$(WWWDIR)/security.html \
+	$(WWWDIR)/thanks.html \
 	$(WWWDIR)/tools.html \
 	$(WWWDIR)/utilities.html\
 	$(WWWDIR)/wand/wand.html

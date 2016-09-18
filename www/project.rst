@@ -6,30 +6,32 @@
 GraphicsMagick Project Information
 ==================================
 
-.. _Bugs : https://sourceforge.net/p/graphicsmagick/_list/tickets
+.. _`Bugs` : https://sourceforge.net/p/graphicsmagick/_list/tickets
 .. _`Change Logs` : Changes.html
-.. _Contribute : contribute.html
+.. _`Contribute` : contribute.html
 .. _`Development Process` : process.html
 .. _`Download` : download.html
 .. _`FAQ` : FAQ.html
 .. _`Install` : README.html
-.. _License : Copyright.html
-.. _Links : links.html
+.. _`License` : Copyright.html
+.. _`Links` : links.html
 .. _`Mailing Lists` : https://sourceforge.net/p/graphicsmagick/mailman/
 .. _`Mission` : mission.html
-.. _News : NEWS.html
+.. _`News` : NEWS.html
 .. _`Source Control` : Hg.html
 .. _`Security` : security.html
+.. _`Authors` : authors.html
+.. _`Thanks` : thanks.html
 
 `Security`_ - GraphicsMagick security (and how to report issues).
 
 `Change Logs`_ - Read the detailed change logs to see what changed.
 
-License_ - Copyrights and usage terms for GraphicsMagick.
+`License`_ - Copyrights and usage terms for GraphicsMagick.
 
-Contribute_ - Contribute your work to the project.
+`Contribute`_ - Contribute your work to the project.
 
-Bugs_ - Report a bug.
+`Bugs`_ - Report a bug.
 
 `Development Process`_ - Read about the project development process.
 
@@ -39,13 +41,17 @@ Bugs_ - Report a bug.
 
 `Install`_ - Read about how to install the software.
 
-Links_ - Some links we find useful.
+`Links`_ - Some links we find useful.
 
 `Mailing Lists`_ - Participate in discussions on our mailing lists.
 
-Mission_ - Every project needs a mission statement.
+`Mission`_ - Every project needs a mission statement.
 
-News_ - Read the project news and release notes.
+`News`_ - Read the project news and release notes.
+
+`Authors`_ - Read about those who provided source code or algorithms.
+
+`Thanks`_ - Read about those who helped in ways other than contributing code.
 
 `Source Control`_ - Source control is important.  We now use Mercurial.
 

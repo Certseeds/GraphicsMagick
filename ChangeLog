@@ -1,3 +1,7 @@
+2016-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/thanks.rst: Added a 'thanks' page.
+
 2016-09-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/MANIFEST: Fix content of PerlMagick MANIFEST.
