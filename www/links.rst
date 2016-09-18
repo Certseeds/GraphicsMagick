@@ -13,7 +13,7 @@ GraphicsMagick Topics
 
 `Free Software Foundation <http://directory.fsf.org/project/GraphicsMagick/>`_ GraphicsMagick Entry.
 
-`FreeBSD port <http://www.freebsd.org/cgi/cvsweb.cgi/ports/graphics/GraphicsMagick13/>`_ for GraphicsMagick.
+`FreeBSD port <https://www.freshports.org/graphics/GraphicsMagick/>`_ for GraphicsMagick.
 
 `NetBSD/pkgsrc port <http://pkgsrc.se/graphics/GraphicsMagick/>`_ for GraphicsMagick.
 
@@ -29,13 +29,9 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 
 `WikiPedia <http://en.wikipedia.org/wiki/GraphicsMagick>`_ GraphicsMagick Entry.
 
-`IceWalkers <http://www.icewalkers.com/Linux/Software/519400/GraphicsMagick.html>`_ GraphicsMagick Entry.
-
 `Black Duck | Open HUB <http://www.openhub.net/p/GraphicsMagick>`_ GraphicsMagick Entry.
 
 `SourceForge <http://sourceforge.net/projects/graphicsmagick/>`_ GraphicsMagick Entry.
-
-`GraphicsMagick on MinGW <http://ascendwiki.cheme.cmu.edu/Building_GraphicsMagick_on_MinGW>`_.
 
 `GraphicsMagick questions on StackOverflow <http://stackoverflow.com/questions/tagged/graphicsmagick?>`_.
 
@@ -76,11 +72,6 @@ Color Technology Related Topics
 Charles Poynton's `Color technology FAQs <http://www.poynton.com/Poynton-color.html>`_,
 very useful documentation on color technologies.
 
-Richard Kirk's excellent `Standard Colour Spaces (FL-TL-TN-0282-StdColourSpaces.pdf) <http://www.filmlight.ltd.uk/services_support/library/truelight>`_ at `FilmLight <http://www.filmlight.ltd.uk/>`_.
-
-`Computer Graphics Colorspace <http://cs.fit.edu/~wds/classes/cse5255/cse5255/davis/>`_,
-tutorials (with figures) describing the operation of common colorspaces.
-
 `International Color Consortium <http://www.color.org/>`_,
 the organization responsible for color profile standards.
 
@@ -89,9 +80,6 @@ a free experimental color management system.
 
 `Littlecms <http://www.littlecms.com/>`_,
 a free commercial-grade colormanagement engine in 100K (and used by GraphicsMagick).
-
-`SCARSE Profile Library <http://www.scarse.org/goodies/profiles/>`_,
-a useful collection of CMS profiles built using the SCARSE ICC profile builder.
 
 `Bruce Lindbloom's Web Site <http://www.brucelindbloom.com/>`_,
 offering interesting information related to color science and working spaces.
@@ -129,11 +117,6 @@ gamma-related topics:
 provides an excellent description of what gamma is, why it is good,
 and when you don't want it.
 
-`Interpolation and Gamma Correction
-<http://www.all-in-one.ee/~dersch/gamma/gamma.html>`_, provides a
-discussion of how affine transforms on gamma-corrected images can
-cause distortion.
-
 `Gamma error in picture scaling
 <http://www.4p8.com/eric.brasseur/gamma.html>`_, provides a discussion
 of how image resize on gamma-corrected images can cause distortion.
@@ -142,7 +125,7 @@ of how image resize on gamma-corrected images can cause distortion.
 TIFF Related Topics
 ============================
 
-`LibTIFF <http://www.remotesensing.org/libtiff/>`_,
+`LibTIFF <http://www.simplesystems.org/libtiff/>`_,
 Libtiff library and TIFF format mailing list.
 
 AWare Systems `TIFF <http://www.awaresystems.be/imaging/tiff.html>`_ site.
@@ -212,7 +195,7 @@ Video Topics
 Other Software Packages
 ========================
 
-`DMMD Visere <http://www.dmmd.net/>`_,
+`DMMD Visere <http://dmmd.net/main_wp/visere/>`_,
 truly outstanding image viewing/browsing software for Microsoft Windows.
 Visere is based on GraphicsMagick.
 
@@ -233,9 +216,6 @@ large images, and which comes with an unusual GUI.
 a free image processing library.
 
 `ImageJ <http://rsbweb.nih.gov/ij/>`_ Image Processing and Analysis in Java.
-
-`VIGRA <http://hci.iwr.uni-heidelberg.de/vigra/>`_,
-an image processing library in C++ based on generic algorithms.
 
 `Pstoedit <http://www.pstoedit.net/>`_,
 A Postscript to editable vector translation utility.
