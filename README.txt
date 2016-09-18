@@ -246,13 +246,9 @@ building under Microsoft Windows:
   upon the ZLIB library (see below).
 
 * GraphicsMagick requires Sam Leffler's TIFF software available via
-  anonymous FTP at
+  HTTP at
 
-     ftp://ftp.remotesensing.org/libtiff/
-
-  or via HTTP at
-
-     http://www.remotesensing.org/libtiff/
+     http://www.simplesystems.org/libtiff/
 
   to read the TIFF image format. It in turn optionally requires the
   JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.

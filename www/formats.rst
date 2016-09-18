@@ -51,7 +51,7 @@ GraphicsMagick Supported Formats
 .. _SFW : http://www.algonet.se/~cyren/sfw/
 .. _SMPTE : http://www.smpte.org/
 .. _SVG : http://www.w3.org/Graphics/SVG/
-.. _TIFF : http://www.remotesensing.org/libtiff/
+.. _TIFF : http://www.simplesystems.org/libtiff/
 .. _TopoL : http://www.topol.cz/english/share/index.php3
 .. _VIFF: http://www.fileformat.info/format/viff/egff.htm
 .. _WBMP : http://www.openmobilealliance.org/Technical/wapindex.aspx
