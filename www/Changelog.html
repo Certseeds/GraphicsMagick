@@ -98,7 +98,8 @@ __powerpc__ is defined.</li>
 <ul class="simple">
 <li>coders/rle.c (ReadRLEImage): Reject truncated/absurd Utah RLE
 files. Problem was reported by Agostino Sarubbo on August 19,
-2016.</li>
+2016.  This problem was assigned CVE-2016-7448 after the 1.3.25
+release.</li>
 </ul>
 </blockquote>
 <p>2016-08-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -107,7 +108,8 @@ files. Problem was reported by Agostino Sarubbo on August 19,
 <li>coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
 overflow.  TIFF sized attibutes were not being properly copied to
 a null-terminated string if the value was not null terminated.
-Problem was reported by Agostino Sarubbo on August 18, 2016.</li>
+Problem was reported by Agostino Sarubbo on August 18, 2016.  This
+problem was assigned CVE-2016-7449 after the 1.3.25 release.</li>
 </ul>
 </blockquote>
 <p>2016-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -181,7 +183,8 @@ detailed error reports when a gradient is rejected.</li>
 EscapeParenthesis().  I was not able to reproduce the issue but
 changed the implementation with the suspicion that the
 implementation has a bug, and due to noticing arbitary limits and
-inefficiency.</li>
+inefficiency.  This issue was assigned CVE-2016-7447 after the
+1.3.25 release.</li>
 </ul>
 </blockquote>
 <p>2016-07-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

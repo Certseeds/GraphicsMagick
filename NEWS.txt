@@ -27,18 +27,22 @@ Security Fixes:
 * EscapeParenthesis(): I was notified by Gustavo Grieco of a heap
   overflow in EscapeParenthesis() used in the text annotation code.
   While not being able to reproduce the issue, the implementation of
-  this function is completely redone.
+  this function is completely redone.  This issue was assigned
+  CVE-2016-7447 after the release.
 
 * Utah RLE: Reject truncated/absurd files which caused huge memory
   allocations and/or consumed huge CPU.  Problem was reported by
-  Agostino Sarubbo based on testing with AFL.
+  Agostino Sarubbo based on testing with AFL.  This issue was assigned
+  CVE-2016-7448 after the release.
 
 * SVG/MVG: Fix another case of CVE-2016-2317 (heap buffer overflow) in
-  the MVG rendering code (also impacts SVG).
+  the MVG rendering code (also impacts SVG).  This issue (remaining
+  part) was assigned CVE-2016-7446 after the release.
 
 * TIFF: Fix heap buffer read overflow while copying sized TIFF
   attributes.  Problem was reported by Agostino Sarubbo based on
-  testing with AFL.
+  testing with AFL.  This issue was assigned CVE-2016-7449 after the
+  release.
 
 Bug fixes:
 
