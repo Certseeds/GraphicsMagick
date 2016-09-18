@@ -298,7 +298,9 @@ InitializeLogInfo(void)
   /*
     Lock for access (to make Coverity happy)
   */
+#if defined(__COVERITY__)
   LockSemaphoreInfo(log_semaphore);
+#endif /* defined(__COVERITY__) */
 
   (void) strlcpy(log_info.path,"(default)",sizeof(log_info.path));
   (void) strlcpy(log_info.filename,"Magick-%d.log",sizeof(log_info.filename));
@@ -317,7 +319,9 @@ InitializeLogInfo(void)
 #endif
   GetTimerInfo(&log_info.timer);
 
+#if defined(__COVERITY__)
   UnlockSemaphoreInfo(log_semaphore);
+#endif /* defined(__COVERITY__) */
 
   /*
     Set initial logging flags using the value of MAGICK_DEBUG if it is
