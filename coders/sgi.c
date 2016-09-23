@@ -344,11 +344,21 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		      iris_info.dummy2);
 
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "    Header: Storage=%u, BPC=%u, Dimension=%u, "
-                            "XSize=%u, YSize=%u, ZSize=%u, PixMin=%u, "
-                            "PixMax=%u, image_name=\"%.79s\", color_map=%u, "
-                            "file_size=%" MAGICK_OFF_F "d",
+			    "IRIS Header:\n"
+                            "    MAGIC=%u\n"
+                            "    STORAGE=%u (%s)\n"
+                            "    BPC=%u\n"
+                            "    DIMENSION=%u\n"
+                            "    XSIZE=%u\n"
+                            "    YSIZE=%u\n"
+                            "    ZSIZE=%u\n"
+                            "    PIXMIN=%u\n"
+                            "    PIXMAX=%u\n"
+                            "    IMAGENAME=\"%.79s\"\n"
+                            "    COLORMAP=%u",
+                            (unsigned int) iris_info.magic,
 			    (unsigned int) iris_info.storage,
+                            (iris_info.storage == 1 ? "RLE" : "VERBATIM"),
 			    (unsigned int) iris_info.bytes_per_pixel,
 			    (unsigned int) iris_info.dimension,
 			    (unsigned int) iris_info.xsize,
@@ -357,8 +367,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 			    iris_info.pix_min,
 			    iris_info.pix_max,
 			    iris_info.image_name,
-			    iris_info.color_map,
-                            file_size);
+			    iris_info.color_map);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "File size %" MAGICK_OFF_F "d bytes", file_size);
 
       /*
 	Validate image header and set image attributes.
@@ -413,6 +424,13 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  */
 	  image->columns=iris_info.xsize;
 	  image->rows=1;
+          if (iris_info.ysize != image->rows)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Overriding unexpected value of YSIZE (%u) "
+                                    "for 1 dimensional image", iris_info.ysize);
+              iris_info.ysize=image->rows;
+            }
 	  image->is_grayscale=MagickTrue;
 	  if (iris_info.bytes_per_pixel == 1)
 	    {
@@ -504,6 +522,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
         double
           uncompressed_size;
 
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Image columns=%lu rows=%lu", image->columns, image->rows);
         uncompressed_size=((double) (iris_info.dimension == 3 ? iris_info.zsize : 1)*
                            image->columns*image->rows*iris_info.bytes_per_pixel);
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
