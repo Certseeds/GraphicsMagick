@@ -49,7 +49,8 @@ static unsigned int
 RLEConstrainColormapIndex(Image *image, unsigned int index,
                           unsigned int colormap_entries)
 {
-  if (index >= colormap_entries)
+  if ((index >= colormap_entries) &&
+      (image->exception.severity < CorruptImageError ))
     {
       char
         colormapIndexBuffer[MaxTextExtent];
