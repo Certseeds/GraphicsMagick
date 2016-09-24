@@ -1,3 +1,7 @@
+2016-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (OpenCache): Trace ExtendCache() failures.
+
 2016-09-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sgi.c (ReadSGIImage): Fix unexpectedly large memory
