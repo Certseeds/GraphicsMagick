@@ -49,18 +49,20 @@ static unsigned int
 RLEConstrainColormapIndex(Image *image, unsigned int index,
                           unsigned int colormap_entries)
 {
-  if ((index >= colormap_entries) &&
-      (image->exception.severity < CorruptImageError ))
+  if (index >= colormap_entries)
     {
-      char
-        colormapIndexBuffer[MaxTextExtent];
+      if (image->exception.severity < CorruptImageError)
+        {
+          char
+            colormapIndexBuffer[MaxTextExtent];
 
-      FormatString(colormapIndexBuffer,"index %u >= %u, %.1024s",
-        (unsigned int) index, colormap_entries, image->filename);
-      errno=0;
+          FormatString(colormapIndexBuffer,"index %u >= %u, %.1024s",
+                       (unsigned int) index, colormap_entries, image->filename);
+          errno=0;
+          ThrowException(&image->exception,CorruptImageError,
+                         InvalidColormapIndex,colormapIndexBuffer);
+        }
       index=0U;
-      ThrowException(&image->exception,CorruptImageError,
-        InvalidColormapIndex,colormapIndexBuffer);
     }
 
   return index;

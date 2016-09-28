@@ -1,5 +1,9 @@
 2016-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rle.c (RLEConstrainColormapIndex): Was not constraining
+	colormap index like it should be.  This problem was added on
+	2016-09-23.
+
 	* www/thanks.rst: Added Moshe Kaplan to Thanks.
 
 	* www/Hg.rst: Mercurial URL fixes.  Patch from Mark Mitchell.
