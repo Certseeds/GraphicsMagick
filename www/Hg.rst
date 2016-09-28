@@ -19,7 +19,7 @@ GraphicsMagick Mercurial
               processing, software development, simulation, image,
               software, Magick++
 
-.. _Mercurial : http://mercurial.selenic.com/
+.. _Mercurial : https://www.mercurial-scm.org/
 .. _TortoiseHg : http://tortoisehg.bitbucket.org/
 .. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
 
@@ -257,8 +257,8 @@ do::
 Mercurial Topics
 ====================
 
-* `Merge Tool Configuration <http://mercurial.selenic.com/wiki/MergeToolConfiguration>`_
-* `Keep "My" or "Their" files when doing a merge <http://mercurial.selenic.com/wiki/TipsAndTricks#mergemineortheir>`_
+* `Merge Tool Configuration <https://www.mercurial-scm.org/wiki/MergeToolConfiguration>`_
+* `Keep "My" or "Their" files when doing a merge <https://www.mercurial-scm.org/wiki/TipsAndTricks#Keep_.22My.22_or_.22Their.22_files_when_doing_a_merge>`_
 
 
 --------------------------------------------------------------------------

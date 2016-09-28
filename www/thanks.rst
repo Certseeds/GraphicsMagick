@@ -30,6 +30,8 @@ Fuzz Testing
 
   * Michal Zalewski
 
+  * Moshe Kaplan
+
 Security Analysis/Reports
 -------------------------
 

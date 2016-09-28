@@ -51,7 +51,7 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`Flickr` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _`Etsy` : http://codeascraft.etsy.com/2010/07/09/batch-processing-millions-of-images/
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
-.. _Mercurial : http://mercurial.selenic.com/
+.. _Mercurial : https://www.mercurial-scm.org/
 .. _`NEWS` : NEWS.html
 .. _`SLOCCount` : http://www.dwheeler.com/sloccount/
 .. _`authors` : authors.html

@@ -35,7 +35,7 @@ possible.
 
 GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
-tool (http://mercurial.selenic.com/). GraphicsMagick may be retrieved
+tool (https://www.mercurial-scm.org/). GraphicsMagick may be retrieved
 via the following command:
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code/ GM

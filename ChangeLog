@@ -1,3 +1,11 @@
+2016-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/thanks.rst: Added Moshe Kaplan to Thanks.
+
+	* www/Hg.rst: Mercurial URL fixes.  Patch from Mark Mitchell.
+
+	* www/programming.rst: Updated programming APIs page.
+
 2016-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (OpenCache): Trace ExtendCache() failures.

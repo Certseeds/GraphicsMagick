@@ -28,7 +28,9 @@ GraphicsMagick Programming Interfaces
 .. _PHP : http://pecl.php.net/package/gmagick
 .. _Perl : perl.html
 .. _Python: https://github.com/hhatto/pgmagick
-.. _Ruby : http://rmagick.rubyforge.org/
+.. _`Redis Module` : https://github.com/RedisLabsModules/graphicsmagick
+.. _`Ruby (RMagick)` : http://rmagick.rubyforge.org/
+.. _`Ruby (MiniMagick)` : https://github.com/minimagick/minimagick
 .. _Tcl/Tk : http://www.graphicsmagick.org/TclMagick/doc/
 .. _Windows OLE : ImageMagickObject.html
 .. _`Windows .NET` : https://graphicsmagick.codeplex.com/
@@ -38,25 +40,28 @@ GraphicsMagick Programming Interfaces
 GraphicsMagick capabilities may be accessed from many languages and scripting
 environments via programming APIs as shown in the following table:
 
-===============  ====================================================================
-Language         Description
-===============  ====================================================================
-`C Core`_        C language API for the lowest-level core programming interface.
-`C Wand`_        C language API for the mid-level Wand API programming interface.
-`C++`_           Magick++ provides an abstract object-oriented C++ interface.
-`Lua`_           The gm.Image API provides an interface to GraphicsMagick's Wand API.
-`node.js`_	 Graphicsmagick for node.js provides server-side support for
-                 Javascript programming with node.js.
-PHP_		 Gmagick provides a small and fast extension for PHP.
-Perl_            PerlMagick provides an object-oriented Perl interface.
-Python_          PgMagick provides the power and ease of the C++ API, but in Python.
-Ruby_            RMagick provides a Ruby language extension  
-`Tcl/Tk`_        TclMagick provides a scripting environment based on Tcl or Tcl/Tk.
-`Windows .NET`_  GraphicsMagick.NET provides a Windows .NET programming interface,
-                 allowing use of GraphicsMagick features via a stand-alone package.
-`Windows OLE`_   The ImageMagickObject OLE control supports utility-style access via
-                 a COM+ object.
-===============  ====================================================================
+====================  ====================================================================
+Language              Description
+====================  ====================================================================
+`C Core`_             C language API for the lowest-level core programming interface.
+`C Wand`_             C language API for the mid-level Wand API programming interface.
+`C++`_                Magick++ provides an abstract object-oriented C++ interface.
+`Lua`_                The gm.Image API provides an interface to GraphicsMagick's Wand API.
+`node.js`_	      Graphicsmagick for node.js provides server-side support for
+                      Javascript programming with node.js.
+PHP_		      Gmagick provides a small and fast extension for PHP.
+Perl_                 PerlMagick provides an object-oriented Perl interface.
+Python_               PgMagick provides the power and ease of the C++ API, but in Python.
+`Redis Module`_       Image processing via redis APIs
+`Ruby (RMagick)`_     RMagick provides a native Ruby language extension
+`Ruby (MiniMagick)`_  MiniMagick provides a Ruby language extension via a command line
+                      wrapper.
+`Tcl/Tk`_             TclMagick provides a scripting environment based on Tcl or Tcl/Tk.
+`Windows .NET`_       GraphicsMagick.NET provides a Windows .NET programming interface,
+                      allowing use of GraphicsMagick features via a stand-alone package.
+`Windows OLE`_        The ImageMagickObject OLE control supports utility-style access via
+                      a COM+ object.
+====================  ====================================================================
 
 *Some of these languages and scripting environments are supported by the
 GraphicsMagick Group while others are developed and supported by third parties.*
