@@ -1,3 +1,8 @@
+2016-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xcf.c: Improve the robustness of the XCF reader by adding
+	more error checking.
+
 2016-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/rle.c (RLEConstrainColormapIndex): Was not constraining
