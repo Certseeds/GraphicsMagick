@@ -3,7 +3,8 @@
 	* coders/meta.c (parse8BIM): Fix unsigned underflow leading to
 	heap overflow when parsing 8BIM chunk.  Problem was reported by
 	Marco Grassi via email on October 1, 2016.  Problem was already
-	known (but not fixed) based on comments in the code.
+	known (but not fixed) based on comments in the code.  This issue
+	has been assigned CVE-2016-7800.
 
 2016-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
