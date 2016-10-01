@@ -1,3 +1,10 @@
+2016-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (parse8BIM): Fix unsigned underflow leading to
+	heap overflow when parsing 8BIM chunk.  Problem was reported by
+	Marco Grassi via email on October 1, 2016.  Problem was already
+	known (but not fixed) based on comments in the code.
+
 2016-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xcf.c: Improve the robustness of the XCF reader by adding

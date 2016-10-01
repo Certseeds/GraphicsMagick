@@ -396,10 +396,17 @@ static long parse8BIM(Image *ifile, Image *ofile)
             {
               if (brkused && next > 0)
                 {
+                  size_t
+                    codes_len;
+
                   char
                     *s = &token[next-1];
 
-                  len -= convertHTMLcodes(s, strlen(s));
+                  codes_len = convertHTMLcodes(s, strlen(s));
+                  if (codes_len > len)
+                    len = 0;
+                  else
+                    len -= codes_len;
                 }
             }
 
@@ -450,7 +457,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                     next=0;
                     outputlen += len;
                     while (len--)
-                      (void) WriteBlobByte(ofile,token[next++]); /* boom */
+                      (void) WriteBlobByte(ofile,token[next++]);
 
                     if (outputlen & 1)
                       {
@@ -682,10 +689,17 @@ static long parse8BIMW(Image *ifile, Image *ofile)
             {
               if (brkused && next > 0)
                 {
+                  size_t
+                    codes_len;
+
                   char
                     *s = &token[next-1];
 
-                  len -= convertHTMLcodes(s, strlen(s));
+                  codes_len = convertHTMLcodes(s, strlen(s));
+                  if (codes_len > len)
+                    len = 0;
+                  else
+                    len -= codes_len;
                 }
             }
 
