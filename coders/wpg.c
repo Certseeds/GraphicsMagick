@@ -1210,7 +1210,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           Header.DataOffset=TellBlob(image)+Rec2.RecordLength;
 
-          if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec2.RecType);
 
           switch(Rec2.RecType)
@@ -1224,18 +1224,20 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
 
+			/* Sanity check for amount of palette entries. */
+              if( (WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) > (Rec2.RecordLength-2-2) / 3)
+                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);                 
+ 
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
               for (i=WPG_Palette.StartIndex;
                    i < (int)WPG_Palette.NumOfEntries; i++)
                 {
-                  image->colormap[i].red=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=
-                    ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
                   (void) ReadBlobByte(image);   /*Opacity??*/
                 }
               break;
