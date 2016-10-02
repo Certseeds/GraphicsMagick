@@ -1,6 +1,7 @@
 2016-10-02  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Add sanity check for palette.
+        merge RemoveLastImageFromList+AppendImageToList to ReplaceImageInList
 
 2016-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

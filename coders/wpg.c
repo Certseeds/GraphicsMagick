@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2015                               %
+%                              June 2000 - 2016                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -1132,13 +1132,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   if(BitmapHeader2.RotAngle & 0x8000)
                     {
                       rotated_image = FlopImage(image, exception);
-                      if (rotated_image != (Image *) NULL)
+                      if (rotated_image != (Image *)NULL)
                         {
-                          BlobInfo *TmpBlob = rotated_image->blob;
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
                           image->blob = TmpBlob;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }
                   /* flip command */
@@ -1147,11 +1146,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       rotated_image = FlipImage(image, exception);
                       if (rotated_image != (Image *) NULL)
                         {
-                          BlobInfo *TmpBlob = rotated_image->blob;
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
                           image->blob = TmpBlob;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);		
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }
 		
@@ -1163,11 +1161,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                                                   exception);
                       if (rotated_image != (Image *) NULL)
                         {
-                          BlobInfo *TmpBlob = rotated_image->blob;
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
                           image->blob = TmpBlob;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }                
                 }
@@ -1320,11 +1317,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 		  rotated_image = FlopImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
-                      BlobInfo *TmpBlob = rotated_image->blob;
+                      TmpBlob = rotated_image->blob;
                       rotated_image->blob = image->blob;
                       image->blob = TmpBlob;
-                      (void) RemoveLastImageFromList(&image);
-                      AppendImageToList(&image,rotated_image);
+                      ReplaceImageInList(&image,rotated_image);
                     }
                   /* Try to change CTM according to Flip - I am not sure, must be checked.		  
                      Tx(0,0)=-1;      Tx(1,0)=0;   Tx(2,0)=0;
@@ -1337,10 +1333,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 		  rotated_image = FlipImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
+                      TmpBlob = rotated_image->blob;
                       rotated_image->blob = image->blob;
-                      image->blob = NULL;
-                      (void) RemoveLastImageFromList(&image);
-                      AppendImageToList(&image,rotated_image);
+                      image->blob = TmpBlob;
+                      ReplaceImageInList(&image,rotated_image);
                     }
                   /* Try to change CTM according to Flip - I am not sure, must be checked.
                      float_matrix Tx(3,3);
