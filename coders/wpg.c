@@ -935,6 +935,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
   unsigned char
     *BImgBuff;
+  BlobInfo *TmpBlob;
 
   tCTM CTM;         /*current transform matrix*/
 
@@ -1133,8 +1134,9 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       rotated_image = FlopImage(image, exception);
                       if (rotated_image != (Image *) NULL)
                         {
+                          BlobInfo *TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
+                          image->blob = TmpBlob;
                           (void) RemoveLastImageFromList(&image);
                           AppendImageToList(&image,rotated_image);
                         }
@@ -1145,8 +1147,9 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       rotated_image = FlipImage(image, exception);
                       if (rotated_image != (Image *) NULL)
                         {
+                          BlobInfo *TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
+                          image->blob = TmpBlob;
                           (void) RemoveLastImageFromList(&image);
                           AppendImageToList(&image,rotated_image);		
                         }
@@ -1160,8 +1163,9 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                                                   exception);
                       if (rotated_image != (Image *) NULL)
                         {
+                          BlobInfo *TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
+                          image->blob = TmpBlob;
                           (void) RemoveLastImageFromList(&image);
                           AppendImageToList(&image,rotated_image);
                         }
@@ -1316,8 +1320,9 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 		  rotated_image = FlopImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
+                      BlobInfo *TmpBlob = rotated_image->blob;
                       rotated_image->blob = image->blob;
-                      image->blob = NULL;
+                      image->blob = TmpBlob;
                       (void) RemoveLastImageFromList(&image);
                       AppendImageToList(&image,rotated_image);
                     }
