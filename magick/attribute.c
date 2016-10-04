@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2061,6 +2061,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 	      break; /* break out of the for loop */
 	    }
 	}
+      /* Finished current IFD, clear IFD flags */
+      gpsfound=MagickFalse;
     } while (level > 0);
   if (strlen(final) == 0)
     (void) ConcatenateString(&final,"unknown");
