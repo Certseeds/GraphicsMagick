@@ -2115,7 +2115,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         QuantumType
           quantum_type;
 
-        if ((samples_per_pixel > 1) && (compress_tag == COMPRESSION_JPEG) &&
+        if ((samples_per_pixel > 1) &&
+            (compress_tag == COMPRESSION_JPEG) &&
 	    (photometric == PHOTOMETRIC_YCBCR))
           {
             /* Following hack avoids the error message "Application
@@ -2139,7 +2140,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             == MagickPass)
           {
             method=ScanLineMethod;
-            if (compress_tag == COMPRESSION_JPEG)
+            if ((compress_tag == COMPRESSION_JPEG) ||
+                (compress_tag == COMPRESSION_OJPEG))
               {
                 if (TIFFIsTiled(tiff))
                   method=TiledMethod;
@@ -2153,7 +2155,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
             else if (TIFFIsTiled(tiff))
               method=TiledMethod;
-            else if ((TIFFStripSize(tiff)) <= (1024*64))
+            else if (TIFFStripSize(tiff) <= 1024*256)
               method=StrippedMethod;
             if (photometric == PHOTOMETRIC_MINISWHITE)
               import_options.grayscale_miniswhite=MagickTrue;

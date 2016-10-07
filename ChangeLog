@@ -1,3 +1,10 @@
+2016-10-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): If TIFF uses Old JPEG
+	compression, then read using full tiles or strips.  Solves
+	"Improper call to JPEG library in state 0. (LibJpeg)." error.
+	Problem was reported via email on October 6, 2016 by John Brown.
+
 2016-10-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Fixed SourceForge
