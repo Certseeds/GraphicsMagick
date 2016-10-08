@@ -1,3 +1,11 @@
+2016-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sgi.c (ReadSGIImage): For RLE SGI image, defer memory
+	allocations for as long as possible and allow the file to prove
+	itself worthy before making the largest allocations.  This helps
+	with rejecting bogus RLE files while avoiding rejecting valid
+	files.
+
 2016-10-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): If TIFF uses Old JPEG
