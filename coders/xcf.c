@@ -1242,6 +1242,24 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
 %
 %
 */
+#define DestroyLayerInfo(number_layers,layer_info) \
+  do {                                                         \
+    size_t                                                     \
+      j;                                                       \
+                                                               \
+    if (layer_info != (XCFLayerInfo *) NULL)                   \
+      {                                                        \
+        for (j=0; j < number_layers; j++)       \
+          {                                                    \
+            if (layer_info[j].image != (Image *) NULL)         \
+              {                                                \
+                DestroyImage(layer_info[j].image);             \
+                layer_info[j].image = (Image *) NULL;          \
+              }                                                \
+          }                                                    \
+      }                                                        \
+    MagickFreeMemory(layer_info);                              \
+  } while (0);
 static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   char
@@ -1631,12 +1649,17 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	    {
 	      /* seek to the layer offset */
 	      if (SeekBlob(image, offset, SEEK_SET) != offset)
-                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+                {
+                  /* FIXME: CID 64064: leaks layer_info */
+                  DestroyLayerInfo(number_layers,layer_info);
+                  ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+                }
 
 	      /* read in the layer */
 	      layer_ok = ReadOneLayer( image, &doc_info, &layer_info[current_layer-first_layer] );
 	      if (!layer_ok)
 		{
+#if 0
 		  int
 		    j;
 
@@ -1649,6 +1672,8 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         }
                     }
 		  MagickFreeMemory(layer_info);
+#endif
+                  DestroyLayerInfo(number_layers,layer_info);
 		  CopyException(exception,&image->exception);
 		  CloseBlob(image);
 		  DestroyImageList(image);
@@ -1658,7 +1683,11 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	       *  read the next offset.
 	       */
 	      if (SeekBlob(image, saved_pos, SEEK_SET) != saved_pos)
-                ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+                {
+                  /* FIXME: CID 64064: leaks layer_info */
+                  DestroyLayerInfo(number_layers,layer_info);
+                  ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+                }
 	    }
 
           current_layer++;
