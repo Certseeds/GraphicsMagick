@@ -1,3 +1,8 @@
+2016-10-09 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadJNGImage): Quiet COVERITY issue about
+	a potential memory leak.
+
 2016-10-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xcf.c (ReadXCFImage): Fix memory leak of layer_info for
