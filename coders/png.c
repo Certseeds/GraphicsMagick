@@ -2936,6 +2936,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           if (length != 16)
             {
+              DestroyJNGInfo(color_image_info,alpha_image_info);
+              MagickFreeMemory(chunk);
               (void) ThrowException2(&image->exception,CoderWarning,
                              "Invalid JHDR chunk length",(char *) NULL);
               return (MagickFail);
