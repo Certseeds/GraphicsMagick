@@ -1,3 +1,8 @@
+2016-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sgi.c (ReadSGIImage): Adjusts some variable types and
+	lessen the amount of casting.
+
 2016-10-09 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadJNGImage): Quiet COVERITY issue about

@@ -327,13 +327,13 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (iris_info.magic != 0x01DA)
 	ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
       iris_info.storage=ReadBlobByte(image);
-      iris_info.bytes_per_pixel=ReadBlobByte(image);
-      iris_info.dimension=ReadBlobMSBShort(image);
-      iris_info.xsize=ReadBlobMSBShort(image);
-      iris_info.ysize=ReadBlobMSBShort(image);
-      iris_info.zsize=ReadBlobMSBShort(image);
-      iris_info.pix_min=ReadBlobMSBLong(image);
-      iris_info.pix_max=ReadBlobMSBLong(image);
+      iris_info.bytes_per_pixel=ReadBlobByte(image) &0xF;
+      iris_info.dimension=ReadBlobMSBShort(image) & 0xFFFF;
+      iris_info.xsize=ReadBlobMSBShort(image) & 0xFFFF;
+      iris_info.ysize=ReadBlobMSBShort(image) & 0xFFFF;
+      iris_info.zsize=ReadBlobMSBShort(image) & 0xFFFF;
+      iris_info.pix_min=ReadBlobMSBLong(image) & 0xFFFFFFFF;
+      iris_info.pix_max=ReadBlobMSBLong(image) & 0xFFFFFFFF;
 
       (void) ReadBlob(image,(unsigned int) sizeof(iris_info.dummy1),
 		      iris_info.dummy1);
@@ -375,12 +375,12 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
 	Validate image header and set image attributes.
       */
-      if (iris_info.storage == 0)
+      if (iris_info.storage == 0U)
 	{
 	  /* Uncompressed */
 	  image->compression=NoCompression;
 	}
-      else if (iris_info.storage == 1)
+      else if (iris_info.storage == 1U)
 	{
 	  /* RLE compressed */
 	  image->compression=RLECompression;
@@ -391,18 +391,18 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 	}
 
-      if (iris_info.color_map != 0)
+      if (iris_info.color_map != 0U)
 	{
 	  /* We only support images with normal (no) colormap */
 	  ThrowReaderException(CorruptImageError,ImageTypeNotSupported,image);
 	}
 
-      if (iris_info.bytes_per_pixel == 1)
+      if (iris_info.bytes_per_pixel == 1U)
 	{
 	  /* 8 bits per sample */
 	  image->depth=8;
 	}
-      else if (iris_info.bytes_per_pixel == 2)
+      else if (iris_info.bytes_per_pixel == 2U)
 	{
 	  /* 16 bits per sample */
 	  image->depth=Min(16,QuantumDepth);
@@ -414,10 +414,10 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	}
 
       /* We only support zsize up to 4. Code further on assumes that. */
-      if (iris_info.zsize > 4)
+      if (iris_info.zsize > 4U)
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
-      if (iris_info.dimension == 1)
+      if (iris_info.dimension == 1U)
 	{
 	  /*
 	    Image contains one channel and one scanline, with scanline
@@ -433,14 +433,14 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
               iris_info.ysize=image->rows;
             }
 	  image->is_grayscale=MagickTrue;
-	  if (iris_info.bytes_per_pixel == 1)
+	  if (iris_info.bytes_per_pixel == 1U)
 	    {
 	      /* Use a grayscale colormap */
 	      image->storage_class=PseudoClass;
 	      image->colors=256;
 	    }
 	}
-      else if (iris_info.dimension == 2)
+      else if (iris_info.dimension == 2U)
 	{
 	  /*
 	    One channel with a number of scan lines.  Width and height
@@ -456,7 +456,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	      image->colors=256;
 	    }
 	}
-      else if (iris_info.dimension == 3)
+      else if (iris_info.dimension == 3U)
 	{
 	  /*
 	    A number of channels.  Width and height of image are given
@@ -472,24 +472,24 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  image->columns=iris_info.xsize;
 	  image->rows=iris_info.ysize;
 
-	  if (iris_info.zsize == 1)
+	  if (iris_info.zsize == 1U)
 	    {
 	      /* B/W image */
 	      image->matte = MagickFalse;
 	      image->is_grayscale=MagickTrue;
-	      if (iris_info.bytes_per_pixel == 1)
+	      if (iris_info.bytes_per_pixel == 1U)
 		{
 		  /* Use a grayscale colormap */
 		  image->storage_class=PseudoClass;
-		  image->colors=256;
+		  image->colors=256U;
 		}
 	    }
-	  else if (iris_info.zsize == 3)
+	  else if (iris_info.zsize == 3U)
 	    {
 	      /* RGB */
 	      image->matte=MagickFalse;
 	    }
-	  else if (iris_info.zsize == 4)
+	  else if (iris_info.zsize == 4U)
 	    {
 	      /* RGBA  */
 	      image->matte=MagickTrue;
@@ -531,7 +531,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             Check that filesize is reasonable given header
           */
-          uncompressed_size=((double) (iris_info.dimension == 3 ? iris_info.zsize : 1)*
+          uncompressed_size=((double) (iris_info.dimension == 3U ? iris_info.zsize : 1U)*
                              image->columns*image->rows*iris_info.bytes_per_pixel);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Uncompressed size: %.0f", uncompressed_size);
@@ -551,17 +551,17 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     image);
 
           iris_pixels=MagickAllocateArray(unsigned char *,
-                                          MagickArraySize(4,bytes_per_pixel),
+                                          MagickArraySize(4U,bytes_per_pixel),
                                           MagickArraySize(iris_info.xsize,iris_info.ysize));
           if (iris_pixels == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
 	  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 				"   Reading SGI scanlines"); 
-	  for (z=0; z < iris_info.zsize; z++)
+	  for (z=0U; z < iris_info.zsize; z++)
 	    {
 	      p=iris_pixels+bytes_per_pixel*z;
-	      for (y=0; y < iris_info.ysize; y++)
+	      for (y=0U; y < iris_info.ysize; y++)
 		{
 		  if (ReadBlob(image,bytes_per_pixel*iris_info.xsize,
                                (char *) scanline) != bytes_per_pixel*iris_info.xsize)
@@ -570,18 +570,18 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                               UnexpectedEndOfFile, image);
 		      break;
 		    }
-		  if (bytes_per_pixel == 2)
+		  if (bytes_per_pixel == 2U)
 		    for (x=0; x < iris_info.xsize; x++)
 		      {
-			*p=scanline[2*x];
-			*(p+1)=scanline[2*x+1];
-			p+=8;
+			*p=scanline[2U*x];
+			*(p+1U)=scanline[2U*x+1U];
+			p+=8U;
 		      }
 		  else
 		    for (x=0; x < iris_info.xsize; x++)
 		      {
 			*p=scanline[x];
-			p+=4;
+			p+=4U;
 		      }
 		}
 	      if (EOFBlob(image))
@@ -607,7 +607,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
           rle_dimensions=MagickArraySize(iris_info.ysize, iris_info.zsize);
           rle_alloc_size=MagickArraySize(rle_dimensions, sizeof(magick_uint32_t));
 
-          if ((rle_dimensions == 0) || (rle_alloc_size == 0))
+          if ((rle_dimensions == 0U) || (rle_alloc_size == 0U))
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
 
@@ -638,20 +638,24 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
           here=TellBlob(image);
 
-          for (i=0; i < rle_dimensions; i++)
-            if ((offsets[i] < here) ||(offsets[i] > file_size))
+          for (i=0U; i < rle_dimensions; i++)
+            if ((offsets[i] != ((magick_off_t) offsets[i])) ||
+                (offsets[i] < here) ||
+                (offsets[i] > file_size))
               ThrowSGIReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
-          for (i=0; i < rle_dimensions; i++)
-            if (runlength[i] > ((magick_uint32_t) 4*iris_info.xsize+10))
+          for (i=0U; i < rle_dimensions; i++)
+            {
+              if (runlength[i] > ((size_t) 4U*iris_info.xsize+10U))
 		ThrowSGIReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
+            }
 
-	  max_packets=MagickAllocateArray(unsigned char *,iris_info.xsize+10,4);
+	  max_packets=MagickAllocateArray(unsigned char *,iris_info.xsize+10U,4U);
 	  if (max_packets == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
 
           iris_pixels=MagickAllocateArray(unsigned char *,
-                                          MagickArraySize(4,bytes_per_pixel),
+                                          MagickArraySize(4U,bytes_per_pixel),
                                           MagickArraySize(iris_info.xsize,iris_info.ysize));
           if (iris_pixels == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -660,73 +664,73 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	    Check data order.
 	  */
 	  offset=0;
-	  data_order=0;
-	  for (y=0; ((y < (long) iris_info.ysize) && !data_order); y++)
-	    for (z=0; ((z < (int) iris_info.zsize) && !data_order); z++)
+	  data_order=0U;
+	  for (y=0; ((y < iris_info.ysize) && !data_order); y++)
+	    for (z=0U; ((z < iris_info.zsize) && !data_order); z++)
 	      {
 		if (offsets[y+z*iris_info.ysize] < offset)
 		  data_order=1;
-		offset=offsets[y+z*iris_info.ysize];
+		offset=(magick_off_t) offsets[y+z*iris_info.ysize];
 	      }
 	  offset=TellBlob(image);
 	  if (data_order == 1)
 	    {
-	      for (z=0; z < iris_info.zsize; z++)
+	      for (z=0U; z < iris_info.zsize; z++)
 		{
 		  p=iris_pixels;
-		  for (y=0; y < iris_info.ysize; y++)
+		  for (y=0U; y < iris_info.ysize; y++)
 		    {
-		      if (offset != offsets[y+z*iris_info.ysize])
+		      if (offset != (magick_off_t) offsets[(size_t) y+z*iris_info.ysize])
 			{
-			  offset=offsets[y+z*iris_info.ysize];
+			  offset=(magick_off_t) offsets[(size_t) y+z*iris_info.ysize];
 			  if (SeekBlob(image,offset,SEEK_SET) != offset)
                             ThrowSGIReaderException(CorruptImageError,
                                                     UnableToRunlengthDecodeImage, image);
 			}
-		      if (ReadBlob(image,runlength[y+z*iris_info.ysize],
-                                   (char *) max_packets) != runlength[y+z*iris_info.ysize])
+		      if (ReadBlob(image,runlength[(size_t) y+z*iris_info.ysize],
+                                   (char *) max_packets) != runlength[(size_t) y+z*iris_info.ysize])
 			{
 			  ThrowSGIReaderException(CorruptImageError,
                                                   UnexpectedEndOfFile, image);
 			}
-		      offset+=runlength[y+z*iris_info.ysize];
+		      offset+=(magick_off_t) runlength[(size_t) y+z*iris_info.ysize];
 		      if (SGIDecode(bytes_per_pixel,max_packets,p+bytes_per_pixel*z,
-				    runlength[y+z*iris_info.ysize]/bytes_per_pixel,
+				    runlength[(size_t) y+z*iris_info.ysize]/bytes_per_pixel,
 				    iris_info.xsize) == -1)
 			ThrowSGIReaderException(CorruptImageError,
                                                 UnableToRunlengthDecodeImage,image); 
-		      p+=(iris_info.xsize*4*bytes_per_pixel);
+		      p+=((size_t) iris_info.xsize*4U*bytes_per_pixel);
 		    }
 		}
 	    }
 	  else
 	    {
 	      p=iris_pixels;
-	      for (y=0; y < (long) iris_info.ysize; y++)
+	      for (y=0; y < iris_info.ysize; y++)
 		{
-		  for (z=0; z < (int) iris_info.zsize; z++)
+		  for (z=0; z < iris_info.zsize; z++)
 		    {
-		      if (offset != offsets[y+z*iris_info.ysize])
+		      if (offset != (magick_off_t) offsets[y+z*iris_info.ysize])
 			{
-			  offset=offsets[y+z*iris_info.ysize];
+			  offset=(magick_off_t) offsets[(size_t) y+z*iris_info.ysize];
 			  if (SeekBlob(image,offset,SEEK_SET) != offset)
                             ThrowSGIReaderException(CorruptImageError,
                                                     UnableToRunlengthDecodeImage, image);
 			}
-		      if (ReadBlob(image,runlength[y+z*iris_info.ysize],
-                                   (char *) max_packets) != runlength[y+z*iris_info.ysize])
+		      if (ReadBlob(image,runlength[(size_t) y+z*iris_info.ysize],
+                                   (char *) max_packets) != runlength[(size_t) y+z*iris_info.ysize])
 			{
 			  ThrowSGIReaderException(CorruptImageError,
                                                   UnexpectedEndOfFile, image);
 			}
-		      offset+=runlength[y+z*iris_info.ysize];
+		      offset+=runlength[(size_t) y+z*iris_info.ysize];
 		      if (SGIDecode(bytes_per_pixel,max_packets,p+bytes_per_pixel*z,
-				    runlength[y+z*iris_info.ysize]/bytes_per_pixel,
+				    runlength[(size_t) y+z*iris_info.ysize]/bytes_per_pixel,
 				    iris_info.xsize) == -1)
 			ThrowSGIReaderException(CorruptImageError,
                                                 UnableToRunlengthDecodeImage,image); 
 		    }
-		  p+=(iris_info.xsize*4*bytes_per_pixel);
+		  p+=((size_t) iris_info.xsize*4U*bytes_per_pixel);
 		  if (EOFBlob(image))
 		    break;
 		}
@@ -744,7 +748,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  /*
 	    Convert SGI image to DirectClass pixel packets.
 	  */
-	  if (bytes_per_pixel == 2)
+	  if (bytes_per_pixel == 2U)
 	    {
 	      for (y=0; y < image->rows; y++)
 		{
@@ -752,17 +756,17 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		  q=SetImagePixels(image,0,y,image->columns,1);
 		  if (q == (PixelPacket *) NULL)
 		    break;
-		  for (x=0; x < image->columns; x++)
+		  for (x=0U; x < image->columns; x++)
 		    {
-		      q->red=ScaleShortToQuantum((*(p+0) << 8) | (*(p+1)));
-		      q->green=ScaleShortToQuantum((*(p+2) << 8) | (*(p+3)));
-		      q->blue=ScaleShortToQuantum((*(p+4) << 8) | (*(p+5)));
+		      q->red=ScaleShortToQuantum((*(p+0) << 8U) | (*(p+1)));
+		      q->green=ScaleShortToQuantum((*(p+2) << 8U) | (*(p+3)));
+		      q->blue=ScaleShortToQuantum((*(p+4) << 8U) | (*(p+5)));
 		      if (image->matte)
 			q->opacity=(Quantum)
 			  (MaxRGB-ScaleShortToQuantum((*(p+6) << 8) | (*(p+7))));
 		      else
 			q->opacity=OpaqueOpacity;
-		      p+=8;
+		      p+=8U;
 		      q++;
 		    }
 		  if (!SyncImagePixels(image))
@@ -841,7 +845,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  else
 	    for (y=0; y < image->rows; y++)
 	      {
-		p=iris_pixels+(image->rows-y-1)*4*image->columns;
+		p=iris_pixels+(image->rows-y-1)*4U*image->columns;
 		q=SetImagePixels(image,0,y,image->columns,1);
 		if (q == (PixelPacket *) NULL)
 		  break;
