@@ -1,3 +1,13 @@
+2016-10-09 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	*doc/options.imdoc (-strip): Added a caution to not use the -strip
+	option to remove author, copyright, and license information
+	when redistributing an image that requires them to be retained.
+
+	*doc/options.imdoc (-comment and -label): Document the fact that
+	only one comment or label is stored, and how they are stored in
+	PNG files.
+
 2016-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sgi.c (ReadSGIImage): Adjusts some variable types and
