@@ -1,4 +1,4 @@
-.TH gm 1 "2016/05/29" "GraphicsMagick"
+.TH gm 1 "2016/10/20" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -729,7 +729,8 @@ image filename, type, width, height, or other image attribute by embedding
 special format characters listed under the \fB-format\fP option.
 The comment is not drawn on the image, but is embedded in the image
 datastream via a "Comment" tag or similar mechanism.  If you want the
-comment to be visible on the image itself, use the \fB-draw\fP option.
+comment to be visible on the image itself, use the \fB-draw\fP option
+instead.
 
 For example,
 
@@ -741,6 +742,12 @@ titled \fBbird.miff\fP and whose width is 512 and height is 480.
 
 If the first character of \fIstring\fP is \fI@\fP, the image comment
 is read from a file titled by the remaining characters in the string.
+
+If the -comment option appears multiple times, only the last comment is
+stored.
+
+In PNG images, the comment is stored in a \fBtEXt\fP or \fBzTXt\fP chunk
+with the keyword "comment".
 .TP
 .B "-compose \fI<operator>"\fP
 \fRthe type of image composition
@@ -2756,6 +2763,12 @@ and whose width is 512 and height is 480.
 If the first character of \fIstring\fP is \fI@\fP, the image label is
 read from a file titled by the remaining characters in the string.
 
+If the -label option appears multiple times, only the last label is
+stored.
+
+In PNG images, the label is stored in a \fBtEXt\fP or \fBzTXt\fP chunk
+with the keyword "label".
+
 When converting to \fIPostScript\fP, use this option to specify a header
 string to print above the image. Specify the label font with
 \fB-font\fP.
@@ -4261,6 +4274,10 @@ glasses are required to properly view the stereo image.
 All embedded profiles and text attributes are stripped from the image.
 This is useful for images used for the web, or when output files need
 to be as small as possible
+
+Be careful not to use this option to remove author, copyright, and
+license information that you are required to retain when redistributing
+an image.
 .TP
 .B "-stroke \fI<color>"\fP
 \fRcolor to use when stroking a graphic primitive
