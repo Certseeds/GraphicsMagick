@@ -1,4 +1,8 @@
-2016-10-09 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2016-10-21 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	*coders/png.c (ReadOneJNGImage): Enforce spec requirement that
+	the dimensions of the JPEG embedded in a JDAT chunk must match
+	the JHDR dimensions.
 
 	*doc/options.imdoc (-strip): Added a caution to not use the -strip
 	option to remove author, copyright, and license information

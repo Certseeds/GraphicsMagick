@@ -2801,6 +2801,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   long
     y;
 
+  magick_int64_t
+    height_resource,
+    width_resource;
+
   unsigned long
     jng_height,
     jng_width;
@@ -2871,6 +2875,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
   read_JSEP=MagickFalse;
   reading_idat=MagickFalse;
+  
+  width_resource = GetMagickResourceLimit(WidthResource);
+  height_resource = GetMagickResourceLimit(HeightResource);
+
   for (;;)
     {
       char
@@ -3003,6 +3011,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               DestroyJNGInfo(color_image_info,alpha_image_info);
               ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
             }
+
+          /* Temporarily set width and height resources to match JHDR */
+          SetMagickResourceLimit(WidthResource,jng_width);
+          SetMagickResourceLimit(HeightResource,jng_height);
 
           continue;
         }
@@ -3444,6 +3456,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "  exit ReadOneJNGImage()");
+
+  SetMagickResourceLimit(WidthResource,width_resource);
+  SetMagickResourceLimit(HeightResource,height_resource);
+
   return (image);
 }
 
