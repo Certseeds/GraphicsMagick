@@ -1,3 +1,7 @@
+2016-10-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Ability to read multiple images from Matlab V4 format.
+
 2016-10-21 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	*coders/png.c (ReadOneJNGImage): Enforce spec requirement that

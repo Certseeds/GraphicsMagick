@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1119,7 +1119,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     }
                 }      
 
-			  if(!image_info->ping)
+              if(!image_info->ping)
                 if(UnpackWPGRaster(image,bpp) < 0)                
                 {		/* The raster cannot be unpacked */
                 DecompressionFailed:
