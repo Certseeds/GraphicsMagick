@@ -1,3 +1,8 @@
+2016-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c: Eliminate unused variable compiler warnings when
+	HAVE_MMAP_FILEIO is not defined.
+
 2016-10-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Ability to read multiple images from Matlab V4 format.

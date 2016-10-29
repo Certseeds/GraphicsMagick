@@ -2319,6 +2319,10 @@ MagickExport void *MapBlob(int file,const MapMode mode,magick_off_t offset,
 			map);
   return((void *) map);
 #else
+  (void) file;
+  (void) mode;
+  (void) offset;
+  (void) length;
   return((void *) NULL);
 #endif
 }
@@ -4555,6 +4559,8 @@ MagickExport MagickPassFail UnmapBlob(void *map,const size_t length)
   status=MagickMunmap(map,length);
   return(status == 0);
 #else
+  (void) map;
+  (void) length;
   return(MagickFail);
 #endif
 }
