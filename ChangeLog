@@ -1,5 +1,9 @@
 2016-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* acinclude.m4 (LIBS): Fix memory leaks in GM_FUNC_MMAP_FILEIO
+	macro test-case so that it can be used successfully with ASAN
+	compilation options.
+
 	* magick/blob.c: Eliminate unused variable compiler warnings when
 	HAVE_MMAP_FILEIO is not defined.
 

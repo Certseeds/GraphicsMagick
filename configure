@@ -21569,37 +21569,57 @@ char *malloc ();
 int
 main ()
 {
-  char *data, *data2, *data3;
+  char *data = NULL, *data2 = NULL, *data3 = NULL;
   int i, pagesize;
-  int fd;
+  int fd = -1;
+  int exit_status = 0;
 
   pagesize = getpagesize ();
 
   /* First, make a file with some known garbage in it. */
   data = (char *) malloc (pagesize);
   if (!data)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   for (i = 0; i < pagesize; ++i)
     *(data + i) = rand ();
   umask (0);
   fd = creat ("conftest.mmap", 0600);
   if (fd < 0)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   if (write (fd, data, pagesize) != pagesize)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   close (fd);
+  fd = -1;
 
   /* Mmap the file as read/write/shared and verify that we see the
   same garbage. */
   fd = open ("conftest.mmap", O_RDWR);
   if (fd < 0)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   data2 = mmap (0, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0L);
   if (data2 == 0)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   for (i = 0; i < pagesize; ++i)
     if (*(data + i) != *(data2 + i))
-      exit (1);
+    {
+      exit_status = 1;
+      goto quit;
+    }
 
   /* Finally, make sure that changes to the mapped area
      percolate back to the file as seen by read().  */
@@ -21607,14 +21627,31 @@ main ()
     *(data2 + i) = *(data2 + i) + 1;
   data3 = (char *) malloc (pagesize);
   if (!data3)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   if (read (fd, data3, pagesize) != pagesize)
-    exit (1);
+  {
+    exit_status = 1;
+    goto quit;
+  }
   for (i = 0; i < pagesize; ++i)
     if (*(data2 + i) != *(data3 + i))
-      exit (1);
-  close (fd);
-  exit (0);
+    {
+      exit_status = 1;
+      goto quit;
+    }
+quit:
+  if (fd != -1)
+    close (fd);
+  if (data)
+    free (data);
+  if (data2)
+    (void) munmap (data2, pagesize);
+  if (data3)
+    free (data3);
+  exit (exit_status);
 }
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
