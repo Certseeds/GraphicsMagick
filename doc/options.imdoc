@@ -2632,7 +2632,7 @@ Use the given radius and standard deviation (sigma).</pp>
 The <s>-geometry</s> option is used for a number of different
 purposes, depending on the utility it is used with.</pp>
 
-<pp
+<pp>
 For the X11 commands ('animate', 'display', and 'import'), it
 specifies the preferred size and location of the Image window.  By
 default, the window size is the image size and the location is chosen
@@ -3067,7 +3067,7 @@ is displayed with the corresponding tile in the montage.  Use the
 <!-- ------------ -lat ---------------------------------------------- -->
 
 <utils apps=convert,mogrify>
-<opt>-lat <width>x<height>{+-}<offset>{%}</opt>
+<dopt>-lat <width>x<height>{+-}<offset>{%}</opt>
 
 <abs>perform local adaptive thresholding</abs>
 
