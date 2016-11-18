@@ -1,4 +1,4 @@
-.TH gm 1 "2016/10/20" "GraphicsMagick"
+.TH gm 1 "2016/11/17" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -493,7 +493,9 @@ The argument string is comma delimited and is in the following form
 
 
 with the unity (no change) specification being:
+
 "1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+
 .TP
 .B "-authenticate \fI<string>"\fP
 \fRdecrypt image with this password
@@ -808,6 +810,7 @@ composite operators are available:
 
 
 The behavior of each operator is described below.
+
 .in 15
 
 .in 15
@@ -1031,6 +1034,7 @@ space, then the change-image pixel intensities are used.
 
 .in 15
 
+
 .TP
 .B "-compress \fI<type>"\fP
 \fRthe type of image compression
@@ -1172,6 +1176,7 @@ that name. This is used to control on/off options. Use +define
 +define "*" to remove all existing definitions.
 
 The following definitions may be created:
+
 .in 15
 
 .in 15
@@ -1749,6 +1754,7 @@ If set, reduce memory usage (but increase CPU use)
 .in 15
 
 
+
 For example, to create a postscript file that will render only the black
 pixels of a bilevel image, use:
 
@@ -2105,7 +2111,6 @@ the left and five pixels up, with respect to the thumbnail:
 
 This command reduces or expands a JPEG image to fit on an 800x600
 display: 
-
 
     gm convert -size 800x600 input.jpg \\
               -resize 800x600 -background black \\
@@ -2519,7 +2524,7 @@ Use the given radius and standard deviation (sigma).
 
 The \fB-geometry\fP option is used for a number of different
 purposes, depending on the utility it is used with.
-<pp
+
 For the X11 commands ('animate', 'display', and 'import'), it
 specifies the preferred size and location of the Image window.  By
 default, the window size is the image size and the location is chosen
