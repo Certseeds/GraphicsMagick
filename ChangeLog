@@ -1,3 +1,8 @@
+2016-11-18 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* doc/options.imdoc, doc/config_files.imdoc, doc/benchmark.imdoc:
+	Fixed some indentation in the documentation.
+
 2016-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* acinclude.m4 (LIBS): Fix memory leaks in GM_FUNC_MMAP_FILEIO
