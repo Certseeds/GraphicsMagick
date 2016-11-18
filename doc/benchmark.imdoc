@@ -172,16 +172,16 @@ any argument.</p>
 
 <abs>duration to run benchmark</abs>
 
-<p>Specify the number of seconds to run the benchmark. The command is
+<pp>Specify the number of seconds to run the benchmark. The command is
 executed repeatedly until the specified amount of time has
-elapsed.</p>
+elapsed.</pp>
 
 <!-- ------------ -help ------------------------------------- -->
 
 <opt>-help</opt>
 
-<p>
-Prints benchmark command help.</p>
+<pp>
+Prints benchmark command help.</pp>
 
 <!-- ------------ -iterations ------------------------------------- -->
 
@@ -189,9 +189,9 @@ Prints benchmark command help.</p>
 
 <abs>number of command iterations</abs>
 
-<p>Specify the number of iterations to run the benchmark. The command
+<pp>Specify the number of iterations to run the benchmark. The command
 is executed repeatedly until the specified number of iterations has
-been reached.</p>
+been reached.</pp>
 
 <!-- ------------ -rawcsv ------------------------------------- -->
 
@@ -199,10 +199,10 @@ been reached.</p>
 
 <abs>Print results in CSV format</abs>
 
-<p>Print results in a comma-separated value (CSV) format which is easy
+<pp>Print results in a comma-separated value (CSV) format which is easy
 to parse for plotting or importing into a spreadsheet or database.
 The values reported are <s>threads</s>, <s>iterations</s>,
-<s>user_time</s>, and <s>elapsed_time</s>.</p>
+<s>user_time</s>, and <s>elapsed_time</s>.</pp>
 
 <!-- ------------ -stepthreads ------------------------------------- -->
 
@@ -210,10 +210,10 @@ The values reported are <s>threads</s>, <s>iterations</s>,
 
 <abs>execute a per-thread benchmark ramp</abs>
 
-<p> Execute a per-thread benchmark ramp, incrementing the number of
+<pp> Execute a per-thread benchmark ramp, incrementing the number of
 threads at each step by the specified value.  The maximum number of
 threads is taken from the standard <tt>OMP_NUM_THREADS</tt>
-environment variable.</p>
+environment variable.</pp>
 
 
 </sect>

@@ -149,16 +149,16 @@ The argument string is comma delimited and is in the following form
 (but without invervening spaces or line breaks)</pp>
 
 <pp><pre>
-  redslope,redoffset,redpower:
-  greenslope,greenoffset,greenpower:
-  blueslope,blueoffset,bluepower:
-  saturation
+    redslope,redoffset,redpower:
+    greenslope,greenoffset,greenpower:
+    blueslope,blueoffset,bluepower:
+    saturation
 </pre></pp>
 
 <pp>
 with the unity (no change) specification being:</pp>
 <pp><pre>
-"1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+    "1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
 </pre></pp>
 
 </utils>
@@ -2040,9 +2040,6 @@ display: </pp>
 If the aspect ratio of the input image isn't exactly 4:3, then the
 image is centered on an 800x600 black canvas. </pp>
 
-<pp>
-</pp>
-
 
 </utils>
 
@@ -2200,10 +2197,6 @@ and this flattens a Photoshop PSD file:</pp>
 <pp><pre>
     gm convert input.psd -flatten output.png
 </pre></pp>
-
-<pp>
-</pp>
-
 
 </utils>
 
@@ -2834,11 +2827,7 @@ used so it is not usually necessary for CLUT images to be very large.
 The PNG file format is ideal for storing Hald CLUT images because it
 compresses them very well.</pp>
 
-<pp>
-</pp>
-
 </utils>
-
 
 
 <!-- ------------ -help --------------------------------------------- -->
@@ -2861,9 +2850,6 @@ compresses them very well.</pp>
 
 <pp>
 Specifies the color to use when annotating difference pixels.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -2900,9 +2886,6 @@ and <s>XOR</s> does an XOR between the pixel and the highlight color.</pp>
 Offsets, if present in the geometry specification, are handled in
 the same manner as the <s>-geometry</s> option, using X11 style to handle
 negative offsets.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -2962,9 +2945,6 @@ Choose from these intents:
 <pp>
 The default intent is undefined.</pp>
 
-<pp>
-</pp>
-
 </utils>
 
 
@@ -3000,9 +2980,6 @@ is like plane except the different planes are saved to individual files
 <pp>
 Use <s>Line</s> to create an <s>interlaced PNG</s> or <s> GIF</s> or
 <s>progressive JPEG</s> image.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -3048,7 +3025,7 @@ stored.</pp>
 
 <pp>
 In PNG images, the label is stored in a <s>tEXt</s> or <s>zTXt</s> chunk
-with the keyword "label".
+with the keyword "label".</pp>
 
 <pp>
 When converting to <i>PostScript</i>, use this option to specify a header
@@ -3091,12 +3068,9 @@ For example,</pp>
      -colorspace gray -lat "10x10-5%"
 </pre></pp>
 
-<p>
+<pp>
 will help clarify a scanned grayscale or color document, producing a
 bi-level equivalent.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -3841,6 +3815,8 @@ integral value prior to use. If a percent (<s>%</s>) symbol is appended
 to the argument, then the argument has a range of 0 to 100 percent.</pp>
 <pp>
 The following is a description of the operators:</pp>
+
+<pp>
 <dl>
 
 <dt>Add</dt>
@@ -3991,6 +3967,7 @@ quantum span.
 the intensity specified by rvalue.
 </dd>
 </dl>
+</pp>
 
 <pp>
 As an example, the <s>Assign</s> operator assigns a fixed value to a
@@ -4715,7 +4692,6 @@ offset:</pp>
 The <i>x</i> and <i>y</i> offsets are treated in the same manner as in <s>-crop</s></pp>.
 
 </utils>
-
 
 
 
@@ -5746,6 +5722,7 @@ a radius of 0 to have the method select a suitable radius.</pp>
 <pp>
 The parameters are:</pp>
 
+<pp>
 <dl>
 <dt>radius</dt>
 <dd>
@@ -5769,6 +5746,7 @@ The threshold, as a fraction of MaxRGB, needed to apply the difference
 amount (default 0.05).
 </dd>
 </dl>
+</pp>
 
 </utils>
 
@@ -5855,6 +5833,7 @@ the boundaries of an image.</pp>
 <pp>
 Choose from these methods:</pp>
 
+<pp>
 <dl>
 <dt>Constant</dt>
 <dd>
@@ -5876,6 +5855,7 @@ Mirror the image.
 Tile the image.
 </dd>
 </dl>
+</pp>
 
 <pp>
 This option affects operations that use

@@ -32,13 +32,13 @@
 <opt>colors.mgk</opt>
 <abs>colors configuration file</abs>
 
-<pre>
+<pp><pre>
   <?xml version="1.0"?>
   <colormap>
     <color name="AliceBlue" red="240" green="248" blue="255"
            compliance="SVG, X11, XPM" />
   </colormap>
-</pre>
+</pre></pp>
 
 <opt>delegates.mgk</opt>
 <abs>delegates configuration file</abs>
@@ -47,7 +47,7 @@
 <opt>log.mgk</opt>
 <abs>logging configuration file</abs>
 
-<pre>
+<pp><pre>
   <?xml version="1.0"?>
   <magicklog>
     <log events="None" />
@@ -57,22 +57,22 @@
     <log limit="2000" />
     <log format="%t %r %u %p %m/%f/%l/%d:\n  %e"  />
   </magicklog>
-</pre>
+</pre></pp>
 
 <opt>modules.mgk</opt>
 <abs>loadable modules configuration file</abs>
 
-<pre>
+<pp><pre>
   <?xml version="1.0"?>
   <modulemap>
     <module magick="8BIM" name="META" />
   </modulemap>
-</pre>
+</pre></pp>
 
 <opt>type.mgk</opt>
 <abs>master type (fonts) configuration file</abs>
 
-<pre>
+<pp><pre>
   <?xml version="1.0"?>
   <typemap>
     <<s></s>include file="type-windows.mgk" />
@@ -89,6 +89,6 @@
       glyphs="/usr/local/share/ghostscript/fonts/a010013l.pfb"
     />
   </typemap>
-</pre>
+</pre></pp>
 
 </imdoc>
