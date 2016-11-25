@@ -599,15 +599,15 @@ numbers comprising a single color decision. The tenth number
 The argument string is comma delimited and is in the following form
 (but without invervening spaces or line breaks)</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
-  redslope,redoffset,redpower:
-  greenslope,greenoffset,greenpower:
-  blueslope,blueoffset,bluepower:
-  saturation
+    redslope,redoffset,redpower:
+    greenslope,greenoffset,greenpower:
+    blueslope,blueoffset,bluepower:
+    saturation
 </pre></font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 with the unity (no change) specification being:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
-"1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+    "1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
 </pre></font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
@@ -2252,8 +2252,6 @@ display: </font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the aspect ratio of the input image isn't exactly 4:3, then the
 image is centered on an 800x600 black canvas. </font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -2391,8 +2389,6 @@ and this flattens a Photoshop PSD file:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
     gm convert input.psd -flatten output.png
 </pre></font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -2948,8 +2944,6 @@ order for the <strong>IDENTITY</strong> CLUT generator is 8.  Interpolation is
 used so it is not usually necessary for CLUT images to be very large.
 The PNG file format is ideal for storing Hald CLUT images because it
 compresses them very well.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -2974,8 +2968,6 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>pixel annotation color</td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Specifies the color to use when annotating difference pixels.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3010,8 +3002,6 @@ width=15><b><font face="Helvetica, Arial"
 Offsets, if present in the geometry specification, are handled in
 the same manner as the <strong>-geometry</strong> option, using X11 style to handle
 negative offsets.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3063,8 +3053,6 @@ Choose from these intents:
 <strong>Absolute, Perceptual, Relative, Saturation</strong>.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The default intent is undefined.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3096,8 +3084,6 @@ is like plane except the different planes are saved to individual files
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Use <strong>Line</strong> to create an <strong>interlaced PNG</strong> or <strong> GIF</strong> or
 <strong>progressive JPEG</strong> image.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3135,7 +3121,7 @@ If the -label option appears multiple times, only the last label is
 stored.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 In PNG images, the label is stored in a <strong>tEXt</strong> or <strong>zTXt</strong> chunk
-with the keyword "label".
+with the keyword "label".</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 When converting to <em>PostScript</em>, use this option to specify a header
 string to print above the image. Specify the label font with
@@ -3170,11 +3156,9 @@ For example,</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
      -colorspace gray -lat "10x10-5%"
 </pre></font></td></tr></table>
-<p>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 will help clarify a scanned grayscale or color document, producing a
 bi-level equivalent.</font></td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3826,6 +3810,7 @@ integral value prior to use. If a percent (<strong>%</strong>) symbol is appende
 to the argument, then the argument has a range of 0 to 100 percent.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The following is a description of the operators:</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 <dl>
 <dt>Add</dt>
 <dd>Result is rvalue added to channel value.
@@ -3947,6 +3932,7 @@ quantum span.
 the intensity specified by rvalue.
 </dd>
 </dl>
+</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 As an example, the <strong>Assign</strong> operator assigns a fixed value to a
 channel. For example, this command sets the red channel to the mid-range
@@ -5505,6 +5491,7 @@ with a Gaussian operator of the given radius and standard deviation
 a radius of 0 to have the method select a suitable radius.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The parameters are:</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 <dl>
 <dt>radius</dt>
 <dd>
@@ -5525,6 +5512,7 @@ The threshold, as a fraction of MaxRGB, needed to apply the difference
 amount (default 0.05).
 </dd>
 </dl>
+</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -5600,6 +5588,7 @@ defines "virtual pixels" for use in operations that can access pixels outside
 the boundaries of an image.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Choose from these methods:</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 <dl>
 <dt>Constant</dt>
 <dd>
@@ -5618,6 +5607,7 @@ Mirror the image.
 Tile the image.
 </dd>
 </dl>
+</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 This option affects operations that use
 virtual pixels such as <strong>-blur</strong>, <strong>-sharpen</strong>, <strong>-wave</strong>, etc.</font></td></tr></table>
@@ -6200,13 +6190,13 @@ width=15><b><font face="Helvetica, Arial"
     colors.mgk
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>colors configuration file</td></tr></table>
-<pre>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
   &lt;?xml version="1.0"?&gt;
   &lt;colormap&gt;
     &lt;color name="AliceBlue" red="240" green="248" blue="255"
            compliance="SVG, X11, XPM" /&gt;
   &lt;/colormap&gt;
-</pre>
+</pre></font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -6229,7 +6219,7 @@ width=15><b><font face="Helvetica, Arial"
     log.mgk
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>logging configuration file</td></tr></table>
-<pre>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
   &lt;?xml version="1.0"?&gt;
   &lt;magicklog&gt;
     &lt;log events="None" /&gt;
@@ -6239,7 +6229,7 @@ width=15><b><font face="Helvetica, Arial"
     &lt;log limit="2000" /&gt;
     &lt;log format="%t %r %u %p %m/%f/%l/%d:\n  %e"  /&gt;
   &lt;/magicklog&gt;
-</pre>
+</pre></font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -6251,12 +6241,12 @@ width=15><b><font face="Helvetica, Arial"
     modules.mgk
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>loadable modules configuration file</td></tr></table>
-<pre>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
   &lt;?xml version="1.0"?&gt;
   &lt;modulemap&gt;
     &lt;module magick="8BIM" name="META" /&gt;
   &lt;/modulemap&gt;
-</pre>
+</pre></font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -6268,7 +6258,7 @@ width=15><b><font face="Helvetica, Arial"
     type.mgk
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>master type (fonts) configuration file</td></tr></table>
-<pre>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
   &lt;?xml version="1.0"?&gt;
   &lt;typemap&gt;
     &lt;<strong></strong>include file="type-windows.mgk" /&gt;
@@ -6285,7 +6275,7 @@ width=15><b><font face="Helvetica, Arial"
       glyphs="/usr/local/share/ghostscript/fonts/a010013l.pfb"
     /&gt;
   &lt;/typemap&gt;
-</pre>
+</pre></font></td></tr></table>
 </td></tr></table>
      <p>
 <i><a href="#top">Back to Contents</a></i> 
@@ -7469,9 +7459,9 @@ width=15><b><font face="Helvetica, Arial"
     -duration <i>duration</i>
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>duration to run benchmark</td></tr></table>
-<p>Specify the number of seconds to run the benchmark. The command is
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">Specify the number of seconds to run the benchmark. The command is
 executed repeatedly until the specified amount of time has
-elapsed.
+elapsed.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -7482,8 +7472,8 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     -help
 </font></font></font></b></td></tr></table>
-<p>
-Prints benchmark command help.
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+Prints benchmark command help.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -7495,9 +7485,9 @@ width=15><b><font face="Helvetica, Arial"
     -iterations <i>loops</i>
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>number of command iterations</td></tr></table>
-<p>Specify the number of iterations to run the benchmark. The command
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">Specify the number of iterations to run the benchmark. The command
 is executed repeatedly until the specified number of iterations has
-been reached.
+been reached.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -7509,10 +7499,10 @@ width=15><b><font face="Helvetica, Arial"
     -rawcsv
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Print results in CSV format</td></tr></table>
-<p>Print results in a comma-separated value (CSV) format which is easy
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">Print results in a comma-separated value (CSV) format which is easy
 to parse for plotting or importing into a spreadsheet or database.
 The values reported are <strong>threads</strong>, <strong>iterations</strong>,
-<strong>user_time</strong>, and <strong>elapsed_time</strong>.
+<strong>user_time</strong>, and <strong>elapsed_time</strong>.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -7524,10 +7514,10 @@ width=15><b><font face="Helvetica, Arial"
     -stepthreads <i>step</i>
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>execute a per-thread benchmark ramp</td></tr></table>
-<p> Execute a per-thread benchmark ramp, incrementing the number of
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"> Execute a per-thread benchmark ramp, incrementing the number of
 threads at each step by the specified value.  The maximum number of
 threads is taken from the standard <tt>OMP_NUM_THREADS</tt>
-environment variable.
+environment variable.</font></td></tr></table>
 </td></tr></table>
 </td></tr></table>
 <br>&nbsp;<br>
