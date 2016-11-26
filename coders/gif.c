@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -232,11 +232,6 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
           /*
             Interpret the code
           */
-          if (code > available)
-            {
-              status=MagickFail;
-              break;
-            }
           if (code == end_of_information)
             break;
           if (code == clear)
@@ -285,23 +280,18 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
           /*
             Add a new string to the string table,
           */
-          if (available >= MaxStackSize)
+          if (available < MaxStackSize)
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Excessive LZW string data "
-                                    "(string table overflow)");
-              status=MagickFail;
-              break;
+              prefix[available]=(short) old_code;
+              suffix[available]=first;
+              available++;
+            if (available >= (code_mask + 1) && code_size < 12)
+              {
+                code_size++;
+                code_mask+=available;
+              }
             }
           *top_stack++=first;
-          prefix[available]=(short) old_code;
-          suffix[available]=first;
-          available++;
-          if (((available & code_mask) == 0) && (available < MaxStackSize))
-            {
-              code_size++;
-              code_mask+=available;
-            }
           old_code=in_code;
         }
       /*
@@ -386,7 +376,9 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
   if ((status == MagickFail) || (y < (long) image->rows))
     {
       if (image->exception.severity < ErrorException)
+      {
         ThrowException(&image->exception,CorruptImageError,CorruptImage,image->filename);
+      }
       return MagickFail;
     }
   return(MagickPass);

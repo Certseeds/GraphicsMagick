@@ -1,3 +1,9 @@
+2016-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/gif.c (DecodeImage): Applied fixes by Tianyu Lang for
+	"Excessive LZW string data" problem leading to "Corrupt image"
+	report while reading some GIF files.
+
 2016-11-18 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* doc/options.imdoc, doc/config_files.imdoc, doc/benchmark.imdoc:
