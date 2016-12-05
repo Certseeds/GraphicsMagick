@@ -24,9 +24,14 @@
 
 2016-10-21 Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	*coders/png.c (ReadOneJNGImage): Enforce spec requirement that
-	the dimensions of the JPEG embedded in a JDAT chunk must match
-	the JHDR dimensions.
+	*coders/png.c (ReadOneJNGImage): Enforce spec requirement that the
+	dimensions of the JPEG embedded in a JDAT chunk must match the
+	JHDR dimensions. This issue was assigned CVE-2016-9830 on
+	2016-12-04.  Please note that GraphicsMagick's pixel, width, and
+	height default limits are often greater than the dimension limits
+	of JNG and JPEG so the user should add explicit limits (if needed)
+	to prevent unexpected memory consumption from properly-constructed
+	JNG files with large dimensions.
 
 	*doc/options.imdoc (-strip): Added a caution to not use the -strip
 	option to remove author, copyright, and license information
