@@ -6,6 +6,7 @@
 #ifndef _TCLMAGICK_H_
 #define _TCLMAGICK_H_
 
+#include <string.h>
 #include <tcl.h>
 #include <wand/magick_wand.h>
 

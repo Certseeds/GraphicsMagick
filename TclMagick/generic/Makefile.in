@@ -147,6 +147,7 @@ CFLAGS = @CFLAGS@
 CFLAGS_DEBUG = @CFLAGS_DEBUG@
 CFLAGS_OPTIMIZE = @CFLAGS_OPTIMIZE@
 CFLAGS_WARNING = @CFLAGS_WARNING@
+CLEANFILES = @CLEANFILES@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH = @CYGPATH@
@@ -154,7 +155,6 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
-DL_LIBS = @DL_LIBS@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
@@ -234,6 +234,7 @@ TCL_LIBS = @TCL_LIBS@
 TCL_LIB_FILE = @TCL_LIB_FILE@
 TCL_LIB_FLAG = @TCL_LIB_FLAG@
 TCL_LIB_SPEC = @TCL_LIB_SPEC@
+TCL_PATCH_LEVEL = @TCL_PATCH_LEVEL@
 TCL_SHLIB_LD_LIBS = @TCL_SHLIB_LD_LIBS@
 TCL_SRC_DIR = @TCL_SRC_DIR@
 TCL_STUB_LIB_FILE = @TCL_STUB_LIB_FILE@
@@ -253,6 +254,8 @@ TK_STUB_LIB_FLAG = @TK_STUB_LIB_FLAG@
 TK_STUB_LIB_SPEC = @TK_STUB_LIB_SPEC@
 TK_VERSION = @TK_VERSION@
 TK_XINCLUDES = @TK_XINCLUDES@
+VC_MANIFEST_EMBED_DLL = @VC_MANIFEST_EMBED_DLL@
+VC_MANIFEST_EMBED_EXE = @VC_MANIFEST_EMBED_EXE@
 VERSION = @VERSION@
 WISH_PROG = @WISH_PROG@
 abs_builddir = @abs_builddir@
@@ -332,9 +335,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu generic/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign generic/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu generic/Makefile
+	  $(AUTOMAKE) --foreign generic/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -550,6 +553,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)

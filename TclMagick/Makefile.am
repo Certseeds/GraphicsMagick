@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = 1.11 dist-zip dist-bzip2 dist-lzma foreign
+AUTOMAKE_OPTIONS = 1.11 dist-zip dist-bzip2 foreign
 ACLOCAL_AMFLAGS = -I unix/m4
 
 EXTRA_DIST=LICENSE tests images doc pkgIndex.tcl
