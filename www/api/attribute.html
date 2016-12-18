@@ -165,7 +165,15 @@ the value is concatenated to the attribute.  SetImageAttribute returns
 True if the attribute is successfully concatenated or added to the list,
 otherwise False.  If the value is NULL, the matching key is deleted
 from the list.</p>
-<p>The 'comment' and 'label' attributes are treated specially in that
+<p>There is special handling for the EXIF:Orientation attribute. Setting this
+attribute will also update the EXIF tag in the image's EXIF profile to the
+given value provided an EXIF profile exists and has an existing EXIF
+orientation tag and the attribute value is a valid orientation
+(see orientationType). The attribute value will be set regardless of
+whether the EXIF profile was successfully updated. The new
+EXIF:Orientation attribute replaces the existing value rather than
+being concatenated to it as when setting other attributes.
+The 'comment' and 'label' attributes are treated specially in that
 embedded format specifications are translated according to the formatting
 rules of TranslateText().</p>
 <p>The format of the SetImageAttribute method is:</p>

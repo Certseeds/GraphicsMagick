@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2015 GraphicsMagick Group */
+/* Copyright (C) 2003-2016 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -624,6 +624,81 @@ WandExport MagickWand *MagickAppendImages(MagickWand *wand,
 %                                                                             %
 %                                                                             %
 %                                                                             %
+%   M a g i c k A u t o O r i e n t I m a g e                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickAutoOrientImage() adjusts the current image so that its orientation
+%  is suitable for viewing (i.e. top-left orientation).
+%
+%  The format of the MagickAutoOrientImage method is:
+%
+%      unsigned int MagickAutoOrientImage(MagickWand *wand,
+%        const OrientationType current_orientation,
+%        ExceptionInfo *exception)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o current_orientation: Current image orientation. May be one of:
+%         TopLeftOrientation      Left to right and Top to bottom
+%         TopRightOrientation     Right to left  and Top to bottom
+%         BottomRightOrientation  Right to left and Bottom to top
+%         BottomLeftOrientation   Left to right and Bottom to top
+%         LeftTopOrientation      Top to bottom and Left to right
+%         RightTopOrientation     Top to bottom and Right to left
+%         RightBottomOrientation  Bottom to top and Right to left
+%         LeftBottomOrientation   Bottom to top and Left to right
+%         UndefinedOrientation    Current orientation is not known.
+%                                 Use orientation defined by the
+%                                 current image if any. Equivalent
+%                                 to MagickGetImageOrientation().
+%
+%  Returns True on success, False otherwise.
+%
+%  Note that after successful auto-orientation the internal orientation will
+%  be set to TopLeftOrientation. However this internal value is only written
+%  to TIFF files. For JPEG files, there is currently no support for resetting
+%  the EXIF orientation tag to TopLeft so the JPEG should be stripped or EXIF
+%  profile removed if present to prevent saved auto-oriented images from being
+%  incorrectly rotated a second time by follow-on viewers that understand the
+%  EXIF orientation tag.
+%
+*/
+WandExport unsigned int MagickAutoOrientImage(MagickWand *wand,
+  const OrientationType current_orientation)
+{
+  Image
+    *orient_image;
+
+  OrientationType
+    orientation;
+
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+
+  orientation = (current_orientation == UndefinedOrientation)
+    ? wand->image->orientation
+    : current_orientation;
+
+  orient_image=AutoOrientImage(wand->image,orientation,&wand->exception);
+  if (orient_image == (Image *) NULL)
+    return(False);
+  ReplaceImageInList(&wand->image,orient_image);
+  wand->images=GetFirstImageInList(wand->image);
+  return(True);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 %   M a g i c k A v e r a g e I m a g e s                                     %
 %                                                                             %
 %                                                                             %
@@ -971,6 +1046,35 @@ WandExport unsigned int MagickChopImage(MagickWand *wand,
   ReplaceImageInList(&wand->image,chop_image);
   wand->images=GetFirstImageInList(wand->image);
   return(True);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k C l e a r E x c e p t i o n                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickClearException() clears the last wand exception.
+%
+%  The format of the MagickClearException method is:
+%
+%      void MagickClearException(MagickWand *wand)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+*/
+WandExport void MagickClearException(MagickWand *wand)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  GetExceptionInfo(&wand->exception);
 }
 
 /*
@@ -4005,6 +4109,51 @@ WandExport unsigned int MagickGetImageMatteColor(MagickWand *wand,
 %                                                                             %
 %                                                                             %
 %                                                                             %
+%   M a g i c k G e t I m a g e O r i e n t a t i o n                         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickGetImageOrientation() gets the image orientation type. May be one of:
+%
+%         UndefinedOrientation    Image orientation not specified or error.
+%         TopLeftOrientation      Left to right and Top to bottom.
+%         TopRightOrientation     Right to left  and Top to bottom.
+%         BottomRightOrientation  Right to left and Bottom to top.
+%         BottomLeftOrientation   Left to right and Bottom to top.
+%         LeftTopOrientation      Top to bottom and Left to right.
+%         RightTopOrientation     Top to bottom and Right to left.
+%         RightBottomOrientation  Bottom to top and Right to left.
+%         LeftBottomOrientation   Bottom to top and Left to right.
+%
+%  The format of the MagickGetImageOrientation method is:
+%
+%      OrientationType MagickGetImageOrientation(MagickWand *wand)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+*/
+WandExport OrientationType MagickGetImageOrientation(MagickWand *wand)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  if (wand->images == (Image *) NULL)
+    {
+      (void) ThrowException(&wand->exception,WandError,WandContainsNoImages,
+                            wand->id);
+      return(UndefinedOrientation);
+    }
+  return(wand->image->orientation);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 %   M a g i c k G e t I m a g e P a g e                                       %
 %                                                                             %
 %                                                                             %
@@ -6976,6 +7125,47 @@ WandExport unsigned int MagickRemoveImage(MagickWand *wand)
 %                                                                             %
 %                                                                             %
 %                                                                             %
+%   M a g i c k R e m o v e I m a g e O p t i o n                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickRemoveImageOption() removes an image format-specific option from the
+%  the image (.e.g MagickRemoveImageOption(wand,"jpeg","preserve-settings").
+%
+%  The format of the MagickRemoveImageOption method is:
+%
+%      unsigned int MagickRemoveImageOption(MagickWand *wand,const char *format,
+%        const char *key)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o format: The image format.
+%
+%    o key:  The key.
+%
+*/
+WandExport unsigned int MagickRemoveImageOption(MagickWand *wand,
+  const char *format,const char *key)
+{
+  char
+    option[MaxTextExtent];
+
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  (void) MagickFormatString(option,MaxTextExtent,"%.1024s:%.1024s",
+    format,key);
+  return (RemoveDefinitions(wand->image_info,option) ? True : False);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 %   M a g i c k R e m o v e I m a g e P r o f i l e                           %
 %                                                                             %
 %                                                                             %
@@ -8651,6 +8841,66 @@ WandExport unsigned int MagickSetImageOption(MagickWand *wand,
   (void) MagickFormatString(option,MaxTextExtent,"%.1024s:%.1024s=%.1024s",
     format,key,value);
   (void) AddDefinitions(wand->image_info,option,&wand->exception);
+  return(True);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k S e t I m a g e O r i e n t a t i o n                         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickSetImageOrientation() sets the internal image orientation type.
+%  The EXIF orientation tag will be updated if present.
+%
+%  The format of the MagickSetImageOrientation method is:
+%
+%      MagickSetImageOrientation(MagickWand *wand,
+%        OrientationType new_orientation)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o new_orientation: The new orientation of the image. One of:
+%
+%         UndefinedOrientation    Image orientation not specified.
+%         TopLeftOrientation      Left to right and Top to bottom.
+%         TopRightOrientation     Right to left  and Top to bottom.
+%         BottomRightOrientation  Right to left and Bottom to top.
+%         BottomLeftOrientation   Left to right and Bottom to top.
+%         LeftTopOrientation      Top to bottom and Left to right.
+%         RightTopOrientation     Top to bottom and Right to left.
+%         RightBottomOrientation  Bottom to top and Right to left.
+%         LeftBottomOrientation   Bottom to top and Left to right.
+%
+%  Returns True on success, False otherwise.
+%
+*/
+WandExport unsigned int MagickSetImageOrientation(MagickWand *wand,
+  const OrientationType new_orientation)
+{
+  OrientationType orientation;
+  char orientation_attribute[MaxTextExtent];
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  orientation = ((new_orientation > UndefinedOrientation
+    && new_orientation <= LeftBottomOrientation)
+      ? new_orientation
+      : UndefinedOrientation);
+  snprintf(orientation_attribute,MaxTextExtent,"%d",new_orientation);
+
+  if (wand->images == (Image *) NULL)
+      (void) ThrowException(&wand->exception,WandError,WandContainsNoImages,
+                            wand->id);
+
+  SetImageAttribute(wand->image, "EXIF:Orientation", orientation_attribute);
+  wand->image->orientation = orientation;
   return(True);
 }
 

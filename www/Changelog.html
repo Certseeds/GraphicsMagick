@@ -35,6 +35,61 @@
 <div class="document">
 
 
+<p>2016-12-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p class="first">magick/attribute.c: From SourceForge patches #47
+&quot;GraphicsMagick-1.3.25-5-set-exif-orientation.patch&quot; by Troy
+Patteson with description: Rotating an image without resetting the
+EXIF orientation tag is problematic as follow-on viewers that
+support the EXIF orientation tag may incorrectly rotate the image
+a second time. For JPEG images, the current solution is to either
+strip the image, remove the EXIF profile or modify the EXIF data
+of the written image with other software. This patch adds the
+ability to set the orientation tag in the EXIF profile via the
+SetImageAttribute on attribute EXIF:Orientation provided the EXIF
+orientation already exists. AutoOrientImage() has been modified to
+set the EXIF orientation tag on successful rotation of the image.</p>
+<p>The implementation is less than ideal. The EXIF profile must be
+duplicated because it is returned read-only from the profiles
+map. Large amounts of the GenerateEXIFAttribute() function has
+been duplicated in a function called FindEXIFAttribute() which
+returns the offset in the EXIF profile of a given tag ID. Once
+found, the orientation tag value is updated accordingly and the
+new EXIF profile set. Despite the patches shortcomings, I believe
+it is preferable to leaving the EXIF orientation tag unchanged
+after auto-orienting the image.</p>
+</li>
+<li><p class="first">wand/magick_wand.c (MagickClearException): From SourceForge
+patches #47 &quot;GraphicsMagick-1.3.25-1-wand-clear-exception.patch&quot;
+by Troy Patteson with description: This patch adds the ability to
+clear the last Wand exception. This is particularly useful to
+clear any exception on the Wand before calling MagickReadImage()
+which can return success with a warning exception such as &quot;JPEG
+data: premature end of data segment&quot;.
+(MagickRemoveImageOption): From SourceForge patches #47
+&quot;GraphicsMagick-1.3.25-2-wand-remove-image-option.patch&quot; by Troy
+Patteson with description: There is MagickSetImageOption() to set
+options like JPEG preserve-settings but no way to remove the
+option once set. Since the mechanism to remove image options
+already exists in lower-level API there seems no reason not to
+expose it in the Wand API.
+(MagickGetImageOrientation, MagickSetImageOrientation): From
+SourceForge patches #47
+&quot;GraphicsMagick-1.3.25-3-wand-get-set-orientation.patch&quot; by Troy
+Patteson with description: MagickGetImageOrientation returns the
+internal orientation setting which is useful to know to determine
+whether an image needs rotation. The function to set the
+orientation is less useful as it only sets the internal
+orientation setting which is only used when writing out TIFF
+files. A future patch addresses this issue.
+(MagickAutoOrientImage): From SourceForge patches #47
+&quot;GraphicsMagick-1.3.25-4-wand-auto-orient.patch&quot; by Troy Patteson
+with description: This patch adds auto-orient image to the Wand
+API.</p>
+</li>
+</ul>
+</blockquote>
 <p>2016-12-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

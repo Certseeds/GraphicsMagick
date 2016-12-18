@@ -1082,6 +1082,7 @@ Generate8BIMAttribute(Image *image,const char *key)
 #define GPS_LONGITUDE 0x0004
 #define GPS_TIMESTAMP 0x0007
 #define MAX_TAGS_PER_IFD 1024 /* Maximum tags allowed per IFD */
+#define EXIF_ORIENTATION 0x0112
 
 typedef struct _TagInfo
 {
@@ -1509,6 +1510,24 @@ Read32u(int morder, void *ilong)
   return(Read32s(morder,ilong) & 0xffffffffUL);
 }
 
+static void
+Write16u(int morder, void *location, unsigned short value)
+{
+  char
+    *pval;
+
+  pval = (char *)location;
+  if (morder)
+    {
+      *pval++ = (char)((value >> 8) & 0xffL);
+      *pval++ = (char)(value & 0xffL);
+    }
+  else
+    {
+      *pval++ = (char)(value & 0xffL);
+      *pval++ = (char)((value >> 8) & 0xffL);
+    }
+}
 
 static int
 GenerateEXIFAttribute(Image *image,const char *specification)
@@ -2486,6 +2505,15 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
 %  otherwise False.  If the value is NULL, the matching key is deleted
 %  from the list.
 %
+%  There is special handling for the EXIF:Orientation attribute. Setting this
+%  attribute will also update the EXIF tag in the image's EXIF profile to the
+%  given value provided an EXIF profile exists and has an existing EXIF
+%  orientation tag and the attribute value is a valid orientation
+%  (see orientationType). The attribute value will be set regardless of
+%  whether the EXIF profile was successfully updated. The new
+%  EXIF:Orientation attribute replaces the existing value rather than
+%  being concatenated to it as when setting other attributes.
+$
 %  The 'comment' and 'label' attributes are treated specially in that
 %  embedded format specifications are translated according to the formatting
 %  rules of TranslateText().
@@ -2504,6 +2532,362 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
 %
 %
 */
+
+/*
+  Find the location of an EXIF attribute in an EXIF profile. The EXIF attribute
+  to be found is specified as its numeric tag value (see tag_table). Returns
+  a pointer to the attribute in the EXIF profile or NULL if missing or there
+  is an error parsing the profile. Returns the EXIF profile byte order if the
+  morderp parameter is not NULL.
+*/
+
+static unsigned char *
+FindEXIFAttribute(const unsigned char *profile_info,
+                  const size_t profile_length,
+                  const unsigned short tag, int *morderp)
+{
+  char
+    tag_description[MaxTextExtent];
+
+  int
+    id,
+    level,
+    morder;
+
+  size_t
+    length;
+
+  unsigned long
+    offset;
+
+  unsigned long
+    gpsoffset;
+
+  unsigned char
+    *tiffp,
+    *tiffp_max,
+    *ifdstack[DE_STACK_SIZE],
+    *ifdp,
+    *info,
+    *attribp;
+
+  unsigned int
+    de,
+    destack[DE_STACK_SIZE],
+    nde;
+
+  MagickBool
+    gpsfound;
+
+  MagickBool
+    debug=MagickFalse;
+
+  attribp = (unsigned char *)NULL;
+
+  assert((sizeof(format_bytes)/sizeof(format_bytes[0])-1) == EXIF_NUM_FORMATS);
+
+  {
+    const char *
+      env_value;
+
+    /*
+      Allow enabling debug of EXIF tags
+    */
+    if ((env_value=getenv("MAGICK_DEBUG_EXIF")))
+      {
+    if (LocaleCompare(env_value,"TRUE") == 0)
+      debug=MagickTrue;
+      }
+  }
+  gpsfound=MagickFalse;
+  gpsoffset=0;
+  length=profile_length;
+  info=(unsigned char *) profile_info;
+  while (length != 0)
+    {
+      if (ReadByte(&info,&length) != 0x45)
+    continue;
+      if (ReadByte(&info,&length) != 0x78)
+    continue;
+      if (ReadByte(&info,&length) != 0x69)
+    continue;
+      if (ReadByte(&info,&length) != 0x66)
+    continue;
+      if (ReadByte(&info,&length) != 0x00)
+    continue;
+      if (ReadByte(&info,&length) != 0x00)
+    continue;
+      break;
+    }
+  if (length < 16)
+    goto find_attribute_failure;
+  tiffp=info;
+  tiffp_max=tiffp+length;
+  id=Read16u(0,tiffp);
+  morder=0;
+  if (id == 0x4949) /* LSB */
+    morder=0;
+  else
+    if (id == 0x4D4D) /* MSB */
+      morder=1;
+    else
+      goto find_attribute_failure;
+  if (morderp)
+    *morderp = morder;
+  if (Read16u(morder,tiffp+2) != 0x002a)
+    goto find_attribute_failure;
+  /*
+    This is the offset to the first IFD.
+  */
+  offset=Read32u(morder,tiffp+4);
+  if (offset >= length)
+    goto find_attribute_failure;
+  /*
+    Set the pointer to the first IFD and follow it were it leads.
+  */
+  ifdp=tiffp+offset;
+  level=0;
+  de=0U;
+  do
+    {
+      /*
+    If there is anything on the stack then pop it off.
+      */
+      if (level > 0)
+    {
+      level--;
+      ifdp=ifdstack[level];
+      de=destack[level];
+    }
+      /*
+    Determine how many entries there are in the current IFD.
+        Limit the number of entries parsed to MAX_TAGS_PER_IFD.
+      */
+      if ((ifdp < tiffp) || (ifdp+2 > tiffp_max))
+        goto find_attribute_failure;
+      nde=Read16u(morder,ifdp);
+      if (nde > MAX_TAGS_PER_IFD)
+        nde=MAX_TAGS_PER_IFD;
+      for (; de < nde; de++)
+    {
+      unsigned int
+        n;
+
+      int
+        t,
+        f,
+        c;
+
+      unsigned char
+        *pde,
+        *pval;
+
+
+      pde=(unsigned char *) (ifdp+2+(12*de));
+          if (pde + 12 > tiffp + length)
+            {
+              if (debug)
+                fprintf(stderr, "EXIF: Invalid Exif, entry is beyond metadata limit.\n");
+              goto find_attribute_failure;
+            }
+      t=Read16u(morder,pde); /* get tag value */
+      f=Read16u(morder,pde+2); /* get the format */
+          if ((f < 0) ||
+              ((size_t) f >= sizeof(format_bytes)/sizeof(format_bytes[0])))
+        break;
+      c=(long) Read32u(morder,pde+4); /* get number of components */
+      n=c*format_bytes[f];
+      if (n <= 4)
+        pval=(unsigned char *) pde+8;
+      else
+        {
+          unsigned long
+        oval;
+
+          /*
+        The directory entry contains an offset.
+          */
+          oval=Read32u(morder,pde+8);
+          if ((oval+n) > length)
+        continue;
+          pval=(unsigned char *)(tiffp+oval);
+        }
+
+      if (debug)
+        {
+          fprintf(stderr,
+              "EXIF: TagVal=%d  TagDescr=\"%s\" Format=%d  "
+              "FormatDescr=\"%s\"  Components=%d\n",t,
+              EXIFTagToDescription(t,tag_description),f,
+              EXIFFormatToDescription(f),c);
+        }
+
+      if (gpsfound)
+        {
+          if ((t < GPS_TAG_START) || (t > GPS_TAG_STOP))
+        {
+          if (debug)
+            fprintf(stderr,
+                "EXIF: Skipping bogus GPS IFD tag %d ...\n",t);
+          continue;
+        }
+        }
+      else
+        {
+          if ((t < EXIF_TAG_START) || ( t > EXIF_TAG_STOP))
+        {
+          if (debug)
+            fprintf(stderr,
+                "EXIF: Skipping bogus EXIF IFD tag %d ...\n",t);
+          continue;
+        }
+        }
+
+      /*
+        Return values for all the tags, or for a specific requested tag.
+
+        Tags from the GPS sub-IFD are in a bit of a chicken and
+        egg situation in that the tag for the GPS sub-IFD will not
+        be seen unless we pass that tag through so it can be
+        processed.  So we pass the GPS_OFFSET tag through, but if
+        it was not requested, then we don't return a string value
+        for it.
+      */
+      if (tag == t)
+        {
+          attribp = pde;
+          break;
+        }
+
+      if (t == GPS_OFFSET && (gpsoffset != 0))
+        {
+          if ((gpsoffset < length) && (level < (DE_STACK_SIZE-2)))
+        {
+          /*
+            Push our current directory state onto the stack.
+          */
+          ifdstack[level]=ifdp;
+          de++; /* bump to the next entry */
+          destack[level]=de;
+          level++;
+          /*
+            Push new state onto of stack to cause a jump.
+          */
+          ifdstack[level]=tiffp+gpsoffset;
+          destack[level]=0;
+          level++;
+        }
+          gpsoffset=0;
+          gpsfound=MagickTrue;
+          break; /* break out of the for loop */
+        }
+
+      if ((t == TAG_EXIF_OFFSET) || (t == TAG_INTEROP_OFFSET))
+        {
+          offset=Read32u(morder,pval);
+          if ((offset < length) && (level < (DE_STACK_SIZE-2)))
+        {
+          /*
+            Push our current directory state onto the stack.
+          */
+          ifdstack[level]=ifdp;
+          de++; /* bump to the next entry */
+          destack[level]=de;
+          level++;
+          /*
+            Push new state onto of stack to cause a jump.
+          */
+          ifdstack[level]=tiffp+offset;
+          destack[level]=0;
+          level++;
+        }
+          gpsfound=MagickFalse;
+          break; /* break out of the for loop */
+        }
+    }
+    /* finished current IFD, clear IFD flags */
+    gpsfound=MagickFalse;
+    } while (!attribp && (level > 0));
+  return attribp;
+ find_attribute_failure:
+  return (unsigned char *)NULL;
+}
+
+/*
+  SetEXIFOrientation() updates the EXIF orientation tag in the image's EXIF
+  profile to the value provided. Returns MagickPass on success or MagickFail
+  if either there is no EXIF profile in the image, there was an error parsing
+  the EXIF profile, there was no existing EXIF orientation attribute in
+  the EXIF profile or there was a memory allocation error.
+*/
+
+static MagickPassFail
+SetEXIFOrientation(Image *image, const int orientation)
+{
+  MagickPassFail
+    result;
+
+  const unsigned char
+    *current_profile;
+
+  size_t
+    profile_length;
+
+  unsigned char
+    *orientp,
+    *pval,
+    *new_profile;
+
+  int
+    morder,
+    current_orientation;
+
+  unsigned short
+    f;
+
+  unsigned long
+    c;
+
+  if (orientation < TopLeftOrientation || orientation > LeftBottomOrientation)
+    return(MagickFail);
+
+  current_profile=GetImageProfile(image,"EXIF",&profile_length);
+  if (current_profile == 0)
+    return(MagickFail);
+
+  /* Clone profile so orientation can be set */
+  new_profile = MagickAllocateMemory(unsigned char *,profile_length);
+  if (new_profile == 0)
+    return(MagickFail);
+
+  result = MagickFail;
+  memcpy(new_profile, current_profile, profile_length);
+  orientp = FindEXIFAttribute(new_profile, profile_length,
+                              (unsigned short)EXIF_ORIENTATION, &morder);
+  if (orientp)
+    {
+      /* Make sure EXIF orientation attribute is valid */
+      f=Read16u(morder,orientp+2); /* get the format */
+      c=Read32u(morder,orientp+4); /* get number of components */
+      if ((f == EXIF_FMT_USHORT) && (c == 1))
+        {
+          pval=(unsigned char *) orientp+8;
+          current_orientation=(int)Read16u(morder, pval);
+          if (current_orientation != (unsigned short)orientation)
+            {
+              Write16u(morder, pval, orientation);
+              Write16u(morder, pval+2, 0);
+              result=SetImageProfile(image,"EXIF",new_profile,profile_length);
+            }
+          else
+            result = MagickPass;
+        }
+    }
+  MagickFreeMemory(new_profile);
+
+  return result;
+}
+
 MagickExport MagickPassFail
 SetImageAttribute(Image *image,const char *key,const char *value)
 {
@@ -2512,6 +2896,9 @@ SetImageAttribute(Image *image,const char *key,const char *value)
 
   register ImageAttribute
     *p;
+
+  int
+    orientation;
 
   /*
     Initialize new attribute.
@@ -2596,29 +2983,54 @@ SetImageAttribute(Image *image,const char *key,const char *value)
   for (p=image->attributes; p != (ImageAttribute *) NULL; p=p->next)
     {
       if (LocaleCompare(attribute->key,p->key) == 0)
-	{
-	  size_t
-	    min_l,
-	    realloc_l;
+        {
+          size_t
+            min_l,
+            realloc_l;
 
-	  /*
-	    Extend existing text string.
-	  */
-	  min_l=p->length+attribute->length+1;
-	  for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
-            { /* nada */};
-	  MagickReallocMemory(char *,p->value,realloc_l);
-	  if (p->value != (char *) NULL)
-	    (void) strcat(p->value+p->length,attribute->value);
-	  p->length += attribute->length;
-	  DestroyImageAttribute(attribute);
-	  if (p->value != (char *) NULL)
-	    return(MagickPass);
-	  (void) SetImageAttribute(image,key,NULL);
-	  return(MagickFail);
-	}
+          if (LocaleCompare(attribute->key,"EXIF:Orientation") == 0)
+            {
+              /*
+                Special handling for EXIF orientation tag.
+                If new value differs from existing value,
+                EXIF profile is updated as well if it exists and
+                is valid. Don't append new value to existing value,
+                replace it instead.
+              */
+              orientation = MagickAtoI(value);
+              if (orientation > 0 || orientation <= (int)LeftBottomOrientation)
+                SetEXIFOrientation(image, orientation);
+
+              /* Replace current attribute with new one */
+              attribute->next = p->next;
+              if (p->previous == (ImageAttribute *) NULL)
+                image->attributes=attribute;
+              else
+                p->previous->next = attribute;
+              DestroyImageAttribute(p);
+              return(MagickPass);
+            }
+          else
+            {
+              /*
+                Extend existing text string.
+              */
+              min_l=p->length+attribute->length+1;
+              for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
+                    { /* nada */};
+              MagickReallocMemory(char *,p->value,realloc_l);
+              if (p->value != (char *) NULL)
+                (void) strcat(p->value+p->length,attribute->value);
+              p->length += attribute->length;
+              DestroyImageAttribute(attribute);
+            }
+          if (p->value != (char *) NULL)
+            return(MagickPass);
+          (void) SetImageAttribute(image,key,NULL);
+          return(MagickFail);
+        }
       if (p->next == (ImageAttribute *) NULL)
-	break;
+        break;
     }
   /*
     Place new attribute at the end of the attribute list.
