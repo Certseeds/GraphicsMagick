@@ -1,5 +1,21 @@
 2016-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/txt.c (ReadTXTImage): Fix Coverity issue 55866 "Resource
+	leak".
+
+	* magick/enum_strings.c (StringToCompositeOperator): Fix Coverity
+	issue 139296 "Constant expression result".
+
+	* magick/channel.c (ImportImageChannelsMasked): Fix Coverity issue
+	139297 "Constant expression result".  This was a bug but only in
+	terms of reduced performance, not results.
+
+	* Magick++/lib/Drawable.cpp
+	(PathSmoothCurvetoRel::operator): Fix Coverity issue 139301 "Using
+	invalid iterator".
+	(PathSmoothCurvetoRel::operator): Fix Coverity issue 139302 "Using
+	invalid iterator"
+
 	* magick/attribute.c: From SourceForge patches #47
 	"GraphicsMagick-1.3.25-get-exif-attribute-gps-fix.patch" and
 	"GraphicsMagick-1.3.25-set-exif-orientation-fix.patch" by Troy

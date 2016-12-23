@@ -38,6 +38,22 @@
 <p>2016-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul>
+<li><p class="first">coders/txt.c (ReadTXTImage): Fix Coverity issue 55866 &quot;Resource
+leak&quot;.</p>
+</li>
+<li><p class="first">magick/enum_strings.c (StringToCompositeOperator): Fix Coverity
+issue 139296 &quot;Constant expression result&quot;.</p>
+</li>
+<li><p class="first">magick/channel.c (ImportImageChannelsMasked): Fix Coverity issue
+139297 &quot;Constant expression result&quot;.  This was a bug but only in
+terms of reduced performance, not results.</p>
+</li>
+<li><p class="first">Magick++/lib/Drawable.cpp
+(PathSmoothCurvetoRel::operator): Fix Coverity issue 139301 &quot;Using
+invalid iterator&quot;.
+(PathSmoothCurvetoRel::operator): Fix Coverity issue 139302 &quot;Using
+invalid iterator&quot;</p>
+</li>
 <li><p class="first">magick/attribute.c: From SourceForge patches #47
 &quot;GraphicsMagick-1.3.25-get-exif-attribute-gps-fix.patch&quot; and
 &quot;GraphicsMagick-1.3.25-set-exif-orientation-fix.patch&quot; by Troy

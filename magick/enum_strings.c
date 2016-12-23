@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2008 - 2015 GraphicsMagick Group
+% Copyright (C) 2008 - 2016 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -507,7 +507,8 @@ MagickExport CompositeOperator StringToCompositeOperator(const char *option)
     composite_op = UndefinedCompositeOp;
 
   unsigned int
-    index;
+    index,
+    mindex;
 
   char
     c;
@@ -519,13 +520,14 @@ MagickExport CompositeOperator StringToCompositeOperator(const char *option)
     Handle dash or underscore separated values like the major brand by
     stripping them out.
   */
-  for (index = 0; option[index] != 0; index++)
+  for (index = 0, mindex =0; option[index] != 0; index++)
     {
       c=option[index];
-      if ((c != '_') || (c != '-'))
-        match_string[index]=c;
+      if ((c != '_') && (c != '-'))
+        if (mindex < sizeof(match_string)-2)
+          match_string[mindex++]=c;
     }
-  match_string[index]='\0';
+  match_string[mindex]='\0';
 
   /*
     Find a match

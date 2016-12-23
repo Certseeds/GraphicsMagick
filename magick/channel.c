@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2004 - 2010 GraphicsMagick Group
+% Copyright (C) 2004 - 2016 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -875,7 +875,7 @@ MagickPassFail ImportImageChannelsMasked(const Image *source_image,
   assert(source_image != (Image *) NULL);
   assert(source_image->signature == MagickSignature);
 
-  if ((AllChannels != channel_type) || (GrayChannel != channel_type))
+  if (!((AllChannels == channel_type) || (GrayChannel == channel_type)))
     {
       update_image->storage_class=DirectClass;
       status=PixelIterateDualModify(ImportImageChannelsMaskedPixels,

@@ -598,6 +598,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	    offset;
 
           size_t
+            max_packets_alloc_size,
             rle_alloc_size,
             rle_dimensions;
 
@@ -649,7 +650,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		ThrowSGIReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             }
 
-	  max_packets=MagickAllocateArray(unsigned char *,iris_info.xsize+10U,4U);
+          max_packets_alloc_size=MagickArraySize(iris_info.xsize+10U,4U);
+	  max_packets=MagickAllocateMemory(unsigned char *,max_packets_alloc_size);
 	  if (max_packets == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
@@ -668,9 +670,13 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	  for (y=0; ((y < iris_info.ysize) && !data_order); y++)
 	    for (z=0U; ((z < iris_info.zsize) && !data_order); z++)
 	      {
-		if (offsets[y+z*iris_info.ysize] < offset)
+                const size_t run_index = (size_t) y+z*iris_info.ysize;
+                if (run_index >= rle_alloc_size)
+                  ThrowSGIReaderException(CorruptImageError,
+                                          UnableToRunlengthDecodeImage,image);
+		if (offsets[run_index] < offset)
 		  data_order=1;
-		offset=(magick_off_t) offsets[y+z*iris_info.ysize];
+		offset=(magick_off_t) offsets[run_index];
 	      }
 	  offset=TellBlob(image);
 	  if (data_order == 1)
@@ -680,25 +686,31 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		  p=iris_pixels;
 		  for (y=0U; y < iris_info.ysize; y++)
 		    {
-		      if (offset != (magick_off_t) offsets[(size_t) y+z*iris_info.ysize])
+                      const size_t run_index = (size_t) y+z*iris_info.ysize;
+                      size_t length;
+                      if (run_index >= rle_alloc_size)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnableToRunlengthDecodeImage,image);
+		      if (offset != (magick_off_t) offsets[run_index])
 			{
-			  offset=(magick_off_t) offsets[(size_t) y+z*iris_info.ysize];
+			  offset=(magick_off_t) offsets[run_index];
 			  if (SeekBlob(image,offset,SEEK_SET) != offset)
                             ThrowSGIReaderException(CorruptImageError,
                                                     UnableToRunlengthDecodeImage, image);
 			}
-		      if (ReadBlob(image,runlength[(size_t) y+z*iris_info.ysize],
-                                   (char *) max_packets) != runlength[(size_t) y+z*iris_info.ysize])
-			{
-			  ThrowSGIReaderException(CorruptImageError,
-                                                  UnexpectedEndOfFile, image);
-			}
-		      offset+=(magick_off_t) runlength[(size_t) y+z*iris_info.ysize];
+                      length=runlength[run_index];
+                      if (length > max_packets_alloc_size)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnableToRunlengthDecodeImage,image);
+		      if (ReadBlob(image,length,(char *) max_packets) != length)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnexpectedEndOfFile, image);
+		      offset+=(magick_off_t) length;
 		      if (SGIDecode(bytes_per_pixel,max_packets,p+bytes_per_pixel*z,
-				    runlength[(size_t) y+z*iris_info.ysize]/bytes_per_pixel,
+				    length/bytes_per_pixel,
 				    iris_info.xsize) == -1)
 			ThrowSGIReaderException(CorruptImageError,
-                                                UnableToRunlengthDecodeImage,image); 
+                                                UnableToRunlengthDecodeImage,image);
 		      p+=((size_t) iris_info.xsize*4U*bytes_per_pixel);
 		    }
 		}
@@ -710,22 +722,28 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		{
 		  for (z=0; z < iris_info.zsize; z++)
 		    {
-		      if (offset != (magick_off_t) offsets[y+z*iris_info.ysize])
+                      const size_t run_index = (size_t) y+z*iris_info.ysize;
+                      size_t length;
+                      if (run_index >= rle_alloc_size)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnableToRunlengthDecodeImage,image);
+		      if (offset != (magick_off_t) offsets[run_index])
 			{
-			  offset=(magick_off_t) offsets[(size_t) y+z*iris_info.ysize];
+			  offset=(magick_off_t) offsets[run_index];
 			  if (SeekBlob(image,offset,SEEK_SET) != offset)
                             ThrowSGIReaderException(CorruptImageError,
                                                     UnableToRunlengthDecodeImage, image);
 			}
-		      if (ReadBlob(image,runlength[(size_t) y+z*iris_info.ysize],
-                                   (char *) max_packets) != runlength[(size_t) y+z*iris_info.ysize])
-			{
-			  ThrowSGIReaderException(CorruptImageError,
-                                                  UnexpectedEndOfFile, image);
-			}
-		      offset+=runlength[(size_t) y+z*iris_info.ysize];
+                      length=runlength[run_index];
+                      if (length > max_packets_alloc_size)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnableToRunlengthDecodeImage,image);
+		      if (ReadBlob(image,length, (char *) max_packets) != length)
+                        ThrowSGIReaderException(CorruptImageError,
+                                                UnexpectedEndOfFile, image);
+		      offset+=length;
 		      if (SGIDecode(bytes_per_pixel,max_packets,p+bytes_per_pixel*z,
-				    runlength[(size_t) y+z*iris_info.ysize]/bytes_per_pixel,
+				    length/bytes_per_pixel,
 				    iris_info.xsize) == -1)
 			ThrowSGIReaderException(CorruptImageError,
                                                 UnableToRunlengthDecodeImage,image); 
