@@ -35,6 +35,33 @@
 <div class="document">
 
 
+<p>2016-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p class="first">magick/attribute.c: From SourceForge patches #47
+&quot;GraphicsMagick-1.3.25-get-exif-attribute-gps-fix.patch&quot; and
+&quot;GraphicsMagick-1.3.25-set-exif-orientation-fix.patch&quot; by Troy
+Patteson with description (related to provided Coverity reports in
+coverity.txt): Those coverity errors indicate a problem with the
+earlier patch I sent you to fix getting the EXIF orientation when
+the GPS IFD occurs before the EXIF IFD. Although the patch fixed
+that issue it introduced a new issue in that GPS tags could no
+longer be retrieved. This occurs because the gpsfound flag is set
+when the GPS IFD is pushed onto the stack but then cleared
+immediately when breaking out of the loop processing the directory
+entries for the current IFD. The solution is to push the gpsfound
+flag onto the stack as well as it needs to be set when the GPS IFD
+is popped off the stack rather than being set straight away.</p>
+<p>The second coverity error relates to gpsoffset not being set in
+FindEXIFAttribute(). The code that sets gpsoffset in
+GenerateEXIFAttribute() was embedded in the code that gets tags
+values which was removed in FindEXIFAttribute() as only the DE
+offset is required. I have removed the need for gpsoffset and just
+computed the GPS IFD offset when pushing it onto the stack in the
+same way the EXIF IFD offset is computed.</p>
+</li>
+</ul>
+</blockquote>
 <p>2016-12-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul>
