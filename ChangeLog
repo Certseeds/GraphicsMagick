@@ -1,3 +1,9 @@
+2016-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/compare.c (DifferenceImage): Fix all-black difference
+	image if an input file is colormapped.  Resolves SourceForge issue
+	#404 "Difference file does not work if PNG ".
+
 2016-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/txt.c (ReadTXTImage): Fix Coverity issue 55866 "Resource

@@ -2381,6 +2381,12 @@ unable to allocate ICC profile
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorUnableToAllocateImage
+Language        = English
+Unable to allocate image
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorUnableToAllocateString
 Language        = English
 unable to allocate string

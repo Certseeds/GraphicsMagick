@@ -1312,6 +1312,9 @@
         <Message name="UnableToAllocateColormap">
           Unable to allocate colormap
         </Message>
+        <Message name="UnableToAllocateImage">
+          Unable to allocate image
+        </Message>
         <Message name="UnableToAnnotateImage">
           Unable to annotate image
         </Message>
