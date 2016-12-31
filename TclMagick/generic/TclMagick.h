@@ -51,37 +51,6 @@ typedef struct {
 #   define EXPORT(a,b) a b
 #endif
 
-EXPORT(TclMagickObj, *findMagickObj)(Tcl_Interp *interp, int type, char *name);
-
-/*----------------------------------------------------------------------
- * Return Magick error description as a TCL result
- * Used by both TclMagick and TkMagick.
- *----------------------------------------------------------------------
- */
-static int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
-{
-    char *description;
-
-    ExceptionType severity;
-    char msg[40];
-
-    description = MagickGetException(wandPtr, &severity);
-    if( (description == NULL) || (strlen(description) == 0) ) {
-        Tcl_AppendResult(interp, MagickGetPackageName(), ": Unknown error", NULL);
-    } else {
-        sprintf(msg, "%s: #%d:", MagickGetPackageName(), severity); /* FIXME, not used! */
-        Tcl_AppendResult(interp, description, NULL);
-    }
-    if( description != NULL ) {
-        MagickRelinquishMemory(description);
-    }
-    /*
-     * if(severity < ErrorException) --> warning
-     * return TCL_OK ???
-     */
-    return TCL_ERROR;
-}
-
 
 #endif
 /* vim: set ts=8 sts=8 sw=8 noet: */

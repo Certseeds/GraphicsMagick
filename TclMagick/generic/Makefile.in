@@ -82,9 +82,9 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)"
-LTLIBRARIES = $(lib_LTLIBRARIES)
-libTclMagick_la_DEPENDENCIES =
+am__installdirs = "$(DESTDIR)$(lib_magickdir)"
+LTLIBRARIES = $(lib_magick_LTLIBRARIES)
+libTclMagick_la_DEPENDENCIES = libttkcommon.la
 am_libTclMagick_la_OBJECTS = libTclMagick_la-TclMagick.lo
 libTclMagick_la_OBJECTS = $(am_libTclMagick_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -94,13 +94,20 @@ libTclMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(AM_CFLAGS) $(CFLAGS) $(libTclMagick_la_LDFLAGS) $(LDFLAGS) \
 	-o $@
-libTkMagick_la_DEPENDENCIES =
+libTkMagick_la_DEPENDENCIES = libttkcommon.la
 am_libTkMagick_la_OBJECTS = libTkMagick_la-TkMagick.lo
 libTkMagick_la_OBJECTS = $(am_libTkMagick_la_OBJECTS)
 libTkMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(AM_CFLAGS) $(CFLAGS) $(libTkMagick_la_LDFLAGS) $(LDFLAGS) -o \
 	$@
+libttkcommon_la_DEPENDENCIES =
+am_libttkcommon_la_OBJECTS = libttkcommon_la-libttkcommon.lo
+libttkcommon_la_OBJECTS = $(am_libttkcommon_la_OBJECTS)
+libttkcommon_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(libttkcommon_la_LDFLAGS) $(LDFLAGS) \
+	-o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/unix/config/depcomp
 am__depfiles_maybe = depfiles
@@ -127,8 +134,10 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(libTclMagick_la_SOURCES) $(libTkMagick_la_SOURCES)
-DIST_SOURCES = $(libTclMagick_la_SOURCES) $(libTkMagick_la_SOURCES)
+SOURCES = $(libTclMagick_la_SOURCES) $(libTkMagick_la_SOURCES) \
+	$(libttkcommon_la_SOURCES)
+DIST_SOURCES = $(libTclMagick_la_SOURCES) $(libTkMagick_la_SOURCES) \
+	$(libttkcommon_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -291,9 +300,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-
-# Put this in its own package directory.
-libdir = @libdir@/TclMagick@VERSION@
+libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -313,14 +320,21 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 wand_config = @wand_config@
-lib_LTLIBRARIES = libTclMagick.la libTkMagick.la
-libTclMagick_la_SOURCES = TclMagick.c TclMagick.h
-libTkMagick_la_SOURCES = TkMagick.c TclMagick.h
-libTclMagick_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined -module
-libTclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
+
+# Put this in its own package directory.
+lib_magickdir = @libdir@/TclMagick@VERSION@
+lib_magick_LTLIBRARIES = libttkcommon.la libTclMagick.la libTkMagick.la
+libttkcommon_la_SOURCES = libttkcommon.c libttkcommon.h
+libttkcommon_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined
+libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
+libttkcommon_la_CPPFLAGS = @TCL_INCLUDES@ @GM_CPPFLAGS@
+libTclMagick_la_SOURCES = TclMagick.c TclMagick.h libttkcommon.h
+libTclMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(lib_magickdir) -no-undefined -module
+libTclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@ libttkcommon.la
 libTclMagick_la_CPPFLAGS = @TCL_INCLUDES@ @GM_CPPFLAGS@
-libTkMagick_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined -module
-libTkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@
+libTkMagick_la_SOURCES = TkMagick.c TclMagick.h libttkcommon.h
+libTkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(lib_magickdir) -no-undefined -module
+libTkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@ libttkcommon.la
 libTkMagick_la_CPPFLAGS = @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
 all: all-am
 
@@ -335,9 +349,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign generic/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu generic/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign generic/Makefile
+	  $(AUTOMAKE) --gnu generic/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -356,41 +370,43 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+install-lib_magickLTLIBRARIES: $(lib_magick_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	test -z "$(lib_magickdir)" || $(MKDIR_P) "$(DESTDIR)$(lib_magickdir)"
+	@list='$(lib_magick_LTLIBRARIES)'; test -n "$(lib_magickdir)" || list=; \
 	list2=; for p in $$list; do \
 	  if test -f $$p; then \
 	    list2="$$list2 $$p"; \
 	  else :; fi; \
 	done; \
 	test -z "$$list2" || { \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(lib_magickdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(lib_magickdir)"; \
 	}
 
-uninstall-libLTLIBRARIES:
+uninstall-lib_magickLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	@list='$(lib_magick_LTLIBRARIES)'; test -n "$(lib_magickdir)" || list=; \
 	for p in $$list; do \
 	  $(am__strip_dir) \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(lib_magickdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(lib_magickdir)/$$f"; \
 	done
 
-clean-libLTLIBRARIES:
-	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+clean-lib_magickLTLIBRARIES:
+	-test -z "$(lib_magick_LTLIBRARIES)" || rm -f $(lib_magick_LTLIBRARIES)
+	@list='$(lib_magick_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
 libTclMagick.la: $(libTclMagick_la_OBJECTS) $(libTclMagick_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libTclMagick_la_LINK) -rpath $(libdir) $(libTclMagick_la_OBJECTS) $(libTclMagick_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libTclMagick_la_LINK) -rpath $(lib_magickdir) $(libTclMagick_la_OBJECTS) $(libTclMagick_la_LIBADD) $(LIBS)
 libTkMagick.la: $(libTkMagick_la_OBJECTS) $(libTkMagick_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libTkMagick_la_LINK) -rpath $(libdir) $(libTkMagick_la_OBJECTS) $(libTkMagick_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libTkMagick_la_LINK) -rpath $(lib_magickdir) $(libTkMagick_la_OBJECTS) $(libTkMagick_la_LIBADD) $(LIBS)
+libttkcommon.la: $(libttkcommon_la_OBJECTS) $(libttkcommon_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libttkcommon_la_LINK) -rpath $(lib_magickdir) $(libttkcommon_la_OBJECTS) $(libttkcommon_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -400,6 +416,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libTclMagick_la-TclMagick.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libTkMagick_la-TkMagick.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libttkcommon_la-libttkcommon.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -435,6 +452,13 @@ libTkMagick_la-TkMagick.lo: TkMagick.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='TkMagick.c' object='libTkMagick_la-TkMagick.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libTkMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libTkMagick_la-TkMagick.lo `test -f 'TkMagick.c' || echo '$(srcdir)/'`TkMagick.c
+
+libttkcommon_la-libttkcommon.lo: libttkcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libttkcommon_la-libttkcommon.lo -MD -MP -MF $(DEPDIR)/libttkcommon_la-libttkcommon.Tpo -c -o libttkcommon_la-libttkcommon.lo `test -f 'libttkcommon.c' || echo '$(srcdir)/'`libttkcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libttkcommon_la-libttkcommon.Tpo $(DEPDIR)/libttkcommon_la-libttkcommon.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libttkcommon.c' object='libttkcommon_la-libttkcommon.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libttkcommon_la-libttkcommon.lo `test -f 'libttkcommon.c' || echo '$(srcdir)/'`libttkcommon.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -528,7 +552,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(lib_magickdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -564,7 +588,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+clean-am: clean-generic clean-lib_magickLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -585,13 +609,13 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-lib_magickLTLIBRARIES
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am:
 
 install-html: install-html-am
 
@@ -631,23 +655,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-lib_magickLTLIBRARIES
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
+	clean-lib_magickLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-lib_magickLTLIBRARIES install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-libLTLIBRARIES
+	tags uninstall uninstall-am uninstall-lib_magickLTLIBRARIES
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

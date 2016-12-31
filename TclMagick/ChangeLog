@@ -1,3 +1,11 @@
+2016-12-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* generic/Makefile.am: Applied patch by Massimo Manghi (plus some
+	fixes by me) to add a 'libttkcommon' shared library to contain
+	codde common to the TclMagick/TkMagick loadable modules, and
+	particularly to allow TkMagick to access TclMagick functions
+	without depending on dlopen() with RTLD_GLOBAL behavior.
+
 2016-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac, Makefile.am: Applied patches by Massimo Manghi to

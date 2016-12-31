@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "libttkcommon.h"
 #include "TclMagick.h"
 #include <wand/magick_wand.h>
 
@@ -28,16 +29,8 @@ static TclMagickObj *newMagickObj(Tcl_Interp  *interp, int type, void *wandPtr, 
 #define MAGICK_DEBUG
 /**********************************************************************/
 
-struct {
-    int             initialized; /* Whether module has been initialized */
-    Tcl_HashTable   hashTable;   /* HasTable for MagickWand objects */
-} TM
-= {0};
-
-static CONST char *objTypeNames[] = {
-    "wand", "drawing", "pixel", (char *) NULL
-};
-
+extern TMHT TM;
+extern CONST char* objTypeNames[];
 static Tcl_ObjCmdProc    magickCmd;
 static Tcl_CmdDeleteProc magickObjDeleteCmd;
 static Tcl_ObjCmdProc    wandObjCmd;
@@ -235,30 +228,6 @@ TclMagickObj *findMagickObj(Tcl_Interp *interp, int type, char *name)
         }
         return mPtr;
     }
-}
-static MagickWand *findMagickWand(Tcl_Interp *interp, char *name)
-{
-    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_WAND, name);
-    if( mPtr == NULL ) {
-        return (MagickWand *)NULL;
-    }
-    return (MagickWand *)mPtr->wandPtr;
-}
-static DrawingWand *findDrawingWand(Tcl_Interp *interp, char *name)
-{
-    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_DRAWING, name);
-    if( mPtr == NULL ) {
-        return (DrawingWand *)NULL;
-    }
-    return (DrawingWand *)mPtr->wandPtr;
-}
-static PixelWand *findPixelWand(Tcl_Interp *interp, char *name)
-{
-    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_PIXEL, name);
-    if( mPtr == NULL ) {
-        return (PixelWand *)NULL;
-    }
-    return (PixelWand *)mPtr->wandPtr;
 }
 
 /*----------------------------------------------------------------------
