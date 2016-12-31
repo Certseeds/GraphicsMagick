@@ -1,5 +1,10 @@
 2016-12-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (WritePNMImage): Support writing GRAYSCALE PAM
+	format.  Before this fix, grayscale output was marked as type
+	BLACKANDWHITE.  Problem was reported by Aaron Boxer via email on
+	December 31, 2016.
+
 	* TclMagick/generic/Makefile.am: Applied patch by Massimo Manghi
 	(plus some fixes by me) to add a 'libttkcommon' shared library to
 	contain codde common to the TclMagick/TkMagick loadable modules,
