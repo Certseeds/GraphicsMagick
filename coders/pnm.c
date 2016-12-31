@@ -1856,7 +1856,12 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                       tuple_type="GRAYSCALE";
                   }
 		else if (GrayAlphaQuantum == quantum_type)
-		  tuple_type="BLACKANDWHITE_ALPHA";
+                  {
+                    if (1 == bits_per_sample)
+                      tuple_type="BLACKANDWHITE_ALPHA";
+                    else
+                      tuple_type="GRAYSCALE_ALPHA";
+                  }
 		else if (RGBQuantum == quantum_type)
 		  tuple_type="RGB";
 		else if (RGBAQuantum == quantum_type)
