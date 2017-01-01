@@ -965,9 +965,21 @@ Compression not valid
 .
 
 MessageId       = +1
+SymbolicName    = ImageWarningCorruptImage
+Language        = English
+Corrupt image (some data returned)
+.
+
+MessageId       = +1
 SymbolicName    = ImageWarningImproperImageHeader
 Language        = English
 Improper image header
+.
+
+MessageId       = +1
+SymbolicName    = ImageWarningInvalidColormapIndex
+Language        = English
+Invalid colormap index
 .
 
 MessageId       = +1

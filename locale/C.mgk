@@ -522,11 +522,17 @@
         <Message name="ImproperImageHeader">
           Improper image header
         </Message>
+        <Message name="InvalidColormapIndex">
+          Invalid colormap index
+        </Message>
         <Message name="NegativeOrZeroImageSize">
           Negative or zero image size
         </Message>
         <Message name="NonOS2HeaderSizeError">
           Non OS2 header size error
+        </Message>
+        <Message name="CorruptImage">
+          Corrupt image (some data returned)
         </Message>
         <Message name="StaticPlanesValueNotEqualToOne">
           Static planes value not equal to one
