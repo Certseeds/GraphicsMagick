@@ -1,4 +1,4 @@
-# Copyright (C) 2008 - 2014 GraphicsMagick Group
+# Copyright (C) 2008 - 2017 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -51,6 +51,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2013.html \
 	$(WWWDIR)/ChangeLog-2014.html \
 	$(WWWDIR)/ChangeLog-2015.html \
+	$(WWWDIR)/ChangeLog-2016.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -164,6 +165,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2013.html \
 	$(WWWDIR)/ChangeLog-2014.html \
 	$(WWWDIR)/ChangeLog-2015.html \
+	$(WWWDIR)/ChangeLog-2016.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -264,6 +266,9 @@ $(top_srcdir)/%.html: $(top_srcdir)/%.rst
 CHANGELOG2RST=$(top_srcdir)/scripts/changelog2rst.sh
 
 $(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+	$(CHANGELOG2RST) < $^ > $@
+
+$(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
 	$(CHANGELOG2RST) < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2015.rst: $(top_srcdir)/ChangeLog.2015

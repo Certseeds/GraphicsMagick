@@ -59,4 +59,4 @@ GraphicsMagick Project Information
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2012 - 2016
+Copyright |copy| GraphicsMagick Group 2012 - 2017
