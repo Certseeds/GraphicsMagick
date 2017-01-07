@@ -1,3 +1,10 @@
+2017-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Applied patch by
+	Massimo Manghi to set AM_DISTCHECK_CONFIGURE_FLAGS so that 'make
+	distcheck' remembers configuration options, and also to uninstall
+	pkgIndex.tcl.
+
 2016-12-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* generic/Makefile.am: Applied patch by Massimo Manghi (plus some

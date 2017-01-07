@@ -1,5 +1,10 @@
 2017-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* TclMagick/Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Applied
+	patch by Massimo Manghi to set AM_DISTCHECK_CONFIGURE_FLAGS so
+	that 'make distcheck' remembers configuration options, and also to
+	uninstall pkgIndex.tcl.
+
 	* magick/image.c (SetImageEx): Use PixelIterateMonoSet() for
 	possibly improved efficiency.
 
