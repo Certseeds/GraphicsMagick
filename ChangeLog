@@ -1,5 +1,14 @@
+2017-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (SetImageEx): Use PixelIterateMonoSet() for
+	possibly improved efficiency.
+
+	* magick/pixel_iterator.c (PixelIterateMonoSet): New pixel
+	iterator intended for use when initializing image pixels, without
+	regard to existing values.
+
 2017-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Copyright.txt: Bump copyright years and rotate ChangeLog.
-	
+
 

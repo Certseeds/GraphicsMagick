@@ -2122,11 +2122,11 @@ MagickExport MagickPassFail SetImageEx(Image *image,const Quantum opacity,
       image->storage_class=DirectClass;
     }
 
-  status=PixelIterateMonoModify(SetImageColorCallBack,NULL,
-                                SetImageColorText,
-                                NULL,&background_color,0,0,
-                                image->columns,image->rows,
-                                image,exception);
+  status=PixelIterateMonoSet(SetImageColorCallBack,NULL,
+                             SetImageColorText,
+                             NULL,&background_color,0,0,
+                             image->columns,image->rows,
+                             image,exception);
 
   image->is_grayscale=IsGray(image->background_color);
   image->is_monochrome=IsMonochrome(image->background_color);
