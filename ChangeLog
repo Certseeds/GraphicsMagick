@@ -1,5 +1,12 @@
 2017-01-21  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
+	* coders/png.c: Added support for a proposed new PNG
+	chunk (exIf read-write, eXIf read-only) that is currently
+	being discussed on the png-mng-misc at lists.sourceforge.net
+	mailing list.
+
+2017-01-21  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
 	* coders/png.c: Added read_user_chunk_callback() function
 	and used it to implement a private PNG caNv (canvas) chunk
 	for remembering the original dimensions and offsets when an

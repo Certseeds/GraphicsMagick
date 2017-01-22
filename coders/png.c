@@ -196,6 +196,10 @@ static png_byte const mng_TERM[5]={ 84,  69,  82,  77, '\0'};
 static png_byte const mng_bKGD[5]={ 98,  75,  71,  68, '\0'};
 static png_byte const mng_caNv[5]={ 99,  97,  78, 118, '\0'};
 static png_byte const mng_cHRM[5]={ 99,  72,  82,  77, '\0'};
+/* until registration of eXIf */
+static png_byte const mng_exIf[5]={101, 120,  73, 102, '\0'};
+/* after registration of eXIf */
+static png_byte const mng_eXIf[5]={101,  88,  73, 102, '\0'};
 static png_byte const mng_gAMA[5]={103,  65,  77,  65, '\0'};
 static png_byte const mng_iCCP[5]={105,  67,  67,  80, '\0'};
 static png_byte const mng_nEED[5]={110,  69,  69,  68, '\0'};
@@ -1232,6 +1236,58 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      "    read_user_chunk: found %c%c%c%c chunk",
        chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
 
+  if (chunk->name[0]  == 101 &&
+      (chunk->name[1] ==  88 || chunk->name[1] == 120 ) &&
+      chunk->name[2]  ==  73 &&
+      chunk-> name[3] == 102)
+    {
+      /* process eXIf or exIf chunk */
+
+      unsigned char
+        *profile;
+
+      unsigned char
+        *p;
+
+      png_byte
+        *s;
+
+      int
+        i;
+
+      LogMagickEvent(CoderEvent,GetMagickModule(),
+        " recognized eXIf|exIf chunk");
+
+      image=(Image *) png_get_user_chunk_ptr(ping);
+
+      /* allocate profile = size+8; */
+#if PNG_LIBPNG_VER >= 14000
+      profile=(unsigned char *) png_malloc(ping,
+        (png_alloc_size_t) chunk->size);
+#else
+      profile=(unsigned char *) png_malloc(ping,
+         (png_size_t) chunk->size);
+#endif
+      p=profile;
+
+      /* Initialize profile with "Exif\0\0" */
+      *p++ ='E';
+      *p++ ='x';
+      *p++ ='i';
+      *p++ ='f';
+      *p++ ='\0';
+      *p++ ='\0';
+
+      /* copy chunk->data to profile */
+      s=chunk->data;
+      for (i=0; i<chunk->size; i++)
+        *p++ = *s++;
+
+      (void) SetImageProfile(image,"exif",
+         (const unsigned char *)profile, chunk->size+6);
+      return(1);
+    }
+
   /* caNv */
   if (chunk->name[0] ==  99 &&
       chunk->name[1] ==  97 &&
@@ -1520,7 +1576,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 # else
   png_set_keep_unknown_chunks(ping, 1, NULL, 0);
 # endif
-  /* Ignore unused chunks and all unknown chunks except for caNv */
+  /* Ignore unused chunks and all unknown chunks except for exIf
+     and caNv */
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
@@ -7715,6 +7772,67 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         }
       png_set_text(ping,ping_info,text,1);
       png_free(ping,text);
+    }
+
+  /* write exIf profile */
+
+  {
+    ImageProfileIterator
+      *profile_iterator;
+
+    profile_iterator=AllocateImageProfileIterator(image);
+    if (profile_iterator)
+      {
+        const char
+          *profile_name;
+
+        const unsigned char
+          *profile_info;
+
+        size_t
+          profile_length;
+
+        while (NextImageProfile(profile_iterator,&profile_name,&profile_info,
+                                &profile_length) != MagickFail)
+          {
+            if (LocaleCompare(profile_name,"exif") == 0)
+              {
+                png_uint_32
+                  length;
+                unsigned char
+                  chunk[4];
+                const unsigned char
+                  *data;
+
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                   "  Have eXIf profile");
+
+                data=profile_info;
+
+                length=(png_uint_32) profile_length;
+
+#if 0 /* eXIf chunk is registered */
+                PNGType(chunk,mng_eXIf);
+#else /* eXIf chunk not yet registered; write exIf instead */
+                PNGType(chunk,mng_exIf);
+#endif
+                if (length < 7)
+                  break;  /* othewise crashes */
+
+                /* skip the "Exif\0\0" JFIF Exif Header ID */
+                length -= 6;
+
+                LogPNGChunk(logging,chunk,length);
+                (void) WriteBlobMSBULong(image,length);
+                (void) WriteBlob(image,4,chunk);
+                (void) WriteBlob(image,length,data+6);
+                (void) WriteBlobMSBULong(image,crc32(crc32(0,chunk,4),
+                  data+6, (uInt) length));
+                break;
+              }
+          }
+        DeallocateImageProfileIterator(profile_iterator);
+      }
     }
 
   if (logging)
