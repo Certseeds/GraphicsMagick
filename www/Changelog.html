@@ -35,9 +35,40 @@
 <div class="document">
 
 
+<p>2017-01-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>TclMagick/unix/m4/tcl.m4: Update tcl.m4 to TEA 3.10.  File
+supplied by Massimo Manghi.</li>
+</ul>
+</blockquote>
+<p>2017-01-21  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">glennrp<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c: Added support for a proposed new PNG
+chunk (exIf read-write, eXIf read-only) that is currently
+being discussed on the png-mng-misc at lists.sourceforge.net
+mailing list.</li>
+</ul>
+</blockquote>
+<p>2017-01-21  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">glennrp<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c: Added read_user_chunk_callback() function
+and used it to implement a private PNG caNv (canvas) chunk
+for remembering the original dimensions and offsets when an
+image is cropped.  Previously we used the oFFs chunk for this
+purpose, but this had potential conflicts with other applications
+that also use the oFFs chunk.</li>
+</ul>
+</blockquote>
 <p>2017-01-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>TclMagick/Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Applied
+patch by Massimo Manghi to set AM_DISTCHECK_CONFIGURE_FLAGS so
+that 'make distcheck' remembers configuration options, and also to
+uninstall pkgIndex.tcl.</li>
 <li>magick/image.c (SetImageEx): Use PixelIterateMonoSet() for
 possibly improved efficiency.</li>
 <li>magick/pixel_iterator.c (PixelIterateMonoSet): New pixel

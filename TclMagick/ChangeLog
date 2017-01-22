@@ -1,3 +1,8 @@
+2017-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* unix/m4/tcl.m4: Update tcl.m4 to TEA 3.10.  File supplied by
+	Massimo Manghi.
+
 2017-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Applied patch by
