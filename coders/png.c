@@ -194,6 +194,7 @@ static png_byte const mng_SEEK[5]={ 83,  69,  69,  75, '\0'};
 static png_byte const mng_SHOW[5]={ 83,  72,  79,  87, '\0'};
 static png_byte const mng_TERM[5]={ 84,  69,  82,  77, '\0'};
 static png_byte const mng_bKGD[5]={ 98,  75,  71,  68, '\0'};
+static png_byte const mng_caNv[5]={ 99,  97,  78, 118, '\0'};
 static png_byte const mng_cHRM[5]={ 99,  72,  82,  77, '\0'};
 static png_byte const mng_gAMA[5]={103,  65,  77,  65, '\0'};
 static png_byte const mng_iCCP[5]={105,  67,  67,  80, '\0'};
@@ -1212,6 +1213,62 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   return MagickTrue;
 }
 
+#if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
+static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
+{
+  Image
+    *image;
+
+
+  /* The unknown chunk structure contains the chunk data:
+     png_byte name[5];
+     png_byte *data;
+     png_size_t size;
+
+     Note that libpng has already taken care of the CRC handling.
+  */
+
+  LogMagickEvent(CoderEvent,GetMagickModule(),
+     "    read_user_chunk: found %c%c%c%c chunk",
+       chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
+
+  /* caNv */
+  if (chunk->name[0] ==  99 &&
+      chunk->name[1] ==  97 &&
+      chunk->name[2] ==  78 &&
+      chunk->name[3] == 118)
+    {
+     /* recognized caNv */
+
+     if (chunk->size != 16)
+       return(-1); /* Error return */
+
+     image=(Image *) png_get_user_chunk_ptr(ping);
+
+     image->page.width=(size_t) ((chunk->data[0] << 24) |
+        (chunk->data[1] << 16) | (chunk->data[2] << 8) | chunk->data[3]);
+
+     image->page.height=(size_t) ((chunk->data[4] << 24) |
+        (chunk->data[5] << 16) | (chunk->data[6] << 8) | chunk->data[7]);
+
+     image->page.x=(size_t) ((chunk->data[8] << 24) |
+        (chunk->data[9] << 16) | (chunk->data[10] << 8) | chunk->data[11]);
+
+     image->page.y=(size_t) ((chunk->data[12] << 24) |
+        (chunk->data[13] << 16) | (chunk->data[14] << 8) | chunk->data[15]);
+
+     /* Return one of the following: */
+        /* return(-n);  chunk had an error */
+        /* return(0);  did not recognize */
+        /* return(n);  success */
+
+     return(1);
+    }
+
+  return(0); /* Did not recognize */
+}
+#endif
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1441,16 +1498,16 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       (void) png_permit_mng_features(ping,PNG_ALL_MNG_FEATURES);
       png_set_read_fn(ping,image,png_get_data);
 #else
-#if defined(PNG_READ_EMPTY_PLTE_SUPPORTED)
+# if defined(PNG_READ_EMPTY_PLTE_SUPPORTED)
       png_permit_empty_plte(ping,MagickTrue);
       png_set_read_fn(ping,image,png_get_data);
-#else
+# else
       mng_info->image=image;
       mng_info->bytes_in_read_buffer=0;
       mng_info->found_empty_plte=MagickFalse;
       mng_info->have_saved_bkgd_index=MagickFalse;
       png_set_read_fn(ping,mng_info,mng_get_data);
-#endif
+# endif
 #endif
     }
   else
@@ -1458,14 +1515,17 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
   /* Ignore unknown chunks */
-#if PNG_LIBPNG_VER < 10700 /* Avoid a libpng16 warning */
+# if PNG_LIBPNG_VER < 10700 /* Avoid a libpng16 warning */
   png_set_keep_unknown_chunks(ping, 2, NULL, 0);
-#else
+# else
   png_set_keep_unknown_chunks(ping, 1, NULL, 0);
-#endif
-  /* Ignore unused chunks */
+# endif
+  /* Ignore unused chunks and all unknown chunks except for caNv */
+  png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
+  /* Callback for other unknown chunks */
+  png_set_read_user_chunk_fn(ping, image, read_user_chunk_callback);
 #endif
 
 #ifdef PNG_READ_CHECK_FOR_INVALID_INDEX_SUPPORTED
@@ -7156,11 +7216,16 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 #if defined(PNG_oFFs_SUPPORTED)
   if (mng_info->write_mng == 0 && (image->page.x || image->page.y))
     {
-      png_set_oFFs(ping,ping_info,(png_int_32) image->page.x,
+      if (!((image->page.width != 0 && image->page.width != image->columns) ||
+          (image->page.height != 0 && image->page.height != image->rows)))
+        {
+          png_set_oFFs(ping,ping_info,(png_int_32) image->page.x,
                    (png_int_32) image->page.y, 0);
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "    Setting up oFFs chunk");
+        }
+      /* else write caNv instead, later */
     }
 #endif
 
@@ -7305,6 +7370,25 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
     }
 
   png_write_info(ping,ping_info);
+
+  /* write caNv chunk */
+  if ((image->page.width != 0 && image->page.width != image->columns) ||
+      (image->page.height != 0 && image->page.height != image->rows) ||
+      image->page.x != 0 || image->page.y != 0)
+    {
+      unsigned char
+        chunk[22];
+
+      (void) WriteBlobMSBULong(image,16L);  /* data length=8 */
+      PNGType(chunk,mng_caNv);
+      LogPNGChunk(logging,mng_caNv,16L);
+      PNGLong(chunk+4,(png_uint_32) image->page.width);
+      PNGLong(chunk+8,(png_uint_32) image->page.height);
+      PNGsLong(chunk+12,(png_int_32) image->page.x);
+      PNGsLong(chunk+16,(png_int_32) image->page.y);
+      (void) WriteBlob(image,20,chunk);
+      (void) WriteBlobMSBULong(image,crc32(0,chunk,20));
+    }
 
 #if (PNG_LIBPNG_VER == 10206)
   /* avoid libpng-1.2.6 bug by setting PNG_HAVE_IDAT flag */
@@ -7632,6 +7716,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       png_set_text(ping,ping_info,text,1);
       png_free(ping,text);
     }
+
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "  Writing PNG end info");

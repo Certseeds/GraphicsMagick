@@ -1,3 +1,12 @@
+2017-01-21  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Added read_user_chunk_callback() function
+	and used it to implement a private PNG caNv (canvas) chunk
+	for remembering the original dimensions and offsets when an
+	image is cropped.  Previously we used the oFFs chunk for this
+	purpose, but this had potential conflicts with other applications
+	that also use the oFFs chunk.
+
 2017-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Applied
