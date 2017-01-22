@@ -1232,7 +1232,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      Note that libpng has already taken care of the CRC handling.
   */
 
-  LogMagickEvent(CoderEvent,GetMagickModule(),
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
      "    read_user_chunk: found %c%c%c%c chunk",
        chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
 
@@ -1255,7 +1255,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       int
         i;
 
-      LogMagickEvent(CoderEvent,GetMagickModule(),
+(void) LogMagickEvent(CoderEvent,GetMagickModule(),
         " recognized eXIf|exIf chunk");
 
       image=(Image *) png_get_user_chunk_ptr(ping);
