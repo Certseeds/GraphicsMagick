@@ -1252,7 +1252,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       png_byte
         *s;
 
-      int
+      size_t
         i;
 
 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1260,13 +1260,12 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
       image=(Image *) png_get_user_chunk_ptr(ping);
 
-      /* allocate profile = size+8; */
 #if PNG_LIBPNG_VER >= 14000
       profile=(unsigned char *) png_malloc(ping,
-        (png_alloc_size_t) chunk->size);
+        (png_alloc_size_t) chunk->size+6);
 #else
       profile=(unsigned char *) png_malloc(ping,
-         (png_size_t) chunk->size);
+         (png_size_t) chunk->size+6);
 #endif
       p=profile;
 
