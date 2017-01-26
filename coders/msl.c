@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2654,18 +2654,19 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         else if (LocaleCompare((char *) name,"resize") == 0)
           {
-            /* init the values */
-            width=msl_info->image[n]->columns;
-            height=msl_info->image[n]->rows;
-            x=0;
-            y=0;
-
             if (msl_info->image[n] == (Image *) NULL)
               {
                 ThrowException(msl_info->exception,OptionError,
                                NoImagesDefined,(char *) name);
                 break;
               }
+
+            /* init the values */
+            width=msl_info->image[n]->columns;
+            height=msl_info->image[n]->rows;
+            x=0;
+            y=0;
+
             if (attributes == (const xmlChar **) NULL)
               break;
             for (i=0; (attributes[i] != (const xmlChar *) NULL); i++)

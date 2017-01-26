@@ -1,3 +1,9 @@
+2017-01-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/msl.c (MSLStartElement): Change test for NULL image
+	pointer to before it is used rather than after it is used.
+	Problem reported by Petr Gajdos on 2017-01-25.
+
 2017-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/unix/m4/tcl.m4: Update tcl.m4 to TEA 3.10.  File
