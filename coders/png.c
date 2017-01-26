@@ -93,6 +93,16 @@
 /*
   Optional declarations. Define or undefine them as you like.
 */
+
+/* After eXIf chunk has been approved:
+#define eXIf_SUPPORTED
+*/
+
+/* Experimental; define one or both of these:
+#define exIf_SUPPORTED
+#define zxIf_SUPPORTED
+*/
+
 /* #define PNG_DEBUG -- turning this on breaks VisualC compiling */
 
 /*
@@ -208,6 +218,10 @@ static png_byte const mng_pHYs[5]={112,  72,  89, 115, '\0'};
 static png_byte const mng_sBIT[5]={115,  66,  73,  84, '\0'};
 static png_byte const mng_sRGB[5]={115,  82,  71,  66, '\0'};
 static png_byte const mng_tRNS[5]={116,  82,  78,  83, '\0'};
+#if defined(zxIf_SUPPORTED)
+static png_byte const mng_uxIf[5]={117, 120,  73, 102, '\0'};
+static png_byte const mng_zxIf[5]={122, 120,  73, 102, '\0'};
+#endif
 
 #if defined(JNG_SUPPORTED)
 static png_byte const mng_IDAT[5]={ 73,  68,  65,  84, '\0'};
@@ -1217,6 +1231,154 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   return MagickTrue;
 }
 
+#define CHUNK 4096
+#define MAX_CHUNK_SIZE 40000000
+/* Derived from code in libpng-1.4.1beta06 */
+png_size_t
+measure_decompressed_chunk(unsigned char *source, png_size_t chunklength)
+{
+   png_size_t text_size = 0;
+   z_stream zstream;
+   png_byte temp[CHUNK];
+
+   {
+      int ret = Z_OK;
+
+      /* allocate inflate state */
+      zstream.zalloc = Z_NULL;
+      zstream.zfree = Z_NULL;
+      zstream.opaque = Z_NULL;
+      ret = inflateInit(&zstream);
+      if (ret != Z_OK)
+          return (-1);
+
+      zstream.next_in = source;
+      zstream.avail_in = (uInt)(chunklength);
+      zstream.next_out = temp;
+      zstream.avail_out = CHUNK;
+
+      while (zstream.avail_in)
+      {
+         ret = inflate(&zstream, Z_PARTIAL_FLUSH);
+         if (ret != Z_OK && ret != Z_STREAM_END)
+         {
+            inflateReset(&zstream);
+            zstream.avail_in = 0;
+            break;
+         }
+         if (!zstream.avail_out || ret == Z_STREAM_END)
+         {
+            if (text_size == 0)  /* Initialize the decompression buffer */
+            {
+               text_size = CHUNK - zstream.avail_out;
+            }
+            else               /* Enlarge the decompression buffer */
+            {
+              text_size += CHUNK - zstream.avail_out;
+              if (text_size >= PNG_USER_CHUNK_MALLOC_MAX - 1)
+                 return 0;
+            }
+         }
+         if (ret == Z_STREAM_END)
+            break;
+
+         else
+         {
+            zstream.next_out = temp;
+            zstream.avail_out = CHUNK;
+         }
+      }
+
+      inflateReset(&zstream);
+      zstream.avail_in = 0;
+   }
+   return text_size;
+}
+
+/* exif_inf() derived from zlib-1.2.11/examples/zpipe.c/inf()
+   Not copyrighted -- provided to the public domain
+   Version 1.4  11 December 2005  Mark Adler */
+
+#include <assert.h>
+
+/* Decompress from source to dest (copied from zlib-1.2.11/examples).
+   inf() returns Z_OK on success, Z_MEM_ERROR if memory could not be
+   allocated for processing, Z_DATA_ERROR if the deflate data is
+   invalid or incomplete, Z_VERSION_ERROR if the version of zlib.h and
+   the version of the library linked do not match, or Z_ERRNO if there
+   is an error reading or writing the files. */
+
+int exif_inf(png_structp png_ptr, unsigned char *source,
+    unsigned char **dest, size_t n)
+{
+    /* *source: compressed data stream (input)
+       *dest:   inflated data (output)
+       n: length of input
+
+       Returns one of the following:
+       return(-n);  chunk had an error
+       return(n);  success, n is length of inflated data
+     */
+
+    int ret;
+    z_stream strm;
+
+    size_t inflated_length= measure_decompressed_chunk(source, n);
+
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+       "measure_compressed_chunk; inflated_length=%lu\n",inflated_length);
+
+    if (inflated_length == 0)
+        return (-1);
+
+    /* allocate dest */
+#if PNG_LIBPNG_VER >= 14000
+    *dest=(unsigned char *) png_malloc(png_ptr,
+       (png_alloc_size_t) inflated_length);
+#else
+    *dest=(unsigned char *) png_malloc(png_ptr,
+       (png_size_t) inflated_length);
+#endif
+
+    /* allocate inflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = 0;
+    strm.next_in = Z_NULL;
+    ret = inflateInit(&strm);
+    if (ret != Z_OK)
+        return (-1);
+
+    /* decompress until deflate stream ends or end of file */
+    do {
+
+        strm.avail_in = (int)n;
+        strm.next_in = source;
+
+        /* run inflate() on input until output buffer not full */
+        do {
+            strm.avail_out = (int)inflated_length;
+            strm.next_out = *dest;
+
+            ret = inflate(&strm, Z_NO_FLUSH);
+            assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+            switch (ret) {
+            case Z_NEED_DICT:
+            case Z_DATA_ERROR:
+            case Z_MEM_ERROR:
+                (void)inflateEnd(&strm);
+                return (-1);
+            }
+        } while (strm.avail_out == 0);
+        /* done when inflate() says it's done */
+    } while (ret != Z_STREAM_END);
+
+    /* clean up and return */
+    (void)inflateEnd(&strm);
+    return ret == Z_STREAM_END ? inflated_length : -1;
+}
+
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
 static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 {
@@ -1230,12 +1392,142 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      png_size_t size;
 
      Note that libpng has already taken care of the CRC handling.
+
+     Returns one of the following:
+         return(-n);  chunk had an error
+         return(0);  did not recognize
+         return(n);  success
   */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
      "    read_user_chunk: found %c%c%c%c chunk",
        chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
 
+#if defined(zxIf_SUPPORTED)
+  if ((chunk->name[0]  == 122 || chunk->name[0] == 117 ) &&
+      (chunk->name[1] ==   88 || chunk->name[1] == 120 ) &&
+      chunk->name[2] ==   73 &&
+      chunk-> name[3] == 102)
+    {
+      /* process uxIf or zxIf chunk */
+      unsigned char
+        *profile;
+
+      unsigned char
+        *p;
+
+      png_byte
+        *s;
+
+      size_t
+        i;
+
+      LogMagickEvent(CoderEvent,GetMagickModule(),
+        "     recognized uxIf|zxIf chunk");
+
+      image=(Image *) png_get_user_chunk_ptr(ping);
+
+#if PNG_LIBPNG_VER >= 14000
+      profile=(unsigned char *) png_malloc(ping,
+        (png_alloc_size_t) chunk->size+6);
+#else
+      profile=(unsigned char *) png_malloc(ping,
+         (png_size_t) chunk->size+6);
+#endif
+
+      p=profile;
+
+      /* Initialize profile with "Exif\0\0" */
+      *p++ ='E';
+      *p++ ='x';
+      *p++ ='i';
+      *p++ ='f';
+      *p++ ='\0';
+      *p++ ='\0';
+
+      LogMagickEvent(CoderEvent,GetMagickModule(),
+        "     initialized uxIf|zxIf chunk");
+
+      switch (chunk->data[0])
+        {
+          case 'E':
+          case 'I':
+          {
+            /* Uncompressed */
+            /* copy chunk->data to profile */
+            s=chunk->data;
+            for (i=0; i<chunk->size; i++)
+              *p++ = *s++;
+
+            LogMagickEvent(CoderEvent,GetMagickModule(),
+               "     SetImageProfile with %lu bytes",
+               (unsigned long) chunk->size+6);
+
+            (void) SetImageProfile(image,"exif",
+               (const unsigned char *)profile, chunk->size+6);
+
+            return(1);
+          }
+          case '\0':
+          {
+            /* Zlib compressed */
+
+            unsigned char *temp = NULL;
+
+            int inflated_size;
+              
+            png_free(ping,profile);
+
+            s=chunk->data;
+            s++;  // skip compression byte
+
+            /* uncompress chunk->data to temporary profile */
+            inflated_size=exif_inf(ping,s,&temp,chunk->size-1);
+
+            if (inflated_size <= 0)
+            {
+               LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "     inflated_size = %d bytes",inflated_size);
+               return(-1);
+            }
+
+#if PNG_LIBPNG_VER >= 14000
+           profile=(unsigned char *) png_malloc(ping,
+             (png_alloc_size_t) inflated_size+6);
+#else
+           profile=(unsigned char *) png_malloc(ping,
+              (png_size_t) inflated_size+6);
+#endif
+
+           p=profile;
+
+           /* Initialize profile with "Exif\0\0" */
+           *p++ ='E';
+           *p++ ='x';
+           *p++ ='i';
+           *p++ ='f';
+           *p++ ='\0';
+           *p++ ='\0';
+
+           for (i=0; i<inflated_size; i++)
+              *p++=temp[i];
+
+            LogMagickEvent(CoderEvent,GetMagickModule(),
+               "     SetImageProfile with %lu bytes",
+               (unsigned long) inflated_size+6);
+
+            (void) SetImageProfile(image,"exif",
+               (const unsigned char *)profile, inflated_size+6);
+
+            png_free(ping,temp);
+
+            return(1);
+          }
+       }
+    }
+#endif /* zxIf_SUPPORTED */
+
+#if defined(exIf_SUPPORTED)
   if (chunk->name[0]  == 101 &&
       (chunk->name[1] ==  88 || chunk->name[1] == 120 ) &&
       chunk->name[2]  ==  73 &&
@@ -1286,6 +1578,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
          (const unsigned char *)profile, chunk->size+6);
       return(1);
     }
+#endif /* exIf_SUPPORTED */
 
   /* caNv */
   if (chunk->name[0] ==  99 &&
@@ -1311,11 +1604,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
      image->page.y=(size_t) ((chunk->data[12] << 24) |
         (chunk->data[13] << 16) | (chunk->data[14] << 8) | chunk->data[15]);
-
-     /* Return one of the following: */
-        /* return(-n);  chunk had an error */
-        /* return(0);  did not recognize */
-        /* return(n);  success */
 
      return(1);
     }
@@ -1528,12 +1816,15 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   png_set_benign_errors(ping, 1);
 #endif
 
+  /* Just use libpng's limit (PNG_USER_CHUNK_MALLOC_MAX == 8000000) on
+     chunk size */
 #ifdef PNG_SET_USER_LIMITS_SUPPORTED
   /* Reject images with too many rows or columns */
   png_set_user_limits(ping,
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(WidthResource)),
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(HeightResource)));
 #endif /* PNG_SET_USER_LIMITS_SUPPORTED */
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "    PNG width limit: %lu, height limit: %lu",
     (unsigned long) Min(0x7fffffffL, GetMagickResourceLimit(WidthResource)),
@@ -1575,8 +1866,13 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 # else
   png_set_keep_unknown_chunks(ping, 1, NULL, 0);
 # endif
-  /* Ignore unused chunks and all unknown chunks except for exIf
-     and caNv */
+  /* Ignore unused chunks and all unknown chunks except for eXIf,
+     zxIf, and caNv */
+#if defined(zxIf_SUPPORTED)
+  png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_uxIf, 1);
+  png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_zxIf, 1);
+#endif
+  png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_eXIf, 1);
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
@@ -7348,6 +7644,11 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                       profile_info,
                                       (png_uint_32) profile_length);
               }
+#if defined(exIf_SUPPORTED) || defined(zxIf_SUPPORTED)
+            else if (LocaleCompare(profile_name,"exif") == 0)
+              /* Do not write exif; we'll write it later as exIf/zxIf */ 
+              ;
+#endif
             else
               {
                 if (logging)
@@ -7773,8 +8074,8 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       png_free(ping,text);
     }
 
+#if defined(exIf_SUPPORTED) || defined(zxIf_SUPPORTED)
   /* write exIf profile */
-
   {
     ImageProfileIterator
       *profile_iterator;
@@ -7810,11 +8111,15 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 
                 length=(png_uint_32) profile_length;
 
+#if defined(zxIf_SUPPORTED)
+      /* For now, write uncompressed exIf/eXIf chunk */
+#endif
 #if 0 /* eXIf chunk is registered */
                 PNGType(chunk,mng_eXIf);
 #else /* eXIf chunk not yet registered; write exIf instead */
                 PNGType(chunk,mng_exIf);
 #endif
+
                 if (length < 7)
                   break;  /* othewise crashes */
 
@@ -7833,6 +8138,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         DeallocateImageProfileIterator(profile_iterator);
       }
     }
+#endif /* exIf_SUPPORTED) || zxIf_SUPPORTED */
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
