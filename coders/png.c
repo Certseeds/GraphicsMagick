@@ -1231,6 +1231,8 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   return MagickTrue;
 }
 
+#if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
+#ifdef zxIf_SUPPORTED
 /* exif_inf() was derived from zlib-1.2.11/examples/zpipe.c/inf()
    Not copyrighted -- provided to the public domain
    Version 1.4  11 December 2005  Mark Adler */
@@ -1252,7 +1254,7 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
        n: length of input
 
        Returns one of the following:
-       return(-n);  chunk had an error
+       return(-1);  chunk had an error
        return(n);  success, n is length of inflated data
      */
 
@@ -1311,8 +1313,8 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     (void)inflateEnd(&strm);
     return (inflated_length);
 }
+#endif /* zxIf_SUPPORTED */
 
-#if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
 static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 {
   Image
@@ -1343,8 +1345,8 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       chunk-> name[3] == 102)
     {
       /* process uxIf or zxIf chunk */
-      unsigned char
-        *profile;
+      unsigned char *
+        profile;
 
       unsigned char
         *p;
@@ -1355,7 +1357,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       size_t
         i;
 
-      LogMagickEvent(CoderEvent,GetMagickModule(),
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "     recognized uxIf|zxIf chunk");
 
       image=(Image *) png_get_user_chunk_ptr(ping);
@@ -1367,7 +1369,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       profile=(unsigned char *) png_malloc(ping,
          (png_size_t) chunk->size+6);
 #endif
-
       p=profile;
 
       /* Initialize profile with "Exif\0\0" */
@@ -1378,7 +1379,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       *p++ ='\0';
       *p++ ='\0';
 
-      LogMagickEvent(CoderEvent,GetMagickModule(),
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "     initialized uxIf|zxIf chunk");
 
       switch (chunk->data[0])
@@ -1392,13 +1393,11 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
             for (i=0; i<chunk->size; i++)
               *p++ = *s++;
 
-            LogMagickEvent(CoderEvent,GetMagickModule(),
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                "     SetImageProfile with %lu bytes",
                (unsigned long) chunk->size+6);
-
             (void) SetImageProfile(image,"exif",
                (const unsigned char *)profile, chunk->size+6);
-
             return(1);
           }
           case '\0':
@@ -1428,11 +1427,10 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
             if (inflated_size <= 0)
             {
-               LogMagickEvent(CoderEvent,GetMagickModule(),
+               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "     inflated_size = %lu bytes",inflated_size);
                return(-1);
             }
-
 #if PNG_LIBPNG_VER >= 14000
            profile=(unsigned char *) png_malloc(ping,
              (png_alloc_size_t) inflated_size+6);
@@ -1440,7 +1438,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
            profile=(unsigned char *) png_malloc(ping,
               (png_size_t) inflated_size+6);
 #endif
-
            p=profile;
 
            /* Initialize profile with "Exif\0\0" */
@@ -1454,13 +1451,11 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
            for (i=0; i<inflated_size; i++)
               *p++=temp[i];
 
-            LogMagickEvent(CoderEvent,GetMagickModule(),
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                "     SetImageProfile with %lu bytes",
                (unsigned long) inflated_size+6);
-
             (void) SetImageProfile(image,"exif",
                (const unsigned char *)profile, inflated_size+6);
-
             png_free(ping,temp);
 
             return(1);
@@ -1552,7 +1547,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
   return(0); /* Did not recognize */
 }
-#endif
+#endif /* PNG_UNKNOWN_CHUNKS_SUPPORTED */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
