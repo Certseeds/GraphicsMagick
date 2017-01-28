@@ -1376,7 +1376,7 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
 
     /* clean up and return */
     (void)inflateEnd(&strm);
-    return ret == Z_STREAM_END ? inflated_length : -1;
+    return (inflated_length);
 }
 
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
@@ -1472,7 +1472,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
           {
             /* Zlib compressed */
 
-            unsigned char *temp = NULL;
+            unsigned char *temp;
 
             int inflated_size;
               
@@ -8111,7 +8111,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 
                 length=(png_uint_32) profile_length;
 
-#if defined(zxIf_SUPPORTED)
+#if defined(zxIf_write_SUPPORTED)
       /* For now, write uncompressed exIf/eXIf chunk */
 #endif
 #if 0 /* eXIf chunk is registered */
