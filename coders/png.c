@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1261,10 +1261,8 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
 
     size_t inflated_length = inflated_size;
 
-    if (inflated_length == 0)
-        return (-1);
-
-    if (inflated_length >= PNG_USER_CHUNK_MALLOC_MAX - 1)
+    if (inflated_length >= PNG_USER_CHUNK_MALLOC_MAX - 1 ||
+        inflated_length == 0)
         return (-1);
 
     /* allocate dest */
@@ -1286,7 +1284,6 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
         return (-1);
     /* decompress until deflate stream ends or end of file */
     do {
-
         strm.avail_in = (int)n;
         strm.next_in = source;
 
@@ -1308,6 +1305,7 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     } while (ret != Z_STREAM_END);
 
     /* clean up and return */
+
     /* To do: take care of too little or too much data */
 
     (void)inflateEnd(&strm);
