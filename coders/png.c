@@ -1261,7 +1261,7 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
 
     size_t inflated_length = inflated_size;
 
-    if (inflated_length >= PNG_USER_CHUNK_MALLOC_MAX - 1 ||
+    if (inflated_length >= PNG_USER_CHUNK_MALLOC_MAX - 1U ||
         inflated_length == 0)
         return (-1);
 
@@ -1422,9 +1422,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
                 ((s[2] & 0xff) <<  8) | ((s[3] & 0xff)      ));
 
             s+=4;
-
-            LogMagickEvent(CoderEvent,GetMagickModule(),
-               "     inflated_size = %lu bytes",inflated_size);
 
             /* uncompress chunk->data to temporary profile */
             inflated_size=exif_inf(ping,s,&temp,chunk->size-1,inflated_size);
