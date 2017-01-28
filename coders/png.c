@@ -1231,71 +1231,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   return MagickTrue;
 }
 
-#define CHUNK 4096
-#define MAX_CHUNK_SIZE 40000000
-/* Derived from code in libpng-1.4.1beta06 */
-png_size_t
-measure_decompressed_chunk(unsigned char *source, png_size_t chunklength)
-{
-   png_size_t text_size = 0;
-   z_stream zstream;
-   png_byte temp[CHUNK];
-
-   {
-      int ret = Z_OK;
-
-      /* allocate inflate state */
-      zstream.zalloc = Z_NULL;
-      zstream.zfree = Z_NULL;
-      zstream.opaque = Z_NULL;
-      ret = inflateInit(&zstream);
-      if (ret != Z_OK)
-          return (-1);
-
-      zstream.next_in = source;
-      zstream.avail_in = (uInt)(chunklength);
-      zstream.next_out = temp;
-      zstream.avail_out = CHUNK;
-
-      while (zstream.avail_in)
-      {
-         ret = inflate(&zstream, Z_PARTIAL_FLUSH);
-         if (ret != Z_OK && ret != Z_STREAM_END)
-         {
-            inflateReset(&zstream);
-            zstream.avail_in = 0;
-            break;
-         }
-         if (!zstream.avail_out || ret == Z_STREAM_END)
-         {
-            if (text_size == 0)  /* Initialize the decompression buffer */
-            {
-               text_size = CHUNK - zstream.avail_out;
-            }
-            else               /* Enlarge the decompression buffer */
-            {
-              text_size += CHUNK - zstream.avail_out;
-              if (text_size >= PNG_USER_CHUNK_MALLOC_MAX - 1)
-                 return 0;
-            }
-         }
-         if (ret == Z_STREAM_END)
-            break;
-
-         else
-         {
-            zstream.next_out = temp;
-            zstream.avail_out = CHUNK;
-         }
-      }
-
-      inflateReset(&zstream);
-      zstream.avail_in = 0;
-   }
-   return text_size;
-}
-
-/* exif_inf() derived from zlib-1.2.11/examples/zpipe.c/inf()
+/* exif_inf() was derived from zlib-1.2.11/examples/zpipe.c/inf()
    Not copyrighted -- provided to the public domain
    Version 1.4  11 December 2005  Mark Adler */
 
@@ -1309,7 +1245,7 @@ measure_decompressed_chunk(unsigned char *source, png_size_t chunklength)
    is an error reading or writing the files. */
 
 int exif_inf(png_structp png_ptr, unsigned char *source,
-    unsigned char **dest, size_t n)
+    unsigned char **dest, size_t n, png_uint_32 inflated_size)
 {
     /* *source: compressed data stream (input)
        *dest:   inflated data (output)
@@ -1323,12 +1259,12 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     int ret;
     z_stream strm;
 
-    size_t inflated_length= measure_decompressed_chunk(source, n);
-
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-       "measure_compressed_chunk; inflated_length=%lu\n",inflated_length);
+    size_t inflated_length = inflated_size;
 
     if (inflated_length == 0)
+        return (-1);
+
+    if (inflated_length >= PNG_USER_CHUNK_MALLOC_MAX - 1)
         return (-1);
 
     /* allocate dest */
@@ -1339,7 +1275,6 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     *dest=(unsigned char *) png_malloc(png_ptr,
        (png_size_t) inflated_length);
 #endif
-
     /* allocate inflate state */
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
@@ -1349,7 +1284,6 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     ret = inflateInit(&strm);
     if (ret != Z_OK)
         return (-1);
-
     /* decompress until deflate stream ends or end of file */
     do {
 
@@ -1360,7 +1294,6 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
         do {
             strm.avail_out = (int)inflated_length;
             strm.next_out = *dest;
-
             ret = inflate(&strm, Z_NO_FLUSH);
             assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
             switch (ret) {
@@ -1375,6 +1308,8 @@ int exif_inf(png_structp png_ptr, unsigned char *source,
     } while (ret != Z_STREAM_END);
 
     /* clean up and return */
+    /* To do: take care of too little or too much data */
+
     (void)inflateEnd(&strm);
     return (inflated_length);
 }
@@ -1474,20 +1409,32 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
             unsigned char *temp;
 
-            int inflated_size;
+            png_uint_32 inflated_size;
               
             png_free(ping,profile);
+
+            if (chunk->size < 5)
+               return(-1);
 
             s=chunk->data;
             s++;  // skip compression byte
 
+            inflated_size = (png_uint_32)
+               (((s[0] & 0xff) << 24) | ((s[1] & 0xff) << 16) |
+                ((s[2] & 0xff) <<  8) | ((s[3] & 0xff)      ));
+
+            s+=4;
+
+            LogMagickEvent(CoderEvent,GetMagickModule(),
+               "     inflated_size = %lu bytes",inflated_size);
+
             /* uncompress chunk->data to temporary profile */
-            inflated_size=exif_inf(ping,s,&temp,chunk->size-1);
+            inflated_size=exif_inf(ping,s,&temp,chunk->size-1,inflated_size);
 
             if (inflated_size <= 0)
             {
                LogMagickEvent(CoderEvent,GetMagickModule(),
-                  "     inflated_size = %d bytes",inflated_size);
+                  "     inflated_size = %lu bytes",inflated_size);
                return(-1);
             }
 
