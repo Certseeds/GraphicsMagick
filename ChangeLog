@@ -1,3 +1,8 @@
+2017-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc (-geometry): Geometry documentation changes
+	suggested by Jon Wong.
+
 2017-01-26  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Added support for a proposed new PNG chunk
