@@ -1230,8 +1230,8 @@ QuantumTransferMode(const Image *image,
                   case 0:
                     if (samples_per_pixel == 1)
                       *quantum_type=GrayQuantum;
-                      else
-                        *quantum_type=RedQuantum;
+                    else
+                      *quantum_type=RedQuantum;
                     break;
                   case 1:
                     *quantum_type=GreenQuantum;
@@ -1411,12 +1411,12 @@ QuantumTransferMode(const Image *image,
               }
             else
               {
-                if (image->matte)
+                if (image->matte && samples_per_pixel >= 5)
                   {
                     *quantum_type=CMYKAQuantum;
                     *quantum_samples=5;
                   }
-                else
+                else if (samples_per_pixel >= 4)
                   {
                     *quantum_type=CMYKQuantum;
                     *quantum_samples=4;
