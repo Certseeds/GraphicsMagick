@@ -2,7 +2,8 @@
 
 	* coders/tiff.c (QuantumTransferMode): Fix out of bounds read when
 	reading CMYKA TIFF which claims to have only 2 samples per pixel.
-	Problem was reported via email on February 15, 2017 by Valon Chu.
+	Problem was reported via email on February 15, 2017 by Valon
+	Chu. This issue was assigned CVE-2017-6335.
 
 2017-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
