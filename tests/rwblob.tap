@@ -10,7 +10,7 @@ rwblob=./rwblob
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 200
+test_plan_fn 204
 
 # ART format
 for type in ${check_types}
@@ -190,6 +190,12 @@ done
 for type in ${check_types}
 do
   test_command_fn "PGM ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PGM
+done
+
+# PGX format
+for type in ${check_types}
+do
+  test_command_fn "PGX ${type}" -F JP2 ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PGX
 done
 
 # PICON format

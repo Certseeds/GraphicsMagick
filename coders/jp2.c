@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -190,6 +190,44 @@ static unsigned int IsJPC(const unsigned char *magick,const size_t length)
   if (length < 2)
     return(False);
   if (memcmp(magick,"\377\117",2) == 0)
+    return(True);
+  return(False);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   I s P G X                                                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method IsPGX returns True if the image format type, identified by the
+%  magick string, is PGX.
+%
+%  The format of the IsPGX method is:
+%
+%      unsigned int IsPGX(const unsigned char *magick,const size_t length)
+%
+%  A description of each parameter follows:
+%
+%    o status:  Method IsPGX returns True if the image format type is PGX.
+%
+%    o magick: This string is generally the first few bytes of an image file
+%      or blob.
+%
+%    o length: Specifies the length of the magick string.
+%
+%
+*/
+static unsigned int IsPGX(const unsigned char *magick,const size_t length)
+{
+  if (length < 5)
+    return(False);
+  if ((memcmp(magick,"PG ML",5) == 0) || (memcmp(magick,"PG LM",5) == 0))
     return(True);
   return(False);
 }
@@ -765,13 +803,13 @@ ModuleExport void RegisterJP2Image(void)
   entry=SetMagickInfo("PGX");
   entry->description="JPEG-2000 VM Format";
   entry->module="JP2";
-  entry->magick=(MagickHandler) IsJPC;
+  entry->magick=(MagickHandler) IsPGX;
   entry->adjoin=False;
   entry->seekable_stream=True;
   entry->thread_support=False;
 #if defined(HasJP2)
-  /* Don't set an encoder since PGX is not a standard format */
   entry->decoder=(DecoderHandler) ReadJP2Image;
+  entry->encoder=(EncoderHandler) WriteJP2Image;
 #endif
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -928,6 +966,12 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     Ensure that image is in RGB space.
   */
   (void) TransformColorspace(image,RGBColorspace);
+
+  /*
+    PGX format requires a grayscale representation
+  */
+  if (strcmp("PGX",image_info->magick) == 0)
+    (void) SetImageType(image,GrayscaleType);
 
   /*
     Analyze image to be written.

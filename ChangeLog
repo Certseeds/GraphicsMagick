@@ -1,3 +1,8 @@
+2017-03-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jp2.c: Support PGX JPEG 2000 format for reading and
+	writing (within the bounds of what JasPer supports).
+
 2017-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (QuantumTransferMode): Fix out of bounds read when
