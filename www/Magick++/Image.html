@@ -1811,12 +1811,19 @@ unsigned int    animationIterations ( void ) const
 </div>
 <div class="section" id="attribute">
 <h2><a class="toc-backref" href="#id116">attribute</a></h2>
-<p>Access an arbitrary named image attribute. Any number of named
-attributes may be attached to the image. For example, the image
-comment is a named image attribute with the name &quot;comment&quot;. EXIF tags
-are attached to the image as named attributes. Use the syntax
-&quot;EXIF:&lt;tag&gt;&quot; to request an EXIF tag similar to &quot;EXIF:DateTime&quot;:</p>
+<p>Access or update an arbitrary named image attribute. Any number of
+named attributes may be attached to the image. For example, the image
+comment is a named image attribute with the name &quot;comment&quot;.  If the
+named attribute already exists, the provided text is appended to the
+existing attribute text.  Pass NULL to remove an existing text
+attribute, or to restart the text attribute from scratch.</p>
+<p>EXIF tags are attached to the image as named attributes. Use the
+syntax &quot;EXIF:&lt;tag&gt;&quot; to request an EXIF tag similar to
+&quot;EXIF:DateTime&quot;:</p>
 <pre class="literal-block">
+void            attribute ( const std::string name_,
+                            const char * value_ );
+
 void            attribute ( const std::string name_,
                             const std::string value_ )
 

@@ -1,5 +1,11 @@
 2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Image.cpp (attribute): Added Image attribute method
+	which accepts a 'char *' argument, and will remove the attribute
+	if the value argument is NULL.  From patch provided by "Gints" as
+	SourceForge patch #46 "C++ api - method to clear/remove
+	attribute".
+
 	* VisualMagick/configure/configure.cpp (InitInstance): Applied
 	patch by Paul McConkey to allow the quantum command line argument
 	to set the default value in the wizard drop list.  This allows

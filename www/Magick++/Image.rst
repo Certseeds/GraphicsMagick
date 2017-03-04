@@ -1614,11 +1614,19 @@ extension) for::
 attribute
 +++++++++
 
-Access an arbitrary named image attribute. Any number of named
-attributes may be attached to the image. For example, the image
-comment is a named image attribute with the name "comment". EXIF tags
-are attached to the image as named attributes. Use the syntax
-"EXIF:<tag>" to request an EXIF tag similar to "EXIF:DateTime"::
+Access or update an arbitrary named image attribute. Any number of
+named attributes may be attached to the image. For example, the image
+comment is a named image attribute with the name "comment".  If the
+named attribute already exists, the provided text is appended to the
+existing attribute text.  Pass NULL to remove an existing text
+attribute, or to restart the text attribute from scratch.
+
+EXIF tags are attached to the image as named attributes. Use the
+syntax "EXIF:<tag>" to request an EXIF tag similar to
+"EXIF:DateTime"::
+
+    void            attribute ( const std::string name_,
+                                const char * value_ );
 
     void            attribute ( const std::string name_,
                                 const std::string value_ )
