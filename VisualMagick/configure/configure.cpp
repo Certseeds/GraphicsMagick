@@ -2918,6 +2918,7 @@ BOOL CConfigureApp::InitInstance()
   wizard.m_Page2.m_build64Bit = info.build64Bit();
   wizard.m_Page2.m_openMP = info.openMP();
   wizard.m_Page2.m_projectType = info.projectType();
+  wizard.m_Page2.m_quantumDepth = info.quantumDepth();
 
   wizard.m_Page3.m_tempRelease = release_loc.c_str();
   wizard.m_Page3.m_tempDebug = debug_loc.c_str();

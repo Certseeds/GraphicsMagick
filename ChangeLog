@@ -1,5 +1,14 @@
 2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* VisualMagick/configure/configure.cpp (InitInstance): Applied
+	patch by Paul McConkey to allow the quantum command line argument
+	to set the default value in the wizard drop list.  This allows
+	setting the quantum depth when the /nowizard argument was
+	supplied.  Resolves SourceForge patch #48 "When running from the
+	command line configure.exe does not use the quantum argument".
+	The provided configure.exe still needs to be rebuilt to
+	incorporate this change.
+
 	* magick/command.c (MogrifyImage): The -orient command now also
 	updates the orientation in the EXIF profile, if it exists.
 
