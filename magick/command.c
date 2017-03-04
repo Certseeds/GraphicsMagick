@@ -15674,9 +15674,9 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
       {
         if (LocaleCompare("frame",option+1) == 0)
           {
+            ximage_info.frame=(*option == '-');
             MagickFreeMemory(argv[i]);
             argv[i]=AcquireString("-ignore");  /* resolve option confict */
-            ximage_info.frame=(*option == '-');
             break;
           }
         MagickFatalError(OptionFatalError,UnrecognizedOption,option);

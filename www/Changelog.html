@@ -38,6 +38,12 @@
 <p>2017-03-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/command.c (ImportImageCommand): Fix handling of -frame
+options. Option handling was incorrect due to option checking the
+frame option after it had been freed.  Checking the frame dash
+option before freeing the argument solves the problem.  From patch
+provided by Victor Ananjevsky as SourceForge patch #49 &quot;-frame
+doesn't work in gm import&quot;.</li>
 <li>Magick++/lib/Image.cpp (attribute): Added Image attribute method
 which accepts a 'char *' argument, and will remove the attribute
 if the value argument is NULL.  From patch provided by &quot;Gints&quot; as
