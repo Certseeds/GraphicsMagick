@@ -1,3 +1,11 @@
+2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImage): The -orient command now also
+	updates the orientation in the EXIF profile, if it exists.
+
+	* Magick++/lib/Image.cpp (orientation): Update orientation in EXIF
+	profile, if it exists.
+
 2017-03-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jp2.c: Support PGX JPEG 2000 format for reading and

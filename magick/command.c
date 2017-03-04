@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -10261,7 +10261,12 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
           {
 	    (*image)->orientation=UndefinedOrientation;
 	    if (*option == '-')
-	      (*image)->orientation=StringToOrientationType(argv[++i]);
+              {
+                char orientation[MaxTextExtent];
+                (*image)->orientation=StringToOrientationType(argv[++i]);
+                FormatString(orientation,"%d",(*image)->orientation);
+                (void) SetImageAttribute((*image),"EXIF:Orientation",orientation);
+              }
             continue;
           }
         break;

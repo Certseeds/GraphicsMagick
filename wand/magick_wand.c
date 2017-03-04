@@ -8899,7 +8899,7 @@ WandExport unsigned int MagickSetImageOrientation(MagickWand *wand,
       (void) ThrowException(&wand->exception,WandError,WandContainsNoImages,
                             wand->id);
 
-  SetImageAttribute(wand->image, "EXIF:Orientation", orientation_attribute);
+  (void) SetImageAttribute(wand->image, "EXIF:Orientation", orientation_attribute);
   wand->image->orientation = orientation;
   return(True);
 }

@@ -1,3 +1,8 @@
+2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* lib/Image.cpp (orientation): Update orientation in EXIF profile,
+	if it exists.
+
 2014-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* lib/Magick++/Geometry.h (Magick::Geometry): Add and document

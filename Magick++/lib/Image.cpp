@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2015
+// Copyright Bob Friesenhahn, 1999-2017
 //
 // Implementation of Image
 //
@@ -3175,6 +3175,9 @@ void Magick::Image::orientation ( const Magick::OrientationType orientation_ )
 {
   modifyImage();
   image()->orientation = orientation_;
+  char orientation[MaxTextExtent];
+  FormatString(orientation,"%d",constImage()->orientation);
+  (void) SetImageAttribute(image(),"EXIF:Orientation",orientation);
 }
 Magick::OrientationType Magick::Image::orientation ( void ) const
 {
