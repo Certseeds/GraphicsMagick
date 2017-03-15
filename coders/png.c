@@ -6467,6 +6467,16 @@ png_write_raw_profile(const ImageInfo *image_info,png_struct *ping,
 static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                        const ImageInfo *image_info,Image *imagep)
 {
+  char
+    gm_vers[32],
+#ifdef HasLCMS
+    lcms_vers[32],
+#endif
+    libpng_runv[32],
+    libpng_vers[32],
+    zlib_runv[32],
+    zlib_vers[32];
+
   Image
     * volatile imagev = imagep,  /* Use only 'imagev' before setjmp() */
     *image;                      /* Use only 'image' after setjmp() */
@@ -6542,6 +6552,50 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),
                          "  enter WriteOnePNGImage()");
 
+  /* Define these outside of the following "if logging()" block so they will
+   * show in debuggers.
+   */
+  (void) FormatString(gm_vers,"%s",
+         MagickLibVersionText);
+
+  (void) FormatString(libpng_vers,"%s",
+         PNG_LIBPNG_VER_STRING);
+  (void) FormatString(libpng_runv,"%s",
+         png_get_libpng_ver(NULL));
+
+  (void) FormatString(zlib_vers,"%s",
+         ZLIB_VERSION);
+  (void) FormatString(zlib_runv,"%s",
+         zlib_version);
+
+#ifdef HasLCMS
+  (void) FormatString(lcms_vers,"%d",
+         LCMS_VERSION);
+#endif
+
+  if (logging != MagickFalse)
+    {
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "    GM version     = %s", gm_vers);
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "    Libpng version = %s", libpng_vers);
+       if (LocaleCompare(libpng_vers,libpng_runv) != 0)
+       {
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "      running with   %s", libpng_runv);
+       }
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "    Zlib version   = %s", zlib_vers);
+       if (LocaleCompare(zlib_vers,zlib_runv) != 0)
+       {
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "      running with   %s", zlib_runv);
+       }
+#ifdef HasLCMS
+       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            "    LCMS version   = %s", lcms_vers);
+#endif
+    }
   /* Initialize some stuff */
   ping_background.red = 0;
   ping_background.green = 0;

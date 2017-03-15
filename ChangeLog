@@ -1,3 +1,8 @@
+2017-03-15  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (WriteOnePNGImage): Add version info about
+	gm, libpng, zlib, and lcms to the PNG debug log.
+
 2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (ImportImageCommand): Fix handling of -frame
