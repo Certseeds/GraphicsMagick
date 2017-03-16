@@ -76,6 +76,7 @@
 #include "magick/tempfile.h"
 #include "magick/transform.h"
 #include "magick/utility.h"
+#include "magick/version.h"
 #if defined(HasPNG)
 
 /* Suppress libpng pedantic warnings */
@@ -87,6 +88,9 @@
 
 #include "png.h"
 #include "zlib.h"
+#ifdef HasLCMS
+#include "lcms2.h"
+#endif
 
 
 #if PNG_LIBPNG_VER > 10011
