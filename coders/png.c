@@ -6584,45 +6584,45 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   /* Define these outside of the following "if logging()" block so they will
    * show in debuggers.
    */
-  (void) FormatString(gm_vers,"%s",
+  (void) FormatString(gm_vers,"%.31s",
          MagickLibVersionText);
 
-  (void) FormatString(libpng_vers,"%s",
+  (void) FormatString(libpng_vers,"%.31s",
          PNG_LIBPNG_VER_STRING);
-  (void) FormatString(libpng_runv,"%s",
+  (void) FormatString(libpng_runv,"%.31s",
          png_get_libpng_ver(NULL));
 
-  (void) FormatString(zlib_vers,"%s",
+  (void) FormatString(zlib_vers,"%.31s",
          ZLIB_VERSION);
-  (void) FormatString(zlib_runv,"%s",
+  (void) FormatString(zlib_runv,"%.31s",
          zlib_version);
 
 #ifdef HasLCMS
-  (void) FormatString(lcms_vers,"%d",
+  (void) FormatString(lcms_vers,"%.8d",
          LCMS_VERSION);
 #endif
 
   if (logging != MagickFalse)
     {
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    GM version     = %s", gm_vers);
+            "    GM version     = %.31s", gm_vers);
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    Libpng version = %s", libpng_vers);
+            "    Libpng version = %.31s", libpng_vers);
        if (LocaleCompare(libpng_vers,libpng_runv) != 0)
        {
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "      running with   %s", libpng_runv);
+            "      running with   %.31s", libpng_runv);
        }
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    Zlib version   = %s", zlib_vers);
+            "    Zlib version   = %.31s", zlib_vers);
        if (LocaleCompare(zlib_vers,zlib_runv) != 0)
        {
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "      running with   %s", zlib_runv);
+            "      running with   %.31s", zlib_runv);
        }
 #ifdef HasLCMS
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    LCMS version   = %s", lcms_vers);
+            "    LCMS version   = %.31s", lcms_vers);
 #endif
     }
   /* Initialize some stuff */
