@@ -2002,6 +2002,9 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     }
   image=imagev;  /* Use 'image' after this point for optimization */
 
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+     "  Write JPEG Image: image->orientation = %d",image->orientation);
+
   /*
     Transform image to user-requested colorspace.
   */

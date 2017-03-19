@@ -1,3 +1,11 @@
+2017-03-18  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Added new private orNT PNG chunk, to
+	preserve image->orientation when it is defined and not
+	the default TopLeft.
+	* coders/jpeg.c: Mention image->orientation in the log when
+	writing a JPEG.
+
 2017-03-15  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (WriteOnePNGImage): Add version info about

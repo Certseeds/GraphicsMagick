@@ -217,6 +217,7 @@ static png_byte const mng_eXIf[5]={101,  88,  73, 102, '\0'};
 static png_byte const mng_gAMA[5]={103,  65,  77,  65, '\0'};
 static png_byte const mng_iCCP[5]={105,  67,  67,  80, '\0'};
 static png_byte const mng_nEED[5]={110,  69,  69,  68, '\0'};
+static png_byte const mng_orNT[5]={111, 114,  78,  84, '\0'};
 static png_byte const mng_pHYg[5]={112,  72,  89, 103, '\0'};
 static png_byte const mng_pHYs[5]={112,  72,  89, 115, '\0'};
 static png_byte const mng_sBIT[5]={115,  66,  73,  84, '\0'};
@@ -1472,7 +1473,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
   if (chunk->name[0]  == 101 &&
       (chunk->name[1] ==  88 || chunk->name[1] == 120 ) &&
       chunk->name[2]  ==  73 &&
-      chunk-> name[3] == 102)
+      chunk->name[3]  == 102)
     {
       /* process eXIf or exIf chunk */
 
@@ -1521,6 +1522,24 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
     }
 #endif /* exIf_SUPPORTED */
 
+  /* orNT */
+  if (chunk->name[0] == 111 &&
+      chunk->name[1] == 114 &&
+      chunk->name[2] ==  78 &&
+      chunk->name[3] ==  84)
+    {
+     /* recognized orNT */
+     if (chunk->size != 1)
+       return(-1); /* Error return */
+
+     image=(Image *) png_get_user_chunk_ptr(ping);
+     if (chunk->data[0] < 9)
+       image->orientation = chunk->data[0];
+     else
+       image->orientation = 0;
+     return(1);
+    }
+
   /* caNv */
   if (chunk->name[0] ==  99 &&
       chunk->name[1] ==  97 &&
@@ -1531,6 +1550,9 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
      if (chunk->size != 16)
        return(-1); /* Error return */
+
+     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+             " recognized caNv chunk");
 
      image=(Image *) png_get_user_chunk_ptr(ping);
 
@@ -1548,6 +1570,9 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
      return(1);
     }
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+         " unrecognized user chunk");
 
   return(0); /* Did not recognize */
 }
@@ -7723,6 +7748,19 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 
   png_write_info(ping,ping_info);
 
+  /* write orNT if image->orientation is defined and not TopLeft */
+  if (image->orientation > 1 && image->orientation < 9)
+    {
+      unsigned char
+        chunk[6];
+      (void) WriteBlobMSBULong(image,1L);  /* data length=1 */
+      PNGType(chunk,mng_orNT);
+      LogPNGChunk(logging,mng_orNT,1L);
+      chunk[4]=image->orientation;
+      (void) WriteBlob(image,5,chunk);
+      (void) WriteBlobMSBULong(image,crc32(0,chunk,5));
+    }
+
   /* write caNv chunk */
   if ((image->page.width != 0 && image->page.width != image->columns) ||
       (image->page.height != 0 && image->page.height != image->rows) ||
@@ -7731,7 +7769,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       unsigned char
         chunk[22];
 
-      (void) WriteBlobMSBULong(image,16L);  /* data length=8 */
+      (void) WriteBlobMSBULong(image,16L);  /* data length=16 */
       PNGType(chunk,mng_caNv);
       LogPNGChunk(logging,mng_caNv,16L);
       PNGLong(chunk+4,(png_uint_32) image->page.width);
