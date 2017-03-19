@@ -2748,7 +2748,8 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
       p=image_info->filename;
       while (isalnum((int) *p))
         p++;
-      if ((*p == ':') && ((p-image_info->filename) < (long) sizeof(magic)))
+      if ((p != image_info->filename) && (*p == ':') &&
+          ((p-image_info->filename) < (long) sizeof(magic)))
         {
           char
             format[MaxTextExtent];
@@ -2769,6 +2770,9 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
             (void) strcpy(format,"IMAGE");
 
           LocaleUpper(format);
+          /*
+            If format does not conflict with a Windows logical drive
+          */
           if (!IsMagickConflict(format))
             {
               /*

@@ -1,3 +1,10 @@
+2017-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (SetImageInfo): Ignore empty magic prefix
+	specification and do not remove colon character from start of
+	filename.  Resolves SourceForge bug #415 "Inconsistent Behavior w/
+	input_file Parameter".
+
 2017-03-18  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Added new private orNT PNG chunk, to
