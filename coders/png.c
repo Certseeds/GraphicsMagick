@@ -6496,15 +6496,17 @@ png_write_raw_profile(const ImageInfo *image_info,png_struct *ping,
 static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                        const ImageInfo *image_info,Image *imagep)
 {
-  char
-    gm_vers[32],
+  const char
+    *gm_vers,
+    *libpng_runv,
+    *libpng_vers,
+    *zlib_runv,
+    *zlib_vers;
+
 #ifdef HasLCMS
-    lcms_vers[32],
+  char
+    lcms_vers[32];
 #endif
-    libpng_runv[32],
-    libpng_vers[32],
-    zlib_runv[32],
-    zlib_vers[32];
 
   Image
     * volatile imagev = imagep,  /* Use only 'imagev' before setjmp() */
@@ -6584,23 +6586,14 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   /* Define these outside of the following "if logging()" block so they will
    * show in debuggers.
    */
-  (void) FormatString(gm_vers,"%.31s",
-         MagickLibVersionText);
-
-  (void) FormatString(libpng_vers,"%.31s",
-         PNG_LIBPNG_VER_STRING);
-  (void) FormatString(libpng_runv,"%.31s",
-         png_get_libpng_ver(NULL));
-
-  (void) FormatString(zlib_vers,"%.31s",
-         ZLIB_VERSION);
-  (void) FormatString(zlib_runv,"%.31s",
-         zlib_version);
-
+    gm_vers=MagickLibVersionText;
 #ifdef HasLCMS
-  (void) FormatString(lcms_vers,"%.8d",
-         LCMS_VERSION);
+    (void) sprintf(lcms_vers,"%.4d",LCMS_VERSION);
 #endif
+    libpng_runv=png_get_libpng_ver(NULL);
+    libpng_vers=PNG_LIBPNG_VER_STRING;
+    zlib_runv=zlib_version;
+    zlib_vers=ZLIB_VERSION;
 
   if (logging != MagickFalse)
     {
