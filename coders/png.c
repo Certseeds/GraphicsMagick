@@ -210,10 +210,14 @@ static png_byte const mng_TERM[5]={ 84,  69,  82,  77, '\0'};
 static png_byte const mng_bKGD[5]={ 98,  75,  71,  68, '\0'};
 static png_byte const mng_caNv[5]={ 99,  97,  78, 118, '\0'};
 static png_byte const mng_cHRM[5]={ 99,  72,  82,  77, '\0'};
+#ifdef exIf_SUPPORTED
 /* until registration of eXIf */
 static png_byte const mng_exIf[5]={101, 120,  73, 102, '\0'};
+#endif
+#ifdef eXIf_SUPPORTED
 /* after registration of eXIf */
 static png_byte const mng_eXIf[5]={101,  88,  73, 102, '\0'};
+#endif
 static png_byte const mng_gAMA[5]={103,  65,  77,  65, '\0'};
 static png_byte const mng_iCCP[5]={105,  67,  67,  80, '\0'};
 static png_byte const mng_nEED[5]={110,  69,  69,  68, '\0'};
@@ -1838,7 +1842,9 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_uxIf, 1);
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_zxIf, 1);
 #endif
+#if defined(eXIf_SUPPORTED)
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_eXIf, 1);
+#endif
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
@@ -8100,7 +8106,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       png_free(ping,text);
     }
 
-#if defined(exIf_SUPPORTED) || defined(zxIf_SUPPORTED)
+#if defined(exIf_SUPPORTED) || \
+    defined(zxIf_SUPPORTED) || \
+    defined(eXIf_SUPPORTED)
   /* write exIf profile */
   {
     ImageProfileIterator
@@ -8140,7 +8148,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 #if defined(zxIf_write_SUPPORTED)
       /* For now, write uncompressed exIf/eXIf chunk */
 #endif
-#if 0 /* eXIf chunk is registered */
+#ifdef eXIf_SUPPORTED /* eXIf chunk is registered */
                 PNGType(chunk,mng_eXIf);
 #else /* eXIf chunk not yet registered; write exIf instead */
                 PNGType(chunk,mng_exIf);
