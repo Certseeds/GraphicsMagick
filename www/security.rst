@@ -89,7 +89,9 @@ risk.  These are steps which can be taken:
 
 5. Normalize input file names or any other external inputs so that
    they are under your control and not controlled by an untrusted
-   party.
+   party.  This should include any file name specifications, which may
+   include arbitrary 'glob' patterns (wildcards), requiring hours or
+   days to complete if sufficiently close long file names exist.
 
 6. Enforce that uploaded files are passed to the expected reader.  For
    example, the uploaded file "file.jpg" is forced to be read by the

@@ -35,6 +35,8 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 
 `GraphicsMagick questions on StackOverflow <http://stackoverflow.com/questions/tagged/graphicsmagick?>`_.
 
+`GraphicsMagick ABI/API Changes <https://abi-laboratory.pro/tracker/timeline/graphicsmagick/>`_.
+
 
 GraphicsMagick Vulnerabilities
 ==============================

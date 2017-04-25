@@ -101,7 +101,9 @@ to the system running it.</p>
 </li>
 <li><p class="first">Normalize input file names or any other external inputs so that
 they are under your control and not controlled by an untrusted
-party.</p>
+party.  This should include any file name specifications, which may
+include arbitrary 'glob' patterns (wildcards), requiring hours or
+days to complete if sufficiently close long file names exist.</p>
 </li>
 <li><p class="first">Enforce that uploaded files are passed to the expected reader.  For
 example, the uploaded file &quot;file.jpg&quot; is forced to be read by the
