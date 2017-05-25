@@ -2083,8 +2083,20 @@ iccColorProfile
 
 ICC color profile. Supplied via a `Blob`_ since Magick++/ and
 GraphicsMagick do not currently support formating this data structure
-directly.  Specifications are available from the International Color
-Consortium for the format of ICC color profiles::
+directly.
+
+If there is not already an ICC color profile, the profile is merely
+attached to the image without transforming the pixels.  If there is
+already an ICC color profile (the source profile), the pixels are
+translated according to the source and target profiles, and the
+existing profile is replaced with the target profile.
+
+Also see `renderingIntent`_, which allows specifying the rendering
+intent if the profile is executed.
+
+Specifications for ICC color profiles and their usage are available
+from the International Color Consortium for the format of ICC color
+profiles::
 
     void            iccColorProfile( const Blob &colorProfile_ )
 
@@ -2357,7 +2369,7 @@ renderingIntent
 +++++++++++++++
 
 The type of rendering intent (used when applying an ICC color
-profile)::
+profile using `iccColorProfile`_)::
 
     void            renderingIntent ( const RenderingIntent renderingIntent_ )
 

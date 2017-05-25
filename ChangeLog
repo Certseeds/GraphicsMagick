@@ -1,3 +1,8 @@
+2017-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Magick++/Image.rst: Improve documentation for Magick++
+	Image::iccColorProfile() and Image::renderingIntent().
+
 2017-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tiff: Update to libtiff 4.0.8.
