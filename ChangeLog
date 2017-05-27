@@ -1,3 +1,7 @@
+2017-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Changes.rst: Add missing link to most recent changes.
+
 2017-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/Magick++/Image.rst: Improve documentation for Magick++
