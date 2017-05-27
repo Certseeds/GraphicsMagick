@@ -1,5 +1,8 @@
 2017-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* config/log.mgk: Added documentation suggested by SourceForge
+	issue #419 "Consider a small patch to log.mgk".
+
 	* www/Changes.rst: Add missing link to most recent changes.
 
 2017-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

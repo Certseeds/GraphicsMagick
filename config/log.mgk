@@ -5,7 +5,7 @@
 
 The following options are available:
 
-  o events
+  o events [comma separated list]
       annotate       Text annotation events.
       blob           File opening/closing/loading events.
       cache          Pixel cache events.
