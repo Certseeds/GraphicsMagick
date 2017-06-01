@@ -1,3 +1,8 @@
+2017-06-01  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Removed experimental zxIF chunk support.  That
+	proposal is dead.
+
 2017-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* config/log.mgk: Added documentation suggested by SourceForge
