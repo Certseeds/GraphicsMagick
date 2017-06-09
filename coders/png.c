@@ -1294,13 +1294,19 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 #endif
       p=profile;
 
-      /* Initialize profile with "Exif\0\0" */
-      *p++ ='E';
-      *p++ ='x';
-      *p++ ='i';
-      *p++ ='f';
-      *p++ ='\0';
-      *p++ ='\0';
+      if (*p != 'E' || *(p+1) != 'x' || *(p+2) != 'i' ||
+          *(p+3) != 'f' || *(p+4) != '\0' || *(p+5) != '\0')
+        {
+          /* Initialize profile with "Exif\0\0" if it
+             doesn't already begin with it by accident
+          */
+          *p++ ='E';
+          *p++ ='x';
+          *p++ ='i';
+          *p++ ='f';
+          *p++ ='\0';
+          *p++ ='\0';
+        }
 
       /* copy chunk->data to profile */
       s=chunk->data;
