@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2016 GraphicsMagick Group */
+/* Copyright (C) 2003-2017 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -8893,7 +8893,7 @@ WandExport unsigned int MagickSetImageOrientation(MagickWand *wand,
     && new_orientation <= LeftBottomOrientation)
       ? new_orientation
       : UndefinedOrientation);
-  snprintf(orientation_attribute,MaxTextExtent,"%d",new_orientation);
+  FormatString(orientation_attribute,"%d",new_orientation);
 
   if (wand->images == (Image *) NULL)
       (void) ThrowException(&wand->exception,WandError,WandContainsNoImages,
