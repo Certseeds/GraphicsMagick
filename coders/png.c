@@ -88,8 +88,14 @@
 
 #include "png.h"
 #include "zlib.h"
-#ifdef HasLCMS
-#include "lcms2.h"
+#if defined(HasLCMS)
+#  if defined(HAVE_LCMS2_LCMS2_H)
+#    include <lcms2/lcms2.h>
+#  elif defined(HAVE_LCMS2_H)
+#    include <lcms2.h>
+#  else
+#    error "LCMS 2 header missing!"
+#  endif
 #endif
 
 

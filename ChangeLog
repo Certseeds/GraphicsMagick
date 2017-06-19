@@ -1,5 +1,7 @@
 2017-06-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c: Fix lcms2.h inclusion logic.
+
 	* wand/magick_wand.c (MagickSetImageOrientation): Eliminate use of
 	snprintf, which is not supported by older Visual Studio.
 
