@@ -3531,6 +3531,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             Don't throw exception here since ReadImage() will already
             have thrown it.
           */
+          DestroyImage(image);
           return (Image *) NULL;
         }
 

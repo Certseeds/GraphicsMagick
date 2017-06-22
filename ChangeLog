@@ -1,3 +1,8 @@
+2017-06-22  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Stop memory leak when reading invalid JNG image.
+	Fixes CVE-2017-8350.
+
 2017-06-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c: Fix lcms2.h inclusion logic.
