@@ -139,7 +139,7 @@ static TclMagickObj *newMagickObj(Tcl_Interp  *interp, int type, void *wandPtr, 
      * create one from the MagickWand address
      */
     if( name == NULL ) {
-        sprintf(idString, "magick%lX", (unsigned long)wandPtr );
+        sprintf(idString, "magick%p", wandPtr );
         name = idString;
     }
 

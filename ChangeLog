@@ -2,6 +2,9 @@
 
 	* TclMagick/generic/TclMagick.c (magickCmd): Resolve SourceForge
 	patch #51 "TclMagick: memory access error; possible segfault".
+	(newMagickObj): Fix formatting of pointer value so it is 64-bit
+	safe.  Resolves SourceForge patch #50 "TclMagick: 64-bit
+	portability issue".
 
 	* coders/pict.c (ReadPICTImage): Avoid possible use of negative
 	value when indexing array, which would cause buffer overflow.

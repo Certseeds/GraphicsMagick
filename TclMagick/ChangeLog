@@ -2,6 +2,9 @@
 
 	* generic/TclMagick.c (magickCmd): Resolve SourceForge patch #51
 	"TclMagick: memory access error; possible segfault".
+	(newMagickObj): Fix formatting of pointer value so it is 64-bit
+	safe.  Resolves SourceForge patch #50 "TclMagick: 64-bit
+	portability issue".
 
 2017-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

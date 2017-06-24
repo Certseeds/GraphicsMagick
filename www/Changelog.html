@@ -39,7 +39,10 @@
 <blockquote>
 <ul class="simple">
 <li>TclMagick/generic/TclMagick.c (magickCmd): Resolve SourceForge
-patch #51 &quot;TclMagick: memory access error; possible segfault&quot;.</li>
+patch #51 &quot;TclMagick: memory access error; possible segfault&quot;.
+(newMagickObj): Fix formatting of pointer value so it is 64-bit
+safe.  Resolves SourceForge patch #50 &quot;TclMagick: 64-bit
+portability issue&quot;.</li>
 <li>coders/pict.c (ReadPICTImage): Avoid possible use of negative
 value when indexing array, which would cause buffer overflow.
 Resolves SourceForge issue #427 &quot;One possible buffer overflow
