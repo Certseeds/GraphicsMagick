@@ -418,7 +418,7 @@ static int magickCmd(
 				"resourceType", 0, &resourceIdx) != TCL_OK) {
 	    return TCL_ERROR;
 	}
-	if (objc == 3) {
+	if (objc == 4) {
 	    /*
 	     * Set channel depth
 	     */

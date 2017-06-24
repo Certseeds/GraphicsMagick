@@ -1,5 +1,8 @@
 2017-06-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* TclMagick/generic/TclMagick.c (magickCmd): Resolve SourceForge
+	patch #51 "TclMagick: memory access error; possible segfault".
+
 	* coders/pict.c (ReadPICTImage): Avoid possible use of negative
 	value when indexing array, which would cause buffer overflow.
 	Resolves SourceForge issue #427 "One possible buffer overflow
