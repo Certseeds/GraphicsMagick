@@ -47,12 +47,6 @@ Prerequisites
   important.  Both 32 and 64-bit versions of GraphicsMagick and
   Ghostscript may be installed at the same time.
 
-  The installation package includes the GraphicsMagick Perl extension
-  ( `PerlMagick <perl.html>`_) as an installation option. If you would
-  like to use this extension, then you must install `ActiveState
-  ActivePerl <http://www.activestate.com/activeperl/downloads/>`_
-  prior to commencing with installation of GraphicsMagick.
-
 Retrieve Install Package
 ------------------------
 
@@ -61,7 +55,7 @@ Retrieve Install Package
   <download.html>`_ page. The available install packages are as follows
 
   Windows Dynamic-Multithread (DLL-based) install package with utilities,
-  PerlMagick, ImageMagickObject COM object, and web pages:
+  ImageMagickObject COM object, and web pages:
 
     ::
 
@@ -130,17 +124,12 @@ Select Additional Tasks
 
   * Associate supported file extensions with GraphicsMagick
 
-  * Install PerlMagick for ActiveState Perl v5.14.2 build 1402
-
   * Install ImageMagickObject OLE Control for VBscript, Visual Basic,
     and WSH.
 
   "Creating a desktop icon" and "Update the executable search path"
   are selected by default. The remaining options default to
-  un-selected.  Select the options you prefer. Note that ActiveState
-  Perl packages are intended to be binary compatible across a build
-  series.  See the ActiveState Perl documentation for more information
-  on this topic.
+  un-selected.  Select the options you prefer.
 
   Think twice before selecting "*Associate supported file extensions with
   GraphicsMagick*" since this will set up approximately fifty file
@@ -613,7 +602,8 @@ Windows Distribution Build Procedure
   The following are the instructions for how to build a Q:8 (or Q:16)
   DLL-based distribution installer package using Visual Studio 2008
   Professional.  This is the same procedure used to produce the
-  release packages:
+  release packages.  The PerlMagick steps are skipped as of
+  GraphicsMagick 1.3.26):
 
   1. Install prerequisite software:
 
@@ -622,7 +612,7 @@ Windows Distribution Build Procedure
     b. Download and install Inno Setup 5
        <"http://www.jrsoftware.org/isinfo.php">.
 
-    c. Download and install ActiveState ActivePerl
+    c. Download and install ActiveState ActivePerl (optional)
        <"http://www.activestate.com/activeperl/downloads/">.
 
   2. Disable automatic indexing and virus scanning for the
@@ -713,7 +703,7 @@ Windows Distribution Build Procedure
 
      f. ``cd ..\..\..\..``
 
-  7. Build PerlMagick extension
+  7. Build PerlMagick extension (optional)
 
      a. Open Visual Studio Command Shell Window for WIN32  or WIN64
 
@@ -744,7 +734,7 @@ Windows Distribution Build Procedure
 
      b. Test install by clicking on green triangle
 
-  9. Test PerlMagick.
+  9. Test PerlMagick (optional).
 
      a. ``cd PerlMagick``
 

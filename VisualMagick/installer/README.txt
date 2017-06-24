@@ -11,7 +11,7 @@
   a. Download and install Inno Setup 5 from
       "http://www.jrsoftware.org/isinfo.php".
   b. Download and install ActiveState ActivePerl from
-     "http://www.activestate.com/activeperl/downloads/".
+     "http://www.activestate.com/activeperl/downloads/" (optional).
 
 1. Build VisualMagick\configure\configure.exe (if missing/outdated)
 
@@ -54,7 +54,7 @@
    c. BuildImageMagickObject release
    d. cd ..\..\..\..
 
-5. Build PerlMagick
+5. Build PerlMagick (optional)
 
    a. Open Windows Command Shell Window
    b. cd PROJECT\PerlMagick
@@ -75,7 +75,7 @@
    b. Test install by clicking on green triangle
    c. Quit Inno Setup.
 
-7.
+7. Test PerlMagick (optional)
    
    a. cd PROJECT\PerlMagick
    b. nmake test

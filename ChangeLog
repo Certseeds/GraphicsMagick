@@ -1,5 +1,9 @@
 2017-06-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* VisualMagick/installer/gm-foo-dll.iss: Remove PerlMagick from
+	the slim Inno Setup installer builder and remove mention of
+	PerlMagick from the installer documentation.
+
 	* TclMagick/generic/TclMagick.c (magickCmd): Resolve SourceForge
 	patch #51 "TclMagick: memory access error; possible segfault".
 	(newMagickObj): Fix formatting of pointer value so it is 64-bit
