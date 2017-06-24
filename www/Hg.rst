@@ -20,7 +20,7 @@ GraphicsMagick Mercurial
               software, Magick++
 
 .. _Mercurial : https://www.mercurial-scm.org/
-.. _TortoiseHg : http://tortoisehg.bitbucket.org/
+.. _TortoiseHg : https://tortoisehg.bitbucket.io/
 .. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
 
 .. contents::
