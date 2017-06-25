@@ -2282,7 +2282,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
             png_read_row(ping,mng_info->png_pixels+row_offset,NULL);
 
-	    if (!SetImagePixels(image,0,y,image->columns,1))
+            if (!SetImagePixels(image,0,y,image->columns,1))
               break;
 
             if (pass < num_passes-1)
@@ -2442,7 +2442,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
           if (QuantumTick(pass, num_passes))
             if (!MagickMonitorFormatted(pass,num_passes,exception,
                                         LoadImageTag,image->filename,
-				        image->columns,image->rows))
+                                        image->columns,image->rows))
                break;
       }
 
@@ -2574,7 +2574,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
           if (QuantumTick(pass, num_passes))
             if (!MagickMonitorFormatted(pass,num_passes,exception,LoadImageTag,
                                         image->filename,
-            			        image->columns,image->rows))
+                                            image->columns,image->rows))
               break;
       }
 
@@ -2633,8 +2633,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                     if (index < (unsigned int) ping_num_trans)
                       q->opacity=
                         ScaleCharToQuantum(255-ping_trans_alpha[index]);
-		    else
-		      q->opacity=OpaqueOpacity;
+                    else
+                      q->opacity=OpaqueOpacity;
                     q++;
                   }
               else if (ping_colortype == PNG_COLOR_TYPE_GRAY)
@@ -2647,8 +2647,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                     if ((unsigned long) ScaleQuantumToShort(q->red) ==
                         transparent_color.opacity)
                       q->opacity=TransparentOpacity;
-		    else
-		      q->opacity=OpaqueOpacity;
+                    else
+                      q->opacity=OpaqueOpacity;
                     q++;
                   }
             }
@@ -2662,8 +2662,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                     (unsigned long) ScaleQuantumToShort(q->blue) ==
                     transparent_color.blue)
                   q->opacity=TransparentOpacity;
-		else
-		  q->opacity=OpaqueOpacity;
+                else
+                  q->opacity=OpaqueOpacity;
                 q++;
               }
           if (!SyncImagePixels(image))
@@ -5257,6 +5257,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       for (y=0; y < (long) image->rows; y++)
                         {
                           q=GetImagePixels(image,0,y,image->columns,1);
+                          if(q == (PixelPacket *) NULL)
+                            break;
                           for (x=(long) image->columns; x > 0; x--)
                             {
                               q->red=ScaleQuantumToShort(q->red);
@@ -5309,6 +5311,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                            MemoryAllocationFailed,image)
                     }
                   n=GetImagePixels(image,0,0,image->columns,1);
+                  if(n == (PixelPacket *) NULL)
+                     return ((Image *) NULL);
                   (void) memcpy(next,n,row_length);
                   for (y=0; y < (long) image->rows; y++)
                     {
@@ -5328,6 +5332,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       if (y < (long) image->rows-1)
                         {
                           n=GetImagePixels(image,0,y+1,image->columns,1);
+                          if(n == (PixelPacket *) NULL)
+                             break;
                           (void) memcpy(next,n,row_length);
                         }
                       for (i=0; i < m; i++, yy++)
@@ -5432,6 +5438,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   for (y=0; y < (long) image->rows; y++)
                     {
                       q=GetImagePixels(image,0,y,image->columns,1);
+                      if(q == (PixelPacket * ) NULL)
+                        break;
                       p=q+(image->columns-row_length);
                       n=p+1;
                       for (x=(long) (image->columns-row_length);
@@ -5525,6 +5533,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       for (y=0; y < (long) image->rows; y++)
                         {
                           q=GetImagePixels(image,0,y,image->columns,1);
+                          if(q == (PixelPacket *) NULL)
+                            break;
                           for (x=(long) image->columns; x > 0; x--)
                             {
                               q->red=ScaleShortToQuantum(q->red);
@@ -7665,7 +7675,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                             &image->exception,
                                             SaveImageTag,
                                             image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
 
           }
@@ -7723,7 +7733,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                                 num_passes,
                                                 &image->exception,SaveImageTag,
                                                 image->filename,
-					        image->columns,image->rows))
+                                                image->columns,image->rows))
                       break;
               }
           }
@@ -7790,7 +7800,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                                     &image->exception,
                                                     SaveImageTag,
                                                     image->filename,
-						    image->columns,image->rows))
+                                                    image->columns,image->rows))
                           break;
                     }
                   if (logging)
@@ -7836,7 +7846,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                                       &image->exception,
                                                       SaveImageTag,
                                                       image->filename,
-						      image->columns,
+                                                      image->columns,
                                                       image->rows))
                             break;
                     }

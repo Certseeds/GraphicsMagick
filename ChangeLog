@@ -1,3 +1,9 @@
+2017-06-25  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Avoid NULL dereference when MAGN chunk processing
+        fails (https://sourceforge.net/p/graphicsmagick/bugs/426/). Expand
+	TABs.
+
 2017-06-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update NEWS with changes since the previous release.
