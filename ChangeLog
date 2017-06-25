@@ -1,5 +1,7 @@
 2017-06-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update NEWS with changes since the previous release.
+
 	* www/programming.rst: Switch the Lua link to
 	https://github.com/arcapos/luagraphicsmagick, which is a more
 	complete and direct interface from Lua to GraphicsMagick's Wand

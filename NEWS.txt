@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on September 5, 2016
+This file was last updated on June 25 5, 2017
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -14,6 +14,128 @@ ChangeLog file for full details.
 
 .. contents::
   :local:
+
+
+1.3.26 (???)
+==========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* JNG: Fix memory leak when reading invalid JNG image (CVE-2017-8350).
+
+* META: Fix heap overflow while parsing 8BIM chunk (CVE-2016-7800).
+
+* PCX: Fix denial of service issue.
+
+* RLE: Fix abnomally slow operation (denial of service issue) with
+  intentionally corrupt colormapped file.
+
+* PICT: Fix possible buffer overflow vulnerability given suitably
+  truncated input file.
+
+* PNG: Enforce spec requirement that the dimensions of the JPEG
+  embedded in a JDAT chunk must match the JHDR dimensions
+  (CVE-2016-9830).
+
+* SCT: Fix stack-buffer read overflow (underflow?) while reading SCT
+  header.
+
+* SGI: Fix denial of service issues.  Delay large memory allocations
+  until file header has fully passed sanity checks.
+
+* TIFF: Fix out of bounds read when reading CMYKA TIFF which claims to
+  have only 2 samples per pixel (CVE-2017-6335).
+
+* WPG: Fix heap overflow (CVE-2016-7996).  Fix assertion crash
+  (CVE-2016-7997).
+
+Bug fixes:
+
+* DifferenceImage(): Fix Fix all-black difference image if an input
+  file is colormapped.
+
+* EXIF orientation was not being properly detected for some files.
+
+* -frame: The `import` command -frame handling was improperly
+  implemented and was using already freed data.
+
+* GIF: Fixes for "Excessive LZW string data" problem.
+
+* Magick++: Bug fixes to PathSmoothCurvetoRel::operator() and
+  PathSmoothCurvetoRel::operator().
+
+* PAM: Support writing GRAYSCALE PAM format.
+
+* PNG: Fix memory leaks.
+
+* SVG: Fixed a memory leak.  Fixed a possible null pointer dereference.
+
+* TclMagick: Problem that TkMagick could not resolve functions from
+  TclMagick under Linux is fixed.
+
+* TclMagick: Fix parser validatation in magickCmd() to avoid crash
+  given a syntax error.
+
+* TIFF: Fix for reading old JPEG files (avoids "Improper call to JPEG
+  library in state 0. (LibJpeg).").
+
+* TXT: Fixed memory leak.
+
+* XCF: Error checking is improved.
+
+New Features:
+
+* EXIF rotation: Support is added such that the EXIF orientation tag
+  is updated when the image is rotated.
+
+* MAT: Now support reading multiple images from Matlab V4 format.
+
+* Magick++: Orientation method now updates orientation in EXIF
+  profile, if it exists.
+
+* Magick++: Added Image attribute method which accepts a 'char *'
+  argument, and will remove the attribute if the value argument is
+  NULL.
+
+* -orient: The -orient command line option now also updates the
+  orientation in the EXIF profile, if it exists.
+
+* PGX: Support PGX JPEG 2000 format for reading and writing (within
+  the bounds of what JasPer supports).
+
+* Wand API: Added MagickAutoOrientImage(),
+  MagickGetImageOrientation(), MagickSetImageOrientation(),
+  MagickRemoveImageOption(), and MagickClearException().
+
+
+Feature improvements:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* TIFF: Updated to libtiff 4.0.8.
+
+Build Changes:
+
+* TclMagick: Updated configure to use latest TEA tcl.m4 version 3.10.
+  Support for AM_DISTCHECK_CONFIGURE_FLAGS so that 'make distcheck'
+  remembers configuration options, and also to uninstall pkgIndex.tcl.
+
+* VisualMagick Configure: A 'quantum' command line argument is added
+  to set the default quantum depth in the wizard drop-down list.  This
+  This allows setting the quantum depth when the /nowizard argument
+  was supplied.
+
+Behavior Changes:
+
+* The installer for the Windows build no longer includes IMDisplay
+  (simple display program), ImageMagickDLL, and PerlMagick for
+  ActiveState Perl.  These are still available from the source tree.
 
 1.3.25 (September 5, 2016)
 ==========================
