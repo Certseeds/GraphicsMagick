@@ -139,7 +139,7 @@ typedef struct _BatchOptions {
   CommandLineParser command_line_parser;
 } BatchOptions;
 
-typedef unsigned int (*CommandVectorHandler)(ImageInfo *image_info,
+typedef MagickPassFail (*CommandVectorHandler)(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception);
 
 typedef void (*UsageVectorHandler)(void);
@@ -184,7 +184,7 @@ static void
   SetUsage(void),
   TimeUsage(void);
 
-static unsigned int
+static MagickPassFail
   HelpCommand(ImageInfo *image_info,int argc,char **argv,
               char **metadata,ExceptionInfo *exception),
 #if defined(MSWINDOWS)
@@ -543,7 +543,7 @@ static void AnimateUsage(void)
     (void) printf("  %.1024s\n",*p);
 }
 #endif /* HasX11 */
-MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
 #if defined(HasX11)
@@ -600,7 +600,7 @@ MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
   image_list=(Image *) NULL;
   last_scene=0;
   server_name=(char *) NULL;
-  status=True;
+  status=MagickTrue;
   /*
     Check for server name specified on the command line.
   */
@@ -639,7 +639,7 @@ MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
     Expand argument list
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -1446,7 +1446,7 @@ MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
 
   MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
-  return(False);
+  return(MagickFail);
 #endif
 }
 
@@ -1466,7 +1466,7 @@ MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
 %
 %  The format of the BatchCommand method is:
 %
-%      unsigned int BatchCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail BatchCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -1482,7 +1482,7 @@ MagickExport unsigned int AnimateImageCommand(ImageInfo *image_info,
 %    o exception: Return any errors or warnings in this structure.
 %
 */
-static MagickBool BatchCommand(int argc, char **argv)
+static MagickPassFail BatchCommand(int argc, char **argv)
 {
   int result;
   MagickBool hasInputFile;
@@ -1510,7 +1510,7 @@ static MagickBool BatchCommand(int argc, char **argv)
     {
       (void) fprintf(stderr, "Error: unexpected parameter: %s\n", argv[result+1]);
       BatchUsage();
-      return MagickFalse;
+      return MagickFail;
     }
 
   if (hasInputFile && (argv[result][0] != '-' || argv[result][1] != '\0'))
@@ -1549,7 +1549,7 @@ static MagickBool BatchCommand(int argc, char **argv)
       ac = (batch_options.command_line_parser)(stdin, MAX_PARAM, av);
       if (ac < 0)
         {
-          result = MagickTrue;
+          result = MagickPass;
           break;
         };
       if (batch_options.is_echo_enabled)
@@ -1577,7 +1577,7 @@ static MagickBool BatchCommand(int argc, char **argv)
             (void) fprintf(stderr,
                            "Error: command line exceeded %d parameters.\n",
                            MAX_PARAM);
-          result = MagickFalse;
+          result = MagickFail;
         }
 
       if (batch_options.is_feedback_enabled)
@@ -1767,7 +1767,7 @@ static void BenchmarkUsage(void)
 %
 %
 */
-static unsigned int ExecuteSubCommand(const ImageInfo *image_info,
+static MagickPassFail ExecuteSubCommand(const ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   unsigned int
@@ -1797,7 +1797,7 @@ static unsigned int ExecuteSubCommand(const ImageInfo *image_info,
   DestroyImageInfo(clone_info);
   return status;
 }
-MagickExport unsigned int
+MagickExport MagickPassFail
 BenchmarkImageCommand(ImageInfo *image_info,
 		      int argc,char **argv,
 		      char **metadata,ExceptionInfo *exception)
@@ -2215,7 +2215,7 @@ static OptionStatus CheckOptionValue(const char *option, const char *value)
   DestroyImageList(reference_image); \
   ThrowException(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail); \
 }
 #define ThrowCompareException3(code,reason,description) \
 { \
@@ -2224,9 +2224,9 @@ static OptionStatus CheckOptionValue(const char *option, const char *value)
   DestroyImageList(reference_image); \
   ThrowException3(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail);                        \
 }
-MagickExport unsigned int 
+MagickExport MagickPassFail
 CompareImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
@@ -2267,7 +2267,7 @@ CompareImageCommand(ImageInfo *image_info,
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
-  status=True;
+  status=MagickPass;
 
   if (argc < 2 || ((argc < 3) && (LocaleCompare("-help",argv[1]) == 0 ||
       LocaleCompare("-?",argv[1]) == 0)))
@@ -2287,7 +2287,7 @@ CompareImageCommand(ImageInfo *image_info,
     }
 
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
     (char *) NULL);
 
@@ -2300,7 +2300,7 @@ CompareImageCommand(ImageInfo *image_info,
   (void) strlcpy(image_info->filename,argv[argc-1],MaxTextExtent);
   (void) SetImageInfo(image_info,SETMAGICK_WRITE,exception);
 
-  status=True;
+  status=MagickPass;
   /*
     Check command syntax.
   */
@@ -2691,7 +2691,7 @@ CompareImageCommand(ImageInfo *image_info,
       if (exception->severity == UndefinedException)
         ThrowCompareException(OptionError,RequestDidNotReturnAnImage,
           (char *) NULL);
-      return(False);
+      return(MagickFail);
     }
   if ((reference_image == (Image *) NULL) ||
       (compare_image == (Image *) NULL))
@@ -2875,7 +2875,7 @@ static void CompareUsage(void)
 %
 %  The format of the CompositeImageCommand method is:
 %
-%      unsigned int CompositeImageCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail CompositeImageCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -2892,7 +2892,7 @@ static void CompareUsage(void)
 %
 %
 */
-static unsigned int CompositeImageList(ImageInfo *image_info,Image **image,
+static MagickPassFail CompositeImageList(ImageInfo *image_info,Image **image,
   Image *composite_image,Image *mask_image,CompositeOptions *option_info,
   ExceptionInfo *exception)
 {
@@ -2909,7 +2909,7 @@ static unsigned int CompositeImageList(ImageInfo *image_info,Image **image,
   assert(image != (Image **) NULL);
   assert((*image)->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
-  status=True;
+  status=MagickPass;
   if (composite_image != (Image *) NULL)
     {
       assert(composite_image->signature == MagickSignature);
@@ -2921,7 +2921,7 @@ static unsigned int CompositeImageList(ImageInfo *image_info,Image **image,
             SetImageOpacity(composite_image,OpaqueOpacity);
           status&=CompositeImage(composite_image,CopyOpacityCompositeOp,
             mask_image,0,0);
-          if (status == False)
+          if (status == MagickFail)
             GetImageException(composite_image,exception);
         }
       if (option_info->compose == DissolveCompositeOp)
@@ -3021,7 +3021,7 @@ static unsigned int CompositeImageList(ImageInfo *image_info,Image **image,
                 composite_image->columns,composite_image->rows,geometry.x,
                 geometry.y);
               (*image)->gravity=option_info->gravity;
-              (void) GetImageGeometry(*image,composite_geometry,False,
+              (void) GetImageGeometry(*image,composite_geometry,MagickFalse,
                 &geometry);
               status&=CompositeImage(*image,option_info->compose,
                 composite_image,geometry.x,geometry.y);
@@ -3050,7 +3050,7 @@ static void LiberateCompositeOptions(CompositeOptions *option_info)
   DestroyImageList(mask_image); \
   ThrowException(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail); \
 }
 #define ThrowCompositeException3(code,reason,description) \
 { \
@@ -3060,9 +3060,9 @@ static void LiberateCompositeOptions(CompositeOptions *option_info)
   DestroyImageList(mask_image); \
   ThrowException3(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail); \
 }
-MagickExport unsigned int CompositeImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
@@ -3114,7 +3114,7 @@ MagickExport unsigned int CompositeImageCommand(ImageInfo *image_info,
     }
 
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
     (char *) NULL);
 
@@ -3131,11 +3131,11 @@ MagickExport unsigned int CompositeImageCommand(ImageInfo *image_info,
   (void) SetImageInfo(image_info,SETMAGICK_WRITE,exception);
   mask_image=NewImageList();
   option_info.stegano=0;
-  option_info.stereo=False;
-  option_info.tile=False;
+  option_info.stereo=MagickFalse;
+  option_info.tile=MagickFalse;
   option_info.watermark_geometry=(char *) NULL;
   option_info.unsharp_geometry=(char *) NULL;
-  status=True;
+  status=MagickPass;
   /*
     Check command syntax.
   */
@@ -4025,7 +4025,7 @@ MagickExport unsigned int CompositeImageCommand(ImageInfo *image_info,
       if (exception->severity == UndefinedException)
         ThrowCompositeException(OptionError,RequestDidNotReturnAnImage,
           (char *) NULL);
-      return(False);
+      return(MagickFail);
     }
   if (i != (argc-1))
     ThrowCompositeException(OptionError,MissingAnImageFilename,(char *) NULL);
@@ -4201,7 +4201,7 @@ static void CompositeUsage(void)
 %
 */
 
-static unsigned int ConcatenateImages(const int argc,char **argv,
+static MagickPassFail ConcatenateImages(const int argc,char **argv,
   ExceptionInfo *exception)
 {
   FILE
@@ -4221,7 +4221,7 @@ static unsigned int ConcatenateImages(const int argc,char **argv,
   if (output == (FILE *) NULL)
     {
       ThrowException(exception,FileOpenError,UnableToOpenFile,argv[argc-1]);
-      return(False);
+      return(MagickFail);
     }
   for (i=2; i < (argc-1); i++)
   {
@@ -4237,7 +4237,7 @@ static unsigned int ConcatenateImages(const int argc,char **argv,
     (void) remove(argv[i]);
   }
   (void) fclose(output);
-  return(True);
+  return(MagickPass);
 }
 
 #define NotInitialized  (unsigned int) (~0)
@@ -4255,7 +4255,7 @@ static unsigned int ConcatenateImages(const int argc,char **argv,
   goto convert_cleanup_and_return; \
 }
 
-MagickExport unsigned int ConvertImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
@@ -4305,7 +4305,7 @@ MagickExport unsigned int ConvertImageCommand(ImageInfo *image_info,
     }
 
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -4318,9 +4318,9 @@ MagickExport unsigned int ConvertImageCommand(ImageInfo *image_info,
   image_list=(Image *) NULL;
   (void) strlcpy(image_info->filename,argv[argc-1],MaxTextExtent);
   (void) SetImageInfo(image_info,SETMAGICK_WRITE,exception);
-  ping=False;
+  ping=MagickFalse;
   option=(char *) NULL;
-  status=True;
+  status=MagickPass;
   /*
     Parse command-line arguments.
   */
@@ -6367,7 +6367,7 @@ static void ConjureUsage(void)
   (void) printf("    conjure -size 100x100 -color blue -foo bar script.msl\n");
 }
 
-MagickExport unsigned int ConjureImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
@@ -6379,7 +6379,7 @@ MagickExport unsigned int ConjureImageCommand(ImageInfo *image_info,
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status=MagickPass;
 
   if (argc < 2 || ((argc < 3) && (LocaleCompare("-help",argv[1]) == 0 ||
@@ -6412,7 +6412,7 @@ MagickExport unsigned int ConjureImageCommand(ImageInfo *image_info,
   */
   image_info=CloneImageInfo((ImageInfo *) NULL);
   image_info->attributes=AllocateImage(image_info);
-  status=True;
+  status=MagickPass;
   for (i=1; i < argc; i++)
   {
     option=argv[i];
@@ -6630,7 +6630,7 @@ static void DisplayUsage(void)
 }
 #endif /* HasX11 */
 
-MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
 #if defined(HasX11)
@@ -6669,7 +6669,9 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
 
   unsigned int
     *image_marker,
-    last_image,
+    last_image;
+
+  MagickPassFail
     status;
 
   unsigned long
@@ -6700,7 +6702,7 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
     Expand Argument List
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -6782,7 +6784,7 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
   /*
     Parse command line.
   */
-  status=True;
+  status=MagickPass;
   j=1;
   k=0;
   for (i=1; ((i <= argc) && !(state & ExitState)); i++)
@@ -6911,7 +6913,7 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
                 (void) CatchImageException(image);
               }
             if (image_info->verbose)
-              (void) DescribeImage(image,stderr,False);
+              (void) DescribeImage(image,stderr,MagickFalse);
             /*
               Proceed to next/previous image.
             */
@@ -7946,7 +7948,7 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
   if (state & RetainColorsState)
     {
       MagickXRetainWindowColors(display,XRootWindow(display,XDefaultScreen(display)));
-      (void) XSync(display,False);
+      (void) XSync(display,MagickFalse);
     } 
   if (resource_database != (XrmDatabase) NULL)
     {
@@ -7973,7 +7975,7 @@ MagickExport unsigned int DisplayImageCommand(ImageInfo *image_info,
 
   MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
-  return(False);
+  return(MagickFail);
 #endif
 }
 
@@ -8164,7 +8166,7 @@ static void GMUsage(void)
 %
 %  The format of the HelpCommand method is:
 %
-%      unsigned int HelpCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail HelpCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -8181,7 +8183,7 @@ static void GMUsage(void)
 %
 %
 */
-static unsigned int HelpCommand(ImageInfo *image_info,
+static MagickPassFail HelpCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,
   ExceptionInfo *exception)
 {
@@ -8203,7 +8205,7 @@ static unsigned int HelpCommand(ImageInfo *image_info,
               if (commands[i].usage_vector)
                 {
                   (commands[i].usage_vector)();
-                  return True;
+                  return MagickPass;
                 }
             }
         }
@@ -8235,7 +8237,7 @@ static unsigned int HelpCommand(ImageInfo *image_info,
 %
 %  The format of the IdentifyImageCommand method is:
 %
-%      unsigned int IdentifyImageCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail IdentifyImageCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -8266,7 +8268,7 @@ static unsigned int HelpCommand(ImageInfo *image_info,
   goto identify_cleanup_and_return; \
 }
 
-MagickExport unsigned int IdentifyImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
@@ -8289,8 +8291,10 @@ MagickExport unsigned int IdentifyImageCommand(ImageInfo *image_info,
     i;
 
   unsigned int
-    ping,
-    status = 0;
+    ping;
+
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Check for sufficient arguments
@@ -8319,14 +8323,14 @@ MagickExport unsigned int IdentifyImageCommand(ImageInfo *image_info,
   format=(char *) NULL;
   image=NewImageList();
   number_images=0;
-  status=True;
-  ping=True;
+  status=MagickTrue;
+  ping=MagickTrue;
 
   /*
     Expand argument list
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -8365,7 +8369,7 @@ MagickExport unsigned int IdentifyImageCommand(ImageInfo *image_info,
               if ((c == 'A') || (c == 'k') || (c == 'q') || (c == 'r') ||
                   (c == '#'))
                 {
-                  ping=False;
+                  ping=MagickFalse;
                   break;
                 }
             }
@@ -8792,7 +8796,7 @@ static void LiberateArgumentList(const int argc,char **argv)
 %
 %  The format of the MagickCommand method is:
 %
-%      unsigned int MagickCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail MagickCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -8809,14 +8813,14 @@ static void LiberateArgumentList(const int argc,char **argv)
 %
 %
 */
-MagickExport unsigned int MagickCommand(ImageInfo *image_info,
+MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
     *option;
 
-  unsigned int
-    status=False;
+  MagickPassFail
+    status=MagickFail;
 
   int
     i;
@@ -8938,7 +8942,7 @@ MagickInitializeCommandInfo(void)
 %
 %  The format of the MogrifyImage method is:
 %
-%      unsigned int MogrifyImage(const ImageInfo *image_info,const int argc,
+%      MagickPassFail MogrifyImage(const ImageInfo *image_info,const int argc,
 %        char **argv,Image **image)
 %
 %  A description of each parameter follows:
@@ -8956,7 +8960,7 @@ MagickInitializeCommandInfo(void)
 %
 %
 */
-MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
+MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
   int argc,char **argv,Image **image)
 {
   char
@@ -8995,7 +8999,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
   assert(image != (Image **) NULL);
   assert((*image)->signature == MagickSignature);
   if (argc <= 0)
-    return(True);
+    return(MagickFail);
 
 #if defined(DEBUG_COMMAND_PARSER)
   fprintf(stderr,"  MogrifyImage (0x%p->%s):", *image, (*image)->filename);
@@ -9156,7 +9160,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Surround image with a border of solid color.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             border_image=BorderImage(*image,&geometry,&(*image)->exception);
             if (border_image == (Image *) NULL)
               break;
@@ -9224,7 +9228,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Chop the image.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             chop_image=ChopImage(*image,&geometry,&(*image)->exception);
             if (chop_image == (Image *) NULL)
               break;
@@ -9738,7 +9742,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Surround image with an ornamental border.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             frame_info.width=geometry.width;
             frame_info.height=geometry.height;
             frame_info.outer_bevel=geometry.x;
@@ -9809,7 +9813,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Resize image.
             */
-            (void) GetImageGeometry(*image,argv[++i],True,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickTrue,&geometry);
             if ((geometry.width == (*image)->columns) &&
                 (geometry.height == (*image)->rows))
               break;
@@ -10335,7 +10339,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
                   Remove a ICM, IPTC, or generic profile from the image.
                 */
                 (void) ProfileImage(*image,argv[++i],
-                  (unsigned char *) NULL,0,True);
+                  (unsigned char *) NULL,0,MagickTrue);
                 continue;
               }
             else if (*option == '-')
@@ -10404,7 +10408,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
 					    (unsigned long) profile_length);
 		      (void) ProfileImage(*image,profile_name,
 					  (unsigned char *) profile_data,
-					  profile_length,True);
+					  profile_length,MagickTrue);
 		    }
                   else
 		    {
@@ -10444,7 +10448,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Surround image with a raise of solid color.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             (void) RaiseImage(*image,&geometry,*option == '-');
             continue;
           }
@@ -10555,7 +10559,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Apply transformations to a selected region of the image.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&region_geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&region_geometry);
             crop_image=CropImage(*image,&region_geometry,&(*image)->exception);
             if (crop_image == (Image *) NULL)
               break;
@@ -10669,7 +10673,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Resize image.
             */
-            (void) GetImageGeometry(*image,argv[++i],True,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickTrue,&geometry);
             if ((geometry.width == (*image)->columns) &&
                 (geometry.height == (*image)->rows))
               break;
@@ -10689,7 +10693,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Roll image.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             roll_image=RollImage(*image,geometry.x,geometry.y,
               &(*image)->exception);
             if (roll_image == (Image *) NULL)
@@ -10739,7 +10743,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Sample image with pixel replication.
             */
-            (void) GetImageGeometry(*image,argv[++i],True,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickTrue,&geometry);
             if ((geometry.width == (*image)->columns) &&
                 (geometry.height == (*image)->rows))
               break;
@@ -10771,7 +10775,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Resize image.
             */
-            (void) GetImageGeometry(*image,argv[++i],True,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickTrue,&geometry);
             if ((geometry.width == (*image)->columns) &&
                 (geometry.height == (*image)->rows))
               break;
@@ -10873,7 +10877,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Shave the image edges.
             */
-            (void) GetImageGeometry(*image,argv[++i],False,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickFalse,&geometry);
             shave_image=ShaveImage(*image,&geometry,&(*image)->exception);
             if (shave_image == (Image *) NULL)
               break;
@@ -10996,7 +11000,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             /*
               Resize image.
             */
-            (void) GetImageGeometry(*image,argv[++i],True,&geometry);
+            (void) GetImageGeometry(*image,argv[++i],MagickTrue,&geometry);
             if ((geometry.width == (*image)->columns) &&
                 (geometry.height == (*image)->rows))
               break;
@@ -11018,7 +11022,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
             if (fill_pattern == (Image *) NULL)
               continue;
             draw_info->fill_pattern=
-              CloneImage(fill_pattern,0,0,True,&(*image)->exception);
+              CloneImage(fill_pattern,0,0,MagickTrue,&(*image)->exception);
             DestroyImage(fill_pattern);
 	    fill_pattern=(Image *) NULL;
             continue;
@@ -11242,7 +11246,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
                 (void) strlcpy(clone_image->filename,argv[i],sizeof(clone_image->filename));
                 (void) WriteImage(clone_info,clone_image);
                 if (clone_info->verbose)
-                  (void) DescribeImage(clone_image,stderr,False);
+                  (void) DescribeImage(clone_image,stderr,MagickFalse);
                 DestroyImage(clone_image);
                 clone_image=(Image *) NULL;
               }
@@ -11324,7 +11328,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
 %
 %  The format of the MogrifyImage method is:
 %
-%      unsigned int MogrifyImages(const ImageInfo *image_info,const int argc,
+%      MagickPassFail MogrifyImages(const ImageInfo *image_info,const int argc,
 %        char **argv,Image **images)
 %
 %  A description of each parameter follows:
@@ -11342,7 +11346,7 @@ MagickExport unsigned int MogrifyImage(const ImageInfo *image_info,
 %
 %
 */
-MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
+MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
   int argc,char **argv,Image **images)
 {
 #define MogrifyImageText  "Transform image...  "
@@ -11357,7 +11361,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status;
 
   unsigned long
@@ -11368,7 +11372,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
   assert(images != (Image **) NULL);
   assert((*images)->signature == MagickSignature);
   if ((argc <= 0) || (*argv == (char *) NULL))
-    return(True);
+    return(MagickPass);
 
 #if defined(DEBUG_COMMAND_PARSER)
   fprintf(stderr,"MogrifyImages (");
@@ -11384,7 +11388,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
   fprintf(stderr,"\n");
 #endif /* DEBUG_COMMAND_PARSER */
 
-  scene=False;
+  scene=MagickFalse;
   for (i=0; i < argc; i++)
   {
     option=argv[i];
@@ -11395,7 +11399,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
       case 's':
       {
         if (LocaleCompare("scene",option+1) == 0)
-          scene=True;
+          scene=MagickTrue;
         break;
       }
       default:
@@ -11405,7 +11409,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
   /*
     Apply options to each individual image in the list.
   */
-  status=True;
+  status=MagickPass;
   mogrify_images=NewImageList();
   i=0;
   while ((image=RemoveFirstImageFromList(images)) != (Image *) NULL)
@@ -11420,7 +11424,7 @@ MagickExport unsigned int MogrifyImages(const ImageInfo *image_info,
 	    if (scene)
 	      p->scene += i;
 	    if (image_info->verbose)
-	      (void) DescribeImage(p,stderr,False);
+	      (void) DescribeImage(p,stderr,MagickFalse);
 	    i++;
 	  }
       }
@@ -11912,7 +11916,7 @@ LoadAndCacheImageFile(char **filename,long *id,ExceptionInfo *exception)
 }
 
 
-MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
 
@@ -11941,7 +11945,7 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
     global_colormap,
     preserve_file_attr;
 
-  unsigned int
+  MagickPassFail
     status;
 
   /*
@@ -11972,13 +11976,13 @@ MagickExport unsigned int MogrifyImageCommand(ImageInfo *image_info,
   create_directories=MagickFalse;
   global_colormap=MagickFalse;
   preserve_file_attr=MagickFalse;
-  status=True;
+  status=MagickPass;
 
   /*
     Expand argument list
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -13908,7 +13912,7 @@ static void MogrifyUsage(void)
 %
 %  The format of the MontageImageCommand method is:
 %
-%      unsigned int MontageImageCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail MontageImageCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -13933,7 +13937,7 @@ static void MogrifyUsage(void)
   DestroyMontageInfo(montage_info); \
   ThrowException(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail); \
 }
 #define ThrowMontageException3(code,reason,description) \
 { \
@@ -13943,9 +13947,9 @@ static void MogrifyUsage(void)
   DestroyMontageInfo(montage_info); \
   ThrowException3(exception,code,reason,description); \
   LiberateArgumentList(argc,argv); \
-  return(False); \
+  return(MagickFail); \
 }
-MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
   char
@@ -13979,7 +13983,7 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status;
 
   /*
@@ -14011,7 +14015,7 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
     Expand argument list
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -14021,7 +14025,7 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
   GetQuantizeInfo(&quantize_info);
   quantize_info.number_colors=0;
   scene=0;
-  status=True;
+  status=MagickPass;
   transparent_color=(char *) NULL;
 
   j=1;
@@ -14637,14 +14641,14 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
                   {
                     mode=FrameMode;
                     (void) CloneString(&montage_info->frame,"15x15+3+3");
-                    montage_info->shadow=True;
+                    montage_info->shadow=MagickTrue;
                     break;
                   }
                 if (LocaleCompare("unframe",option) == 0)
                   {
                     mode=UnframeMode;
                     montage_info->frame=(char *) NULL;
-                    montage_info->shadow=False;
+                    montage_info->shadow=MagickFalse;
                     montage_info->border_width=0;
                     break;
                   }
@@ -14652,7 +14656,7 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
                   {
                     mode=ConcatenateMode;
                     montage_info->frame=(char *) NULL;
-                    montage_info->shadow=False;
+                    montage_info->shadow=MagickFalse;
                     (void) CloneString(&montage_info->geometry,"+0+0");
                     montage_info->border_width=0;
                     break;
@@ -15036,7 +15040,7 @@ MagickExport unsigned int MontageImageCommand(ImageInfo *image_info,
       if (exception->severity == UndefinedException)
         ThrowMontageException(OptionError,RequestDidNotReturnAnImage,
           (char *) NULL);
-      return(False);
+      return(MagickFail);
     }
   if (i != (argc-1))
     ThrowMontageException(OptionError,MissingAnImageFilename,(char *) NULL);
@@ -15250,7 +15254,7 @@ static void MontageUsage(void)
 %
 %  The format of the ImportImageCommand method is:
 %
-%      unsigned int ImportImageCommand(ImageInfo *image_info,int argc,
+%      MagickPassFail ImportImageCommand(ImageInfo *image_info,int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -15267,7 +15271,7 @@ static void MontageUsage(void)
 %
 %
 */
-MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
+MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
 #if defined(HasX11)
@@ -15298,7 +15302,7 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status;
 
   MagickXImportInfo
@@ -15350,7 +15354,7 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
     Expand argument list
   */
   status=ExpandFilenames(&argc,&argv);
-  if (status == False)
+  if (status == MagickFail)
     MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
       (char *) NULL);
 
@@ -15409,7 +15413,7 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
     MagickXGetResourceInstance(resource_database,client_name,"dither","True");
   quantize_info->dither=MagickIsTrue(resource_value);
   snapshots=1;
-  status=True;
+  status=MagickPass;
   filename=(char *) NULL;
   target_window=(char *) NULL;
   /*
@@ -16106,7 +16110,7 @@ MagickExport unsigned int ImportImageCommand(ImageInfo *image_info,
 
   MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
-  return(False);
+  return(MagickFail);
 #endif
 }
 
@@ -16734,7 +16738,7 @@ static void TimeUsage(void)
 %
 %
 */
-MagickExport unsigned int
+MagickExport MagickPassFail
 TimeImageCommand(ImageInfo *image_info,
 		 int argc,char **argv,char **metadata,ExceptionInfo *exception)
 {
@@ -16757,8 +16761,8 @@ TimeImageCommand(ImageInfo *image_info,
     i,
     screen_width;
 
-  unsigned int
-    status=True;
+  MagickPassFail
+    status=MagickTrue;
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -16840,7 +16844,7 @@ TimeImageCommand(ImageInfo *image_info,
 %
 %  The format of the VersionCommand method is:
 %
-%      unsigned int VersionCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail VersionCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -16872,9 +16876,9 @@ static void PrintFeature(const char* feature,MagickBool support)
 {
   PrintFeatureTextual(feature,support, NULL);
 }
-static unsigned int VersionCommand(ImageInfo *image_info,
-				   int argc,char **argv,char **metadata,
-				   ExceptionInfo *exception)
+static MagickPassFail VersionCommand(ImageInfo *image_info,
+                                     int argc,char **argv,char **metadata,
+                                     ExceptionInfo *exception)
 {
   MagickBool
     supported;
@@ -17154,7 +17158,7 @@ static unsigned int VersionCommand(ImageInfo *image_info,
 
 #endif /* defined(_VISUALC_) */
 
-  return True;
+  return MagickPass;
 }
 
 #if defined(MSWINDOWS)
@@ -17176,7 +17180,7 @@ static unsigned int VersionCommand(ImageInfo *image_info,
 %
 %  The format of the RegisterCommand method is:
 %
-%      unsigned int RegisterCommand(ImageInfo *image_info,const int argc,
+%      MagickPassFail RegisterCommand(ImageInfo *image_info,const int argc,
 %        char **argv,char **metadata,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -17193,11 +17197,11 @@ static unsigned int VersionCommand(ImageInfo *image_info,
 %
 %
 */
-static unsigned int RegisterCommand(ImageInfo *image_info,
-                                    int argc,
-                                    char **argv,
-                                    char **metadata,
-                                    ExceptionInfo *exception)
+static MagickPassFail RegisterCommand(ImageInfo *image_info,
+                                      int argc,
+                                      char **argv,
+                                      char **metadata,
+                                      ExceptionInfo *exception)
 {
   char
     *szRegPath = 
@@ -17255,10 +17259,10 @@ static unsigned int RegisterCommand(ImageInfo *image_info,
                     (const BYTE *) &dwSupportedTypes, sizeof(DWORD));
 
       RegCloseKey(hKey);
-      return TRUE;
+      return MagickPass;
     }
 
-  return False;
+  return MagickFail;
 }
 #endif
 
@@ -17279,7 +17283,7 @@ static unsigned int RegisterCommand(ImageInfo *image_info,
 %
 %  The format of the GMCommandSingle method is:
 %
-%      int GMCommandSingle(int argc,char **argv)
+%      MagickPassFail GMCommandSingle(int argc,char **argv)
 %
 %  A description of each parameter follows:
 %
@@ -17289,7 +17293,7 @@ static unsigned int RegisterCommand(ImageInfo *image_info,
 %
 %
 */
-static MagickBool GMCommandSingle(int argc,char **argv)
+static MagickPassFail GMCommandSingle(int argc,char **argv)
 {
   char
     command[MaxTextExtent],
@@ -17301,7 +17305,7 @@ static MagickBool GMCommandSingle(int argc,char **argv)
   ImageInfo
     *image_info;
 
-  MagickBool
+  MagickPassFail
     status=MagickTrue;
 
   /*
@@ -17365,7 +17369,7 @@ static MagickBool GMCommandSingle(int argc,char **argv)
         if (argc < 2)
           {
             GMUsage();
-            return(MagickFalse);
+            return(MagickFail);
           }
 
         /*

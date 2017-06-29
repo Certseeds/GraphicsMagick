@@ -1,3 +1,11 @@
+2017-06-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c: Convert bare 'unsigned int' to MagickPassFail
+	where suitable to make intentions clear.  Convert True/False to
+	MagickTrue/MagickFalse or MagickPass/MagickFail according to
+	purpose.  This is a continuation of a gradual migration and does
+	not represent an API change.
+
 2017-06-25  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Avoid NULL dereference when MAGN chunk processing
