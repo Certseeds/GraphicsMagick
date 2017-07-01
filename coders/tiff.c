@@ -1260,7 +1260,7 @@ QuantumTransferMode(const Image *image,
                         *quantum_samples=1;
                       }
                   }
-                else if (samples_per_pixel == 3)
+                else
                   {
                     if (image->matte)
                       {
@@ -1411,12 +1411,12 @@ QuantumTransferMode(const Image *image,
               }
             else
               {
-                if (image->matte && samples_per_pixel >= 5)
+                if (image->matte)
                   {
                     *quantum_type=CMYKAQuantum;
                     *quantum_samples=5;
                   }
-                else if (samples_per_pixel >= 4)
+                else
                   {
                     *quantum_type=CMYKQuantum;
                     *quantum_samples=4;
@@ -1430,7 +1430,7 @@ QuantumTransferMode(const Image *image,
               This is here to support JPEGCOLORMODE_RGB which claims a
               YCbCr photometric, but passes RGB to libtiff.
             */
-            if ((compress_tag == COMPRESSION_JPEG) && (samples_per_pixel == 3))
+            if (compress_tag == COMPRESSION_JPEG)
               {
                 *quantum_type=RGBQuantum;
                 *quantum_samples=3;
@@ -1440,8 +1440,26 @@ QuantumTransferMode(const Image *image,
         }
     }
   /* fprintf(stderr,"Quantum Type: %d Quantum Samples: %d\n",(int) *quantum_type,*quantum_samples); */
-  /* FIXME: Throw exception if there is an error */
   /* FIXME: We do need to support YCbCr! */
+
+  if (*quantum_samples != 0)
+    {
+      /*
+        Enforce that there are no buffer-overruns.
+      */
+      if (((planar_config == PLANARCONFIG_SEPARATE) && (*quantum_samples != 1)) ||
+          ((unsigned int) (*quantum_samples) > samples_per_pixel))
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Expected >= %u samples per pixel, have only %d!",
+                                  *quantum_samples, samples_per_pixel);
+          ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                         image->filename);
+          *quantum_type=UndefinedQuantum;
+          *quantum_samples=0;
+        }
+    }
 
   return (*quantum_samples != 0 ? MagickPass : MagickFail);
 }
@@ -2160,12 +2178,20 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (photometric == PHOTOMETRIC_MINISWHITE)
               import_options.grayscale_miniswhite=MagickTrue;
           }
-        else
+        else if (exception->severity < ErrorException)
           {
             if (TIFFIsTiled(tiff))
               method=RGBATiledMethod;
             else if (TIFFGetField(tiff,TIFFTAG_ROWSPERSTRIP,&rows_per_strip) == 1)
               method=RGBAStrippedMethod;
+          }
+        else
+          {
+            /*
+              QuantumTransferMode reported an error
+             */
+            TIFFClose(tiff);
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           }
       }
 
@@ -2800,6 +2826,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                      image);
               }
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Allocated %" MAGICK_SIZE_T_F "u bytes for RGBA strip",
+                                    (MAGICK_SIZE_T) number_pixels*sizeof(uint32));
             /*
               Convert image to DirectClass pixel packets.
             */

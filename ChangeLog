@@ -1,3 +1,10 @@
+2017-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c ("QuantumTransferMode"): Use a generalized method
+	to enforce that buffer overflow can not happen while importing
+	pixels.  Resolves problem with RGB TIFF claiming only one sample
+	per pixel provided via email on Thu, 29 Jun 2017 by LCatro.
+
 2017-06-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c: Convert bare 'unsigned int' to MagickPassFail
@@ -9,7 +16,7 @@
 2017-06-25  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Avoid NULL dereference when MAGN chunk processing
-        fails (https://sourceforge.net/p/graphicsmagick/bugs/426/). Expand
+	fails (https://sourceforge.net/p/graphicsmagick/bugs/426/). Expand
 	TABs.
 
 2017-06-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
