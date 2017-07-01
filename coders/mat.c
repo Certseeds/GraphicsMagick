@@ -309,7 +309,7 @@ static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 }
 
 /** This procedure decompreses an image block for a new MATLAB format. */
-static Image *DecompressBlock(Image *orig, magick_off_t Size, ImageInfo *clone_info, ExceptionInfo *exception)
+static Image *DecompressBlock(Image *orig, magick_off_t *Size, ImageInfo *clone_info, ExceptionInfo *exception)
 {
 Image *image2;
 void *cache_block, *decompress_block;
@@ -317,7 +317,8 @@ z_stream zip_info;
 FILE *mat_file;
 size_t magick_size;
 int status;
- int zip_status;
+int zip_status;
+magick_off_t TotalSize = 0;
 
   if(clone_info==NULL) return NULL;
   if(clone_info->file)		/* Close file opened from previous transaction. */
@@ -386,11 +387,12 @@ int status;
           return NULL;
         }
       fwrite(decompress_block, 4096-zip_info.avail_out, 1, mat_file);
+      TotalSize += 4096-zip_info.avail_out;
 
       if(zip_status == Z_STREAM_END) goto DblBreak;
     }
 
-    Size -= magick_size;
+    *Size -= magick_size;
   }
 DblBreak:
  
@@ -398,6 +400,7 @@ DblBreak:
   (void)fclose(mat_file);
   MagickFreeMemory(cache_block);
   MagickFreeMemory(decompress_block);
+  *Size = TotalSize;
 
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL) goto UnlinkFile;
   if( (image2 = AllocateImage(clone_info))==NULL ) goto EraseFile;  
@@ -818,7 +821,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
                                    "CloneImageInfo failed");
 		  continue;
 		}
-      image2 = DecompressBlock(image,MATLAB_HDR.ObjectSize,clone_info,exception);
+      image2 = DecompressBlock(image,&MATLAB_HDR.ObjectSize,clone_info,exception);
       if(image2==NULL) 
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -978,6 +981,9 @@ NEXT_FRAME:
     image->colors = 1l << image->depth;
     if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
+    if(ldblk*(long)MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
+      goto MATLAB_KO;
+
     if(CheckImagePixelLimits(image, exception) != MagickPass)
     {
       ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);

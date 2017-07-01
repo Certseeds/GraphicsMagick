@@ -1,3 +1,8 @@
+2016-07-01  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Safety check for forged and or corrupted data.
+
+
 2017-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c ("QuantumTransferMode"): Use a generalized method
