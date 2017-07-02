@@ -328,7 +328,7 @@ magick_off_t TotalSize = 0;
     (void) unlink(clone_info->filename);
   }
 
-  cache_block = MagickAllocateMemory(unsigned char *,(size_t)(*Size<16384) ? *Size : 16384);
+  cache_block = MagickAllocateMemory(unsigned char *,(size_t)((*Size<16384) ? *Size : 16384));
   if(cache_block==NULL) return NULL;
   decompress_block = MagickAllocateMemory(unsigned char *,(size_t)(4096));
   if(decompress_block==NULL) 
@@ -364,7 +364,7 @@ magick_off_t TotalSize = 0;
 
   zip_info.avail_in = 0;
   zip_info.total_out = 0;
-  while(Size>0 && !EOFBlob(orig))
+  while(*Size>0 && !EOFBlob(orig))
   {
     magick_size = ReadBlob(orig, (*Size<16384)?*Size:16384, cache_block);
     zip_info.next_in = cache_block;
@@ -814,7 +814,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       if(MATLAB_HDR.ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-             "  MAT Object with size %u overflows file with size %u.", MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
+             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
         goto MATLAB_KO;
       }
     }
