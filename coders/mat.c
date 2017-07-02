@@ -67,7 +67,7 @@ typedef struct
   unsigned short Version;
   char EndianIndicator[2];
   unsigned long DataType;
-  unsigned long ObjectSize;
+  magick_uint32_t ObjectSize;
   unsigned long unknown1;
   unsigned long unknown2;
 
@@ -309,7 +309,7 @@ static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 }
 
 /** This procedure decompreses an image block for a new MATLAB format. */
-static Image *DecompressBlock(Image *orig, magick_off_t *Size, ImageInfo *clone_info, ExceptionInfo *exception)
+static Image *DecompressBlock(Image *orig, magick_uint32_t *Size, ImageInfo *clone_info, ExceptionInfo *exception)
 {
 Image *image2;
 void *cache_block, *decompress_block;
