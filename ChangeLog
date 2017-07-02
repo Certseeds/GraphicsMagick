@@ -1,12 +1,18 @@
+2017-07-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Compute required file size and
+	verify that sufficient data exists in file before allocating
+	memory to decode the image data.  Resolves problem with DPX file
+	with valid header (but a huge claimed image width) provided
+	provided via email on Thu, 29 Jun 2017 by LCatro.
+
 2016-07-02  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Check whether reported object size overflows file size.
 
-
 2016-07-01  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Safety check for forged and or corrupted data.
-
 
 2017-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

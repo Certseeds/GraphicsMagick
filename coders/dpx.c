@@ -2048,6 +2048,51 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowDPXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   /*
+    Validate file size if using a seekable blob
+  */
+  if (BlobIsSeekable(image))
+    {
+      magick_off_t file_size;
+      magick_off_t file_size_estimate = dpx_file_info.image_data_offset;
+
+      /*
+        Verify that file size claimed by header is matched by file size
+      */
+      if ((file_size = GetBlobSize(image)) != 0)
+        {
+          if (file_size < dpx_file_info.file_size)
+            {
+              ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            }
+        }
+
+      /*
+        Estimate the required file size and assure that actual file
+        size is at least that size.
+      */
+      for (element=0; element < dpx_image_info.elements; element++)
+        {
+          bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
+          element_descriptor=(DPXImageElementDescriptor)
+            dpx_image_info.element_info[element].descriptor;
+          transfer_characteristic=
+            (DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
+          packing_method=(ImageComponentPackingMethod) dpx_image_info.element_info[element].packing;
+          samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
+          samples_per_row=samples_per_pixel*image->columns;
+          element_size=DPXRowOctets(image->rows,samples_per_row,
+                                    bits_per_sample,packing_method);
+          file_size_estimate += element_size;
+        }
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "File size estimate %" MAGICK_OFF_F
+                            "u bytes (have %" MAGICK_OFF_F "u bytes)",
+                            file_size_estimate, file_size);
+      if ((file_size_estimate <= 0) || (file_size < file_size_estimate))
+        ThrowDPXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+    }
+
+  /*
     Read remainder of header.
   */
   for ( ; offset < pixels_offset ; offset++ )
@@ -2070,16 +2115,19 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Allocate per-thread-view row samples.
+    FIXME: Unlimited memory allocation here based on width
   */
   samples_set=AllocateThreadViewDataArray(image,exception,image->columns,
-                                          max_samples_per_pixel*sizeof(sample_t));
+                                          MagickArraySize(max_samples_per_pixel,
+                                                          sizeof(sample_t)));
   if (samples_set == (ThreadViewDataSet *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Allocate per-thread-view scanline storage.
   */
   scanline_set=AllocateThreadViewDataArray(image,exception,image->columns,
-                                           max_samples_per_pixel*sizeof(U32));
+                                           MagickArraySize(max_samples_per_pixel,
+                                                           sizeof(U32)));
   if (scanline_set == (ThreadViewDataSet *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
