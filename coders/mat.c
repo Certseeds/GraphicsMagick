@@ -807,8 +807,19 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     MATLAB_HDR.DataType = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
     MATLAB_HDR.ObjectSize = ReadBlobXXXLong(image);
-    if(EOFBlob(image)) break;
-    filepos += MATLAB_HDR.ObjectSize + 4 + 4;
+    if(EOFBlob(image)) break;    
+
+    if(BlobIsSeekable(image))
+    {      
+      if(MATLAB_HDR.ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
+      {
+        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+             "  MAT Object with size %u overflows file with size %u.", MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
+        goto MATLAB_KO;
+      }
+    }
+
+    filepos += MATLAB_HDR.ObjectSize + 4 + 4;	/* Position of a next object, when exists. */
 
     image2 = image;
 #if defined(HasZLIB)
