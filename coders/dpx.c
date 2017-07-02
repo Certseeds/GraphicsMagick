@@ -2115,7 +2115,6 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Allocate per-thread-view row samples.
-    FIXME: Unlimited memory allocation here based on width
   */
   samples_set=AllocateThreadViewDataArray(image,exception,image->columns,
                                           MagickArraySize(max_samples_per_pixel,
