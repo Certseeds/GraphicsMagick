@@ -1,7 +1,7 @@
 2017-07-02  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Reject a PNG file if the file size is too small
-	(less than 60 bytes).
+	(less than 61 bytes).
 
 2017-07-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
