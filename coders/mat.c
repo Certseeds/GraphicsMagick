@@ -328,7 +328,7 @@ magick_off_t TotalSize = 0;
     (void) unlink(clone_info->filename);
   }
 
-  cache_block = MagickAllocateMemory(unsigned char *,(size_t)((Size<16384)?Size:16384));
+  cache_block = MagickAllocateMemory(unsigned char *,(size_t)(*Size<16384) ? *Size : 16384);
   if(cache_block==NULL) return NULL;
   decompress_block = MagickAllocateMemory(unsigned char *,(size_t)(4096));
   if(decompress_block==NULL) 
@@ -365,8 +365,8 @@ magick_off_t TotalSize = 0;
   zip_info.avail_in = 0;
   zip_info.total_out = 0;
   while(Size>0 && !EOFBlob(orig))
-  {    
-    magick_size = ReadBlob(orig, (Size<16384)?Size:16384, cache_block);
+  {
+    magick_size = ReadBlob(orig, (*Size<16384)?*Size:16384, cache_block);
     zip_info.next_in = cache_block;
     zip_info.avail_in = (uInt) magick_size;    
 
