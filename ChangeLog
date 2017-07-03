@@ -1,7 +1,10 @@
-2017-07-02  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-07-03  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Reject a PNG file if the file size is too small
-	(less than 61 bytes).
+	(less than 61 bytes).  Reject a JNG file if it is too small (less
+	than 147 bytes).
+	* coders/jpeg.c: Reject a JPEG file if the file size is too small
+	(less than 107 bytes).
 
 2017-07-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

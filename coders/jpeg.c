@@ -1035,6 +1035,8 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  if (BlobIsSeekable(image) && GetBlobSize(image) < 107)
+    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
   /*
     Initialize structures.
   */
