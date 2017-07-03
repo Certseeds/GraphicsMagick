@@ -992,7 +992,7 @@ NEXT_FRAME:
     image->colors = 1l << image->depth;
     if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
-    if(ldblk*(long)MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
+    if((unsigned long)ldblk*MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
       goto MATLAB_KO;
 
     if(CheckImagePixelLimits(image, exception) != MagickPass)
