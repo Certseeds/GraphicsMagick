@@ -1538,7 +1538,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
       (void) fflush(stdout);
     }
 
-  for (;;)
+  while (!(ferror(stdin) || ferror(stdout) || ferror(stderr) || feof(stdin)))
     {
       if (batch_options.prompt[0])
         {
@@ -16254,7 +16254,11 @@ static int ParseUnixCommandLine(FILE *in, int acmax, char **av)
     limit[1] = 0;
     av[1] = p;
     *p = 0;
-    do c = fgetc(in); while(MagickIsBlank(c));
+    do
+      {
+        c = fgetc(in);
+      }
+    while(MagickIsBlank(c));
 
     while (c != EOF)
       {
@@ -16385,7 +16389,11 @@ static int ParseWindowsCommandLine(FILE *in, int acmax, char **av)
     limit[1] = 0;
     av[1] = p;
     *p = 0;
-    do c = fgetc(in); while(MagickIsBlank(c));
+    do
+      {
+        c = fgetc(in);
+      }
+    while(MagickIsBlank(c));
 
     while (c != EOF)
       {

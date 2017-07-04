@@ -1,3 +1,8 @@
+2017-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (BatchCommand): Add ferror() checks around
+	batch input loop.
+
 2017-07-03  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Reject a PNG file if the file size is too small
