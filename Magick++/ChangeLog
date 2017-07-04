@@ -1,3 +1,11 @@
+2017-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* lib/Image.cpp (orientation): Update orientation in EXIF profile,
+	if it exists.
+	(attribute): Added Image attribute method which accepts a 'char *'
+	argument, and will remove the attribute if the value argument is
+	NULL.
+
 2014-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* lib/Magick++/Geometry.h (Magick::Geometry): Add and document

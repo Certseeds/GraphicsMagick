@@ -3230,6 +3230,14 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
     }
   if (!ExtendCache(file,cache_info->offset+cache_info->length))
     {
+      (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                            "Unable to extend pixel cache from %"
+                            MAGICK_OFF_F "d bytes "
+                            "by %" MAGICK_OFF_F "d bytes "
+                            "to %" MAGICK_OFF_F "d bytes",
+                            cache_info->length,
+                            cache_info->offset,
+                            cache_info->offset+cache_info->length);
       (void) close(file);
       (void) LiberateTemporaryFile(cache_info->cache_filename);
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),

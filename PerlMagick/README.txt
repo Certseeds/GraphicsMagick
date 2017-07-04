@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2009 GraphicsMagick Group
+# Copyright (C) 2003-2017 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998,1999 E. I. du Pont de Nemours and Company
 #

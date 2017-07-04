@@ -6,6 +6,7 @@
 #ifndef _TCLMAGICK_H_
 #define _TCLMAGICK_H_
 
+#include <string.h>
 #include <tcl.h>
 #include <wand/magick_wand.h>
 
@@ -49,37 +50,6 @@ typedef struct {
 #else
 #   define EXPORT(a,b) a b
 #endif
-
-EXPORT(TclMagickObj, *findMagickObj)(Tcl_Interp *interp, int type, char *name);
-
-/*----------------------------------------------------------------------
- * Return Magick error description as a TCL result
- * Used by both TclMagick and TkMagick.
- *----------------------------------------------------------------------
- */
-static int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
-{
-    char *description;
-
-    ExceptionType severity;
-    char msg[40];
-
-    description = MagickGetException(wandPtr, &severity);
-    if( (description == NULL) || (strlen(description) == 0) ) {
-        Tcl_AppendResult(interp, MagickGetPackageName(), ": Unknown error", NULL);
-    } else {
-        sprintf(msg, "%s: #%d:", MagickGetPackageName(), severity); /* FIXME, not used! */
-        Tcl_AppendResult(interp, description, NULL);
-    }
-    if( description != NULL ) {
-        MagickRelinquishMemory(description);
-    }
-    /*
-     * if(severity < ErrorException) --> warning
-     * return TCL_OK ???
-     */
-    return TCL_ERROR;
-}
 
 
 #endif

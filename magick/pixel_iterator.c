@@ -1,15 +1,26 @@
 /*
-% Copyright (C) 2004-2012 GraphicsMagick Group
-%
-% This program is covered by multiple licenses, which are described in
-% Copyright.txt. You should have received a copy of Copyright.txt with this
-% package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
-%
-% Interfaces to support simple iterative pixel read/update access within
-% an image or between two images.
-%
-% Written by Bob Friesenhahn, March 2004, Updated for rows 2008.
-%
+  Copyright (C) 2004-2016 GraphicsMagick Group
+ 
+  This program is covered by multiple licenses, which are described in
+  Copyright.txt. You should have received a copy of Copyright.txt with this
+  package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
+ 
+  Interfaces to support simple iterative pixel read/update access
+  within an image or between two images. These interfaces exist in
+  order to eliminate large amounts of redundant code and to allow
+  changing the underlying implementation without changing the using
+  code. These interfaces intentionally omit any pixel position
+  information in order to not constrain the implementation and to
+  improve performance.
+
+  User-provided callbacks must be thread-safe (preferably re-entrant) since
+  they may be invoked by multiple threads.
+
+  These interfaces have proven to be future safe (since implemented)
+  and may be safely used by other applications/libraries.
+
+  Written by Bob Friesenhahn, March 2004, Updated for rows 2008.
+
 */
 
 #include "magick/studio.h"
@@ -136,7 +147,7 @@ InitializePixelIteratorOptions(PixelIteratorOptions *options,
 %  A description of each parameter follows:
 %
 %    o call_back: A user-provided C callback function which is passed the
-%       address of pixels from each image.
+%       address of pixels from the image.
 %
 %    o options: Pixel iterator execution options (may be NULL).
 %
@@ -243,21 +254,24 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%   P i x e l I t e r a t e M o n o M o d i f y                               %
+%   P i x e l I t e r a t e M o n o S e t                                     %
 %                                                                             %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelIterateMonoModify() iterates through a region of an image and invokes
-%  a user-provided callback function (of type PixelIteratorMonoReadCallback)
-%  for a region of pixels. This is useful to support simple operations such as
-%  level shifting, colorspace translation, or thresholding.
+%  PixelIterateMonoSet() iterates through a region of an image and invokes
+%  a user-provided callback function (of type PixelIteratorMonoModifyCallback)
+%  to initialize a region of pixels from scratch.   The difference from
+%  PixelIterateMonoModify() is that the output pixels are not initialized
+%  from the underlying store so it is more efficient when outputting a new
+%  image or when the existing pixels are intentionally discarded.  This is
+%  useful for operations such as setting the pixel color.
 %
-%  The format of the PixelIterateMonoModify method is:
+%  The format of the PixelIterateMonoSet method is:
 %
-%      MagickPassFail PixelIterateMonoModify(
-%                              PixelIteratorMonoModifyCallback call_back,
+%      MagickPassFail PixelIterateMonoSet(
+%                              PixelIteratorMonoModifyback call_back,
 %                              const PixelIteratorOptions *options,
 %                              const char *description,
 %                              void *mutable_data,
@@ -272,7 +286,7 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
 %  A description of each parameter follows:
 %
 %    o call_back: A user-provided C callback function which is passed the
-%       address of pixels from each image.
+%       address of pixels to be initialized in the image.
 %
 %    o options: Pixel iterator execution options (may be NULL).
 %
@@ -295,18 +309,19 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
 %    o exception: If an error is reported, this argument is updated with the reason.
 %
 */
-MagickExport MagickPassFail
-PixelIterateMonoModify(PixelIteratorMonoModifyCallback call_back,
-                       const PixelIteratorOptions *options,
-                       const char *description,
-                       void *mutable_data,
-                       const void *immutable_data,
-                       const long x,
-                       const long y,
-                       const unsigned long columns,
-                       const unsigned long rows,
-                       Image *image,
-                       ExceptionInfo *exception)
+static MagickPassFail
+PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
+                                     const PixelIteratorOptions *options,
+                                     const char *description,
+                                     void *mutable_data,
+                                     const void *immutable_data,
+                                     const long x,
+                                     const long y,
+                                     const unsigned long columns,
+                                     const unsigned long rows,
+                                     Image *image,
+                                     ExceptionInfo *exception,
+                                     MagickBool set)
 {
   MagickPassFail
     status = MagickPass;
@@ -351,7 +366,10 @@ PixelIterateMonoModify(PixelIteratorMonoModifyCallback call_back,
       if (thread_status == MagickFail)
         continue;
 
-      pixels=GetImagePixelsEx(image, x, row, columns, 1, exception);
+      if (set)
+        pixels=SetImagePixelsEx(image, x, row, columns, 1, exception);
+      else
+        pixels=GetImagePixelsEx(image, x, row, columns, 1, exception);
       if (!pixels)
         thread_status=MagickFail;
       indexes=AccessMutableIndexes(image);
@@ -380,6 +398,117 @@ PixelIterateMonoModify(PixelIteratorMonoModifyCallback call_back,
 
   return (status);
 }
+
+MagickExport MagickPassFail
+PixelIterateMonoSet(PixelIteratorMonoModifyCallback call_back,
+                    const PixelIteratorOptions *options,
+                    const char *description,
+                    void *mutable_data,
+                    const void *immutable_data,
+                    const long x,
+                    const long y,
+                    const unsigned long columns,
+                    const unsigned long rows,
+                    Image *image,
+                    ExceptionInfo *exception)
+{
+  return PixelIterateMonoModifyImplementation(call_back,
+                                              options,
+                                              description,
+                                              mutable_data,
+                                              immutable_data,
+                                              x,
+                                              y,
+                                              columns,
+                                              rows,
+                                              image,
+                                              exception,
+                                              MagickTrue);
+    }
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   P i x e l I t e r a t e M o n o M o d i f y                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  PixelIterateMonoModify() iterates through a region of an image and invokes
+%  a user-provided callback function (of type PixelIteratorMonoModifyCallback)
+%  to modify a region of pixels. This is useful to support simple operations
+%  such as level shifting, colorspace translation, or thresholding.
+%
+%  The format of the PixelIterateMonoModify method is:
+%
+%      MagickPassFail PixelIterateMonoModify(
+%                              PixelIteratorMonoModifyCallback call_back,
+%                              const PixelIteratorOptions *options,
+%                              const char *description,
+%                              void *mutable_data,
+%                              const void *immutable_data,
+%                              const long x,
+%                              const long y,
+%                              const unsigned long columns,
+%                              const unsigned long rows,
+%                              Image *image,
+%                              ExceptionInfo *exception)
+%
+%  A description of each parameter follows:
+%
+%    o call_back: A user-provided C callback function which is passed the
+%       address of pixels from the image.
+%
+%    o options: Pixel iterator execution options (may be NULL).
+%
+%    o description: textual description of operation being performed.
+%
+%    o mutable_data: User-provided mutable context data.
+%
+%    o immutable_data: User-provided immutable context data.
+%
+%    o x: The horizontal ordinate of the top left corner of the region.
+%
+%    o y: The vertical ordinate of the top left corner of the region.
+%
+%    o columns: Width of pixel region
+%
+%    o rows: Height of pixel region
+%
+%    o image: The address of the Image.
+%
+%    o exception: If an error is reported, this argument is updated with the reason.
+%
+*/
+MagickExport MagickPassFail
+PixelIterateMonoModify(PixelIteratorMonoModifyCallback call_back,
+                       const PixelIteratorOptions *options,
+                       const char *description,
+                       void *mutable_data,
+                       const void *immutable_data,
+                       const long x,
+                       const long y,
+                       const unsigned long columns,
+                       const unsigned long rows,
+                       Image *image,
+                       ExceptionInfo *exception)
+{
+  return PixelIterateMonoModifyImplementation(call_back,
+                                              options,
+                                              description,
+                                              mutable_data,
+                                              immutable_data,
+                                              x,
+                                              y,
+                                              columns,
+                                              rows,
+                                              image,
+                                              exception,
+                                              MagickFalse);
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -397,7 +526,7 @@ PixelIterateMonoModify(PixelIteratorMonoModifyCallback call_back,
 %  PixelIteratorDualReadCallback) for each row of pixels. This is useful to
 %  support operations such as image comparison.
 %
-%  The format of the PixelIterateDualModify method is:
+%  The format of the PixelIterateDualRead method is:
 %
 %      MagickPassFail PixelIterateDualRead(
 %                                PixelIteratorDualReadCallback call_back,

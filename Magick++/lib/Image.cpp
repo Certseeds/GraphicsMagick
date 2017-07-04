@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2015
+// Copyright Bob Friesenhahn, 1999-2017
 //
 // Implementation of Image
 //
@@ -2223,7 +2223,16 @@ unsigned int Magick::Image::animationIterations ( void ) const
   return constImage()->iterations;
 }
 
-// Access/Update a named image attribute
+// Access/Update a named image text attribute. Updates append the
+// provided to any existing attribute text.  Pass NULL as the value to
+// remove an existing value or before a subsequent call to add new
+// text.
+void Magick::Image::attribute ( const std::string name_,
+                                const char * value_ )
+{
+  modifyImage();
+  SetImageAttribute( image(), name_.c_str(), value_ );
+}
 void Magick::Image::attribute ( const std::string name_,
                                 const std::string value_ )
 {
@@ -3175,6 +3184,9 @@ void Magick::Image::orientation ( const Magick::OrientationType orientation_ )
 {
   modifyImage();
   image()->orientation = orientation_;
+  char orientation[MaxTextExtent];
+  FormatString(orientation,"%d",constImage()->orientation);
+  (void) SetImageAttribute(image(),"EXIF:Orientation",orientation);
 }
 Magick::OrientationType Magick::Image::orientation ( void ) const
 {

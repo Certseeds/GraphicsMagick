@@ -1230,8 +1230,8 @@ QuantumTransferMode(const Image *image,
                   case 0:
                     if (samples_per_pixel == 1)
                       *quantum_type=GrayQuantum;
-                      else
-                        *quantum_type=RedQuantum;
+                    else
+                      *quantum_type=RedQuantum;
                     break;
                   case 1:
                     *quantum_type=GreenQuantum;
@@ -1260,7 +1260,7 @@ QuantumTransferMode(const Image *image,
                         *quantum_samples=1;
                       }
                   }
-                else if (samples_per_pixel == 3)
+                else
                   {
                     if (image->matte)
                       {
@@ -1430,7 +1430,7 @@ QuantumTransferMode(const Image *image,
               This is here to support JPEGCOLORMODE_RGB which claims a
               YCbCr photometric, but passes RGB to libtiff.
             */
-            if ((compress_tag == COMPRESSION_JPEG) && (samples_per_pixel == 3))
+            if (compress_tag == COMPRESSION_JPEG)
               {
                 *quantum_type=RGBQuantum;
                 *quantum_samples=3;
@@ -1440,8 +1440,26 @@ QuantumTransferMode(const Image *image,
         }
     }
   /* fprintf(stderr,"Quantum Type: %d Quantum Samples: %d\n",(int) *quantum_type,*quantum_samples); */
-  /* FIXME: Throw exception if there is an error */
   /* FIXME: We do need to support YCbCr! */
+
+  if (*quantum_samples != 0)
+    {
+      /*
+        Enforce that there are no buffer-overruns.
+      */
+      if (((planar_config == PLANARCONFIG_SEPARATE) && (*quantum_samples != 1)) ||
+          ((unsigned int) (*quantum_samples) > samples_per_pixel))
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Expected >= %u samples per pixel, have only %d!",
+                                  *quantum_samples, samples_per_pixel);
+          ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                         image->filename);
+          *quantum_type=UndefinedQuantum;
+          *quantum_samples=0;
+        }
+    }
 
   return (*quantum_samples != 0 ? MagickPass : MagickFail);
 }
@@ -2115,7 +2133,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         QuantumType
           quantum_type;
 
-        if ((samples_per_pixel > 1) && (compress_tag == COMPRESSION_JPEG) &&
+        if ((samples_per_pixel > 1) &&
+            (compress_tag == COMPRESSION_JPEG) &&
 	    (photometric == PHOTOMETRIC_YCBCR))
           {
             /* Following hack avoids the error message "Application
@@ -2139,7 +2158,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             == MagickPass)
           {
             method=ScanLineMethod;
-            if (compress_tag == COMPRESSION_JPEG)
+            if ((compress_tag == COMPRESSION_JPEG) ||
+                (compress_tag == COMPRESSION_OJPEG))
               {
                 if (TIFFIsTiled(tiff))
                   method=TiledMethod;
@@ -2153,17 +2173,25 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
             else if (TIFFIsTiled(tiff))
               method=TiledMethod;
-            else if ((TIFFStripSize(tiff)) <= (1024*64))
+            else if (TIFFStripSize(tiff) <= 1024*256)
               method=StrippedMethod;
             if (photometric == PHOTOMETRIC_MINISWHITE)
               import_options.grayscale_miniswhite=MagickTrue;
           }
-        else
+        else if (exception->severity < ErrorException)
           {
             if (TIFFIsTiled(tiff))
               method=RGBATiledMethod;
             else if (TIFFGetField(tiff,TIFFTAG_ROWSPERSTRIP,&rows_per_strip) == 1)
               method=RGBAStrippedMethod;
+          }
+        else
+          {
+            /*
+              QuantumTransferMode reported an error
+             */
+            TIFFClose(tiff);
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           }
       }
 
@@ -2798,6 +2826,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                      image);
               }
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Allocated %" MAGICK_SIZE_T_F "u bytes for RGBA strip",
+                                    (MAGICK_SIZE_T) number_pixels*sizeof(uint32));
             /*
               Convert image to DirectClass pixel packets.
             */

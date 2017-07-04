@@ -160,7 +160,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   /*
     Read WEBP file.
   */
-  length = (size_t) GetBlobSize(image);
+  length = (size_t) GetBlobSize(image); /* FIXME, does not work with stream */
   stream=MagickAllocateArray(unsigned char *,
                              length,sizeof(*stream));
   if (stream == (unsigned char *) NULL)
@@ -351,7 +351,7 @@ ModuleExport void RegisterWEBPImage(void)
 #endif
   entry->description=description;
   entry->adjoin=False;
-  entry->seekable_stream=MagickFalse;
+  entry->seekable_stream=MagickTrue; /* FIXME */
   if (*version != '\0')
     entry->version=version;
   entry->module="WEBP";

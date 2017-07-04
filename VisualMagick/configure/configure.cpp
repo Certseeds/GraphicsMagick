@@ -1187,6 +1187,7 @@ void CConfigureApp::process_library( const char *root,
       // PNG module depends on zlib
       if (name.compare("png") == 0)
         {
+	      workspace->write_project_dependency(project,"CORE_lcms");
           workspace->write_project_dependency(project,"CORE_zlib");
         }
       // TIFF module depends on jbig, jpeg, and zlib
@@ -1279,6 +1280,8 @@ void CConfigureApp::process_module( const char *root,
     }
   if (name.compare("png") == 0)
     {
+      extra = "..\\lcms";
+      add_includes(includes_list, extra, levels-2);
       extra = "..\\zlib";
       add_includes(includes_list, extra, levels-2);
     }
@@ -1484,6 +1487,7 @@ void CConfigureApp::process_module( const char *root,
           }
         if (name.compare("png") == 0)
           {
+            workspace->write_project_dependency(project,"CORE_lcms");
             workspace->write_project_dependency(project,"CORE_zlib");
           }
         if (name.compare("pdf") == 0)
@@ -1613,6 +1617,7 @@ void CConfigureApp::process_3rd_party_library( const char *root,
                   }
                 if (name.compare("png") == 0)
                   {
+                    workspace->write_project_dependency(project,"CORE_lcms");
                     workspace->write_project_dependency(project,"CORE_zlib");
                   }
                 if (name.compare("pdf") == 0)
@@ -2918,6 +2923,7 @@ BOOL CConfigureApp::InitInstance()
   wizard.m_Page2.m_build64Bit = info.build64Bit();
   wizard.m_Page2.m_openMP = info.openMP();
   wizard.m_Page2.m_projectType = info.projectType();
+  wizard.m_Page2.m_quantumDepth = info.quantumDepth();
 
   wizard.m_Page3.m_tempRelease = release_loc.c_str();
   wizard.m_Page3.m_tempDebug = debug_loc.c_str();

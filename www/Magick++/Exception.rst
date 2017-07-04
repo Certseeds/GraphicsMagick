@@ -180,5 +180,5 @@ GraphicsMagick is unable to figure out how to open the file.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| Bob Friesenhahn 1999 - 2016
+Copyright |copy| Bob Friesenhahn 1999 - 2017
 

@@ -1,0 +1,189 @@
+Only in jp2: images
+Only in jp2: jasper.def
+diff -r -u jasper-1.900.1/src/appl/jasper.c jp2/src/appl/jasper.c
+--- jasper-1.900.1/src/appl/jasper.c	2007-01-19 15:43:08.000000000 -0600
++++ jp2/src/appl/jasper.c	2015-09-19 17:09:46.453940772 -0500
+@@ -447,12 +447,12 @@
+ 
+ int addopt(char *optstr, int maxlen, char *s)
+ {
+-	int n;
+-	int m;
++	size_t n;
++	size_t m;
+ 
+ 	n = strlen(optstr);
+ 	m = n + strlen(s) + 1;
+-	if (m > maxlen) {
++	if (m > (size_t) maxlen) {
+ 		return 1;
+ 	}
+ 	if (n > 0) {
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_debug.c jp2/src/libjasper/base/jas_debug.c
+--- jasper-1.900.1/src/libjasper/base/jas_debug.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_debug.c	2016-08-21 13:05:24.667829189 -0500
+@@ -125,7 +125,7 @@
+ 	uchar *dp;
+ 	dp = data;
+ 	for (i = 0; i < len; i += 16) {
+-		fprintf(out, "%04x:", i);
++		fprintf(out, "%04x:", (unsigned int) i);
+ 		for (j = 0; j < 16; ++j) {
+ 			if (i + j < len) {
+ 				fprintf(out, " %02x", dp[i + j]);
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_icc.c jp2/src/libjasper/base/jas_icc.c
+--- jasper-1.900.1/src/libjasper/base/jas_icc.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_icc.c	2015-09-19 17:09:46.455169737 -0500
+@@ -1112,7 +1112,7 @@
+ 	txtdesc->maclen = c;
+ 	if (jas_stream_read(in, txtdesc->macdata, 67) != 67)
+ 		goto error;
+-	txtdesc->asclen = strlen(txtdesc->ascdata) + 1;
++	txtdesc->asclen = (unsigned int) strlen(txtdesc->ascdata) + 1;
+ #define WORKAROUND_BAD_PROFILES
+ #ifdef WORKAROUND_BAD_PROFILES
+ 	n = txtdesc->asclen + txtdesc->uclen * 2 + 15 + 67;
+@@ -1136,7 +1136,7 @@
+ static int jas_icctxtdesc_getsize(jas_iccattrval_t *attrval)
+ {
+ 	jas_icctxtdesc_t *txtdesc = &attrval->data.txtdesc;
+-	return strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 + 15 + 67;
++	return (int) strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 + 15 + 67;
+ }
+ 
+ static int jas_icctxtdesc_output(jas_iccattrval_t *attrval, jas_stream_t *out)
+@@ -1216,7 +1216,7 @@
+ static int jas_icctxt_getsize(jas_iccattrval_t *attrval)
+ {
+ 	jas_icctxt_t *txt = &attrval->data.txt;
+-	return strlen(txt->string) + 1;
++	return (int) strlen(txt->string) + 1;
+ }
+ 
+ static int jas_icctxt_output(jas_iccattrval_t *attrval, jas_stream_t *out)
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_init.c jp2/src/libjasper/base/jas_init.c
+--- jasper-1.900.1/src/libjasper/base/jas_init.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_init.c	2011-05-28 12:13:25.871757347 -0500
+@@ -151,7 +151,7 @@
+ 	at least one memory allocation is performed.  This is desirable
+ 	as it ensures that the JasPer exit handler is called before the
+ 	debug memory allocator exit handler. */
+-	atexit(jas_cleanup);
++	/* atexit(jas_cleanup); */
+ 
+ 	return 0;
+ }
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_seq.c jp2/src/libjasper/base/jas_seq.c
+--- jasper-1.900.1/src/libjasper/base/jas_seq.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_seq.c	2015-09-19 17:09:46.455902366 -0500
+@@ -421,7 +421,7 @@
+ 	jas_seqent_t x;
+ 	char buf[MAXLINELEN + 1];
+ 	char sbuf[MAXLINELEN + 1];
+-	int n;
++	size_t n;
+ 
+ 	fprintf(out, "%d %d\n", jas_seq2d_xstart(matrix),
+ 	  jas_seq2d_ystart(matrix));
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_stream.c jp2/src/libjasper/base/jas_stream.c
+--- jasper-1.900.1/src/libjasper/base/jas_stream.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_stream.c	2015-09-19 17:09:46.456788910 -0500
+@@ -1125,14 +1125,14 @@
+ {
+ 	FILE *fp;
+ 	fp = JAS_CAST(FILE *, obj);
+-	return fread(buf, 1, cnt, fp);
++	return (int) fread(buf, 1, cnt, fp);
+ }
+ 
+ static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt)
+ {
+ 	FILE *fp;
+ 	fp = JAS_CAST(FILE *, obj);
+-	return fwrite(buf, 1, cnt, fp);
++	return (int) fwrite(buf, 1, cnt, fp);
+ }
+ 
+ static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)
+diff -r -u jasper-1.900.1/src/libjasper/base/jas_string.c jp2/src/libjasper/base/jas_string.c
+--- jasper-1.900.1/src/libjasper/base/jas_string.c	2007-01-19 15:43:05.000000000 -0600
++++ jp2/src/libjasper/base/jas_string.c	2015-09-19 17:09:46.457369156 -0500
+@@ -85,7 +85,7 @@
+ 
+ char *jas_strdup(const char *s)
+ {
+-	int n;
++	size_t n;
+ 	char *p;
+ 	n = strlen(s) + 1;
+ 	if (!(p = jas_malloc(n * sizeof(char)))) {
+diff -r -u jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h jp2/src/libjasper/include/jasper/jas_config2.h
+--- jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h	2007-01-19 15:43:04.000000000 -0600
++++ jp2/src/libjasper/include/jasper/jas_config2.h	2011-05-28 12:13:25.885523923 -0500
+@@ -74,7 +74,9 @@
+ #define	ushort		unsigned short
+ #define	uint		unsigned int
+ #define	ulong		unsigned long
++#undef longlong
+ #define	longlong	long long
++#undef ulonglong
+ #define	ulonglong	unsigned long long
+ /*#define	ssize_t		int*/
+ 
+diff -r -u jasper-1.900.1/src/libjasper/include/jasper/jas_config.h jp2/src/libjasper/include/jasper/jas_config.h
+--- jasper-1.900.1/src/libjasper/include/jasper/jas_config.h	2007-01-19 15:54:59.000000000 -0600
++++ jp2/src/libjasper/include/jasper/jas_config.h	2014-03-23 17:30:39.159094581 -0500
+@@ -14,6 +14,15 @@
+ /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
+   unless the JasPer software is being built under Microsoft Windows
+   using Microsoft Visual C. */
++#if defined(_VISUALC_) && !defined(JAS_WIN_MSVC_BUILD)
++# define JAS_WIN_MSVC_BUILD
++#endif
++#if defined(JAS_WIN_MSVC_BUILD)
++# pragma warning(disable : 4013)
++# pragma warning(disable : 4018)
++# pragma warning(disable : 4244)
++# pragma warning(disable : 4715)
++#endif
+ #if !defined(JAS_WIN_MSVC_BUILD)
+ /* A configure-based build is being used. */
+ 
+diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_enc.c jp2/src/libjasper/jpc/jpc_enc.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_enc.c	2007-01-19 15:43:07.000000000 -0600
++++ jp2/src/libjasper/jpc/jpc_enc.c	2015-09-19 17:09:46.458932474 -0500
+@@ -960,7 +960,7 @@
+ 	}
+ 	sprintf(buf, "Creator: JasPer Version %s", jas_getversion());
+ 	com = &enc->mrk->parms.com;
+-	com->len = strlen(buf);
++	com->len = (unsigned int) strlen(buf);
+ 	com->regid = JPC_COM_LATIN;
+ 	if (!(com->data = JAS_CAST(uchar *, jas_strdup(buf)))) {
+ 		abort();
+diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c jp2/src/libjasper/jpc/jpc_mqdec.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c	2007-01-19 15:43:07.000000000 -0600
++++ jp2/src/libjasper/jpc/jpc_mqdec.c	2016-08-21 13:05:24.668935963 -0500
+@@ -300,7 +300,7 @@
+ 	fprintf(out, "MQDEC A = %08lx, C = %08lx, CT=%08lx, ",
+ 	  (unsigned long) mqdec->areg, (unsigned long) mqdec->creg,
+ 	  (unsigned long) mqdec->ctreg);
+-	fprintf(out, "CTX = %d, ", mqdec->curctx - mqdec->ctxs);
+-	fprintf(out, "IND %d, MPS %d, QEVAL %x\n", *mqdec->curctx -
+-	  jpc_mqstates, (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
++	fprintf(out, "CTX = %d, ", (int) (mqdec->curctx - mqdec->ctxs));
++	fprintf(out, "IND %d, MPS %d, QEVAL %x\n", (int) (*mqdec->curctx -
++	  jpc_mqstates), (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
+ }
+diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c jp2/src/libjasper/jpc/jpc_mqenc.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c	2007-01-19 15:43:07.000000000 -0600
++++ jp2/src/libjasper/jpc/jpc_mqenc.c	2016-08-21 13:05:24.669741641 -0500
+@@ -386,7 +386,7 @@
+ 	fprintf(out, "AREG = %08x, CREG = %08x, CTREG = %d\n",
+ 	  mqenc->areg, mqenc->creg, mqenc->ctreg);
+ 	fprintf(out, "IND = %02d, MPS = %d, QEVAL = %04x\n",
+-	  *mqenc->curctx - jpc_mqstates, (*mqenc->curctx)->mps,
++	  (int) (*mqenc->curctx - jpc_mqstates), (*mqenc->curctx)->mps,
+ 	  (*mqenc->curctx)->qeval);
+ 	return 0;
+ }

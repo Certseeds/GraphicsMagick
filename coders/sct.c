@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -188,9 +188,11 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
       if (ReadBlob(image,14,(char *) buffer) != 14)
         break;
+      buffer[14]='\0';
       image->rows=MagickAtoL(buffer) & 0x7FFFFFFF;
       if (ReadBlob(image,14,(char *) buffer) != 14)
         break;
+      buffer[14]='\0';
       image->columns=MagickAtoL(buffer) & 0x7FFFFFFF;
       if (ReadBlob(image,196,(char *) buffer) != 196)
         break;

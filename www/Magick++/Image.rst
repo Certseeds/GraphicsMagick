@@ -1614,11 +1614,19 @@ extension) for::
 attribute
 +++++++++
 
-Access an arbitrary named image attribute. Any number of named
-attributes may be attached to the image. For example, the image
-comment is a named image attribute with the name "comment". EXIF tags
-are attached to the image as named attributes. Use the syntax
-"EXIF:<tag>" to request an EXIF tag similar to "EXIF:DateTime"::
+Access or update an arbitrary named image attribute. Any number of
+named attributes may be attached to the image. For example, the image
+comment is a named image attribute with the name "comment".  If the
+named attribute already exists, the provided text is appended to the
+existing attribute text.  Pass NULL to remove an existing text
+attribute, or to restart the text attribute from scratch.
+
+EXIF tags are attached to the image as named attributes. Use the
+syntax "EXIF:<tag>" to request an EXIF tag similar to
+"EXIF:DateTime"::
+
+    void            attribute ( const std::string name_,
+                                const char * value_ );
 
     void            attribute ( const std::string name_,
                                 const std::string value_ )
@@ -2075,8 +2083,20 @@ iccColorProfile
 
 ICC color profile. Supplied via a `Blob`_ since Magick++/ and
 GraphicsMagick do not currently support formating this data structure
-directly.  Specifications are available from the International Color
-Consortium for the format of ICC color profiles::
+directly.
+
+If there is not already an ICC color profile, the profile is merely
+attached to the image without transforming the pixels.  If there is
+already an ICC color profile (the source profile), the pixels are
+translated according to the source and target profiles, and the
+existing profile is replaced with the target profile.
+
+Also see `renderingIntent`_, which allows specifying the rendering
+intent if the profile is executed.
+
+Specifications for ICC color profiles and their usage are available
+from the International Color Consortium for the format of ICC color
+profiles::
 
     void            iccColorProfile( const Blob &colorProfile_ )
 
@@ -2349,7 +2369,7 @@ renderingIntent
 +++++++++++++++
 
 The type of rendering intent (used when applying an ICC color
-profile)::
+profile using `iccColorProfile`_)::
 
     void            renderingIntent ( const RenderingIntent renderingIntent_ )
 
@@ -2793,6 +2813,5 @@ buffer or file.  Used to support image encoders::
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| `Bob Friesenhahn`_ 1999 - 2016
-
+Copyright |copy| `Bob Friesenhahn`_ 1999 - 2017
 

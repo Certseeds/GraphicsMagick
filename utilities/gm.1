@@ -1,4 +1,4 @@
-.TH gm 1 "2016/05/29" "GraphicsMagick"
+.TH gm 1 "2017/01/29" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -486,14 +486,16 @@ numbers comprising a single color decision. The tenth number
 The argument string is comma delimited and is in the following form
 (but without invervening spaces or line breaks)
 
-  redslope,redoffset,redpower:
-  greenslope,greenoffset,greenpower:
-  blueslope,blueoffset,bluepower:
-  saturation
+    redslope,redoffset,redpower:
+    greenslope,greenoffset,greenpower:
+    blueslope,blueoffset,bluepower:
+    saturation
 
 
 with the unity (no change) specification being:
-"1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+
+    "1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+
 .TP
 .B "-authenticate \fI<string>"\fP
 \fRdecrypt image with this password
@@ -729,7 +731,8 @@ image filename, type, width, height, or other image attribute by embedding
 special format characters listed under the \fB-format\fP option.
 The comment is not drawn on the image, but is embedded in the image
 datastream via a "Comment" tag or similar mechanism.  If you want the
-comment to be visible on the image itself, use the \fB-draw\fP option.
+comment to be visible on the image itself, use the \fB-draw\fP option
+instead.
 
 For example,
 
@@ -741,6 +744,12 @@ titled \fBbird.miff\fP and whose width is 512 and height is 480.
 
 If the first character of \fIstring\fP is \fI@\fP, the image comment
 is read from a file titled by the remaining characters in the string.
+
+If the -comment option appears multiple times, only the last comment is
+stored.
+
+In PNG images, the comment is stored in a \fBtEXt\fP or \fBzTXt\fP chunk
+with the keyword "comment".
 .TP
 .B "-compose \fI<operator>"\fP
 \fRthe type of image composition
@@ -801,6 +810,7 @@ composite operators are available:
 
 
 The behavior of each operator is described below.
+
 .in 15
 
 .in 15
@@ -1024,6 +1034,7 @@ space, then the change-image pixel intensities are used.
 
 .in 15
 
+
 .TP
 .B "-compress \fI<type>"\fP
 \fRthe type of image compression
@@ -1165,6 +1176,7 @@ that name. This is used to control on/off options. Use +define
 +define "*" to remove all existing definitions.
 
 The following definitions may be created:
+
 .in 15
 
 .in 15
@@ -1742,6 +1754,7 @@ If set, reduce memory usage (but increase CPU use)
 .in 15
 
 
+
 For example, to create a postscript file that will render only the black
 pixels of a bilevel image, use:
 
@@ -2099,7 +2112,6 @@ the left and five pixels up, with respect to the thumbnail:
 This command reduces or expands a JPEG image to fit on an 800x600
 display: 
 
-
     gm convert -size 800x600 input.jpg \\
               -resize 800x600 -background black \\
               -compose Copy -gravity center \\
@@ -2109,8 +2121,6 @@ display:
 
 If the aspect ratio of the input image isn't exactly 4:3, then the
 image is centered on an 800x600 black canvas. 
-
-
 .TP
 .B "-file \fI<filename>"\fP
 \fRwrite annotated difference image to file
@@ -2215,8 +2225,6 @@ black canvas image:
 and this flattens a Photoshop PSD file:
 
     gm convert input.psd -flatten output.png
-
-
 
 .TP
 .B "-flip"
@@ -2512,7 +2520,7 @@ Use the given radius and standard deviation (sigma).
 
 The \fB-geometry\fP option is used for a number of different
 purposes, depending on the utility it is used with.
-<pp
+
 For the X11 commands ('animate', 'display', and 'import'), it
 specifies the preferred size and location of the Image window.  By
 default, the window size is the image size and the location is chosen
@@ -2531,11 +2539,11 @@ By default, the width and height are maximum values. That is, the
 image is expanded or contracted to fit the width and height value
 while maintaining the aspect ratio of the image.
 
-Append a ^ to the geometry so that the image is resized while
-maintaining the aspect ratio of the image, but the resulting width or
+Append a ^ to the geometry so that the image aspect ratio is
+maintained when the image is resized, but the resulting width or
 height are treated as minimum values rather than maximum values.
 
-Append an exclamation point to the geometry to force the image size to
+Append a ! (exclamation point) to the geometry to force the image size to
 exactly the size you specify. For example, if you specify
 640x480! the image width is set to 640 pixels and height to
 480.
@@ -2653,8 +2661,6 @@ order for the \fBIDENTITY\fP CLUT generator is 8.  Interpolation is
 used so it is not usually necessary for CLUT images to be very large.
 The PNG file format is ideal for storing Hald CLUT images because it
 compresses them very well.
-
-
 .TP
 .B "-help"
 \fRprint usage instructions
@@ -2663,8 +2669,6 @@ compresses them very well.
 \fRpixel annotation color
 
 Specifies the color to use when annotating difference pixels.
-
-
 .TP
 .B "-highlight-style \fI<style>"\fP
 \fRpixel annotation style
@@ -2683,8 +2687,6 @@ and \fBXOR\fP does an XOR between the pixel and the highlight color.
 Offsets, if present in the geometry specification, are handled in
 the same manner as the \fB-geometry\fP option, using X11 style to handle
 negative offsets.
-
-
 .TP
 .B "-iconic"
 \fRiconic animation
@@ -2704,8 +2706,6 @@ Choose from these intents:
 \fBAbsolute, Perceptual, Relative, Saturation\fP.
 
 The default intent is undefined.
-
-
 .TP
 .B "-interlace \fI<type>"\fP
 \fRthe type of interlacing scheme
@@ -2729,8 +2729,6 @@ is like plane except the different planes are saved to individual files
 
 Use \fBLine\fP to create an \fBinterlaced PNG\fP or \fB GIF\fP or
 \fBprogressive JPEG\fP image.
-
-
 .TP
 .B "-label \fI<name>"\fP
 \fRassign a label to an image
@@ -2755,6 +2753,12 @@ and whose width is 512 and height is 480.
 
 If the first character of \fIstring\fP is \fI@\fP, the image label is
 read from a file titled by the remaining characters in the string.
+
+If the -label option appears multiple times, only the last label is
+stored.
+
+In PNG images, the label is stored in a \fBtEXt\fP or \fBzTXt\fP chunk
+with the keyword "label".
 
 When converting to \fIPostScript\fP, use this option to specify a header
 string to print above the image. Specify the label font with
@@ -2784,8 +2788,6 @@ For example,
 
 will help clarify a scanned grayscale or color document, producing a
 bi-level equivalent.
-
-
 .TP
 .B "-level \fI<black_point>{,<gamma>}{,<white_point>}{%}"\fP
 \fRadjust the level of image contrast
@@ -3189,6 +3191,7 @@ integral value prior to use. If a percent (\fB%\fP) symbol is appended
 to the argument, then the argument has a range of 0 to 100 percent.
 
 The following is a description of the operators:
+
 .in 15
 
 .in 15
@@ -3455,6 +3458,7 @@ Result is the channel value with uniform noise applied according to
 the intensity specified by rvalue.
 
 .in 15
+
 
 
 As an example, the \fBAssign\fP operator assigns a fixed value to a
@@ -4261,6 +4265,10 @@ glasses are required to properly view the stereo image.
 All embedded profiles and text attributes are stripped from the image.
 This is useful for images used for the web, or when output files need
 to be as small as possible
+
+Be careful not to use this option to remove author, copyright, and
+license information that you are required to retain when redistributing
+an image.
 .TP
 .B "-stroke \fI<color>"\fP
 \fRcolor to use when stroking a graphic primitive
@@ -4458,6 +4466,7 @@ with a Gaussian operator of the given radius and standard deviation
 a radius of 0 to have the method select a suitable radius.
 
 The parameters are:
+
 .in 15
 
 .in 15
@@ -4499,6 +4508,7 @@ amount (default 0.05).
 
 .in 15
 
+
 .TP
 .B "-use-pixmap"
 \fRuse the pixmap
@@ -4534,6 +4544,7 @@ defines "virtual pixels" for use in operations that can access pixels outside
 the boundaries of an image.
 
 Choose from these methods:
+
 .in 15
 
 .in 15
@@ -4572,6 +4583,7 @@ Mirror the image.
 Tile the image.
 
 .in 15
+
 
 
 This option affects operations that use

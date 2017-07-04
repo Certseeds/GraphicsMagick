@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2003-2012 GraphicsMagick Group
+; Copyright (C) 2003-2017 GraphicsMagick Group
 ;
 ; This program is covered by multiple licenses, which are described in
 ; Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -12,7 +12,7 @@
 
 #define  public MagickDynamicPackage 1
 #define  public QuantumDepth "8"
-#define  public InstallPerlMagick 1
+#define  public InstallPerlMagick 0
 #include "inc\body.isx"
 
 #ifdef Debug

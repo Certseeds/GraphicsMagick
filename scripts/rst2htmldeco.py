@@ -121,7 +121,7 @@ docutils_opts = [
     '--no-datestamp',          # Do not include a datestamp of any kind
     '--traceback',             # Enable Python tracebacks when Docutils is halted.
     '--rfc-references',        # Recognize and link to standalone RFC references (like "RFC 822")
-    '--rfc-base-url="http://rfc-ref.org/RFC-TEXTS/"', # Base URL for RFC references
+    '--rfc-base-url=http://tools.ietf.org/html/', # Base URL for RFC references
 ]
 
 

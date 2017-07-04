@@ -27,7 +27,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.25 (Released September 5, 2016) `download release`__
+Current Release              1.3.26 (Released July 4, 2017) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -51,13 +51,14 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`Flickr` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _`Etsy` : http://codeascraft.etsy.com/2010/07/09/batch-processing-millions-of-images/
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
-.. _Mercurial : http://mercurial.selenic.com/
+.. _Mercurial : https://www.mercurial-scm.org/
 .. _`NEWS` : NEWS.html
 .. _`SLOCCount` : http://www.dwheeler.com/sloccount/
 .. _`authors` : authors.html
 .. _`benchmarks` : benchmarks.html
 .. _`manual page` : GraphicsMagick.html
 .. _`valgrind` : http://www.valgrind.org/
+.. _'ASan' : https://github.com/google/sanitizers/wiki/AddressSanitizer
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
 of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
@@ -112,6 +113,8 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
 
   * GM `valgrind`_'s 100% clean (memcheck and helgrind).
   
+  * GM passes rigorous memory error testing using `ASan_`.
+
   * GM comes with a comprehensive `manual page`_.
   
   * GM provides API and ABI stability and managed releases that you can
@@ -165,4 +168,4 @@ Here are just a few examples of what GraphicsMagick can do:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2016
+Copyright |copy| GraphicsMagick Group 2002 - 2017

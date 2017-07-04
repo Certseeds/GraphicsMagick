@@ -794,12 +794,14 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
 
   int
     c,
-    code;
+    version;
+
+  unsigned int
+    code,
+    flags;
 
   long
-    flags,
     j,
-    version,
     y;
 
   PICTRectangle
@@ -897,9 +899,13 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     if ((version == 1) || ((TellBlob(image) % 2) != 0))
-      code=ReadBlobByte(image);
+      {
+        if ((c=ReadBlobByte(image)) == EOF) /* returns int */
+          break;
+        code=(unsigned int) c;
+      }
     if (version == 2)
-      code=ReadBlobMSBShort(image);
+      code=ReadBlobMSBShort(image); /* returns magick_uint16_t */
     if (code > 0xa1)
       {
         if (IsEventLogging())

@@ -66,9 +66,9 @@ files. If <s>+adjoin</s> is used, then the output filename must
 include a printf style formatting specification for the numeric part
 of the filename.  For example,</pp>
 
-<pre>
+<pp><pre>
     image%02d.miff
-</pre>
+</pre></pp>
 
 
 </utils>
@@ -148,16 +148,18 @@ numbers comprising a single color decision. The tenth number
 The argument string is comma delimited and is in the following form
 (but without invervening spaces or line breaks)</pp>
 
-<pre>
-  redslope,redoffset,redpower:
-  greenslope,greenoffset,greenpower:
-  blueslope,blueoffset,bluepower:
-  saturation
-</pre>
+<pp><pre>
+    redslope,redoffset,redpower:
+    greenslope,greenoffset,greenpower:
+    blueslope,blueoffset,bluepower:
+    saturation
+</pre></pp>
 
 <pp>
-with the unity (no change) specification being:
-"1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"</pp>
+with the unity (no change) specification being:</pp>
+<pp><pre>
+    "1.0,0.0,1.0:1.0,0.0,1.0:1.0,0.0,1.0:1.0"
+</pre></pp>
 
 </utils>
 
@@ -445,9 +447,9 @@ If a clipping path is present, it will be applied to subsequent operations.</pp>
 
 <pp>
 For example, if you type the following command:</pp>
-<pre>
+<pp><pre>
     gm convert -clip -negate cockatoo.tif negated.tif
-</pre>
+</pre></pp>
 <pp>
 only the pixels within the clipping path are negated.</pp>
 
@@ -497,10 +499,10 @@ a colorization value list delimited with slashes (e.g. 0/0/50).</pp>
 The <s>-colorize</s> option may be used in conjunction with <s>-modulate</s>
 to produce a nice sepia toned image like:</pp>
 
-<pre>
+<pp><pre>
     gm convert input.ppm -modulate 115,0,100 \
               -colorize 7,21,50 output.ppm.
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -622,13 +624,14 @@ image filename, type, width, height, or other image attribute by embedding
 special format characters listed under the <s>-format</s> option.
 The comment is not drawn on the image, but is embedded in the image
 datastream via a "Comment" tag or similar mechanism.  If you want the
-comment to be visible on the image itself, use the <s>-draw</s> option.</pp>
+comment to be visible on the image itself, use the <s>-draw</s> option
+instead.</pp>
 
 <pp>
 For example,</pp>
-<pre>
+<pp><pre>
      -comment "%m:%f %wx%h"
-</pre>
+</pre></pp>
 
 <pp>
 produces an image comment of <s>MIFF:bird.miff 512x480</s> for an image
@@ -637,6 +640,14 @@ titled <s>bird.miff</s> and whose width is 512 and height is 480.</pp>
 <pp>
 If the first character of <i>string</i> is <i>@</i>, the image comment
 is read from a file titled by the remaining characters in the string.</pp>
+
+<pp>
+If the -comment option appears multiple times, only the last comment is
+stored.</pp>
+
+<pp>
+In PNG images, the comment is stored in a <s>tEXt</s> or <s>zTXt</s> chunk
+with the keyword "comment".</pp>
 
 </utils>
 
@@ -683,7 +694,8 @@ boolean operations.</pp>
 <pp>
 By default, the <i>Over</i> composite operator is used. The following
 composite operators are available:</pp>
-<pre>
+
+<pp><pre>
      Over
      In
      Out
@@ -706,11 +718,12 @@ composite operators are available:</pp>
      CopyMagenta
      CopyYellow
      CopyBlack
-</pre>
+</pre></pp>
 
 <pp>
 The behavior of each operator is described below.</pp>
 
+<pp>
 <dl>
 <dt>Over</dt>
 <dd>The result will be the union of the two image shapes, with opaque areas
@@ -844,6 +857,7 @@ base-image be in CMYK(A) colorspace. If change-image is not in CMYK
 space, then the change-image pixel intensities are used.
 </dd>
 </dl>
+</pp>
 
 </utils>
 
@@ -898,9 +912,9 @@ or <s>+contrast</s> to reduce the image contrast.
 </pp>
 <pp>
 For a more pronounced effect you can repeat the option:</pp>
-<pre>
+<pp><pre>
     gm convert rose: -contrast -contrast rose_c2.png
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -1018,9 +1032,9 @@ consisting of one or more of the following domains: <tt>Annotate</tt>,
 <tt>Transform</tt>, <tt>Warning</tt>, <tt>X11</tt>, or <tt>User</tt>.
 For example, to log cache and blob events, use</pp>
 
-<pre>
+<pp><pre>
     gm convert -debug "Cache,Blob" rose: rose.png
-</pre>
+</pre></pp>
 
 <pp>
 The "User" domain is normally empty, but developers can log "User" events
@@ -1086,6 +1100,7 @@ that name. This is used to control on/off options. Use <tt>+define
 <pp>
 The following definitions may be created:</pp>
 
+<pp>
 <dl>
 <dt>cineon:colorspace={rgb|cineonlog}</dt>
 <dd>Use the cineon:colorspace option when reading a Cineon file to
@@ -1448,13 +1463,14 @@ size will be similar but the degradation will be lower.
 </dd>
 
 </dl>
+</pp>
 
 <pp>
 For example, to create a postscript file that will render only the black
 pixels of a bilevel image, use:</pp>
-<pre>
+<pp><pre>
     gm convert bilevel.tif -define ps:imagemask eps3:stencil.ps
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -1623,7 +1639,7 @@ be treated after being displayed.</pp>
 <pp>
 Here are the valid methods:</pp>
 
-<pre>
+<pp><pre>
     Undefined       No disposal specified.
     None            Do not dispose between frames.
     Background      Overwrite the image area with
@@ -1631,7 +1647,7 @@ Here are the valid methods:</pp>
     Previous        Overwrite the image area with
                     what was there prior to rendering
                     the image.
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -1693,7 +1709,7 @@ Use this option to annotate an image with one or more graphic primitives.
 The primitives include shapes, text, transformations,
 and pixel operations.  The shape primitives are</pp>
 
-<pre>
+<pp><pre>
      point           x,y
      line            x0,y0 x1,y1
      rectangle       x0,y0 x1,y1
@@ -1706,20 +1722,20 @@ and pixel operations.  The shape primitives are</pp>
      Bezier          x0,y0  ...  xn,yn
      path            path specification
      image           operator x0,y0 w,h filename
-</pre>
+</pre></pp>
 
 <pp>
 The text primitive is</pp>
-<pre>
+<pp><pre>
      text            x0,y0 string
-</pre>
+</pre></pp>
 
 <pp>
 The text gravity primitive is</pp>
-<pre>
+<pp><pre>
      gravity         NorthWest, North, NorthEast, West, Center,
                      East, SouthWest, South, or SouthEast
-</pre>
+</pre></pp>
 <pp>
 The text gravity primitive only affects the placement of text and
 does not interact with the other primitives.  It is equivalent to
@@ -1728,20 +1744,20 @@ limited in scope to the <s>-draw</s> option in which it appears.</pp>
 
 <pp>
 The transformation primitives are</pp>
-<pre>
+<pp><pre>
      rotate          degrees
      translate       dx,dy
      scale           sx,sy
      skewX           degrees
      skewY           degrees
-</pre>
+</pre></pp>
 
 <pp>
 The pixel operation primitives are</pp>
-<pre>
+<pp><pre>
      color           x0,y0 method
      matte           x0,y0 method
-</pre>
+</pre></pp>
 
 <pp>
 The shape primitives are drawn in the color specified in the preceding
@@ -1776,9 +1792,9 @@ Coordinates are integers separated by an optional comma.  For example,
 to define a circle centered at 100,100
 that extends to 150,150 use:</pp>
 
-<pre>
+<pp><pre>
      -draw 'circle 100,100 150,150'
-</pre>
+</pre></pp>
 
 <pp>
 <s>Paths</s>
@@ -1796,9 +1812,9 @@ line or curve operations) are possible to allow effects such as
 Use <s>image</s> to composite an image with another image. Follow the
 image keyword with the composite operator, image location, image size,
 and filename:</pp>
-<pre>
+<pp><pre>
      -draw 'image Over 100,100 225,225 image.jpg'
-</pre>
+</pre></pp>
 <pp>
 You can use 0,0 for the image size, which means to use the actual
 dimensions found in the image header. Otherwise, it will
@@ -1817,9 +1833,9 @@ special format character. See <s>-comment</s> for details.</pp>
 For example,
 </pp>
 
-<pre>
+<pp><pre>
      -draw 'text 100,100 "%m:%f %wx%h"'
-</pre>
+</pre></pp>
 
 <pp>
 annotates the image with <tt>MIFF:bird.miff 512x480</tt> for an image titled
@@ -1856,13 +1872,13 @@ Use <s>color</s> to change the color of a pixel to the fill color (see
 <s>-fill</s>). Follow the pixel coordinate
 with a method:</pp>
 
-<pre>
+<pp><pre>
      point
      replace
      floodfill
      filltoborder
      reset
-</pre>
+</pre></pp>
 
 <pp>
 Consider the target pixel as that specified by your coordinate. The
@@ -2003,30 +2019,26 @@ discarded.</pp>
 For example, this command creates a thumbnail of an image, and centers
 it on a red color backdrop image, offsetting the canvas ten pixels to
 the left and five pixels up, with respect to the thumbnail:</pp>
-<pre>
+<pp><pre>
     gm convert infile.jpg -thumbnail 120x80 -background red -gravity center \
               -extent 140x100-10-5 outfile.jpg
-</pre>
+</pre></pp>
 <pp>
 This command reduces or expands a JPEG image to fit on an 800x600
 display: </pp>
 
-<pp>
-<pre>
+<pp><pre>
     gm convert -size 800x600 input.jpg \
               -resize 800x600 -background black \
               -compose Copy -gravity center \
               -extent 800x600 \
               -quality 92 output.jpg
 
-</pre>
+</pre></pp>
 
 <pp>
 If the aspect ratio of the input image isn't exactly 4:3, then the
 image is centered on an 800x600 black canvas. </pp>
-
-<pp>
-</pp>
 
 
 </utils>
@@ -2063,7 +2075,7 @@ before the changes are obvious.</pp>
 <pp>
 Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm convert -list color" to list named colors:</pp>
 
-<pre>
+<pp><pre>
     name               (named color)
     #RGB               (hex numbers, 4 bits each)
     #RRGGBB            (8 bits each)
@@ -2075,17 +2087,17 @@ Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm c
     #RRRRGGGGBBBBAAAA  (16 bits each)
     rgb(r,g,b)         (r,g,b are decimal numbers)
     rgba(r,g,b,a)      (r,g,b,a are decimal numbers)
-</pre>
+</pre></pp>
 <pp>
 Enclose the color specification in quotation marks to prevent the "#"
 or the parentheses from being interpreted by your shell.</pp>
 <pp>
 For example,</pp>
-<pre>
+<pp><pre>
     gm convert -fill blue ...
     gm convert -fill "#ddddff" ...
     gm convert -fill "rgb(65000,65000,65535)" ...
-</pre>
+</pre></pp>
 
 <pp>
 The shorter forms are scaled up, if necessary by replication.  For example, 
@@ -2112,7 +2124,7 @@ Use this option to affect the resizing operation of an image (see
 Choose from these filters (ordered by approximate increasing CPU
 time):</pp>
 
-<pre>
+<pp><pre>
      Point
      Box
      Triangle
@@ -2128,7 +2140,7 @@ time):</pp>
      Lanczos
      Bessel
      Sinc
-</pre>
+</pre></pp>
 
 <pp>
 The default filter is automatically selected to provide the best quality
@@ -2172,25 +2184,19 @@ image.</pp>
 For example, this composites an image on top of a 640x400 transparent
 black canvas image:</pp>
 
-<pre>
+<pp><pre>
     gm convert -size 640x300 xc:transparent \
               -compose over -page +0-100 \
               frame.png -flatten output.png
-</pre>
+</pre></pp>
 
 <pp>
 
 and this flattens a Photoshop PSD file:</pp>
 
-<pre>
-
+<pp><pre>
     gm convert input.psd -flatten output.png
-
-</pre>
-
-<pp>
-</pp>
-
+</pre></pp>
 
 </utils>
 
@@ -2301,7 +2307,7 @@ choosing.  You can include the image filename, type, width, height,
 Exif data, or other image attributes by embedding special format
 characters:</pp>
 
-<pre>
+<pp><pre>
      %b   file size
      %c   comment
      %d   directory
@@ -2343,14 +2349,14 @@ characters:</pp>
      \n   newline
      \r   carriage return
      %%   %
-</pre>
+</pre></pp>
 
 <pp>
 For example,</pp>
 
-<pre>
+<pp><pre>
      -format "%m:%f %wx%h"
-</pre>
+</pre></pp>
 
 <pp>
 displays <s>MIFF:bird.miff 512x480</s> for an image
@@ -2363,7 +2369,7 @@ is read from a file titled by the remaining characters in the string.</pp>
 <pp>
 The values of image type (<s>%p</s>) which may be returned include:</pp>
 
-<pre>
+<pp><pre>
      Bilevel
      Grayscale
      GrayscaleMatte
@@ -2374,18 +2380,18 @@ The values of image type (<s>%p</s>) which may be returned include:</pp>
      ColorSeparation
      ColorSeparationMatte
      Optimize
-</pre>
+</pre></pp>
 
 <pp>
 You can also use the following special formatting syntax to print Exif
 information contained in the file:</pp>
 
-<pre>
+<pp><pre>
      %[EXIF:<tag>]
-</pre>
+</pre></pp>
 <pp>
 Where "<tag>" may be one of the following:</pp>
-<pre>
+<pp><pre>
      *  (print all Exif tags, in keyword=data format)
      !  (print all Exif tags, in tag_number format)
      #hhhh (print data for Exif tag #hhhh)
@@ -2471,25 +2477,25 @@ Where "<tag>" may be one of the following:</pp>
      SensingMethod
      FileSource
      SceneType
-</pre>
+</pre></pp>
 
 <pp>
 JPEG specific information (from reading a JPEG file) may be obtained
 like this:</pp>
 
-<pre>
+<pp><pre>
      %[JPEG-<tag>]
-</pre>
+</pre></pp>
 <pp>
 Where "<tag>" may be one of the following:</pp>
-<pre>
+<pp><pre>
      *                 (all JPEG-related tags, in
                         keyword=data format)
      Quality           IJG JPEG "quality" estimate
      Colorspace        JPEG colorspace numeric ID
      Colorspace-Name   JPEG colorspace name
      Sampling-factors  JPEG sampling factors
-</pre>
+</pre></pp>
 
 <pp>
 Please note that JPEG has no notion of "quality" and that the quality
@@ -2623,7 +2629,7 @@ Use the given radius and standard deviation (sigma).</pp>
 The <s>-geometry</s> option is used for a number of different
 purposes, depending on the utility it is used with.</pp>
 
-<pp
+<pp>
 For the X11 commands ('animate', 'display', and 'import'), it
 specifies the preferred size and location of the Image window.  By
 default, the window size is the image size and the location is chosen
@@ -2646,12 +2652,12 @@ image is expanded or contracted to fit the width and height value
 while maintaining the aspect ratio of the image.</pp>
 
 <pp>
-Append a ^ to the geometry so that the image is resized while
-maintaining the aspect ratio of the image, but the resulting width or
+Append a ^ to the geometry so that the image aspect ratio is
+maintained when the image is resized, but the resulting width or
 height are treated as minimum values rather than maximum values.</pp>
 
 <pp>
-Append an exclamation point to the geometry to force the image size to
+Append a ! (exclamation point) to the geometry to force the image size to
 exactly the size you specify. For example, if you specify
 <tt>640x480!</tt> the image width is set to 640 pixels and height to
 480.</pp>
@@ -2821,11 +2827,7 @@ used so it is not usually necessary for CLUT images to be very large.
 The PNG file format is ideal for storing Hald CLUT images because it
 compresses them very well.</pp>
 
-<pp>
-</pp>
-
 </utils>
-
 
 
 <!-- ------------ -help --------------------------------------------- -->
@@ -2848,9 +2850,6 @@ compresses them very well.</pp>
 
 <pp>
 Specifies the color to use when annotating difference pixels.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -2887,9 +2886,6 @@ and <s>XOR</s> does an XOR between the pixel and the highlight color.</pp>
 Offsets, if present in the geometry specification, are handled in
 the same manner as the <s>-geometry</s> option, using X11 style to handle
 negative offsets.</pp>
-
-<pp>
-</pp>
 
 </utils>
 
@@ -2949,9 +2945,6 @@ Choose from these intents:
 <pp>
 The default intent is undefined.</pp>
 
-<pp>
-</pp>
-
 </utils>
 
 
@@ -2988,9 +2981,6 @@ is like plane except the different planes are saved to individual files
 Use <s>Line</s> to create an <s>interlaced PNG</s> or <s> GIF</s> or
 <s>progressive JPEG</s> image.</pp>
 
-<pp>
-</pp>
-
 </utils>
 
 
@@ -3016,9 +3006,9 @@ See <s>-comment</s> for details.</pp>
 <pp>
 For example,</pp>
 
-<pre>
+<pp><pre>
      -label "%m:%f %wx%h"
-</pre>
+</pre></pp>
 
 <pp>
 produces an image label of <s>MIFF:bird.miff 512x480</s> for an image titled
@@ -3028,6 +3018,14 @@ and whose width is 512 and height is 480.</pp>
 <pp>
 If the first character of <i>string</i> is <i>@</i>, the image label is
 read from a file titled by the remaining characters in the string.</pp>
+
+<pp>
+If the -label option appears multiple times, only the last label is
+stored.</pp>
+
+<pp>
+In PNG images, the label is stored in a <s>tEXt</s> or <s>zTXt</s> chunk
+with the keyword "label".</pp>
 
 <pp>
 When converting to <i>PostScript</i>, use this option to specify a header
@@ -3050,7 +3048,7 @@ is displayed with the corresponding tile in the montage.  Use the
 <!-- ------------ -lat ---------------------------------------------- -->
 
 <utils apps=convert,mogrify>
-<opt>-lat <width>x<height>{+-}<offset>{%}</opt>
+<dopt>-lat <width>x<height>{+-}<offset>{%}</opt>
 
 <abs>perform local adaptive thresholding</abs>
 
@@ -3066,16 +3064,13 @@ sensitive to pixel quantum depth.</pp>
 <pp>
 For example,</pp>
 
-<pre>
+<pp><pre>
      -colorspace gray -lat "10x10-5%"
-</pre>
-
-<p>
-will help clarify a scanned grayscale or color document, producing a
-bi-level equivalent.</pp>
+</pre></pp>
 
 <pp>
-</pp>
+will help clarify a scanned grayscale or color document, producing a
+bi-level equivalent.</pp>
 
 </utils>
 
@@ -3209,7 +3204,7 @@ option is active.</pp>
 You can display the following components by embedding
 special format characters:</pp>
 
-<pre>
+<pp><pre>
      %d   domain
      %e   event
      %f   function
@@ -3222,13 +3217,13 @@ special format characters:</pp>
      %%   percent sign
      \n   newline
      \r   carriage return
-</pre>
+</pre></pp>
 
 <pp>
 For example:</pp>
-<pre>
+<pp><pre>
     gm convert -debug coders -log "%u %m:%l %e" in.gif out.png
-</pre>
+</pre></pp>
 
 <pp>
 The default behavior is to print all of the components.</pp>
@@ -3329,14 +3324,14 @@ option appears after all of the input images, all images are mapped.</pp>
 <pp>
 Choose from these <i>Standard Colormap</i> types:</pp>
 
-<pre>
+<pp><pre>
      best
      default
      gray
      red
      green
      blue
-</pre>
+</pre></pp>
 
 <pp>
 The <i>X server</i> must support the <i>Standard Colormap</i> you choose,
@@ -3613,13 +3608,13 @@ The following is an example of composing an image based on red, green,
 and blue layers extracted from a sequence of images and pasted on the
 canvas image at specified offsets:</pp>
 
-<pre>
+<pp><pre>
     gm convert -background black \
               -compose CopyRed   -page +0-100 red.png \
               -compose CopyGreen -page +0+40  green.png \
               -compose CopyBlue  -page +0+180 blue.png \
               -mosaic output.png
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -3697,7 +3692,7 @@ Use <s>+noise</s> followed by a noise type to add noise to an image.
 The noise added modulates the existing image pixels. Choose from these
 noise types:</pp>
 
-<pre>
+<pp><pre>
      Uniform
      Gaussian
      Multiplicative
@@ -3705,7 +3700,7 @@ noise types:</pp>
      Laplacian
      Poisson
      Random (uniform distribution)
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -3820,6 +3815,8 @@ integral value prior to use. If a percent (<s>%</s>) symbol is appended
 to the argument, then the argument has a range of 0 to 100 percent.</pp>
 <pp>
 The following is a description of the operators:</pp>
+
+<pp>
 <dl>
 
 <dt>Add</dt>
@@ -3970,20 +3967,21 @@ quantum span.
 the intensity specified by rvalue.
 </dd>
 </dl>
+</pp>
 
 <pp>
 As an example, the <s>Assign</s> operator assigns a fixed value to a
 channel. For example, this command sets the red channel to the mid-range
 value:</pp>
-<pre>
+<pp><pre>
     gm convert in.bmp -operator red assign "50%" out.bmp
-</pre>
+</pre></pp>
 <pp>
 The following applies 50% thresholding to the image and returns a gray
 image:</pp>
-<pre>
+<pp><pre>
     gm convert in.bmp -operator gray threshold "50%" out.bmp
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -4093,7 +4091,7 @@ Use this option to specify the dimensions of the
 in dots per inch or a TEXT page in pixels. The choices for a PostScript
 page are:</pp>
 
-<pre>
+<pp><pre>
      11x17         792  1224
      Ledger       1224   792
      Legal         612  1008
@@ -4132,7 +4130,7 @@ page are:</pp>
      Flsa          612   936
      Flse          612   936
      HalfLetter    396   612
-</pre>
+</pre></pp>
 
 <pp>
 For convenience you can specify the page size by media (e.g. A4, Ledger,
@@ -4285,7 +4283,7 @@ Use this option to affect the preview operation of an image (e.g.
 <tt>convert file.png -preview Gamma Preview:gamma.png</tt>). Choose
 from these previews:</pp>
 
-<pre>
+<pp><pre>
      Rotate
      Shear
      Roll
@@ -4315,7 +4313,7 @@ from these previews:</pp>
      OilPaint
      CharcoalDrawing
      JPEG
-</pre>
+</pre></pp>
 
 <pp>
 The default preview is <s>JPEG</s>.</pp>
@@ -4382,9 +4380,9 @@ format such as <i>APP1, 8BIM, ICM,</i> or <i>IPTC</i>.</pp>
 For example, to extract the Exif data (which is stored in JPEG files
 in the <i>APP1</i> profile), use
 </pp>
-<pre>
+<pp><pre>
     gm convert cockatoo.jpg exifdata.app1
-</pre>
+</pre></pp>
 <pp>Note that GraphicsMagick does not attempt to update any profile to
 reflect changes made to the image, e.g., rotation from portrait to landscape
 orientation, so it is possible that the preserved profile may contain
@@ -4472,13 +4470,13 @@ necessarily the worst compression.</pp>
 If
 filter-type is 4 or less, the specified filter-type is used for all scanlines:</pp>
 
-<pre>
+<pp><pre>
      0: none
      1: sub
      2: up
      3: average
      4: Paeth
-</pre>
+</pre></pp>
 
 <pp>
 If filter-type is 5, adaptive filtering is used when quality is greater
@@ -4605,67 +4603,67 @@ based on an alteration of the identity matrix.</pp>
 
 <pp>
 Identity matrix of order 3</pp>
-<pre>
+<pp><pre>
   1 0 0
   0 1 0
   0 0 1
-</pre>
+</pre></pp>
 
 <pp>
 which may be formatted into a convenient matrix argument similar to
 (comma is treated as white space):</pp>
-<pre>
+<pp><pre>
   -recolor "1 0 0, 0 1 0, 0 0 1"
-</pre>
+</pre></pp>
 
 <pp>
 Identity matrix of order 4</pp>
-<pre>
+<pp><pre>
   1 0 0 0
   0 1 0 0
   0 0 1 0
   0 0 0 1
-</pre>
+</pre></pp>
 
 <pp>
 Identity matrix of order 5.  The last row is required to exist
 for the purpose of parsing, but is otherwise not used.</pp>
-<pre>
+<pp><pre>
   1 0 0 0 0
   0 1 0 0 0
   0 0 1 0 0
   0 0 0 1 0
   0 0 0 0 1
-</pre>
+</pre></pp>
 
 <pp>
 As an example, an image wrongly in BGR channel order may be converted
 to RGB using this matrix (blue->red, red->blue):</pp>
-<pre>
+<pp><pre>
   0 0 1
   0 1 0
   1 0 0
-</pre>
+</pre></pp>
 
 <pp>
 and an RGB image using standard Rec.709 primaries may be converted
 to grayscale using this matrix of standard weighting factors:</pp>
-<pre>
+<pp><pre>
   0.2126 0.7152 0.0722
   0.2126 0.7152 0.0722
   0.2126 0.7152 0.0722
-</pre>
+</pre></pp>
 
 <pp>
 and contrast may be reduced by scaling down by 80% and adding a 10%
 offset:</pp>
-<pre>
+<pp><pre>
   0.8 0.0 0.0 0.0 0.1
   0.0 0.8 0.0 0.0 0.1
   0.0 0.0 0.8 0.0 0.1
   0.0 0.0 0.0 0.8 0.1
   0.0 0.0 0.0 0.0 1.0
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -4694,7 +4692,6 @@ offset:</pp>
 The <i>x</i> and <i>y</i> offsets are treated in the same manner as in <s>-crop</s></pp>.
 
 </utils>
-
 
 
 
@@ -4983,14 +4980,14 @@ with the filename followed by a period (<s>.</s>) and the decimal scene
 number.  You
 can change this behavior by embedding a <s>%d, %0Nd, %o, %0No, %x, or %0Nx
 printf</s> format specification in the file name. For example,</pp>
-<pre>
+<pp><pre>
     gm montage -scenes 5-7 image.miff montage.miff
-</pre>
+</pre></pp>
 <pp>
 makes a montage of files image.miff.5, image.miff.6, and image.miff.7, and</pp>
-<pre>
+<pp><pre>
     gm animate -scenes 0-12 image%02d.miff
-</pre>
+</pre></pp>
 <pp>
 animates files image00.miff, image01.miff, through image12.miff.</pp>
 
@@ -5219,13 +5216,13 @@ of colors in a <s>MAP</s> image file, (e.g. -size 640x512+256).</pp>
 <pp>
 For Photo CD images, choose from these sizes:</pp>
 
-<pre>
+<pp><pre>
      192x128
      384x256
      768x512
      1536x1024
      3072x2048
-</pre>
+</pre></pp>
 
 <pp>
 Finally, use this option to choose a particular resolution layer of a JBIG
@@ -5334,6 +5331,11 @@ All embedded profiles and text attributes are stripped from the image.
 This is useful for images used for the web, or when output files need
 to be as small as possible</pp>
 
+<pp>
+Be careful not to use this option to remove author, copyright, and
+license information that you are required to retain when redistributing
+an image.</pp>
+
 </utils>
 
 
@@ -5432,9 +5434,9 @@ is applied, then the threshold is a percentage of the available range.</pp>
 
 <pp>
 To efficiently create a black and white image from a color image, use</pp>
-<pre>
+<pp><pre>
     gm convert -threshold 50% in.png out.png
-</pre>
+</pre></pp>
 
 <pp>
 The optimum threshold value depends on the nature of the image.</pp>
@@ -5511,9 +5513,9 @@ option.</pp>
 <pp>
 For example,</pp>
 
-<pre>
+<pp><pre>
      -title "%m:%f %wx%h"
-</pre>
+</pre></pp>
 
 <pp>
 produces an image title of <tt>MIFF:bird.miff 512x480</tt> for an image
@@ -5534,9 +5536,9 @@ titled <tt>bird.miff</tt> and whose width is 512 and height is 480.</pp>
 <pp>
 This option applies the transformation matrix from a previous
 <s>-affine</s> option.</pp>
-<pre>
+<pp><pre>
     gm convert -affine 2,2,-2,2,0,0 -transform bird.ppm bird.jpg
-</pre>
+</pre></pp>
 
 </utils>
 
@@ -5638,9 +5640,9 @@ Sometimes a specific subformat is desired. For example, to force a JPEG
 image to be written in TrueColor RGB format even though only gray pixels
 are present, use</pp>
 
-<pre>
+<pp><pre>
     gm convert bird.pgm -type TrueColor bird.jpg
-</pre>
+</pre></pp>
 
 <pp>
 Similarly, using <tt>-type TrueColorMatte</tt> will force the encoder to
@@ -5652,9 +5654,9 @@ Some pseudo-formats (e.g. the XC format) will respect the requested
 type if it occurs previously on the command line.  For example, to obtain
 a DirectClass solid color canvas image rather than PsuedoClass, use</pp>
 
-<pre>
+<pp><pre>
     gm convert -size 640x480 -type TrueColor xc:red red.miff
-</pre>
+</pre></pp>
 
 <pp>
 Likewise, specify <s>-type</s> <s>Bilevel</s>, <s>Grayscale</s>,
@@ -5720,6 +5722,7 @@ a radius of 0 to have the method select a suitable radius.</pp>
 <pp>
 The parameters are:</pp>
 
+<pp>
 <dl>
 <dt>radius</dt>
 <dd>
@@ -5743,6 +5746,7 @@ The threshold, as a fraction of MaxRGB, needed to apply the difference
 amount (default 0.05).
 </dd>
 </dl>
+</pp>
 
 </utils>
 
@@ -5829,6 +5833,7 @@ the boundaries of an image.</pp>
 <pp>
 Choose from these methods:</pp>
 
+<pp>
 <dl>
 <dt>Constant</dt>
 <dd>
@@ -5850,6 +5855,7 @@ Mirror the image.
 Tile the image.
 </dd>
 </dl>
+</pp>
 
 <pp>
 This option affects operations that use
@@ -5870,7 +5876,7 @@ virtual pixels such as <s>-blur</s>, <s>-sharpen</s>, <s>-wave</s>, etc.</pp>
 <pp>
 Choose from these visual classes:</pp>
 
-<pre>
+<pp><pre>
      StaticGray
      GrayScale
      StaticColor
@@ -5879,7 +5885,7 @@ Choose from these visual classes:</pp>
      DirectColor
      default
      visual id
-</pre>
+</pre></pp>
 
 <pp>
 The X server must support the visual you choose, otherwise an error occurs.
@@ -6006,10 +6012,10 @@ processing continues using that image. The following is an example of how
 several sizes of an image may be generated in one command (repeat as
 often as needed):</pp>
 
-<pre>
+<pp><pre>
     gm convert input.jpg -resize 50% -write input50.jpg \
               -resize 25% input25.jpg
-</pre>
+</pre></pp>
 
 
 </utils>

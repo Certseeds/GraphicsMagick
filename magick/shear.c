@@ -30,7 +30,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method RotateImage, XShearImage, and YShearImage is based on the paper
-%  "A Fast Algorithm for General Raster Rotatation" by Alan W. Paeth,
+%  "A Fast Algorithm for General Raster Rotation" by Alan W. Paeth,
 %  Graphics Interface '86 (Vancouver).  RotateImage is adapted from a similar
 %  method based on the Paeth paper written by Michael Halle of the Spatial
 %  Imaging Group, MIT Media Lab.
@@ -43,6 +43,7 @@
 */
 #include "magick/studio.h"
 #include "magick/alpha_composite.h"
+#include "magick/attribute.h"
 #include "magick/color.h"
 #include "magick/decorate.h"
 #include "magick/log.h"
@@ -278,7 +279,10 @@ AutoOrientImage(const Image *image,
     };
 
   if (orient_image != (Image *) NULL)
-    orient_image->orientation=TopLeftOrientation;
+    {
+      orient_image->orientation=TopLeftOrientation;
+      SetImageAttribute(orient_image, "EXIF:Orientation", "1");
+    }
 
   return orient_image;
 }

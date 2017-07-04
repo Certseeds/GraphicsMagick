@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.9.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
 <title>GraphicsMagick Security</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
@@ -101,7 +101,9 @@ to the system running it.</p>
 </li>
 <li><p class="first">Normalize input file names or any other external inputs so that
 they are under your control and not controlled by an untrusted
-party.</p>
+party.  This should include any file name specifications, which may
+include arbitrary 'glob' patterns (wildcards), requiring hours or
+days to complete if sufficiently close long file names exist.</p>
 </li>
 <li><p class="first">Enforce that uploaded files are passed to the expected reader.  For
 example, the uploaded file &quot;file.jpg&quot; is forced to be read by the
@@ -132,7 +134,7 @@ access of http and ftp URLs (<a class="reference external" href="https://cwe.mit
 block SVG renderer access to read local image files.</p>
 </li>
 </ol>
-<p>Copyright © GraphicsMagick Group 2002 - 2016</p>
+<p>Copyright © GraphicsMagick Group 2002 - 2017</p>
 </div>
 </div>
 </body>

@@ -11,7 +11,7 @@ rwfile=./rwfile
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 556
+test_plan_fn 564
 
 # ART format
 for type in ${check_types}
@@ -286,6 +286,13 @@ do
     test_command_fn "PGM ASCII ${type} (depth ${depth})" ${MEMCHECK} ${rwfile} -depth ${depth} -quality 0 -filespec "out_${type}_${depth}_%d" "${SRCDIR}/input_${type}.miff" PGM
     test_command_fn "PGM ASCII ${type} (stdio, depth ${depth})" ${MEMCHECK} ${rwfile} -depth ${depth} -quality 0 -stdio -filespec "out_${type}_${depth}_stdio_%d" "${SRCDIR}/input_${type}.miff" PGM
   done
+done
+
+# PGX format
+for type in ${check_types}
+do
+  test_command_fn "PGX ${type}" -F JP2 ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PGX
+  test_command_fn "PGX ${type} (stdio)" -F JP2 ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PGX
 done
 
 # PICON format

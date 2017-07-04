@@ -965,9 +965,21 @@ Compression not valid
 .
 
 MessageId       = +1
+SymbolicName    = ImageWarningCorruptImage
+Language        = English
+Corrupt image (some data returned)
+.
+
+MessageId       = +1
 SymbolicName    = ImageWarningImproperImageHeader
 Language        = English
 Improper image header
+.
+
+MessageId       = +1
+SymbolicName    = ImageWarningInvalidColormapIndex
+Language        = English
+Invalid colormap index
 .
 
 MessageId       = +1
@@ -2378,6 +2390,12 @@ MessageId       = +1
 SymbolicName    = LimitErrorUnableToAllocateICCProfile
 Language        = English
 unable to allocate ICC profile
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorUnableToAllocateImage
+Language        = English
+Unable to allocate image
 .
 
 MessageId       = +1

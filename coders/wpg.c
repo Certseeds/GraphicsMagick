@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2016 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2015                               %
+%                              June 2000 - 2016                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -935,6 +935,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
   unsigned char
     *BImgBuff;
+  BlobInfo *TmpBlob;
 
   tCTM CTM;         /*current transform matrix*/
 
@@ -1118,7 +1119,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     }
                 }      
 
-			  if(!image_info->ping)
+              if(!image_info->ping)
                 if(UnpackWPGRaster(image,bpp) < 0)                
                 {		/* The raster cannot be unpacked */
                 DecompressionFailed:
@@ -1131,12 +1132,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   if(BitmapHeader2.RotAngle & 0x8000)
                     {
                       rotated_image = FlopImage(image, exception);
-                      if (rotated_image != (Image *) NULL)
+                      if (rotated_image != (Image *)NULL)
                         {
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);
+                          image->blob = TmpBlob;
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }
                   /* flip command */
@@ -1145,10 +1146,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       rotated_image = FlipImage(image, exception);
                       if (rotated_image != (Image *) NULL)
                         {
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);		
+                          image->blob = TmpBlob;
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }
 		
@@ -1160,10 +1161,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                                                   exception);
                       if (rotated_image != (Image *) NULL)
                         {
+                          TmpBlob = rotated_image->blob;
                           rotated_image->blob = image->blob;
-                          image->blob = NULL;
-                          (void) RemoveLastImageFromList(&image);
-                          AppendImageToList(&image,rotated_image);
+                          image->blob = TmpBlob;
+                          ReplaceImageInList(&image,rotated_image);
                         }
                     }                
                 }
@@ -1210,7 +1211,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           Header.DataOffset=TellBlob(image)+Rec2.RecordLength;
 
-          if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec2.RecType);
 
           switch(Rec2.RecType)
@@ -1224,18 +1225,20 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
 
+			/* Sanity check for amount of palette entries. */
+              if( (WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) > (Rec2.RecordLength-2-2) / 3)
+                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);                 
+ 
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
               for (i=WPG_Palette.StartIndex;
                    i < (int)WPG_Palette.NumOfEntries; i++)
                 {
-                  image->colormap[i].red=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=
-                    ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
                   (void) ReadBlobByte(image);   /*Opacity??*/
                 }
               break;
@@ -1314,10 +1317,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 		  rotated_image = FlopImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
+                      TmpBlob = rotated_image->blob;
                       rotated_image->blob = image->blob;
-                      image->blob = NULL;
-                      (void) RemoveLastImageFromList(&image);
-                      AppendImageToList(&image,rotated_image);
+                      image->blob = TmpBlob;
+                      ReplaceImageInList(&image,rotated_image);
                     }
                   /* Try to change CTM according to Flip - I am not sure, must be checked.		  
                      Tx(0,0)=-1;      Tx(1,0)=0;   Tx(2,0)=0;
@@ -1330,10 +1333,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 		  rotated_image = FlipImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
+                      TmpBlob = rotated_image->blob;
                       rotated_image->blob = image->blob;
-                      image->blob = NULL;
-                      (void) RemoveLastImageFromList(&image);
-                      AppendImageToList(&image,rotated_image);
+                      image->blob = TmpBlob;
+                      ReplaceImageInList(&image,rotated_image);
                     }
                   /* Try to change CTM according to Flip - I am not sure, must be checked.
                      float_matrix Tx(3,3);

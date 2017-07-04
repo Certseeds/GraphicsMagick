@@ -5,6 +5,7 @@
 /* $Id$ */
 
 #include <tk.h>
+#include "libttkcommon.h"
 #include "TclMagick.h"
 #include <string.h>
 #include <wand/magick_wand.h>
@@ -92,7 +93,7 @@ static int MagickToPhoto(
     if (MagickGetImagePixels (
 	    wand, 0, 0, (unsigned)magickblock.width, (unsigned)magickblock.height,
 	    map, CharPixel, magickblock.pixelPtr) == False) {
-	return myMagickError(interp, wand);
+	    return myMagickError(interp, wand);
     }
 
 #if TCL_MAJOR_VERSION <= 8 && TCL_MINOR_VERSION <= 4
