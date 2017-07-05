@@ -3314,12 +3314,13 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "    Copying JDAT chunk data"
-                                  " to color_blob.");
-          if (color_image != (Image *)NULL)
+                                  "    Copying %lu bytes of JDAT chunk data"
+                                  " to color_blob.",length);
+          if (length && color_image != (Image *)NULL)
+          {
             (void) WriteBlob(color_image,length,(char *) chunk);
-          if (length)
             MagickFreeMemory(chunk);
+          }
           continue;
         }
 
