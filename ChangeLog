@@ -1,3 +1,8 @@
+2017-07-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Remove spurious '\n' from log
+	statement.
+
 2017-07-06  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Consolidate JNG cleanup into a new DestroyJNG()

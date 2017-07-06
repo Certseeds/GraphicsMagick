@@ -3102,7 +3102,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 type[0],type[1],type[2],type[3],length);
       
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "   count=%u\n",count);
+                                "   count=%u",count);
         }
 
       if (length > PNG_MAX_UINT || count == 0)
