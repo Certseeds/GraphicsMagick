@@ -1,5 +1,8 @@
 2017-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): Fix double-frees caused by
+	commit on 2017-07-06.
+
 	* coders/jpeg.c (ReadJPEGImage): Defer creating pixel cache until
 	after successfully reading first scanline.  Classify some serious
 	libjpeg reported "warnings" as errors and quit processing

@@ -3622,6 +3622,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (void) LiberateUniqueFileResource(alpha_image->filename);
               DestroyJNG(NULL,color_image,color_image_info,
                 alpha_image,alpha_image_info);
+              color_image = (Image *)NULL;
+              color_image_info = (ImageInfo *) NULL;
+              alpha_image = (Image *)NULL;
+              alpha_image_info = (ImageInfo *) NULL;
               DestroyImage(jng_image);
               jng_image = (Image *)NULL;
             }
