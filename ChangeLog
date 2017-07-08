@@ -1,3 +1,7 @@
+2017-07-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJngImage): Revised double-free fix.
+
 2017-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Fix double-frees caused by
