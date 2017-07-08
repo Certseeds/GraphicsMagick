@@ -240,10 +240,34 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
 				err->msg_parm.i[4], err->msg_parm.i[5],
 				err->msg_parm.i[6], err->msg_parm.i[7]);
 	}
-      if ((err->num_warnings == 0) ||
-          (err->trace_level >= 3))
-	ThrowBinaryException2(CorruptImageWarning,(char *) message,
+      /*
+        Treat some "warnings" as errors
+      */
+      switch (err->msg_code)
+        {
+        case JWRN_HIT_MARKER: /* Corrupt JPEG data: premature end of data segment */
+        case JWRN_JPEG_EOF: /* Premature end of JPEG file */
+          {
+            ThrowBinaryException2(CorruptImageError,(char *) message,
+                                  image->filename);
+            break;
+          }
+        case JWRN_HUFF_BAD_CODE: /* Corrupt JPEG data: bad Huffman code */
+        case JWRN_MUST_RESYNC: /* Corrupt JPEG data: found marker 0x%02x instead of RST%d */
+        case JWRN_NOT_SEQUENTIAL: /* "Invalid SOS parameters for sequential JPEG */
+          {
+            ThrowBinaryException2(CorruptImageError,(char *) message,
 			      image->filename);
+            break;
+          }
+        default:
+          {
+            if ((err->num_warnings == 0) ||
+                (err->trace_level >= 3))
+              ThrowBinaryException2(CorruptImageWarning,(char *) message,
+                                    image->filename);
+          }
+        }
       err->num_warnings++;
     }
   else
@@ -1350,6 +1374,16 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       register PixelPacket
 	*q;
 
+      /*
+        Read scanlines. Stop at first serious error.
+       */
+      if ((jpeg_read_scanlines(&jpeg_info,scanline,1) != 1) ||
+          (image->exception.severity >= ErrorException))
+	{
+	  status=MagickFail;
+	  break;
+	}
+
       q=SetImagePixels(image,0,y,image->columns,1);
       if (q == (PixelPacket *) NULL)
 	{
@@ -1357,12 +1391,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 	  break;
 	}
       indexes=AccessMutableIndexes(image);
-
-      if (jpeg_read_scanlines(&jpeg_info,scanline,1) != 1)
-	{
-	  status=MagickFail;
-	  break;
-	}
 
       p=jpeg_pixels;
 

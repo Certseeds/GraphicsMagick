@@ -1,3 +1,13 @@
+2017-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Defer creating pixel cache until
+	after successfully reading first scanline.  Classify some serious
+	libjpeg reported "warnings" as errors and quit processing
+	scanlines immediately upon first error so that corrupt JPEG does
+	not consume excessive resources.  Resolves excessive resource
+	consumption issue reported for two JPEG files provided via email
+	by LCatro on Tue, 4 Jul 2017.
+
 2017-07-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Remove spurious '\n' from log
