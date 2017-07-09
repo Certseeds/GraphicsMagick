@@ -28,7 +28,7 @@
 2017-07-05  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: prevent a crash due to zero-length color_image
-	while reading a JNG image.
+	while reading a JNG image. (CVE-2017-11102)
 
 2017-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
