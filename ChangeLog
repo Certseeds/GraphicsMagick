@@ -1,3 +1,9 @@
+2017-07-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c: Add casts to fix undefined behavior in left
+	shifts.  Issue was reported by Agostino Sarubbo via email on Mon,
+	10 Jul 2017.
+
 2017-07-09  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJngImage): Ignore out-of-bounds MOVE
