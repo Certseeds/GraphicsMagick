@@ -4465,10 +4465,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                                   "    Framing_timeout=%ld",
                                                   frame_timeout);
                         }
-                      if (change_clipping && (p-chunk) < (ssize_t) (length-17))
+                      if (change_clipping && (p-chunk) < (ssize_t) (length-16))
                         {
                           fb=mng_read_box(previous_fb,p[0],&p[1]);
-                          p+=17;
+                          p+=16;
                           previous_fb=fb;
                           if (logging)
                             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
