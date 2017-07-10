@@ -4,7 +4,7 @@
 	shifts.  Issue was reported by Agostino Sarubbo via email on Mon,
 	10 Jul 2017.
 
-2017-07-09  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-07-10  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Ignore out-of-bounds MOVE
 	and CLIP object_id's.
