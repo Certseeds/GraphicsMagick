@@ -5161,8 +5161,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
       if (image == (Image *) NULL)
         {
-          DestroyImageList(previous);
           CloseBlob(previous);
+          DestroyImageList(previous);
           MngInfoFreeStruct(mng_info,&have_mng_structure);
           return((Image *) NULL);
         }
