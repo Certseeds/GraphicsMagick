@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3320,10 +3320,10 @@ MagickExport magick_uint32_t ReadBlobLSBLong(Image *image)
   if (ReadBlob(image,4,buffer) != 4)
     return(0U);
 
-  value=buffer[3] << 24;
-  value|=buffer[2] << 16;
-  value|=buffer[1] << 8;
-  value|=buffer[0];
+  value=(magick_uint32_t) buffer[3] << 24;
+  value|=(magick_uint32_t) buffer[2] << 16;
+  value|=(magick_uint32_t) buffer[1] << 8;
+  value|=(magick_uint32_t) buffer[0];
   return(value & 0xffffffff);
 }
 
@@ -3370,10 +3370,10 @@ MagickExport magick_int32_t ReadBlobLSBSignedLong(Image *image)
   if (ReadBlob(image,4,buffer) != 4)
     return(0U);
 
-  value.uint32=buffer[3] << 24;
-  value.uint32|=buffer[2] << 16;
-  value.uint32|=buffer[1] << 8;
-  value.uint32|=buffer[0];
+  value.uint32=(magick_uint32_t) buffer[3] << 24;
+  value.uint32|=(magick_uint32_t) buffer[2] << 16;
+  value.uint32|=(magick_uint32_t) buffer[1] << 8;
+  value.uint32|=(magick_uint32_t) buffer[0];
   value.uint32&=0xffffffff;
   return value.int32;
 }
@@ -3473,8 +3473,8 @@ MagickExport magick_uint16_t ReadBlobLSBShort(Image *image)
   if (ReadBlob(image,2,buffer) != 2)
     return(0U);
 
-  value=buffer[1] << 8;
-  value|=buffer[0];
+  value=(magick_uint16_t) buffer[1] << 8;
+  value|=(magick_uint16_t) buffer[0];
   return(value & 0xffff);
 }
 
@@ -3521,8 +3521,8 @@ MagickExport magick_int16_t ReadBlobLSBSignedShort(Image *image)
   if (ReadBlob(image,2,buffer) != 2)
     return(0U);
 
-  value.uint16=buffer[1] << 8;
-  value.uint16|=buffer[0];
+  value.uint16=(magick_uint16_t) buffer[1] << 8;
+  value.uint16|=(magick_uint16_t) buffer[0];
   value.uint16&=0xffff;
   return value.int16;
 }
@@ -3874,9 +3874,9 @@ MagickExport magick_uint32_t ReadBlobMSBLong(Image *image)
   if (ReadBlob(image,4,buffer) != 4)
     return(0U);
 
-  value=buffer[0] << 24;
-  value|=buffer[1] << 16;
-  value|=buffer[2] << 8;
+  value=(magick_uint32_t) buffer[0] << 24;
+  value|=(magick_uint32_t) buffer[1] << 16;
+  value|=(magick_uint32_t) buffer[2] << 8;
   value|=buffer[3];
   return(value & 0xffffffff);
 }
@@ -3925,10 +3925,10 @@ MagickExport magick_int32_t ReadBlobMSBSignedLong(Image *image)
   if (ReadBlob(image,4,buffer) != 4)
     return(0);
 
-  value.uint32=buffer[0] << 24;
-  value.uint32|=buffer[1] << 16;
-  value.uint32|=buffer[2] << 8;
-  value.uint32|=buffer[3];
+  value.uint32=(magick_uint32_t) buffer[0] << 24;
+  value.uint32|=(magick_uint32_t) buffer[1] << 16;
+  value.uint32|=(magick_uint32_t) buffer[2] << 8;
+  value.uint32|=(magick_uint32_t) buffer[3];
   value.uint32&=0xffffffff;
   return value.int32;
 }
@@ -3976,8 +3976,8 @@ MagickExport magick_uint16_t ReadBlobMSBShort(Image *image)
   if (ReadBlob(image,2,buffer) != 2)
     return(0U);
 
-  value=buffer[0] << 8;
-  value|=buffer[1];
+  value=(magick_uint16_t) buffer[0] << 8;
+  value|=(magick_uint16_t) buffer[1];
   return(value & 0xffff);
 }
 
@@ -4024,8 +4024,8 @@ MagickExport magick_int16_t ReadBlobMSBSignedShort(Image *image)
   if (ReadBlob(image,2,buffer) != 2)
     return(0U);
 
-  value.uint16=buffer[0] << 8;
-  value.uint16|=buffer[1];
+  value.uint16=(magick_uint16_t) buffer[0] << 8;
+  value.uint16|=(magick_uint16_t) buffer[1];
   value.uint16&=0xffff;
   return value.int16;
 }
