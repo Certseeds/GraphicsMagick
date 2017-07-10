@@ -1,6 +1,6 @@
 2017-07-09  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c (ReadOneJngImage): Ignore out-of-bounds MOVE
+	* coders/png.c (ReadOneJNGImage): Ignore out-of-bounds MOVE
 	and CLIP object_id's.
 	* coders/png.c (ReadMNGImage): Fix apparent off-by-one error
 	in MNG FRAM change_clipping processing.
