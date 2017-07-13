@@ -1,3 +1,10 @@
+2017-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/ps.c (ReadPSImage): Fix reference to constant NULL image
+	argument which is dereferenced to pass an exception to
+	MagickMonitorFormatted().  Problem was reported by Agostino
+	Sarubbo via email on Wed, 12 Jul 2017.
+
 2017-07-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c: Add casts to fix undefined behavior in left

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -342,7 +342,7 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		 antialias,density,options,image_info->filename,
 		 postscript_filename);
   }
-  (void) MagickMonitorFormatted(0,8,&image->exception,RenderPostscriptText,
+  (void) MagickMonitorFormatted(0,8,exception,RenderPostscriptText,
                                 image_info->filename);
   status=InvokePostscriptDelegate(image_info->verbose,command,exception);
   if (!IsAccessibleAndNotEmpty(image_info->filename))
@@ -361,7 +361,7 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
       status=InvokePostscriptDelegate(image_info->verbose,command,exception);
     }
   (void) LiberateTemporaryFile(postscript_filename);
-  (void) MagickMonitorFormatted(7,8,&image->exception,RenderPostscriptText,
+  (void) MagickMonitorFormatted(7,8,exception,RenderPostscriptText,
                                 image_info->filename);
   if (IsAccessibleAndNotEmpty(image_info->filename))
     {
