@@ -104,14 +104,6 @@
   Optional declarations. Define or undefine them as you like.
 */
 
-/* After eXIf chunk has been approved:
-#define eXIf_SUPPORTED
-*/
-
-/* Experimental; define one or both of these:
-#define exIf_SUPPORTED
-*/
-
 /* #define PNG_DEBUG -- turning this on breaks VisualC compiling */
 
 /*
@@ -215,14 +207,7 @@ static png_byte const mng_TERM[5]={ 84,  69,  82,  77, '\0'};
 static png_byte const mng_bKGD[5]={ 98,  75,  71,  68, '\0'};
 static png_byte const mng_caNv[5]={ 99,  97,  78, 118, '\0'};
 static png_byte const mng_cHRM[5]={ 99,  72,  82,  77, '\0'};
-#ifdef exIf_SUPPORTED
-/* until registration of eXIf */
-static png_byte const mng_exIf[5]={101, 120,  73, 102, '\0'};
-#endif
-#ifdef eXIf_SUPPORTED
-/* after registration of eXIf */
 static png_byte const mng_eXIf[5]={101,  88,  73, 102, '\0'};
-#endif
 static png_byte const mng_gAMA[5]={103,  65,  77,  65, '\0'};
 static png_byte const mng_iCCP[5]={105,  67,  67,  80, '\0'};
 static png_byte const mng_nEED[5]={110,  69,  69,  68, '\0'};
@@ -1281,7 +1266,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      "    read_user_chunk: found %c%c%c%c chunk",
        chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
 
-#if defined(exIf_SUPPORTED)
   if (chunk->name[0]  == 101 &&
       (chunk->name[1] ==  88 || chunk->name[1] == 120 ) &&
       chunk->name[2]  ==  73 &&
@@ -1302,7 +1286,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
         i;
 
 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        " recognized eXIf|exIf chunk");
+        " recognized eXIf chunk");
 
       image=(Image *) png_get_user_chunk_ptr(ping);
 
@@ -1338,7 +1322,6 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
          (const unsigned char *)profile, chunk->size+6);
       return(1);
     }
-#endif /* exIf_SUPPORTED */
 
   /* orNT */
   if (chunk->name[0] == 111 &&
@@ -1660,9 +1643,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 # endif
   /* Ignore unused chunks and all unknown chunks except for eXIf
      and caNv */
-#if defined(eXIf_SUPPORTED)
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_eXIf, 1);
-#endif
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
@@ -7990,8 +7971,6 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       png_free(ping,text);
     }
 
-#if defined(exIf_SUPPORTED) || \
-    defined(eXIf_SUPPORTED)
   /* write exIf profile */
   {
     ImageProfileIterator
@@ -8028,11 +8007,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 
                 length=(png_uint_32) profile_length;
 
-#ifdef eXIf_SUPPORTED /* eXIf chunk is registered */
                 PNGType(chunk,mng_eXIf);
-#else /* eXIf chunk not yet registered; write exIf instead */
-                PNGType(chunk,mng_exIf);
-#endif
 
                 if (length < 7)
                   break;  /* othewise crashes */
@@ -8052,7 +8027,6 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         DeallocateImageProfileIterator(profile_iterator);
       }
     }
-#endif /* exIf_SUPPORTED) */
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
