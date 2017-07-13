@@ -1,3 +1,7 @@
+2017-07-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Fix typecast of left shifts (patch by Bob F)
+
 2017-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/ps.c (ReadPSImage): Fix reference to constant NULL image

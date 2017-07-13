@@ -1033,10 +1033,22 @@ static MngBox mng_read_box(MngBox previous_box,char delta_type,
   /*
     Read clipping boundaries from DEFI, CLIP, FRAM, or PAST chunk.
   */
-  box.left=(long) ((p[0]  << 24) | (p[1]  << 16) | (p[2]  << 8) | p[3]);
-  box.right=(long) ((p[4]  << 24) | (p[5]  << 16) | (p[6]  << 8) | p[7]);
-  box.top=(long) ((p[8]  << 24) | (p[9]  << 16) | (p[10] << 8) | p[11]);
-  box.bottom=(long) ((p[12] << 24) | (p[13] << 16) | (p[14] << 8) | p[15]);
+  box.left=(long) (((magick_uint32_t) p[0]  << 24) |
+                   ((magick_uint32_t) p[1]  << 16) |
+                   ((magick_uint32_t) p[2]  << 8) |
+                   (magick_uint32_t) p[3]);
+  box.right=(long) (((magick_uint32_t) p[4]  << 24) |
+                    ((magick_uint32_t) p[5]  << 16) |
+                    ((magick_uint32_t) p[6]  << 8) |
+                    (magick_uint32_t) p[7]);
+  box.top=(long) (((magick_uint32_t) p[8]  << 24) |
+                  ((magick_uint32_t) p[9]  << 16) |
+                  ((magick_uint32_t) p[10] << 8) |
+                  (magick_uint32_t) p[11]);
+  box.bottom=(long) (((magick_uint32_t) p[12] << 24) |
+                     ((magick_uint32_t) p[13] << 16) |
+                     ((magick_uint32_t) p[14] << 8) |
+                     (magick_uint32_t) p[15]);
   if (delta_type != 0)
     {
       box.left+=previous_box.left;
@@ -1055,8 +1067,10 @@ static MngPair mng_read_pair(MngPair previous_pair,int delta_type,
   /*
     Read two longs from CLON, MOVE or PAST chunk
   */
-  pair.a=(long) ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
-  pair.b=(long) ((p[4] << 24) | (p[5] << 16) | (p[6] << 8) | p[7]);
+  pair.a=(long) (((magick_uint32_t) p[0] << 24) | ((magick_uint32_t) p[1] << 16) |
+                 ((magick_uint32_t) p[2] << 8) | (magick_uint32_t) p[3]);
+  pair.b=(long) (((magick_uint32_t) p[4] << 24) | ((magick_uint32_t) p[5] << 16) |
+                 ((magick_uint32_t) p[6] << 8) | (magick_uint32_t) p[7]);
   if (delta_type != 0)
     {
       pair.a+=previous_pair.a;
@@ -1067,7 +1081,8 @@ static MngPair mng_read_pair(MngPair previous_pair,int delta_type,
 
 static long mng_get_long(unsigned char *p)
 {
-  return((long) ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]));
+  return ((long) (((magick_uint32_t) p[0] << 24) | ((magick_uint32_t) p[1] << 16) |
+                  ((magick_uint32_t) p[2] << 8) | (magick_uint32_t) p[3]));
 }
 
 static void PNGErrorHandler(png_struct *ping,png_const_charp message) MAGICK_FUNC_NORETURN;
@@ -1359,17 +1374,25 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
      image=(Image *) png_get_user_chunk_ptr(ping);
 
-     image->page.width=(size_t) ((chunk->data[0] << 24) |
-        (chunk->data[1] << 16) | (chunk->data[2] << 8) | chunk->data[3]);
+     image->page.width=(size_t) (((magick_uint32_t) chunk->data[0] << 24) |
+                                 ((magick_uint32_t) chunk->data[1] << 16) |
+                                 ((magick_uint32_t) chunk->data[2] << 8) |
+                                 (magick_uint32_t) chunk->data[3]);
 
-     image->page.height=(size_t) ((chunk->data[4] << 24) |
-        (chunk->data[5] << 16) | (chunk->data[6] << 8) | chunk->data[7]);
+     image->page.height=(size_t) (((magick_uint32_t) chunk->data[4] << 24) |
+                                  ((magick_uint32_t) chunk->data[5] << 16) |
+                                  ((magick_uint32_t) chunk->data[6] << 8) |
+                                  (magick_uint32_t) chunk->data[7]);
 
-     image->page.x=(size_t) ((chunk->data[8] << 24) |
-        (chunk->data[9] << 16) | (chunk->data[10] << 8) | chunk->data[11]);
+     image->page.x=(size_t) (((magick_uint32_t) chunk->data[8] << 24) |
+                             ((magick_uint32_t) chunk->data[9] << 16) |
+                             ((magick_uint32_t) chunk->data[10] << 8) |
+                             (magick_uint32_t) chunk->data[11]);
 
-     image->page.y=(size_t) ((chunk->data[12] << 24) |
-        (chunk->data[13] << 16) | (chunk->data[14] << 8) | chunk->data[15]);
+     image->page.y=(size_t) (((magick_uint32_t) chunk->data[12] << 24) |
+                             ((magick_uint32_t) chunk->data[13] << 16) |
+                             ((magick_uint32_t) chunk->data[14] << 8) |
+                             (magick_uint32_t) chunk->data[15]);
 
      return(1);
     }
@@ -2065,7 +2088,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "    Reading PNG tRNS chunk.");
 
-      bit_mask = (1 << ping_file_depth) - 1;
+      bit_mask = (1U << ping_file_depth) - 1;
 
       /*
         Image has a transparent background.
@@ -2145,7 +2168,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       (ping_colortype == PNG_COLOR_TYPE_GRAY))
     {
       image->storage_class=PseudoClass;
-      image->colors=1 << ping_file_depth;
+      image->colors=1U << ping_file_depth;
 #if (QuantumDepth == 8)
       if (image->colors > 256)
         image->colors=256;
@@ -2198,7 +2221,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
           unsigned long
             scale;
 
-          scale=(MaxRGB/((1 << ping_file_depth)-1));
+          scale=(MaxRGB/((1U << ping_file_depth)-1));
           if (scale < 1)
             scale=1;
           for (i=0; i < (long) image->colors; i++)
@@ -2304,7 +2327,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                         *r++=*p++;
                         p++;
                         if ((png_get_valid(ping, ping_info, PNG_INFO_tRNS)) &&
-                            ((unsigned long) ((*(p-2) << 8)|*(p-1))
+                            ((unsigned long) (((magick_uint32_t) *(p-2) << 8)|
+                                              (magick_uint32_t) *(p-1))
                             == transparent_color.opacity))
                           {
                             /* Cheap transparency */
@@ -2325,11 +2349,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                           p++;
                           *r++=*p++;
                           p++;
-                          if (((unsigned long) ((*(p-6) << 8)|*(p-5)) ==
+                          if (((unsigned long) (((magick_uint32_t) *(p-6) << 8)|*(p-5)) ==
                               transparent_color.red) &&
-                              ((unsigned long) ((*(p-4) << 8)|*(p-3)) ==
+                              ((unsigned long) (((magick_uint32_t) *(p-4) << 8)|*(p-3)) ==
                               transparent_color.green) &&
-                              ((unsigned long) ((*(p-2) << 8)|*(p-1)) ==
+                              ((unsigned long) (((magick_uint32_t) *(p-2) << 8)|*(p-1)) ==
                               transparent_color.blue))
                             {
                               /* Cheap transparency */
@@ -2513,31 +2537,31 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                     {
 #if (QuantumDepth == 16)
                       if (image->colors > 256)
-                        *r=((*p++) << 8);
+                        *r=(((magick_uint32_t) *p++) << 8);
                       else
                         *r=0;
                       *r|=(*p++);
                       r++;
                       if (ping_colortype == 4)
                         {
-                          q->opacity=((*p++) << 8);
-                          q->opacity|=(*p++);
+                          q->opacity=(((magick_uint32_t) *p++) << 8);
+                          q->opacity|=((magick_uint32_t) *p++);
                           q->opacity=(Quantum) (MaxRGB-q->opacity);
                           q++;
                         }
 #else
 #if (QuantumDepth == 32)
                       if (image->colors > 256)
-                        *r=((*p++) << 8);
+                        *r=(((magick_uint32_t) *p++) << 8);
                       else
                         *r=0;
                       *r|=(*p++);
                       r++;
                       if (ping_colortype == 4)
                         {
-                          q->opacity=((*p++) << 8);
-                          q->opacity|=(*p++);
-                          q->opacity*=65537L;
+                          q->opacity=(((magick_uint32_t) *p++) << 8);
+                          q->opacity|=((magick_uint32_t) *p++);
+                          q->opacity*=65537U;
                           q->opacity=(Quantum) (MaxRGB-q->opacity);
                           q++;
                         }
@@ -3158,10 +3182,14 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               return (MagickFail);
             }
 
-          jng_width=(unsigned long) ((p[0] << 24) | (p[1] << 16) |
-                                     (p[2] << 8) | p[3]);
-          jng_height=(unsigned long) ((p[4] << 24) | (p[5] << 16) |
-                                      (p[6] << 8) | p[7]);
+          jng_width=(unsigned long) (((magick_uint32_t) p[0] << 24) |
+                                     ((magick_uint32_t) p[1] << 16) |
+                                     ((magick_uint32_t) p[2] << 8) |
+                                     (magick_uint32_t) p[3]);
+          jng_height=(unsigned long) (((magick_uint32_t) p[4] << 24) |
+                                      ((magick_uint32_t) p[5] << 16) |
+                                      ((magick_uint32_t) p[6] << 8) |
+                                      (magick_uint32_t) p[7]);
           jng_color_type=p[8];
           jng_image_sample_depth=p[9];
           jng_image_compression_method=p[10];
@@ -4049,12 +4077,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               /* To quiet a Coverity complaint */
               LockSemaphoreInfo(png_semaphore);
 #endif
-              mng_info->mng_width=(unsigned long) ((p[0] << 24) |
-                                                   (p[1] << 16) |
-                                                   (p[2] << 8) | p[3]);
-              mng_info->mng_height=(unsigned long) ((p[4] << 24) |
-                                                    (p[5] << 16) |
-                                                    (p[6] << 8) | p[7]);
+              mng_info->mng_width=(unsigned long) (((magick_uint32_t) p[0] << 24) |
+                                                   ((magick_uint32_t) p[1] << 16) |
+                                                   ((magick_uint32_t) p[2] << 8) |
+                                                   (magick_uint32_t) p[3]);
+              mng_info->mng_height=(unsigned long) (((magick_uint32_t) p[4] << 24) |
+                                                    ((magick_uint32_t) p[5] << 16) |
+                                                    ((magick_uint32_t) p[6] << 8) |
+                                                    (magick_uint32_t) p[7]);
               if (logging)
                 {
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -4179,7 +4209,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                        "DEFI chunk found in MNG-VLC"
                                        " datastream",
                                        (char *) NULL);
-              object_id=(p[0] << 8) | p[1];
+              object_id=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
               if (mng_type == 2 && object_id != 0)
                 (void) ThrowException2(&image->exception,CoderError,
                                        "Nonzero object_id in MNG-LC"
@@ -4213,12 +4243,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               */
               if (length > 11)
                 {
-                  mng_info->x_off[object_id]=(long) ((p[4] << 24) |
-                                                     (p[5] << 16) |
-                                                     (p[6] << 8) | p[7]);
-                  mng_info->y_off[object_id]=(long) ((p[8] << 24) |
-                                                     (p[9] << 16) |
-                                                     (p[10] << 8) | p[11]);
+                  mng_info->x_off[object_id]=(long) (((magick_uint32_t) p[4] << 24) |
+                                                     ((magick_uint32_t) p[5] << 16) |
+                                                     ((magick_uint32_t) p[6] << 8) |
+                                                     (magick_uint32_t) p[7]);
+                  mng_info->y_off[object_id]=(long) (((magick_uint32_t) p[8] << 24) |
+                                                     ((magick_uint32_t) p[9] << 16) |
+                                                     ((magick_uint32_t) p[10] << 8) |
+                                                     (magick_uint32_t) p[11]);
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -4244,11 +4276,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (length > 5)
                 {
                   mng_info->mng_global_bkgd.red
-                    =ScaleShortToQuantum(((p[0] << 8) | p[1]));
+                    =ScaleShortToQuantum((((magick_uint32_t) p[0] << 8) |
+                                          (magick_uint32_t) p[1]));
                   mng_info->mng_global_bkgd.green
-                    =ScaleShortToQuantum(((p[2] << 8) | p[3]));
+                    =ScaleShortToQuantum((((magick_uint32_t) p[2] << 8) |
+                                          (magick_uint32_t) p[3]));
                   mng_info->mng_global_bkgd.blue
-                    =ScaleShortToQuantum(((p[4] << 8) | p[5]));
+                    =ScaleShortToQuantum((((magick_uint32_t) p[4] << 8) |
+                                          (magick_uint32_t) p[5]));
                   mng_info->have_global_bkgd=MagickTrue;
                 }
               MagickFreeMemory(chunk);
@@ -4264,16 +4299,20 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (mandatory_back && length > 5)
                 {
                   mng_background_color.red=
-                    ScaleShortToQuantum(((p[0] << 8) | p[1]));
+                    ScaleShortToQuantum((((magick_uint32_t) p[0] << 8) |
+                                         (magick_uint32_t) p[1]));
                   mng_background_color.green=
-                    ScaleShortToQuantum(((p[2] << 8) | p[3]));
+                    ScaleShortToQuantum((((magick_uint32_t) p[2] << 8) |
+                                         (magick_uint32_t) p[3]));
                   mng_background_color.blue=
-                    ScaleShortToQuantum(((p[4] << 8) | p[5]));
+                    ScaleShortToQuantum((((magick_uint32_t) p[4] << 8) |
+                                         (magick_uint32_t) p[5]));
                   mng_background_color.opacity=OpaqueOpacity;
                 }
 #ifdef MNG_OBJECT_BUFFERS
               if (length > 8)
-                mng_background_object=(p[7] << 8) | p[8];
+                mng_background_object=((magick_uint32_t) p[7] << 8) |
+                  (magick_uint32_t) p[8];
 #endif
 #endif
               MagickFreeMemory(chunk);
@@ -4562,8 +4601,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               */
               if (length > 3)
                 {
-                  first_object=(p[0] << 8) | p[1];
-                  last_object=(p[2] << 8) | p[3];
+                  first_object=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
+                  last_object=((magick_uint32_t) p[2] << 8) | (magick_uint32_t) p[3];
                   p+=4;
 
                   for (i=(int) first_object; i <= (int) last_object; i++)
@@ -4618,7 +4657,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
                   for (j=0; j < (long) length; j+=2)
                     {
-                      i=p[j] << 8 | p[j+1];
+                      i=(magick_uint32_t) p[j] << 8 | (magick_uint32_t) p[j+1];
                       MngInfoDiscardObject(mng_info,i);
                     }
                 }
@@ -4638,8 +4677,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
               if (length > 3)
                 {
-                  first_object=(p[0] << 8) | p[1];
-                  last_object=(p[2] << 8) | p[3];
+                  first_object=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
+                  last_object=((magick_uint32_t) p[2] << 8) | (magick_uint32_t) p[3];
                   p+=4;
 
                   for (i=(long) first_object; i <= (long) last_object; i++)
@@ -4760,11 +4799,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 magn_methy;
 
               if (length > 1)
-                magn_first=(p[0] << 8) | p[1];
+                magn_first=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
               else
                 magn_first=0;
               if (length > 3)
-                magn_last=(p[2] << 8) | p[3];
+                magn_last=((magick_uint32_t) p[2] << 8) | (magick_uint32_t) p[3];
               else
                 magn_last=magn_first;
 #ifndef MNG_OBJECT_BUFFERS
@@ -4784,42 +4823,42 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 magn_methx=0;
 
               if (length > 6)
-                magn_mx=(p[5] << 8) | p[6];
+                magn_mx=((magick_uint32_t) p[5] << 8) | (magick_uint32_t) p[6];
               else
                 magn_mx=1;
               if (magn_mx == 0)
                 magn_mx=1;
 
               if (length > 8)
-                magn_my=(p[7] << 8) | p[8];
+                magn_my=((magick_uint32_t) p[7] << 8) | (magick_uint32_t) p[8];
               else
                 magn_my=magn_mx;
               if (magn_my == 0)
                 magn_my=1;
 
               if (length > 10)
-                magn_ml=(p[9] << 8) | p[10];
+                magn_ml=((magick_uint32_t) p[9] << 8) | (magick_uint32_t) p[10];
               else
                 magn_ml=magn_mx;
               if (magn_ml == 0)
                 magn_ml=1;
 
               if (length > 12)
-                magn_mr=(p[11] << 8) | p[12];
+                magn_mr=((magick_uint32_t) p[11] << 8) | (magick_uint32_t) p[12];
               else
                 magn_mr=magn_mx;
               if (magn_mr == 0)
                 magn_mr=1;
 
               if (length > 14)
-                magn_mt=(p[13] << 8) | p[14];
+                magn_mt=((magick_uint32_t) p[13] << 8) | (magick_uint32_t) p[14];
               else
                 magn_mt=magn_my;
               if (magn_mt == 0)
                 magn_mt=1;
 
               if (length > 16)
-                magn_mb=(p[15] << 8) | p[16];
+                magn_mb=((magick_uint32_t) p[15] << 8) | (magick_uint32_t) p[16];
               else
                 magn_mb=magn_my;
               if (magn_mb == 0)
@@ -4915,28 +4954,32 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                        image->filename);
               mng_info->basi_warning++;
 #ifdef MNG_BASI_SUPPORTED
-              basi_width=(unsigned long) ((p[0] << 24) | (p[1] << 16) |
-                                          (p[2] << 8) | p[3]);
-              basi_height=(unsigned long) ((p[4] << 24) | (p[5] << 16) |
-                                           (p[6] << 8) | p[7]);
+              basi_width=(unsigned long) (((magick_uint32_t) p[0] << 24) |
+                                          ((magick_uint32_t) p[1] << 16) |
+                                          ((magick_uint32_t) p[2] << 8) |
+                                          (magick_uint32_t) p[3]);
+              basi_height=(unsigned long) (((magick_uint32_t) p[4] << 24) |
+                                           ((magick_uint32_t) p[5] << 16) |
+                                           ((magick_uint32_t) p[6] << 8) |
+                                           (magick_uint32_t) p[7]);
               basi_color_type=p[8];
               basi_compression_method=p[9];
               basi_filter_type=p[10];
               basi_interlace_method=p[11];
               if (length > 11)
-                basi_red=(p[12] << 8) & p[13];
+                basi_red=((magick_uint32_t) p[12] << 8) & (magick_uint32_t) p[13];
               else
                 basi_red=0;
               if (length > 13)
-                basi_green=(p[14] << 8) & p[15];
+                basi_green=((magick_uint32_t) p[14] << 8) & (magick_uint32_t) p[15];
               else
                 basi_green=0;
               if (length > 15)
-                basi_blue=(p[16] << 8) & p[17];
+                basi_blue=((magick_uint32_t) p[16] << 8) & (magick_uint32_t) p[17];
               else
                 basi_blue=0;
               if (length > 17)
-                basi_alpha=(p[18] << 8) & p[19];
+                basi_alpha=((magick_uint32_t) p[18] << 8) & (magick_uint32_t) p[19];
               else
                 {
                   if (basi_sample_depth == 16)
@@ -6998,7 +7041,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
           if (image_depth > QuantumDepth)
             image_depth=QuantumDepth;
           if (image_colors == 0 || image_colors-1 > MaxRGB)
-            image_colors=1 << image_depth;
+            image_colors=1U << image_depth;
           if (image_depth > 8)
             ping_bit_depth=16;
           else
@@ -7006,7 +7049,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
               if (ping_colortype == PNG_COLOR_TYPE_PALETTE)
                 {
                   ping_bit_depth=1;
-                  while ((int) (1 << ping_bit_depth) <
+                  while ((int) (1U << ping_bit_depth) <
                                 (long) image_colors)
                     ping_bit_depth <<= 1;
                 }
@@ -7056,7 +7099,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                     MagickFreeMemory(palette);
                   }
                 ping_bit_depth=1;
-                while ((1UL << ping_bit_depth) < number_colors)
+                while ((1U << ping_bit_depth) < number_colors)
                   ping_bit_depth <<= 1;
                 ping_num_trans=0;
                 if (matte)
@@ -7201,7 +7244,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
           png_uint_16
             maxval;
 
-          maxval=(1 << ping_bit_depth)-1;
+          maxval=(1U << ping_bit_depth)-1;
 
           ping_trans_color.gray=(png_uint_16)(maxval*
                                 ping_trans_color.gray/
@@ -7337,7 +7380,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
           png_color_16
             background;
 
-          maxval=(1 << ping_bit_depth)-1;
+          maxval=(1U << ping_bit_depth)-1;
 
 
           background.gray=(png_uint_16)
@@ -7356,7 +7399,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
               int
                 maxval;
 
-              maxval=(1 << image_depth)-1;
+              maxval=(1U << image_depth)-1;
               background.red=(png_uint_16)
                 (maxval*image->background_color.red/MaxRGB);
               background.green=(png_uint_16)
@@ -8670,10 +8713,10 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
           p=(unsigned char *) (blob+8);
           for (i=8; i<(long) length; i+=len+12)
             {
-              len=((*(p    ) & 0xff) << 24) +
-                  ((*(p + 1) & 0xff) << 16) +
-                  ((*(p + 2) & 0xff) <<  8) +
-                  ((*(p + 3) & 0xff)      ) ;
+              len=(((magick_uint32_t) *(p    ) & 0xff) << 24) +
+                  (((magick_uint32_t) *(p + 1) & 0xff) << 16) +
+                  (((magick_uint32_t) *(p + 2) & 0xff) <<  8) +
+                  (((magick_uint32_t) *(p + 3) & 0xff)      ) ;
               p+=4;
               if (*(p)==73 && *(p+1)==68 && *(p+2)==65 && *(p+3)==84)
                 {
