@@ -7528,11 +7528,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                       profile_info,
                                       (png_uint_32) profile_length);
               }
-#ifdef exIf_SUPPORTED
             else if (LocaleCompare(profile_name,"exif") == 0)
               /* Do not write exif; we'll write it later as exIf */ 
               ;
-#endif
             else
               {
                 if (logging)
