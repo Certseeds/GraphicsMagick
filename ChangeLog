@@ -27,6 +27,7 @@
 	in MNG FRAM change_clipping processing.
 	* coders/png.c (ReadMNGImage): Fix out-of-order CloseBlob()
 	and DestroyImageList() that caused a use-after-free crash.
+        Fixes CVE-2017-11403.  This bug was discovered by Agostino Sarubbo.
 
 2017-07-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
