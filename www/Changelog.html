@@ -66,13 +66,23 @@ shifts.  Issue was reported by Agostino Sarubbo via email on Mon,
 </blockquote>
 <p>2017-07-10  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">glennrp<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-<ul class="simple">
-<li>coders/png.c (ReadOneJNGImage): Ignore out-of-bounds MOVE
-and CLIP object_id's.</li>
-<li>coders/png.c (ReadMNGImage): Fix apparent off-by-one error
-in MNG FRAM change_clipping processing.</li>
-<li>coders/png.c (ReadMNGImage): Fix out-of-order CloseBlob()
-and DestroyImageList() that caused a use-after-free crash.</li>
+<ul>
+<li><p class="first">coders/png.c (ReadOneJNGImage): Ignore out-of-bounds MOVE
+and CLIP object_id's.</p>
+</li>
+<li><p class="first">coders/png.c (ReadMNGImage): Fix apparent off-by-one error
+in MNG FRAM change_clipping processing.</p>
+</li>
+<li><p class="first">coders/png.c (ReadMNGImage): Fix out-of-order CloseBlob()
+and DestroyImageList() that caused a use-after-free crash.</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">/home/bfriesen/src/graphics/GM/www/Changelog.rst</tt>, line 30)</p>
+<p>Unexpected indentation.</p>
+</div>
+<blockquote>
+<p>Fixes CVE-2017-11403.  This bug was discovered by Agostino Sarubbo.</p>
+</blockquote>
+</li>
 </ul>
 </blockquote>
 <p>2017-07-08  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">glennrp<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
