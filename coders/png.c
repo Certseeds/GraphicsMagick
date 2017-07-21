@@ -1026,10 +1026,10 @@ static MngBox mng_read_box(MngBox previous_box,char delta_type,
   /*
     Read clipping boundaries from DEFI, CLIP, FRAM, or PAST chunk.
   */
-  box.left  =(long) mng_get_long(p);
-  box.right =(long) mng_get_long(&p[4]);
-  box.top   =(long) mng_get_long(&p[8]);
-  box.bottom=(long) mng_get_long(&p[12]);
+  box.left  = mng_get_long(p);
+  box.right = mng_get_long(&p[4]);
+  box.top   = mng_get_long(&p[8]);
+  box.bottom= mng_get_long(&p[12]);
   if (delta_type != 0)
     {
       box.left+=previous_box.left;
@@ -1048,8 +1048,8 @@ static MngPair mng_read_pair(MngPair previous_pair,int delta_type,
   /*
     Read two longs from CLON, MOVE or PAST chunk
   */
-  pair.a=(long) mng_get_long(p);
-  pair.b=(long) mng_get_long(&p[4]);
+  pair.a= mng_get_long(p);
+  pair.b= mng_get_long(&p[4]);
 
   if (delta_type != 0)
     {
@@ -4186,8 +4186,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               */
               if (length > 11)
                 {
-                  mng_info->x_off[object_id]=(long) mng_get_long(&p[4]);
-                  mng_info->y_off[object_id]=(long) mng_get_long(&p[8]);
+                  mng_info->x_off[object_id]= mng_get_long(&p[4]);
+                  mng_info->y_off[object_id]= mng_get_long(&p[8]);
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
