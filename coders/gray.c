@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -147,8 +147,10 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   Image
     *image;
 
+  unsigned long
+    j;
+
   long
-    j,
     y;
 
   register long
@@ -299,7 +301,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     }
     image->is_grayscale=is_grayscale;
     count=image->tile_info.height-image->rows-image->tile_info.y;
-    for (j=0; j < (long) count; j++)
+    for (j=0; j < count; j++)
       (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
     if (EOFBlob(image))
       {
@@ -526,14 +528,14 @@ ModuleExport void UnregisterGRAYImage(void)
 
 static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
 {
-  int
+  long
     y;
 
   register const PixelPacket
     *p;
 
   unsigned char
-    *scanline=0;
+    *scanline= (unsigned char *) NULL;
 
   unsigned int
     depth,
@@ -574,23 +576,23 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     depth=16;
   else
     depth=8;
+
+  if (depth <= 8)
+    quantum_size=8;
+  else if (depth <= 16)
+    quantum_size=16;
+  else
+    quantum_size=32;
+
+  samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+  packet_size=(quantum_size*samples_per_pixel)/8;
+
   /*
     Convert image to gray scale PseudoColor class.
   */
   scene=0;
   do
   {
-    /*
-      Allocate memory for scanline.
-    */
-    if (depth <= 8)
-      quantum_size=8;
-    else if (depth <= 16)
-      quantum_size=16;
-    else
-      quantum_size=32;
-    samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
-    packet_size=(quantum_size*samples_per_pixel)/8;
     /*
       Allocate scanline
     */
@@ -626,16 +628,20 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       export_options.endian=image->endian;
     else if (image_info->endian != UndefinedEndian)
       export_options.endian=image_info->endian;
-    if (image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Depth: %u bits, "
-                            "Type: %s, "
-                            "Samples/Pixel: %u, "
-                            "Endian %s",
-                            quantum_size,
-                            QuantumTypeToString(quantum_type),
-                            samples_per_pixel,
-                            EndianTypeToString(export_options.endian));
+
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "%lu: "
+                          "Geometry %lux%lu, "
+                          "Depth: %u bits, "
+                          "Type: %s, "
+                          "Samples/Pixel: %u, "
+                          "Endian %s",
+                          image->scene,
+                          image->columns,image->rows,
+                          quantum_size,
+                          QuantumTypeToString(quantum_type),
+                          samples_per_pixel,
+                          EndianTypeToString(export_options.endian));
     /*
       Convert MIFF to GRAY raster scanline.
     */
