@@ -18,7 +18,7 @@
 %                            M   M  A   A  P                                  %
 %                                                                             %
 %                                                                             %
-%                 Read/Write Image Colormaps As An Image File                 %
+%                 Read/Write Image Colormaps And Image File                   %
 %                                                                             %
 %                                                                             %
 %                              Software Design                                %
@@ -349,16 +349,17 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate colormap.
   */
-  if (!IsPaletteImage(image,&image->exception))
-    (void) SetImageType(image,PaletteType);
+  if (SetImageType(image,PaletteType) == MagickFail)
+    ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   packet_size=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateMemory(unsigned char *,image->columns*packet_size);
+  pixels=MagickAllocateArray(unsigned char *,image->columns,packet_size);
   if (pixels == (unsigned char *) NULL)
     ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   packet_size=image->colors > 256 ? 6 : 3;
-  colormap=MagickAllocateMemory(unsigned char *,packet_size*image->colors);
+  colormap=MagickAllocateArray(unsigned char *,packet_size,image->colors);
   if (colormap == (unsigned char *) NULL)
     ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
   /*
     Write colormap to file.
   */

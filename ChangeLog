@@ -1,5 +1,10 @@
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/map.c (WriteMAPImage): Fix null pointer dereference or
+	segmentation violation in the MAP writer if the input image is not
+	already colormapped.  Problem was reported by LCatro via email on
+	July 18.
+
 	* coders/gray.c (WriteGRAYImage): Improve tracing and tidy up.
 
 	* coders/rgb.c (WriteRGBImage): Fix heap overwrite in raw RGB
