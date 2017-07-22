@@ -38,6 +38,16 @@
 <p>2017-07-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/gray.c (WriteGRAYImage): Improve tracing and tidy up.</li>
+<li>coders/rgb.c (WriteRGBImage): Fix heap overwrite in raw RGB
+writer (all output subformats) given a multiframe sequence using
+different widths.  Problem was reported by LCatro via email on
+July 18.</li>
+<li>coders/cmyk.c (WriteCMYKImage): Fix heap overwrite in raw CMYK
+writer (all output subformats) given a multiframe sequence using
+different widths.  Also fix wrong output of CMYKA (and vice-versa)
+when CMYK was intended.  Problem was reported by LCatro via email
+on July 18.</li>
 <li>coders/palm.c: Disable the PALM writer since the writer is a
 work in progress and still has implementation problems.  Perhaps
 no one in the world remains who cares about the undocumented PALM
