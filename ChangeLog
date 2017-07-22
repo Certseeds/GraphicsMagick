@@ -1,3 +1,14 @@
+2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/palm.c: Disable the PALM writer since the writer is a
+	work in progress and still has implementation problems.  Perhaps
+	no one in the world remains who cares about the undocumented PALM
+	format.  Resolves heap overflow and assertion issues reported by
+	LCatro via emails on July 11th, and 12th, 2017.
+
+	* magick/colormap.c (ReplaceImageColormap): Throw an exception
+	rather than assertion if the input image is not colormapped.
+
 2017-07-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Implemented eXIf chunk support.
@@ -27,7 +38,7 @@
 	in MNG FRAM change_clipping processing.
 	* coders/png.c (ReadMNGImage): Fix out-of-order CloseBlob()
 	and DestroyImageList() that caused a use-after-free crash.
-        Fixes CVE-2017-11403.  This bug was discovered by Agostino Sarubbo.
+	Fixes CVE-2017-11403.  This bug was discovered by Agostino Sarubbo.
 
 2017-07-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 

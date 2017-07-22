@@ -1307,6 +1307,12 @@ image does not contain resolution
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorImageIsNotColormapped
+Language        = English
+image is not colormapped
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorImageOpacityDiffers
 Language        = English
 image opacity differs

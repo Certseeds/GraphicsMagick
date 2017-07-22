@@ -724,6 +724,9 @@
       <Message name="ImageDoesNotContainResolution">
         image does not contain resolution
       </Message>
+      <Message name="ImageIsNotColormapped">
+        image is not colormapped
+      </Message>
       <Message name="ImageOpacityDiffers">
         image opacity differs
       </Message>

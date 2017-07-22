@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -44,6 +44,12 @@
 % Add -rle or -scanline to add compression.  Add -transparent color to make color transparent.
 %
 */
+/*
+  Disable PALM writer by default since it is a work in progress.
+*/
+#if !defined(ENABLE_PALM_WRITER)
+#  define ENABLE_PALM_WRITER 0
+#endif /* if !defined(ENABLE_PALM_WRITER) */
 
 /*
   Include declarations.
@@ -710,8 +716,10 @@ typedef struct _PalmHeader
 /*
   Forward declarations.
 */
+#if ENABLE_PALM_WRITER
 static unsigned int
   WritePALMImage(const ImageInfo *,Image *);
+#endif /* #if ENABLE_PALM_WRITER */
 
 void LogPALMHeader(const PalmHeader* palm_header)
 {
@@ -1323,7 +1331,9 @@ ModuleExport void RegisterPALMImage(void)
 
   entry=SetMagickInfo("PALM");
   entry->decoder=ReadPALMImage;
+#if ENABLE_PALM_WRITER
   entry->encoder=WritePALMImage;
+#endif /* #if ENABLE_PALM_WRITER */
   entry->adjoin=False;
   entry->seekable_stream=True;
   entry->description="Palm pixmap";
@@ -1385,7 +1395,7 @@ ModuleExport void UnregisterPALMImage(void)
 %
 %
 */
-#if 1
+#if ENABLE_PALM_WRITER
 static Image *
 CreatePALMMapImage(const unsigned int depth)
 {
@@ -1480,7 +1490,9 @@ OptimizePALMImage(const ImageInfo *image_info,
     {
       for (depth = 1; depth <= 8; depth *= 2)
         {
-          fprintf(stderr,"Depth %u\n",depth);
+          if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Trying depth %u",depth);
           /*
             Get PALM map image for depth.
           */
@@ -1497,13 +1509,13 @@ OptimizePALMImage(const ImageInfo *image_info,
           /*
             Make sure that image is in an RGB type space.
           */
-          if (!TransformColorspace(palm_image,RGBColorspace))
+          if (TransformColorspace(palm_image,RGBColorspace) == MagickFail)
             break;
 
           /*
             Map optimize image to colormap without dithering.
           */
-          if (!MapImage(palm_image, map_image, False))
+          if (MapImage(palm_image, map_image, False) == MagickFail)
             break;
 
           /*
@@ -1543,8 +1555,8 @@ OptimizePALMImage(const ImageInfo *image_info,
           /*
             Replace colormap in optimize image with map image palette.
           */
-          if (!ReplaceImageColormap(palm_image,map_image->colormap,
-                                    map_image->colors))
+          if (ReplaceImageColormap(palm_image,map_image->colormap,
+                                    map_image->colors) == MagickFail)
             break;
 
           DestroyImage(map_image);
@@ -1589,7 +1601,7 @@ OptimizePALMImage(const ImageInfo *image_info,
               /*
                 Make sure that image is in an RGB type space.
               */
-              if (!TransformColorspace(palm_image,RGBColorspace))
+              if (TransformColorspace(palm_image,RGBColorspace) == MagickFail)
                 break;
 
               GetQuantizeInfo(&quantize_info);
@@ -1672,7 +1684,7 @@ OptimizePALMImage(const ImageInfo *image_info,
 
   return palm_image;
 }
-#endif
+
 static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
 {
   int
@@ -1882,7 +1894,7 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
             {
               if (bits_per_pixel < 8) /* Make sure we use the entire colorspace for bits_per_pixel */
                 color = (unsigned char) (indexes[x] * ((1 << bits_per_pixel) - 1) /
-                                         (palm_image->colors - 1));
+                                         (palm_image->colors - 1)); /* FIXME: /0 */
               else
                 color = (unsigned char) indexes[x];
               byte |= color << bit;
@@ -1908,7 +1920,7 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
             {
               byte = one_row[x];
               count = 1;
-              while (one_row[++x] == byte && count < 255 && x < (long) bytes_per_row)
+              while (one_row[++x] == byte && count < 255 && x < (long) bytes_per_row) /* FIXME: overrun */
                 count++;
               (void) WriteBlobByte(image, count);
               (void) WriteBlobByte(image, byte);
@@ -1979,3 +1991,4 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
   MagickFreeMemory(lastrow);
   return(True);
 }
+#endif /* if ENABLE_PALM_WRITER */

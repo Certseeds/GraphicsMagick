@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -336,7 +336,18 @@ ReplaceImageColormap(Image *image,
   assert(image != (Image *) NULL);
   assert(colormap != (const PixelPacket *) NULL);
   assert(colors != 0);
-  assert(image->storage_class == PseudoClass);
+
+  /*
+    Input image is required to have a colormap
+  */
+  if ((image->storage_class != PseudoClass) ||
+      (image->colormap == (PixelPacket *) NULL) ||
+      (image->colors == 0U))
+    {
+      ThrowException(&image->exception,ImageError,
+                     ImageIsNotColormapped,image->filename);
+      return MagickFail;
+    }
 
   /*
     Allocate memory for colormap index
