@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -570,19 +570,20 @@ ModuleExport void UnregisterRGBImage(void)
 */
 static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
 {
-  int
+  long
     y;
 
   register const PixelPacket
     *p;
 
   unsigned char
-    *pixels;
+    *pixels = (unsigned char *) NULL;
 
   unsigned int
     status;
 
   unsigned int
+    depth,
     packet_size,
     quantum_size,
     scene;
@@ -593,27 +594,11 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
   ExportPixelAreaInfo
     export_info;
 
-  /*
-    Allocate memory for pixels.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
 
-  if (image->depth <= 8)
-    quantum_size=8;
-  else if (image->depth <= 16)
-    quantum_size=16;
-  else
-    quantum_size=32;
-
-  packet_size=(quantum_size*3)/8;
-  if (LocaleCompare(image_info->magick,"RGBA") == 0)
-    packet_size=(quantum_size*4)/8;
-  pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
-  if (pixels == (unsigned char *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   if (image_info->interlace != PartitionInterlace)
     {
       /*
@@ -623,23 +608,62 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
       if (status == False)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
     }
-  scene=0;
+
   /*
-    Initialize export options.
+    Support depth in multiples of 8 bits.
   */
-  ExportPixelAreaOptionsInit(&export_options);
-  if (image->endian != UndefinedEndian)
-    export_options.endian=image->endian;
-  else if (image_info->endian != UndefinedEndian)
-    export_options.endian=image_info->endian;
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Depth %u bits, Endian %s, Interlace %s",
-			  quantum_size,
-			  EndianTypeToString(export_options.endian),
-			  InterlaceTypeToString(image_info->interlace));
+  if (image->depth > 16)
+    depth=32;
+  else if (image->depth > 8)
+    depth=16;
+  else
+    depth=8;
+
+  if (depth <= 8)
+    quantum_size=8;
+  else if (depth <= 16)
+    quantum_size=16;
+  else
+    quantum_size=32;
+
+  packet_size=(quantum_size*3)/8;
+  if (LocaleCompare(image_info->magick,"RGBA") == 0)
+    packet_size=(quantum_size*4)/8;
+
+  scene=0;
   do
   {
+    /*
+      Allocate memory for pixels.
+    */
+    MagickReallocMemory(unsigned char *,pixels,
+                        MagickArraySize(packet_size,image->columns));
+    if (pixels == (unsigned char *) NULL)
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
+    /*
+      Initialize export options.
+    */
+    ExportPixelAreaOptionsInit(&export_options);
+    if (image->endian != UndefinedEndian)
+      export_options.endian=image->endian;
+    else if (image_info->endian != UndefinedEndian)
+      export_options.endian=image_info->endian;
+
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "%lu: "
+                          "Geometry %lux%lu, "
+                          "Depth %u bits, "
+                          "Endian %s, "
+                          "Packet Size %u, "
+                          "Row bytes %" MAGICK_SIZE_T_F "u",
+                          image->scene,
+                          image->columns,image->rows,
+                          quantum_size,
+                          EndianTypeToString(export_options.endian),
+                          packet_size,
+                          (MAGICK_SIZE_T) MagickArraySize(packet_size,image->columns));
+
     /*
       Convert MIFF to RGB raster pixels.
     */
@@ -647,6 +671,7 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
     if (LocaleCompare(image_info->magick,"RGBA") == 0)
       if (!image->matte)
         SetImageOpacity(image,OpaqueOpacity);
+
     switch (image_info->interlace)
     {
       case NoInterlace:
