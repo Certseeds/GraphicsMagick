@@ -3458,7 +3458,10 @@ PersistCache(Image *image,const char *filename,
   cache_info->type=DiskCache;
   cache_info->offset=(*offset);
   if (!OpenCache(clone_image,IOMode,exception))
-    return(MagickFail);
+    {
+      DestroyImage(clone_image);
+      return(MagickFail);
+    }
   y=0;
   {
     ViewInfo
@@ -3495,11 +3498,13 @@ PersistCache(Image *image,const char *filename,
     CloseCacheView(image_view);
     CloseCacheView(clone_view);
   }
-  cache_info=(CacheInfo*) ReferenceCache(cache_info);
-  DestroyImage(clone_image);
   if (y < (long) image->rows)
-    return(MagickFail);
+    {
+      DestroyImage(clone_image);
+      return(MagickFail);
+    }
   *offset+=cache_info->length+pagesize-(cache_info->length % pagesize);
+  DestroyImage(clone_image);
   (void) LogMagickEvent(CacheEvent,GetMagickModule(),"Clone persistent cache");
   return(MagickPass);
 }
