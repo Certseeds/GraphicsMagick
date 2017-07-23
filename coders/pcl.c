@@ -1010,7 +1010,16 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
               for (x=0; x < (long) image->columns; x++)
                 {
                   byte<<=1;
-                  if (indexes[x] == blk_ind) byte |= 1;
+                  if (image->storage_class == PseudoClass)
+                    {
+                      if (indexes[x] == blk_ind)
+                        byte |= 1;
+                    }
+                  else
+                    {
+                      if (p[x].red == 0)
+                        byte |= 1;
+                    }
                   bit++;
                   if (bit == 8)
                     {
@@ -1028,10 +1037,20 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
               /*
                 8 bit PseudoClass row
               */
-              indexes=AccessImmutableIndexes(image);
-              for (x=0; x < (long) image->columns; x++)
+              if (image->storage_class == PseudoClass)
                 {
-                  *q++=indexes[x];
+                  indexes=AccessImmutableIndexes(image);
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      *q++=indexes[x];
+                    }
+                }
+              else
+                {
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      *q++=PixelIntensityRec601(&p[x]);
+                    }
                 }
             }
           else

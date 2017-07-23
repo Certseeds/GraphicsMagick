@@ -1,5 +1,9 @@
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcl.c (WritePCLImage): Fix null pointer dereference in
+	PCL writer when writing monochrome images.  Problem was reported
+	by LCatro via email on July 18.
+
 	* magick/pixel_cache.c (PersistCache): Fix memory leak while
 	writing a MPC file.  Problem was reported by LCatro via email on
 	July 18.
