@@ -2906,8 +2906,7 @@ DestroyJNG(unsigned char *chunk,Image **color_image,
    ImageInfo **color_image_info,
    Image **alpha_image,ImageInfo **alpha_image_info)
 {
-  if (chunk)
-    MagickFreeMemory(chunk);
+  MagickFreeMemory(chunk);
   if (*color_image_info)
   {
     DestroyImageInfo(*color_image_info);
@@ -3179,8 +3178,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                     jng_alpha_interlace_method);
             }
 
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
 
           if (jng_width > 65535 || jng_height > 65535 ||
                (long) jng_width > GetMagickResourceLimit(WidthResource) ||
@@ -3346,8 +3344,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (void) WriteBlobMSBULong(alpha_image,
                                        crc32(crc32(0,data,4),chunk,length));
             }
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
           continue;
         }
 
@@ -3366,16 +3363,14 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
               (void) WriteBlob(alpha_image,length,(char *) chunk);
             }
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
           continue;
         }
 
       if (!memcmp(type,mng_JSEP,4))
         {
           read_JSEP=MagickTrue;
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
           continue;
         }
 
@@ -3453,8 +3448,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   image->page.y/=10000;
                 }
             }
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
           continue;
         }
 
@@ -3479,14 +3473,12 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
       if (!memcmp(type,mng_iCCP,4))
         {
           /* To do. */
-          if (length)
-            MagickFreeMemory(chunk);
+          MagickFreeMemory(chunk);
           continue;
         }
 #endif
 
-      if (length)
-        MagickFreeMemory(chunk);
+      MagickFreeMemory(chunk);
 
       if (memcmp(type,mng_IEND,4))
         continue;
@@ -4003,13 +3995,15 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               mng_info->dhdr_warning++;
             }
           if (!memcmp(type,mng_MEND,4))
-            break;
+            {
+              MagickFreeMemory(chunk);
+              break;
+            }
           if (skip_to_iend)
             {
               if (!memcmp(type,mng_IEND,4))
                 skip_to_iend=MagickFalse;
-              if (length)
-                MagickFreeMemory(chunk);
+              MagickFreeMemory(chunk);
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "  Skip to IEND.");
@@ -4372,8 +4366,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               /*
                 Read global iCCP.
               */
-              if (length)
-                MagickFreeMemory(chunk);
+              MagickFreeMemory(chunk);
               continue;
             }
           if (!memcmp(type,mng_FRAM,4))
@@ -4571,8 +4564,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       mng_info->ob[i]->frozen=MagickTrue;
 #endif
                   }
-              if (length)
-                MagickFreeMemory(chunk);
+              MagickFreeMemory(chunk);
               continue;
             }
 
@@ -4597,8 +4589,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       MngInfoDiscardObject(mng_info,i);
                     }
                 }
-              if (length)
-                MagickFreeMemory(chunk);
+              MagickFreeMemory(chunk);
               continue;
             }
           if (!memcmp(type,mng_MOVE,4))
@@ -4935,8 +4926,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               )
             {
               /* Not an IHDR or JHDR chunk */
-              if (length)
-                MagickFreeMemory(chunk);
+              MagickFreeMemory(chunk);
               continue;
             }
           /* Process IHDR */

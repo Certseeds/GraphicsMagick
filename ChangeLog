@@ -2,6 +2,9 @@
 
 	* coders/png.c (ReadMNGImage) Free chunk allocation that remains
 	after attempting to read a truncated file.
+	* coders/png.c: Removed some redundant checks for chunk length
+	before MagickFreeMemory(chunk), which is safe to call with a
+	NULL argument.
 
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
