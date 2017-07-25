@@ -1615,9 +1615,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 # else
   png_set_keep_unknown_chunks(ping, 1, NULL, 0);
 # endif
-  /* Ignore unused chunks and all unknown chunks except for eXIf
-     and caNv */
-  png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_eXIf, 1);
+  /* Ignore unused chunks and all unknown chunks except for caNv */
   png_set_keep_unknown_chunks(ping, 2, (png_bytep) mng_caNv, 1);
   png_set_keep_unknown_chunks(ping, 1, unused_chunks,
                               (int)sizeof(unused_chunks)/5);
@@ -7482,7 +7480,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                       (png_uint_32) profile_length);
               }
             else if (LocaleCompare(profile_name,"exif") == 0)
-              /* Do not write exif; we'll write it later as exIf */ 
+              /* Do not write exif; we'll write it later as eXIf */ 
               ;
             else
               {
@@ -7922,7 +7920,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       png_free(ping,text);
     }
 
-  /* write exIf profile */
+  /* write eXIf profile */
   {
     ImageProfileIterator
       *profile_iterator;
