@@ -3975,6 +3975,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                      image);
               if (ReadBlob(image,length,chunk) < length)
                 {
+                  MagickFree(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
