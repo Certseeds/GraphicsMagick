@@ -5,6 +5,9 @@
 	* coders/png.c: Removed some redundant checks for chunk length
 	before MagickFreeMemory(chunk), which is safe to call with a
 	NULL argument.
+	* coders/png.c: Fixed writer bug due to missing brackets; a Log
+	statement should have been inside the "i" loop but instead was
+	using i++ left over from the loop.  Bug report by L. Catro.
 
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

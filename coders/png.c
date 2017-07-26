@@ -7125,12 +7125,14 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                           png_error(ping, "Could not allocate trans_alpha");
 
                         for (i=0; i<(int) number_colors; i++)
-                          if (trans_alpha[i] == 256)
-                             ping_trans_alpha[i]=255;
-                          else
-                             ping_trans_alpha[i]=(png_byte) trans_alpha[i];
-                         (void) LogMagickEvent(CoderEvent, GetMagickModule(),
-                            "    Alpha[%d]=%d",(int) i, (int) trans_alpha[i]);
+                          {
+                            if (trans_alpha[i] == 256)
+                               ping_trans_alpha[i]=255;
+                            else
+                               ping_trans_alpha[i]=(png_byte) trans_alpha[i];
+                           (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                              "    Alpha[%d]=%d",(int) i, (int) trans_alpha[i]);
+                          }
                       }
                   }
 
