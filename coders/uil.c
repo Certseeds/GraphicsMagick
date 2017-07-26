@@ -243,7 +243,6 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
             indexes=AccessMutableIndexes(image);
             for (x=0; x < (long) image->columns; x++)
             {
-              fprintf(stderr,"number_pixels=%lu, i=%ld\n",number_pixels,i);
               if (matte_image[i])
                 indexes[x]=(IndexPacket) image->colors;
               p++;
