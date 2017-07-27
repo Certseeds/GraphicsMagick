@@ -1,3 +1,9 @@
+2017-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wmf.c (ReadWMFImage): Eliminate use of already freed heap
+	data in error reporting path.  Problem was reported via email by
+	Agostino Sarubbo on Fri, 14 Jul 2017
+
 2017-07-25  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage) Free chunk allocation that remains

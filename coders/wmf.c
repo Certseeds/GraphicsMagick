@@ -2719,8 +2719,8 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
   if(image->exception.severity != UndefinedException)
     ThrowException2(exception,
                    CoderWarning,
-                   ddata->image->exception.reason,
-                   ddata->image->exception.description);
+                   image->exception.reason,
+                   image->exception.description);
 
   if(logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"leave ReadWMFImage()");
