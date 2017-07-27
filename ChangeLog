@@ -14,6 +14,8 @@
 	* coders/png.c: Fixed writer bug due to missing brackets; a Log
 	statement should have been inside the "i" loop but instead was
 	using i++ left over from the loop.  Bug report by L. Catro.
+	* coders/png.c: Reject a MNG with dimensions greater than 65k
+	by 65k.
 
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

@@ -4084,11 +4084,17 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   mng_info->image=image;
                 }
 
-              if ((mng_info->mng_width > 65535L) || (mng_info->mng_height
-                                                     > 65535L))
-                (void) ThrowException(&image->exception,ImageError,
-                                      WidthOrHeightExceedsLimit,
-                                      image->filename);
+              if ((mng_info->mng_width > 65535L) ||
+                  (mng_info->mng_height > 65535L))
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "  MNG width or height is too large: %lu, %lu",
+                      mng_info->mng_width,mng_info->mng_height);
+                  MagickFreeMemory(chunk);
+                  ThrowReaderException(CorruptImageError,
+                     ImproperImageHeader,image);
+                }
+
               FormatString(page_geometry,"%lux%lu+0+0",mng_info->mng_width,
                            mng_info->mng_height);
               mng_info->frame.left=0;
