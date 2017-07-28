@@ -16,6 +16,8 @@
 	using i++ left over from the loop.  Bug report by L. Catro.
 	* coders/png.c: Reject a MNG with dimensions greater than 65k
 	by 65k.
+	* coders/png.c (WriteOnePNGImage): Return without crashing if
+	WriteOnePNGImage is passed a NULL image. Fixes CVE-2017-11522.
 
 2017-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

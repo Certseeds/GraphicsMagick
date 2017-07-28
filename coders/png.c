@@ -6402,6 +6402,11 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),
                          "  enter WriteOnePNGImage()");
 
+  if (imagev == (Image *) NULL)
+    return(MagickFalse);
+  if (image_info == (ImageInfo *) NULL)
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,imagev);
+
   /* Define these outside of the following "if logging()" block so they will
    * show in debuggers.
    */
