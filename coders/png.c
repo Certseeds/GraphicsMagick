@@ -4091,6 +4091,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       "  MNG width or height is too large: %lu, %lu",
                       mng_info->mng_width,mng_info->mng_height);
                   MagickFreeMemory(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,
                      ImproperImageHeader,image);
                 }
