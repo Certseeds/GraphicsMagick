@@ -54,6 +54,10 @@ NULL argument.</li>
 <li>coders/png.c: Fixed writer bug due to missing brackets; a Log
 statement should have been inside the &quot;i&quot; loop but instead was
 using i++ left over from the loop.  Bug report by L. Catro.</li>
+<li>coders/png.c: Reject a MNG with dimensions greater than 65k
+by 65k.</li>
+<li>coders/png.c (WriteOnePNGImage): Return without crashing if
+WriteOnePNGImage is passed a NULL image. Fixes CVE-2017-11522.</li>
 </ul>
 </blockquote>
 <p>2017-07-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
