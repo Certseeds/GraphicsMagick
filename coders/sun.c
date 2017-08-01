@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -577,6 +577,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
           for (bit=7; bit >= 0; bit--)
             {
               index=((*p) & (0x01 << bit) ? 0x01 : 0x00);
+              VerifyColormapIndex(image,index);
               indexes[x+7-bit]=index;
               q[x+7-bit]=image->colormap[index];
             }
@@ -587,6 +588,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
             for (bit=7; bit >= (long) (8-(image->columns % 8)); bit--)
               {
                 index=((*p) & (0x01 << bit) ? 0x01 : 0x00);
+                VerifyColormapIndex(image,index);
                 indexes[x+7-bit]=index;
                 q[x+7-bit]=image->colormap[index];
               }

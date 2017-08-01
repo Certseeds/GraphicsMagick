@@ -1,3 +1,9 @@
+2017-07-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sun.c: Fix heap read overflow while indexing into
+	colormap. Problem was reported via email on 17 Jul 2017 by
+	Agostino Sarubbo.
+
 2017-07-31  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Stop a leak when rejecting a
