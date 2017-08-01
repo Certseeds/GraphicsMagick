@@ -1,3 +1,11 @@
+2017-08-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (RegisterJPEGImage): Add support for the
+	SETJMP_IS_THREAD_SAFE preprocessor definition (already used by
+	coders/png.c) to indicate if setjmp/longjmp are thread safe on
+	this platform and that it is safe for multiple encoders/decoders
+	to be active at one time.
+
 2017-07-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sun.c: Fix heap read overflow while indexing into
