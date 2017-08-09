@@ -1,3 +1,20 @@
+2017-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mtv.c (ReadMTVImage): Fix memory leak in error return
+	path upon unexpected EOF (ImageMagick CVE-2017-9142).  Problem was
+	brought to our attention via email from Petr Gajdos on Wed, 9 Aug
+	2017.  Also changed pixel cache access functions used to assure
+	delivery of exception to the user.
+
+2017-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac (SETJMP_IS_THREAD_SAFE): Decide if setjmp/longjmp
+	are thread safe based on host OS.  Assume that these interfaces
+	are thread safe by default.  Declared not to be thread safe under
+	Solaris.  Declaring these interfaces to be thread safe increases
+	available concurrency for coders which use setjmp/longjmp for
+	error recovery (e.g. PNG and JPEG).
+
 2017-08-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (RegisterJPEGImage): Add support for the

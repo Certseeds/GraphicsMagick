@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -158,9 +158,9 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_size,pixels) != row_size)
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        break;
       p=pixels;
-      q=SetImagePixels(image,0,y,image->columns,1);
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
       for (x=0; x < (long) image->columns; x++)
@@ -170,7 +170,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
         q->blue=ScaleCharToQuantum(*p++);
         q++;
       }
-      if (!SyncImagePixels(image))
+      if (!SyncImagePixelsEx(image,exception))
         break;
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))

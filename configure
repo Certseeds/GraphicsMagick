@@ -8011,6 +8011,21 @@ fi
 
 
 #
+# Decide if setjmp/longjmp is thread safe based on host OS
+#
+case "${host_os}" in
+  solaris2* )
+    # Documented not to be MT safe
+
+    ;;
+  *)
+
+$as_echo "#define SETJMP_IS_THREAD_SAFE 1" >>confdefs.h
+
+    ;;
+esac
+
+#
 # Configure libtool
 #
 

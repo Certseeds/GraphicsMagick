@@ -535,6 +535,9 @@
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
 
+/* Setjmp/longjmp are thread safe */
+#undef SETJMP_IS_THREAD_SAFE
+
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
 

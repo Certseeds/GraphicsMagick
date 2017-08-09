@@ -393,6 +393,19 @@ fi
 AC_SUBST(LFS_CPPFLAGS)
 
 #
+# Decide if setjmp/longjmp is thread safe based on host OS
+#
+case "${host_os}" in
+  solaris2* )
+    # Documented not to be MT safe
+
+    ;;
+  *)
+    AC_DEFINE(SETJMP_IS_THREAD_SAFE,1,[Setjmp/longjmp are thread safe])
+    ;;
+esac
+
+#
 # Configure libtool
 #
 
