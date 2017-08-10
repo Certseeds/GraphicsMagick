@@ -393,17 +393,18 @@ typedef enum
 /*
   Image orientation.  Based on TIFF standard values (also EXIF).
 */
-typedef enum               /* Line direction / Frame Direction */
-{                          /* -------------- / --------------- */
-  UndefinedOrientation,    /* Unknown        / Unknown         */
-  TopLeftOrientation,      /* Left to right  / Top to bottom   */
-  TopRightOrientation,     /* Right to left  / Top to bottom   */
-  BottomRightOrientation,  /* Right to left  / Bottom to top   */
-  BottomLeftOrientation,   /* Left to right  / Bottom to top   */
-  LeftTopOrientation,      /* Top to bottom  / Left to right   */
-  RightTopOrientation,     /* Top to bottom  / Right to left   */
-  RightBottomOrientation,  /* Bottom to top  / Right to left   */
-  LeftBottomOrientation    /* Bottom to top  / Left to right   */
+typedef enum               /*    Exif     /  Row 0   / Column 0 */
+                           /* Orientation /  edge    /   edge   */
+{                          /* ----------- / -------- / -------- */
+  UndefinedOrientation,    /*      0      / Unknown  / Unknown  */
+  TopLeftOrientation,      /*      1      / Left     / Top      */
+  TopRightOrientation,     /*      2      / Right    / Top      */
+  BottomRightOrientation,  /*      3      / Right    / Bottom   */
+  BottomLeftOrientation,   /*      4      / Left     / Bottom   */
+  LeftTopOrientation,      /*      5      / Top      / Left     */
+  RightTopOrientation,     /*      6      / Top      / Right    */
+  RightBottomOrientation,  /*      7      / Bottom   / Right    */
+  LeftBottomOrientation    /*      8      / Bottom   / Left     */
 } OrientationType;
 
 typedef enum
