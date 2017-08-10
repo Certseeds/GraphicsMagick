@@ -261,6 +261,8 @@ int main ( int argc, char **argv )
     }
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -332,6 +334,8 @@ int main ( int argc, char **argv )
   original->delay = 10;
   if (!WriteImage ( imageInfo, original ))
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&original->exception);
       exit_status = 1;
       goto program_exit;
@@ -376,6 +380,8 @@ int main ( int argc, char **argv )
       }
     if (exception.severity != UndefinedException)
       {
+        if (exception.reason)
+          (void) printf("    reason:%s\n",exception.reason);
 	CatchException(&exception);
 	(void) fflush(stderr);
 	ping_error = MagickTrue;
@@ -424,6 +430,8 @@ int main ( int argc, char **argv )
     }
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -462,6 +470,8 @@ int main ( int argc, char **argv )
   (void) fflush(stdout);
   if(!WriteImage (imageInfo,original))
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&original->exception);
       exit_status = 1;
       goto program_exit;
@@ -493,6 +503,8 @@ int main ( int argc, char **argv )
   final = ReadImage ( imageInfo, &exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;

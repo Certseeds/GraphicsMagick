@@ -1,3 +1,8 @@
+2017-07-10  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* tests/rwblob.c and rwfile.c: Write the reason for FAIL in
+	test-suite.log.
+
 2017-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mtv.c (ReadMTVImage): Fix memory leak in error return
