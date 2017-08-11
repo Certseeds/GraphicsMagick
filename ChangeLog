@@ -1,5 +1,8 @@
 2017-08-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/gif.c (ReadGIFImage): Assure that global colormap is
+	initialized.
+
 	* coders/pict.c (ReadPICTImage): Fix memory leaks in error return
 	path.  ImageMagick CVE CVE-2017-8353.  Patch by Petr Gajdos.
 
