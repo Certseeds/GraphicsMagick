@@ -6,13 +6,14 @@
 	* coders/pict.c (ReadPICTImage): Fix memory leaks in error return
 	path.  ImageMagick CVE CVE-2017-8353.  Patch by Petr Gajdos.
 
-2017-07-10  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-07-11  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* tests/rwblob.c and rwfile.c: Write the reason for FAIL in
 	test-suite.log.
 	* magick/image.h: Revised table of image orientations to show
 	Exif ImageOrientation values (which happen to be the same as
 	the enum values 1 to 8).
+	* coders/png.c: ReadJNGIMage(): fix memory leak (Issue 431). 
 
 2017-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

@@ -1716,8 +1716,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     }
 
   /* Too big? */
-  if (ping_width >
-     (magick_uint64_t) GetMagickResourceLimit(PixelsResource)/ping_height)
+  if (ping_width > 
+    (magick_uint64_t) GetMagickResourceLimit(PixelsResource)/ping_height)
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
       "Number of pixels exceeds resource limit");
@@ -3129,8 +3129,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              (void) ThrowException2(&image->exception,CoderWarning,
-                             "Invalid JHDR chunk length",(char *) NULL);
+
+              /* Issue 431 */
+              DestroyImageList(image);
+  
               return (MagickFail);
             }
 
@@ -3703,26 +3705,42 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   mng_info=(MngInfo *) NULL;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
+  {
+    DestroyImageList(image);
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  }
   if (LocaleCompare(image_info->magick,"JNG") != 0)
+  {
+    DestroyImageList(image);
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  }
   /*
     Verify JNG signature.
   */
   if ((ReadBlob(image,8,magic_number) != 8) ||
       (memcmp(magic_number,"\213JNG\r\n\032\n",8) != 0))
+  {
+    DestroyImageList(image);
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  }
+    
 
   if (BlobIsSeekable(image) && GetBlobSize(image) < 147)
+  {
+    DestroyImageList(image);
     ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
-
+  }
+    
   /*
     Allocate a MngInfo structure.
   */
   have_mng_structure=MagickFalse;
   mng_info=MagickAllocateMemory(MngInfo *,sizeof(MngInfo));
   if (mng_info == (MngInfo *) NULL)
+  {
+    DestroyImageList(image);
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  }
   /*
     Initialize members of the MngInfo structure.
   */
