@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1090,7 +1090,10 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               {
                 ReadPixmap(pixmap);
                 if (!ValidatePixmap(pixmap))
+                {
+                  DestroyImage(tile_image);
                   ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+                }
                 tile_image->matte=pixmap.component_count == 4;
               }
             if ((code != 0x9a) && (code != 0x9b))
@@ -1142,10 +1145,16 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               }
             ReadRectangle(source);
             if (!ValidateRectangle(source))
+            {
+              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
             ReadRectangle(destination);
             if (!ValidateRectangle(destination))
+            {
+              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
             (void) ReadBlobMSBShort(image);
             if ((code == 0x91) || (code == 0x99) || (code == 0x9b))
               {
