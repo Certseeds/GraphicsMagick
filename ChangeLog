@@ -6,7 +6,7 @@
 	* coders/pict.c (ReadPICTImage): Fix memory leaks in error return
 	path.  ImageMagick CVE CVE-2017-8353.  Patch by Petr Gajdos.
 
-2017-07-11  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-08-11  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* tests/rwblob.c and rwfile.c: Write the reason for FAIL in
 	test-suite.log.
