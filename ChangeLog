@@ -1,3 +1,9 @@
+2017-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcd.c (ReadPCDImage): Fix memory leak on return path due
+	to corrupted header.  Patch included in email on 14 Aug 2017 by
+	Petr Gajdos (ImageMagick CVE CVE-2017-8351).
+
 2017-08-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/gif.c (ReadGIFImage): Assure that global colormap is
@@ -13,7 +19,7 @@
 	* magick/image.h: Revised table of image orientations to show
 	Exif ImageOrientation values (which happen to be the same as
 	the enum values 1 to 8).
-	* coders/png.c: ReadJNGIMage(): fix memory leak (Issue 431). 
+	* coders/png.c: ReadJNGIMage(): fix memory leak (Issue 431).
 
 2017-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
