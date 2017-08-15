@@ -3125,59 +3125,51 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
       if (!memcmp(type,mng_JHDR,4))
         {
-          if (length != 16)
+          if (length == 16)
             {
-              DestroyJNG(chunk,&color_image,&color_image_info,
-                &alpha_image,&alpha_image_info);
-
-              /* Issue 431 */
-              DestroyImageList(image);
-  
-              return (MagickFail);
-            }
-
-          jng_width=(unsigned long) mng_get_long(p);
-          jng_height=(unsigned long) mng_get_long(&p[4]);
-          jng_color_type=p[8];
-          jng_image_sample_depth=p[9];
-          jng_image_compression_method=p[10];
-          jng_image_interlace_method=p[11];
-          jng_alpha_sample_depth=p[12];
-          jng_alpha_compression_method=p[13];
-          jng_alpha_filter_method=p[14];
-          jng_alpha_interlace_method=p[15];
-          if (logging)
-            {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_width:      %16lu",
-                                    jng_width);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_height:     %16lu",
-                                    jng_height);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_color_type: %16d",
-                                    jng_color_type);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_image_sample_depth:      %3d",
-                                    jng_image_sample_depth);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_image_compression_method:%3d",
-                                    jng_image_compression_method);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_image_interlace_method:  %3d",
-                                    jng_image_interlace_method);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_alpha_sample_depth:      %3d",
-                                jng_alpha_sample_depth);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_alpha_compression_method:%3d",
-                                    jng_alpha_compression_method);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_alpha_filter_method:     %3d",
-                                    jng_alpha_filter_method);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "    jng_alpha_interlace_method:  %3d",
-                                    jng_alpha_interlace_method);
+              jng_width=(unsigned long) mng_get_long(p);
+              jng_height=(unsigned long) mng_get_long(&p[4]);
+              jng_color_type=p[8];
+              jng_image_sample_depth=p[9];
+              jng_image_compression_method=p[10];
+              jng_image_interlace_method=p[11];
+              jng_alpha_sample_depth=p[12];
+              jng_alpha_compression_method=p[13];
+              jng_alpha_filter_method=p[14];
+              jng_alpha_interlace_method=p[15];
+              if (logging)
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_width:      %16lu",
+                      jng_width);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_height:     %16lu",
+                      jng_height);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_color_type: %16d",
+                      jng_color_type);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_image_sample_depth:      %3d",
+                      jng_image_sample_depth);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_image_compression_method:%3d",
+                      jng_image_compression_method);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_image_interlace_method:  %3d",
+                      jng_image_interlace_method);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_alpha_sample_depth:      %3d",
+                      jng_alpha_sample_depth);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_alpha_compression_method:%3d",
+                      jng_alpha_compression_method);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_alpha_filter_method:     %3d",
+                      jng_alpha_filter_method);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    jng_alpha_interlace_method:  %3d",
+                      jng_alpha_interlace_method);
+                }
             }
 
           MagickFreeMemory(chunk);
@@ -3191,7 +3183,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   jng_width, jng_height);
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+              ThrowReaderException(CorruptImageError,
+                 ImproperImageHeader,image);
             }
 
           /* Temporarily set width and height resources to match JHDR */
@@ -3201,11 +3194,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           continue;
         }
 
-
-      if (!reading_idat && !read_JSEP && (!memcmp(type,mng_JDAT,4) ||
-                                          !memcmp(type,mng_JdAA,4) ||
-                                          !memcmp(type,mng_IDAT,4) ||
-                                          !memcmp(type,mng_JDAA,4)))
+      if ((reading_idat == MagickFalse) && (read_JSEP == MagickFalse) &&
+         ((memcmp(type,mng_JDAT,4) == 0) || (memcmp(type,mng_JdAA,4) == 0) ||
+         (memcmp(type,mng_IDAT,4) == 0) || (memcmp(type,mng_JDAA,4) == 0)))
         {
           /*
             o create color_image
@@ -3511,7 +3502,13 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
     o destroy the secondary image.
   */
 
-  if (color_image != (Image *)NULL)
+  if (color_image_info == (ImageInfo *) NULL || color_image == (Image *) NULL)
+    {
+      DestroyImage(color_image);
+      return (Image *) NULL;
+    }
+
+  else
     {
       CloseBlob(color_image);
       if (logging)
@@ -3534,7 +3531,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             Don't throw exception here since ReadImage() will already
             have thrown it.
           */
-          DestroyImage(image);
           return (Image *) NULL;
         }
 
@@ -3750,22 +3746,16 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   mng_info->image=image;
   image=ReadOneJNGImage(mng_info,image_info,exception);
   MngInfoFreeStruct(mng_info,&have_mng_structure);
-  if (image == (Image *) NULL)
+  if (image == (Image *) NULL || image->columns == 0 || image->rows == 0)
     {
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "exit ReadJNGImage() with error");
-      return((Image *) NULL);
+      return(image);
     }
+
   CloseBlob(image);
-  if (image->columns == 0 || image->rows == 0)
-    {
-      DestroyImageList(image);
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "exit ReadJNGImage() with error");
-      return((Image *) NULL);
-    }
+
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"exit ReadJNGImage()");
   return (image);

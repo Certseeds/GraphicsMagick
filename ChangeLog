@@ -1,3 +1,8 @@
+2017-08-14  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Fixed double-free after
+	reading a malformed JNG (Issue #438).
+
 2017-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcd.c (ReadPCDImage): Fix memory leak on return path due
