@@ -1,3 +1,15 @@
+2017-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (GetStyleTokens): Fix SourceForge bugs 434 "heap
+	buffer overflow in GetStyleTokens", 435 "null pointer
+	dereference_in_SVGStartElement", and 436 "heap buffer overflow in
+	GetStyleTokens" which all originated from a heap buffer overflow
+	in GetStyleStokens(), or inconsistent initialization.  Now the
+	implementation truncates parsing for poorly-formed input (to avoid
+	buffer overflow) while still correctly parsing well-formed input.
+	The reproducers and problem reports are attributed to "ADLab of
+	Venustech".
+
 2017-08-14  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Fixed double-free after

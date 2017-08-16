@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2017-08-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (GetStyleTokens): Fix SourceForge bugs 434 &quot;heap
+buffer overflow in GetStyleTokens&quot;, 435 &quot;null pointer
+dereference_in_SVGStartElement&quot;, and 436 &quot;heap buffer overflow in
+GetStyleTokens&quot; which all originated from a heap buffer overflow
+in GetStyleStokens(), or inconsistent initialization.  Now the
+implementation truncates parsing for poorly-formed input (to avoid
+buffer overflow) while still correctly parsing well-formed input.
+The reproducers and problem reports are attributed to &quot;ADLab of
+Venustech&quot;.</li>
+</ul>
+</blockquote>
 <p>2017-08-14  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">glennrp<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
