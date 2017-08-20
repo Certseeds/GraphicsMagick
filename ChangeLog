@@ -1,3 +1,11 @@
+2017-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sun.c (ReadSUNImage): Fix failure to allocate memory due
+	to inadequate file data to support claimed image width and height.
+	First notified by email from Agostino Sarubbo on 14 Jul 2017 and
+	then again as SourceForge bug #442 "memory allocation failure in
+	magickmalloc".
+
 2017-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (GetStyleTokens): Fix SourceForge bugs 434 "heap
