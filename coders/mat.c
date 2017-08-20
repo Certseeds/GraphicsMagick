@@ -378,12 +378,12 @@ magick_off_t TotalSize = 0;
       if ((zip_status != Z_OK) && (zip_status != Z_STREAM_END))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Corrupt inflate stream");
-          ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
+          inflateEnd(&zip_info);          
           MagickFreeMemory(cache_block);
-          MagickFreeMemory(decompress_block);
-          inflateEnd(&zip_info);
+          MagickFreeMemory(decompress_block);          
           (void)fclose(mat_file);
           LiberateTemporaryFile(clone_info->filename);
+          ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
           return NULL;
         }
       fwrite(decompress_block, 4096-zip_info.avail_out, 1, mat_file);
@@ -750,13 +750,19 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
+  {
     ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);
+    goto END_OF_READING_NOCLOSE;
+  }
 
   /*
      Read MATLAB image.
    */
   if(ReadBlob(image,124,&MATLAB_HDR.identific) != 124)
+  {    
     ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
+    goto END_OF_READING;
+  }
 
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
@@ -768,7 +774,10 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
   if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
+  {
     ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
+    goto END_OF_READING;
+  }
 
   ImportPixelAreaOptionsInit(&import_options);
 
@@ -793,11 +802,15 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   else			/* unsupported endian */
   {
 MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);  
+    goto END_OF_READING;
   }
 
   filepos = TellBlob(image);
   if(filepos < 0)
-      ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
+  {
+    ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
+    goto END_OF_READING;
+  }
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
@@ -876,8 +889,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
                if (Frames == 0)
                  ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image2);
 	       break;
-      default: ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
-                         image);
+      default: ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
     }  
 
     MATLAB_HDR.Flag1 = ReadBlobXXXShort(image2);
@@ -977,7 +989,10 @@ NEXT_FRAME:
         image->depth = Min(QuantumDepth,32);        /* double type cell */
         import_options.sample_type = FloatQuantumSampleType;
         if (sizeof(double) != 8)
+        {
           ThrowMATReaderException(CoderError, IncompatibleSizeOfDouble, image);
+          goto MATLAB_KO;
+        }
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{                         /* complex double type cell */        
 	}
@@ -985,6 +1000,7 @@ NEXT_FRAME:
         break;
       default:
         ThrowMATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
+        goto MATLAB_KO;
     }
 
     image->columns = MATLAB_HDR.SizeX;
@@ -1008,9 +1024,9 @@ NEXT_FRAME:
 
       if (!AllocateImageColormap(image, image->colors))
       {
-NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed,
-                           image)}
-    }
+NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
+        goto END_OF_READING;
+      }
 
     /*
       If ping is true, then only set image size and colors without
@@ -1200,6 +1216,7 @@ skip_reading_current:
   MagickFreeMemory(BImgBuff);
 END_OF_READING:
   CloseBlob(image);
+END_OF_READING_NOCLOSE:
 
   {
     Image *p;    
