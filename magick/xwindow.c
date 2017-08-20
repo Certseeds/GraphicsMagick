@@ -5678,6 +5678,7 @@ MagickXMakeImage(Display *display,
       segment_info=(XShmSegmentInfo *) window->segment_info;
       segment_info[1].shmid=(-1);
       segment_info[1].shmaddr=NULL;
+      shm_extent=0;
       ximage=XShmCreateImage(display,window->visual,depth,format,(char *) NULL,
 			     &segment_info[1],width,height);
       window->shared_memory &= (ximage != (XImage *) NULL);
