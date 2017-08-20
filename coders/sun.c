@@ -498,6 +498,12 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (sun_info.depth < 8)
       image->depth=sun_info.depth;
 
+    if (image_info->ping)
+      {
+        CloseBlob(image);
+        return(image);
+      }
+
     /*
       Compute bytes per line and bytes per image for an unencoded
       image.
@@ -522,15 +528,37 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (bytes_per_image > sun_info.length)
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
-    if (image_info->ping)
-      {
-        CloseBlob(image);
-        return(image);
-      }
     if (sun_info.type == RT_ENCODED)
       sun_data_length=(size_t) sun_info.length;
     else
       sun_data_length=bytes_per_image;
+
+    /*
+      Verify that data length claimed by header is supported by file size
+    */
+    if (sun_info.type == RT_ENCODED)
+      {
+        if (sun_data_length < bytes_per_image/255U)
+          {
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+          }
+      }
+    if (BlobIsSeekable(image))
+      {
+        const magick_off_t file_size = GetBlobSize(image);
+        const magick_off_t current_offset = TellBlob(image);
+        if ((file_size > 0) &&
+            (current_offset > 0) &&
+            (file_size > current_offset))
+        {
+          const magick_off_t remaining = file_size-current_offset;
+          if (remaining < (magick_off_t) sun_data_length)
+            {
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            }
+        }
+      }
+
     sun_data=MagickAllocateMemory(unsigned char *,sun_data_length);
     if (sun_data == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
