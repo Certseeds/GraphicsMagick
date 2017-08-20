@@ -765,8 +765,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
   {
-    ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);    
-    goto END_OF_READING_NOCLOSE;
+    ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);   
   }
 
   /*
@@ -788,8 +787,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
   if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
   {
-    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
-    goto END_OF_READING;
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);   
   }
 
   ImportPixelAreaOptionsInit(&import_options);
@@ -1022,12 +1020,7 @@ NEXT_FRAME:
 
     if(CheckImagePixelLimits(image, exception) != MagickPass)
     {
-      if(image2!=NULL && image2!=image)		/* Does shadow temporary decompressed image exist? */      
-      {
-        CloseBlob(image2);
-        DeleteImageFromList(&image2);
-      }
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowImg2MATReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     }
 
     /* ----- Create gray palette ----- */
@@ -1036,11 +1029,13 @@ NEXT_FRAME:
     {
       if(image->colors>256) image->colors = 256;
 
-      if (!AllocateImageColormap(image, image->colors))
+      if(AllocateImageColormap(image, image->colors) != MagickPass)
       {
-NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
-        //goto END_OF_READING;
+         if(logging)
+           (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot allocate colormap with %d colors.", image->colors);
+NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed, image)         
       }
+    }
 
     /*
       If ping is true, then only set image size and colors without
@@ -1230,7 +1225,6 @@ skip_reading_current:
   MagickFreeMemory(BImgBuff);
 END_OF_READING:
   CloseBlob(image);
-END_OF_READING_NOCLOSE:
 
   {
     Image *p;    
