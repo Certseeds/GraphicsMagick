@@ -991,7 +991,7 @@ NEXT_FRAME:
         if (sizeof(double) != 8)
         {
           ThrowMATReaderException(CoderError, IncompatibleSizeOfDouble, image);
-          goto MATLAB_KO;
+          goto skip_reading_current;
         }
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{                         /* complex double type cell */        
@@ -1000,7 +1000,7 @@ NEXT_FRAME:
         break;
       default:
         ThrowMATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
-        goto MATLAB_KO;
+        goto skip_reading_current;
     }
 
     image->columns = MATLAB_HDR.SizeX;
