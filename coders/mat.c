@@ -403,7 +403,7 @@ DblBreak:
   *Size = TotalSize;
 
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL) goto UnlinkFile;
-  if( (image2 = AllocateImage(clone_info))==NULL ) goto EraseFile;  
+  if((image2 = AllocateImage(clone_info))==NULL) goto EraseFile;  
   status = OpenBlob(clone_info,image2,ReadBinaryBlobMode,exception);
   if (status == False)
   {
@@ -427,6 +427,20 @@ UnlinkFile:
     DestroyImageInfo(clone_info);    \
   ThrowReaderException(code_,reason_,image_); \
 }
+
+
+#define ThrowImg2MATReaderException(code_,reason_,image_) \
+{ \
+   if(image2!=NULL && image2!=image)	/* Does shadow temporary decompressed image exist? */ \
+   { \
+     CloseBlob(image2); \
+     DeleteImageFromList(&image2); \
+  } \
+  if(clone_info) \
+    DestroyImageInfo(clone_info);    \
+  ThrowReaderException(code_,reason_,image_); \
+}
+
 
 
 
@@ -751,8 +765,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
   {
-    ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);
-    goto END_OF_READING_NOCLOSE;
+    ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);    
   }
 
   /*
@@ -760,8 +773,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
    */
   if(ReadBlob(image,124,&MATLAB_HDR.identific) != 124)
   {    
-    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
-    goto END_OF_READING;
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);    
   }
 
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
@@ -775,8 +787,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
   if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
   {
-    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
-    goto END_OF_READING;
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);    
   }
 
   ImportPixelAreaOptionsInit(&import_options);
@@ -801,15 +812,13 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   }
   else			/* unsupported endian */
   {
-MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);  
-    goto END_OF_READING;
+MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);    
   }
 
   filepos = TellBlob(image);
   if(filepos < 0)
   {
-    ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
-    goto END_OF_READING;
+    ThrowMATReaderException(BlobError,UnableToObtainOffset,image);    
   }
   while(!EOFBlob(image)) /* object parser loop */
   {
@@ -879,17 +888,17 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       case  8: z2=z=1; break;			/* 2D matrix*/
       case 12: z2=z = ReadBlobXXXLong(image2);	/* 3D matrix RGB*/
 	       (void) ReadBlobXXXLong(image2);  /* Unknown6 */
-	       if(z!=3) ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
+	       if(z!=3) ThrowImg2MATReaderException(CoderError, MultidimensionalMatricesAreNotSupported,
                          image);
 	       break;
       case 16: z2=z = ReadBlobXXXLong(image2);	/* 4D matrix animation */
 	       if(z!=3 && z!=1)
-		 ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
+		 ThrowImg2MATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
                Frames = ReadBlobXXXLong(image2);
                if (Frames == 0)
-                 ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image2);
+                 ThrowImg2MATReaderException(CorruptImageError,ImproperImageHeader,image2);
 	       break;
-      default: ThrowMATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
+      default: ThrowImg2MATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
     }  
 
     MATLAB_HDR.Flag1 = ReadBlobXXXShort(image2);
@@ -908,7 +917,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
         MATLAB_HDR.StructureClass != mxUINT32_CLASS &&		/* uint32 + uint32 3D */
         MATLAB_HDR.StructureClass != mxINT64_CLASS &&
         MATLAB_HDR.StructureClass != mxUINT64_CLASS)		/* uint64 + uint64 3D */
-      ThrowMATReaderException(CoderError,UnsupportedCellTypeInTheMatrix,image);
+      ThrowImg2MATReaderException(CoderError,UnsupportedCellTypeInTheMatrix,image);
 
     switch (MATLAB_HDR.NameFlag)
     {
@@ -977,7 +986,7 @@ NEXT_FRAME:
         import_options.sample_type = FloatQuantumSampleType;
 #if 0
       if (sizeof(float) != 4)
-        ThrowMATReaderException(CoderError, IncompatibleSizeOfFloat, image);
+        ThrowImg2MATReaderException(CoderError, IncompatibleSizeOfFloat, image);
 #endif
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{					    /* complex float type cell */
@@ -989,18 +998,16 @@ NEXT_FRAME:
         image->depth = Min(QuantumDepth,32);        /* double type cell */
         import_options.sample_type = FloatQuantumSampleType;
         if (sizeof(double) != 8)
-        {
-          ThrowMATReaderException(CoderError, IncompatibleSizeOfDouble, image);
-          goto skip_reading_current;
+        {          
+          ThrowImg2MATReaderException(CoderError, IncompatibleSizeOfDouble, image);  /* this causes immediate return. */          
         }
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
 	{                         /* complex double type cell */        
 	}
         ldblk = (long) (8 * MATLAB_HDR.SizeX);
         break;
-      default:
-        ThrowMATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
-        goto skip_reading_current;
+      default:        
+        ThrowImg2MATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)        
     }
 
     image->columns = MATLAB_HDR.SizeX;
@@ -1013,6 +1020,11 @@ NEXT_FRAME:
 
     if(CheckImagePixelLimits(image, exception) != MagickPass)
     {
+      if(image2!=NULL && image2!=image)		/* Does shadow temporary decompressed image exist? */      
+      {
+        CloseBlob(image2);
+        DeleteImageFromList(&image2);
+      }
       ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     }
 
@@ -1024,7 +1036,7 @@ NEXT_FRAME:
 
       if (!AllocateImageColormap(image, image->colors))
       {
-NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
+NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
         goto END_OF_READING;
       }
 
