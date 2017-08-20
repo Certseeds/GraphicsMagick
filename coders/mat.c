@@ -766,6 +766,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   if (status == False)
   {
     ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);    
+    goto END_OF_READING_NOCLOSE;
   }
 
   /*
@@ -787,7 +788,8 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   MATLAB_HDR.Version = ReadBlobLSBShort(image);
   if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
   {
-    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);    
+    ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
+    goto END_OF_READING;
   }
 
   ImportPixelAreaOptionsInit(&import_options);
@@ -1036,8 +1038,8 @@ NEXT_FRAME:
 
       if (!AllocateImageColormap(image, image->colors))
       {
-NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
-        goto END_OF_READING;
+NoMemory: ThrowMATReaderException(ResourceLimitError, MemoryAllocationFailed, image)}
+        //goto END_OF_READING;
       }
 
     /*
