@@ -1,3 +1,11 @@
+2017-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pnm.c (ReadPNMImage): Verify that sufficient file data
+	exists to support what the file header requires before allocating
+	memory for it.  Fixes problem reported by Agostino Sarubbo via
+	email on Wed, 12 Jul 2017 and reported yet again via SourceForge
+	bug #441 "memory allocation failure in MagickRealloc".
+
 2017-08-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c: Fix SourceForge bug #433 "memory leak in

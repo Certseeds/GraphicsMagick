@@ -569,7 +569,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Colors: %u",
                                 image->colors);
         }
-      number_pixels=image->columns*image->rows;
+      number_pixels=MagickArraySize(image->columns,image->rows);
       if (number_pixels == 0)
         ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
       if (image->storage_class == PseudoClass)
@@ -858,14 +858,14 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		if (1 == bits_per_sample)
 		  {
 		    /* PBM */
-		    bytes_per_row=((image->columns+7) >> 3);
+		    bytes_per_row=((image->columns+7U) >> 3);
 		    import_options.grayscale_miniswhite=MagickTrue;
 		    quantum_type=GrayQuantum;
 		  }
 		else
 		  {
 		    /* PGM & XV_332 */
-		    bytes_per_row=((bits_per_sample+7)/8)*image->columns;
+		    bytes_per_row=MagickArraySize(((bits_per_sample+7U)/8U),image->columns);
 		    if (XV_332_Format == format)
 		      {
 			quantum_type=IndexQuantum;
@@ -878,7 +878,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 	      }
 	    else
 	      {
-		bytes_per_row=(((bits_per_sample+7)/8)*samples_per_pixel)*image->columns;
+		bytes_per_row=MagickArraySize((((bits_per_sample+7)/8)*samples_per_pixel),
+                                              image->columns);
 		if (3 == samples_per_pixel)
 		  {
 		    /* PPM */
@@ -915,6 +916,28 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		    is_monochrome=MagickFalse;
 		  }
 	      }
+
+            /* Validate file size before allocating memory */
+            if (BlobIsSeekable(image))
+              {
+                const magick_off_t file_size = GetBlobSize(image);
+                const magick_off_t current_offset = TellBlob(image);
+                if ((file_size > 0) &&
+                    (current_offset > 0) &&
+                    (file_size > current_offset))
+                  {
+                    const magick_off_t remaining = file_size-current_offset;
+                    const magick_off_t needed = (magick_off_t) image->rows *
+                      (magick_off_t) bytes_per_row;
+                    if ((remaining < (magick_off_t) bytes_per_row) ||
+                        (remaining < needed))
+                      {
+                        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                                       image->filename);
+                        break;
+                      }
+                  }
+              }
         
             scanline_set=AllocateThreadViewDataArray(image,exception,bytes_per_row,1);
             if (scanline_set == (ThreadViewDataSet *) NULL)
