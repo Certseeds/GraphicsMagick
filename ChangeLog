@@ -1,4 +1,8 @@
-2017-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+2017-08-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c: Fix SourceForge bug #433 "memory leak in
+	ReadMATImage".  Credit for discovering and reporting the problem
+	is "ADLab of Venustech".
 
 	* coders/sun.c (ReadSUNImage): Fix failure to allocate memory due
 	to inadequate file data to support claimed image width and height.
