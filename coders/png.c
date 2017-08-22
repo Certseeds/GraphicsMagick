@@ -3964,9 +3964,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                   type[0],type[1],type[2],type[3],length);
 
           if (length > PNG_MAX_UINT)
-            status=MagickFalse;
-          p=NULL;
-          chunk=(unsigned char *) NULL;
+            {
+              MngInfoFreeStruct(mng_info,&have_mng_structure);
+              ThrowReaderException(CorruptImageError,CorruptImage,image);
+            }
           if (length)
             {
               chunk=MagickAllocateMemory(unsigned char *,length);

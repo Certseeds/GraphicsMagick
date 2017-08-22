@@ -1,3 +1,8 @@
+2017-08-14  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneMNGImage): Deal with invalid (too large)
+	length of MNG chunks (bug #446).
+
 2017-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pnm.c (ReadPNMImage): Verify that sufficient file data
