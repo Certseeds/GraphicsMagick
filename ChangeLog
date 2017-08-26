@@ -1,5 +1,10 @@
 2017-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xbm.c (ReadXBMImage): Fix two denial of service (DOS)
+	issues in ReadXBMImage() which result in the reader not
+	returning. Problem was reported via email on Wed Aug 23 2017 by
+	Xiaohei and Wangchu from Alibaba Security Team.
+
 	* coders/jnx.c (ReadJNXImage): Fix denial of service (DOS) issue
 	in ReadJNXImage() whereby large amounts of CPU and memory
 	resources may be consumed although the file itself does not
