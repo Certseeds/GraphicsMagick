@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2012-2015 GraphicsMagick Group
+% Copyright (C) 2012-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -99,6 +99,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
     *blob;
 
   char img_label_str[MaxTextExtent];
+
 
   alloc_size = TileInfo->PicSize + 2;
 
@@ -242,6 +243,9 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
     total_tiles,
     current_tile;
 
+  magick_off_t
+    file_size;
+
   /* Open image file. */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -254,9 +258,8 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   if (status == False)
     ThrowReaderException(FileOpenError, UnableToOpenFile, image);
 
-  memset(JNXLevelInfo, 0, sizeof(JNXLevelInfo));
-
   /* Read JNX image header. */
+  (void) memset(&JNXHeader, 0, sizeof(JNXHeader));
   JNXHeader.Version = ReadBlobLSBLong(image);
   if (JNXHeader.Version > 4)
     ThrowReaderException(CorruptImageError, ImproperImageHeader, image);
@@ -266,8 +269,6 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   JNXHeader.MapBounds.SouthWest.lat = ReadBlobLSBLong(image);
   JNXHeader.MapBounds.SouthWest.lon = ReadBlobLSBLong(image);
   JNXHeader.Levels = ReadBlobLSBLong(image);
-  if (JNXHeader.Levels > 20)
-    ThrowReaderException(CorruptImageError, ImproperImageHeader, image);
   JNXHeader.Expiration = ReadBlobLSBLong(image);
   JNXHeader.ProductID = ReadBlobLSBLong(image);
   JNXHeader.CRC = ReadBlobLSBLong(image);
@@ -279,7 +280,41 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   if (EOFBlob(image))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
+  file_size = GetBlobSize(image);
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "JNX Header:\n"
+                        "    Version:    %u\n"
+                        "    DeviceSN:   %u\n"
+                        "    MapBounds:\n"
+                        "      NorthEast: lat = %u, lon = %u\n"
+                        "      SouthWest: lat = %u, lon = %u\n"
+                        "    Levels:     %u\n"
+                        "    Expiration: %u\n"
+                        "    ProductID:  %u\n"
+                        "    CRC:        %u\n"
+                        "    SigVersion: %u\n"
+                        "    SigOffset:  %u\n"
+                        "    ZOrder:     %u",
+                        JNXHeader.Version,
+                        JNXHeader.DeviceSN,
+                        JNXHeader.MapBounds.NorthEast.lat,
+                        JNXHeader.MapBounds.NorthEast.lon,
+                        JNXHeader.MapBounds.SouthWest.lat,
+                        JNXHeader.MapBounds.SouthWest.lon,
+                        JNXHeader.Levels,
+                        JNXHeader.Expiration,
+                        JNXHeader.ProductID,
+                        JNXHeader.CRC,
+                        JNXHeader.SigVersion,
+                        JNXHeader.SigOffset,
+                        JNXHeader.ZOrder);
+
+  if (JNXHeader.Levels > 20)
+    ThrowReaderException(CorruptImageError, ImproperImageHeader, image);
+
   /* Read JNX image level info. */
+  memset(JNXLevelInfo, 0, sizeof(JNXLevelInfo));
   total_tiles = 0;
   current_tile = 0;
   for (i = 0; i < JNXHeader.Levels; i++)
@@ -302,10 +337,22 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
         {
           JNXLevelInfo[i].Copyright = NULL;
         }
-    }
 
-  if (EOFBlob(image))
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+      if (EOFBlob(image))
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Level[%u] Info:"
+                              "  TileCount: %4u"
+                              "  TilesOffset: %6u"
+                              "  Scale: %04u",
+                              i,
+                              JNXLevelInfo[i].TileCount,
+                              JNXLevelInfo[i].TilesOffset,
+                              JNXLevelInfo[i].Scale
+                              );
+    }
 
   /* Get the current limit */
   SaveLimit = GetMagickResourceLimit(MapResource);
@@ -316,11 +363,32 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   /* Read JNX image data. */
   for (i = 0; i < JNXHeader.Levels; i++)
     {
+      /*
+        Validate TileCount against remaining file data
+      */
+      const magick_off_t current_offset = TellBlob(image);
+      const size_t pos_list_entry_size =
+        sizeof(magick_uint32_t) + sizeof(magick_uint32_t) + sizeof(magick_uint32_t) +
+        sizeof(magick_uint32_t) + sizeof(magick_uint16_t) + sizeof(magick_uint16_t) +
+        sizeof(magick_uint32_t) + sizeof(magick_uint32_t);
+      const magick_off_t remaining = file_size-current_offset;
+      const size_t needed = MagickArraySize(pos_list_entry_size,JNXLevelInfo[i].TileCount);
+
+      if ((needed == 0U) || (remaining <= 0) || (remaining < (magick_off_t) needed))
+        {
+          (void) SetMagickResourceLimit(MapResource, SaveLimit);
+          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
+
       PositionList = MagickAllocateArray(TJNXTileInfo *,
                                          JNXLevelInfo[i].TileCount,
                                          sizeof(TJNXTileInfo));
       if (PositionList == NULL)
-        continue;
+        {
+          (void) SetMagickResourceLimit(MapResource, SaveLimit);
+          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                               image);
+        }
 
       (void) SeekBlob(image, JNXLevelInfo[i].TilesOffset, SEEK_SET);
       for (j = 0; j < JNXLevelInfo[i].TileCount; j++)
@@ -333,12 +401,15 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
           PositionList[j].PicHeight = ReadBlobLSBShort(image);
           PositionList[j].PicSize = ReadBlobLSBLong(image);
           PositionList[j].PicOffset = ReadBlobLSBLong(image);
-        }
 
-      if (EOFBlob(image))
-        {
-          MagickFreeMemory(PositionList);
-          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          if (EOFBlob(image) ||
+              ((magick_off_t) PositionList[j].PicOffset +
+               PositionList[j].PicSize > file_size))
+            {
+              (void) SetMagickResourceLimit(MapResource, SaveLimit);
+              MagickFreeMemory(PositionList);
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            }
         }
 
       for (j = 0; j < JNXLevelInfo[i].TileCount; j++)
@@ -350,6 +421,9 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
           previous_handler = SetMonitorHandler(0);
           image = ExtractTileJPG(image, image_info, PositionList+j, exception);
           (void) SetMonitorHandler(previous_handler);
+
+          if (exception->severity >= ErrorException)
+            break;
 
           current_tile++;
           if (QuantumTick(current_tile,total_tiles))

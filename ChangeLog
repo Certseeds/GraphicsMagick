@@ -1,3 +1,11 @@
+2017-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jnx.c (ReadJNXImage): Fix denial of service (DOS) issue
+	in ReadJNXImage() whereby large amounts of CPU and memory
+	resources may be consumed although the file itself does not
+	support the requests.  Problem was reported via email on Wed Aug
+	23 2017 by Xiaohei and Wangchu from Alibaba Security Team.
+
 2017-08-14  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneMNGImage): Deal with invalid (too large)
