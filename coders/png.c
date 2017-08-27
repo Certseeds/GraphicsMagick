@@ -3098,7 +3098,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
-          ThrowReaderException(CorruptImageError,CorruptImage,image);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+              "chunk length (%lu) > PNG_MAX_UINT",length);
+          return ((Image*)NULL);
         }
 
       chunk=(unsigned char *) NULL;
@@ -3110,14 +3112,17 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                   image);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "    Could not allocate chunk memory");
+              return ((Image*)NULL);
             }
           if (ReadBlob(image,length,chunk) < length)
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(CorruptImageError,CorruptImage,image);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "    chunk reading was incomplete");
+              return ((Image*)NULL);
             }
           p=chunk;
         }
@@ -3183,8 +3188,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   jng_width, jng_height);
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(CorruptImageError,
-                 ImproperImageHeader,image);
+              return ((Image *)NULL);
             }
 
           /* Temporarily set width and height resources to match JHDR */
@@ -3210,8 +3214,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                   image);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "    could not allocate color_image_info");
+              return ((Image *)NULL);
             }
           GetImageInfo(color_image_info);
           color_image=AllocateImage(color_image_info);
@@ -3219,8 +3224,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                   image);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "    could not allocate color_image");
+              return ((Image *)NULL);
             }
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3232,7 +3238,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
-              ThrowReaderException(CoderError,UnableToOpenBlob,color_image);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  "    could not open color_image blob");
+              return ((Image *)NULL);
             }
 
           if (!image_info->ping && jng_color_type >= 12)
@@ -3243,8 +3251,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
-                  ThrowReaderException(ResourceLimitError,
-                                       MemoryAllocationFailed, image);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    could not allocate alpha_image_info");
+                  return ((Image *)NULL);
                 }
               GetImageInfo(alpha_image_info);
               alpha_image=AllocateImage(alpha_image_info);
@@ -3252,9 +3261,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
-                  ThrowReaderException(ResourceLimitError,
-                                       MemoryAllocationFailed,
-                                       alpha_image);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    could not allocate alpha_image");
+                  return ((Image *)NULL);
                 }
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3266,7 +3275,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
-                  ThrowReaderException(CoderError,UnableToOpenBlob,image);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                      "    could not open alpha_image blob");
+                  return ((Image *)NULL);
                 }
               if (jng_alpha_compression_method == 0)
                 {
@@ -3600,6 +3611,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (void) LiberateUniqueFileResource(alpha_image->filename);
               DestroyJNG(NULL,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  " Destroy the JNG image");
               DestroyImage(jng_image);
               jng_image = (Image *)NULL;
             }
@@ -3751,7 +3764,9 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "exit ReadJNGImage() with error");
-      return(image);
+      if (image != (Image *)NULL)
+        DestroyImageList(image);
+      return((Image *)NULL);
     }
 
   CloseBlob(image);
