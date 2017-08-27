@@ -1,5 +1,9 @@
 2017-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mpeg.c (WriteMPEGImage): Fix MPEG writer memory leak.
+	Only the first image in the coalesce image list was being freed.
+	Problem was reported by LCatro via email on July 15, 2017.
+
 	* magick/attribute.c (TracePSClippingPath, TraceSVGClippingPath):
 	Fix SourceForge bug #447 "Heap out of bounds read in
 	ReadMSBShort()".

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -498,7 +498,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
   if (status == False)
     {
       if (coalesce_image != image)
-        DestroyImage(coalesce_image);
+        DestroyImageList(coalesce_image);
       (void) LiberateTemporaryFile(basename);
       if (image_info->quality != DefaultCompressionQuality)
         {
@@ -604,7 +604,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
   (void) remove(filename);
   (void) LiberateTemporaryFile(basename);
   if (coalesce_image != image)
-    DestroyImage(coalesce_image);
+    DestroyImageList(coalesce_image);
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"exit");
   return(status);
