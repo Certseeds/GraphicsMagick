@@ -1,3 +1,9 @@
+2017-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (TracePSClippingPath, TraceSVGClippingPath):
+	Fix SourceForge bug #447 "Heap out of bounds read in
+	ReadMSBShort()".
+
 2017-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xbm.c (ReadXBMImage): Fix two denial of service (DOS)

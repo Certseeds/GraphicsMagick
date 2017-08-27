@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -368,7 +368,7 @@ ReadByte(unsigned char **p,size_t *length)
   return(c);
 }
 
-static long
+static magick_int32_t
 ReadMSBLong(unsigned char **p,size_t *length)
 {
   int
@@ -401,7 +401,7 @@ ReadMSBLong(unsigned char **p,size_t *length)
   return(value.s);
 }
 
-static int
+static magick_int32_t
 ReadMSBShort(unsigned char **p,size_t *length)
 {
   int
@@ -433,13 +433,28 @@ ReadMSBShort(unsigned char **p,size_t *length)
 }
 
 /*
-  FIXME: length is defined as type size_t, and then code incorrectly
-  assumes that size_t is a signed type
+  Advance 'blob' by 'amount' or the amount remaining in 'length'.
+  Decrement 'length' by 'amount' or to zero.
 */
+static inline size_t AdvanceBlob(const size_t amount, size_t length, unsigned char **blob)
+{
+  if (length > amount)
+    {
+      *blob+=amount;
+      length-=amount;
+    }
+  else
+    {
+      *blob+=length;
+      length=0U;
+    }
+  return length;
+}
+
 static char *
 TracePSClippingPath(unsigned char *blob,size_t length,
-		    unsigned long columns,
-		    unsigned long rows)
+		    const unsigned long columns,
+		    const unsigned long rows)
 {
   char
     *path,
@@ -516,13 +531,11 @@ TracePSClippingPath(unsigned char *blob,size_t length,
 		  Expected subpath length record
 		*/
 		knot_count=ReadMSBShort(&blob,&length);
-		blob+=22;
-		length-=22;
+                length=AdvanceBlob(22U,length,&blob);
 	      }
 	    else
 	      {
-		blob+=24;
-		length-=24;
+                length=AdvanceBlob(24U,length,&blob);
 	      }	  
 	    break;
 	  }
@@ -536,8 +549,7 @@ TracePSClippingPath(unsigned char *blob,size_t length,
 		/*
 		  Unexpected subpath knot
 		*/
-		blob+=24;
-		length-=24;
+                length=AdvanceBlob(24U,length,&blob);
 	      }
 	    else
 	      {
@@ -665,8 +677,7 @@ TracePSClippingPath(unsigned char *blob,size_t length,
 	case 8:
 	default:
 	  {
-	    blob+=24;
-	    length-=24;
+            length=AdvanceBlob(24U,length,&blob);
 	    break;
 	  }
 	}
@@ -682,13 +693,11 @@ TracePSClippingPath(unsigned char *blob,size_t length,
   return(path);
 }
 
-/*
-  FIXME: length is defined as type size_t, and then code incorrectly
-  assumes that size_t is a signed type.
-*/
 static char *
-TraceSVGClippingPath(unsigned char *blob,size_t length,
-		     unsigned long columns,unsigned long rows)
+TraceSVGClippingPath(unsigned char *blob,
+                     size_t length,
+		     const unsigned long columns,
+                     const unsigned long rows)
 {
   char
     *path,
@@ -756,13 +765,11 @@ TraceSVGClippingPath(unsigned char *blob,size_t length,
 		  Expected subpath length record
 		*/
 		knot_count=ReadMSBShort(&blob,&length);
-		blob+=22;
-		length-=22;
+		length=AdvanceBlob(22U,length,&blob);
 	      }
 	    else
 	      {
-		blob+=24;
-		length-=24;
+		length=AdvanceBlob(24U,length,&blob);
 	      }	  
 	    break;
 	  }
@@ -776,8 +783,7 @@ TraceSVGClippingPath(unsigned char *blob,size_t length,
 		/*
 		  Unexpected subpath knot
 		*/
-		blob+=24;
-		length-=24;
+                length=AdvanceBlob(24U,length,&blob);
 	      }
 	    else
 	      {
@@ -872,8 +878,7 @@ TraceSVGClippingPath(unsigned char *blob,size_t length,
 	case 8:
 	default:
 	  {
-	    blob+=24;
-	    length-=24;
+            length=AdvanceBlob(24U,length,&blob);
 	    break;
 	  }
 	}
