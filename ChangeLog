@@ -1,6 +1,8 @@
 2017-08-27  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c (ReadOneJNGImage): Attempt to deal with Issue 440.
+	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue "#440
+	use-after-free in CloseBlob (blob.c) (INCOMPLETE FIX FOR
+	CVE-2017-11403)".
 
 2017-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
