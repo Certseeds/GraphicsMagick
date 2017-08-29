@@ -1,9 +1,11 @@
-2017-08-27  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-08-29  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue "#440
-	use-after-free in CloseBlob (blob.c) (INCOMPLETE FIX FOR
+	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue #440
+	"use-after-free in CloseBlob (blob.c) (INCOMPLETE FIX FOR
 	CVE-2017-11403)" and SourceForge issue #438 "heap use after free
 	in CloseBlob".
+	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue #439
+	"assertion failure in magick/​pixel_cache.c"
 
 2017-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
