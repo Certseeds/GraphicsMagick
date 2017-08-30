@@ -1006,6 +1006,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             case 0x0B: /* bitmap type 1 */
               BitmapHeader1.Width=ReadBlobLSBShort(image);
               BitmapHeader1.Heigth=ReadBlobLSBShort(image);
+              if ((BitmapHeader1.Width == 0) || (BitmapHeader1.Heigth == 0))
+                ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               BitmapHeader1.Depth=ReadBlobLSBShort(image);
               BitmapHeader1.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader1.VertRes=ReadBlobLSBShort(image);
@@ -1057,6 +1059,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader2.UpRightY=ReadBlobLSBShort(image);
               BitmapHeader2.Width=ReadBlobLSBShort(image);
               BitmapHeader2.Heigth=ReadBlobLSBShort(image);
+              if ((BitmapHeader2.Width == 0) || (BitmapHeader2.Heigth == 0))
+                ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               BitmapHeader2.Depth=ReadBlobLSBShort(image);
               BitmapHeader2.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader2.VertRes=ReadBlobLSBShort(image);
@@ -1245,6 +1249,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             case 0x0E:
               Bitmap2Header1.Width=ReadBlobLSBShort(image);
               Bitmap2Header1.Heigth=ReadBlobLSBShort(image);
+              if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Heigth == 0))
+                ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               Bitmap2Header1.Depth=ReadBlobByte(image);
               Bitmap2Header1.Compression=ReadBlobByte(image);
 

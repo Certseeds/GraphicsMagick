@@ -1,3 +1,10 @@
+2017-08-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): Patch submitted by Petr Gajdos to
+	check that .Width and .Height are greater than zero before they
+	are assigned to image->columns and image->rows respectively
+	(CVE-2014-9815).
+
 2017-08-29  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue #440
