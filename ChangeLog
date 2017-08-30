@@ -5,7 +5,7 @@
 	CVE-2017-11403)" and SourceForge issue #438 "heap use after free
 	in CloseBlob".
 	* coders/png.c (ReadOneJNGImage): Fix for SourceForge issue #439
-	"assertion failure in magick/​pixel_cache.c"
+	"assertion failure in magick/pixel_cache.c"
 
 2017-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
