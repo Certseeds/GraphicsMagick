@@ -1229,10 +1229,18 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
 
-			/* Sanity check for amount of palette entries. */
-              if( (WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) > (Rec2.RecordLength-2-2) / 3)
-                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);                 
+              /* Sanity check for amount of palette entries. */
+              if (WPG_Palette.NumOfEntries == 0)
+                ThrowReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
+
+              if (WPG_Palette.NumOfEntries > MaxMap)
+                ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
  
+              if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
+                   (((WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) >
+                     ((Rec2.RecordLength-2-2) / 3))) )
+                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
+
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);

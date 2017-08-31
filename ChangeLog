@@ -4,6 +4,8 @@
 	check that .Width and .Height are greater than zero before they
 	are assigned to image->columns and image->rows respectively
 	(CVE-2014-9815).
+	(ReadWPGImage): Do more validations on WPG_Palette.StartIndex and
+	WPG_Palette.NumOfEntries.
 
 2017-08-29  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
