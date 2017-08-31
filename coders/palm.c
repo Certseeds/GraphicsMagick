@@ -394,6 +394,7 @@ PalmPalette8[256][3] =
     { 255, 204, 255 },
     { 255, 255, 255 }
   };
+#if ENABLE_PALM_WRITER
 /*
  The 256 color system palette for Palm Computing Devices.
 */
@@ -657,6 +658,7 @@ static const unsigned char
     {  0,   0,  0},
     {  0,   0,  0}
   };
+#endif /* ENABLE_PALM_WRITER */
 
 typedef struct _PalmHeader
 {
