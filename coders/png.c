@@ -3745,13 +3745,15 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
   {
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unable to open file");
     DestroyImageList(image);
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    return ((Image *)NULL);
   }
   if (LocaleCompare(image_info->magick,"JNG") != 0)
   {
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Improper Image Header");
     DestroyImageList(image);
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    return((Image *)NULL);
   }
   /*
     Verify JNG signature.
@@ -3759,15 +3761,17 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   if ((ReadBlob(image,8,magic_number) != 8) ||
       (memcmp(magic_number,"\213JNG\r\n\032\n",8) != 0))
   {
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Improper Image Header");
     DestroyImageList(image);
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    return((Image *)NULL);
   }
-    
 
   if (BlobIsSeekable(image) && GetBlobSize(image) < 147)
   {
     DestroyImageList(image);
-    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+    return((Image *)NULL);
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+        "Insufficient Image Data");
   }
     
   /*
@@ -3777,8 +3781,10 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   mng_info=MagickAllocateMemory(MngInfo *,sizeof(MngInfo));
   if (mng_info == (MngInfo *) NULL)
   {
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+        "Memory Allocation Failed");
     DestroyImageList(image);
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    return((Image *)NULL);
   }
   /*
     Initialize members of the MngInfo structure.
@@ -3793,7 +3799,7 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
     {
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "exit ReadJNGImage() with error");
+            "exit ReadJNGImage() with error");
       if (image != (Image *)NULL)
         DestroyImageList(image);
       return((Image *)NULL);

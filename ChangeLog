@@ -1,3 +1,8 @@
+2017-09-01  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while
+	reading a malformed JNG file.
+
 2017-08-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ReadWPGImage): Patch submitted by Petr Gajdos to
