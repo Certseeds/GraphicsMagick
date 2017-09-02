@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -888,6 +888,9 @@ MagickExport void ThrowException(ExceptionInfo *exception,
 %  reason, optional description, source filename, function name, and line
 %  number. If logging is enabled, the exception is also logged.
 %
+%  If the exception already contains an ErrorException (or greater) or the
+%  existing exception is more severe, then it is ignored.
+%
 %  The format of the ThrowLoggedException method is:
 %
 %      void ThrowLoggedException(ExceptionInfo *exception,
@@ -918,7 +921,28 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
   const char *module,const char *function,const unsigned long line)
 {
   assert(exception != (ExceptionInfo *) NULL);
+  assert(description != (const char *) NULL);
+  assert(function != (const char *) NULL);
   assert(exception->signature == MagickSignature);
+  if ((exception->severity > ErrorException) ||
+       (exception->severity > severity))
+    {
+      if (reason)
+        {
+          if (description)
+            (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s (%.1024s)",
+                                  reason,description );
+          else
+            (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s",
+                                  reason);
+        }
+      else
+        {
+          (void) LogMagickEvent(severity,module,function,line,
+                                "Ignored: exception contains no reason!");
+        }
+      return;
+    }
   exception->severity=(ExceptionType) severity;
   MagickFreeMemory(exception->reason);
   if (reason)

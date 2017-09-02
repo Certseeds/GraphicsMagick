@@ -392,6 +392,8 @@ void ThrowLoggedException( <a class="reference external" href="../api/types.html
 <p>ThrowLoggedException() throws an exception with the specified severity code,
 reason, optional description, source filename, function name, and line
 number. If logging is enabled, the exception is also logged.</p>
+<p>If the exception already contains an ErrorException (or greater) or the
+existing exception is more severe, then it is ignored.</p>
 <p>The format of the ThrowLoggedException method is:</p>
 <pre class="literal-block">
 void ThrowLoggedException( <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception, const <a class="reference external" href="../api/types.html#exceptiontype">ExceptionType</a> severity,

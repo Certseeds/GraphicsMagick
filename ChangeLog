@@ -1,3 +1,14 @@
+2017-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/error.c (ThrowLoggedException): Capture the first
+	exception at ErrorException level or greater, or only capture
+	exception if it is more severe than an already reported exception.
+	This should help lead to better error reports since the first
+	error is usually the most significant.
+
+	* coders/png.c (ReadJNGImage): Add "improper header" exception
+	reporting.
+
 2017-09-01  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while
