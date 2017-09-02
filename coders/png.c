@@ -3746,12 +3746,14 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   if (status == MagickFalse)
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unable to open file");
+    ThrowException(exception,FileOpenError,UnableToOpenFile,image->filename);
     DestroyImageList(image);
     return ((Image *)NULL);
   }
   if (LocaleCompare(image_info->magick,"JNG") != 0)
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Improper Image Header");
+    ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
     DestroyImageList(image);
     return((Image *)NULL);
   }
@@ -3762,6 +3764,7 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
       (memcmp(magic_number,"\213JNG\r\n\032\n",8) != 0))
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Improper Image Header");
+    ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
     DestroyImageList(image);
     return((Image *)NULL);
   }
