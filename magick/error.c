@@ -921,7 +921,6 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
   const char *module,const char *function,const unsigned long line)
 {
   assert(exception != (ExceptionInfo *) NULL);
-  assert(description != (const char *) NULL);
   assert(function != (const char *) NULL);
   assert(exception->signature == MagickSignature);
   if ((exception->severity > ErrorException) ||
@@ -931,7 +930,7 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
         {
           if (description)
             (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s (%.1024s)",
-                                  reason,description );
+                                  reason,description);
           else
             (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s",
                                   reason);
