@@ -3771,10 +3771,11 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
 
   if (BlobIsSeekable(image) && GetBlobSize(image) < 147)
   {
-    DestroyImageList(image);
-    return((Image *)NULL);
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Insufficient Image Data");
+    ThrowException(exception,CorruptImageError,InsufficientImageDataInFile,image->filename);
+    DestroyImageList(image);
+    return((Image *)NULL);
   }
     
   /*
@@ -3786,6 +3787,7 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Memory Allocation Failed");
+    ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
     DestroyImageList(image);
     return((Image *)NULL);
   }
