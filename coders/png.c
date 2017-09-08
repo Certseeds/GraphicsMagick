@@ -3809,7 +3809,10 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
         DestroyImageList(image);
       image=mng_info->image;
       if (image != (Image *)NULL)
+      {
         DestroyImageList(image);
+        mng_info->image=NULL;
+      }
       return((Image *)NULL);
     }
 
