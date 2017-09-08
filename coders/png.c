@@ -3807,6 +3807,9 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
             "exit ReadJNGImage() with error");
       if (image != (Image *)NULL)
         DestroyImageList(image);
+      image=mng_info->image;
+      if (image != (Image *)NULL)
+        DestroyImageList(image);
       return((Image *)NULL);
     }
 
