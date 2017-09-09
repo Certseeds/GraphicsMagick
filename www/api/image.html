@@ -402,7 +402,8 @@ void DestroyImage( <a class="reference external" href="../api/types.html#image">
 <div class="section" id="id23">
 <h2>Description</h2>
 <p>DestroyImage() dereferences an image, deallocating memory associated with
-the image if the reference count becomes zero.</p>
+the image if the reference count becomes zero.  There is no effect if the
+image pointer is null.</p>
 <p>The format of the DestroyImage method is:</p>
 <pre class="literal-block">
 void DestroyImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
