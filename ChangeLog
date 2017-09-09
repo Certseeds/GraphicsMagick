@@ -1,13 +1,16 @@
 2017-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadJNGImage): Complete fixing CVE-2017-8350 crash
+	while reading a malformed JNG file.
+
 	* coders/{html.c, map.c, plasma.c, png.c, psd.c, rle.c, stegano.c,
 	uil.c}: Downgrade claimed coder stability level for HTML, SHTML,
 	MAP, FRACTAL, PLASMA, JNG, MNG, RLE, STEGANO, and UIL formats.
 
 2017-09-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while
-	reading a malformed JNG file (again).
+	* coders/png.c (ReadJNGImage): More efforts toward fixing
+	CVE-2017-8350 while reading a malformed JNG file.
 
 2017-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -22,8 +25,8 @@
 
 2017-09-01  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while
-	reading a malformed JNG file.
+	* coders/png.c (ReadJNGImage): Efforts toward fixing CVE-2017-8350
+	while reading a malformed JNG file.
 
 2017-08-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
