@@ -1207,7 +1207,8 @@ MagickExport ImageInfo *CloneImageInfo(const ImageInfo *image_info)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DestroyImage() dereferences an image, deallocating memory associated with
-%  the image if the reference count becomes zero.
+%  the image if the reference count becomes zero.  There is no effect if the
+%  image pointer is null.
 %
 %  The format of the DestroyImage method is:
 %
@@ -1274,6 +1275,7 @@ MagickExport void DestroyImage(Image *image)
   MagickFreeMemory(image->ascii85);
   DestroyBlob(image);
   DestroySemaphoreInfo((SemaphoreInfo **) &image->semaphore);
+  image->signature=0;
   MagickFreeMemory(image);
 }
 
@@ -1321,6 +1323,7 @@ MagickExport void DestroyImageInfo(ImageInfo *image_info)
     DestroyCacheInfo(image_info->cache);
   if (image_info->definitions != (MagickMap) NULL)
     MagickMapDeallocateMap((MagickMap) image_info->definitions);
+  image_info->signature=0;
   MagickFreeMemory(image_info);
 }
 
