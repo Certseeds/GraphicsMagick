@@ -1,5 +1,5 @@
 # -*- shell-script -*-
-# Copyright (C) 2012 GraphicsMagick Group
+# Copyright (C) 2012-2017 GraphicsMagick Group
 # Definitions of optional features and configuration values for this build.
 # Intended for use by test scripts.
 MAGICK_FEATURES='@MAGICK_FEATURES@'
@@ -13,6 +13,7 @@ LD_LIBRARY_PATH="@abs_top_builddir@/magick/.libs:${LD_LIBRARY_PATH}"
 MAGICK_CODER_MODULE_PATH='@abs_top_builddir@/coders'
 MAGICK_CONFIGURE_PATH='@abs_top_builddir@/config:@abs_top_srcdir@/config'
 MAGICK_FILTER_MODULE_PATH='@abs_top_builddir@/filters'
+MAGICK_CODER_STABILITY='BROKEN'
 
 PATH="@abs_top_builddir@/utilities:${PATH}"
 set +a
