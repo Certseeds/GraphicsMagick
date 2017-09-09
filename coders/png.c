@@ -6047,7 +6047,7 @@ ModuleExport void RegisterPNGImage(void)
       if (*version != '\0')
         entry->version=version;
       entry->module="PNG";
-      entry->coder_class=PrimaryCoderClass;
+      entry->coder_class=StableCoderClass;
       entry->note=MNGNote;
       (void) RegisterMagickInfo(entry);
 
@@ -6178,7 +6178,7 @@ ModuleExport void RegisterPNGImage(void)
       if (*version != '\0')
         entry->version=version;
       entry->module="PNG";
-      entry->coder_class=PrimaryCoderClass;
+      entry->coder_class=StableCoderClass;
       (void) RegisterMagickInfo(entry);
 
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)

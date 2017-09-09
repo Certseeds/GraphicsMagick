@@ -1,3 +1,9 @@
+2017-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/{html.c, map.c, plasma.c, png.c, psd.c, rle.c, stegano.c,
+	uil.c}: Downgrade claimed coder stability level for HTML, SHTML,
+	MAP, FRACTAL, PLASMA, JNG, MNG, RLE, STEGANO, and UIL formats.
+
 2017-09-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while

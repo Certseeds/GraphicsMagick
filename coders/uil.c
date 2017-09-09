@@ -83,6 +83,7 @@ ModuleExport void RegisterUILImage(void)
   entry->adjoin=False;
   entry->description="X-Motif UIL table";
   entry->module="UIL";
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 

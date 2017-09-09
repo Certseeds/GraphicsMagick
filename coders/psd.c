@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1553,7 +1553,7 @@ ModuleExport void RegisterPSDImage(void)
   entry->magick=(MagickHandler) IsPSD;
   entry->description="Adobe Photoshop bitmap";
   entry->module="PSD";
-  entry->coder_class=UnstableCoderClass;
+  entry->coder_class=BrokenCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 

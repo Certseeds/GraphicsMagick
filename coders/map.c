@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -242,7 +242,7 @@ ModuleExport void RegisterMAPImage(void)
   entry->raw=True;
   entry->description="Colormap intensities and indices";
   entry->module="MAP";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=UnstableCoderClass;
   entry->extension_treatment=ObeyExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 }
