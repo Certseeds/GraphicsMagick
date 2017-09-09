@@ -1,3 +1,8 @@
+2017-09-08  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c (ReadJNGImage): Fixed CVE-2017-8350 crash while
+	reading a malformed JNG file (again).
+
 2017-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/error.c (ThrowLoggedException): Capture the first
