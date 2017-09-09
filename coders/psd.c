@@ -1553,7 +1553,7 @@ ModuleExport void RegisterPSDImage(void)
   entry->magick=(MagickHandler) IsPSD;
   entry->description="Adobe Photoshop bitmap";
   entry->module="PSD";
-  entry->coder_class=BrokenCoderClass;
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
