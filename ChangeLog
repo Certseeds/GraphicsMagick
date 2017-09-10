@@ -1,3 +1,10 @@
+2017-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/rle.c (ReadRLEImage): Impose image dimension limits
+	according to Utah RLE specification. Cap number of planes handled
+	internally at 4.  Remove non-standard multi-frame extension, which
+	did not work anyway.
+
 2017-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadJNGImage): Complete fixing CVE-2017-8350 crash

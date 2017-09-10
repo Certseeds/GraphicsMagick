@@ -87,6 +87,31 @@ typedef struct _RLE_Header
 
 } RLE_HEADER;
 
+/* If this flag is set, the image rectangle should first be cleared to
+the background color (q.v.) before reading the scanline data. */
+#define ClearFirstFlag    0x01
+
+/* If this flag is set, no background color is supplied, and the
+ClearFirst flag should be ignored. */
+#define NoBackgroundFlag  0x02
+
+/* This flag indicates the presence of an "alpha" channel. The alpha
+channel is used by image compositing software to correctly blend
+anti-aliased edges. It is stored as channel -1 (255). */
+#define AlphaFlag         0x04
+
+/* If this flag is set, comments are present in the variable part of
+the header, immediately following the color map. */
+#define CommentsFlag      0x08
+
+/* RLE operators */
+#define SkipLinesOp  0x01
+#define SetColorOp  0x02
+#define SkipPixelsOp  0x03
+#define ByteDataOp  0x05
+#define RunDataOp  0x06
+#define EOFOp  0x07
+
 static void LogRLEHeader(const RLE_HEADER* rle_header)
 {
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -199,13 +224,6 @@ do { \
 } while (0);
 static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
-#define SkipLinesOp  0x01
-#define SetColorOp  0x02
-#define SkipPixelsOp  0x03
-#define ByteDataOp  0x05
-#define RunDataOp  0x06
-#define EOFOp  0x07
-
   RLE_HEADER
     rle_header;
 
@@ -244,10 +262,10 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   size_t
     count,
+    map_length,
+    number_pixels,
+    offset,
     rle_bytes;
-
-  unsigned int
-    map_length;
 
   unsigned char
     background_color[256],
@@ -257,7 +275,6 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned int
     number_colormaps,
-    number_pixels,
     number_planes;
 
   magick_off_t
@@ -282,163 +299,194 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if ((count != 2) || (memcmp(&rle_header.Magic,"\122\314",2) != 0))
     ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
   file_size=GetBlobSize(image);
-  do
-  {
-    /*
-      Read image header.
-    */
-    rle_header.Xpos=ReadBlobLSBShort(image);
-    rle_header.Ypos=ReadBlobLSBShort(image);
-    rle_header.XSize=ReadBlobLSBShort(image);
-    rle_header.YSize=ReadBlobLSBShort(image);
-    rle_header.Flags=ReadBlobByte(image);
-    rle_header.Ncolors=ReadBlobByte(image);
-    rle_header.Pixelbits=ReadBlobByte(image);
-    rle_header.Ncmap=ReadBlobByte(image);
-    rle_header.Cmaplen=ReadBlobByte(image);
-    if (EOFBlob(image))
-      ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  /*
+    Read image header.
+  */
+  rle_header.Xpos=ReadBlobLSBShort(image);
+  rle_header.Ypos=ReadBlobLSBShort(image);
+  rle_header.XSize=ReadBlobLSBShort(image);
+  rle_header.YSize=ReadBlobLSBShort(image);
+  rle_header.Flags=ReadBlobByte(image);
+  rle_header.Ncolors=ReadBlobByte(image);
+  rle_header.Pixelbits=ReadBlobByte(image);
+  rle_header.Ncmap=ReadBlobByte(image);
+  rle_header.Cmaplen=ReadBlobByte(image);
+  if (EOFBlob(image))
+    ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
-    LogRLEHeader(&rle_header);
+  LogRLEHeader(&rle_header);
 
-    if ((rle_header.Ncolors == 0) ||
-        (rle_header.Ncolors == 2) ||
-        ((rle_header.Flags & 0x04) && (rle_header.Ncolors > 254)) ||
-        (rle_header.Pixelbits != 8))
-      ThrowRLEReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
+  if ((rle_header.Ncolors == 0) ||
+      (rle_header.Ncolors == 2) ||
+      ((rle_header.Flags & AlphaFlag) && (rle_header.Ncolors > 254)) ||
+      (rle_header.Pixelbits != 8))
+    ThrowRLEReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
 
-    if ((rle_header.XSize == 0) || (rle_header.YSize == 0))
-      ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
+  /* X/Y size may not be zero and may not exceed 32768 */
+  if ((rle_header.XSize == 0) || (rle_header.XSize >= 32768) ||
+      (rle_header.YSize == 0) || (rle_header.YSize >= 32768))
+    ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
 
-    image->columns=rle_header.XSize;
-    image->rows=rle_header.YSize;
-    image->matte=rle_header.Flags & 0x04;
-    number_planes=rle_header.Ncolors;
-    number_colormaps=rle_header.Ncmap;
-    map_length=(1U << rle_header.Cmaplen);
+  image->columns=rle_header.XSize;
+  image->rows=rle_header.YSize;
+  image->matte=rle_header.Flags & AlphaFlag;
+  number_planes=rle_header.Ncolors;
+  number_colormaps=rle_header.Ncmap;
+  map_length=(1U << rle_header.Cmaplen);
 
-    (void) memset(background_color,0,sizeof(background_color));
-    if (rle_header.Flags & 0x02)
-      {
-        /*
-          No background color-- initialize to black.
-        */
-        for (i=0; i < number_planes; i++)
-          background_color[i]=0;
-        (void) ReadBlobByte(image);
-      }
-    else
-      {
-        /*
-          Initialize background color.
-        */
-        p=background_color;
-        for (i=0; i < number_planes; i++)
-          *p++=ReadBlobByte(image);
-      }
-    if ((number_planes & 0x01) == 0)
+  (void) memset(background_color,0,sizeof(background_color));
+  if (rle_header.Flags & NoBackgroundFlag)
+    {
+      /*
+        No background color-- initialize to black.
+      */
+      for (i=0; i < number_planes; i++)
+        background_color[i]=0;
       (void) ReadBlobByte(image);
+    }
+  else
+    {
+      /*
+        Initialize background color.
+      */
+      p=background_color;
+      for (i=0; i < number_planes; i++)
+        *p++=ReadBlobByte(image);
+    }
+  if ((number_planes & 0x01) == 0)
+    (void) ReadBlobByte(image);
 
-    if (EOFBlob(image))
-      ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  if (EOFBlob(image))
+    ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
-    if (image->matte)
-      number_planes++;
+  if (image->matte)
+    number_planes++;
 
-    /*
-      Rationalize pixels with file size
-    */
-    if ((file_size == 0) ||
-        ((((double) image->columns*image->rows*number_planes*
-           rle_header.Pixelbits/8)/file_size) > 254.0))
-      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
-                              image);
+  /*
+    Rationalize pixels with file size
+  */
+  if ((file_size == 0) ||
+      ((((double) image->columns*image->rows*number_planes*
+         rle_header.Pixelbits/8)/file_size) > 254.0))
+    ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                            image);
 
-    if ((double) number_colormaps*map_length > file_size)
-      ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
-                              image);
+  if ((double) number_colormaps*map_length > file_size)
+    ThrowRLEReaderException(CorruptImageError,InsufficientImageDataInFile,
+                            image);
 
-    colormap=(unsigned char *) NULL;
-    colormap_entries=0;
-    if (number_colormaps != 0)
-      {
-        /*
-          Read image colormaps.  Color map values are stored as 16 bit
-          quantities, left justified in the word.
-        */
-        colormap=MagickAllocateArray(unsigned char *,number_colormaps,
-                                     map_length);
-        if (colormap == (unsigned char *) NULL)
+  /*
+    Cap the number of planes at 4 since we don't support more than that.
+  */
+  if (number_planes > 4)
+    number_planes=4;
+
+  colormap_entries=0;
+  if (number_colormaps != 0)
+    {
+      /*
+        Read image colormaps.  Color map values are stored as 16 bit
+        quantities, left justified in the word.
+      */
+      colormap=MagickAllocateArray(unsigned char *,number_colormaps,
+                                   map_length);
+      if (colormap == (unsigned char *) NULL)
+        ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                image);
+      p=colormap; /* unsigned char * */
+      for (i=0; i < number_colormaps; i++)
+        for (x=0; x < map_length; x++)
+          {
+            if (EOFBlob(image))
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                      image);
+            *p++=(ReadBlobLSBShort(image) >> 8);
+          }
+      colormap_entries=number_colormaps*map_length;
+    }
+  if (rle_header.Flags & CommentsFlag)
+    {
+      char
+        *comment;
+
+      unsigned int
+        length;
+
+      /*
+        Read image comment.
+
+        The comment block contains any number of null-terminated
+        text strings. These strings will conventionally be of the
+        form "name=value", allowing for easy retrieval of specific
+        information. However, there is no restriction that a given
+        name appear only once, and a comment may contain an
+        arbitrary string.
+      */
+      length=ReadBlobLSBShort(image);
+      comment=MagickAllocateMemory(char *,length+1);
+      if (comment == (char *) NULL)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Failed to allocate %u bytes for comment",
+                                length+1);
           ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        p=colormap; /* unsigned char * */
-        for (i=0; i < number_colormaps; i++)
-          for (x=0; x < map_length; x++)
-            {
-              if (EOFBlob(image))
-                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,
-                                        image);
-              *p++=(ReadBlobLSBShort(image) >> 8);
-            }
-        colormap_entries=number_colormaps*map_length;
-      }
-    if (rle_header.Flags & 0x08)
-      {
-        char
-          *comment;
+                                  image);
+        }
+      (void) ReadBlob(image,length,comment);
+      comment[length]='\0';
+      /*
+        Delimit multiple comments with '\n' so they fit in one string.
+      */
+      if (length)
+        for (i=0; i < length-1; i++)
+          {
+            if (comment[i]=='\0')
+              comment[i]='\n';
+          }
+      (void) SetImageAttribute(image,"comment",comment);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Comment: '%s'", comment);
+      MagickFreeMemory(comment);
+      if ((length & 0x01) == 0)
+        (void) ReadBlobByte(image);
+    }
 
-        unsigned int
-          length;
+  if (EOFBlob(image))
+    ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
-        /*
-          Read image comment.
-        */
-        length=ReadBlobLSBShort(image);
-        comment=MagickAllocateMemory(char *,length);
-        if (comment == (char *) NULL)
-          ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        (void) ReadBlob(image,length-1,comment);
-        comment[length-1]='\0';
-        (void) SetImageAttribute(image,"comment",comment);
-        MagickFreeMemory(comment);
-        if ((length & 0x01) == 0)
-          (void) ReadBlobByte(image);
-      }
+  if (image_info->ping)
+    {
+      MagickFreeMemory(colormap);
+      CloseBlob(image);
+      return(image);
+    }
 
-    if (EOFBlob(image))
-      ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  if (CheckImagePixelLimits(image, exception) != MagickPass)
+    ThrowRLEReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-    if (image_info->ping && (image_info->subrange != 0))
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
-        break;
+  /*
+    Allocate RLE pixels.
+  */
+  number_pixels=MagickArraySize(image->columns,image->rows);
+  rle_bytes=MagickArraySize(number_pixels,number_planes);
+  if ((number_pixels == 0) || (rle_bytes == 0))
+    ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  rle_pixels=MagickAllocateArray(unsigned char *,number_pixels,
+                                 number_planes);
+  if (rle_pixels == (unsigned char *) NULL)
+    ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  (void) memset(rle_pixels,0,rle_bytes);
+  if ((rle_header.Flags & ClearFirstFlag) &&
+      !(rle_header.Flags & NoBackgroundFlag))
+    {
+      int
+        j;
 
-    if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowRLEReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-
-    /*
-      Allocate RLE pixels.
-    */
-    number_pixels=image->columns*image->rows;
-    if ((image->columns != 0) &&
-        (image->rows != number_pixels/image->columns))
-      number_pixels=0;
-    rle_pixels=MagickAllocateArray(unsigned char *,number_pixels,
-                                   Max(number_planes,4));
-    if (rle_pixels == (unsigned char *) NULL)
-      ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    rle_bytes=MagickArraySize(number_pixels,Max(number_planes,4));
-    (void) memset(rle_pixels,0,rle_bytes);
-    if ((rle_header.Flags & 0x01) && !(rle_header.Flags & 0x02))
-      {
-        int
-          j;
-
-        /*
-          Set background color.
-        */
-        p=rle_pixels;
-        for (i=0; i < number_pixels; i++)
+      /*
+        Set background color.
+      */
+      p=rle_pixels;
+      for (i=0; i < number_pixels; i++)
         {
           if (!image->matte)
             for (j=0; j < (int) number_planes; j++)
@@ -450,178 +498,178 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
               *p++=0;  /* initialize matte channel */
             }
         }
-      }
-    /*
-      Read runlength-encoded image.
-    */
-    plane=0;
-    x=0;
-    y=0;
-    opcode=ReadBlobByte(image);
-    if (opcode == EOF)
-      ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-    do
+    }
+  /*
+    Read runlength-encoded image.
+  */
+  plane=0;
+  x=0;
+  y=0;
+  opcode=ReadBlobByte(image);
+  if (opcode == EOF)
+    ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  do
     {
       switch (opcode & 0x3f)
-      {
+        {
         case SkipLinesOp:
-        {
-          operand=ReadBlobByte(image);
-          if (operand == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          if (opcode & 0x40)
-            {
-              operand=ReadBlobLSBShort(image);
-              if (EOFBlob(image))
-                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-          x=0;
-          y+=operand;
-          break;
-        }
-        case SetColorOp:
-        {
-          operand=ReadBlobByte(image);
-          if (operand == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          plane=(unsigned char) operand;
-          if (plane == 255)
-            plane=(unsigned char) (number_planes-1);
-          x=0;
-          break;
-        }
-        case SkipPixelsOp:
-        {
-          operand=ReadBlobByte(image);
-          if (operand == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          if (opcode & 0x40)
-            {
-              operand=ReadBlobLSBShort(image);
-              if (EOFBlob(image))
-                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-          x+=operand;
-          break;
-        }
-        case ByteDataOp:
-        {
-          operand=ReadBlobByte(image);
-          if (operand == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          if (opcode & 0x40)
-            {
-              operand=ReadBlobLSBShort(image);
-              if (EOFBlob(image))
-                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-          p=rle_pixels+((image->rows-y-1)*image->columns*number_planes)+
-            x*number_planes+plane;
-          operand++;
-          for (i=0; i < (unsigned int) operand; i++)
           {
+            operand=ReadBlobByte(image);
+            if (operand == EOF)
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            if (opcode & 0x40)
+              {
+                operand=ReadBlobLSBShort(image);
+                if (EOFBlob(image))
+                  ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              }
+            x=0;
+            y+=operand;
+            break;
+          }
+        case SetColorOp:
+          {
+            operand=ReadBlobByte(image);
+            if (operand == EOF)
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            plane=(unsigned char) operand;
+            if (plane == 255)
+              plane=(unsigned char) (number_planes-1);
+            x=0;
+            break;
+          }
+        case SkipPixelsOp:
+          {
+            operand=ReadBlobByte(image);
+            if (operand == EOF)
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            if (opcode & 0x40)
+              {
+                operand=ReadBlobLSBShort(image);
+                if (EOFBlob(image))
+                  ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              }
+            x+=operand;
+            break;
+          }
+        case ByteDataOp:
+          {
+            operand=ReadBlobByte(image);
+            if (operand == EOF)
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            if (opcode & 0x40)
+              {
+                operand=ReadBlobLSBShort(image);
+                if (EOFBlob(image))
+                  ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              }
+            offset=((image->rows-y-1)*image->columns*number_planes)+x*number_planes+plane;
+            operand++;
+            p=rle_pixels+offset;
+            for (i=0; i < (unsigned int) operand; i++)
+              {
+                pixel=ReadBlobByte(image);
+                if (pixel == EOF)
+                  ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
+                  *p=(unsigned char) pixel;
+                else
+                  ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
+                p+=number_planes;
+              }
+            if (operand & 0x01)
+              (void) ReadBlobByte(image);
+            x+=operand;
+            break;
+          }
+        case RunDataOp:
+          {
+            operand=ReadBlobByte(image);
+            if (operand == EOF)
+              ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            if (opcode & 0x40)
+              {
+                operand=ReadBlobLSBShort(image);
+                if (EOFBlob(image))
+                  ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              }
             pixel=ReadBlobByte(image);
             if (pixel == EOF)
               ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
-              *p=(unsigned char) pixel;
-            else
-              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
-            p+=number_planes;
-          }
-          if (operand & 0x01)
             (void) ReadBlobByte(image);
-          x+=operand;
-          break;
-        }
-        case RunDataOp:
-        {
-          operand=ReadBlobByte(image);
-          if (operand == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          if (opcode & 0x40)
-            {
-              operand=ReadBlobLSBShort(image);
-              if (EOFBlob(image))
-                ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-          pixel=ReadBlobByte(image);
-          if (pixel == EOF)
-            ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-          (void) ReadBlobByte(image);
-          operand++;
-          p=rle_pixels+((image->rows-y-1)*image->columns*number_planes)+
-            x*number_planes+plane;
-          for (i=0; i < (unsigned int) operand; i++)
-          {
-            if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
-              *p=pixel;
-            else
-              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
-            p+=number_planes;
+            operand++;
+            offset=((image->rows-y-1)*image->columns*number_planes)+x*number_planes+plane;
+            p=rle_pixels+offset;
+            for (i=0; i < (unsigned int) operand; i++)
+              {
+                if ((p >= rle_pixels) && (p < rle_pixels+rle_bytes))
+                  *p=pixel;
+                else
+                  ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
+                p+=number_planes;
+              }
+            x+=operand;
+            break;
           }
-          x+=operand;
-          break;
-        }
         default:
           break;
-      }
+        }
       opcode=ReadBlobByte(image);
       if (opcode == EOF)
         ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     } while (((opcode & 0x3f) != EOFOp) && (opcode != EOF));
-    if (number_colormaps != 0)
-      {
-        unsigned int
-          mask;
+  if (number_colormaps != 0)
+    {
+      unsigned int
+        mask;
 
-        /*
-          Apply colormap affineation to image.
-        */
-        mask=(map_length-1);
-        p=rle_pixels;
-        if (number_colormaps == 1)
-          for (i=0; i < number_pixels; i++)
+      /*
+        Apply colormap affineation to image.
+      */
+      mask=(map_length-1);
+      p=rle_pixels;
+      if (number_colormaps == 1)
+        for (i=0; i < number_pixels; i++)
           {
             index=*p & mask;
             RLEVerifyColormapIndex(image,index,colormap_entries);
             *p=colormap[index];
             p++;
           }
-        else
-          if ((number_planes >= 3) && (number_colormaps >= 3))
-            for (i=0; i < number_pixels; i++)
-              for (x=0; x < number_planes; x++)
+      else
+        if ((number_planes >= 3) && (number_colormaps >= 3))
+          for (i=0; i < number_pixels; i++)
+            for (x=0; x < number_planes; x++)
               {
                 index=x*map_length+(*p & mask);
                 RLEVerifyColormapIndex(image,index,colormap_entries);
                 *p=colormap[index];
                 p++;
               }
-      }
-    /*
-      Initialize image structure.
-    */
-    if (number_planes >= 3)
-      {
-        /*
-          Convert raster image to DirectClass pixel packets.
-        */
-        p=rle_pixels;
-        for (y=0; y < image->rows; y++)
+    }
+  /*
+    Initialize image structure.
+  */
+  if (number_planes >= 3)
+    {
+      /*
+        Convert raster image to DirectClass pixel packets.
+      */
+      p=rle_pixels;
+      for (y=0; y < image->rows; y++)
         {
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           for (x=0; x < image->columns; x++)
-          {
-            q->red=ScaleCharToQuantum(*p++);
-            q->green=ScaleCharToQuantum(*p++);
-            q->blue=ScaleCharToQuantum(*p++);
-            if (image->matte)
-              q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
-            q++;
-          }
+            {
+              q->red=ScaleCharToQuantum(*p++);
+              q->green=ScaleCharToQuantum(*p++);
+              q->blue=ScaleCharToQuantum(*p++);
+              if (image->matte)
+                q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
+              q++;
+            }
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
@@ -631,20 +679,20 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 					  image->columns,image->rows))
                 break;
         }
-      }
-    else
-      {
-        /*
-          Create colormap.
-        */
-        if (number_colormaps == 0)
-          map_length=256;
-        if (!AllocateImageColormap(image,map_length))
-          ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        p=colormap;
-        if (number_colormaps == 1)
-          for (i=0; i < image->colors; i++)
+    }
+  else
+    {
+      /*
+        Create colormap.
+      */
+      if (number_colormaps == 0)
+        map_length=256;
+      if (!AllocateImageColormap(image,map_length))
+        ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                image);
+      p=colormap;
+      if (number_colormaps == 1)
+        for (i=0; i < image->colors; i++)
           {
             /*
               Pseudocolor.
@@ -653,9 +701,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             image->colormap[i].green=ScaleCharToQuantum(i);
             image->colormap[i].blue=ScaleCharToQuantum(i);
           }
-        else
-          if (number_colormaps > 1)
-            for (i=0; i < image->colors; i++)
+      else
+        if (number_colormaps > 1)
+          for (i=0; i < image->colors; i++)
             {
               image->colormap[i].red=ScaleCharToQuantum(*p);
               image->colormap[i].green=ScaleCharToQuantum(*(p+map_length));
@@ -665,13 +713,13 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 image->colormap[i].blue=0U;
               p++;
             }
-        p=rle_pixels;
-        if (!image->matte)
-          {
-            /*
-              Convert raster image to PseudoClass pixel packets.
-            */
-            for (y=0; y < image->rows; y++)
+      p=rle_pixels;
+      if (!image->matte)
+        {
+          /*
+            Convert raster image to PseudoClass pixel packets.
+          */
+          for (y=0; y < image->rows; y++)
             {
               q=SetImagePixels(image,0,y,image->columns,1);
               if (q == (PixelPacket *) NULL)
@@ -688,32 +736,32 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 					      image->columns,image->rows))
                     break;
             }
-            (void) SyncImage(image);
-          }
-        else
-          {
-            /*
-              Image has a matte channel-- promote to DirectClass.
-            */
-            for (y=0; y < image->rows; y++)
+          (void) SyncImage(image);
+        }
+      else
+        {
+          /*
+            Image has a matte channel-- promote to DirectClass.
+          */
+          for (y=0; y < image->rows; y++)
             {
               q=SetImagePixels(image,0,y,image->columns,1);
               if (q == (PixelPacket *) NULL)
                 break;
               for (x=0; x < image->columns; x++)
-              {
-                index=*p++;
-                VerifyColormapIndex(image,index);
-                q->red=image->colormap[index].red;
-                index=*p++;
-                VerifyColormapIndex(image,index);
-                q->green=image->colormap[index].green;
-                index=*p++;
-                VerifyColormapIndex(image,index);
-                q->blue=image->colormap[index].blue;
-                q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
-                q++;
-              }
+                {
+                  index=*p++;
+                  VerifyColormapIndex(image,index);
+                  q->red=image->colormap[index].red;
+                  index=*p++;
+                  VerifyColormapIndex(image,index);
+                  q->green=image->colormap[index].green;
+                  index=*p++;
+                  VerifyColormapIndex(image,index);
+                  q->blue=image->colormap[index].blue;
+                  q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
+                  q++;
+                }
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -724,49 +772,18 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 					      image->columns,image->rows))
                     break;
             }
-            MagickFreeMemory(image->colormap);
-            image->colormap=(PixelPacket *) NULL;
-            image->storage_class=DirectClass;
-            image->colors=0;
-          }
-      }
-    if (number_colormaps != 0)
-      MagickFreeMemory(colormap);
-    MagickFreeMemory(rle_pixels);
-    if (EOFBlob(image))
-      {
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-          image->filename);
-        break;
-      }
-    /*
-      Proceed to next image.
-    */
-    if (image_info->subrange != 0)
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
-        break;
-    (void) ReadBlobByte(image);
-    count=ReadBlob(image,2,(char *) &rle_header.Magic);
-    if ((count == 2) && (memcmp(&rle_header.Magic,"\122\314",2) == 0))
-      {
-        /*
-          Allocate next image structure.
-        */
-        AllocateNextImage(image_info,image);
-        if (image->next == (Image *) NULL)
-          {
-            DestroyImageList(image);
-            return((Image *) NULL);
-          }
-        image=SyncNextImageInList(image);
-        if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
-                                    exception,LoadImagesText,
-                                    image->filename))
-          break;
-      }
-  } while ((count == 2) && (memcmp(&rle_header.Magic,"\122\314",2) == 0));
-  while (image->previous != (Image *) NULL)
-    image=image->previous;
+          MagickFreeMemory(image->colormap);
+          image->colormap=(PixelPacket *) NULL;
+          image->storage_class=DirectClass;
+          image->colors=0;
+        }
+    }
+  MagickFreeMemory(colormap);
+  MagickFreeMemory(rle_pixels);
+  if (EOFBlob(image))
+    {
+      ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    }
   CloseBlob(image);
   return(image);
 }
