@@ -2723,7 +2723,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     MagickGetToken(p,&p,token,token_max_length);
                 }
                 graphic_context[n]->dash_pattern=
-		  MagickAllocateArray(double *,(2*x+1),sizeof(double));
+		  MagickAllocateArray(double *,(2*x+2),sizeof(double));
                 if (graphic_context[n]->dash_pattern == (double *) NULL)
                   {
                     status=MagickFail;
