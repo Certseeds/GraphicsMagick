@@ -1,5 +1,9 @@
 2017-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (InsertRow): Fix crash which occurs if image is not
+	PseudoClass but a PseudoColor scanline is needed.  Resolves
+	SourceForge issue #449 "Null pointer dereference in InsertRow()".
+
 	* coders/rle.c (ReadRLEImage): Impose image dimension limits
 	according to Utah RLE specification. Cap number of planes handled
 	internally at 4.  Remove non-standard multi-frame extension, which
