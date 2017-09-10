@@ -47,7 +47,9 @@ If you become aware of a serious security issue with GraphicsMagick,
 then it may be addressed by email directly to the GraphicsMagick
 maintainers or to the `GraphicsMagick Security`_ mail address.  More
 minor issues are best addressed via the `GraphicsMagick Bug Tracker`_
-at SourceForge.
+at SourceForge.  Please remember to set the bug to 'private' if you
+use the bug tracker or else someone may aquire a zero-day exploit from
+your report.
 
 Reporting an issue will allow us to fix it so that future releases of
 the software won't suffer from the problem.
