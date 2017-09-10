@@ -38,6 +38,9 @@
 <p>2017-09-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/uil.c (WriteUILImage): Fix crash in UIL writer when
+writing image containing transparency.  Issue was reported by
+LCatro via email on 18 Jul 2017.</li>
 <li>coders/wpg.c (InsertRow): Fix crash which occurs if image is not
 PseudoClass but a PseudoColor scanline is needed.  Resolves
 SourceForge issue #449 &quot;Null pointer dereference in InsertRow()&quot;.</li>

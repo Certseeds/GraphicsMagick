@@ -232,6 +232,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
       colors=image->colors;
       if (transparent)
         {
+          i=0;
           colors++;
           for (y=0; y < (long) image->rows; y++)
           {
@@ -266,7 +267,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
   GetPathComponent(image->filename,BasePath,basename);
   FormatString(buffer,"value\n  %.1024s_ct : color_table(\n",basename);
   (void) WriteBlobString(image,buffer);
-  for (i=0; i < (long) colors; i++)
+  for (i=0; i < (long) image->colors; i++)
   {
     /*
       Define UIL color.
