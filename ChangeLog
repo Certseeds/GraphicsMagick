@@ -1,3 +1,8 @@
+2017-09-11  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* magick/shear.c: Possible evil loop might waste CPU for long time
+        without any reason.
+
 2017-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix SourceForge issue #448 "Heap

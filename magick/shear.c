@@ -1657,9 +1657,9 @@ RotateImage(const Image *image,const double degrees,ExceptionInfo *exception)
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  angle=degrees;
-  while (angle < -45.0)
-    angle+=360.0;
+  angle = degrees - 360.0*(int)(degrees / 360);
+  if(angle < -45.0) angle+=360.0;
+
   for (rotations=0; angle > 45.0; rotations++)
     angle-=90.0;
   rotations%=4;
