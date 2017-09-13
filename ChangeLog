@@ -1,3 +1,8 @@
+2017-09-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Check MemoryResource before allocating
+	ping_pixel array.
+
 2017-09-11  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* magick/shear.c: Possible evil loop might waste CPU for long time

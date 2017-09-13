@@ -1523,6 +1523,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
 
+  png_set_crc_action(ping, PNG_CRC_QUIET_USE, PNG_CRC_QUIET_USE);
+
   mng_info->png_pixels=(unsigned char *) NULL;
   mng_info->quantum_scanline=(Quantum *) NULL;
 
@@ -2224,12 +2226,24 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "    Reading PNG IDAT chunk(s)");
   if (num_passes > 1)
-    mng_info->png_pixels=MagickAllocateMemory(unsigned char *,
-                                    ping_rowbytes*image->rows);
+  {
+    if (ping_rowbytes < GetMagickResourceLimit(MemoryResource)/image->rows)
+      mng_info->png_pixels=MagickAllocateMemory(unsigned char *,
+               ping_rowbytes*image->rows);
+    else
+      png_error(ping, "png_pixels array exceeds MemoryResource");
+  }
   else
-    mng_info->png_pixels=MagickAllocateMemory(unsigned char *, ping_rowbytes);
+  {
+    if (ping_rowbytes < GetMagickResourceLimit(MemoryResource))
+      mng_info->png_pixels=MagickAllocateMemory(unsigned char *, ping_rowbytes);
+    else
+      png_error(ping, "png_rowbytes array exceeds MemoryResource");
+  }
   if (mng_info->png_pixels == (unsigned char *) NULL)
+  {
     png_error(ping, "Could not allocate png_pixels array");
+  }
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
