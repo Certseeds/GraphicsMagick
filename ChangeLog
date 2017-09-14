@@ -1,3 +1,10 @@
+2017-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (ReadMATImage): Fix CVE-2016-10070, which is a heap
+	overflow in the MAT reader due to an under-sized memory
+	allocation.  Based on private email from Petr Gajdos on Mon, 11
+	Sep 2017.
+
 2017-09-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c: Check MemoryResource before allocating

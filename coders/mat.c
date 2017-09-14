@@ -1050,9 +1050,10 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     }  
 
   /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateArray(unsigned char *,(size_t) (ldblk),sizeof(double));    /* Ldblk was set in the check phase */
     if (BImgBuff == NULL)
       goto NoMemory;
+    (void) memset(BImgBuff,0,ldblk*sizeof(double));
 
     if (CellType==miDOUBLE)        /* Find Min and Max Values for floats */
     {
