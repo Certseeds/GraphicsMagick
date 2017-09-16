@@ -53,7 +53,7 @@
 MagickExport MagickPassFail AllocateImageColormap(Image *image,
   const unsigned long colors)
 {
-  register long
+  register unsigned int
     i;
 
   size_t
@@ -71,7 +71,7 @@ MagickExport MagickPassFail AllocateImageColormap(Image *image,
     return (MagickFail);
   image->storage_class=PseudoClass;
   image->colors=colors;
-  length=image->colors*sizeof(PixelPacket);
+  length=MagickArraySize((size_t) image->colors,sizeof(PixelPacket));
   if (image->colormap == (PixelPacket *) NULL)
     image->colormap=MagickAllocateMemory(PixelPacket *,length);
   else
@@ -82,7 +82,7 @@ MagickExport MagickPassFail AllocateImageColormap(Image *image,
       image->storage_class=DirectClass;
       return(MagickFail);
     }
-  for (i=0; i < (long) image->colors; i++)
+  for (i=0; i < image->colors; i++)
   {
     quantum=(Quantum) (i*(MaxRGB/Max(colors-1,1)));
     image->colormap[i].red=quantum;
