@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2013 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -538,6 +538,9 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if ((max_value == 0) || (max_value > 4294967295U))
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
+      if ((format == XV_332_Format) && (max_value != 255))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
       bits_per_sample=0;
       if (max_value <= 1)
 	bits_per_sample=1;
@@ -577,6 +580,9 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             Create colormap.
           */
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Allocating colormap with %u colors",
+                                image->colors);
           if (!AllocateImageColormap(image,image->colors))
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
@@ -866,7 +872,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		  {
 		    /* PGM & XV_332 */
 		    bytes_per_row=MagickArraySize(((bits_per_sample+7U)/8U),image->columns);
-		    if (XV_332_Format == format)
+		    if ((XV_332_Format == format) && (image->storage_class == PseudoClass))
 		      {
 			quantum_type=IndexQuantum;
 		      }
@@ -898,6 +904,9 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 		      quantum_type=CMYKAQuantum;
 		  }
 	      }
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "using %s QuantumType",
+                                  QuantumTypeToString(quantum_type));
 
 	    if (1 == samples_per_pixel)
 	      {

@@ -1,3 +1,13 @@
+2017-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pnm.c (ReadPNMImage): Require that XV 332 format have 256
+	colors.  Fixes SourceForge issue #465 "NULL Pointer Dereference
+	triggered by malformed file".  In our own testing the test case
+	produced an assertion failure because assertions were enabled.
+
+	* magick/colormap.c (AllocateImageColormap): Use unsigned array
+	index.
+
 2017-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c (ReadMATImage): Fix CVE-2016-10070, which is a heap
