@@ -723,7 +723,7 @@ static unsigned int
   WritePALMImage(const ImageInfo *,Image *);
 #endif /* #if ENABLE_PALM_WRITER */
 
-void LogPALMHeader(const PalmHeader* palm_header)
+static void LogPALMHeader(const PalmHeader* palm_header)
 {
   static const struct
   {
