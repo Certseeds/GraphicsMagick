@@ -2924,7 +2924,7 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
 
 #if defined(JNG_SUPPORTED)
 
-void
+static void
 DestroyJNG(unsigned char *chunk,Image **color_image,
    ImageInfo **color_image_info,
    Image **alpha_image,ImageInfo **alpha_image_info)
@@ -4027,7 +4027,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       if (LocaleCompare(image_info->magick,"MNG") == 0)
         {
           register unsigned char
-            *p;
+            *p = 0;
 
           unsigned char
             *chunk;
