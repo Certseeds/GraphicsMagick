@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2016 GraphicsMagick Group
+  Copyright (C) 2003 - 2017 GraphicsMagick Group
  
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -74,7 +74,6 @@
 #define AttachBlob GmAttachBlob
 #define AutoOrientImage GmAutoOrientImage
 #define AverageImages GmAverageImages
-#define BackgroundColor GmBackgroundColor
 #define Base64Decode GmBase64Decode
 #define Base64Encode GmBase64Encode
 #define BenchmarkImageCommand GmBenchmarkImageCommand
@@ -87,7 +86,6 @@
 #define BlobWriteByteHook GmBlobWriteByteHook
 #define BlurImage GmBlurImage
 #define BlurImageChannel GmBlurImageChannel
-#define BorderColor GmBorderColor
 #define BorderImage GmBorderImage
 #define CatchException GmCatchException
 #define CatchImageException GmCatchImageException
@@ -141,9 +139,6 @@
 #define DCM_SetRescaling GmDCM_SetRescaling
 #define DeallocateImageProfileIterator GmDeallocateImageProfileIterator
 #define DeconstructImages GmDeconstructImages
-#define DefaultTileFrame GmDefaultTileFrame
-#define DefaultTileGeometry GmDefaultTileGeometry
-#define DefaultTileLabel GmDefaultTileLabel
 #define DefineClientName GmDefineClientName
 #define DefineClientPathAndName GmDefineClientPathAndName
 #define DeleteImageFromList GmDeleteImageFromList
@@ -180,6 +175,7 @@
 #define DestroyTypeInfo GmDestroyTypeInfo
 #define DetachBlob GmDetachBlob
 #define DifferenceImage GmDifferenceImage
+#define DisassociateBlob GmDisassociateBlob
 #define DispatchImage GmDispatchImage
 #define DisplayImageCommand GmDisplayImageCommand
 #define DisplayImages GmDisplayImages
@@ -320,7 +316,6 @@
 #define FlattenImages GmFlattenImages
 #define FlipImage GmFlipImage
 #define FlopImage GmFlopImage
-#define ForegroundColor GmForegroundColor
 #define FormatSize GmFormatSize
 #define FormatString GmFormatString
 #define FormatStringList GmFormatStringList
@@ -463,6 +458,7 @@
 #define InitializeDifferenceImageOptions GmInitializeDifferenceImageOptions
 #define InitializeDifferenceStatistics GmInitializeDifferenceStatistics
 #define InitializeLogInfo GmInitializeLogInfo
+#define InitializeLogInfoPost GmInitializeLogInfoPost
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
 #define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
@@ -518,13 +514,16 @@
 #define LocaleNCompare GmLocaleNCompare
 #define LocaleUpper GmLocaleUpper
 #define LockSemaphoreInfo GmLockSemaphoreInfo
-#define LogMagickEvent GmLogMagickEvent
-#define LogMagickEventList GmLogMagickEventList
-#define MatteColor GmMatteColor
+#define LogPALMHeader GmLogPALMHeader
 #define MSBOrderLong GmMSBOrderLong
 #define MSBOrderShort GmMSBOrderShort
 #define MagickAllocFunctions GmMagickAllocFunctions
 #define MagickArraySize GmMagickArraySize
+#define MagickAtoFChk GmMagickAtoFChk
+#define MagickAtoIChk GmMagickAtoIChk
+#define MagickAtoLChk GmMagickAtoLChk
+#define MagickAtoUIChk GmMagickAtoUIChk
+#define MagickAtoULChk GmMagickAtoULChk
 #define MagickBitStreamInitializeRead GmMagickBitStreamInitializeRead
 #define MagickBitStreamInitializeWrite GmMagickBitStreamInitializeWrite
 #define MagickBitStreamMSBRead GmMagickBitStreamMSBRead
@@ -537,16 +536,18 @@
 #define MagickCreateDirectoryPath GmMagickCreateDirectoryPath
 #define MagickDestroyCommandInfo GmMagickDestroyCommandInfo
 #define MagickFindRawImageMinMax GmMagickFindRawImageMinMax
+#define MagickFmax GmMagickFmax
+#define MagickFmin GmMagickFmin
 #define MagickFormatString GmMagickFormatString
 #define MagickFormatStringList GmMagickFormatStringList
 #define MagickFree GmMagickFree
 #define MagickFreeAligned GmMagickFreeAligned
-#define MagickFmin GmMagickFmin
-#define MagickFmax GmMagickFmax
 #define MagickGetBitRevTable GmMagickGetBitRevTable
+#define MagickGetFileAttributes GmMagickGetFileAttributes
 #define MagickGetFileSystemBlockSize GmMagickGetFileSystemBlockSize
 #define MagickGetMMUPageSize GmMagickGetMMUPageSize
 #define MagickGetQuantumSamplesPerPixel GmMagickGetQuantumSamplesPerPixel
+#define MagickGetToken GmMagickGetToken
 #define MagickInitializeCommandInfo GmMagickInitializeCommandInfo
 #define MagickIsTrue GmMagickIsTrue
 #define MagickMalloc GmMagickMalloc
@@ -582,6 +583,7 @@
 #define MagickReverseBits GmMagickReverseBits
 #define MagickSceneFileName GmMagickSceneFileName
 #define MagickSetConfirmAccessHandler GmMagickSetConfirmAccessHandler
+#define MagickSetFileAttributes GmMagickSetFileAttributes
 #define MagickSetFileSystemBlockSize GmMagickSetFileSystemBlockSize
 #define MagickSizeStrToInt64 GmMagickSizeStrToInt64
 #define MagickSpawnVP GmMagickSpawnVP
@@ -723,16 +725,14 @@
 #define PixelIterateDualNew GmPixelIterateDualNew
 #define PixelIterateDualRead GmPixelIterateDualRead
 #define PixelIterateMonoModify GmPixelIterateMonoModify
-#define PixelIterateMonoSet GmPixelIterateMonoSet
 #define PixelIterateMonoRead GmPixelIterateMonoRead
+#define PixelIterateMonoSet GmPixelIterateMonoSet
 #define PixelIterateTripleModify GmPixelIterateTripleModify
 #define PixelIterateTripleNew GmPixelIterateTripleNew
 #define PlasmaImage GmPlasmaImage
 #define PopImagePixels GmPopImagePixels
 #define PrependImageToList GmPrependImageToList
 #define ProfileImage GmProfileImage
-#define PSDensityGeometry GmPSDensityGeometry
-#define PSPageGeometry GmPSPageGeometry
 #define PurgeTemporaryFiles GmPurgeTemporaryFiles
 #define PurgeTemporaryFilesAsyncSafe GmPurgeTemporaryFilesAsyncSafe
 #define PushImagePixels GmPushImagePixels
@@ -762,6 +762,8 @@
 #define ReadBlobLSBShort GmReadBlobLSBShort
 #define ReadBlobLSBShortFromBuffer GmReadBlobLSBShortFromBuffer
 #define ReadBlobLSBShorts GmReadBlobLSBShorts
+#define ReadBlobLSBSignedLong GmReadBlobLSBSignedLong
+#define ReadBlobLSBSignedShort GmReadBlobLSBSignedShort
 #define ReadBlobMSBDouble GmReadBlobMSBDouble
 #define ReadBlobMSBDoubles GmReadBlobMSBDoubles
 #define ReadBlobMSBFloat GmReadBlobMSBFloat
@@ -770,6 +772,8 @@
 #define ReadBlobMSBLongs GmReadBlobMSBLongs
 #define ReadBlobMSBShort GmReadBlobMSBShort
 #define ReadBlobMSBShorts GmReadBlobMSBShorts
+#define ReadBlobMSBSignedLong GmReadBlobMSBSignedLong
+#define ReadBlobMSBSignedShort GmReadBlobMSBSignedShort
 #define ReadBlobString GmReadBlobString
 #define ReadBlobZC GmReadBlobZC
 #define ReadImage GmReadImage
@@ -779,7 +783,6 @@
 #define ReferenceCache GmReferenceCache
 #define ReferenceImage GmReferenceImage
 #define RegisterARTImage GmRegisterARTImage
-#define RegisterAVIImage GmRegisterAVIImage
 #define RegisterAVSImage GmRegisterAVSImage
 #define RegisterBMPImage GmRegisterBMPImage
 #define RegisterCALSImage GmRegisterCALSImage
@@ -866,6 +869,7 @@
 #define RegisterVIDImage GmRegisterVIDImage
 #define RegisterVIFFImage GmRegisterVIFFImage
 #define RegisterWBMPImage GmRegisterWBMPImage
+#define RegisterWEBPImage GmRegisterWEBPImage
 #define RegisterWMFImage GmRegisterWMFImage
 #define RegisterWPGImage GmRegisterWPGImage
 #define RegisterXBMImage GmRegisterXBMImage
@@ -891,7 +895,6 @@
 #define SampleImage GmSampleImage
 #define ScaleImage GmScaleImage
 #define SeekBlob GmSeekBlob
-#define SegmentImage GmSegmentImage
 #define SetBlobClosable GmSetBlobClosable
 #define SetBlobTemporary GmSetBlobTemporary
 #define SetCacheView GmSetCacheView
@@ -905,13 +908,13 @@
 #define SetFatalErrorHandler GmSetFatalErrorHandler
 #define SetGeometry GmSetGeometry
 #define SetImage GmSetImage
-#define SetImageEx GmSetImageEx
 #define SetImageAttribute GmSetImageAttribute
 #define SetImageChannelDepth GmSetImageChannelDepth
 #define SetImageClipMask GmSetImageClipMask
 #define SetImageColor GmSetImageColor
 #define SetImageColorRegion GmSetImageColorRegion
 #define SetImageDepth GmSetImageDepth
+#define SetImageEx GmSetImageEx
 #define SetImageInfo GmSetImageInfo
 #define SetImageOpacity GmSetImageOpacity
 #define SetImagePixels GmSetImagePixels
@@ -921,7 +924,6 @@
 #define SetImageVirtualPixelMethod GmSetImageVirtualPixelMethod
 #define SetLogEventMask GmSetLogEventMask
 #define SetLogFormat GmSetLogFormat
-#define SetLogMethod GmSetLogMethod
 #define SetMagickInfo GmSetMagickInfo
 #define SetMagickRegistry GmSetMagickRegistry
 #define SetMagickResourceLimit GmSetMagickResourceLimit
@@ -957,6 +959,7 @@
 #define StringToList GmStringToList
 #define StringToMetricType GmStringToMetricType
 #define StringToNoiseType GmStringToNoiseType
+#define StringToOrientationType GmStringToOrientationType
 #define StringToPreviewType GmStringToPreviewType
 #define StringToQuantumOperator GmStringToQuantumOperator
 #define StringToResolutionType GmStringToResolutionType
@@ -993,7 +996,6 @@
 #define UnlockSemaphoreInfo GmUnlockSemaphoreInfo
 #define UnmapBlob GmUnmapBlob
 #define UnregisterARTImage GmUnregisterARTImage
-#define UnregisterAVIImage GmUnregisterAVIImage
 #define UnregisterAVSImage GmUnregisterAVSImage
 #define UnregisterBMPImage GmUnregisterBMPImage
 #define UnregisterCALSImage GmUnregisterCALSImage
@@ -1080,6 +1082,7 @@
 #define UnregisterVIDImage GmUnregisterVIDImage
 #define UnregisterVIFFImage GmUnregisterVIFFImage
 #define UnregisterWBMPImage GmUnregisterWBMPImage
+#define UnregisterWEBPImage GmUnregisterWEBPImage
 #define UnregisterWMFImage GmUnregisterWMFImage
 #define UnregisterWPGImage GmUnregisterWPGImage
 #define UnregisterXBMImage GmUnregisterXBMImage
@@ -1099,8 +1102,12 @@
 #define WriteBlobFile GmWriteBlobFile
 #define WriteBlobLSBLong GmWriteBlobLSBLong
 #define WriteBlobLSBShort GmWriteBlobLSBShort
+#define WriteBlobLSBSignedLong GmWriteBlobLSBSignedLong
+#define WriteBlobLSBSignedShort GmWriteBlobLSBSignedShort
 #define WriteBlobMSBLong GmWriteBlobMSBLong
 #define WriteBlobMSBShort GmWriteBlobMSBShort
+#define WriteBlobMSBSignedLong GmWriteBlobMSBSignedLong
+#define WriteBlobMSBSignedShort GmWriteBlobMSBSignedShort
 #define WriteBlobString GmWriteBlobString
 #define WriteBlobStringEOL GmWriteBlobStringEOL
 #define WriteBlobStringWithEOL GmWriteBlobStringWithEOL

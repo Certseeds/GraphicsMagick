@@ -1,5 +1,11 @@
 2017-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/symbols.h, wand/wand_symbols.h: Update C library symbols
+	which should be prefixed with 'Gm'. However, GM will not move
+	Magick++ namespace because of the ImageMagick version.  Resolves
+	SourceForge issue #468 "--enable-symbol-prefix does not prevent
+	clashes with libMagick++ or libMagickWand?"
+
 	* coders/png.c (DestroyJNG): DestroyJNG should be a static
 	function.  Was wrongly exposed as DestroyJNGInfo in 1.3.26.  This
 	is not a public function and was not intended to be part of the
