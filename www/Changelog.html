@@ -38,6 +38,10 @@
 <p>2017-09-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/tiff.c (ReadTIFFImage): Limit scanline, strip, and tile
+memory allocations based on file size multiplied by a maximum
+compression ratio.  Fixes SourceForge issues #460, #461, #462,
+#463, #464 &quot;allocation failure in ReadTIFFImage&quot;.</li>
 <li>coders/pnm.c (ReadPNMImage): Require that XV 332 format have 256
 colors.  Fixes SourceForge issue #465 &quot;NULL Pointer Dereference
 triggered by malformed file&quot;.  In our own testing the test case

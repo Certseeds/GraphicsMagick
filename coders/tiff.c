@@ -1648,6 +1648,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   TIFF
     *tiff;
 
+  magick_off_t
+    file_size,
+    max_compress_ratio=70; /* Maximum compression ratio */
+
   uint16
     compress_tag,
     bits_per_sample,
@@ -1703,6 +1707,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  file_size = GetBlobSize(image);
   (void) MagickTsdSetSpecific(tsd_key,(void *) exception);
   (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFErrors);
   (void) TIFFSetWarningHandler((TIFFErrorHandler) (CheckThrowWarnings(image_info) ?
@@ -2266,8 +2271,23 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Allocating scanline buffer of %lu bytes",
-                                    (unsigned long) scanline_size);
+                                    "Request to allocate scanline buffer of %"
+                                    MAGICK_SIZE_T_F "u bytes",
+                                    (MAGICK_SIZE_T) scanline_size);
+
+            /*
+              Rationalize memory request based on file size
+            */
+            if (scanline_size > file_size*max_compress_ratio)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable allocation size "
+                                      "(ratio of alloc to file size %g)",
+                                      (double) scanline_size/file_size);
+                TIFFClose(tiff);
+                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                     image);
+              }
 
             scanline=MagickAllocateMemory(unsigned char *,(size_t) scanline_size);
             if (scanline == (unsigned char *) NULL)
@@ -2430,6 +2450,20 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
               }
 
+            /*
+              Rationalize memory request based on file size
+            */
+            if (strip_size_max > file_size*max_compress_ratio)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable allocation size "
+                                      "(ratio of alloc to file size %g)",
+                                      (double) strip_size_max/file_size);
+                TIFFClose(tiff);
+                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                     image);
+              }
+
             strip=MagickAllocateMemory(unsigned char *,(size_t) strip_size_max);
             if (strip == (unsigned char *) NULL)
               {
@@ -2590,7 +2624,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             QuantumType
               quantum_type;
 
-            unsigned long
+            size_t
               tile_total_pixels;
         
             if (logging)
@@ -2622,15 +2656,33 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Compute the total number of pixels in one tile
             */
-            tile_total_pixels=tile_columns*tile_rows;
+            tile_total_pixels=MagickArraySize(tile_columns,tile_rows);
             if (logging)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "TIFF tile geometry %ux%u, %lu pixels",
+                                      "TIFF tile geometry %ux%u, "
+                                      "%" MAGICK_SIZE_T_F "u pixels"
+                                      " (%" MAGICK_SIZE_T_F  "u bytes max)",
                                       (unsigned int)tile_columns,
                                       (unsigned int)tile_rows,
-                                      tile_total_pixels);
+                                      (MAGICK_SIZE_T) tile_total_pixels,
+                                      (MAGICK_SIZE_T) tile_size_max);
               }
+
+            /*
+              Rationalize memory request based on file size
+            */
+            if (tile_size_max > file_size*max_compress_ratio)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable allocation size "
+                                      "(ratio of alloc to file size %g)",
+                                      (double) tile_size_max/file_size);
+                TIFFClose(tiff);
+                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                     image);
+              }
+
             /*
               Allocate tile buffer
             */
@@ -2817,6 +2869,20 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 TIFFClose(tiff);
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                     image);
+              }
+            /*
+              Rationalize memory request based on file size
+            */
+            if ((magick_off_t) (number_pixels*sizeof(uint32)) >
+                file_size*max_compress_ratio)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable allocation size "
+                                      "(ratio of alloc to file size %g)",
+                                      (double) (number_pixels*sizeof(uint32))/file_size);
+                TIFFClose(tiff);
+                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
                                      image);
               }
             strip_pixels=MagickAllocateArray(uint32 *,number_pixels,sizeof(uint32));
