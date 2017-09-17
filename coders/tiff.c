@@ -1650,7 +1650,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   magick_off_t
     file_size,
-    max_compress_ratio=70; /* Maximum compression ratio */
+    max_compress_ratio=1000; /* Maximum compression ratio */
 
   uint16
     compress_tag,
@@ -1925,22 +1925,44 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
       }
       /*
-        Allocate memory for the image and pixel buffer.
+        Map from TIFF compression tags to GraphicsMagick equivalents
+        as well as estimate a maximum compression ratio (for
+        validating scanline/strip/tile allocation requests).
       */
       switch (compress_tag)
         {
-        case COMPRESSION_NONE: image->compression=NoCompression; break;
-        case COMPRESSION_CCITTFAX3: image->compression=FaxCompression; break;
-        case COMPRESSION_CCITTFAX4: image->compression=Group4Compression; break;
-        case COMPRESSION_JPEG: image->compression=JPEGCompression; break;
-        case COMPRESSION_OJPEG: image->compression=JPEGCompression; break;
-        case COMPRESSION_LZW: image->compression=LZWCompression; break;
+        case COMPRESSION_NONE:
+          image->compression=NoCompression;
+          break;
+        case COMPRESSION_CCITTFAX3:
+          image->compression=FaxCompression;
+          break;
+        case COMPRESSION_CCITTFAX4:
+          image->compression=Group4Compression;
+          break;
+        case COMPRESSION_JPEG:
+          image->compression=JPEGCompression;
+          break;
+        case COMPRESSION_OJPEG:
+          image->compression=JPEGCompression;
+          break;
+        case COMPRESSION_LZW:
+          image->compression=LZWCompression;
+          break;
 #if defined(COMPRESSION_LZMA)
-	case COMPRESSION_LZMA: image->compression=LZMACompression; break;
+	case COMPRESSION_LZMA:
+          image->compression=LZMACompression;
+          break;
 #endif /* defined(COMPRESSION_LZMA) */
-        case COMPRESSION_DEFLATE: image->compression=ZipCompression; break;
-        case COMPRESSION_ADOBE_DEFLATE: image->compression=ZipCompression; break;
-        default: image->compression=RLECompression; break;
+        case COMPRESSION_DEFLATE:
+          image->compression=ZipCompression;
+          break;
+        case COMPRESSION_ADOBE_DEFLATE:
+          image->compression=ZipCompression;
+          break;
+        default:
+          image->compression=NoCompression;
+          break;
         }
       image->columns=width;
       image->rows=height;

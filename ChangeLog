@@ -1,3 +1,10 @@
+2017-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Allow a single scanline, strip,
+	tile, to be 1000X larger than the input file in order to not cause
+	problems for extremely compressible images or tile sizes much
+	larger than the pixel dimensions.
+
 2017-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/symbols.h, wand/wand_symbols.h: Update C library symbols
