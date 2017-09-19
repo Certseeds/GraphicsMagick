@@ -1,3 +1,9 @@
+2017-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sgi.c (ReadSGIImage): Check for EOF while reading SGI
+	file header.  Issue was brought to our attention by Petr Gajdos
+	via email on Fri, 1 Sep 2017.
+
 2017-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Allow a single scanline, strip,

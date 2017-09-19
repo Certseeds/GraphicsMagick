@@ -314,18 +314,14 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
-  /*
-    Read SGI raster header.
-  */
-  iris_info.magic=ReadBlobMSBShort(image);
   file_size=GetBlobSize(image);
   do
     {
       /*
-	Verify SGI identifier.
+        Read SGI raster header.
       */
-      if (iris_info.magic != 0x01DA)
-	ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      (void) memset(&iris_info, 0, sizeof(iris_info));
+      iris_info.magic=ReadBlobMSBShort(image);
       iris_info.storage=ReadBlobByte(image);
       iris_info.bytes_per_pixel=ReadBlobByte(image) &0xF;
       iris_info.dimension=ReadBlobMSBShort(image) & 0xFFFF;
@@ -343,6 +339,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
       iris_info.color_map=ReadBlobMSBLong(image);
       (void) ReadBlob(image,(unsigned int) sizeof(iris_info.dummy2),
 		      iris_info.dummy2);
+
+      if (EOFBlob(image))
+        ThrowReaderException(CorruptImageError,UnableToReadImageHeader,image);
 
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
 			    "IRIS Header:\n"
@@ -375,6 +374,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
 	Validate image header and set image attributes.
       */
+      if (iris_info.magic != 0x01DA)
+	ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
       if (iris_info.storage == 0U)
 	{
 	  /* Uncompressed */
