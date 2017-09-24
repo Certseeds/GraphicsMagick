@@ -1,3 +1,8 @@
+2017-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/rle.c (ReadRLEImage): Fix SourceForge issue #458 "Heap
+	out of bounds read in ReadRLEImage()".
+
 2017-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sgi.c (ReadSGIImage): Check for EOF while reading SGI

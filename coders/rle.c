@@ -318,7 +318,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if ((rle_header.Ncolors == 0) ||
       (rle_header.Ncolors == 2) ||
-      ((rle_header.Flags & AlphaFlag) && (rle_header.Ncolors > 254)) ||
+      ((rle_header.Flags & AlphaFlag) &&
+       ((rle_header.Ncolors > 254) || (rle_header.Ncolors < 3))) ||
       (rle_header.Pixelbits != 8))
     ThrowRLEReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
 
