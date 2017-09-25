@@ -2843,6 +2843,12 @@ unable to allocate magick info
 .
 
 MessageId       = +1
+SymbolicName    = LimitFatalErrorUnableToAllocateMagickMap
+Language        = English
+unable to allocate magick map
+.
+
+MessageId       = +1
 SymbolicName    = LimitFatalErrorUnableToAllocateModuleInfo
 Language        = English
 unable to allocate module info

@@ -1617,6 +1617,9 @@
         <Message name="UnableToObtainRandomEntropy">
           unable to obtain random bytes from operating system
         </Message>
+        <Message name="UnableToAllocateMagickMap">
+          unable to allocate magick map
+        </Message>
       </FatalError>
       <Warning>
         <Message name="MemoryAllocationFailed">

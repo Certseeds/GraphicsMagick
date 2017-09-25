@@ -1714,6 +1714,13 @@ MagickExport void *GetConfigureBlob(const char *filename,char *path,
 
   (void) strlcpy(path,filename,MaxTextExtent);
   path_map=MagickMapAllocateMap(MagickMapCopyString,MagickMapDeallocateString);
+  if (path_map == (MagickMap) NULL)
+    {
+      /* MagickMap is a tiny allocation so failure to allocate it is fatal */
+      ThrowException3(exception,ResourceLimitFatalError,MemoryAllocationFailed,
+      UnableToAllocateMagickMap);
+      return (void *) NULL;
+    }
 
   {
     /*
