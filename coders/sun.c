@@ -576,8 +576,11 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         sun_pixels=MagickAllocateMemory(unsigned char *,bytes_per_image);
         if (sun_pixels == (unsigned char *) NULL)
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
+          {
+            MagickFreeMemory(sun_data);
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
+          }
         status &= DecodeImage(sun_data,sun_data_length,sun_pixels,bytes_per_image);
         MagickFreeMemory(sun_data);
         if (status != MagickPass)

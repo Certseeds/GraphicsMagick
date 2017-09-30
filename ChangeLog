@@ -1,5 +1,11 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sun.c (ReadSUNImage): Fix SourceForge issue #484 "Memory
+	leak in sun.c".
+
+	* coders/tim.c (ReadTIMImage): Fix SourceForge issue #483 "Memory
+	leak in tim.c".
+
 	* magick/nt_base.c (NTRegistryKeyLookup): Fix SourceForge issue
 	#482 "NULL pointer dereference in NTRegistryKeyLookup".
 
