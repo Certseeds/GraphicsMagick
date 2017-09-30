@@ -1435,7 +1435,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
     bits_per_sample = cin_image_info.channel_info[0].bits_per_sample;
     scale_from_short=(65535U / (65535U >> (16-bits_per_sample)));
 
-    scanline_bytes=image->columns*4;
+    scanline_bytes=MagickArraySize(image->columns,4);
     scanline=MagickAllocateMemory(unsigned char *,scanline_bytes);
     if (scanline == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
