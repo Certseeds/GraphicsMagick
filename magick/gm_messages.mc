@@ -2381,6 +2381,12 @@ unable to add IPTC profile
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorUnableToAddProfile
+Language        = English
+unable to add profile
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorUnableToAllocateCoefficients
 Language        = English
 unable to allocate coefficients

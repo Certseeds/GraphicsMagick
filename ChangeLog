@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/profile.c (SetImageProfile): Fix SourceForge issue #480
+	"assertion failure in MagickMapAllocateMap".
+
 	* coders/yuv.c (ReadYUVImage): Fix SourceForge issue #478 "Memory
 	leak in yuv.c".
 
