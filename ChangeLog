@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcd.c (ReadPCDImage): Fix SourceForge issue #493 "memory
+	leak in ReadPCDImage".
+
 	* coders/histogram.c (WriteHISTOGRAMImage): Fix SourceForge issue
 	#492 "memory leak in WriteHISTOGRAMImage".
 
