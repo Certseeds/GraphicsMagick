@@ -50,6 +50,12 @@
 static unsigned int
   WriteRGBImage(const ImageInfo *,Image *);
 
+#define ThrowRGBReaderException(code_,reason_,image_) \
+{ \
+  MagickFreeMemory(scanline);                 \
+  ThrowReaderException(code_,reason_,image_); \
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -100,7 +106,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     count;
 
   unsigned char
-    *scanline;
+    *scanline = (unsigned char *) NULL;
 
   unsigned int
     status;
@@ -118,7 +124,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   if ((image->columns == 0) || (image->rows == 0))
-    ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+    ThrowRGBReaderException(OptionError,MustSpecifyImageSize,image);
   if (image_info->interlace != PartitionInterlace)
     {
       /*
@@ -126,7 +132,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
       if (status == False)
-        ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+        ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
       for (i=0; i < image->offset; i++)
         {
           if (EOF == ReadBlobByte(image))
@@ -161,7 +167,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   scanline=MagickAllocateArray(unsigned char *,
 			       packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowRGBReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Initialize import options.
   */
@@ -292,7 +298,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             AppendImageFormat("R",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
           }
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
@@ -327,7 +333,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             AppendImageFormat("G",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
           (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -358,7 +364,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             AppendImageFormat("B",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
           (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -394,7 +400,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 AppendImageFormat("A",image->filename);
                 status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
                 if (status == False)
-                  ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+                  ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
               }
             for (y=0; y < image->tile_info.y; y++)
               (void) ReadBlob(image,packet_size*image->tile_info.width,

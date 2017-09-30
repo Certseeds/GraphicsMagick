@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rgb.c (ReadRGBImage): Fix SourceForge issue #488 "Memory
+	leak in rgb.c".
+
 	* coders/palm.c (ReadPALMImage): Fix SourceForge issue #487 "NULL
 	pointer dereference in ReadPALMImage".
 
