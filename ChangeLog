@@ -1,5 +1,9 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Options.cpp (strokeDashArray): Fix SourceForge
+	issue #486 "NULL pointer dereference in
+	Magick::Options::strokeDashArray".
+
 	* magick/nt_feature.c (NTGetTypeList): Fix SourceForge issue #485
 	"NULL pointer dereference in NTGetTypeList".
 

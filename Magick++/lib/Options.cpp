@@ -500,13 +500,18 @@ void Magick::Options::strokeDashArray ( const double* strokeDashArray_ )
 {
   MagickFreeMemory(_drawInfo->dash_pattern);
 
-  if(strokeDashArray_)
+  if (strokeDashArray_)
     {
       // Count elements in dash array
       unsigned int x;
       for (x=0; strokeDashArray_[x]; x++) {};
       // Allocate elements
       _drawInfo->dash_pattern = MagickAllocateMemory(double*,(x+1)*sizeof(double));
+
+      if (!_drawInfo->dash_pattern)
+        throwExceptionExplicit( ResourceLimitError,
+                                "Unable to allocate dash-pattern memory");
+
       // Copy elements
       memcpy(_drawInfo->dash_pattern,strokeDashArray_,
              (x+1)*sizeof(double));
