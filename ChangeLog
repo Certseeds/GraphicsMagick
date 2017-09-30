@@ -1,3 +1,8 @@
+2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (TIFFIgnoreTags): Fix SourceForge issue #476 "NULL
+	Pointer in tiff.c".
+
 2017-09-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (GetConfigureBlob): Fix SourceForge issue #472

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -276,8 +276,8 @@ TIFFIgnoreTags(TIFF *tiff)
     *p,
     *tags;
 
-  const ImageInfo
-    *image_info;
+  Magick_TIFF_ClientData
+    *client_data;
 
   register ssize_t
     i;
@@ -291,8 +291,10 @@ TIFFIgnoreTags(TIFF *tiff)
   if (TIFFGetReadProc(tiff) != TIFFReadBlob)
     return;
 
-  image_info=((Magick_TIFF_ClientData *)TIFFClientdata(tiff))->image_info;
-  tags=AccessDefinition(image_info,"tiff","ignore-tags");
+  client_data=((Magick_TIFF_ClientData *) TIFFClientdata(tiff));
+  if (client_data == (Magick_TIFF_ClientData *) NULL)
+    return;
+  tags=AccessDefinition(client_data->image_info,"tiff","ignore-tags");
   if (tags == (const char *) NULL)
     return;
   count=0;
@@ -303,9 +305,7 @@ TIFFIgnoreTags(TIFF *tiff)
         p++;
 
       {
-        /* Avoid warning about unused strtol return value on Linux */
-        long ignored = strtol(p,&q,10);
-        (void) ignored;
+        (void) strtol(p,&q,10);
       }
       if (p == q)
         return;
@@ -321,6 +321,12 @@ TIFFIgnoreTags(TIFF *tiff)
   i=0;
   p=tags;
   ignore=MagickAllocateArray(TIFFFieldInfo*,count,sizeof(*ignore));
+  if (ignore == (TIFFFieldInfo*) NULL)
+    {
+      ThrowException(&client_data->image->exception,ResourceLimitError,
+                     MemoryAllocationFailed,client_data->image->filename);
+      return;
+    }
   /* This also sets field_bit to 0 (FIELD_IGNORE) */
   (void) memset(ignore,0,count*sizeof(*ignore));
   while (*p != '\0')
