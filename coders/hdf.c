@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -223,12 +223,18 @@ static Image *ReadHDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           Create colormap.
         */
         if (!AllocateImageColormap(image,image->colors))
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
+          {
+            MagickFreeMemory(hdf_pixels);
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
+          }
         hdf_palette=MagickAllocateMemory(unsigned char *,768);
         if (hdf_palette == (unsigned char *) NULL)
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
+          {
+            MagickFreeMemory(hdf_pixels);
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
+          }
         (void) DFR8getimage(image->filename,hdf_pixels,(int) image->columns,
           (int) image->rows,hdf_palette);
         reference=DFR8lastref();

@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/hdf.c (ReadHDFImage): Fix SourceForge issue #495 "memory
+	leak in hdf.c".
+
 	* coders/pcx.c (ReadPCXImage): Fix SourceForge issue #494 "memory
 	leak in pcx.c".
 
