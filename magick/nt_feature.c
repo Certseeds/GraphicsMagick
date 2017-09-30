@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -557,29 +557,33 @@ MagickExport TypeInfo* NTGetTypeList( void )
     int
       array_index = 0;
 
-    type_array = MagickAllocateMemory(TypeInfo**,sizeof(TypeInfo*)*list_entries);
+    type_array = MagickAllocateMemory(TypeInfo**,MagickArraySize(sizeof(TypeInfo*),
+                                                                 list_entries));
 
-    while (type_list->previous != (TypeInfo *) NULL)
-      type_list=type_list->previous;
-
-    for (array_index=0; array_index< list_entries; array_index++)
+    if (type_array != (TypeInfo**) NULL)
       {
-        type_array[array_index] = type_list;
-        type_list=type_list->next;
+        while (type_list->previous != (TypeInfo *) NULL)
+          type_list=type_list->previous;
+
+        for (array_index=0; array_index< list_entries; array_index++)
+          {
+            type_array[array_index] = type_list;
+            type_list=type_list->next;
+          }
+
+        qsort((void *) type_array, list_entries, sizeof(TypeInfo *),TypeInfoCompare);
+
+        type_list=type_array[0];
+        type_list->previous=(TypeInfo *) NULL;
+        for(array_index=1; array_index < list_entries; array_index++)
+          {
+            type_array[array_index-1]->next = type_array[array_index];
+            type_array[array_index]->previous = type_array[array_index-1];
+            type_array[array_index]->next=(TypeInfo *) NULL;
+          }
+        
+        MagickFreeMemory(type_array);
       }
-
-    qsort((void *) type_array, list_entries, sizeof(TypeInfo *),TypeInfoCompare);
-
-    type_list=type_array[0];
-    type_list->previous=(TypeInfo *) NULL;
-    for(array_index=1; array_index < list_entries; array_index++)
-      {
-        type_array[array_index-1]->next = type_array[array_index];
-        type_array[array_index]->previous = type_array[array_index-1];
-        type_array[array_index]->next=(TypeInfo *) NULL;
-      }
-
-    MagickFreeMemory(type_array);
   }
 
   return (TypeInfo *) type_list;

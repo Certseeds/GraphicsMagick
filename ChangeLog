@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_feature.c (NTGetTypeList): Fix SourceForge issue #485
+	"NULL pointer dereference in NTGetTypeList".
+
 	* coders/sun.c (ReadSUNImage): Fix SourceForge issue #484 "Memory
 	leak in sun.c".
 
