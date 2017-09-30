@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -774,6 +774,8 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
           scandata_bytes=4;
           scale_to_short=64;
           scandata=MagickAllocateMemory(unsigned char *,scandata_bytes);
+          if (scandata == (unsigned char *) NULL)
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           scanline=scandata;
           MagickBitStreamInitializeRead(&bit_stream,scanline);
           for (y=0; y < (long) image->rows; y++)
@@ -816,9 +818,11 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
         }
       case 3:
         {
-          scandata_bytes=image->columns*4;
+          scandata_bytes=MagickArraySize(image->columns,4);
           scale_to_short=64;
           scandata=MagickAllocateMemory(unsigned char *,scandata_bytes);
+          if (scandata == (unsigned char *) NULL)
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           for (y=0; y < (long) image->rows; y++)
             {
               magick_uint32_t red;

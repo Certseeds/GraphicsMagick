@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cineon.c (ReadCINEONImage): Fix SourceForge issue #473
+	"NULL pointer dereference in ReadCINEONImage"
+
 	* coders/tiff.c (TIFFIgnoreTags): Fix SourceForge issue #476 "NULL
 	Pointer in tiff.c".
 
