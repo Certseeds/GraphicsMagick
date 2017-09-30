@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -290,6 +290,12 @@ static unsigned int GetCutColors(Image *image)
 %
 %
 */
+#define ThrowCUTReaderException(code_,reason_,image_) \
+{ \
+  DestroyImage(palette);                      \
+  DestroyImageInfo(clone_info);               \
+  ThrowReaderException(code_,reason_,image_); \
+}
 static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image *image,*palette;
@@ -326,7 +332,7 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (Header.Width==0 || Header.Height==0 || Header.Reserved!=0 ||
       (Header.Width > INT_MAX) || (Header.Height > INT_MAX) )
-  CUT_KO:  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  CUT_KO:  ThrowCUTReaderException(CorruptImageError,ImproperImageHeader,image);
 
   /*---This code checks first line of image---*/
   EncodedByte=ReadBlobLSBShort(image);
@@ -362,7 +368,7 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping) goto Finish;
 
   if (CheckImagePixelLimits(image, exception) != MagickPass)
-    ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+    ThrowCUTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   /* ----- Do something with palette ----- */
   if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoPalette;
@@ -428,7 +434,7 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) ReadBlob(palette,20,PalHeader.PaletteId);
 
       if (EOFBlob(image))
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        ThrowCUTReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
       if (PalHeader.MaxIndex<1) goto ErasePalette;
       image->colors=PalHeader.MaxIndex+1;
@@ -468,7 +474,7 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         }
       if (EOFBlob(image))
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        ThrowCUTReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
 
 
@@ -482,8 +488,11 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
         NoMemory:
           if (clone_info != NULL)
-            DestroyImageInfo(clone_info);
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            {
+              DestroyImageInfo(clone_info);
+              clone_info=(ImageInfo *) NULL;
+            }
+          ThrowCUTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
         }
 
       for (i=0; i < (long)image->colors; i++)
@@ -580,10 +589,18 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
  Finish:
   if (BImgBuff!=NULL) MagickFreeMemory(BImgBuff);
-  if (palette!=NULL) DestroyImage(palette);
-  if (clone_info!=NULL) DestroyImageInfo(clone_info);
+  if (palette!=NULL)
+    {
+      DestroyImage(palette);
+      palette=(Image *) NULL;
+    }
+  if (clone_info!=NULL)
+    {
+      DestroyImageInfo(clone_info);
+      clone_info=(ImageInfo *) NULL;
+    }
   if (EOFBlob(image))
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowCUTReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   CloseBlob(image);
   return(image);
 }

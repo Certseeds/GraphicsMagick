@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cut.c (ReadCUTImage): Fix SourceForge issue #497 "memory
+	leak in cut.c".
+
 	* coders/dpx.c (ReadDPXImage): Fix SourceForge issue #496 "memory
 	leak in dpx.c".
 
