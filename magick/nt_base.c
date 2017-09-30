@@ -1913,17 +1913,20 @@ MagickExport unsigned char *NTRegistryKeyLookup(const char *subkey)
     
     size = 32;
     dest = MagickAllocateMemory(unsigned char *,size);
-    
-    res = RegQueryValueExA (reg_key, subkey, 0, &type, dest, &size);
-    if (res == ERROR_MORE_DATA && type == REG_SZ)
+
+    if (dest != (unsigned char *) NULL)
       {
-        MagickReallocMemory(unsigned char *,dest,size);
         res = RegQueryValueExA (reg_key, subkey, 0, &type, dest, &size);
-      }
+        if (res == ERROR_MORE_DATA && type == REG_SZ)
+          {
+            MagickReallocMemory(unsigned char *,dest,size);
+            res = RegQueryValueExA (reg_key, subkey, 0, &type, dest, &size);
+          }
     
-    if (type != REG_SZ || res != ERROR_SUCCESS)
-      {
-        MagickFreeMemory(dest);
+        if (type != REG_SZ || res != ERROR_SUCCESS)
+          {
+            MagickFreeMemory(dest);
+          }
       }
     
     return dest;

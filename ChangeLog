@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_base.c (NTRegistryKeyLookup): Fix SourceForge issue
+	#482 "NULL pointer dereference in NTRegistryKeyLookup".
+
 	* coders/viff.c (ReadVIFFImage): Fix SourceForge issue #481
 	"Memory leak in viff.c".
 
