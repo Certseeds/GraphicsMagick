@@ -1290,13 +1290,17 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
     next_image=next_image->next;
   }
   /*
-    Allocate colormap.
+    Allocate colormaps.
   */
   global_colormap=MagickAllocateMemory(unsigned char *,768);
-  colormap=MagickAllocateMemory(unsigned char *,768);
-  if ((global_colormap == (unsigned char *) NULL) ||
-      (colormap == (unsigned char *) NULL))
+  if (global_colormap == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  colormap=MagickAllocateMemory(unsigned char *,768);
+  if (colormap == (unsigned char *) NULL)
+    {
+      MagickFreeMemory(global_colormap);
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
   for (i=0; i < 768; i++)
     colormap[i]=0;
   /*

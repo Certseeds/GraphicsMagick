@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/gif.c (WriteGIFImage): Fix SourceForge issue #491 "memory
+	leak in WriteGIFImage".
+
 	* coders/fits.c (WriteFITSImage): Fix SourceForge issue #490
 	"memory leak in WriteFITSImage".
 
