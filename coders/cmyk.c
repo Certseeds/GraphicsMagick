@@ -82,6 +82,11 @@ static unsigned int
 %
 %
 */
+#define ThrowCMYKReaderException(code_,reason_,image_) \
+{ \
+  MagickFreeMemory(scanline);                 \
+  ThrowReaderException(code_,reason_,image_); \
+}
 static Image *ReadCMYKImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -102,7 +107,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
     count;
 
   unsigned char
-    *scanline;
+    *scanline = (unsigned char *) NULL;
 
   unsigned int
     status;
@@ -128,7 +133,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       */
       status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
       if (status == False)
-        ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+        ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
       for (i=0; i < image->offset; i++)
         {
           if (EOF == ReadBlobByte(image))
@@ -163,7 +168,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
   scanline=MagickAllocateArray(unsigned char *,
 			       packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Initialize import options.
   */
@@ -298,7 +303,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             AppendImageFormat("C",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
@@ -333,7 +338,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             AppendImageFormat("M",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
           (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -364,7 +369,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             AppendImageFormat("Y",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
           (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -395,7 +400,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             AppendImageFormat("K",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
           (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
@@ -431,7 +436,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 AppendImageFormat("A",image->filename);
                 status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
                 if (status == False)
-                  ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+                  ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
               }
             for (y=0; y < image->tile_info.y; y++)
               (void) ReadBlob(image,packet_size*image->tile_info.width,

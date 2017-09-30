@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cmyk.c (ReadCMYKImage): Fix SourceForge issue #498
+	"memory leak in cmyk.c".
+
 	* coders/cut.c (ReadCUTImage): Fix SourceForge issue #497 "memory
 	leak in cut.c".
 
