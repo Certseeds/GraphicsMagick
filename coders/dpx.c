@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2015 GraphicsMagick Group
+% Copyright (C) 2005-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -1899,7 +1899,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           dpx_user_data=(DPXUserDefinedData *) user_data;
           StringToAttribute(image,"DPX:user.data.id",dpx_user_data->user_id);
           if (!SetImageProfile(image,"DPXUSERDATA",user_data,user_data_length))
-            ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            {
+              MagickFreeMemory(user_data);
+              ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            }
           MagickFreeMemory(user_data);
         }
     }

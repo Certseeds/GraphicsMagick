@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadDPXImage): Fix SourceForge issue #496 "memory
+	leak in dpx.c".
+
 	* coders/hdf.c (ReadHDFImage): Fix SourceForge issue #495 "memory
 	leak in hdf.c".
 
