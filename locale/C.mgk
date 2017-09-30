@@ -1318,6 +1318,9 @@
         <Message name="UnableToAddIPTCProfile">
           unable to add IPTC profile
         </Message>
+        <Message name="UnableToAddOrRemoveProfile">
+          unable to add or remove profile
+        </Message>
         <Message name="UnableToAllocateColormap">
           Unable to allocate colormap
         </Message>

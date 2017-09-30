@@ -401,7 +401,7 @@ extern MagickExport const char *GetLocaleMessageFromID(const int);
 #define MGK_ResourceLimitErrorUnableToAddColorProfile 394
 #define MGK_ResourceLimitErrorUnableToAddGenericProfile 395
 #define MGK_ResourceLimitErrorUnableToAddIPTCProfile 396
-#define MGK_ResourceLimitErrorUnableToAddProfile 397
+#define MGK_ResourceLimitErrorUnableToAddOrRemoveProfile 397
 #define MGK_ResourceLimitErrorUnableToAllocateCoefficients 398
 #define MGK_ResourceLimitErrorUnableToAllocateColormap 399
 #define MGK_ResourceLimitErrorUnableToAllocateICCProfile 400
@@ -1072,7 +1072,7 @@ static const MessageInfo message_map[] =
     { "UnableToAddColorProfile", 394 },
     { "UnableToAddGenericProfile", 395 },
     { "UnableToAddIPTCProfile", 396 },
-    { "UnableToAddProfile", 397 },
+    { "UnableToAddOrRemoveProfile", 397 },
     { "UnableToAllocateCoefficients", 398 },
     { "UnableToAllocateColormap", 399 },
     { "UnableToAllocateICCProfile", 400 },
@@ -1640,7 +1640,7 @@ static const char *message_dat[] =
     "unable to add ICC Color profile",
     "unable to add generic profile",
     "unable to add IPTC profile",
-    "unable to add profile",
+    "unable to add or remove profile",
     "unable to allocate coefficients",
     "Unable to allocate colormap",
     "unable to allocate ICC profile",

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -510,7 +510,10 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         */
         if (ReadBlob(image,viff_colormap_size,(char *) viff_colormap)
             != viff_colormap_size)
-          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          {
+            MagickFreeMemory(viff_colormap);
+            ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          }
 
         lsb_first=1;
         if (*(char *) &lsb_first &&

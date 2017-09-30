@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/viff.c (ReadVIFFImage): Fix SourceForge issue #481
+	"Memory leak in viff.c".
+
 	* magick/profile.c (SetImageProfile): Fix SourceForge issue #480
 	"assertion failure in MagickMapAllocateMap".
 

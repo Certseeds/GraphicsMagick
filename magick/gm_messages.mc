@@ -2381,9 +2381,9 @@ unable to add IPTC profile
 .
 
 MessageId       = +1
-SymbolicName    = LimitErrorUnableToAddProfile
+SymbolicName    = LimitErrorUnableToAddOrRemoveProfile
 Language        = English
-unable to add profile
+unable to add or remove profile
 .
 
 MessageId       = +1
