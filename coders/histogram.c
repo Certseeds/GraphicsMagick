@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -195,7 +195,7 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
   unsigned int
     status;
 
-  unsigned long
+  size_t
     length;
 
   /*
@@ -222,12 +222,15 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
     Allocate histogram count arrays.
   */
   length=Max(ScaleQuantumToChar(MaxRGB)+1,histogram_image->columns);
-  red=MagickAllocateMemory(long *,length*sizeof(long));
-  green=MagickAllocateMemory(long *,length*sizeof(long));
-  blue=MagickAllocateMemory(long *,length*sizeof(long));
+  red=MagickAllocateArray(long *,length,sizeof(long));
+  green=MagickAllocateArray(long *,length,sizeof(long));
+  blue=MagickAllocateArray(long *,length,sizeof(long));
   if ((red == (long *) NULL) || (green == (long *) NULL) ||
       (blue == (long *) NULL))
     {
+      MagickFreeMemory(red);
+      MagickFreeMemory(green);
+      MagickFreeMemory(blue);
       DestroyImage(histogram_image);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image)
     }

@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/histogram.c (WriteHISTOGRAMImage): Fix SourceForge issue
+	#492 "memory leak in WriteHISTOGRAMImage".
+
 	* coders/gif.c (WriteGIFImage): Fix SourceForge issue #491 "memory
 	leak in WriteGIFImage".
 
