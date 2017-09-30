@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -457,7 +457,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowPCXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
 
     /*
@@ -474,15 +474,15 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           /* Not compressed */
           if (uncompressed_size > file_size)
-            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
-                                   image);
+            ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                    image);
         }
       else
         {
           /* RLE compressed */
           if (uncompressed_size > file_size*254.0)
-            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
-                                 image);
+            ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                    image);
         }
     }
 

@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (ReadPCXImage): Fix SourceForge issue #494 "memory
+	leak in pcx.c".
+
 	* coders/pcd.c (ReadPCDImage): Fix SourceForge issue #493 "memory
 	leak in ReadPCDImage".
 
