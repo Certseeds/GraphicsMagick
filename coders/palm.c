@@ -1149,11 +1149,17 @@ image->depth = 8;
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowPALMReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-  one_row = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,2*image->columns));
+  one_row = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,
+                                                     MagickArraySize(2,image->columns)));
   if (one_row == (unsigned char *) NULL)
     ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   if (palm_header.compression_type == PALM_COMPRESSION_SCANLINE)
-    lastrow = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,2*image->columns));
+    {
+      lastrow = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,
+                                                         MagickArraySize(2,image->columns)));
+      if (lastrow == (unsigned char *) NULL)
+        ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
 
   mask = (1l << palm_header.bits_per_pixel) - 1;
 

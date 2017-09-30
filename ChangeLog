@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/palm.c (ReadPALMImage): Fix SourceForge issue #487 "NULL
+	pointer dereference in ReadPALMImage".
+
 	* Magick++/lib/Options.cpp (strokeDashArray): Fix SourceForge
 	issue #486 "NULL pointer dereference in
 	Magick::Options::strokeDashArray".
