@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/palm.c (WritePALMImage): Fix SourceForge issue #489
+	"memory leak in WritePALMImage".
+
 	* coders/rgb.c (ReadRGBImage): Fix SourceForge issue #488 "Memory
 	leak in rgb.c".
 

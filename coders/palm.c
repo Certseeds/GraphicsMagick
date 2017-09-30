@@ -1860,10 +1860,17 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
     }
 
   if (palm_image->compression == FaxCompression)
-    lastrow = MagickAllocateMemory(unsigned char *,bytes_per_row);
+    {
+      lastrow = MagickAllocateMemory(unsigned char *,bytes_per_row);
+      if (lastrow == (unsigned char *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
   one_row = MagickAllocateMemory(unsigned char *,bytes_per_row);
   if (one_row == (unsigned char *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      MagickFreeMemory(lastrow);
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
 
   ClearPixelPacket(&transpix);
   for (y=0; y < (int) palm_image->rows; y++)
