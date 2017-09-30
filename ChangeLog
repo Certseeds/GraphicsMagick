@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/emf.c (ReadEnhMetaFile): Fix SourceForge issue #475 "NULL
+	pointer dereference in ReadEnhMetaFile".
+
 	* coders/cineon.c (ReadCINEONImage): Fix SourceForge issue #473
 	"NULL pointer dereference in ReadCINEONImage"
 
