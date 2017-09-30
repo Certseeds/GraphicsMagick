@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/yuv.c (ReadYUVImage): Fix SourceForge issue #478 "Memory
+	leak in yuv.c".
+
 	* magick/map.c (MagickMapCloneMap): Fix SourceForge issue #477
 	"assertion failure in MagickMapIterateNext".
 
