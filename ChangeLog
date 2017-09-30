@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/fits.c (WriteFITSImage): Fix SourceForge issue #490
+	"memory leak in WriteFITSImage".
+
 	* coders/palm.c (WritePALMImage): Fix SourceForge issue #489
 	"memory leak in WritePALMImage".
 

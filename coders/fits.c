@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -765,8 +765,12 @@ static unsigned int WriteFITSImage(const ImageInfo *image_info,Image *image)
   */  
   packet_size=quantum_size/8;
   fits_info=MagickAllocateMemory(char *,FITS_BLOCK_SIZE);
-  pixels=MagickAllocateMemory(unsigned char *,packet_size*image->columns);
-  if ((fits_info == (char *) NULL) || (pixels == (unsigned char *) NULL))
+  if (fits_info == (char *) NULL)
+    {
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
+  pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+  if (pixels == (unsigned char *) NULL)
     {
       MagickFreeMemory(fits_info);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
