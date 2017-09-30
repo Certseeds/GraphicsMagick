@@ -1,5 +1,8 @@
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/map.c (MagickMapCloneMap): Fix SourceForge issue #477
+	"assertion failure in MagickMapIterateNext".
+
 	* coders/emf.c (ReadEnhMetaFile): Fix SourceForge issue #475 "NULL
 	pointer dereference in ReadEnhMetaFile".
 

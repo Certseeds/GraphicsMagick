@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -507,7 +507,20 @@ MagickMapCloneMap(MagickMap map,ExceptionInfo *exception)
   /* LockSemaphoreInfo(map->semaphore); */
 
   map_clone=MagickMapAllocateMap(map->clone_function,map->deallocate_function);
+  if (map_clone == (MagickMap) NULL)
+    {
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     "MagickMapAllocateMap");
+      return (MagickMap) NULL;
+    }
   iterator=MagickMapAllocateIterator(map);
+  if (iterator == (MagickMapIterator) NULL)
+    {
+      MagickMapDeallocateMap(map_clone);
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     "MagickMapAllocateIterator");
+      return (MagickMap) NULL;
+    }
   while(MagickMapIterateNext(iterator,&key))
   {
     const void *object=MagickMapDereferenceIterator(iterator,&size);
