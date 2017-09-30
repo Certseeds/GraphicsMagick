@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -114,7 +114,6 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   unsigned char
-    *tim_data,
     *tim_pixels;
 
   unsigned short
@@ -225,11 +224,14 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-    tim_data=MagickAllocateMemory(unsigned char *,image_size);
-    if (tim_data == (unsigned char *) NULL)
+    tim_pixels=MagickAllocateMemory(unsigned char *,image_size);
+    if (tim_pixels == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    (void) ReadBlob(image,image_size,(char *) tim_data);
-    tim_pixels=tim_data;
+    if (ReadBlob(image,image_size,(char *) tim_pixels) != image_size)
+      {
+        MagickFreeMemory(tim_pixels);
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+      }
 
     /*
       Convert TIM raster image to pixel packets.
@@ -368,7 +370,10 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
       }
       default:
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
+        {
+          MagickFreeMemory(tim_pixels);
+          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
     }
     if (image->storage_class == PseudoClass)
       (void) SyncImage(image);
