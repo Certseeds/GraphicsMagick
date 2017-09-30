@@ -83,6 +83,11 @@ static unsigned int
 */
 #define AVS_WIDTH_LIMIT 65536UL  /* Artificially limit width to 64K pixels */
 #define AVS_HEIGHT_LIMIT 65536UL /* Artificially limit height to 64K pixels */
+#define ThrowAVSReaderException(code_,reason_,image_)   \
+  {                                                     \
+    MagickFreeMemory(pixels);                           \
+    ThrowReaderException(code_,reason_,image_);         \
+  }
 static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image
@@ -101,7 +106,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   unsigned char
-    *pixels;
+    *pixels = (unsigned char *) NULL;
 
   unsigned int
     status;
@@ -127,7 +132,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
   width=ReadBlobMSBLong(image);
   height=ReadBlobMSBLong(image);
   if (EOFBlob(image))
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowAVSReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "AVS dimensions %ldx%ld",width,height);
@@ -137,7 +142,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     incredibly huge allocations.
   */
   if ((width > AVS_WIDTH_LIMIT) || (height > AVS_HEIGHT_LIMIT))
-    ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+    ThrowAVSReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
 
   do
   {
@@ -154,19 +159,15 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowAVSReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     pixels=MagickAllocateArray(unsigned char *,image->columns,4);
     if (pixels == (unsigned char *) NULL)
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowAVSReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     row_bytes=4*image->columns;
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_bytes,pixels) != row_bytes)
-        {
-          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                         image->filename);
-          status=MagickFail;
-        }
+        ThrowAVSReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       p=pixels;
       q=SetImagePixels(image,0,y,image->columns,1);
       if (q == (PixelPacket *) NULL)
