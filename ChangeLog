@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/widget.c (MagickXFileBrowserWidget): Fix SourceForge
+	issue #506 "null pointer in widget.c".
+
 	* coders/tiff.c (WriteTIFFImage): Fix SourceForge issue #509
 	"Memory leak in tiff.c".
 

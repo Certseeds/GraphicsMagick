@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4829,10 +4829,15 @@ MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *wind
                 GetExceptionInfo(&exception);
                 magick_info=GetMagickInfo("*",&exception);
                 DestroyExceptionInfo(&exception);
+                if (magick_info == (const MagickInfo *) NULL)
+                  break;
                 i=0;
                 for (p=magick_info; p != (MagickInfo *) NULL; p=p->next)
                   i++;
-                formats=MagickAllocateMemory(char **,(i+1)*sizeof(char *));
+                formats=MagickAllocateArray(char **,(i+1),sizeof(char *));
+                if (formats == (char **) NULL)
+                  break;
+                (void) memset(formats,0,(i+1)*sizeof(char *));
                 i=0;
                 for (p=magick_info; p != (MagickInfo *) NULL; p=p->next)
                 {
@@ -4840,8 +4845,10 @@ MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *wind
                     continue;
                   if (!p->encoder)
                     continue;
+                   /* AllocateString does a fatal exit on failed alloc */
                   formats[i]=AllocateString(p->name);
-                  LocaleLower((char *) formats[i]);
+                  if (formats[i] != NULL)
+                    LocaleLower((char *) formats[i]);
                   i++;
                 }
                 formats[i]=(char *) NULL;
