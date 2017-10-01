@@ -1,3 +1,8 @@
+2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/avs.c (ReadAVSImage): Fix Coverity CID 184115 "Control
+	flow issues (DEADCODE)".
+
 2017-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/avs.c (ReadAVSImage): Fix SourceForge issue #499 "memory

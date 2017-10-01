@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -198,8 +198,6 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickFail;
               break;
             }
-      if (MagickFail == status)
-        break;
     }
     MagickFreeMemory(pixels);
 
