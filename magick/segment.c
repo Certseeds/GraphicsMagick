@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -165,6 +165,7 @@ static int
   DefineRegion(const short *,ExtentPacket *);
 
 static void
+  FreeNodes(IntervalTree *node),
   ScaleSpace(const long *,const double,double *),
   ZeroCrossHistogram(double *,const double,short *);
 
@@ -1191,16 +1192,24 @@ InitializeIntervalTree(const ZeroCrossing *zero_crossing,
   */
   list=MagickAllocateMemory(IntervalTree **,TreeLength*sizeof(IntervalTree *));
   if (list == (IntervalTree **) NULL)
-    return((IntervalTree *) NULL);
+    return ((IntervalTree *) NULL);
   /*
     The root is the entire histogram.
   */
   root=MagickAllocateMemory(IntervalTree *,sizeof(IntervalTree));
+  if (root == (IntervalTree *) NULL)
+    {
+      MagickFreeMemory(list);
+      return ((IntervalTree *) NULL);
+    }
   root->child=(IntervalTree *) NULL;
   root->sibling=(IntervalTree *) NULL;
   root->tau=0.0;
   root->left=0;
   root->right=255;
+  root->mean_stability=0.0;
+  root->stability=0.0;
+  (void) memset(list,0,TreeLength*sizeof(IntervalTree *));
   for (i=(-1); i < (long) number_crossings; i++)
     {
       /*
@@ -1232,6 +1241,8 @@ InitializeIntervalTree(const ZeroCrossing *zero_crossing,
                                                          sizeof(IntervalTree));
                       node=node->sibling;
                     }
+                  if (node == (IntervalTree *) NULL)
+                    goto interval_tree_alloc_failure;
                   node->tau=zero_crossing[i+1].tau;
                   node->child=(IntervalTree *) NULL;
                   node->sibling=(IntervalTree *) NULL;
@@ -1243,6 +1254,8 @@ InitializeIntervalTree(const ZeroCrossing *zero_crossing,
           if (left != head->left)
             {
               node->sibling=MagickAllocateMemory(IntervalTree *,sizeof(IntervalTree));
+              if (node->sibling == (IntervalTree *) NULL)
+                goto interval_tree_alloc_failure;
               node=node->sibling;
               node->tau=zero_crossing[i+1].tau;
               node->child=(IntervalTree *) NULL;
@@ -1259,6 +1272,12 @@ InitializeIntervalTree(const ZeroCrossing *zero_crossing,
   MeanStability(root->child);
   MagickFreeMemory(list);
   return(root);
+
+ interval_tree_alloc_failure:
+  
+  MagickFreeMemory(list);
+  FreeNodes(root);
+  return ((IntervalTree *) NULL);
 }
 
 /*
@@ -1380,7 +1399,10 @@ OptimalTau(const long *histogram,const double max_tau,
   count=(unsigned long) ((max_tau-min_tau)/delta_tau)+2;
   zero_crossing=MagickAllocateMemory(ZeroCrossing *,count*sizeof(ZeroCrossing));
   if (zero_crossing == (ZeroCrossing *) NULL)
-    return(0.0);
+    {
+      MagickFreeMemory(list);
+      return(0.0);
+    }
   for (i=0; i < (long) count; i++)
     zero_crossing[i].tau=(-1);
   /*
@@ -1439,7 +1461,11 @@ OptimalTau(const long *histogram,const double max_tau,
   */
   root=InitializeIntervalTree(zero_crossing,number_crossings);
   if (root == (IntervalTree *) NULL)
-    return(0.0);
+    {
+      MagickFreeMemory(zero_crossing);
+      MagickFreeMemory(list);
+      return(0.0);
+    }
   /*
     Find active nodes:  stability is greater (or equal) to the mean stability of
     its children.

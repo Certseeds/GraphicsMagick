@@ -1,5 +1,9 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/segment.c (InitializeIntervalTree): Fix SourceForge issue
+	#507 "null pointer in segment.c" and issue #508 "null pointer in
+	segment.c".
+
 	* coders/topol.c (ReadTOPOLImage): Fix SourceForge issue #510
 	"null pointer and meory leak in topol.c".
 
