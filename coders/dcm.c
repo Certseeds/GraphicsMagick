@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2009 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4852,10 +4852,21 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     MagickFreeMemory(dcm.rescale_map);
   if (status == MagickPass)
     {
-      while (image->previous != (Image *) NULL)
-        image=image->previous;
-      CloseBlob(image);
-      return(image);
+      /* It is possible to have success status yet have no image */
+      if (image != (Image *) NULL)
+        {
+          while (image->previous != (Image *) NULL)
+            image=image->previous;
+          CloseBlob(image);
+          return(image);
+        }
+      else
+        {
+          ThrowException(exception,CorruptImageError,
+                         ImageFileDoesNotContainAnyImageData,
+                         image_info->filename);
+          return (Image *) NULL;
+        }
     }
   else
     {

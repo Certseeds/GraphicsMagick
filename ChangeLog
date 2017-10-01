@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dcm.c (ReadDCMImage): Fix SourceForge issue #512 "NULL
+	Pointer Dereference in DICOM Decoder".
+
 	* coders/pict.c (ReadPICTImage): Fix SourceForge issue #511
 	"Memory Allocation error due to malformed image file".
 
