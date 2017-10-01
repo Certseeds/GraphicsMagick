@@ -1978,6 +1978,9 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 		/*
 		  Allocate and initialize dither maps.
 		*/
+                memset(blue_map,0,sizeof(blue_map));
+                memset(green_map,0,sizeof(green_map));
+                memset(red_map,0,sizeof(red_map));
 		for (i=0; i < 2; i++)
 		  for (j=0; j < 16; j++)
 		    {
@@ -1990,8 +1993,17 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 		      if ((red_map[i][j] == (unsigned short *) NULL) ||
 			  (green_map[i][j] == (unsigned short *) NULL) ||
 			  (blue_map[i][j] == (unsigned short *) NULL))
-			ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-					     image);
+                        {
+                          for (i=0; i < 2; i++)
+                            for (j=0; j < 16; j++)
+                              {
+                                MagickFreeMemory(green_map[i][j]);
+                                MagickFreeMemory(blue_map[i][j]);
+                                MagickFreeMemory(red_map[i][j]);
+                              }
+                          ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
+                                               image);
+                        }
 		    }
 		/*
 		  Initialize dither tables.

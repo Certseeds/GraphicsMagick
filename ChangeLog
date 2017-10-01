@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (WritePNMImage): Fix SourceForge issue #503 "memory
+	leak in WritePNMImage".
+
 	* coders/png.c (ReadMNGImage): Fix SourceForge issue #501 "memory
 	leak in ReadMNGImage".
 
