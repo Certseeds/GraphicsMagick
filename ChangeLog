@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Fix SourceForge issue #511
+	"Memory Allocation error due to malformed image file".
+
 	* coders/pnm.c (WritePNMImage): Fix SourceForge issue #503 "memory
 	leak in WritePNMImage".
 
