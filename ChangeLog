@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Fix SourceForge issue #501 "memory
+	leak in ReadMNGImage".
+
 	* magick/segment.c (InitializeIntervalTree): Fix SourceForge issue
 	#507 "null pointer in segment.c" and issue #508 "null pointer in
 	segment.c".

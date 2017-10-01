@@ -5409,12 +5409,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                           large_image->rows);
                   m=mng_info->magn_mt;
                   yy=0;
-                  row_length=(size_t) (image->columns*sizeof(PixelPacket));
+                  row_length=MagickArraySize(image->columns,sizeof(PixelPacket));
                   next=MagickAllocateMemory(PixelPacket *,row_length);
                   prev=MagickAllocateMemory(PixelPacket *,row_length);
                   if ((prev == (PixelPacket *) NULL) ||
                       (next == (PixelPacket *) NULL))
                     {
+                      MagickFreeMemory(next);
+                      MagickFreeMemory(prev);
                       DestroyImageList(image);
                       MngInfoFreeStruct(mng_info,&have_mng_structure);
                       ThrowReaderException(ResourceLimitError,
