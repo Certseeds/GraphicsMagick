@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/module.c (FindMagickModule): Fix SourceForge issue #502
+	"null pointer in module.c".
+
 	* coders/avs.c (ReadAVSImage): Fix Coverity CID 184115 "Control
 	flow issues (DEADCODE)".
 

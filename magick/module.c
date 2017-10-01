@@ -690,6 +690,13 @@ FindMagickModule(const char *filename,MagickModuleType module_type,
     }
   
   path_map_iterator=MagickMapAllocateIterator(path_map);
+  if (path_map_iterator == (MagickMapIterator) NULL)
+    {
+      path[0]='\0';
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     "MagickMapAllocateIterator");
+      return MagickFail;
+    }
   
   if (IsEventLogging())
     {
