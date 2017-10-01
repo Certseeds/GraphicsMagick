@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -325,6 +325,7 @@ static void ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
     DestroyImageInfo(clone_info); \
   if (palette) \
     DestroyImage(palette); \
+  MagickFreeMemory(BImgBuff); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -332,10 +333,10 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
 {
   Image
     *image,
-    *palette;
+    *palette = (Image *) NULL;
 
   ImageInfo
-    *clone_info;
+    *clone_info = (ImageInfo *) NULL;
 
   RasHeader
     Header;
@@ -646,9 +647,13 @@ NoPalette:
 
        ldblk = (long)((depth * Header.TileWidth + 7) / 8);
        BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) ldblk);	/*Ldblk was set in the check phase */
+       if (BImgBuff == NULL)
+         ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        /* dlazdice.create(Header.TileWidth,Header.TileHeight,p.Planes); */
-       Offsets = MagickAllocateMemory(magick_uint32_t *,(size_t)TilesAcross*TilesDown*sizeof(magick_uint32_t));
+       Offsets = MagickAllocateArray(magick_uint32_t *,
+                                     MagickArraySize((size_t)TilesAcross,(size_t)TilesDown),
+                                     sizeof(magick_uint32_t));
        if(Offsets==NULL)
          ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);         
 
@@ -684,8 +689,7 @@ NoPalette:
 
   /* Finish: */
 DONE_READING:
-  if (BImgBuff != NULL)
-    MagickFreeMemory(BImgBuff);
+  MagickFreeMemory(BImgBuff);
   if (palette != NULL)
     DestroyImage(palette);
   if (clone_info != NULL)
