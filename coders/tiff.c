@@ -5239,8 +5239,13 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           if ((blue == (unsigned short *) NULL) ||
               (green == (unsigned short *) NULL) ||
               (red == (unsigned short *) NULL))
-            ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-                                 image);
+            {
+              MagickFreeMemory(blue);
+              MagickFreeMemory(green);
+              MagickFreeMemory(red);
+              ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+            }
           (void) memset(red,0,65536L*sizeof(unsigned short));
           (void) memset(green,0,65536L*sizeof(unsigned short));
           (void) memset(blue,0,65536L*sizeof(unsigned short));

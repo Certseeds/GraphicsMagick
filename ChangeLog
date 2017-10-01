@@ -1,5 +1,8 @@
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (WriteTIFFImage): Fix SourceForge issue #509
+	"Memory leak in tiff.c".
+
 	* magick/module.c (FindMagickModule): Fix SourceForge issue #502
 	"null pointer in module.c".
 
