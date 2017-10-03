@@ -1,3 +1,9 @@
+2017-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadNonNativeImages): Additional fix
+	(improvement) for SourceForge issue #512 "NULL Pointer Dereference
+	in DICOM Decoder".
+
 2017-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (ReadDCMImage): Fix SourceForge issue #512 "NULL

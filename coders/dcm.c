@@ -4444,6 +4444,14 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
   if (DCM_ReadOffsetTable(*image,dcm,exception) == MagickFail)
     return MagickFail;
 
+  if (dcm->number_scenes == 0U)
+    {
+      ThrowException(exception,CorruptImageError,
+                     ImageFileHasNoScenes,
+                     image_info->filename);
+      return MagickFail;
+    }
+
   status=MagickPass;
   for (scene=0; scene < dcm->number_scenes; scene++)
     {

@@ -743,6 +743,12 @@ Image file or blob does not contain any image data
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorImageFileHasNoScenes
+Language        = English
+Image file has no scenes
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorImageTypeNotSupported
 Language        = English
 Image type not supported

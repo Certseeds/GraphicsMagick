@@ -509,6 +509,9 @@
         <Message name="UnsupportedNumberOfPlanes">
           Unsupported number of planes
         </Message>
+        <Message name="ImageFileHasNoScenes">
+          Image file has no scenes
+        </Message>
      </Error>
       <FatalError>
         <Message name="UnableToPersistKey">
