@@ -3575,10 +3575,16 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
       image->rows=jng_height;
       image->columns=jng_width;
       length=image->columns*sizeof(PixelPacket);
-      if ((jng_height == 0 || jng_width == 0) && logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    jng_width=%lu jng_height=%lu",
-            (unsigned long)jng_width,(unsigned long)jng_height);
+      if (jng_height == 0 || jng_width == 0)
+        {
+          if (logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+              "    jng_width=%lu jng_height=%lu",
+              (unsigned long)jng_width,(unsigned long)jng_height);
+          DestroyJNG(NULL,&color_image,&color_image_info,
+            &alpha_image,&alpha_image_info);
+          return ((Image *)NULL);     
+        }
       for (y=0; y < (long) image->rows; y++)
         {
           s=AcquireImagePixels(jng_image,0,y,image->columns,1,

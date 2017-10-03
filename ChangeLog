@@ -1,3 +1,8 @@
+2017-09-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+
+	* coders/png.c: Fixed SourceForge Issue #469 "use after free in
+	ReadJNGImage png.c
+
 2017-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_ReadNonNativeImages): Additional fix
