@@ -16,7 +16,7 @@ very important consideration for GraphicsMagick.  GraphicsMagick may
 be used to open files and URLs produced by an untrusted party.  Given
 a suitable weakness (which we make every effort to prevent), an
 intentionally constructed file might be able to cause the software to
-crash, leak memory, request huge amounts memory, run forever, or in
+crash, leak memory, request huge amounts of memory, run forever, or in
 the worst case execute arbitrary code, including shell code.
 GraphicsMagick is very powerful and complex software supporting many
 capabilities and so untrusted parties should never be allowed to
@@ -49,10 +49,19 @@ maintainers or to the `GraphicsMagick Security`_ mail address.  More
 minor issues are best addressed via the `GraphicsMagick Bug Tracker`_
 at SourceForge.  Please remember to set the bug to 'private' if you
 use the bug tracker or else someone may aquire a zero-day exploit from
-your report.
+your report.  We wil set the bug to 'public' as soon as a remedy has
+been made available.
 
 Reporting an issue will allow us to fix it so that future releases of
 the software won't suffer from the problem.
+
+The remedy available to us is to submit a changeset to the
+GraphicsMagick Mercurial repository, and include the changes in the
+next release.  Regardless of how an issue becomes known to us, the
+issue will become public knowledge as soon as we commit a fix to the
+source code repository.  Only in exceedingly rare and dire
+circumstances (e.g a previously-unknown zero-day shell exploit) might
+we do anything different.
 
 
 Safe Use Of The Software
