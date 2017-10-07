@@ -1,5 +1,13 @@
 2017-10-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/module.c (InitializeModuleSearchPath): Verify that any
+	component paths specified in MAGICK_CODER_MODULE_PATH and
+	MAGICK_FILTER_MODULE_PATH exist before adding them to search paths
+	actually used, and convert to real paths if possible.  This avoids
+	possible use of relative paths to load modules (a possible
+	security issue) and may improve efficiency by removing
+	non-existent paths.
+
 	* coders/yuv.c (ReadYUVImage): Fix leak of scanline upon Image
 	allocation failure.  Patch submitted by Petr Gajdos via email on
 	Fri, 6 Oct 2017.

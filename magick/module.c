@@ -1085,6 +1085,9 @@ InitializeModuleSearchPath(MagickModuleType module_type,
           
           int
             length;
+
+          MagickBool
+            skip=MagickFalse;
           
           seperator = strchr(start,DirectoryListSeparator);
           if (seperator)
@@ -1095,9 +1098,52 @@ InitializeModuleSearchPath(MagickModuleType module_type,
             length = MaxTextExtent-1;
           (void) strncpy(buffer,start,length);
           buffer[length]='\0';
-          if (buffer[length-1] != DirectorySeparator[0])
-            (void) strcat(buffer,DirectorySeparator);
-          AddModulePath(path_map,&path_index,buffer,exception);
+#if HAVE_REALPATH
+          {
+            char
+              real_path[PATH_MAX+1];
+
+            if (realpath(buffer,real_path) != NULL)
+              {
+                length=strlcpy(buffer,real_path,sizeof(buffer));
+                if ((size_t) length >= sizeof(buffer))
+                  {
+                    /* Buffer overflow */
+                    (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                          "Module path: Buffer overflow of "
+                                          "component \"%s\"",
+                                          real_path);
+                    length=0;
+                    skip=MagickTrue;
+                  }
+              }
+            else
+              {
+                /* Path does not exist */
+                (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                      "Module path: Skipping invalid path "
+                                      "component \"%s\" (%s)",
+                                      buffer,strerror(errno));
+                skip=MagickTrue;
+              }
+          }
+#else /* !HAVE_REALPATH */
+          if (IsAccessibleNoLogging(buffer) != MagickTrue)
+            {
+              /* Path does not exist */
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "Module path: Skipping invalid path "
+                                    "component \"%s\" (%s)",
+                                    buffer,strerror(errno));
+              skip=MagickTrue;
+            }
+#endif
+          if (skip == MagickFalse)
+            {
+              if (buffer[length-1] != DirectorySeparator[0])
+                (void) strcat(buffer,DirectorySeparator);
+              AddModulePath(path_map,&path_index,buffer,exception);
+            }
           start += length+1;
         }
     }
