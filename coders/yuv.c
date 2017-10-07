@@ -416,6 +416,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->next == (Image *) NULL)
           {
             DestroyImageList(image);
+            MagickFreeMemory(scanline);
             return((Image *) NULL);
           }
         image=SyncNextImageInList(image);

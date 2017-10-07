@@ -1,7 +1,15 @@
+2017-10-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/yuv.c (ReadYUVImage): Fix leak of scanline upon Image
+	allocation failure.  Patch submitted by Petr Gajdos via email on
+	Fri, 6 Oct 2017.
+
 2017-09-13  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
-	* coders/png.c: Fixed SourceForge Issue #469 "use after free in
-	ReadJNGImage png.c
+	* coders/png.c: Attempt to fix SourceForge Issue #469 "use after
+	free in ReadJNGImage".  Note that this change was found to replace
+	a use after free with a memory leak so the problem is not solved
+	yet.
 
 2017-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
