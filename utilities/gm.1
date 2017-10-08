@@ -3520,12 +3520,13 @@ that the user-specified input path (including any sub-directory part)
 is appended to the output path. If the input file lacks an extension,
 then a suitable extension is automatically added to the output file.
 The user is responsible for creating the output directory specified as
-an argument, but subdirectories will be created as needed.  This
-option may be used to apply transformations on files from one
-directory and write the transformed files to a different directory.
-The option is designed to support transforming whole directory trees
-of files provided that the relative path of the input file is included
-as part the list of filenames.
+an argument, but subdirectories will be created as needed if the
+\fB-create-directories\fP option is supplied.  This option may be
+used to apply transformations on files from one directory and write
+the transformed files to a different directory.  In conjunction with
+\fB-create-directories\fP, this option is designed to support
+transforming whole directory trees of files provided that the relative
+path of the input file is included as part the list of filenames.
 .TP
 .B "-orient \fI<orientation>"\fP
 \fRSet the image orientation attribute
