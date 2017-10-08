@@ -3583,6 +3583,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (unsigned long)jng_width,(unsigned long)jng_height);
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
+          DestroyImage(jng_image);
           return ((Image *)NULL);     
         }
       for (y=0; y < (long) image->rows; y++)
