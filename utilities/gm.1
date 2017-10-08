@@ -1,4 +1,4 @@
-.TH gm 1 "2017/01/29" "GraphicsMagick"
+.TH gm 1 "2017/10/08" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -3512,12 +3512,20 @@ first, e.g., with the "-gamma 0.45455" option.
 \fRoutput files to directory
 
 Use -output-directory to specify a directory under which to write the
-output files. Normally mogrify overwrites the input files but with this
-option the output files may be written to a different directory so that
-the input files are preserved. The algorithm used preserves all of the
-input path specification in the output path so that the user-specified
-input path (including any directory part) is appended to the output path.
-The user is responsible for creating the output directory.
+output files. Normally mogrify overwrites the input files, but with
+this option the output files may be written to a different directory
+tree so that the input files are preserved. The algorithm used
+preserves all of the input path specification in the output path so
+that the user-specified input path (including any sub-directory part)
+is appended to the output path. If the input file lacks an extension,
+then a suitable extension is automatically added to the output file.
+The user is responsible for creating the output directory specified as
+an argument, but subdirectories will be created as needed.  This
+option may be used to apply transformations on files from one
+directory and write the transformed files to a different directory.
+The option is designed to support transforming whole directory trees
+of files provided that the relative path of the input file is included
+as part the list of filenames.
 .TP
 .B "-orient \fI<orientation>"\fP
 \fRSet the image orientation attribute

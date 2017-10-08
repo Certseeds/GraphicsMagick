@@ -1,3 +1,8 @@
+2017-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc: Fix SourceForge issue #444 "gm mogrify: Wrong
+	documentation for option -output-directory".
+
 2017-10-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/module.c (InitializeModuleSearchPath): Verify that any

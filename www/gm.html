@@ -4001,12 +4001,20 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>output files to directory</td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Use -output-directory to specify a directory under which to write the
-output files. Normally mogrify overwrites the input files but with this
-option the output files may be written to a different directory so that
-the input files are preserved. The algorithm used preserves all of the
-input path specification in the output path so that the user-specified
-input path (including any directory part) is appended to the output path.
-The user is responsible for creating the output directory.</font></td></tr></table>
+output files. Normally mogrify overwrites the input files, but with
+this option the output files may be written to a different directory
+tree so that the input files are preserved. The algorithm used
+preserves all of the input path specification in the output path so
+that the user-specified input path (including any sub-directory part)
+is appended to the output path. If the input file lacks an extension,
+then a suitable extension is automatically added to the output file.
+The user is responsible for creating the output directory specified as
+an argument, but subdirectories will be created as needed.  This
+option may be used to apply transformations on files from one
+directory and write the transformed files to a different directory.
+The option is designed to support transforming whole directory trees
+of files provided that the relative path of the input file is included
+as part the list of filenames.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
