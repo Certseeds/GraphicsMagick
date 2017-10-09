@@ -2235,7 +2235,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   }
   else
   {
-    if (ping_rowbytes < GetMagickResourceLimit(MemoryResource))
+    if ((magick_int64_t)ping_rowbytes < GetMagickResourceLimit(MemoryResource))
       mng_info->png_pixels=MagickAllocateMemory(unsigned char *, ping_rowbytes);
     else
       png_error(ping, "png_rowbytes array exceeds MemoryResource");
