@@ -2,6 +2,8 @@
 
 	* coders/png.c (ReadJNGImage): Fix memory leak in SourceForge
 	Issue #469 "use after free in ReadJNGImage".
+	* coders/png.c (ReadJNGImage): Fix memory leak in SourceForge
+	Issue #470 "Assert failure in writeblob".
 
 2017-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

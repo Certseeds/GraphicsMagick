@@ -3359,10 +3359,19 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           if (alpha_image != NULL && image_info->ping == MagickFalse)
             {
               if (logging)
+              {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "    Copying IDAT chunk data"
-                                      " to alpha_blob.");
-
+                    "    Copying IDAT chunk data"
+                    " to alpha_blob.");
+              }
+              if (length == 0)
+              {
+                if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                    "    IDAT chunk has length 0");
+                MagickFreeMemory(chunk);
+                continue;
+              }
               (void) WriteBlobMSBULong(alpha_image,(unsigned long) length);
               PNGType(data,mng_IDAT);
               LogPNGChunk(logging,mng_IDAT,length);
