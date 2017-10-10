@@ -1,8 +1,7 @@
-2017-10-09`1Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
+2017-10-09  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOnePNGImage): Suppress "comparison between
 	signed and unsigned integer expressions" warning.
-	Issue #469 "use after free in ReadJNGImage".
 	* coders/png.c (ReadJNGImage): Fix memory leak in SourceForge
 	Issue #469 "use after free in ReadJNGImage".
 	* coders/png.c (ReadJNGImage): Fix memory leak in SourceForge
