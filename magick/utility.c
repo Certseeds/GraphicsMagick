@@ -2450,7 +2450,7 @@ MagickExport void GetPathComponent(const char *path,PathType type,
 
   /* first locate the spot were the filename begins */
   for (p=component+strlen(component); p > component; p--)
-    if (IsBasenameSeparator(*p))
+    if (IsBasenameSeparator(*p)) /* Is directory delimiter like '/' or '\\' */
       break;
 
   switch (type)
