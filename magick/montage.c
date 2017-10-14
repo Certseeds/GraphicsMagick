@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -141,8 +141,12 @@ MagickExport MontageInfo *CloneMontageInfo(const ImageInfo *image_info,
 */
 MagickExport void DestroyMontageInfo(MontageInfo *montage_info)
 {
-  assert(montage_info != (MontageInfo *) NULL);
+
+  if (montage_info == (MontageInfo *) NULL)
+    return;
+
   assert(montage_info->signature == MagickSignature);
+
   if (montage_info->geometry != (char *) NULL)
     MagickFreeMemory(montage_info->geometry);
   if (montage_info->tile != (char *) NULL)
@@ -155,6 +159,7 @@ MagickExport void DestroyMontageInfo(MontageInfo *montage_info)
     MagickFreeMemory(montage_info->texture);
   if (montage_info->font != (char *) NULL)
     MagickFreeMemory(montage_info->font);
+  montage_info->signature=0;
   MagickFreeMemory(montage_info);
 }
 

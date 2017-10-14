@@ -1,5 +1,9 @@
 2017-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (MontageImageCommand): Fix memory leaks in
+	error return path.  Only people doing leak testing or the few who
+	execute MontageImageCommand() as a function will care about this.
+
 	* magick/studio.h (NumberOfObjectsInArray): The
 	NumberOfObjectsInArray() macro is used to compute the number of
 	whole objects in an array.  Instead it was rounding up, resulting

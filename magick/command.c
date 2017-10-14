@@ -8775,6 +8775,9 @@ static void LiberateArgumentList(const int argc,char **argv)
   int
     i;
 
+  if (argv == (char **) NULL)
+    return;
+
   for (i=0; i< argc; i++)
     MagickFreeMemory(argv[i]);
   MagickFreeMemory(argv);
@@ -13931,23 +13934,15 @@ static void MogrifyUsage(void)
 */
 #define ThrowMontageException(code,reason,description) \
 { \
-  DestroyImageList(image); \
-  DestroyImageList(image_list); \
-  DestroyImageList(montage_image); \
-  DestroyMontageInfo(montage_info); \
+  status = MagickFail; \
   ThrowException(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto montage_cleanup_and_return; \
 }
 #define ThrowMontageException3(code,reason,description) \
 { \
-  DestroyImageList(image); \
-  DestroyImageList(image_list); \
-  DestroyImageList(montage_image); \
-  DestroyMontageInfo(montage_info); \
+  status = MagickFail; \
   ThrowException3(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto montage_cleanup_and_return; \
 }
 MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
@@ -13961,10 +13956,10 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
     sans;
 
   Image
-    *image,
-    *image_list,
-    *montage_image,
-    *next_image;
+    *image = (Image *) NULL,
+    *image_list = (Image *) NULL,
+    *montage_image = (Image *) NULL,
+    *next_image = (Image *) NULL;
 
   long
     first_scene,
@@ -13975,7 +13970,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
     x;
 
   MontageInfo
-    *montage_info;
+    *montage_info = (MontageInfo *) NULL;
 
   QuantizeInfo
     quantize_info;
@@ -15037,10 +15032,8 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
   }
   if ((image == (Image *) NULL) && (image_list == (Image *) NULL))
     {
-      if (exception->severity == UndefinedException)
-        ThrowMontageException(OptionError,RequestDidNotReturnAnImage,
-          (char *) NULL);
-      return(MagickFail);
+      ThrowMontageException(OptionError,RequestDidNotReturnAnImage,
+                            (char *) NULL);
     }
   if (i != (argc-1))
     ThrowMontageException(OptionError,MissingAnImageFilename,(char *) NULL);
@@ -15061,6 +15054,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
   if (montage_image == (Image *) NULL)
     ThrowMontageException(OptionError,RequestDidNotReturnAnImage,(char *) NULL);
   DestroyImageList(image_list);
+  image_list=(Image *) NULL;
   /*
     Write image.
   */
@@ -15085,6 +15079,9 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
       (void) ConcatenateString(&(*metadata),"\n");
       MagickFreeMemory(text);
     }
+montage_cleanup_and_return:
+  DestroyImageList(image);
+  DestroyImageList(image_list);
   DestroyImageList(montage_image);
   DestroyMontageInfo(montage_info);
   LiberateArgumentList(argc,argv);
