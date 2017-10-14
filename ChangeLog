@@ -1,3 +1,13 @@
+2017-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/studio.h (NumberOfObjectsInArray): The
+	NumberOfObjectsInArray() macro is used to compute the number of
+	whole objects in an array.  Instead it was rounding up, resulting
+	in scrambling the heap beyond the allocation.  Fixes
+	CVE-2017-13737 "There is an invalid free in the MagickFree
+	function in magick/memory.c in GraphicsMagick 1.3.26 that will
+	lead to a remote denial of service attack."
+
 2017-10-09  Glenn Randers-Pehrson  <glennrp@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOnePNGImage): Suppress "comparison between

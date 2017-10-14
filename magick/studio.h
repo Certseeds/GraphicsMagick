@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2016 GraphicsMagick Group
+  Copyright (C) 2003 - 2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
  
   This program is covered by multiple licenses, which are described in
@@ -356,7 +356,7 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #endif
 #define Max(x,y)  (((x) > (y)) ? (x) : (y))
 #define Min(x,y)  (((x) < (y)) ? (x) : (y))
-#define NumberOfObjectsInArray(octets,size) ((octets+size-1)/size)
+#define NumberOfObjectsInArray(octets,size) (octets/size) /* rounds down */
 #define QuantumTick(i,span) \
   ((((i) % ((Max(101,span)-1)/100)) == 0) || \
     ((magick_int64_t) (i) == ((magick_int64_t) (span)-1)))
