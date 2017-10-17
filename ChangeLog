@@ -1,3 +1,9 @@
+2017-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/webp.c (WriterCallback): WebP writer now detects partial
+	write to output file.  Patch by Przemysław Sobala from a posting
+	on Mon, 16 Oct 2017 via the graphicsmagick-help mailing list.
+
 2017-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MontageImageCommand): Fix memory leaks in

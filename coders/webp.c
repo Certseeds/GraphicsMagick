@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013 - 2014 GraphicsMagick Group
+% Copyright (C) 2013 - 2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -410,7 +410,8 @@ ModuleExport void UnregisterWEBPImage(void)
 */
 
 /*
-  Called to write data to blob
+  Called to write data to blob ("Should return true if writing was
+  successful")
 */
 static int WriterCallback(const unsigned char *stream,size_t length,
                           const WebPPicture *const picture)
@@ -419,11 +420,14 @@ static int WriterCallback(const unsigned char *stream,size_t length,
     *image;
 
   image=(Image *) picture->custom_ptr;
-  return (length != 0 ? (int) WriteBlob(image,length,stream) : 1);
+  return (length != 0U ? (WriteBlob(image,length,stream) == length) :
+          MagickTrue);
 }
 
 /*
-  Called to provide progress indication
+  Called to provide progress indication ("It can return false to
+  request an abort of the encoding process, or true otherwise if
+  everything is OK.")
 */
 #if defined(SUPPORT_PROGRESS)
 static int ProgressCallback(int percent, const WebPPicture* picture)
