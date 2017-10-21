@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2288,6 +2288,9 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
     }
   (void) strlcpy(image->magick,clone_info->magick,MaxTextExtent);
   DestroyImageInfo(clone_info);
+  if (GetBlobStatus(image))
+    ThrowBinaryException(CorruptImageError,AnErrorHasOccurredWritingToFile,
+                         image->filename);
   return(status);
 }
 

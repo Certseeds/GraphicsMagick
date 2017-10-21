@@ -727,7 +727,7 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
     clone_info->blob=(void *) NULL;
     clone_info->length=0;
     
-    if(!AcquireTemporaryFileName(temporary_file))
+    if (!AcquireTemporaryFileName(temporary_file))
       {
 	ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile,
 		       clone_info->filename);
@@ -4625,7 +4625,7 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
     {
       if (length == 1)
         {
-          if((putc((int)*((unsigned char *)data),image->blob->handle.std)) != EOF)
+          if ((putc((int)*((unsigned char *)data),image->blob->handle.std)) != EOF)
             count=1;
           else
             count=0;
@@ -4745,7 +4745,7 @@ MagickExport size_t WriteBlobByte(Image *image,const magick_uint8_t value)
     case StandardStream:
     case PipeStream:
       {
-        if(putc((int) value,image->blob->handle.std) != EOF)
+        if (putc((int) value,image->blob->handle.std) != EOF)
           return 1;
         return 0;
       }
@@ -4753,7 +4753,7 @@ MagickExport size_t WriteBlobByte(Image *image,const magick_uint8_t value)
     default:
       {
         c=(unsigned char) value;
-        return(WriteBlob(image,1,&c));
+        return (WriteBlob(image,1,&c));
       }
     }
 

@@ -1,3 +1,10 @@
+2017-10-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (WriteImage): Restore use of GetBlobStatus()
+	to test if an I/O error was encountered while writing output file.
+	This assures that I/O failure in writers which do not themselves
+	verify writes is assured to be reported.
+
 2017-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/webp.c (WriterCallback): WebP writer now detects partial

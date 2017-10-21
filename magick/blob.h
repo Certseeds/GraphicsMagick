@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2016 GraphicsMagick Group
+  Copyright (C) 2003-2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
  
@@ -189,7 +189,7 @@ extern "C" {
 
   /*
     Test to see if an error has been encountered while doing I/O to the file
-    or BLOB.
+    or BLOB.  Non-zero is returned if an error occured.
   */
   extern MagickExport int GetBlobStatus(const Image *image);
 
