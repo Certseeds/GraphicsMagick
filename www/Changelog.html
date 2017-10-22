@@ -38,6 +38,17 @@
 <p>2017-10-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/describe.c (DescribeImage): Fix possible heap read
+overflow while accessing heap data, and possible information
+disclosure while describing the IPTC profile.  Report was provided
+via email from Maor Shwartz to the graphicsmagick-security mail
+alias on Thu, 19 Oct 2017.  Independent security researchers,
+Jeremy Heng (&#64;nn_amon) and Terry Chia (Ayrx), reported this
+vulnerability to Beyond Security’s SecuriTeam Secure Disclosure
+program. Please note that this interface is usually (but not
+exclusively) used from within the command-line utility program, in
+which case there is not much useful information which might be
+disclosed.</li>
 <li>magick/constitute.c (WriteImage): Assure that the errno present
 when the blob error status first occured is reported to the user.</li>
 <li>magick/blob.c (GetBlobStatus): Blob error status is now updated

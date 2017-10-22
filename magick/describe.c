@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2012 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -657,7 +657,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
       */
       (void) fprintf(file,"  Profile-iptc: %lu bytes\n",(unsigned long)
                      profile_length);
-      for (i=0; i < profile_length; )
+      for (i=0; i+5U < profile_length; )
         {
           if (profile[i] != 0x1c)
             {
@@ -685,7 +685,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
             case 60: tag=(char *) "Created Time"; break;
             case 65: tag=(char *) "Originating Program"; break;
             case 70: tag=(char *) "Program Version"; break;
-            case 75: tag=(char *) "Object Cycle"; break;
+            case 75: tag=(char *) "Object Cyc"; break;
             case 80: tag=(char *) "Byline"; break;
             case 85: tag=(char *) "Byline Title"; break;
             case 90: tag=(char *) "City"; break;
@@ -726,6 +726,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
           (void) fprintf(file,"    %.1024s:\n",tag);
           length=profile[i++] << 8;
           length|=profile[i++];
+          length=Min(length,profile_length-i);
           text=MagickAllocateMemory(char *,length+1);
           if (text != (char *) NULL)
             {

@@ -1,5 +1,17 @@
 2017-10-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/describe.c (DescribeImage): Fix possible heap read
+	overflow while accessing heap data, and possible information
+	disclosure while describing the IPTC profile.  Report was provided
+	via email from Maor Shwartz to the graphicsmagick-security mail
+	alias on Thu, 19 Oct 2017.  Independent security researchers,
+	Jeremy Heng (@nn_amon) and Terry Chia (Ayrx), reported this
+	vulnerability to Beyond Security’s SecuriTeam Secure Disclosure
+	program. Please note that this interface is usually (but not
+	exclusively) used from within the command-line utility program, in
+	which case there is not much useful information which might be
+	disclosed.
+
 	* magick/constitute.c (WriteImage): Assure that the errno present
 	when the blob error status first occured is reported to the user.
 
