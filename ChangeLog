@@ -1,3 +1,13 @@
+2017-10-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (WriteImage): Assure that the errno present
+	when the blob error status first occured is reported to the user.
+
+	* magick/blob.c (GetBlobStatus): Blob error status is now updated
+	immediately upon the first error reported.
+	(GetBlobFirstErrno): Returns errno value when the first blob error
+	was reported.  This is useful for error reporting.
+
 2017-10-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/constitute.c (WriteImage): Restore use of GetBlobStatus()

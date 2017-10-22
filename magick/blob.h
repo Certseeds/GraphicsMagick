@@ -144,7 +144,7 @@ extern "C" {
   /*
     Close I/O to the file or BLOB.
   */
-  extern MagickExport void CloseBlob(Image *image);
+  extern MagickExport MagickPassFail CloseBlob(Image *image);
 
 
   /*
@@ -192,6 +192,13 @@ extern "C" {
     or BLOB.  Non-zero is returned if an error occured.
   */
   extern MagickExport int GetBlobStatus(const Image *image);
+
+  /*
+    Return the first errno present when an error has been encountered while
+    doing I/O to the file or BLOB.  This is only useful if GetBlobStatus() has
+    already reported that an error occured.
+  */
+  extern MagickExport int GetBlobFirstErrno(const Image *image);
 
   /*
     Test to see if blob is currently open.

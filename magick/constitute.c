@@ -2087,13 +2087,14 @@ MagickExport Image *ReadInlineImage(const ImageInfo *image_info,
 %
 %  Use WriteImage() to write an image or an image sequence to a file or
 %  filehandle.  If writing to a file on disk, the name is defined by the
-%  filename member of the image structure.  Write() returns 0 is there is a
-%  memory shortage or if the image cannot be written.  Check the exception
-%  member of image to determine the cause for any failure.
+%  filename member of the image structure.  WriteImage() returns
+%  MagickFailure is there is a memory shortage or if the image cannot be
+%  written.  Check the exception member of image to determine the cause
+%  for any failure.
 %
 %  The format of the WriteImage method is:
 %
-%      unsigned int WriteImage(const ImageInfo *image_info,Image *image)
+%      MagickPassFail WriteImage(const ImageInfo *image_info,Image *image)
 %
 %  A description of each parameter follows:
 %
@@ -2103,7 +2104,8 @@ MagickExport Image *ReadInlineImage(const ImageInfo *image_info,
 %
 %
 */
-MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
+MagickExport MagickPassFail
+WriteImage(const ImageInfo *image_info,Image *image)
 {
   const DelegateInfo
     *delegate_info;
@@ -2114,7 +2116,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
   ImageInfo
     *clone_info;
 
-  unsigned int
+  MagickPassFail
     status;
 
   /*
@@ -2168,7 +2170,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
   /*
     Call appropriate image writer based on image type.
   */
-  status=False;
+  status=MagickFail;
   magick_info=GetMagickInfo(clone_info->magick,&image->exception);
   if ((magick_info != (const MagickInfo *) NULL) &&
       (magick_info->encoder != NULL))
@@ -2193,7 +2195,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
 		      ThrowException(&image->exception,FileOpenError,
 				     UnableToCreateTemporaryFile,image->filename);
 		      DestroyImageInfo(clone_info);
-		      return(False);
+		      return(MagickFail);
 		    }
 		  (void) strlcpy(image->filename,tempfile,sizeof(image->filename));
 		}
@@ -2260,7 +2262,7 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
               ThrowException(&image->exception,FileOpenError,
 			     UnableToCreateTemporaryFile,image->filename);
               DestroyImageInfo(clone_info);
-              return(False);
+              return(MagickFail);
             }
           status=InvokeDelegate(clone_info,image,(char *) NULL,
 				clone_info->magick,&image->exception);
@@ -2289,8 +2291,16 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
   (void) strlcpy(image->magick,clone_info->magick,MaxTextExtent);
   DestroyImageInfo(clone_info);
   if (GetBlobStatus(image))
-    ThrowBinaryException(CorruptImageError,AnErrorHasOccurredWritingToFile,
-                         image->filename);
+    {
+      int
+        first_errno;
+
+      first_errno=GetBlobFirstErrno(image);
+      if (first_errno != 0)
+        errno=first_errno;
+      ThrowBinaryException(CorruptImageError,AnErrorHasOccurredWritingToFile,
+                           image->filename);
+    }
   return(status);
 }
 
@@ -2316,8 +2326,10 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
 %
 %  The format of the WriteImages method is:
 %
-%      unsigned int WriteImages(const ImageInfo *image_info,Image *image,
-%                               const char *filename,ExceptionInfo *exception)
+%      MagickPassFail WriteImages(const ImageInfo *image_info,
+%                                 Image *image,
+%                                 const char *filename,
+%                                 ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
 %
@@ -2331,8 +2343,9 @@ MagickExport unsigned int WriteImage(const ImageInfo *image_info,Image *image)
 %
 %
 */
-MagickExport MagickPassFail WriteImages(const ImageInfo *image_info,Image *image,
-					const char *filename,ExceptionInfo *exception)
+MagickExport MagickPassFail
+WriteImages(const ImageInfo *image_info,Image *image,
+            const char *filename,ExceptionInfo *exception)
 {
   ImageInfo
     *clone_info;
