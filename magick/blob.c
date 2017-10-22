@@ -98,7 +98,7 @@ typedef union _MagickFileHandle
 #endif
 } MagickFileHandle;
 
-typedef struct _BlobInfo
+struct _BlobInfo
 {
   size_t
     block_size,         /* I/O block size */
@@ -145,7 +145,7 @@ typedef struct _BlobInfo
 
   unsigned long
     signature;          /* Numeric value used to evaluate structure integrity. */
-} BlobInfo;
+};
 
 typedef union _MagickInt32Union
 {
