@@ -851,7 +851,8 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
       for (p=image->directory; *p != '\0'; p++)
         {
           q=p;
-          while ((*q != '\n') && (*q != '\0'))
+          while ((*q != '\n') && (*q != '\0') &&
+                 ((size_t) (q-p) < sizeof(image_info->filename)))
             q++;
           (void) strncpy(image_info->filename,p,q-p);
           image_info->filename[q-p]='\0';
