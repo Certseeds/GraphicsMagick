@@ -3040,7 +3040,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
     reading_idat,
     status;
 
-  unsigned long
+  size_t
     length;
 
   jng_alpha_compression_method=0;
@@ -3104,14 +3104,16 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
       type[0]='\0';
       (void) strcat(type,"errr");
-      length=ReadBlobMSBLong(image);
+      length=(size_t) ReadBlobMSBLong(image);
       count=(unsigned int) ReadBlob(image,4,type);
 
       if (logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                " Reading JNG chunk type %c%c%c%c, length: %lu",
-                                type[0],type[1],type[2],type[3],length);
+                                " Reading JNG chunk type %c%c%c%c, "
+                                "length: %" MAGICK_SIZE_T_F "u",
+                                type[0],type[1],type[2],type[3],
+                                (MAGICK_SIZE_T) length);
       
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "   count=%u",count);
@@ -3122,7 +3124,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "chunk length (%lu) > PNG_MAX_UINT",length);
+              "chunk length (%" MAGICK_SIZE_T_F "u) > PNG_MAX_UINT",
+                                (MAGICK_SIZE_T) length);
           return ((Image*)NULL);
         }
 
@@ -3337,8 +3340,10 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "    Copying %lu bytes of JDAT chunk data"
-                                  " to color_blob.",length);
+                                  "    Copying %" MAGICK_SIZE_T_F
+                                  "u bytes of JDAT chunk data"
+                                  " to color_blob.",
+                                  (MAGICK_SIZE_T) length);
           if (length && color_image != (Image *)NULL)
           {
             (void) WriteBlob(color_image,length,(char *) chunk);
@@ -3583,8 +3588,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             "    Copying jng_image pixels to main image.");
       image->rows=jng_height;
       image->columns=jng_width;
-      length=image->columns*sizeof(PixelPacket);
-      if (jng_height == 0 || jng_width == 0)
+      length=MagickArraySize(image->columns,sizeof(PixelPacket));
+      if (jng_height == 0 || jng_width == 0 || length == 0)
         {
           if (logging)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3593,19 +3598,31 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
           DestroyImage(jng_image);
-          return ((Image *)NULL);     
+          return ((Image *)NULL);
         }
       for (y=0; y < (long) image->rows; y++)
         {
           s=AcquireImagePixels(jng_image,0,y,image->columns,1,
-             &image->exception);
-          q=SetImagePixels(image,0,y,image->columns,1);
+             exception);
+          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+          if ((s == (const PixelPacket *) NULL) ||
+              (q == (PixelPacket *) NULL))
+            break;
           (void) memcpy(q,s,length);
           if (!SyncImagePixels(image))
             break;
         }
       DestroyImage(jng_image);
       jng_image = (Image *)NULL;
+      if ((unsigned long) y != image->rows)
+        {
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Failed to transfer JPEG scanlines");
+          DestroyJNG(NULL,&color_image,&color_image_info,
+                     &alpha_image,&alpha_image_info);
+          return ((Image *)NULL);
+        }
       if (alpha_image != (Image *)NULL && !image_info->ping)
         {
           if (jng_color_type >= 12)
@@ -4053,7 +4070,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           */
           type[0]='\0';
           (void) strcat(type,"errr");
-          length=ReadBlobMSBLong(image);
+          length=(size_t) ReadBlobMSBLong(image);
           count=ReadBlob(image,4,type);
           if (count < 4)
             {

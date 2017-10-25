@@ -1,3 +1,9 @@
+2017-10-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Fix SourceForge bug #518 "Null
+	pointer in".  Also make sure that errors are reported properly due
+	to problems with transferring JPEG scanlines.
+
 2017-10-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/describe.c (DescribeImage): Fix possible heap read
