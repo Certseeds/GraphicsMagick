@@ -3212,10 +3212,38 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                  "    JNG width or height too large: (%lu x %lu)",
                   jng_width, jng_height);
+              ThrowException(exception,CorruptImageError,
+                             ImproperImageHeader,image->filename);
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
               return ((Image *)NULL);
             }
+
+# if 0
+          /* Rationalize dimensions with blob size if it is available */
+          if (BlobIsSeekable(image))
+            {
+              magick_off_t
+                blob_size;
+
+              blob_size = GetBlobSize(image);
+              if ((blob_size == 0) || /* FIXME: Need correct math here */
+                  ((((double) jng_width*jng_height)/blob_size) > 254.0))
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "    Unreasonable dimensions: "
+                                        "geometry = %lux%lu, "
+                                        "blob size = %" MAGICK_OFF_F "d",
+                                        jng_width, jng_height, blob_size);
+
+                  ThrowException(exception,CorruptImageError,
+                                 InsufficientImageDataInFile,image->filename);
+                  DestroyJNG(chunk,&color_image,&color_image_info,
+                             &alpha_image,&alpha_image_info);
+                  return ((Image *)NULL);
+                }
+            }
+#endif
 
           /* Temporarily set width and height resources to match JHDR */
           SetMagickResourceLimit(WidthResource,jng_width);
@@ -3677,12 +3705,16 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                      if (image->matte)
                        {
                          q=SetImagePixels(image,0,y,image->columns,1);
+                         if (q == (PixelPacket *) NULL)
+                           break;
                          for (x=(long) image->columns; x > 0; x--,q++,s++)
                            q->opacity=(Quantum) MaxRGB-s->red;
                        }
                      else
                        {
                          q=SetImagePixels(image,0,y,image->columns,1);
+                         if (q == (PixelPacket *) NULL)
+                           break;
                          for (x=(long) image->columns; x > 0; x--,q++,s++)
                            {
                              q->opacity=(Quantum) MaxRGB-s->red;
@@ -5488,6 +5520,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                           n=next;
                           q=SetImagePixels(large_image,0,yy,
                                            large_image->columns,1);
+                          if (q == (const PixelPacket *) NULL)
+                            break;
                           q+=(large_image->columns-image->columns);
                           for (x=(long) image->columns; x > 0; x--)
                             {
