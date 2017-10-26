@@ -3219,7 +3219,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               return ((Image *)NULL);
             }
 
-# if 0
           /* Rationalize dimensions with blob size if it is available */
           if (BlobIsSeekable(image))
             {
@@ -3227,8 +3226,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 blob_size;
 
               blob_size = GetBlobSize(image);
-              if ((blob_size == 0) || /* FIXME: Need correct math here */
-                  ((((double) jng_width*jng_height)/blob_size) > 254.0))
+              if ((blob_size == 0) ||
+                  ((((double) jng_width*jng_height)/blob_size) > 512.0))
                 {
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "    Unreasonable dimensions: "
@@ -3243,7 +3242,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   return ((Image *)NULL);
                 }
             }
-#endif
 
           /* Temporarily set width and height resources to match JHDR */
           SetMagickResourceLimit(WidthResource,jng_width);

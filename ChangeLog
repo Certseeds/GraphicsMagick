@@ -1,3 +1,8 @@
+2017-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Reject JNG files with
+	unreasonable dimensions given the file size.
+
 2017-10-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Fix SourceForge bug #518 "Null
