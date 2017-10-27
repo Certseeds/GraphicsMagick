@@ -1,3 +1,8 @@
+2017-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Make sure that a reasonable
+	exception is reported to the user when there is a read failure.
+
 2017-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Reject JNG files with

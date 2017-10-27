@@ -3126,6 +3126,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
               "chunk length (%" MAGICK_SIZE_T_F "u) > PNG_MAX_UINT",
                                 (MAGICK_SIZE_T) length);
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
           return ((Image*)NULL);
         }
 
@@ -3140,6 +3142,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "    Could not allocate chunk memory");
+              ThrowException(exception,ResourceLimitError,
+                             MemoryAllocationFailed,image->filename);
               return ((Image*)NULL);
             }
           if (ReadBlob(image,length,chunk) < length)
@@ -3148,6 +3152,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "    chunk reading was incomplete");
+              ThrowException(exception,CorruptImageError,
+                             InsufficientImageDataInFile,image->filename);
               return ((Image*)NULL);
             }
           p=chunk;
@@ -3268,6 +3274,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "    could not allocate color_image_info");
+              ThrowException(exception,ResourceLimitError,
+                             MemoryAllocationFailed,image->filename);
               return ((Image *)NULL);
             }
           GetImageInfo(color_image_info);
@@ -3278,6 +3286,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "    could not allocate color_image");
+              ThrowException(exception,ResourceLimitError,
+                             MemoryAllocationFailed,image->filename);
               return ((Image *)NULL);
             }
           if (logging)
@@ -3305,6 +3315,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "    could not allocate alpha_image_info");
+                  ThrowException(exception,ResourceLimitError,
+                                 MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
                 }
               GetImageInfo(alpha_image_info);
@@ -3315,6 +3327,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "    could not allocate alpha_image");
+                  ThrowException(exception,ResourceLimitError,
+                                 MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
                 }
               if (logging)
@@ -3624,6 +3638,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
           DestroyImage(jng_image);
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
           return ((Image *)NULL);
         }
       for (y=0; y < (long) image->rows; y++)
@@ -3700,6 +3716,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                    {
                      s=AcquireImagePixels(jng_image,0,y,image->columns,1,
                                           &image->exception);
+                     if (s == (PixelPacket *) NULL)
+                       break;
                      if (image->matte)
                        {
                          q=SetImagePixels(image,0,y,image->columns,1);
