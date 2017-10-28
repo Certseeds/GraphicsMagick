@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2360,6 +2360,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
+                if (p+5U > q)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
                 (void) SetImageAttribute(image,name,token);
@@ -2433,6 +2438,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
+                if (p+5U > q)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
                 bounds.x1=graphic_context[n]->affine.sx*segment.x1+
@@ -2564,6 +2574,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
+                if (p+5U > q)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
                 FormatString(key,"[%.1024s]",name);

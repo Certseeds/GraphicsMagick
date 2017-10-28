@@ -1,3 +1,12 @@
+2017-10-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix SourceForge bug #517 "Push
+	operations in DrawImage can lead to negative strncpy when looking
+	for pop".  Interestingly, valgrind and ASAN only detected a
+	problem with one of the test cases since exercised code which
+	updated an array using the index.  It appears that Linux strncpy()
+	simply ignores the bad request.
+
 2017-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Make sure that a reasonable

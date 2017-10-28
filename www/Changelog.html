@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2017-10-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Fix SourceForge bug #517 &quot;Push
+operations in DrawImage can lead to negative strncpy when looking
+for pop&quot;.  Interestingly, valgrind and ASAN only detected a
+problem with one of the test cases since exercised code which
+updated an array using the index.  It appears that Linux strncpy()
+simply ignores the bad request.</li>
+</ul>
+</blockquote>
 <p>2017-10-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
