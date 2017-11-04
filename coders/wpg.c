@@ -1085,7 +1085,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               bpp=BitmapHeader2.Depth;
 
             UnpackRaster:	    
-              if ((image->colors == 0) && (bpp != 24))
+              if ((image->storage_class != PseudoClass) && (bpp != 24))
                 {
                   image->colors=1 << bpp;
                   if (!AllocateImageColormap(image,image->colors))
