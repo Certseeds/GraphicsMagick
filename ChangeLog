@@ -1,3 +1,8 @@
+2016-07-01  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Check for InsertRow() return value.
+
+
 2017-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/export.c: Add not-null check for indexes pointer where

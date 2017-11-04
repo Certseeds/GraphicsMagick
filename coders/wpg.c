@@ -340,11 +340,11 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
 
 
   if(RetVal==MagickFail)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp); 
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp);
 
   if (!SyncImagePixels(image))
   {
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"SyncImagePixels failed for row: %ld, bpp: %d", y, bpp); 
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"SyncImagePixels failed for row: %ld, bpp: %d", y, bpp);
     RetVal = MagickFail;
   }
           
@@ -441,7 +441,12 @@ static int UnpackWPGRaster(Image *image,int bpp)
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
-              (void) InsertRow(BImgBuff,y-1,image,bpp);
+              if(InsertRow(BImgBuff,y-1,image,bpp)==MagickFail)
+                {
+                  MagickFreeMemory(BImgBuff);
+                  return(-5);
+                }
+                
             }
         }
       }
@@ -591,8 +596,11 @@ static int UnpackWPG2Raster(Image *image, int bpp)
             /* duplicate the previous row RunCount x */
             for(i=0;i<=RunCount;i++)
               {      
-                (void) InsertRow(UpImgBuff,(long) (image->rows >= y ? y : image->rows-1),
-                                 image,bpp);
+                if(InsertRow(UpImgBuff,(long)(image->rows >= y ? y : image->rows-1),image,bpp) == MagickFail)
+                  {
+                    FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
+                    return(-4);
+                  }                 
                 y++;
               }    
           }
@@ -1173,7 +1181,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                           image->blob = TmpBlob;
                           ReplaceImageInList(&image,rotated_image);
                         }
-                    }                
+                    } 
                 }
 
               /* Allocate next image structure. */
@@ -1313,11 +1321,14 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     for(i=0; i< (long) image->rows; i++)
                       {
                         (void) ReadBlob(image,ldblk,(char *) BImgBuff);
-                        (void) InsertRow(BImgBuff,i,image,bpp);
+                        if(InsertRow(BImgBuff,i,image,bpp) == MagickFail)
+                        {
+                          if(BImgBuff) MagickFreeMemory(BImgBuff);
+                          goto DecompressionFailed;
+                        }
                       }
 
-                    if(BImgBuff)
-                      MagickFreeMemory(BImgBuff);
+                    if(BImgBuff) MagickFreeMemory(BImgBuff);
                     break;
                   }
                 case 1:    /*RLE for WPG2 */
