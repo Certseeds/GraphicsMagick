@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2012 GraphicsMagick Group
+  Copyright (C) 2003 - 2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -357,8 +357,12 @@ ImportIndexQuantumType(const unsigned char *source,
     index;
 
   assert(image->colors <= MaxColormapSize);
-  assert(image->colors != 0);
-  assert(indexes != (IndexPacket *) NULL);
+
+  if ((image->storage_class != PseudoClass) ||
+      (image->colors == 0) ||
+      (indexes == (IndexPacket *) NULL))
+    ThrowBinaryException3(ImageError,ImageIsNotColormapped,
+                          UnableToImportImagePixels);
 
   p=source;
   if (sample_type == UnsignedQuantumSampleType)
@@ -521,6 +525,12 @@ ImportIndexAlphaQuantumType(const unsigned char *source,
      sample_bits;
 
   assert(image->colors <= MaxColormapSize);
+
+  if ((image->storage_class != PseudoClass) ||
+      (image->colors == 0) ||
+      (indexes == (IndexPacket *) NULL))
+    ThrowBinaryException3(ImageError,ImageIsNotColormapped,
+                          UnableToImportImagePixels);
 
   sample_bits=quantum_size;
   p=source;
@@ -836,7 +846,13 @@ ImportGrayQuantumType(const unsigned char *source,
 	    colormap order as well.
 	  */
 	  assert(image->colors <= MaxColormapSize);
-                
+
+          if ((image->storage_class != PseudoClass) ||
+              (image->colors == 0) ||
+              (indexes == (IndexPacket *) NULL))
+            ThrowBinaryException3(ImageError,ImageIsNotColormapped,
+                                  UnableToImportImagePixels);
+
 	  switch (quantum_size)
 	    {
 	    case 1:
@@ -1206,6 +1222,12 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
 	    indexes_scale = 1U;
 
 	  assert(image->colors <= MaxColormapSize);
+
+          if ((image->storage_class != PseudoClass) ||
+              (image->colors == 0) ||
+              (indexes == (IndexPacket *) NULL))
+            ThrowBinaryException3(ImageError,ImageIsNotColormapped,
+                                  UnableToImportImagePixels);
 
 	  if (unsigned_maxvalue > (image->colors-1))
 	    indexes_scale=(unsigned_maxvalue/(image->colors-1));
@@ -1910,6 +1932,10 @@ ImportAlphaQuantumType(const unsigned char *source,
 
   if (image->colorspace == CMYKColorspace)
     {
+      if (indexes == (IndexPacket *) NULL)
+          ThrowBinaryException3(ImageError,CMYKAImageLacksAlphaChannel,
+                                UnableToImportImagePixels);
+
       if (sample_type == UnsignedQuantumSampleType)
 	{
 	  if ( (quantum_size >= 8) && (quantum_size % 8U == 0U) )
@@ -2809,7 +2835,6 @@ ImportRGBAQuantumType(const unsigned char *source,
 static MagickPassFail
 ImportCMYKQuantumType(const unsigned char *source,
 		      PixelPacket* restrict q,
-		      IndexPacket * restrict indexes,
 		      const unsigned long number_pixels,
 		      const unsigned int quantum_size,
 		      const QuantumSampleType sample_type,
@@ -2919,7 +2944,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		    SetMagentaSample(q,MagickBitStreamMSBRead(&stream,quantum_size)*unsigned_scale);
 		    SetYellowSample(q,MagickBitStreamMSBRead(&stream,quantum_size)*unsigned_scale);
 		    SetBlackSample(q,MagickBitStreamMSBRead(&stream,quantum_size)*unsigned_scale);
-		    *indexes++=OpaqueOpacity;
 		    q++;
 		  }
 	      }
@@ -2932,7 +2956,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		    SetMagentaSample(q,MagickBitStreamMSBRead(&stream,quantum_size)/unsigned_scale);
 		    SetYellowSample(q,MagickBitStreamMSBRead(&stream,quantum_size)/unsigned_scale);
 		    SetBlackSample(q,MagickBitStreamMSBRead(&stream,quantum_size)/unsigned_scale);
-		    *indexes++=OpaqueOpacity;
 		    q++;
 		  }
 	      }
@@ -2964,7 +2987,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		double_value -= double_minvalue;
 		double_value *= double_scale;
 		SetBlackSample(q,RoundDoubleToQuantum(double_value));
-		*indexes++=OpaqueOpacity;
 		q++;
 	      }
 	    break;
@@ -2989,7 +3011,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		double_value -= double_minvalue;
 		double_value *= double_scale;
 		SetBlackSample(q,RoundDoubleToQuantum(double_value));
-		*indexes++=OpaqueOpacity;
 		q++;
 	      }
 	    break;
@@ -3014,7 +3035,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		double_value -= double_minvalue;
 		double_value *= double_scale;
 		SetBlackSample(q,RoundDoubleToQuantum(double_value));
-		*indexes++=OpaqueOpacity;
 		q++;
 	      }
 	    break;
@@ -3039,7 +3059,6 @@ ImportCMYKQuantumType(const unsigned char *source,
 		double_value -= double_minvalue;
 		double_value *= double_scale;
 		SetBlackSample(q,RoundDoubleToQuantum(double_value));
-		*indexes++=OpaqueOpacity;
 		q++;
 	      }
 	    break;
@@ -3068,6 +3087,7 @@ ImportCMYKAQuantumType(const unsigned char *source,
 		       const double double_minvalue,
 		       const double double_scale,
 		       const EndianType endian,
+                       Image *image,
 		       ImportPixelAreaInfo *import_info)
 {
   const unsigned char * restrict
@@ -3087,6 +3107,10 @@ ImportCMYKAQuantumType(const unsigned char *source,
 
   sample_bits=quantum_size;
   p=source;
+
+  if (indexes == (IndexPacket *) NULL)
+    ThrowBinaryException3(ImageError,CMYKAImageLacksAlphaChannel,
+                          UnableToImportImagePixels);
 
   if (sample_type == UnsignedQuantumSampleType)
     {
@@ -3675,7 +3699,7 @@ ImportViewPixelArea(ViewInfo *view,
       }
     case CMYKQuantum:
       {
-	status=ImportCMYKQuantumType(source,q,indexes,number_pixels,quantum_size,
+	status=ImportCMYKQuantumType(source,q,number_pixels,quantum_size,
 				     sample_type,unsigned_scale,double_minvalue,
 				     double_scale,endian,import_info);
         break;
@@ -3684,7 +3708,7 @@ ImportViewPixelArea(ViewInfo *view,
       {
 	status=ImportCMYKAQuantumType(source,q,indexes,number_pixels,quantum_size,
 				      sample_type,unsigned_scale,double_minvalue,
-				      double_scale,endian,import_info);
+				      double_scale,endian,image,import_info);
         break;
       }
     case CIEXYZQuantum:

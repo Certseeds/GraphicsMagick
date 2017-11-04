@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003 - 2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -356,8 +356,12 @@ ExportIndexQuantumType(unsigned char * restrict destination,
 
   q=destination;
 
-  assert(indexes != (const IndexPacket *) NULL);
   assert(image->colors <= MaxColormapSize);
+
+  if ((image->storage_class != PseudoClass) ||
+      (image->colors == 0) ||
+      (indexes == (IndexPacket *) NULL))
+    return MagickFail;
 
   if (sample_type == UnsignedQuantumSampleType)
     {
@@ -508,6 +512,12 @@ ExportIndexAlphaQuantumType(unsigned char * restrict destination,
     unsigned_value;
 
   assert(image->colors <= MaxColormapSize);
+
+  if ((image->storage_class != PseudoClass) ||
+      (image->colors == 0) ||
+      (indexes == (IndexPacket *) NULL))
+    return MagickFail;
+
   if (sample_type == UnsignedQuantumSampleType)
     {
       switch (quantum_size)
@@ -626,7 +636,8 @@ ExportGrayQuantumType(unsigned char * restrict destination,
 	{
 	case 1:
 	  {
-	    if (image->storage_class == PseudoClass)
+	    if ((image->storage_class == PseudoClass) &&
+                (indexes != (IndexPacket *) NULL))
 	      {
 		/*
 		  Special "fast" support for two-color PsudeoClass.
@@ -1837,6 +1848,9 @@ ExportAlphaQuantumType(unsigned char * restrict destination,
 
   if (image->colorspace == CMYKColorspace)
     {
+      if (indexes == (IndexPacket *) NULL)
+        return MagickFail;
+
       if (sample_type == UnsignedQuantumSampleType)
 	{
 	  switch (quantum_size)
@@ -2847,6 +2861,9 @@ ExportCMYKAQuantumType(unsigned char * restrict destination,
 
   register unsigned long
     x;
+
+  if (indexes == (IndexPacket *) NULL)
+    return MagickFail;
 
   if (sample_type == UnsignedQuantumSampleType)
     {

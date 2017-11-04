@@ -1283,6 +1283,12 @@ angle is discontinuous
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorCMYKAImageLacksAlphaChannel
+Language        = English
+CMYKA image lacks an alpha channel (indexes)
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorColorspaceColorProfileMismatch
 Language        = English
 Colorspace color profile mismatch
@@ -1421,6 +1427,12 @@ unable to deconstruct image sequence
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnableToExportImagePixels
+Language        = English
+unable to export image pixels
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorUnableToFlattenImage
 Language        = English
 unable to flatten image
@@ -1436,6 +1448,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorUnableToHandleImageChannel
 Language        = English
 unable to handle image channel
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnableToImportImagePixels
+Language        = English
+unable to import image pixels
 .
 
 MessageId       = +1

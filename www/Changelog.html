@@ -38,6 +38,16 @@
 <p>2017-11-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/export.c: Add not-null check for indexes pointer where
+needed.</li>
+<li>magick/import.c: Add not-null check for indexes pointer with
+associated exception report where the indexes pointer is needed.
+(ImportCMYKQuantumType): Was wrongly importing an opacity channel
+in some cases. Would have crashed if these cases were ever used.</li>
+<li>coders/wpg.c (ReadWPGImage): Assure that colormapped image is a
+PseudoClass type with valid colormapped indexes.  Fixes
+SourceForge bug 519 &quot;Null Pointer Dereference (Write) with
+malformed WPG Image&quot;.</li>
 <li>coders/sfw.c (ReadSFWImage): Avoid possible heap overflow while
 copying JFIF magic into buffer. Reject runt files.  Fixes
 CVE-2017-12983.  Notified of problem via email from Petr Gajdos on

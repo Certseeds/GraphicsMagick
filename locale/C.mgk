@@ -730,6 +730,9 @@
       <Message name="ImageIsNotColormapped">
         image is not colormapped
       </Message>
+      <Message name="CMYKAImageLacksAlphaChannel">
+        CMYKA image lacks an alpha channel (indexes)
+      </Message>
       <Message name="ImageOpacityDiffers">
         image opacity differs
       </Message>
@@ -801,6 +804,12 @@
       </Message>
       <Message name="WidthOrHeightExceedsLimit">
         width or height exceeds limit
+      </Message>
+      <Message name="UnableToExportImagePixels">
+        unable to export image pixels
+      </Message>
+      <Message name="UnableToImportImagePixels">
+        unable to import image pixels
       </Message>
     </Error>
     <FatalError>
