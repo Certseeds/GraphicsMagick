@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -251,7 +251,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if ((magick_off_t) buffer_size != blob_size)
       buffer_size=0;
   }
-  if (buffer_size < 7)
+  if (buffer_size < 141)
     {
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
@@ -270,7 +270,8 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   header=SFWScan(buffer,buffer_end,
 		 (unsigned char *)"\377\310\377\320",4);
-  if (header == (unsigned char *) NULL)
+  if ((header == (unsigned char *) NULL) ||
+      (header+6+134 > buffer_end)) /* 134 ~ Minimum JFIF size */
     {
       MagickFreeMemory(buffer);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
@@ -402,6 +403,7 @@ ModuleExport void RegisterSFWImage(void)
   entry->adjoin=False;
   entry->description="Seattle Film Works";
   entry->module="SFW";
+  entry->seekable_stream=True;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }

@@ -1,3 +1,10 @@
+2017-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sfw.c (ReadSFWImage): Avoid possible heap overflow while
+	copying JFIF magic into buffer. Reject runt files.  Fixes
+	CVE-2017-12983.  Notified of problem via email from Petr Gajdos on
+	Thu, 2 Nov 2017.
+
 2017-10-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix SourceForge bug #517 "Push
