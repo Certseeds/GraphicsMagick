@@ -340,12 +340,15 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
 
 
   if(RetVal==MagickFail)
+  {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp);
+    return MagickFail;
+  }
 
-  if (!SyncImagePixels(image))
+  if(!SyncImagePixels(image))
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"SyncImagePixels failed for row: %ld, bpp: %d", y, bpp);
-    RetVal = MagickFail;
+    return MagickFail;
   }
           
 return RetVal;
