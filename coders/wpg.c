@@ -359,19 +359,22 @@ return RetVal;
   x++; \
   if((long) x>=ldblk) \
   { \
-    (void)InsertRow(BImgBuff,(long) y,image,bpp); \
+    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
     x=0; \
     y++; \
     } \
 }
 
-/* WPG1 raster reader. */
+/* WPG1 raster reader.
+ * @return	0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl 
+                -5 - blob read error; -6 - row insert problem  */
 static int UnpackWPGRaster(Image *image,int bpp)
 {
   int
     x,
     y,
     i;
+  int RetVal = 0;
 
   unsigned char
     bbuf,
@@ -395,8 +398,8 @@ static int UnpackWPGRaster(Image *image,int bpp)
   while(y<(long) image->rows)
     {
       i = ReadBlobByte(image);
-	  if(i==EOF)
-	    {
+      if(i==EOF)
+        {
           MagickFreeMemory(BImgBuff);
           return(-5);
         }
@@ -444,7 +447,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
               if(InsertRow(BImgBuff,y-1,image,bpp)==MagickFail)
                 {
                   MagickFreeMemory(BImgBuff);
-                  return(-5);
+                  return(-6);
                 }
                 
             }
@@ -452,7 +455,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
       }
     }
   MagickFreeMemory(BImgBuff);
-  return(0);
+  return(RetVal);
 }
 
 
@@ -466,7 +469,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   x++; \
   if((long) x >= ldblk) \
   { \
-    (void)InsertRow(BImgBuff,(long) y,image,bpp); \
+    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
     x=0; \
     y++; \
     XorMe = 0; \
@@ -509,6 +512,7 @@ static int UnpackWPG2Raster(Image *image, int bpp)
 
   int XorMe = 0;
   int c;
+  int RetVal = 0;
 
   x=0;
   y=0;
@@ -643,7 +647,7 @@ static int UnpackWPG2Raster(Image *image, int bpp)
         }
     }
   FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
-  return(0);
+  return(RetVal);
 }
 
 
