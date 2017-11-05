@@ -1,4 +1,9 @@
-2016-07-01  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2016-11-05  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Wrong MaxMap check condition - fixed.
+
+
+2016-11-04  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Check for InsertRow() return value.
 

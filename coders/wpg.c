@@ -1251,7 +1251,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               if (WPG_Palette.NumOfEntries == 0)
                 ThrowReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
 
-              if (WPG_Palette.NumOfEntries > MaxMap)
+              if (WPG_Palette.NumOfEntries > MaxMap+1)
                 ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
  
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
