@@ -1,3 +1,9 @@
+2017-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sfw.c (SFWScan): Fix heap buffer overflow
+	(CVE-2017-13134).  Notified of problem via email (including a
+	patch) from Petr Gajdos on Mon, 6 Nov 2017.
+
 2017-11-05  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Wrong MaxMap check condition - fixed.
