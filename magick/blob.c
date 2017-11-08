@@ -481,7 +481,12 @@ MagickExport MagickPassFail BlobReserveSize(Image *image, magick_off_t size)
 #if defined(HAVE_POSIX_FALLOCATE)
       /*
         FIXME: Solaris 11.2 documentation says that posix_fallocate()
-        reports EINVAL for anything but UFS */
+        reports EINVAL for anything but UFS.
+
+        FreeBSD 11 (as of changeset r325320) now reports EINVAL when
+        used on a ZFS filesystem and Illumos and ZFS-On-Linux (ZoL)
+        are reported to do the same thing.
+      */
       int
         err_status;
 
