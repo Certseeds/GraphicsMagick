@@ -39,7 +39,11 @@
 <blockquote>
 <ul class="simple">
 <li>coders/png.c (ReadOneJNGImage): Fix JNG memory leaks when JPEG
-image fails to be read.</li>
+image fails to be read.
+(WriteOnePNGImage): Promotion of indexed PNG to RGBA lacked
+setting of image matte, resulting in undersized buffer allocation
+and heap overflow.  Fixes SourceForge bug #453 &quot;Heap overflow in
+source-gra/coders/png.c&quot;.</li>
 </ul>
 </blockquote>
 <p>2017-11-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

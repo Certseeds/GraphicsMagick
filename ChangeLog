@@ -2,6 +2,10 @@
 
 	* coders/png.c (ReadOneJNGImage): Fix JNG memory leaks when JPEG
 	image fails to be read.
+	(WriteOnePNGImage): Promotion of indexed PNG to RGBA lacked
+	setting of image matte, resulting in undersized buffer allocation
+	and heap overflow.  Fixes SourceForge bug #453 "Heap overflow in
+	source-gra/coders/png.c".
 
 2017-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

@@ -7290,6 +7290,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                          ping_valid_trns = 0;
                          png_set_invalid(ping, ping_info, PNG_INFO_PLTE);
                          mng_info->IsPalette=MagickFalse;
+                         image_matte=MagickTrue;
                          (void) SyncImage(image);
                          if (logging)
                            (void) LogMagickEvent(CoderEvent,
@@ -7798,6 +7799,17 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   /*
     Allocate memory.
   */
+  if (logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  mng_info: columns=%lu, image_depth=%u, "
+                          "write_png8=%u, write_png24=%u, write_png32=%u "
+                          "write_png48=%u, write_png64=%u, IsPalette=%u, "
+                          "image_matte=%u",
+                          image->columns, image_depth, mng_info->write_png8,
+                          mng_info->write_png24, mng_info->write_png32,
+                          mng_info->write_png48, mng_info->write_png64,
+                          mng_info->IsPalette, image_matte
+                          );
   rowbytes=image->columns;
   if (image_depth <= 8)
     {
