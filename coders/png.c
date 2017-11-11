@@ -3620,6 +3620,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             Don't throw exception here since ReadImage() will already
             have thrown it.
           */
+          DestroyJNG(/*chunk*/ NULL,&color_image,&color_image_info,
+                     &alpha_image,&alpha_image_info);
           return (Image *) NULL;
         }
 

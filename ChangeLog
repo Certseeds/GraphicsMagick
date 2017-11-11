@@ -1,3 +1,8 @@
+2017-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Fix JNG memory leaks when JPEG
+	image fails to be read.
+
 2017-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sfw.c (SFWScan): Fix heap buffer overflow
