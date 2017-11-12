@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -76,7 +76,7 @@ typedef struct _DIBInfo
     blue_mask,
     alpha_mask;
 
-  long
+  magick_int32_t
     colorspace;
 
   PointInfo

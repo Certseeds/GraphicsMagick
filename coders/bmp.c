@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -92,33 +92,35 @@
 */
 typedef struct _BMPInfo
 {
-  unsigned long
+  magick_uint32_t
     file_size,
     ba_offset,
     offset_bits,
     size;
 
-  long
+  magick_int32_t
     width,
     height;
 
-  unsigned short
+  magick_uint16_t 
     planes,
     bits_per_pixel;
 
-  unsigned long
+  magick_uint32_t
     compression,
     image_size,
     x_pixels,
     y_pixels,
     number_colors,
+    colors_important;
+
+  magick_uint32_t
     red_mask,
     green_mask,
     blue_mask,
-    alpha_mask,
-    colors_important;
+    alpha_mask;
 
-  long
+  magick_int32_t
     colorspace;
 
   PrimaryInfo
@@ -607,7 +609,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bmp_info.size=ReadBlobLSBLong(image);
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        "  BMP size: %lu, File size: %" MAGICK_OFF_F "u",
+        "  BMP size: %u, File size: %" MAGICK_OFF_F "u",
         bmp_info.size, GetBlobSize(image));
     if (bmp_info.size == 12)
       {
@@ -629,11 +631,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
               "  Format: Windows 2.X or OS/2 Bitmap");
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Geometry: %ldx%ld",bmp_info.width,bmp_info.height);
+              "  Geometry: %dx%d",bmp_info.width,bmp_info.height);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Planes: %d",bmp_info.planes);
+              "  Planes: %u",bmp_info.planes);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Bits per pixel: %d",bmp_info.bits_per_pixel);
+              "  Bits per pixel: %u",bmp_info.bits_per_pixel);
           }
       }
     else
@@ -670,11 +672,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
               "  Format: MS Windows bitmap 3.X");
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Geometry: %ldx%ld",bmp_info.width,bmp_info.height);
+              "  Geometry: %dx%d",bmp_info.width,bmp_info.height);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Planes: %d",bmp_info.planes);
+              "  Planes: %u",bmp_info.planes);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Bits per pixel: %d",bmp_info.bits_per_pixel);
+              "  Bits per pixel: %u",bmp_info.bits_per_pixel);
             switch ((int) bmp_info.compression)
             {
               case BI_RGB:
@@ -719,13 +721,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               default:
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                  "  Compression: UNKNOWN (%lu)",bmp_info.compression);
+                  "  Compression: UNKNOWN (%u)",bmp_info.compression);
               }
             }
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Number of colors: %lu",bmp_info.number_colors);
+              "  Number of colors: %u",bmp_info.number_colors);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  Important colors: %lu",bmp_info.colors_important);
+              "  Important colors: %u",bmp_info.colors_important);
           }
 
         bmp_info.red_mask=ReadBlobLSBLong(image);
@@ -741,7 +743,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read color management information.
             */
             bmp_info.alpha_mask=ReadBlobLSBLong(image);
-            bmp_info.colorspace=(long) ReadBlobLSBLong(image);
+            bmp_info.colorspace=(magick_int32_t) ReadBlobLSBLong(image);
             /*
               Decode 2^30 fixed point formatted CIE primaries.
             */
@@ -840,7 +842,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "File size: Claimed=%lu, Actual=%"
+                            "File size: Claimed=%u, Actual=%"
                             MAGICK_OFF_F "d",
                             bmp_info.file_size, file_size);
     if ((magick_off_t) bmp_info.file_size > file_size)
@@ -1037,18 +1039,18 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     */
     if (bmp_info.compression == BI_RGB)
       {
-        bmp_info.alpha_mask=(image->matte ? 0xff000000L : 0);
-        bmp_info.red_mask=0x00ff0000L;
-        bmp_info.green_mask=0x0000ff00L;
-        bmp_info.blue_mask=0x000000ffL;
+        bmp_info.alpha_mask=(image->matte ? 0xff000000U : 0U);
+        bmp_info.red_mask=0x00ff0000U;
+        bmp_info.green_mask=0x0000ff00U;
+        bmp_info.blue_mask=0x000000ffU;
         if (bmp_info.bits_per_pixel == 16)
           {
             /*
               RGB555.
             */
-            bmp_info.red_mask=0x00007c00L;
-            bmp_info.green_mask=0x000003e0L;
-            bmp_info.blue_mask=0x0000001fL;
+            bmp_info.red_mask=0x00007c00U;
+            bmp_info.green_mask=0x000003e0U;
+            bmp_info.blue_mask=0x0000001fU;
           }
       }
     if ((bmp_info.bits_per_pixel == 16) || (bmp_info.bits_per_pixel == 32))
@@ -1061,32 +1063,32 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         (void) memset(&shift,0,sizeof(PixelPacket));
         (void) memset(&quantum_bits,0,sizeof(PixelPacket));
-        if (bmp_info.red_mask != 0)
-          while (((bmp_info.red_mask << shift.red) & 0x80000000UL) == 0)
+        if (bmp_info.red_mask != 0U)
+          while (((bmp_info.red_mask << shift.red) & 0x80000000U) == 0)
             shift.red++;
         if (bmp_info.green_mask != 0)
-          while (((bmp_info.green_mask << shift.green) & 0x80000000UL) == 0)
+          while (((bmp_info.green_mask << shift.green) & 0x80000000U) == 0)
             shift.green++;
         if (bmp_info.blue_mask != 0)
-          while (((bmp_info.blue_mask << shift.blue) & 0x80000000UL) == 0)
+          while (((bmp_info.blue_mask << shift.blue) & 0x80000000U) == 0)
             shift.blue++;
         if (bmp_info.alpha_mask != 0)
-          while (((bmp_info.alpha_mask << shift.opacity) & 0x80000000UL) == 0)
+          while (((bmp_info.alpha_mask << shift.opacity) & 0x80000000U) == 0)
             shift.opacity++;
         sample=shift.red;
-        while (((bmp_info.red_mask << sample) & 0x80000000UL) != 0)
+        while (((bmp_info.red_mask << sample) & 0x80000000U) != 0)
           sample++;
         quantum_bits.red=(Quantum) (sample-shift.red);
         sample=shift.green;
-        while (((bmp_info.green_mask << sample) & 0x80000000UL) != 0)
+        while (((bmp_info.green_mask << sample) & 0x80000000U) != 0)
           sample++;
         quantum_bits.green=(Quantum) (sample-shift.green);
         sample=shift.blue;
-        while (((bmp_info.blue_mask << sample) & 0x80000000UL) != 0)
+        while (((bmp_info.blue_mask << sample) & 0x80000000U) != 0)
           sample++;
         quantum_bits.blue=(Quantum) (sample-shift.blue);
         sample=shift.opacity;
-        while (((bmp_info.alpha_mask << sample) & 0x80000000UL) != 0)
+        while (((bmp_info.alpha_mask << sample) & 0x80000000U) != 0)
           sample++;
         quantum_bits.opacity=(Quantum) (sample-shift.opacity);
       }
@@ -1886,7 +1888,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "   BMP bits_per_pixel=%d",bmp_info.bits_per_pixel);
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "   BMP file_size=%lu bytes",bmp_info.file_size);
+          "   BMP file_size=%u bytes",bmp_info.file_size);
         switch ((int) bmp_info.compression)
         {
            case BI_RGB:
@@ -1910,7 +1912,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
            default:
            {
              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-               "   Compression=UNKNOWN (%lu)",bmp_info.compression);
+               "   Compression=UNKNOWN (%u)",bmp_info.compression);
              break;
            }
         }
@@ -1919,7 +1921,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
             "   Number_colors=unspecified");
         else
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "   Number_colors=%lu",bmp_info.number_colors);
+            "   Number_colors=%u",bmp_info.number_colors);
       }
     (void) WriteBlob(image,2,"BM");
     (void) WriteBlobLSBLong(image,bmp_info.file_size);
@@ -2074,7 +2076,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       }
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        "  Pixels:  %lu bytes",bmp_info.image_size);
+        "  Pixels:  %u bytes",bmp_info.image_size);
     (void) WriteBlob(image,bmp_info.image_size,(char *) pixels);
     MagickFreeMemory(pixels);
     if (image->next == (Image *) NULL)

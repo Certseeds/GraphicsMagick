@@ -1,3 +1,9 @@
+2017-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (_BMPInfo): "Right-size" BMPInfo members.  The
+	'long' type is promoted to 64-bit on LP64 systems and the large
+	size is not needed.
+
 2017-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/webp.c: Incorporate patch by Jan Spitalnik to add EXIF
