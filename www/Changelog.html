@@ -38,6 +38,12 @@
 <p>2017-11-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/bmp.c (DecodeImage): &quot;Right-size&quot; and &quot;Right-type&quot;
+DecodeImage() variables and check for EOF at every point of the
+way.  Pass buffer size as an argument.</li>
+<li>coders/dib.c (DecodeImage): &quot;Right-size&quot; and &quot;Right-type&quot;
+DecodeImage() variables and check for EOF at every point of the
+way.  Pass buffer size as an argument.</li>
 <li>coders/bmp.c (_BMPInfo): &quot;Right-size&quot; BMPInfo members.  The
 'long' type is promoted to 64-bit on LP64 systems and the large
 size is not needed.</li>
