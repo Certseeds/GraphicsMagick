@@ -170,19 +170,22 @@ static unsigned int
 %    o pixels:  The address of a byte (8 bits) array of pixel data created by
 %      the decoding process.
 %
+%    o pixels_size: The size of the allocated buffer array.
 %
 */
 static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
-  unsigned char *pixels)
+                                  unsigned char *pixels, const size_t pixels_size)
 {
-  long
-    byte,
-    count,
+ unsigned long
+    x,
     y;
 
-  register long
-    i,
-    x;
+  unsigned int
+    i;
+
+  int
+    byte,
+    count;
 
   register unsigned char
     *q;
@@ -193,19 +196,33 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Decoding RLE pixels");
-  (void) memset(pixels,0,image->columns*image->rows);
+  (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
   q=pixels;
-  end=pixels + (size_t) image->columns*image->rows;
-  for (y=0; y < (long) image->rows; )
+  end=pixels + pixels_size;
+  for (y=0; y < image->rows; )
   {
-    if (q < pixels || q  >= end)
-      break;
+    if (q < pixels || q >= end)
+      {
+        if (image->logging)
+          /* With Gray and PseudoClass images, there is a one-off
+             issue which triggers this at the very end of the pixel
+             data if it is sized ROWSxCOLUMNS. Perhaps this is because
+             the EOL marker has not ben encountered yet but the data
+             is fully read.
+          */
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Attempted buffer overun (y=%lu, "
+                                "pixels_size=%" MAGICK_SIZE_T_F "u, "
+                                "pixels=%p, q=%p, end=%p)",
+                                y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
+        break;
+      }
     count=ReadBlobByte(image);
     if (count == EOF)
       return MagickFail;
-    if (count != 0)
+    if (count > 0)
       {
         count=Min(count, end - q);
         /*
@@ -223,7 +240,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
           }
         else
           {
-            for ( i=0; i < count; i++ )
+            for ( i=0; i < (unsigned int) count; i++ )
               {
                 *q++=(unsigned char)
                   ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
@@ -241,7 +258,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
           return MagickFail;
         if (count == 0x01)
           return(MagickPass);
-        switch ((int) count)
+        switch (count)
         {
           case 0x00:
           {
@@ -275,6 +292,8 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
               Absolute mode.
             */
     	    count=Min(count, end - q);
+            if (count < 0)
+              return MagickFail;
             if (compression == BI_RLE8)
               for (i=count; i != 0; --i)
                 {
@@ -284,7 +303,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                   *q++=byte;
                 }
             else
-              for (i=0; i < count; i++)
+              for (i=0; i < (unsigned int) count; i++)
               {
                 if ((i & 0x01) == 0)
                   {
@@ -302,11 +321,13 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
             if (compression == BI_RLE8)
               {
                 if (count & 0x01)
-                  (void) ReadBlobByte(image);
+                  if (ReadBlobByte(image) == EOF)
+                    return MagickFail;
               }
             else
               if (((count & 0x03) == 1) || ((count & 0x03) == 2))
-                (void) ReadBlobByte(image);
+                if (ReadBlobByte(image) == EOF)
+                  return MagickFail;
             break;
           }
         }
@@ -535,7 +556,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   size_t
     count,
-    length;
+    length,
+    pixels_size;
 
   unsigned char
     *bmp_colormap,
@@ -1004,9 +1026,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                   image);
       }
 
-    pixels=MagickAllocateArray(unsigned char *,
-                               Max(bytes_per_line,image->columns+1),
-                               image->rows);
+    pixels_size=MagickArraySize(Max(bytes_per_line,image->columns+1),
+                                image->rows);
+    pixels=MagickAllocateMemory(unsigned char *, pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     if ((bmp_info.compression == BI_RGB) ||
@@ -1022,8 +1044,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       {
         /*
           Convert run-length encoded raster pixels.
+
+          DecodeImage() normally decompresses to rows*columns bytes of data.
         */
-        status=DecodeImage(image,bmp_info.compression,pixels);
+        status=DecodeImage(image,bmp_info.compression,pixels,
+                           image->rows*image->columns);
         if (status == MagickFail)
           ThrowBMPReaderException(CorruptImageError,UnableToRunlengthDecodeImage,
             image);

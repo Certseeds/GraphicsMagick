@@ -156,19 +156,23 @@ static void LogDIBInfo(const DIBInfo *dib_info)
 %    o pixels:  The address of a byte (8 bits) array of pixel data created by
 %      the decoding process.
 %
+%    o pixels_size: The size of the allocated buffer array.
+%
 %
 */
 static unsigned int DecodeImage(Image *image,const unsigned long compression,
-  unsigned char *pixels)
+                                unsigned char *pixels, const size_t pixels_size)
 {
-  long
-    byte,
-    count,
+  unsigned long
+    x,
     y;
 
-  register long
-    i,
-    x;
+  unsigned int
+    i;
+
+  int
+    byte,
+    count;
 
   register unsigned char
     *q;
@@ -178,26 +182,42 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
 
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
-  (void) memset(pixels,0,image->columns*image->rows);
+  (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
   q=pixels;
-  end=pixels + (size_t) image->columns*image->rows;
-  for (y=0; y < (long) image->rows; )
+  end=pixels + pixels_size;
+  for (y=0; y < image->rows; )
   {
-    if (q < pixels || q  >= end)
-      break;
+    if (q < pixels || q >= end)
+      {
+        if (image->logging)
+          /* With Gray and PseudoClass images, there is a one-off
+             issue which triggers this at the very end of the pixel
+             data if it is sized ROWSxCOLUMNS. Perhaps this is because
+             the EOL marker has not ben encountered yet (or is
+             missing) but the data is fully read.
+          */
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Attempted buffer overun (y=%lu, "
+                                "pixels_size=%" MAGICK_SIZE_T_F "u, "
+                                "pixels=%p, q=%p, end=%p)",
+                                y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
+        break;
+      }
     count=ReadBlobByte(image);
     if (count == EOF)
-      break;
-    if (count != 0)
+      return MagickFail;
+    if (count > 0)
       {
         count=Min(count, end - q);
         /*
           Encoded mode.
         */
         byte=ReadBlobByte(image);
-        for (i=0; i < count; i++)
+        if (byte == EOF)
+          return MagickFail;
+        for (i=0; i < (unsigned int) count; i++)
         {
           if (compression == 1)
             *q++=(unsigned char) byte;
@@ -213,9 +233,11 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
           Escape mode.
         */
         count=ReadBlobByte(image);
+        if (count == EOF)
+          return MagickFail;
         if (count == 0x01)
           return(True);
-        switch ((int) count)
+        switch (count)
         {
           case 0x00:
           {
@@ -232,8 +254,14 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
             /*
               Delta mode.
             */
-            x+=ReadBlobByte(image);
-            y+=ReadBlobByte(image);
+            byte=ReadBlobByte(image);
+            if (byte == EOF)
+              return MagickFail;
+            x+=byte;
+            byte=ReadBlobByte(image);
+            if (byte == EOF)
+              return MagickFail;
+            y+=byte;
             q=pixels+y*image->columns+x;
             break;
           }
@@ -243,14 +271,23 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
               Absolute mode.
             */
       	    count=Min(count, end - q);
-            for (i=0; i < count; i++)
+            if (count < 0)
+              return MagickFail;
+            for (i=0; i < (unsigned int) count; i++)
             {
               if (compression == 1)
-                *q++=ReadBlobByte(image);
+                {
+                  byte=ReadBlobByte(image);
+                  if (byte == EOF)
+                    return MagickFail;
+                  *q++=byte;
+                }
               else
                 {
                   if ((i & 0x01) == 0)
                     byte=ReadBlobByte(image);
+                  if (byte == EOF)
+                    return MagickFail;
                   *q++=(unsigned char)
                     ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
                 }
@@ -262,11 +299,13 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
             if (compression == 1)
               {
                 if (count & 0x01)
-                  (void) ReadBlobByte(image);
+                  if (ReadBlobByte(image) == EOF)
+                    return MagickFail;
               }
             else
               if (((count & 0x03) == 1) || ((count & 0x03) == 2))
-                (void) ReadBlobByte(image);
+                if (ReadBlobByte(image) == EOF)
+                  return MagickFail;
             break;
           }
         }
@@ -279,7 +318,7 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
   }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
-  return(True);
+  return(MagickPass);
 }
 
 /*
@@ -486,7 +525,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   size_t
-    bytes_per_line;
+    bytes_per_line,
+    pixels_size;
 
   magick_off_t
     file_size;
@@ -677,9 +717,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   length=MagickArraySize(bytes_per_line,image->rows);
   if (length == 0)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  pixels=MagickAllocateArray(unsigned char *,
-                             image->rows,
-                             Max(bytes_per_line,image->columns+1));
+  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,image->columns+1));
+  pixels=MagickAllocateMemory(unsigned char *,pixels_size);
   if (pixels == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   if ((dib_info.compression == 0) || (dib_info.compression == 3))
@@ -700,9 +739,11 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       /*
         Convert run-length encoded raster pixels.
-        DecodeImage expects that pixels array is rows*columns bytes.
+
+        DecodeImage() normally decompresses to rows*columns bytes of data.
       */
-      status=DecodeImage(image,dib_info.compression,pixels);
+      status=DecodeImage(image,dib_info.compression,pixels,
+                         image->rows*image->columns);
       if (status == False)
         {
           MagickFreeMemory(pixels);
