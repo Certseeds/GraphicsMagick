@@ -107,7 +107,7 @@ static void LogDIBInfo(const DIBInfo *dib_info)
                         "    Bits Per Pixel:       %u\n"
                         "    Compression:          %u\n"
                         "    Size Of Bitmap:       %u\n"
-                        "    Horzontal Resolution: %u\n"
+                        "    Horizontal Resolution:%u\n"
                         "    Vertical Resolution:  %u\n"
                         "    Colors Used:          %u\n"
                         "    Colors Important:     %u",
@@ -187,135 +187,137 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
   x=0;
   q=pixels;
   end=pixels + pixels_size;
+  /*
+    Decompress sufficient data to support the number of pixels (or
+    rows) in the image and then return.
+
+    Do not wait to read the final EOL and EOI markers (if not yet
+    encountered) since we always read this marker just before we
+    return.
+  */
   for (y=0; y < image->rows; )
-  {
-    if (q < pixels || q >= end)
-      {
-        if (image->logging)
-          /* With Gray and PseudoClass images, there is a one-off
-             issue which triggers this at the very end of the pixel
-             data if it is sized ROWSxCOLUMNS. Perhaps this is because
-             the EOL marker has not ben encountered yet (or is
-             missing) but the data is fully read.
-          */
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Attempted buffer overun (y=%lu, "
-                                "pixels_size=%" MAGICK_SIZE_T_F "u, "
-                                "pixels=%p, q=%p, end=%p)",
-                                y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
-        break;
-      }
-    count=ReadBlobByte(image);
-    if (count == EOF)
-      return MagickFail;
-    if (count > 0)
-      {
-        count=Min(count, end - q);
-        /*
-          Encoded mode.
-        */
-        byte=ReadBlobByte(image);
-        if (byte == EOF)
-          return MagickFail;
-        for (i=0; i < (unsigned int) count; i++)
+    {
+      if (q < pixels || q >= end)
         {
-          if (compression == 1)
-            *q++=(unsigned char) byte;
-          else
-            *q++=(unsigned char)
-              ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-          x++;
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Decode buffer full (y=%lu, "
+                                  "pixels_size=%" MAGICK_SIZE_T_F "u, "
+                                  "pixels=%p, q=%p, end=%p)",
+                                  y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
+          break;
         }
-      }
-    else
-      {
-        /*
-          Escape mode.
-        */
-        count=ReadBlobByte(image);
-        if (count == EOF)
-          return MagickFail;
-        if (count == 0x01)
-          return(True);
-        switch (count)
+      count=ReadBlobByte(image);
+      if (count == EOF)
+        return MagickFail;
+      if (count > 0)
         {
-          case 0x00:
-          {
-            /*
-              End of line.
-            */
-            x=0;
-            y++;
-            q=pixels+y*image->columns;
-            break;
-          }
-          case 0x02:
-          {
-            /*
-              Delta mode.
-            */
-            byte=ReadBlobByte(image);
-            if (byte == EOF)
-              return MagickFail;
-            x+=byte;
-            byte=ReadBlobByte(image);
-            if (byte == EOF)
-              return MagickFail;
-            y+=byte;
-            q=pixels+y*image->columns+x;
-            break;
-          }
-          default:
-          {
-            /*
-              Absolute mode.
-            */
-      	    count=Min(count, end - q);
-            if (count < 0)
-              return MagickFail;
-            for (i=0; i < (unsigned int) count; i++)
+          count=Min(count, end - q);
+          /*
+            Encoded mode.
+          */
+          byte=ReadBlobByte(image);
+          if (byte == EOF)
+            return MagickFail;
+          for (i=0; i < (unsigned int) count; i++)
             {
               if (compression == 1)
-                {
-                  byte=ReadBlobByte(image);
-                  if (byte == EOF)
-                    return MagickFail;
-                  *q++=byte;
-                }
+                *q++=(unsigned char) byte;
               else
-                {
-                  if ((i & 0x01) == 0)
-                    byte=ReadBlobByte(image);
-                  if (byte == EOF)
-                    return MagickFail;
-                  *q++=(unsigned char)
-                    ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-                }
+                *q++=(unsigned char)
+                  ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
               x++;
             }
-            /*
-              Read pad byte.
-            */
-            if (compression == 1)
-              {
-                if (count & 0x01)
-                  if (ReadBlobByte(image) == EOF)
-                    return MagickFail;
-              }
-            else
-              if (((count & 0x03) == 1) || ((count & 0x03) == 2))
-                if (ReadBlobByte(image) == EOF)
-                  return MagickFail;
-            break;
-          }
         }
-      }
-    if (QuantumTick(y,image->rows))
-      if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                  LoadImageText,image->filename,
-				  image->columns,image->rows))
-        break;
-  }
+      else
+        {
+          /*
+            Escape mode.
+          */
+          count=ReadBlobByte(image);
+          if (count == EOF)
+            return MagickFail;
+          if (count == 0x01)
+            return(MagickPass);
+          switch (count)
+            {
+            case 0x00:
+              {
+                /*
+                  End of line.
+                */
+                x=0;
+                y++;
+                q=pixels+y*image->columns;
+                break;
+              }
+            case 0x02:
+              {
+                /*
+                  Delta mode.
+                */
+                byte=ReadBlobByte(image);
+                if (byte == EOF)
+                  return MagickFail;
+                x+=byte;
+                byte=ReadBlobByte(image);
+                if (byte == EOF)
+                  return MagickFail;
+                y+=byte;
+                q=pixels+y*image->columns+x;
+                break;
+              }
+            default:
+              {
+                /*
+                  Absolute mode.
+                */
+                count=Min(count, end - q);
+                if (count < 0)
+                  return MagickFail;
+                for (i=0; i < (unsigned int) count; i++)
+                  {
+                    if (compression == 1)
+                      {
+                        byte=ReadBlobByte(image);
+                        if (byte == EOF)
+                          return MagickFail;
+                        *q++=byte;
+                      }
+                    else
+                      {
+                        if ((i & 0x01) == 0)
+                          byte=ReadBlobByte(image);
+                        if (byte == EOF)
+                          return MagickFail;
+                        *q++=(unsigned char)
+                          ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                      }
+                    x++;
+                  }
+                /*
+                  Read pad byte.
+                */
+                if (compression == 1)
+                  {
+                    if (count & 0x01)
+                      if (ReadBlobByte(image) == EOF)
+                        return MagickFail;
+                  }
+                else
+                  if (((count & 0x03) == 1) || ((count & 0x03) == 2))
+                    if (ReadBlobByte(image) == EOF)
+                      return MagickFail;
+                break;
+              }
+            }
+        }
+      if (QuantumTick(y,image->rows))
+        if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                    LoadImageText,image->filename,
+                                    image->columns,image->rows))
+          break;
+    }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
   return(MagickPass);
