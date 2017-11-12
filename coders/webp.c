@@ -44,6 +44,7 @@
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
+#include "magick/profile.h"
 #include "magick/utility.h"
 
 /*
@@ -64,13 +65,19 @@ static unsigned int WriteWEBPImage(const ImageInfo *,Image *);
   Release versions vs ABI versions (found in src/webp/encode.h)
 
     0.1.3  - 0x0002
-    0.1.99 - 0x0100
+    0.1.99 - 0x0100 <-- earliest version we support
     0.2.0  - 0x0200
     0.2.1  - 0x0200
     0.3.0  - 0x0201
     0.4.0  - 0x0202
     0.4.1  - 0x0202
     0.4.2  - 0x0202
+    0.4.3  - 0x0202
+    0.4.4  - 0x0202
+    0.5.0  - 0x0209
+    0.5.1  - 0x0209
+    0.5.2  - 0x0209
+    0.6.0  - 0x020e
 */
 
 /*
@@ -88,6 +95,14 @@ static unsigned int WriteWEBPImage(const ImageInfo *,Image *);
 #  define SUPPORT_CONFIG_EMULATE_JPEG_SIZE
 #  define SUPPORT_CONFIG_THREAD_LEVEL
 #  define SUPPORT_CONFIG_LOW_MEMORY
+#endif
+#if WEBP_ENCODER_ABI_VERSION >= 0x0202 /* >= 0.4.0 */
+#endif
+#if WEBP_ENCODER_ABI_VERSION >= 0x0209 /* >= 0.5.0 */
+#  define SUPPORT_WEBP_MUX
+#include <webp/mux.h>
+#endif
+#if WEBP_ENCODER_ABI_VERSION >= 0x020e /* >= 0.6.0 */
 #endif
 
 /*
@@ -200,9 +215,9 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
         case VP8_STATUS_SUSPENDED:
           /*
             Incremental decoder object may be left in SUSPENDED state
-             if the picture is only partially decoded, pending
-             additional input.  We are not doing incremental decoding
-             at this time.
+            if the picture is only partially decoded, pending
+            additional input.  We are not doing incremental decoding
+            at this time.
           */
           break;
         case VP8_STATUS_USER_ABORT:
@@ -242,8 +257,8 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
                                             &stream_features.height);
   else
     pixels=(unsigned char *) WebPDecodeRGB(stream,length,
-                                            &stream_features.width,
-                                            &stream_features.height);
+                                           &stream_features.width,
+                                           &stream_features.height);
   if (pixels == (unsigned char *) NULL)
     {
       MagickFreeMemory(stream);
@@ -273,6 +288,36 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
       if(!SyncImagePixels(image))
         break;
     }
+
+#if defined(SUPPORT_WEBP_MUX)
+  /* Read features out of the WebP container */
+  {
+    uint32_t webp_flags=0;
+    WebPData flag_data={0};
+    WebPData content={stream,length};
+
+    WebPMux *mux=WebPMuxCreate(&content,0);
+    WebPMuxGetFeatures(mux,&webp_flags);
+
+    if(webp_flags & ICCP_FLAG) {
+      WebPMuxGetChunk(mux,"ICCP",&flag_data);
+      AppendImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
+    }
+
+    if(webp_flags & EXIF_FLAG) {
+      WebPMuxGetChunk(mux,"EXIF",&flag_data);
+      AppendImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+    }
+
+    if(webp_flags & XMP_FLAG) {
+      WebPMuxGetChunk(mux,"XMP",&flag_data);
+      AppendImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
+    }
+
+    WebPMuxDelete(mux);
+  }
+#endif /* defined(SUPPORT_WEBP_MUX) */
+
   /*
     Free scale resource.
   */
@@ -409,7 +454,8 @@ ModuleExport void UnregisterWEBPImage(void)
 %
 */
 
-/*
+#if !defined(SUPPORT_WEBP_MUX)
+ /*
   Called to write data to blob ("Should return true if writing was
   successful")
 */
@@ -423,6 +469,7 @@ static int WriterCallback(const unsigned char *stream,size_t length,
   return (length != 0U ? (WriteBlob(image,length,stream) == length) :
           MagickTrue);
 }
+#endif /* !defined(SUPPORT_WEBP_MUX) */
 
 /*
   Called to provide progress indication ("It can return false to
@@ -477,6 +524,11 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   WebPPicture
     picture;
 
+#if defined(SUPPORT_WEBP_MUX)
+  WebPMemoryWriter
+    writer;
+#endif /* defined(SUPPORT_WEBP_MUX) */
+
   WebPAuxStats
     statistics;
 
@@ -505,8 +557,14 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   (void) TransformColorspace(image,RGBColorspace);
   image->storage_class=DirectClass;
 
+#if !defined(SUPPORT_WEBP_MUX)
   picture.writer=WriterCallback;
   picture.custom_ptr=(void *) image;
+#else
+  WebPMemoryWriterInit(&writer);
+  picture.writer=WebPMemoryWrite;
+  picture.custom_ptr=&writer;
+#endif
 #if defined(SUPPORT_PROGRESS)
   picture.progress_hook=ProgressCallback;
 #endif
@@ -711,7 +769,93 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
         } /* if (! webp_status) */
     } /* if (webp_status) */
 
+#if defined(SUPPORT_WEBP_MUX)
+  /* Write profiles */
+  if(image->profiles) {
+    /* Mapping of GraphicsMagick->libwebp feature/profile names */
+    char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
+
+    /* Prepare the WebP muxer */
+    WebPMuxError mux_error;
+    WebPMux *mux=WebPMuxNew();
+    WebPData encoded_image={writer.mem,writer.size};
+
+    WebPMuxSetImage(mux,&encoded_image,1);
+
+    /* Iterate over all available features and try to push them into the WebP container */
+    for(size_t idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++) {
+      /* Get feature data */
+      WebPData chunk={0};
+
+      chunk.bytes=GetImageProfile(image,data_features[idx][0],&chunk.size);
+
+      if(!chunk.bytes)
+        continue;
+
+      /* Write feature data */
+      mux_error=WebPMuxSetChunk(mux,data_features[idx][1],&chunk,0);
+
+      switch(mux_error) {
+      case WEBP_MUX_OK:
+        break;
+        ;;
+      case WEBP_MUX_BAD_DATA:
+      case WEBP_MUX_NOT_ENOUGH_DATA:
+      case WEBP_MUX_NOT_FOUND:
+        ThrowWriterException(CoderError,WebPInvalidParameter,image);
+        break;
+        ;;
+      case WEBP_MUX_INVALID_ARGUMENT:
+        ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
+        break;
+        ;;
+      case WEBP_MUX_MEMORY_ERROR:
+        ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
+        break;
+        ;;
+      }
+    }
+
+    /* Create the new container */
+    {
+      WebPData picture_profiles={writer.mem, writer.size};
+      mux_error=WebPMuxAssemble(mux,&picture_profiles);
+
+      switch (mux_error) {
+      case WEBP_MUX_OK:
+        break;
+        ;;
+      case WEBP_MUX_BAD_DATA:
+      case WEBP_MUX_NOT_ENOUGH_DATA:
+      case WEBP_MUX_NOT_FOUND:
+        ThrowWriterException(CoderError,WebPInvalidParameter,image);
+      case WEBP_MUX_INVALID_ARGUMENT:
+        ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
+        break;
+        ;;
+      case WEBP_MUX_MEMORY_ERROR:
+        ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
+        break;
+        ;;
+      }
+
+      /* Replace the original data with the container data */
+      WebPMemoryWriterClear(&writer);
+      writer.size=picture_profiles.size;
+      writer.mem=(unsigned char *)picture_profiles.bytes;
+
+      /* Cleanup the muxer */
+      WebPMuxDelete(mux);
+    }
+  } /* if (webp_status) */
+
+  /* Write out the data to the blob and cleanup*/
+  WriteBlob(image, writer.size, writer.mem);
+#endif /* defined(SUPPORT_WEBP_MUX) */
   WebPPictureFree(&picture);
+#if defined(SUPPORT_WEBP_MUX)
+  WebPMemoryWriterClear(&writer);
+#endif
   CloseBlob(image);
 
   return (webp_status ? MagickPass : MagickFail);

@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2016 GraphicsMagick Group
+# Copyright (C) 2003-2017 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -2438,22 +2438,23 @@ then
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER(webp/decode.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(webp,WebPDecodeRGB,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+    AC_CHECK_HEADER([webp/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"; echo "Hello world"],[],[-lwebp])
     AC_MSG_CHECKING(if WEBP package is complete)
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
-  AC_MSG_RESULT(no -- some components failed test)
-        have_webp='no (failed tests)'
-    else
-  LIB_WEBP='-lwebp'
-  LIBS="$LIB_WEBP $LIBS"
-  AC_DEFINE(HasWEBP,1,Define if you have WEBP library)
-  AC_MSG_RESULT(yes)
-        have_webp='yes'
-    fi
+        if test $failed -gt 0
+        then
+            AC_MSG_RESULT(no -- some components failed test)
+            have_webp='no (failed tests)'
+        else
+            LIBS="$LIB_WEBP $LIBS"
+            AC_DEFINE(HasWEBP,1,Define if you have WEBP library)
+            AC_MSG_RESULT(yes)
+            have_webp='yes'
+        fi
     else
         AC_MSG_RESULT(no)
     fi

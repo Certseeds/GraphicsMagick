@@ -27242,6 +27242,14 @@ else
 fi
 
 
+    ac_fn_c_check_header_mongrel "$LINENO" "webp/encode.h" "ac_cv_header_webp_encode_h" "$ac_includes_default"
+if test "x$ac_cv_header_webp_encode_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WebPDecodeRGB in -lwebp" >&5
 $as_echo_n "checking for WebPDecodeRGB in -lwebp... " >&6; }
 if ${ac_cv_lib_webp_WebPDecodeRGB+:} false; then :
@@ -27279,30 +27287,69 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webp_WebPDecodeRGB" >&5
 $as_echo "$ac_cv_lib_webp_WebPDecodeRGB" >&6; }
 if test "x$ac_cv_lib_webp_WebPDecodeRGB" = xyes; then :
-  passed=`expr $passed + 1`
+  passed=`expr $passed + 1`; LIB_WEBP='-lwebp'
 else
   failed=`expr $failed + 1`
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WebPMuxSetImage in -lwebpmux" >&5
+$as_echo_n "checking for WebPMuxSetImage in -lwebpmux... " >&6; }
+if ${ac_cv_lib_webpmux_WebPMuxSetImage+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwebpmux -lwebp $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char WebPMuxSetImage ();
+int
+main ()
+{
+return WebPMuxSetImage ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_webpmux_WebPMuxSetImage=yes
+else
+  ac_cv_lib_webpmux_WebPMuxSetImage=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webpmux_WebPMuxSetImage" >&5
+$as_echo "$ac_cv_lib_webpmux_WebPMuxSetImage" >&6; }
+if test "x$ac_cv_lib_webpmux_WebPMuxSetImage" = xyes; then :
+  LIB_WEBP="$LIB_WEBP -lwebpmux"; echo "Hello world"
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking if WEBP package is complete" >&5
 $as_echo_n "checking if WEBP package is complete... " >&6; }
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        if test $failed -gt 0
+        then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-        have_webp='no (failed tests)'
-    else
-  LIB_WEBP='-lwebp'
-  LIBS="$LIB_WEBP $LIBS"
+            have_webp='no (failed tests)'
+        else
+            LIBS="$LIB_WEBP $LIBS"
 
 $as_echo "#define HasWEBP 1" >>confdefs.h
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-        have_webp='yes'
-    fi
+            have_webp='yes'
+        fi
     else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
