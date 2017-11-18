@@ -772,6 +772,8 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 #if defined(SUPPORT_WEBP_MUX)
   /* Write profiles */
   if(image->profiles) {
+	size_t idx;
+
     /* Mapping of GraphicsMagick->libwebp feature/profile names */
     char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
 
@@ -783,7 +785,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
     WebPMuxSetImage(mux,&encoded_image,1);
 
     /* Iterate over all available features and try to push them into the WebP container */
-    for(size_t idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++) {
+    for(idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++) {
       /* Get feature data */
       WebPData chunk={0};
 
