@@ -285,7 +285,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
           q++;
         }
 
-      if(!SyncImagePixels(image))
+      if (!SyncImagePixels(image))
         break;
     }
 
@@ -299,17 +299,17 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     WebPMux *mux=WebPMuxCreate(&content,0);
     WebPMuxGetFeatures(mux,&webp_flags);
 
-    if(webp_flags & ICCP_FLAG) {
+    if (webp_flags & ICCP_FLAG) {
       WebPMuxGetChunk(mux,"ICCP",&flag_data);
       AppendImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
     }
 
-    if(webp_flags & EXIF_FLAG) {
+    if (webp_flags & EXIF_FLAG) {
       WebPMuxGetChunk(mux,"EXIF",&flag_data);
       AppendImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
     }
 
-    if(webp_flags & XMP_FLAG) {
+    if (webp_flags & XMP_FLAG) {
       WebPMuxGetChunk(mux,"XMP",&flag_data);
       AppendImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
     }
@@ -771,85 +771,87 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 
 #if defined(SUPPORT_WEBP_MUX)
   /* Write profiles */
-  if(image->profiles) {
-	size_t idx;
-
-    /* Mapping of GraphicsMagick->libwebp feature/profile names */
-    char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
-
-    /* Prepare the WebP muxer */
-    WebPMuxError mux_error;
-    WebPMux *mux=WebPMuxNew();
-    WebPData encoded_image={writer.mem,writer.size};
-
-    WebPMuxSetImage(mux,&encoded_image,1);
-
-    /* Iterate over all available features and try to push them into the WebP container */
-    for(idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++) {
-      /* Get feature data */
-      WebPData chunk={0};
-
-      chunk.bytes=GetImageProfile(image,data_features[idx][0],&chunk.size);
-
-      if(!chunk.bytes)
-        continue;
-
-      /* Write feature data */
-      mux_error=WebPMuxSetChunk(mux,data_features[idx][1],&chunk,0);
-
-      switch(mux_error) {
-      case WEBP_MUX_OK:
-        break;
-        ;;
-      case WEBP_MUX_BAD_DATA:
-      case WEBP_MUX_NOT_ENOUGH_DATA:
-      case WEBP_MUX_NOT_FOUND:
-        ThrowWriterException(CoderError,WebPInvalidParameter,image);
-        break;
-        ;;
-      case WEBP_MUX_INVALID_ARGUMENT:
-        ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
-        break;
-        ;;
-      case WEBP_MUX_MEMORY_ERROR:
-        ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
-        break;
-        ;;
-      }
-    }
-
-    /* Create the new container */
+  if (image->profiles)
     {
-      WebPData picture_profiles={writer.mem, writer.size};
-      mux_error=WebPMuxAssemble(mux,&picture_profiles);
+      size_t idx;
 
-      switch (mux_error) {
-      case WEBP_MUX_OK:
-        break;
-        ;;
-      case WEBP_MUX_BAD_DATA:
-      case WEBP_MUX_NOT_ENOUGH_DATA:
-      case WEBP_MUX_NOT_FOUND:
-        ThrowWriterException(CoderError,WebPInvalidParameter,image);
-      case WEBP_MUX_INVALID_ARGUMENT:
-        ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
-        break;
-        ;;
-      case WEBP_MUX_MEMORY_ERROR:
-        ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
-        break;
-        ;;
+      /* Mapping of GraphicsMagick->libwebp feature/profile names */
+      char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
+
+      /* Prepare the WebP muxer */
+      WebPMuxError mux_error;
+      WebPMux *mux=WebPMuxNew();
+      WebPData encoded_image={writer.mem,writer.size};
+
+      WebPMuxSetImage(mux,&encoded_image,1);
+
+      /* Iterate over all available features and try to push them into the WebP container */
+      for (idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++)
+        {
+          /* Get feature data */
+          WebPData chunk={0};
+
+          chunk.bytes=GetImageProfile(image,data_features[idx][0],&chunk.size);
+
+          if (!chunk.bytes)
+            continue;
+
+          /* Write feature data */
+          mux_error=WebPMuxSetChunk(mux,data_features[idx][1],&chunk,0);
+
+          switch(mux_error) {
+          case WEBP_MUX_OK:
+            break;
+            ;;
+          case WEBP_MUX_BAD_DATA:
+          case WEBP_MUX_NOT_ENOUGH_DATA:
+          case WEBP_MUX_NOT_FOUND:
+            ThrowWriterException(CoderError,WebPInvalidParameter,image);
+            break;
+            ;;
+          case WEBP_MUX_INVALID_ARGUMENT:
+            ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
+            break;
+            ;;
+          case WEBP_MUX_MEMORY_ERROR:
+            ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
+            break;
+            ;;
+          }
+        }
+
+      /* Create the new container */
+      {
+        WebPData picture_profiles={writer.mem, writer.size};
+        mux_error=WebPMuxAssemble(mux,&picture_profiles);
+
+        switch (mux_error) {
+        case WEBP_MUX_OK:
+          break;
+          ;;
+        case WEBP_MUX_BAD_DATA:
+        case WEBP_MUX_NOT_ENOUGH_DATA:
+        case WEBP_MUX_NOT_FOUND:
+          ThrowWriterException(CoderError,WebPInvalidParameter,image);
+        case WEBP_MUX_INVALID_ARGUMENT:
+          ThrowWriterException(CoderError,WebPEncodingFailedNULLParameter,image);
+          break;
+          ;;
+        case WEBP_MUX_MEMORY_ERROR:
+          ThrowWriterException(CoderError,WebPEncodingFailedOutOfMemory,image);
+          break;
+          ;;
+        }
+
+        /* Replace the original data with the container data */
+        WebPMemoryWriterClear(&writer);
+        writer.size=picture_profiles.size;
+        writer.mem=(unsigned char *)picture_profiles.bytes;
+
+        /* Cleanup the muxer */
+        WebPMuxDelete(mux);
       }
-
-      /* Replace the original data with the container data */
-      WebPMemoryWriterClear(&writer);
-      writer.size=picture_profiles.size;
-      writer.mem=(unsigned char *)picture_profiles.bytes;
-
-      /* Cleanup the muxer */
-      WebPMuxDelete(mux);
-    }
-  } /* if (webp_status) */
+    } /* if (webp_status) */
 
   /* Write out the data to the blob and cleanup*/
   WriteBlob(image, writer.size, writer.mem);
