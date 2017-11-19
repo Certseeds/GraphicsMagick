@@ -210,7 +210,7 @@ MagickExport MagickPassFail  CycleColormapImage(Image *image,const int amount)
 %  the VerifyColormapIndex macro.  If the colormap index is outside the
 %  bounds of the image colormap then zero is returned and an
 %  InvalidColormapIndex exception is thrown, otherwise the colormap
-%  index is returned.
+%  index is returned.  The use of this function is DEPRECATED.
 %
 %  The format of the MagickConstrainColormapIndex method is:
 %

@@ -1,5 +1,12 @@
 2017-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/colormap.c (MagickConstrainColormapIndex): Deprecate use
+	of MagickConstrainColormapIndex() and prefer use of
+	VerifyColormapIndex() and VerifyColormapIndexWithColors() due to
+	avoiding dependence on index type, allowing provision of colors
+	other than image->colors, and capturing more useful source file
+	and line information.
+
 	* coders/{rle.c, mat.c, xbm.c, sgi.c, png.c}: Eliminate size_t vs
 	unsigned 32 conversion warnings in WIN64 build.
 

@@ -45,26 +45,6 @@
 #include "magick/pixel_cache.h"
 #include "magick/utility.h"
 
-#define RLEVerifyColormapIndex(image,index,colormap_entries)    \
-{ \
-  if (index >= colormap_entries) \
-    { \
-      if (image->exception.severity < CorruptImageError) \
-        { \
-          char \
-            colormapIndexBuffer[MaxTextExtent]; \
-\
-          FormatString(colormapIndexBuffer, \
-                       "index %" MAGICK_SIZE_T_F "u >= %" MAGICK_SIZE_T_F "u, %.1024s",        \
-                       (MAGICK_SIZE_T) index, (MAGICK_SIZE_T) colormap_entries, image->filename); \
-          errno=0; \
-          ThrowException(&image->exception,CorruptImageError, \
-                         InvalidColormapIndex,colormapIndexBuffer); \
-        } \
-      index=0U; \
-    } \
-}
-
 typedef struct _RLE_Header
 {
   magick_uint8_t   Magic[2];    /* Magic number */
@@ -626,7 +606,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         for (i=0; i < number_pixels; i++)
           {
             index=*p & mask;
-			RLEVerifyColormapIndex(image,index,colormap_entries);
+            VerifyColormapIndexWithColors(image,index,colormap_entries);
             *p=colormap[index];
             p++;
           }
@@ -636,7 +616,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             for (x=0; x < number_planes; x++)
               {
                 index=x*(unsigned int) map_length+(*p & mask);
-				RLEVerifyColormapIndex(image,index,colormap_entries);
+                VerifyColormapIndexWithColors(image,index,colormap_entries);
                 *p=colormap[index];
                 p++;
               }
@@ -670,7 +650,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+            image->columns,image->rows))
                 break;
         }
     }
@@ -682,7 +662,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (number_colormaps == 0)
         map_length=256;
       if (((unsigned long) map_length != map_length) ||
-			(!AllocateImageColormap(image,(unsigned long) map_length)))
+          (!AllocateImageColormap(image,(unsigned long) map_length)))
         ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
                                 image);
       p=colormap;
@@ -728,7 +708,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                image->columns,image->rows))
                     break;
             }
           (void) SyncImage(image);
@@ -764,7 +744,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,
                                               image->filename,
-					      image->columns,image->rows))
+                image->columns,image->rows))
                     break;
             }
           MagickFreeMemory(image->colormap);
