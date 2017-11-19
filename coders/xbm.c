@@ -165,7 +165,9 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   register size_t
     bytes_per_line,
-    i,
+    i;
+
+  unsigned long
     x,
     y;
 
