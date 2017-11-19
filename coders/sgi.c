@@ -266,15 +266,17 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *image;
 
   size_t
-    y,
     z;
 
   register IndexPacket
     *indexes;
 
   register size_t
-    i,
-    x;
+    i;
+
+  unsigned long
+	x,
+    y;
 
   register PixelPacket
     *q;
