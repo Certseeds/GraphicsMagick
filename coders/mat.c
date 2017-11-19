@@ -391,8 +391,10 @@ magick_off_t TotalSize = 0;
 
       if(zip_status == Z_STREAM_END) goto DblBreak;
     }
-
-    *Size -= magick_size;
+	if (*Size >= magick_size)
+		*Size -= (magick_uint32_t) magick_size;
+	else
+		*Size = 0U;
   }
 DblBreak:
  
