@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2004 - 2009 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Methods For Manipulating Embedded Image Profiles.
 */
 #ifndef _MAGICK_PROFILE_H
@@ -45,8 +45,8 @@ extern MagickExport MagickPassFail
  */
   extern MagickExport MagickPassFail
   AppendImageProfile(Image *image,const char *name,
-		     const unsigned char *profile_chunk,
-		     const size_t chunk_length);
+                     const unsigned char *profile_chunk,
+                     const size_t chunk_length);
 
 /*
   Generic iterator for traversing profiles.

@@ -95,7 +95,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
     {
       register const PixelPacket
         * restrict p;
-    
+
       register long
         x;
 
@@ -121,13 +121,13 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
       if (thread_status != MagickFail)
         {
           if ((image->matte) &&
-	      (corners[0].opacity != OpaqueOpacity) &&
-	      (corners[0].opacity == corners[1].opacity) &&
-	      (corners[1].opacity == corners[2].opacity))
-	    /*
-	      Consider only the opacity channel. Not currently fuzzy
-	      so only applied for simple transparency.
-	    */
+              (corners[0].opacity != OpaqueOpacity) &&
+              (corners[0].opacity == corners[1].opacity) &&
+              (corners[1].opacity == corners[2].opacity))
+            /*
+              Consider only the opacity channel. Not currently fuzzy
+              so only applied for simple transparency.
+            */
             for (x=0; x < (long) image->columns; x++)
               {
                 if (p->opacity != corners[0].opacity)
@@ -145,31 +145,31 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
                 p++;
               }
           else if (image->fuzz <= MagickEpsilon)
-	    {
-	      /*
-		Consider only the RGB channels using absolute comparison
-	      */
-	      for (x=0; x < (long) image->columns; x++)
-		{
-		  if (!ColorMatch(p,&corners[0]))
-		    if (x < thread_bounds.x)
-		      thread_bounds.x=x;
-		  if (!ColorMatch(p,&corners[1]))
-		    if (x > (long) thread_bounds.width)
-		      thread_bounds.width=x;
-		  if (!ColorMatch(p,&corners[0]))
-		    if (y < thread_bounds.y)
-		      thread_bounds.y=y;
-		  if (!ColorMatch(p,&corners[2]))
-		    if (y > (long) thread_bounds.height)
-		      thread_bounds.height=y;
-		  p++;
-		}
-	    }
-	  else
-	    /*
-	      Consider only the RGB channels using fuzzy comparison
-	    */
+            {
+              /*
+                Consider only the RGB channels using absolute comparison
+              */
+              for (x=0; x < (long) image->columns; x++)
+                {
+                  if (!ColorMatch(p,&corners[0]))
+                    if (x < thread_bounds.x)
+                      thread_bounds.x=x;
+                  if (!ColorMatch(p,&corners[1]))
+                    if (x > (long) thread_bounds.width)
+                      thread_bounds.width=x;
+                  if (!ColorMatch(p,&corners[0]))
+                    if (y < thread_bounds.y)
+                      thread_bounds.y=y;
+                  if (!ColorMatch(p,&corners[2]))
+                    if (y > (long) thread_bounds.height)
+                      thread_bounds.height=y;
+                  p++;
+                }
+            }
+          else
+            /*
+              Consider only the RGB channels using fuzzy comparison
+            */
             for (x=0; x < (long) image->columns; x++)
               {
                 if (!FuzzyColorMatch(p,&corners[0],image->fuzz))
@@ -273,28 +273,28 @@ static inline unsigned char MinimumDepthForValue(const Quantum quantum)
   register unsigned int
     depth,
     scale;
-  
+
   for (depth=1 ; depth < MaxRGB; depth++)
     {
       scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
       if (quantum == scale*(quantum/scale))
         break;
     }
-  
+
   return depth;
 }
 #if MaxMap == MaxRGB
 static magick_uint8_t* AllocateDepthMap(void)
 {
-  magick_uint8_t 
+  magick_uint8_t
     *map;
-  
+
   map = MagickAllocateArray(unsigned char *, MaxMap+1, sizeof(magick_uint8_t));
   if (map != (unsigned char *) NULL)
     {
       unsigned int
         i;
-      
+
       for (i=0; i <= MaxMap; i++)
         map[i] = (magick_uint8_t) MinimumDepthForValue(i);
     }
@@ -429,11 +429,11 @@ MagickExport unsigned long GetImageDepth(const Image *image,
     {
       /*
         DirectClass.
-       
+
         Notice that all pixels in the image must be inspected if the
         image depth is less than QuantumDepth.
       */
-     
+
       (void) PixelIterateMonoRead(GetImageDepthCallBack,
                                   NULL,
                                   GetImageDepthText,
@@ -861,7 +861,7 @@ MagickExport MagickBool IsMonochromeImage(const Image *image,
   if (image->colorspace == CMYKColorspace)
     return(MagickFalse);
   if (image->is_monochrome)
-    return(MagickTrue); 
+    return(MagickTrue);
   is_monochrome=MagickTrue;
   switch (image->storage_class)
   {

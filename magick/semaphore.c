@@ -48,89 +48,89 @@
 
 #if defined(USE_PTHREAD_LOCKS)
 #  include <pthread.h>
-#  define PTHREAD_MUTEX_DESTROY(semaphore_mutex)			\
-  {									\
-    int									\
-      err_status;							\
-    									\
-    if ((err_status = pthread_mutex_destroy(semaphore_mutex)) != 0)	\
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToDestroySemaphore);			\
-      }									\
+#  define PTHREAD_MUTEX_DESTROY(semaphore_mutex)                        \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
+    if ((err_status = pthread_mutex_destroy(semaphore_mutex)) != 0)     \
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToDestroySemaphore);                    \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEXATTR_DESTROY(mutexattr)				\
-  {									\
-    int									\
-      err_status;							\
-    									\
-    if ((err_status = pthread_mutexattr_destroy(mutexattr)) != 0)	\
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToDestroySemaphore);			\
-      }									\
+#  define PTHREAD_MUTEXATTR_DESTROY(mutexattr)                          \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
+    if ((err_status = pthread_mutexattr_destroy(mutexattr)) != 0)       \
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToDestroySemaphore);                    \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEXATTR_INIT(mutexattr)				\
-  {									\
-    int									\
-      err_status;							\
-    									\
-    if ((err_status = pthread_mutexattr_init(mutexattr)) != 0)		\
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToInitializeSemaphore);			\
-      }									\
+#  define PTHREAD_MUTEXATTR_INIT(mutexattr)                             \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
+    if ((err_status = pthread_mutexattr_init(mutexattr)) != 0)          \
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToInitializeSemaphore);                 \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEXATTR_SETTYPE(mutexattr,mutexattrtype)		\
-  {									\
-    int									\
-      err_status;							\
-    									\
+#  define PTHREAD_MUTEXATTR_SETTYPE(mutexattr,mutexattrtype)            \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
     if ((err_status = pthread_mutexattr_settype(mutexattr,mutexattrtype)) != 0) \
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToInitializeSemaphore);			\
-      }									\
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToInitializeSemaphore);                 \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEX_INIT(semaphore_mutex,mutexattr)			\
-  {									\
-    int									\
-      err_status;							\
-    									\
+#  define PTHREAD_MUTEX_INIT(semaphore_mutex,mutexattr)                 \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
     if ((err_status = pthread_mutex_init(semaphore_mutex,mutexattr)) != 0) \
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToInitializeSemaphore);			\
-      }									\
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToInitializeSemaphore);                 \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEX_LOCK(semaphore_mutex)				\
-  {									\
-    int									\
-      err_status;							\
-    									\
-    if ((err_status = pthread_mutex_lock(semaphore_mutex)) != 0)	\
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToLockSemaphore);			\
-      }									\
+#  define PTHREAD_MUTEX_LOCK(semaphore_mutex)                           \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
+    if ((err_status = pthread_mutex_lock(semaphore_mutex)) != 0)        \
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToLockSemaphore);                       \
+      }                                                                 \
   }
-#  define PTHREAD_MUTEX_UNLOCK(semaphore_mutex)				\
-  {									\
-    int									\
-      err_status;							\
-    									\
-    if ((err_status = pthread_mutex_unlock(semaphore_mutex)) != 0)	\
-      {									\
-        errno=err_status;						\
-	MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
-			  UnableToUnlockSemaphore);			\
-      }									\
+#  define PTHREAD_MUTEX_UNLOCK(semaphore_mutex)                         \
+  {                                                                     \
+    int                                                                 \
+      err_status;                                                       \
+                                                                        \
+    if ((err_status = pthread_mutex_unlock(semaphore_mutex)) != 0)      \
+      {                                                                 \
+        errno=err_status;                                               \
+        MagickFatalError3(ResourceLimitFatalError,SemaporeOperationFailed, \
+                          UnableToUnlockSemaphore);                     \
+      }                                                                 \
   }
 #endif
 
@@ -153,22 +153,22 @@ struct _SemaphoreInfo
 #endif /* defined(USE_OPENMP_LOCKS) */
 #if defined(USE_PTHREAD_LOCKS)
   pthread_mutex_t
-    mutex;		/* POSIX thread mutex */
+    mutex;              /* POSIX thread mutex */
 #endif /* if defined(USE_PTHREAD_LOCKS) */
 #if defined(USE_WIN32_LOCKS)
   CRITICAL_SECTION
-    mutex;		/* Windows critical section */
+    mutex;              /* Windows critical section */
 #endif /* defined(USE_WIN32_LOCKS) */
 
   unsigned long
-    signature;		/* Used to validate structure */
+    signature;          /* Used to validate structure */
 };
 
 /*
   Static declaractions.
 */
 #if defined(USE_OPENMP_LOCKS)
-static omp_lock_t 
+static omp_lock_t
   semaphore_mutex;
 
 static unsigned int
@@ -323,8 +323,8 @@ MagickExport SemaphoreInfo *AllocateSemaphoreInfo(void)
     Allocate semaphore.
   */
   semaphore_info=MagickAllocateAlignedMemory(SemaphoreInfo *,
-					     MAGICK_CACHE_LINE_SIZE,
-					     sizeof(SemaphoreInfo));
+                                             MAGICK_CACHE_LINE_SIZE,
+                                             sizeof(SemaphoreInfo));
   if (semaphore_info == (SemaphoreInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateSemaphoreInfo);
@@ -337,7 +337,7 @@ MagickExport SemaphoreInfo *AllocateSemaphoreInfo(void)
 #endif /* defined(USE_OPENMP_LOCKS) */
 #if defined(USE_PTHREAD_LOCKS)
   {
-    pthread_mutexattr_t 
+    pthread_mutexattr_t
       mutexattr;
 
     PTHREAD_MUTEXATTR_INIT(&mutexattr);
@@ -359,7 +359,7 @@ MagickExport SemaphoreInfo *AllocateSemaphoreInfo(void)
 #if defined(USE_WIN32_LOCKS)
   InitializeCriticalSection(&semaphore_info->mutex);
 #endif
-  
+
   semaphore_info->signature=MagickSignature;
   return(semaphore_info);
 }

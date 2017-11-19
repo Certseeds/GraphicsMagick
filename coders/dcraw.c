@@ -148,10 +148,10 @@ ModuleExport void RegisterDCRAWImage(void)
 {
   unsigned int
     i;
-  
+
   MagickInfo
     *entry;
-  
+
   for (i=0; dcraw_formats[i].id != NULL; i++)
     {
       entry=SetMagickInfo(dcraw_formats[i].id);
@@ -186,7 +186,7 @@ ModuleExport void UnregisterDCRAWImage(void)
 {
   unsigned int
     i;
-  
+
   for (i=0; dcraw_formats[i].id != NULL; i++)
     (void) UnregisterMagickInfo(dcraw_formats[i].id);
 }

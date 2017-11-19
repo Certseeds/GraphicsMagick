@@ -102,7 +102,7 @@ typedef struct _BMPInfo
     width,
     height;
 
-  magick_uint16_t 
+  magick_uint16_t
     planes,
     bits_per_pixel;
 
@@ -428,7 +428,7 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   /*
@@ -857,9 +857,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
             profile_data=ReadBlobLSBLong(image);
             profile_size=ReadBlobLSBLong(image);
-	    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				  "  Profile: size %lu data %lu",
-				  profile_size,profile_data);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "  Profile: size %lu data %lu",
+                                  profile_size,profile_data);
             (void) ReadBlobLSBLong(image);  /* Reserved byte */
           }
       }
@@ -959,7 +959,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         else
           packet_size=4;
         if (SeekBlob(image,start_position+14+bmp_info.size,SEEK_SET) == -1)
-	  ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+          ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
         if (ReadBlob(image,packet_size*image->colors,(char *) bmp_colormap)
             != packet_size*image->colors)
           ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -1143,7 +1143,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1172,7 +1172,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1204,7 +1204,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1263,7 +1263,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1297,7 +1297,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1357,7 +1357,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                               exception,LoadImageText,
                                               image->filename,
-					      image->columns,image->rows);
+                                              image->columns,image->rows);
                 if (status == False)
                   break;
               }
@@ -1388,8 +1388,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             DestroyImageList(image);
             return((Image *) NULL);
           }
-	DestroyBlob(flipped_image);
-	flipped_image->blob=ReferenceBlob(image->blob);
+        DestroyBlob(flipped_image);
+        flipped_image->blob=ReferenceBlob(image->blob);
         ReplaceImageInList(&image,flipped_image);
       }
     /*
@@ -1699,18 +1699,18 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
     */
     if (type == 2)
       {
-	bmp_info.width=(magick_int16_t) image->columns;
-	bmp_info.height=(magick_int16_t) image->rows;
+        bmp_info.width=(magick_int16_t) image->columns;
+        bmp_info.height=(magick_int16_t) image->rows;
       }
     else
       {
-	bmp_info.width=(magick_int32_t) image->columns;
-	bmp_info.height=(magick_int32_t) image->rows;
+        bmp_info.width=(magick_int32_t) image->columns;
+        bmp_info.height=(magick_int32_t) image->rows;
       }
     if (((unsigned long) bmp_info.width != image->columns) ||
-	((unsigned long) bmp_info.height != image->rows))
+        ((unsigned long) bmp_info.height != image->rows))
       {
-	ThrowWriterException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+        ThrowWriterException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
       }
 
     bmp_info.planes=1;
@@ -1763,7 +1763,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                               SaveImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           break;
@@ -1794,7 +1794,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
            if (QuantumTick(y,image->rows))
              if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                          SaveImageText,image->filename,
-					 image->columns,image->rows))
+                                         image->columns,image->rows))
                break;
         }
         break;
@@ -1824,7 +1824,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         break;
@@ -1860,7 +1860,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         break;

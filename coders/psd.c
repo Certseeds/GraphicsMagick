@@ -672,14 +672,14 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                 "  ImageColorMap allocated");
         }
     }
-  
+
   if (logging)
     {
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(), 
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             image->matte ?
                             "  image has matte" : "  image has no matte");
     }
-  
+
   /*
     Read PSD raster colormap only present for indexed and duotone images.
   */
@@ -795,7 +795,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
-      
+
       if (logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -882,9 +882,9 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                            "    offset(%ld,%ld), size(%ld,%ld), channels=%d", 
+                                            "    offset(%ld,%ld), size(%ld,%ld), channels=%d",
                                             layer_info[i].page.x,
-                                            layer_info[i].page.y, 
+                                            layer_info[i].page.y,
                                             layer_info[i].page.height,
                                             layer_info[i].page.width,
                                             layer_info[i].channels);
@@ -903,8 +903,8 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       if (logging)
                         {
                           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                                "    channel[%ld]: type=%d, size=%ld", 
-                                                j, layer_info[i].channel_info[j].type, 
+                                                "    channel[%ld]: type=%d, size=%ld",
+                                                j, layer_info[i].channel_info[j].type,
                                                 (long) layer_info[i].channel_info[j].size);
                         }
                     }
@@ -927,7 +927,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (logging)
                     {
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                            "    blend=%.4s, opacity=%d, clipping=%s, flags=%d, visible=%s", 
+                                            "    blend=%.4s, opacity=%d, clipping=%s, flags=%d, visible=%s",
                                             layer_info[i].blendkey, layer_info[i].opacity,
                                             layer_info[i].clipping ? "true" : "false",
                                             layer_info[i].flags,
@@ -1025,7 +1025,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       /* padBytes = ((length + 1 + 3) & ~3) - (length + 1); */
                       /* for (j=0; j < padBytes; j++) */
                       /*   ReadBlobByte(image); */
-              
+
 #if 0  /* still in development */
                       /*
                         Adjustment layers and other stuff...
@@ -1352,7 +1352,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   layer_info[0].image->previous=image;
 #else
                   DestroyImage(image);
-                  returnImage = layer_info[0].image;  
+                  returnImage = layer_info[0].image;
 #endif
                   MagickFreeMemory(layer_info);
 
@@ -1508,7 +1508,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
         }
     }
-  
+
   CloseBlob(image);
 
   if(logging)
@@ -1875,12 +1875,12 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   {
     const unsigned char
       *iptc_profile;
-    
+
     size_t
       iptc_profile_length;
-    
+
     iptc_profile=GetImageProfile(image,"IPTC",&iptc_profile_length);
-    
+
     if ( iptc_profile != 0 )
       {
         (void) WriteBlobMSBLong( image, (const magick_uint32_t) iptc_profile_length );
@@ -1935,7 +1935,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
       if ( invert_layer_count )
         layer_count *= -1;  /* if we have a matte, then use negative count! */
       (void) WriteBlobMSBShort(image, layer_count);
-  
+
       layer_count = 1;
       tmp_image = base_image;
       while ( tmp_image != NULL ) {
@@ -1985,7 +1985,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
               (void) WriteBlobMSBShort(image, 3);
               (void) WriteBlobMSBLong(image, channel_size);
             }
- 
+
         (void) WriteBlob(image, 4, "8BIM");
         (void) WriteBlob(image, 4, CompositeOperatorToPSDBlendMode(tmp_image->compose));
         (void) WriteBlobByte(image, 255);    /* BOGUS: layer opacity */
@@ -2004,7 +2004,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
             sprintf((char *) &(layer_name[1]), "%4s", theAttr->value );
             (void) WriteBlobByte(image, 3);
             (void) WriteBlob(image, 3, &layer_name[1]);
-          */ 
+          */
         } else {
           /*
             In Photoshop 5.5 the maximum number of layers was 100 but

@@ -57,7 +57,7 @@
 #elif defined (MSWINDOWS)
 #  define S_MODE     (_S_IREAD | _S_IWRITE)
 #else
-# define S_MODE      0644 
+# define S_MODE      0644
 #endif
 
 /*
@@ -99,9 +99,9 @@ extern "C" {
   */
   MagickExport const PixelPacket
   *AcquireImagePixelsDirect(const Image *image,
-			    const pixel_off_t offset,
-			    const unsigned long length,
-			    ExceptionInfo *exception);
+                            const pixel_off_t offset,
+                            const unsigned long length,
+                            ExceptionInfo *exception);
 
   /*
     Read/write access to a linear pixel region (existing data read and
@@ -109,18 +109,18 @@ extern "C" {
   */
   extern MagickExport PixelPacket
   *GetImagePixelsDirect(Image *image,
-			const pixel_off_t offset,
-			const unsigned long length,
-			ExceptionInfo *exception);
+                        const pixel_off_t offset,
+                        const unsigned long length,
+                        ExceptionInfo *exception);
 
   /*
     Write access to a linear pixel region (existing data ignored).
   */
   extern MagickExport PixelPacket
   *SetImagePixelsDirect(Image *image,
-			const pixel_off_t offset,
-			const unsigned long length,
-			ExceptionInfo *exception);
+                        const pixel_off_t offset,
+                        const unsigned long length,
+                        ExceptionInfo *exception);
 
 
 /*
@@ -148,7 +148,7 @@ typedef struct _CacheInfo
 
   /* Offset to pixels in cache file */
   magick_off_t offset;
-  
+
   /* Length of pixels region */
   magick_off_t length;
 
@@ -205,7 +205,7 @@ typedef struct _CacheInfo
 typedef struct _NexusInfo
 {
   /* Points to staging or cache_info->pixels+offset */
-  PixelPacket *pixels; 
+  PixelPacket *pixels;
 
   /* Points into staging or cache_info->indexes+offset */
   IndexPacket *indexes;
@@ -259,10 +259,10 @@ typedef struct _View
   A vector of thread views.
 */
 typedef struct _ThreadViewSet
-{ 
+{
   ViewInfo
   *views;
-  
+
   unsigned int
   nviews;
 } ThreadViewSet;
@@ -337,14 +337,14 @@ FilePositionRead(int file, void *buffer, size_t length,magick_off_t offset)
   for (total_count=0; total_count < length; total_count+=count)
     {
       char
-	*io_buff_address;
+        *io_buff_address;
 
       size_t
-	requested_io_size;
+        requested_io_size;
 
 #if HAVE_PREAD
       off_t
-	io_file_offset;
+        io_file_offset;
 #endif
 
       requested_io_size=length-total_count;
@@ -393,14 +393,14 @@ FilePositionWrite(int file, const void *buffer,size_t length,magick_off_t offset
   for (total_count=0; total_count < length; total_count+=count)
     {
       char
-	*io_buff_address;
+        *io_buff_address;
 
       size_t
-	requested_io_size;
+        requested_io_size;
 
 #if HAVE_PWRITE
       off_t
-	io_file_offset;
+        io_file_offset;
 #endif
 
       io_buff_address=(char *) buffer+total_count;
@@ -428,7 +428,7 @@ DestroyThreadViewSet(ThreadViewSet *view_set)
 {
   unsigned int
     i;
-  
+
   if (view_set != (ThreadViewSet *) NULL)
     {
       if (view_set->views != (ViewInfo *) NULL)
@@ -452,21 +452,21 @@ AllocateThreadViewSet(Image *image,ExceptionInfo *exception)
 {
   ThreadViewSet
     *view_set;
-  
+
   unsigned int
     i;
-  
+
   MagickPassFail
     status=MagickPass;
-  
+
   view_set=MagickAllocateAlignedMemory(ThreadViewSet *,MAGICK_CACHE_LINE_SIZE,
-				       sizeof(ThreadViewSet));
+                                       sizeof(ThreadViewSet));
   if (view_set == (ThreadViewSet *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheView);
   view_set->nviews=omp_get_max_threads();
   view_set->views=MagickAllocateAlignedMemory(ViewInfo *,MAGICK_CACHE_LINE_SIZE,
-					      view_set->nviews*sizeof(ViewInfo *));
+                                              view_set->nviews*sizeof(ViewInfo *));
   if (view_set->views == (ViewInfo *) NULL)
     {
       ThrowException(exception,CacheError,UnableToAllocateCacheView,
@@ -989,7 +989,7 @@ AcquireCacheViewPixels(const ViewInfo *view,
 {
   const View
     * restrict view_info = (const View *) view;
-  
+
   assert(view_info != (const View *) NULL);
   assert(view_info->signature == MagickSignature);
   return AcquireCacheNexus(view_info->image,x,y,columns,rows,
@@ -1148,7 +1148,7 @@ AcquireOneCacheViewPixelInlined(const View *view_info,
     {
       magick_off_t
         offset;
-      
+
       offset=y*(magick_off_t) cache_info->columns+x;
       if ((cache_info->indexes_valid) && (PseudoClass == image->storage_class))
         *pixel=image->colormap[cache_info->indexes[offset]];
@@ -1565,10 +1565,10 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
           for (y=0; y < (long) image->rows; y++)
             {
               p=AcquireCacheViewPixels(image_view,0,y,image->columns,1,
-				       exception);
+                                       exception);
               q=SetCacheViewPixels(clone_view,0,y,image->columns,1,exception);
               if ((p == (const PixelPacket *) NULL) ||
-		  (q == (PixelPacket *) NULL))
+                  (q == (PixelPacket *) NULL))
                 break;
               (void) memcpy(q,p,length*sizeof(PixelPacket));
               indexes=AcquireCacheViewIndexes(image_view);
@@ -1576,7 +1576,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
               if ((indexes != (const IndexPacket *) NULL) &&
                   (clone_indexes != (IndexPacket *) NULL))
                 (void) memcpy(clone_indexes,indexes,
-			      length*sizeof(IndexPacket));
+                              length*sizeof(IndexPacket));
               if (!SyncCacheViewPixels(clone_view,exception))
                 break;
             }
@@ -1592,7 +1592,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
   if ((cache_info->type != DiskCache) && (clone_info->type != DiskCache))
     {
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),
-			    "memory => memory clone");
+                            "memory => memory clone");
       (void) memcpy(clone_info->pixels,cache_info->pixels,
                     (size_t) cache_info->length);
       return(MagickPass);
@@ -1605,7 +1605,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
     {
       if (cache_info->file == -1)
         {
-	  /* FIXME: open */
+          /* FIXME: open */
           cache_file=open(cache_info->cache_filename,O_RDONLY | O_BINARY);
           if (cache_file == -1)
             {
@@ -1619,7 +1619,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
       if (clone_info->type != DiskCache)
         {
           (void) LogMagickEvent(CacheEvent,GetMagickModule(),
-				"disk => memory clone");
+                                "disk => memory clone");
           for (offset=0; offset < cache_info->length; offset+=count)
             {
               size_t
@@ -1656,7 +1656,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
     {
       if (clone_info->file == -1)
         {
-	  /* FIXME: open */
+          /* FIXME: open */
           clone_file=open(clone_info->cache_filename,O_WRONLY | O_BINARY |
                           O_EXCL,S_MODE);
           if (clone_file == -1)
@@ -1676,7 +1676,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
       if (cache_info->type != DiskCache)
         {
           (void) LogMagickEvent(CacheEvent,GetMagickModule(),
-				"memory => disk clone");
+                                "memory => disk clone");
           for (offset=0L; offset < clone_info->length; offset+=count)
             {
               size_t
@@ -1795,7 +1795,7 @@ CloseCacheView(ViewInfo *view)
     {
       View
         *view_info = (View *) view;
-      
+
       assert(view_info->signature == MagickSignature);
       assert(view_info->nexus_info->signature == MagickSignature);
       DestroyCacheNexus(view_info->nexus_info);
@@ -1897,7 +1897,7 @@ DestroyCacheInfo(Cache cache_info)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DestroyCacheNexus() destroys a cache nexus which was allocated via 
+%  DestroyCacheNexus() destroys a cache nexus which was allocated via
 %  AllocateCacheNexus().
 %
 %  The format of the DestroyCacheNexus() method is:
@@ -1984,8 +1984,8 @@ GetCacheInfo(Cache *cache)
 
   assert(cache != (Cache*) NULL);
   cache_info=MagickAllocateAlignedMemory(CacheInfo *,
-					 MAGICK_CACHE_LINE_SIZE,
-					 sizeof(CacheInfo));
+                                         MAGICK_CACHE_LINE_SIZE,
+                                         sizeof(CacheInfo));
   if (cache_info == (CacheInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheInfo);
@@ -2505,7 +2505,7 @@ AllocateCacheNexus(void)
     *nexus_info;
 
   nexus_info=MagickAllocateAlignedMemory(NexusInfo *,MAGICK_CACHE_LINE_SIZE,
-					 sizeof(NexusInfo));
+                                         sizeof(NexusInfo));
   if (nexus_info != ((NexusInfo *) NULL))
     {
       (void) memset(nexus_info,0,sizeof(NexusInfo));
@@ -2662,14 +2662,14 @@ GetPixelCacheInCore(const Image *image)
   if (image->cache != (Cache) NULL)
     {
       CacheInfo
-	*cache_info;
+        *cache_info;
 
       cache_info=(CacheInfo *) image->cache;
       assert(cache_info->signature == MagickSignature);
 
       if ((image->cache->type == MemoryCache) ||
-	  ((image->cache->type == MapCache) && (image->cache->read_only)))
-	status=MagickTrue;
+          ((image->cache->type == MapCache) && (image->cache->read_only)))
+        status=MagickTrue;
     }
 
   return status;
@@ -2896,12 +2896,12 @@ ModifyCache(Image *image, ExceptionInfo *exception)
           /* fprintf(stderr,"ModifyCache: Thread %d enters (cache_info = %p)\n",
              omp_get_thread_num(),image->cache); */
           clone_image=(*image);
-	  /*
-	    Semaphore and reference count need to be initialized for the temporary
-	    Image copy since otherwise there may be deadlock in ClonePixelCache.
-	  */
-	  clone_image.semaphore=AllocateSemaphoreInfo();
-	  clone_image.reference_count=1;
+          /*
+            Semaphore and reference count need to be initialized for the temporary
+            Image copy since otherwise there may be deadlock in ClonePixelCache.
+          */
+          clone_image.semaphore=AllocateSemaphoreInfo();
+          clone_image.reference_count=1;
 
           GetCacheInfo(&clone_image.cache);
           status=OpenCache(&clone_image,IOMode,exception);
@@ -2912,11 +2912,11 @@ ModifyCache(Image *image, ExceptionInfo *exception)
               */
               status=ClonePixelCache(image,&clone_image,exception);
             }
-	  DestroySemaphoreInfo(&clone_image.semaphore);
+          DestroySemaphoreInfo(&clone_image.semaphore);
 
           if (status != MagickFail)
             {
-	      destroy_cache=MagickTrue;
+              destroy_cache=MagickTrue;
               image->cache=clone_image.cache;
             }
           if (status == MagickFail)
@@ -2936,19 +2936,19 @@ ModifyCache(Image *image, ExceptionInfo *exception)
 
     if (status != MagickFail)
       {
-	/*
-	  Indicate that image will be (possibly) modified, and unset
-	  grayscale/monocrome flags.
-	*/
-	image->taint=MagickTrue;
-	image->is_grayscale=MagickFalse;
-	image->is_monochrome=MagickFalse;
+        /*
+          Indicate that image will be (possibly) modified, and unset
+          grayscale/monocrome flags.
+        */
+        image->taint=MagickTrue;
+        image->is_grayscale=MagickFalse;
+        image->is_monochrome=MagickFalse;
 
-	/*
-	  Make sure that pixel cache reflects key image parameters
-	  such as storage class and colorspace.  Re-open cache if
-	  necessary.
-	*/
+        /*
+          Make sure that pixel cache reflects key image parameters
+          such as storage class and colorspace.  Re-open cache if
+          necessary.
+        */
         cache_info=(CacheInfo *) image->cache;
         status=(((image->storage_class == cache_info->storage_class) &&
                  (image->colorspace == cache_info->colorspace)) ||
@@ -3197,13 +3197,13 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
     {
     case ReadMode:
       {
-	/* FIXME: open */
+        /* FIXME: open */
         file=open(cache_info->cache_filename,O_RDONLY | O_BINARY | _O_SEQUENTIAL);
         break;
       }
     case WriteMode:
       {
-	/* FIXME: open */
+        /* FIXME: open */
         file=open(cache_info->cache_filename,O_WRONLY | O_CREAT | O_BINARY |
                   O_EXCL | _O_SEQUENTIAL,S_MODE);
         if (file == -1)
@@ -3213,7 +3213,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
     case IOMode:
     default:
       {
-	/* FIXME: open */
+        /* FIXME: open */
         file=open(cache_info->cache_filename,O_RDWR | O_CREAT | O_BINARY |
                   O_EXCL | _O_SEQUENTIAL, S_MODE);
         if (file == -1)
@@ -3324,7 +3324,7 @@ OpenCacheView(Image *image)
   assert(image->signature == MagickSignature);
 
   view=MagickAllocateAlignedMemory(View *,MAGICK_CACHE_LINE_SIZE,
-				   sizeof(View));
+                                   sizeof(View));
   if (view == (View *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheView);
@@ -3602,7 +3602,7 @@ ReadCacheIndexes(const Cache cache,const NexusInfo *nexus_info,
             {
               register long
                 x;
-              
+
               for (x=0; x < (long) nexus_info->region.width; x++)
                 *indexes++=cache_indexes[x];
               cache_indexes+=cache_info->columns;
@@ -3725,7 +3725,7 @@ ReadCachePixels(const Cache cache,const NexusInfo *nexus_info,
   length=nexus_info->region.width*sizeof(PixelPacket);
   if (length/sizeof(PixelPacket) != nexus_info->region.width)
     return MagickFail;
-  rows=nexus_info->region.height;  
+  rows=nexus_info->region.height;
   number_pixels=(magick_uint64_t) length*rows;
   if ((length ==0) || (number_pixels/length != rows))
     return MagickFail;
@@ -4196,7 +4196,7 @@ SetNexus(const Image *image,const RectangleInfo *region,
       (image->clip_mask == (const Image *) NULL))
     {
       magick_off_t
-	offset;
+        offset;
 
       offset=nexus_info->region.y*(magick_off_t) cache_info->columns+nexus_info->region.x;
       length=(nexus_info->region.height-1)*cache_info->columns+nexus_info->region.width-1;
@@ -4234,13 +4234,13 @@ SetNexus(const Image *image,const RectangleInfo *region,
       nexus_info->staging_length=0;
       MagickFreeAlignedMemory(nexus_info->staging);
       nexus_info->staging=MagickAllocateAlignedMemory(PixelPacket *,
-						      MAGICK_CACHE_LINE_SIZE,
-						      length);
+                                                      MAGICK_CACHE_LINE_SIZE,
+                                                      length);
       if (nexus_info->staging != (PixelPacket *) NULL)
-	{
-	  nexus_info->staging_length=length;
-	  (void) memset((void *) nexus_info->staging,0,nexus_info->staging_length);
-	}
+        {
+          nexus_info->staging_length=length;
+          (void) memset((void *) nexus_info->staging,0,nexus_info->staging_length);
+        }
     }
   nexus_info->pixels=nexus_info->staging;
   nexus_info->indexes=(IndexPacket *) NULL;
@@ -4250,17 +4250,17 @@ SetNexus(const Image *image,const RectangleInfo *region,
   if (nexus_info->pixels == (PixelPacket *) NULL)
     {
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),
-			    "Failed to allocate %" MAGICK_SIZE_T_F
+                            "Failed to allocate %" MAGICK_SIZE_T_F
                             "u bytes for nexus staging "
-			    "(number pixels=%" MAGICK_OFF_F "u, region width=%lu, "
-			    "region height=%lu, cache columns=%lu)!",
-			    (MAGICK_SIZE_T) length,
-			    number_pixels,
-			    nexus_info->region.width,
-			    nexus_info->region.height,
-			    cache_info->columns);
+                            "(number pixels=%" MAGICK_OFF_F "u, region width=%lu, "
+                            "region height=%lu, cache columns=%lu)!",
+                            (MAGICK_SIZE_T) length,
+                            number_pixels,
+                            nexus_info->region.width,
+                            nexus_info->region.height,
+                            cache_info->columns);
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
-		     image->filename);
+                     image->filename);
     }
   nexus_info->in_core=IsNexusInCore(cache_info,nexus_info);
 
@@ -4328,19 +4328,19 @@ SyncCacheNexus(Image *image,const NexusInfo *nexus_info,
   else
     {
       if (image->clip_mask != (Image *) NULL)
-	if (!ClipCacheNexus(image,nexus_info))
-	  status=MagickFail;
+        if (!ClipCacheNexus(image,nexus_info))
+          status=MagickFail;
 
       if (status != MagickFail)
-	if ((status=WriteCachePixels(cache_info,nexus_info)) == MagickFail)
-	  ThrowException(exception,CacheError,UnableToSyncCache,
-			 image->filename);
+        if ((status=WriteCachePixels(cache_info,nexus_info)) == MagickFail)
+          ThrowException(exception,CacheError,UnableToSyncCache,
+                         image->filename);
 
       if (status != MagickFail)
-	if (cache_info->indexes_valid)
-	  if ((status=WriteCacheIndexes(cache_info,nexus_info)) == MagickFail)
-	    ThrowException(exception,CacheError,UnableToSyncCache,
-			   image->filename);
+        if (cache_info->indexes_valid)
+          if ((status=WriteCacheIndexes(cache_info,nexus_info)) == MagickFail)
+            ThrowException(exception,CacheError,UnableToSyncCache,
+                           image->filename);
     }
 
   return(status);
@@ -4525,7 +4525,7 @@ WriteCacheIndexes(Cache cache,const NexusInfo *nexus_info)
     return(MagickPass);
   offset=nexus_info->region.y*(magick_off_t) cache_info->columns+nexus_info->region.x;
   length=nexus_info->region.width*sizeof(IndexPacket);
-  rows=nexus_info->region.height;  
+  rows=nexus_info->region.height;
   number_pixels=(magick_uint64_t) length*rows;
   y=0;
   indexes=nexus_info->indexes;
@@ -4535,14 +4535,14 @@ WriteCacheIndexes(Cache cache,const NexusInfo *nexus_info)
         *cache_indexes;
 
       /*
-	Coalesce rows into larger write request if possible.
+        Coalesce rows into larger write request if possible.
       */
       if ((cache_info->columns == nexus_info->region.width) &&
-	  (number_pixels == (size_t) number_pixels))
-	{
-	  length=number_pixels;
-	  rows=1;
-	}
+          (number_pixels == (size_t) number_pixels))
+        {
+          length=number_pixels;
+          rows=1;
+        }
 
       /*
         Write indexes to memory.
@@ -4579,38 +4579,38 @@ WriteCacheIndexes(Cache cache,const NexusInfo *nexus_info)
     file=cache_info->file;
     if (cache_info->file == -1)
       {
-	/* FIXME: open */
+        /* FIXME: open */
         file=open(cache_info->cache_filename,O_WRONLY | O_BINARY | O_EXCL,S_MODE);
         if (file == -1)
           file=open(cache_info->cache_filename,O_WRONLY | O_BINARY,S_MODE);
       }
     if (file != -1)
       {
-	magick_off_t
-	  row_offset;
-	
-	ssize_t
-	  bytes_written;
+        magick_off_t
+          row_offset;
+
+        ssize_t
+          bytes_written;
 
         number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
-	row_offset=cache_info->offset+number_pixels*sizeof(PixelPacket)+offset
-	  *sizeof(IndexPacket);
+        row_offset=cache_info->offset+number_pixels*sizeof(PixelPacket)+offset
+          *sizeof(IndexPacket);
         for (y=0; y < (long) rows; y++)
           {
             if ((bytes_written=FilePositionWrite(file,indexes,length,row_offset))
-		< (long) length)
-	      {
-		(void) LogMagickEvent(CacheEvent,GetMagickModule(),
-				      "Failed to write row %ld at file offset %" MAGICK_OFF_F
-				      "d.  Wrote %" MAGICK_SSIZE_T_F "d rather than %"
+                < (long) length)
+              {
+                (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                                      "Failed to write row %ld at file offset %" MAGICK_OFF_F
+                                      "d.  Wrote %" MAGICK_SSIZE_T_F "d rather than %"
                                       MAGICK_SIZE_T_F "u bytes (%s).",
-				      y,
-				      row_offset,
-				      (MAGICK_SSIZE_T) bytes_written,
-				      (MAGICK_SIZE_T) length,
-				      strerror(errno));
-		break;
-	      }
+                                      y,
+                                      row_offset,
+                                      (MAGICK_SSIZE_T) bytes_written,
+                                      (MAGICK_SIZE_T) length,
+                                      strerror(errno));
+                break;
+              }
             indexes+=nexus_info->region.width;
             offset+=cache_info->columns;
           }
@@ -4691,7 +4691,7 @@ WriteCachePixels(Cache cache,const NexusInfo *nexus_info)
     return(MagickPass);
   offset=nexus_info->region.y*(magick_off_t) cache_info->columns+nexus_info->region.x;
   length=nexus_info->region.width*sizeof(PixelPacket);
-  rows=nexus_info->region.height;  
+  rows=nexus_info->region.height;
   number_pixels=(magick_uint64_t) length*rows;
   y=0;
   pixels=nexus_info->pixels;
@@ -4701,14 +4701,14 @@ WriteCachePixels(Cache cache,const NexusInfo *nexus_info)
         *cache_pixels;
 
       /*
-	Coalesce rows into larger write request if possible.
+        Coalesce rows into larger write request if possible.
       */
       if ((cache_info->columns == nexus_info->region.width) &&
-	  (number_pixels == (size_t) number_pixels))
-	{
-	  length=number_pixels;
-	  rows=1;
-	}
+          (number_pixels == (size_t) number_pixels))
+        {
+          length=number_pixels;
+          rows=1;
+        }
 
       /*
         Write pixels to memory.
@@ -4753,28 +4753,28 @@ WriteCachePixels(Cache cache,const NexusInfo *nexus_info)
       {
         for (y=0; y < (long) rows; y++)
           {
-	    magick_off_t
-	      row_offset;
+            magick_off_t
+              row_offset;
 
-	    ssize_t
-	      bytes_written;
+            ssize_t
+              bytes_written;
 
-	    row_offset=cache_info->offset+offset*sizeof(PixelPacket);
+            row_offset=cache_info->offset+offset*sizeof(PixelPacket);
             if ((bytes_written=FilePositionWrite(file,pixels,length,row_offset))
-		< (ssize_t) length)
-	      {
-		(void) LogMagickEvent(CacheEvent,GetMagickModule(),
-				      "Failed to write row %ld at file offset %"
+                < (ssize_t) length)
+              {
+                (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                                      "Failed to write row %ld at file offset %"
                                       MAGICK_OFF_F "d.  Wrote %"
                                       MAGICK_SSIZE_T_F "d rather than %"
                                       MAGICK_SIZE_T_F "u bytes (%s).",
-				      y,
-				      row_offset,
-				      (MAGICK_SSIZE_T) bytes_written,
-				      (MAGICK_SIZE_T) length,
-				      strerror(errno));
-		break;
-	      }
+                                      y,
+                                      row_offset,
+                                      (MAGICK_SSIZE_T) bytes_written,
+                                      (MAGICK_SIZE_T) length,
+                                      strerror(errno));
+                break;
+              }
             pixels+=nexus_info->region.width;
             offset+=cache_info->columns;
           }

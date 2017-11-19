@@ -314,7 +314,7 @@ MagickExport void Ascii85Encode(Image *image,const magick_uint8_t code)
     image->ascii85->buffer[n]=(*p++);
 }
 
-MagickExport unsigned int Ascii85WriteByteHook(Image *image, 
+MagickExport unsigned int Ascii85WriteByteHook(Image *image,
   const magick_uint8_t code, void *info)
 {
   ARG_NOT_USED(info);
@@ -927,7 +927,7 @@ MagickExport MagickPassFail HuffmanEncodeImage(const ImageInfo *image_info,
 */
 MagickExport unsigned char *
 ImageToHuffman2DBlob(const Image *image,const ImageInfo *image_info,
-		     size_t *blob_length,ExceptionInfo *exception)
+                     size_t *blob_length,ExceptionInfo *exception)
 {
   unsigned char
     *blob = (unsigned char *) NULL;
@@ -941,16 +941,16 @@ ImageToHuffman2DBlob(const Image *image,const ImageInfo *image_info,
   if (huffman_info != (ImageInfo *) NULL)
     {
       Image
-	*huffman_image;
+        *huffman_image;
 
       huffman_image=CloneImage(image,0,0,MagickTrue,exception);
       if (huffman_image != (Image *) NULL)
-	{
-	  (void) strlcpy(huffman_image->magick,"GROUP4RAW",sizeof(huffman_image->magick));
-	  (void) strlcpy(huffman_image->filename,"",sizeof(huffman_image->filename));
-	  blob=ImageToBlob(huffman_info, huffman_image, blob_length, exception);
-	  DestroyImage(huffman_image);
-	}
+        {
+          (void) strlcpy(huffman_image->magick,"GROUP4RAW",sizeof(huffman_image->magick));
+          (void) strlcpy(huffman_image->filename,"",sizeof(huffman_image->filename));
+          blob=ImageToBlob(huffman_info, huffman_image, blob_length, exception);
+          DestroyImage(huffman_image);
+        }
       DestroyImageInfo(huffman_info);
     }
   return blob;
@@ -991,7 +991,7 @@ ImageToHuffman2DBlob(const Image *image,const ImageInfo *image_info,
 */
 MagickExport unsigned char *
 ImageToJPEGBlob(const Image *image,const ImageInfo *image_info,
-		size_t *blob_length,ExceptionInfo *exception)
+                size_t *blob_length,ExceptionInfo *exception)
 {
   unsigned char
     *blob = NULL;
@@ -1004,25 +1004,25 @@ ImageToJPEGBlob(const Image *image,const ImageInfo *image_info,
   if (jpeg_info != (ImageInfo *) NULL)
     {
       Image
-	*jpeg_image;
+        *jpeg_image;
 
       /*
-	Try to preserve any existing JPEG options but if the user
-	applies any override, then existing JPEG options are ignored.
+        Try to preserve any existing JPEG options but if the user
+        applies any override, then existing JPEG options are ignored.
       */
       if ((JPEGCompression == image->compression) &&
-	  (DefaultCompressionQuality == image_info->quality) &&
-	  ((char *) NULL == jpeg_info->sampling_factor))
-	(void) AddDefinitions(jpeg_info,"jpeg:preserve-settings=TRUE",
-			      exception);
+          (DefaultCompressionQuality == image_info->quality) &&
+          ((char *) NULL == jpeg_info->sampling_factor))
+        (void) AddDefinitions(jpeg_info,"jpeg:preserve-settings=TRUE",
+                              exception);
       jpeg_image=CloneImage(image,0,0,MagickTrue,exception);
       if (jpeg_image != (Image *) NULL)
-	{
-	  (void) strlcpy(jpeg_image->magick,"JPEG",sizeof(jpeg_image->magick));
-	  (void) strlcpy(jpeg_image->filename,"",sizeof(jpeg_image->filename));
-	  blob =(unsigned char *) ImageToBlob(jpeg_info, jpeg_image, blob_length, exception);
-	  DestroyImage(jpeg_image);
-	}
+        {
+          (void) strlcpy(jpeg_image->magick,"JPEG",sizeof(jpeg_image->magick));
+          (void) strlcpy(jpeg_image->filename,"",sizeof(jpeg_image->filename));
+          blob =(unsigned char *) ImageToBlob(jpeg_info, jpeg_image, blob_length, exception);
+          DestroyImage(jpeg_image);
+        }
       DestroyImageInfo(jpeg_info);
     }
   return blob;
@@ -1235,7 +1235,7 @@ MagickExport MagickPassFail LZWEncodeImage(Image *image, const size_t length,
 %
 */
 MagickExport MagickPassFail PackbitsEncode2Image(Image *image,
-  const size_t length,magick_uint8_t *pixels,WriteByteHook write_byte, 
+  const size_t length,magick_uint8_t *pixels,WriteByteHook write_byte,
   void *info)
 {
   int

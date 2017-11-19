@@ -42,7 +42,7 @@
 #include "magick/monitor.h"
 #include "magick/tempfile.h"
 #include "magick/utility.h"
-/* 
+/*
    Write an unsigned long to file with Intel/LSB ordering
 */
 static void CALS_WriteIntelULong(FILE *file,unsigned long ul)
@@ -135,7 +135,7 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
     y;
 
   char
-    record[129];  
+    record[129];
 
   unsigned long
     status,
@@ -179,7 +179,7 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
 
   /*
     Scan CAL header, record by record, looking for mandatory fields
-  */ 
+  */
   rtype = 1;
   width = height = 0;
   orient = 1;
@@ -251,7 +251,7 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			"Dimensions %lux%lu",width,height);
+                        "Dimensions %lux%lu",width,height);
 
   /* Create TIFF wrapper to handle file data using TIFF library */
   file=AcquireTemporaryFileStream(filename,BinaryFileIOMode);
@@ -341,9 +341,9 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
   if (image != (Image *) NULL)
     {
       (void) strlcpy(image->filename,image_info->filename,
-		     sizeof(image->filename));
+                     sizeof(image->filename));
       (void) strlcpy(image->magick_filename,image_info->filename,
-		     sizeof(image->magick_filename));
+                     sizeof(image->magick_filename));
       (void) strlcpy(image->magick,"CALS",sizeof(image->magick));
     }
   return(image);
@@ -484,14 +484,14 @@ static MagickPassFail WriteCALSImage(const ImageInfo *image_info,Image *image)
       ory=0;
       break;
     default:
-      orx=0; 
+      orx=0;
       ory=270;
   }
   FormatString(buffer,"rorient: %03d,%03d",orx,ory);
   WriteCALSRecord(image,buffer);
   /* pixel counts based on columns/rows of input */
   FormatString(buffer,"rpelcnt: %06ld,%06ld",image->columns,image->rows);
-  WriteCALSRecord(image,buffer);  
+  WriteCALSRecord(image,buffer);
   /* density based on input density or default of 200 */
   density=200;
   if (image_info->density != (char *) NULL)
@@ -525,8 +525,8 @@ static MagickPassFail WriteCALSImage(const ImageInfo *image_info,Image *image)
 
     if (MagickFail != status)
       {
-	if (WriteBlob(image,blob_length,blob) != blob_length)
-	  status=MagickFail;
+        if (WriteBlob(image,blob_length,blob) != blob_length)
+          status=MagickFail;
       }
     MagickFreeMemory(blob);
   }

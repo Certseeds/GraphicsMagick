@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2004 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
 */
 #ifndef _MAGICK_CHANNEL_H
 #define _MAGICK_CHANNEL_H

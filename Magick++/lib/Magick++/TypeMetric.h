@@ -18,7 +18,7 @@ namespace Magick
   {
     friend class Image;
   public:
-    
+
     TypeMetric ( void );
     ~TypeMetric ( void );
 

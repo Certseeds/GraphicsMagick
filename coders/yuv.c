@@ -276,7 +276,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->previous == (Image *) NULL)
         if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                     image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           {
             status=MagickFail;
             break;
@@ -653,7 +653,7 @@ static unsigned int WriteYUVImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         DestroyImage(yuv_image);
@@ -678,7 +678,7 @@ static unsigned int WriteYUVImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         DestroyImage(yuv_image);

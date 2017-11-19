@@ -144,16 +144,16 @@ static Image *ReadWBMPImage(const ImageInfo *image_info,
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
-  if (!ReadBlob(image,2,(char *) &header)) 
+  if (!ReadBlob(image,2,(char *) &header))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (header != 0U)
     ThrowReaderException(CoderError,OnlyLevelZerofilesSupported,image);
   /*
     Initialize image structure.
   */
-  if (WBMPReadInteger(image,&image->columns) == False) 
+  if (WBMPReadInteger(image,&image->columns) == False)
     ThrowReaderException(CorruptImageError,CorruptImage,image);
-  if (WBMPReadInteger(image,&image->rows) == False) 
+  if (WBMPReadInteger(image,&image->rows) == False)
     ThrowReaderException(CorruptImageError,CorruptImage,image);
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -199,7 +199,7 @@ static Image *ReadWBMPImage(const ImageInfo *image_info,
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                   image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   (void) SyncImage(image);
@@ -404,7 +404,7 @@ static unsigned int WriteWBMPImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   CloseBlob(image);

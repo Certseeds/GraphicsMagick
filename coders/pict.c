@@ -1239,7 +1239,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 if (QuantumTick(y,tile_image->rows))
                   if (!MagickMonitorFormatted(y,tile_image->rows,&image->exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
             MagickFreeMemory(pixels);
@@ -1252,7 +1252,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (destination.bottom != (long) image->rows)
               if (!MagickMonitorFormatted(destination.bottom,image->rows,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
             break;
           }
@@ -1569,7 +1569,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
 
   const unsigned char
     *profile_info;
-  
+
   size_t
     profile_length;
 
@@ -1901,7 +1901,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
     }
   else
@@ -1951,7 +1951,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
       }

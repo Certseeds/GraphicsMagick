@@ -81,7 +81,7 @@ static void DestroyImageAttribute(ImageAttribute *attribute);
 */
 MagickExport MagickPassFail
 CloneImageAttributes(Image* clone_image,
-		     const Image* original_image)
+                     const Image* original_image)
 {
   MagickPassFail
     status;
@@ -104,13 +104,13 @@ CloneImageAttributes(Image* clone_image,
 
   attribute=GetImageAttribute(original_image,(char *) NULL);
   for ( ; attribute != (const ImageAttribute *) NULL;
-	attribute=attribute->next)
+        attribute=attribute->next)
     {
       /*
         Construct AttributeInfo to append.
       */
       cloned_attribute=MagickAllocateMemory(ImageAttribute *,
-					    sizeof(ImageAttribute));
+                                            sizeof(ImageAttribute));
       if (cloned_attribute == (ImageAttribute *) NULL)
         {
           status = MagickFail;
@@ -119,7 +119,7 @@ CloneImageAttributes(Image* clone_image,
       cloned_attribute->key=AcquireString(attribute->key);
       cloned_attribute->length=attribute->length;
       cloned_attribute->value=
-	MagickAllocateMemory(char *,cloned_attribute->length+1);
+        MagickAllocateMemory(char *,cloned_attribute->length+1);
       cloned_attribute->previous=(ImageAttribute *) NULL;
       cloned_attribute->next=(ImageAttribute *) NULL;
       if ((cloned_attribute->value == (char *) NULL) ||
@@ -331,22 +331,22 @@ GenerateIPTCAttribute(Image *image,const char *key)
   for (i=0; i < (long) profile_length; i++)
     {
       if (profile[i] != 0x1cU)
-	continue;
+        continue;
       if (profile[i+1] != dataset)
-	{
-	  /* fprintf(stderr,"Skipping dataset %d\n",profile[i+1]); */
-	  continue;
-	}
+        {
+          /* fprintf(stderr,"Skipping dataset %d\n",profile[i+1]); */
+          continue;
+        }
       if (profile[i+2] != record)
-	{
-	  /* fprintf(stderr,"Skipping record %d\n",profile[i+2]); */
-	  continue;
-	}
+        {
+          /* fprintf(stderr,"Skipping record %d\n",profile[i+2]); */
+          continue;
+        }
       length=profile[i+3] << 8;
       length|=profile[i+4];
       attribute=MagickAllocateMemory(char *,length+1);
       if (attribute == (char *) NULL)
-	continue;
+        continue;
       (void) strlcpy(attribute,(char *) profile+i+5,length+1);
       (void) SetImageAttribute(image,key,(const char *) attribute);
       MagickFreeMemory(attribute);
@@ -453,8 +453,8 @@ static inline size_t AdvanceBlob(const size_t amount, size_t length, unsigned ch
 
 static char *
 TracePSClippingPath(unsigned char *blob,size_t length,
-		    const unsigned long columns,
-		    const unsigned long rows)
+                    const unsigned long columns,
+                    const unsigned long rows)
 {
   char
     *path,
@@ -521,166 +521,166 @@ TracePSClippingPath(unsigned char *blob,size_t length,
     {
       selector=ReadMSBShort(&blob,&length);
       switch (selector)
-	{
-	case 0:
-	case 3:
-	  {
-	    if (knot_count == 0)
-	      {
-		/*
-		  Expected subpath length record
-		*/
-		knot_count=ReadMSBShort(&blob,&length);
+        {
+        case 0:
+        case 3:
+          {
+            if (knot_count == 0)
+              {
+                /*
+                  Expected subpath length record
+                */
+                knot_count=ReadMSBShort(&blob,&length);
                 length=AdvanceBlob(22U,length,&blob);
-	      }
-	    else
-	      {
+              }
+            else
+              {
                 length=AdvanceBlob(24U,length,&blob);
-	      }	  
-	    break;
-	  }
-	case 1:
-	case 2:
-	case 4:
-	case 5:
-	  {
-	    if (knot_count == 0)
-	      {
-		/*
-		  Unexpected subpath knot
-		*/
+              }
+            break;
+          }
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+          {
+            if (knot_count == 0)
+              {
+                /*
+                  Unexpected subpath knot
+                */
                 length=AdvanceBlob(24U,length,&blob);
-	      }
-	    else
-	      {
-		/*
-		  Add sub-path knot
-		*/
-		for (i=0; i < 3; i++)
-		  {
-		    y=ReadMSBLong(&blob,&length);
-		    x=ReadMSBLong(&blob,&length);
-		    point[i].x=(double) x/4096/4096;
-		    point[i].y=1.0-(double) y/4096/4096;
-		  }
-		if (!in_subpath)
-		  {
-		    FormatString(message,"%.6f %.6f m\n",
-				 point[1].x,point[1].y);
-		    for (i=0; i < 3; i++)
-		      {
-			first[i]=point[i];
-			last[i]=point[i];
-		      }
-		  }
-		else
-		  {
-		    /*
-		      Handle special cases when Bezier curves are used
-		      to describe corners and straight lines. This
-		      special handling is desirable to bring down the
-		      size in bytes of the clipping path data.
-		    */
-		    if ((last[1].x == last[2].x) &&
-			(last[1].y == last[2].y) &&
-			(point[0].x == point[1].x) &&
-			(point[0].y == point[1].y))
-		      {
-			/*
-			  First control point equals first anchor
-			  point and last control point equals last
-			  anchow point. Straigt line between anchor
-			  points.
-			*/
-			FormatString(message,"%.6f %.6f l\n",
-				     point[1].x,point[1].y);
-		      }
-		    else if ((last[1].x == last[2].x) &&
-			     (last[1].y == last[2].y))
-		      {
-			/* First control point equals first anchor point */
-			FormatString(message,"%.6f %.6f %.6f %.6f v\n",
-				     point[0].x,point[0].y,
-				     point[1].x,point[1].y);
-		      }
-		    else if ((point[0].x == point[1].x) &&
-			     (point[0].y == point[1].y))
-		      {
-			/* Last control point equals last anchow point. */
-			FormatString(message,"%.6f %.6f %.6f %.6f y\n",
-				     last[2].x,last[2].y,
-				     point[1].x,point[1].y);
-		      }
-		    else
-		      {
-			/* The full monty */
-			FormatString(message,
-				     "%.6f %.6f %.6f %.6f %.6f %.6f c\n",
-				     last[2].x,last[2].y,point[0].x,
-				     point[0].y,point[1].x,
-				     point[1].y);
-		      }
-		    for (i=0; i < 3; i++)
-		      last[i]=point[i];
-		  }
-		(void) ConcatenateString(&path,message);
-		in_subpath=True;
-		knot_count--;
-		/*
-		  Close the subpath if there are no more knots.
-		*/
-		if (knot_count == 0)
-		  {
-		    /*
-		      Same special handling as above except we compare
-		      to the first point in the path and close the
-		      path.
-		    */
-		    if ((last[1].x == last[2].x) &&
-			(last[1].y == last[2].y) &&
-			(first[0].x == first[1].x) &&
-			(first[0].y == first[1].y))
-		      {
-			FormatString(message,"%.6f %.6f l z\n",
-				     first[1].x,first[1].y);
-		      }
-		    else if ((last[1].x == last[2].x) &&
-			     (last[1].y == last[2].y))
-		      {
-			FormatString(message,"%.6f %.6f %.6f %.6f v z\n",
-				     first[0].x,first[0].y,
-				     first[1].x,first[1].y);
-		      }
-		    else if ((first[0].x == first[1].x) &&
-			     (first[0].y == first[1].y))
-		      {
-			FormatString(message,"%.6f %.6f %.6f %.6f y z\n",
-				     last[2].x,last[2].y,
-				     first[1].x,first[1].y);
-		      }
-		    else
-		      {
-			FormatString(message,
-				     "%.6f %.6f %.6f %.6f %.6f %.6f c z\n",
-				     last[2].x,last[2].y,
-				     first[0].x,first[0].y,
-				     first[1].x,first[1].y);
-		      }
-		    (void) ConcatenateString(&path,message);
-		    in_subpath=False;
-		  }
-	      }
-	    break;
-	  }
-	case 6:
-	case 7:
-	case 8:
-	default:
-	  {
+              }
+            else
+              {
+                /*
+                  Add sub-path knot
+                */
+                for (i=0; i < 3; i++)
+                  {
+                    y=ReadMSBLong(&blob,&length);
+                    x=ReadMSBLong(&blob,&length);
+                    point[i].x=(double) x/4096/4096;
+                    point[i].y=1.0-(double) y/4096/4096;
+                  }
+                if (!in_subpath)
+                  {
+                    FormatString(message,"%.6f %.6f m\n",
+                                 point[1].x,point[1].y);
+                    for (i=0; i < 3; i++)
+                      {
+                        first[i]=point[i];
+                        last[i]=point[i];
+                      }
+                  }
+                else
+                  {
+                    /*
+                      Handle special cases when Bezier curves are used
+                      to describe corners and straight lines. This
+                      special handling is desirable to bring down the
+                      size in bytes of the clipping path data.
+                    */
+                    if ((last[1].x == last[2].x) &&
+                        (last[1].y == last[2].y) &&
+                        (point[0].x == point[1].x) &&
+                        (point[0].y == point[1].y))
+                      {
+                        /*
+                          First control point equals first anchor
+                          point and last control point equals last
+                          anchow point. Straigt line between anchor
+                          points.
+                        */
+                        FormatString(message,"%.6f %.6f l\n",
+                                     point[1].x,point[1].y);
+                      }
+                    else if ((last[1].x == last[2].x) &&
+                             (last[1].y == last[2].y))
+                      {
+                        /* First control point equals first anchor point */
+                        FormatString(message,"%.6f %.6f %.6f %.6f v\n",
+                                     point[0].x,point[0].y,
+                                     point[1].x,point[1].y);
+                      }
+                    else if ((point[0].x == point[1].x) &&
+                             (point[0].y == point[1].y))
+                      {
+                        /* Last control point equals last anchow point. */
+                        FormatString(message,"%.6f %.6f %.6f %.6f y\n",
+                                     last[2].x,last[2].y,
+                                     point[1].x,point[1].y);
+                      }
+                    else
+                      {
+                        /* The full monty */
+                        FormatString(message,
+                                     "%.6f %.6f %.6f %.6f %.6f %.6f c\n",
+                                     last[2].x,last[2].y,point[0].x,
+                                     point[0].y,point[1].x,
+                                     point[1].y);
+                      }
+                    for (i=0; i < 3; i++)
+                      last[i]=point[i];
+                  }
+                (void) ConcatenateString(&path,message);
+                in_subpath=True;
+                knot_count--;
+                /*
+                  Close the subpath if there are no more knots.
+                */
+                if (knot_count == 0)
+                  {
+                    /*
+                      Same special handling as above except we compare
+                      to the first point in the path and close the
+                      path.
+                    */
+                    if ((last[1].x == last[2].x) &&
+                        (last[1].y == last[2].y) &&
+                        (first[0].x == first[1].x) &&
+                        (first[0].y == first[1].y))
+                      {
+                        FormatString(message,"%.6f %.6f l z\n",
+                                     first[1].x,first[1].y);
+                      }
+                    else if ((last[1].x == last[2].x) &&
+                             (last[1].y == last[2].y))
+                      {
+                        FormatString(message,"%.6f %.6f %.6f %.6f v z\n",
+                                     first[0].x,first[0].y,
+                                     first[1].x,first[1].y);
+                      }
+                    else if ((first[0].x == first[1].x) &&
+                             (first[0].y == first[1].y))
+                      {
+                        FormatString(message,"%.6f %.6f %.6f %.6f y z\n",
+                                     last[2].x,last[2].y,
+                                     first[1].x,first[1].y);
+                      }
+                    else
+                      {
+                        FormatString(message,
+                                     "%.6f %.6f %.6f %.6f %.6f %.6f c z\n",
+                                     last[2].x,last[2].y,
+                                     first[0].x,first[0].y,
+                                     first[1].x,first[1].y);
+                      }
+                    (void) ConcatenateString(&path,message);
+                    in_subpath=False;
+                  }
+              }
+            break;
+          }
+        case 6:
+        case 7:
+        case 8:
+        default:
+          {
             length=AdvanceBlob(24U,length,&blob);
-	    break;
-	  }
-	}
+            break;
+          }
+        }
     }
   /*
     Returns an empty PS path if the path has no knots.
@@ -696,7 +696,7 @@ TracePSClippingPath(unsigned char *blob,size_t length,
 static char *
 TraceSVGClippingPath(unsigned char *blob,
                      size_t length,
-		     const unsigned long columns,
+                     const unsigned long columns,
                      const unsigned long rows)
 {
   char
@@ -755,133 +755,133 @@ TraceSVGClippingPath(unsigned char *blob,
     {
       selector=ReadMSBShort(&blob,&length);
       switch (selector)
-	{
-	case 0:
-	case 3:
-	  {
-	    if (knot_count == 0)
-	      {
-		/*
-		  Expected subpath length record
-		*/
-		knot_count=ReadMSBShort(&blob,&length);
-		length=AdvanceBlob(22U,length,&blob);
-	      }
-	    else
-	      {
-		length=AdvanceBlob(24U,length,&blob);
-	      }	  
-	    break;
-	  }
-	case 1:
-	case 2:
-	case 4:
-	case 5:
-	  {
-	    if (knot_count == 0)
-	      {
-		/*
-		  Unexpected subpath knot
-		*/
+        {
+        case 0:
+        case 3:
+          {
+            if (knot_count == 0)
+              {
+                /*
+                  Expected subpath length record
+                */
+                knot_count=ReadMSBShort(&blob,&length);
+                length=AdvanceBlob(22U,length,&blob);
+              }
+            else
+              {
                 length=AdvanceBlob(24U,length,&blob);
-	      }
-	    else
-	      {
-		/*
-		  Add sub-path knot
-		*/
-		for (i=0; i < 3; i++)
-		  {
-		    y=ReadMSBLong(&blob,&length);
-		    x=ReadMSBLong(&blob,&length);
-		    point[i].x=(double) x*columns/4096/4096;
-		    point[i].y=(double) y*rows/4096/4096;
-		  }
-		if (!in_subpath)
-		  {
-		    FormatString(message,"M %.6f,%.6f\n",
-				 point[1].x,point[1].y);
-		    for (i=0; i < 3; i++)
-		      {
-			first[i]=point[i];
-			last[i]=point[i];
-		      }
-		  }
-		else
-		  {
-		    /*
-		      Handle special case when Bezier curves are used
-		      to describe straight lines.
-		    */
-		    if ((last[1].x == last[2].x) &&
-			(last[1].y == last[2].y) &&
-			(point[0].x == point[1].x) &&
-			(point[0].y == point[1].y))
-		      {
-			/*
-			  First control point equals first anchor
-			  point and last control point equals last
-			  anchow point. Straigt line between anchor
-			  points.
-			*/
-			FormatString(message,"L %.6f,%.6f\n",
-				     point[1].x,point[1].y);
-		      }
-		    else
-		      {
-			FormatString(message,
-				     "C %.6f,%.6f %.6f,%.6f %.6f,%.6f\n",
-				     last[2].x,last[2].y,
-				     point[0].x,point[0].y,
-				     point[1].x,point[1].y);
-		      }
-		    for (i=0; i < 3; i++)
-		      last[i]=point[i];
-		  }
-		(void) ConcatenateString(&path,message);
-		in_subpath=True;
-		knot_count--;
-		/*
-		  Close the subpath if there are no more knots.
-		*/
-		if (knot_count == 0)
-		  {
-		    /*
-		      Same special handling as above except we compare
-		      to the first point in the path and close the
-		      path.
-		    */
-		    if ((last[1].x == last[2].x) &&
-			(last[1].y == last[2].y) &&
-			(first[0].x == first[1].x) &&
-			(first[0].y == first[1].y))
-		      {
-			FormatString(message,
-				     "L %.6f,%.6f Z\n",first[1].x,first[1].y);
-		      }
-		    else
-		      {
-			FormatString(message,
-				     "C %.6f,%.6f %.6f,%.6f %.6f,%.6f Z\n",
-				     last[2].x,last[2].y,
-				     first[0].x,first[0].y,
-				     first[1].x,first[1].y);
-			(void) ConcatenateString(&path,message);
-		      }
-		    in_subpath=False;
-		  }
-	      }
-	    break;
-	  }
-	case 6:
-	case 7:
-	case 8:
-	default:
-	  {
+              }
+            break;
+          }
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+          {
+            if (knot_count == 0)
+              {
+                /*
+                  Unexpected subpath knot
+                */
+                length=AdvanceBlob(24U,length,&blob);
+              }
+            else
+              {
+                /*
+                  Add sub-path knot
+                */
+                for (i=0; i < 3; i++)
+                  {
+                    y=ReadMSBLong(&blob,&length);
+                    x=ReadMSBLong(&blob,&length);
+                    point[i].x=(double) x*columns/4096/4096;
+                    point[i].y=(double) y*rows/4096/4096;
+                  }
+                if (!in_subpath)
+                  {
+                    FormatString(message,"M %.6f,%.6f\n",
+                                 point[1].x,point[1].y);
+                    for (i=0; i < 3; i++)
+                      {
+                        first[i]=point[i];
+                        last[i]=point[i];
+                      }
+                  }
+                else
+                  {
+                    /*
+                      Handle special case when Bezier curves are used
+                      to describe straight lines.
+                    */
+                    if ((last[1].x == last[2].x) &&
+                        (last[1].y == last[2].y) &&
+                        (point[0].x == point[1].x) &&
+                        (point[0].y == point[1].y))
+                      {
+                        /*
+                          First control point equals first anchor
+                          point and last control point equals last
+                          anchow point. Straigt line between anchor
+                          points.
+                        */
+                        FormatString(message,"L %.6f,%.6f\n",
+                                     point[1].x,point[1].y);
+                      }
+                    else
+                      {
+                        FormatString(message,
+                                     "C %.6f,%.6f %.6f,%.6f %.6f,%.6f\n",
+                                     last[2].x,last[2].y,
+                                     point[0].x,point[0].y,
+                                     point[1].x,point[1].y);
+                      }
+                    for (i=0; i < 3; i++)
+                      last[i]=point[i];
+                  }
+                (void) ConcatenateString(&path,message);
+                in_subpath=True;
+                knot_count--;
+                /*
+                  Close the subpath if there are no more knots.
+                */
+                if (knot_count == 0)
+                  {
+                    /*
+                      Same special handling as above except we compare
+                      to the first point in the path and close the
+                      path.
+                    */
+                    if ((last[1].x == last[2].x) &&
+                        (last[1].y == last[2].y) &&
+                        (first[0].x == first[1].x) &&
+                        (first[0].y == first[1].y))
+                      {
+                        FormatString(message,
+                                     "L %.6f,%.6f Z\n",first[1].x,first[1].y);
+                      }
+                    else
+                      {
+                        FormatString(message,
+                                     "C %.6f,%.6f %.6f,%.6f %.6f,%.6f Z\n",
+                                     last[2].x,last[2].y,
+                                     first[0].x,first[0].y,
+                                     first[1].x,first[1].y);
+                        (void) ConcatenateString(&path,message);
+                      }
+                    in_subpath=False;
+                  }
+              }
+            break;
+          }
+        case 6:
+        case 7:
+        case 8:
+        default:
+          {
             length=AdvanceBlob(24U,length,&blob);
-	    break;
-	  }
-	}
+            break;
+          }
+        }
     }
   /*
     Returns an empty SVG image if the path has no knots.
@@ -963,34 +963,34 @@ Generate8BIMAttribute(Image *image,const char *key)
   while ((length > 0) && (status == False))
     {
       if (ReadByte(&info,&length) != '8')
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 'B')
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 'I')
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 'M')
-	continue;
+        continue;
       id=ReadMSBShort(&info,&length);
       if (id < start)
-	continue;
+        continue;
       if (id > stop)
-	continue;
+        continue;
       if (resource != (char *)NULL)
         MagickFreeMemory(resource);
       count=ReadByte(&info,&length);
       if ((count > 0) && ((size_t) count <= length))
-	{
-	  resource=(char *) MagickAllocateMemory(char *,
+        {
+          resource=(char *) MagickAllocateMemory(char *,
                                                  (size_t) count+MaxTextExtent);
-	  if (resource != (char *) NULL)
-	    {
-	      for (i=0; i < count; i++)
-		resource[i]=(char) ReadByte(&info,&length);
-	      resource[count]='\0';
-	    }
-	}
+          if (resource != (char *) NULL)
+            {
+              for (i=0; i < count; i++)
+                resource[i]=(char) ReadByte(&info,&length);
+              resource[count]='\0';
+            }
+        }
       if (!(count & 0x01))
-	(void) ReadByte(&info,&length);
+        (void) ReadByte(&info,&length);
       count=ReadMSBLong(&info,&length);
       /*
         ReadMSBLong() can return negative values such as -1 or any
@@ -1002,59 +1002,59 @@ Generate8BIMAttribute(Image *image,const char *key)
           continue;
         }
       if ((*name != '\0') && (*name != '#'))
-	{
-	  if ((resource == (char *) NULL) ||
-	      (LocaleCompare(name,resource) != 0))
-	    {
-	      /*
-		No name match, scroll forward and try next resource.
-	      */
-	      info+=count;
-	      length-=count;
-	      continue;
-	    }
-	}
+        {
+          if ((resource == (char *) NULL) ||
+              (LocaleCompare(name,resource) != 0))
+            {
+              /*
+                No name match, scroll forward and try next resource.
+              */
+              info+=count;
+              length-=count;
+              continue;
+            }
+        }
       if ((*name == '#') && (sub_number != 1))
-	{
-	  /*
-	    No numbered match, scroll forward and try next resource.
-	  */
-	  sub_number--;
-	  info+=count;
-	  length-=count;
-	  continue;
-	}
+        {
+          /*
+            No numbered match, scroll forward and try next resource.
+          */
+          sub_number--;
+          info+=count;
+          length-=count;
+          continue;
+        }
       /*
-	We have the resource of interest.
+        We have the resource of interest.
       */
       attribute=(char *) MagickAllocateMemory(char *,
                                               (size_t) count+MaxTextExtent);
       if (attribute != (char *) NULL)
-	{
-	  (void) memcpy(attribute,(char *) info,(size_t) count);
-	  attribute[count]='\0';
-	  info+=count;
-	  length-=count;
-	  if ((id <= 1999) || (id >= 2999))
-	    {
-	      (void) SetImageAttribute(image,key,(const char *) attribute);
-	    }
-	  else
-	    {
-	      char
-		*path;
-	      if (LocaleCompare("SVG",format) == 0)
-		path=TraceSVGClippingPath((unsigned char *) attribute,count,
-					  image->columns,image->rows);
-	      else
-		path=TracePSClippingPath((unsigned char *) attribute,count,
-					 image->columns,image->rows);
-	      (void) SetImageAttribute(image,key,(const char *) path);
-	      MagickFreeMemory(path);
-	    }
-	  MagickFreeMemory(attribute);
-	  status=True;
-	}
+        {
+          (void) memcpy(attribute,(char *) info,(size_t) count);
+          attribute[count]='\0';
+          info+=count;
+          length-=count;
+          if ((id <= 1999) || (id >= 2999))
+            {
+              (void) SetImageAttribute(image,key,(const char *) attribute);
+            }
+          else
+            {
+              char
+                *path;
+              if (LocaleCompare("SVG",format) == 0)
+                path=TraceSVGClippingPath((unsigned char *) attribute,count,
+                                          image->columns,image->rows);
+              else
+                path=TracePSClippingPath((unsigned char *) attribute,count,
+                                         image->columns,image->rows);
+              (void) SetImageAttribute(image,key,(const char *) path);
+              MagickFreeMemory(path);
+            }
+          MagickFreeMemory(attribute);
+          status=True;
+        }
     }
   if (resource != (char *)NULL)
     MagickFreeMemory(resource);
@@ -1372,11 +1372,11 @@ EXIFTagToDescription(int t, char *tag_description)
   for (i=0; i < sizeof(tag_table)/sizeof(tag_table[0]); i++)
     {
       if (tag_table[i].tag == t)
-	{
-	  (void) strlcpy(tag_description,tag_table[i].description,
-			 MaxTextExtent);
-	  return tag_description;
-	}
+        {
+          (void) strlcpy(tag_description,tag_table[i].description,
+                         MaxTextExtent);
+          return tag_description;
+        }
     }
 
   FormatString(tag_description,"0x%04X",t);
@@ -1578,7 +1578,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
 
   const unsigned char
     *profile_info;
-  
+
   size_t
     profile_length;
 
@@ -1594,14 +1594,14 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   {
     const char *
       env_value;
-    
+
     /*
       Allow enabling debug of EXIF tags
     */
     if ((env_value=getenv("MAGICK_DEBUG_EXIF")))
       {
-	if (LocaleCompare(env_value,"TRUE") == 0)
-	  debug=MagickTrue;
+        if (LocaleCompare(env_value,"TRUE") == 0)
+          debug=MagickTrue;
       }
   }
   gpsfound=MagickFalse;
@@ -1630,72 +1630,72 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   switch(*key)
     {
       /*
-	Caller has asked for all the tags in the EXIF data.
+        Caller has asked for all the tags in the EXIF data.
       */
     case '*':
       {
-	tag=0;
-	all=1; /* return the data in description=value format */
-	break;
+        tag=0;
+        all=1; /* return the data in description=value format */
+        break;
       }
     case '!':
       {
-	tag=0;
-	all=2; /* return the data in tageid=value format */
-	break;
+        tag=0;
+        all=2; /* return the data in tageid=value format */
+        break;
       }
       /*
-	Check for a hex based tag specification first.
+        Check for a hex based tag specification first.
       */
     case '#':
       {
-	char
-	  c;
+        char
+          c;
 
-	size_t
-	  n;
+        size_t
+          n;
 
-	tag=0;
-	key++;
-	n=strlen(key);
-	if (n != 4)
-	  goto generate_attribute_failure;
-	else
-	  {
-	    /*
-	      Parse tag specification as a hex number.
-	    */
-	    n/=4;
-	    do
-	      {
-		for (i=(long) n-1; i >= 0; i--)
-		  {
-		    c=(*key++);
-		    tag<<=4;
-		    if ((c >= '0') && (c <= '9'))
-		      tag|=c-'0';
-		    else
-		      if ((c >= 'A') && (c <= 'F'))
-			tag|=c-('A'-10);
-		      else
-			if ((c >= 'a') && (c <= 'f'))
-			  tag|=c-('a'-10);
-			else
-			  goto generate_attribute_failure;
-		  }
-	      } while (*key != '\0');
-	  }
-	break;
+        tag=0;
+        key++;
+        n=strlen(key);
+        if (n != 4)
+          goto generate_attribute_failure;
+        else
+          {
+            /*
+              Parse tag specification as a hex number.
+            */
+            n/=4;
+            do
+              {
+                for (i=(long) n-1; i >= 0; i--)
+                  {
+                    c=(*key++);
+                    tag<<=4;
+                    if ((c >= '0') && (c <= '9'))
+                      tag|=c-'0';
+                    else
+                      if ((c >= 'A') && (c <= 'F'))
+                        tag|=c-('A'-10);
+                      else
+                        if ((c >= 'a') && (c <= 'f'))
+                          tag|=c-('a'-10);
+                        else
+                          goto generate_attribute_failure;
+                  }
+              } while (*key != '\0');
+          }
+        break;
       }
     default:
       {
-	/*
-	  Try to match the text with a tag name instead.
-	*/
-	tag=EXIFDescriptionToTag(key);
-	if (debug)
-	  fprintf(stderr,"Found tag %d for key \"%s\"\n",tag,key);
-	break;
+        /*
+          Try to match the text with a tag name instead.
+        */
+        tag=EXIFDescriptionToTag(key);
+        if (debug)
+          fprintf(stderr,"Found tag %d for key \"%s\"\n",tag,key);
+        break;
       }
     }
   if (tag < 0)
@@ -1705,17 +1705,17 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   while (length != 0)
     {
       if (ReadByte(&info,&length) != 0x45)
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 0x78)
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 0x69)
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 0x66)
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 0x00)
-	continue;
+        continue;
       if (ReadByte(&info,&length) != 0x00)
-	continue;
+        continue;
       break;
     }
   if (length < 16)
@@ -1767,328 +1767,328 @@ GenerateEXIFAttribute(Image *image,const char *specification)
       if (nde > MAX_TAGS_PER_IFD)
         nde=MAX_TAGS_PER_IFD;
       for (; de < nde; de++)
-	{
-	  unsigned int
-	    n;
+        {
+          unsigned int
+            n;
 
-	  int
-	    t,
-	    f,
-	    c;
+          int
+            t,
+            f,
+            c;
 
-	  unsigned char
-	    *pde,
+          unsigned char
+            *pde,
             *pval;
 
-	  pde=(unsigned char *) (ifdp+2+(12*de));
+          pde=(unsigned char *) (ifdp+2+(12*de));
           if (pde + 12 > tiffp + length)
             {
               if (debug)
                 fprintf(stderr, "EXIF: Invalid Exif, entry is beyond metadata limit.\n");
               goto generate_attribute_failure;
             }
-	  t=Read16u(morder,pde); /* get tag value */
-	  f=Read16u(morder,pde+2); /* get the format */
+          t=Read16u(morder,pde); /* get tag value */
+          f=Read16u(morder,pde+2); /* get the format */
           if ((f < 0) ||
               ((size_t) f >= sizeof(format_bytes)/sizeof(format_bytes[0])))
-	    break;
-	  c=(long) Read32u(morder,pde+4); /* get number of components */
-	  n=c*format_bytes[f];
-	  if (n <= 4)
-	    pval=(unsigned char *) pde+8;
-	  else
-	    {
-	      unsigned long
-		oval;
+            break;
+          c=(long) Read32u(morder,pde+4); /* get number of components */
+          n=c*format_bytes[f];
+          if (n <= 4)
+            pval=(unsigned char *) pde+8;
+          else
+            {
+              unsigned long
+                oval;
 
-	      /*
-		The directory entry contains an offset.
-	      */
-	      oval=Read32u(morder,pde+8);
-	      if ((oval+n) > length)
-		continue;
-	      pval=(unsigned char *)(tiffp+oval);
-	    }
+              /*
+                The directory entry contains an offset.
+              */
+              oval=Read32u(morder,pde+8);
+              if ((oval+n) > length)
+                continue;
+              pval=(unsigned char *)(tiffp+oval);
+            }
 
-	  if (debug)
-	    {
-	      fprintf(stderr,
-		      "EXIF: TagVal=%d  TagDescr=\"%s\" Format=%d  "
-		      "FormatDescr=\"%s\"  Components=%d\n",t,
-		      EXIFTagToDescription(t,tag_description),f,
-		      EXIFFormatToDescription(f),c);
-	    }
+          if (debug)
+            {
+              fprintf(stderr,
+                      "EXIF: TagVal=%d  TagDescr=\"%s\" Format=%d  "
+                      "FormatDescr=\"%s\"  Components=%d\n",t,
+                      EXIFTagToDescription(t,tag_description),f,
+                      EXIFFormatToDescription(f),c);
+            }
 
-	  if (gpsfound)
-	    {
-	      if ((t < GPS_TAG_START) || (t > GPS_TAG_STOP))
-		{
-		  if (debug)
-		    fprintf(stderr,
-			    "EXIF: Skipping bogus GPS IFD tag %d ...\n",t);
-		  continue;
-		}
-	    }
-	  else
-	    {
-	      if ((t < EXIF_TAG_START) || ( t > EXIF_TAG_STOP))
-		{
-		  if (debug)
-		    fprintf(stderr,
-			    "EXIF: Skipping bogus EXIF IFD tag %d ...\n",t);
-		  continue;
-		}
-	    }
+          if (gpsfound)
+            {
+              if ((t < GPS_TAG_START) || (t > GPS_TAG_STOP))
+                {
+                  if (debug)
+                    fprintf(stderr,
+                            "EXIF: Skipping bogus GPS IFD tag %d ...\n",t);
+                  continue;
+                }
+            }
+          else
+            {
+              if ((t < EXIF_TAG_START) || ( t > EXIF_TAG_STOP))
+                {
+                  if (debug)
+                    fprintf(stderr,
+                            "EXIF: Skipping bogus EXIF IFD tag %d ...\n",t);
+                  continue;
+                }
+            }
 
-	  /*
-	    Return values for all the tags, or for a specific requested tag.
+          /*
+            Return values for all the tags, or for a specific requested tag.
 
-	    Tags from the GPS sub-IFD are in a bit of a chicken and
-	    egg situation in that the tag for the GPS sub-IFD will not
-	    be seen unless we pass that tag through so it can be
-	    processed.  So we pass the GPS_OFFSET tag through, but if
-	    it was not requested, then we don't return a string value
-	    for it.
-	  */
-	  if (all || (tag == t) || (GPS_OFFSET == t))
-	    {
-	      char
-		s[MaxTextExtent];
+            Tags from the GPS sub-IFD are in a bit of a chicken and
+            egg situation in that the tag for the GPS sub-IFD will not
+            be seen unless we pass that tag through so it can be
+            processed.  So we pass the GPS_OFFSET tag through, but if
+            it was not requested, then we don't return a string value
+            for it.
+          */
+          if (all || (tag == t) || (GPS_OFFSET == t))
+            {
+              char
+                s[MaxTextExtent];
 
-	      switch (f)
-		{
-		case EXIF_FMT_SBYTE:
-		  {
-		    /* 8-bit signed integer */
-		    FormatString(s,"%ld",(long) (*(char *) pval));
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_BYTE:
-		  {
-		    /* 8-bit unsigned integer */
-		    value=MagickAllocateMemory(char *,n+1);
-		    if (value != (char *) NULL)
-		      {
-			unsigned int
-			  a;
+              switch (f)
+                {
+                case EXIF_FMT_SBYTE:
+                  {
+                    /* 8-bit signed integer */
+                    FormatString(s,"%ld",(long) (*(char *) pval));
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_BYTE:
+                  {
+                    /* 8-bit unsigned integer */
+                    value=MagickAllocateMemory(char *,n+1);
+                    if (value != (char *) NULL)
+                      {
+                        unsigned int
+                          a;
 
-			for (a=0; a < n; a++)
-			  {
-			    value[a]='.';
-			    if (isprint((int) pval[a]))
-			      value[a]=pval[a];
-			  }
-			value[a]='\0';
-			break;
-		      }
+                        for (a=0; a < n; a++)
+                          {
+                            value[a]='.';
+                            if (isprint((int) pval[a]))
+                              value[a]=pval[a];
+                          }
+                        value[a]='\0';
+                        break;
+                      }
 #if 0
-		    printf("format %u, length %u\n",f,n);
-		    FormatString(s,"%ld",(long) (*(unsigned char *) pval));
-		    value=AllocateString(s);
+                    printf("format %u, length %u\n",f,n);
+                    FormatString(s,"%ld",(long) (*(unsigned char *) pval));
+                    value=AllocateString(s);
 #endif
-		    break;
-		  }
-		case EXIF_FMT_SSHORT:
-		  {
-		    /* 16-bit signed integer */
-		    FormatString(s,"%hd",Read16u(morder,pval));
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_USHORT:
-		  {
-		    /* 16-bit unsigned integer */
-		    FormatString(s,"%hu",Read16s(morder,pval));
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_ULONG:
-		  {
-		    offset=Read32u(morder,pval);
-		    /*
-		      Only report value if this tag was requested.
-		    */
-		    if (all || (tag == t))
-		      {
-			FormatString(s,"%lu",offset);
-			value=AllocateString(s);
-		      }
-		    if (GPS_OFFSET == t)
-		      gpsoffset=offset;
-		    break;
-		  }
-		case EXIF_FMT_SLONG:
-		  {
-		    FormatString(s,"%ld",Read32s(morder,pval));
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_URATIONAL:
-		  {
-		    if (gpsfound &&
-			(t == GPS_LATITUDE ||
-			 t == GPS_LONGITUDE ||
-			 t == GPS_TIMESTAMP))
-		      {
-			FormatString(s,"%ld/%ld,%ld/%ld,%ld/%ld"
-				     ,Read32u(morder,pval),
-				     Read32u(morder,4+(char *) pval)
-				     ,Read32u(morder,8+(char *)pval),
-				     Read32u(morder,12+(char *) pval)
-				     ,Read32u(morder,16+(char *)pval),
-				     Read32u(morder,20+(char *) pval)
-				     );
-		      }
-		    else
-		      {
-			FormatString(s,"%ld/%ld"
-				     ,Read32u(morder,pval),
-				     Read32u(morder,4+(char *) pval)
-				     );
-		      }
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_SRATIONAL:
-		  {
-		    FormatString(s,"%ld/%ld",Read32s(morder,pval),
-				 Read32s(morder,4+(char *) pval));
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_SINGLE:
-		  {
-		    FormatString(s,"%f",(double) *(float *) pval);
-		    value=AllocateString(s);
-		    break;
-		  }
-		case EXIF_FMT_DOUBLE:
-		  {
-		    FormatString(s,"%f",*(double *) pval);
-		    value=AllocateString(s);
-		    break;
-		  }
-		default:
-		case EXIF_FMT_UNDEFINED:
-		case EXIF_FMT_STRING:
-		  {
-		    unsigned int
-		      a;
+                    break;
+                  }
+                case EXIF_FMT_SSHORT:
+                  {
+                    /* 16-bit signed integer */
+                    FormatString(s,"%hd",Read16u(morder,pval));
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_USHORT:
+                  {
+                    /* 16-bit unsigned integer */
+                    FormatString(s,"%hu",Read16s(morder,pval));
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_ULONG:
+                  {
+                    offset=Read32u(morder,pval);
+                    /*
+                      Only report value if this tag was requested.
+                    */
+                    if (all || (tag == t))
+                      {
+                        FormatString(s,"%lu",offset);
+                        value=AllocateString(s);
+                      }
+                    if (GPS_OFFSET == t)
+                      gpsoffset=offset;
+                    break;
+                  }
+                case EXIF_FMT_SLONG:
+                  {
+                    FormatString(s,"%ld",Read32s(morder,pval));
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_URATIONAL:
+                  {
+                    if (gpsfound &&
+                        (t == GPS_LATITUDE ||
+                         t == GPS_LONGITUDE ||
+                         t == GPS_TIMESTAMP))
+                      {
+                        FormatString(s,"%ld/%ld,%ld/%ld,%ld/%ld"
+                                     ,Read32u(morder,pval),
+                                     Read32u(morder,4+(char *) pval)
+                                     ,Read32u(morder,8+(char *)pval),
+                                     Read32u(morder,12+(char *) pval)
+                                     ,Read32u(morder,16+(char *)pval),
+                                     Read32u(morder,20+(char *) pval)
+                                     );
+                      }
+                    else
+                      {
+                        FormatString(s,"%ld/%ld"
+                                     ,Read32u(morder,pval),
+                                     Read32u(morder,4+(char *) pval)
+                                     );
+                      }
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_SRATIONAL:
+                  {
+                    FormatString(s,"%ld/%ld",Read32s(morder,pval),
+                                 Read32s(morder,4+(char *) pval));
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_SINGLE:
+                  {
+                    FormatString(s,"%f",(double) *(float *) pval);
+                    value=AllocateString(s);
+                    break;
+                  }
+                case EXIF_FMT_DOUBLE:
+                  {
+                    FormatString(s,"%f",*(double *) pval);
+                    value=AllocateString(s);
+                    break;
+                  }
+                default:
+                case EXIF_FMT_UNDEFINED:
+                case EXIF_FMT_STRING:
+                  {
+                    unsigned int
+                      a;
 
-		    size_t
-		      allocation_size;
+                    size_t
+                      allocation_size;
 
-		    MagickBool
-		      binary=MagickFalse;
+                    MagickBool
+                      binary=MagickFalse;
 
-		    allocation_size=n+1;
-		    for (a=0; a < n; a++)
-		      if (!(isprint((int) pval[a])))
-			allocation_size += 3;
+                    allocation_size=n+1;
+                    for (a=0; a < n; a++)
+                      if (!(isprint((int) pval[a])))
+                        allocation_size += 3;
 
-		    value=MagickAllocateMemory(char *,allocation_size);
-		    if (value != (char *) NULL)
-		      {
-			i=0;
-			for (a=0; a < n; a++)
-			  {
-			    if ((f == EXIF_FMT_STRING) && (pval[a] == '\0'))
-			      break;
-			    if ((isprint((int) pval[a])) ||
-				((pval[a] == '\0') &&
-				 (a == (n-1) && (!binary))))
-			      {
-				value[i++]=pval[a];
-			      }
-			    else
-			      {
-				i += sprintf(&value[i],"\\%03o",
-					     (unsigned int) pval[a]);
-				binary |= MagickTrue;
-			      }
-			  }
-			value[i]='\0';
-		      }
-		    break;
-		  }
-		}
-	      if (value != (char *) NULL)
-		{
-		  const char
-		    *description;
+                    value=MagickAllocateMemory(char *,allocation_size);
+                    if (value != (char *) NULL)
+                      {
+                        i=0;
+                        for (a=0; a < n; a++)
+                          {
+                            if ((f == EXIF_FMT_STRING) && (pval[a] == '\0'))
+                              break;
+                            if ((isprint((int) pval[a])) ||
+                                ((pval[a] == '\0') &&
+                                 (a == (n-1) && (!binary))))
+                              {
+                                value[i++]=pval[a];
+                              }
+                            else
+                              {
+                                i += sprintf(&value[i],"\\%03o",
+                                             (unsigned int) pval[a]);
+                                binary |= MagickTrue;
+                              }
+                          }
+                        value[i]='\0';
+                      }
+                    break;
+                  }
+                }
+              if (value != (char *) NULL)
+                {
+                  const char
+                    *description;
 
-		  if (strlen(final) != 0)
-		    (void) ConcatenateString(&final,EXIF_DELIMITER);
-		  description=(const char *) NULL;
-		  switch (all)
-		    {
-		    case 1:
-		      {
-			description=EXIFTagToDescription(t,tag_description);
-			FormatString(s,"%.1024s=",description);
-			(void) ConcatenateString(&final,s);
-			break;
-		      }
-		    case 2:
-		      {
-			FormatString(s,"#%04x=",t);
-			(void) ConcatenateString(&final,s);
-			break;
-		      }
-		    }
-		  (void) ConcatenateString(&final,value);
-		  MagickFreeMemory(value);
-		}
-	    }
-	  if (t == GPS_OFFSET && (gpsoffset != 0))
-	    {
-	      if ((gpsoffset < length) && (level < (DE_STACK_SIZE-2)))
-		{
-		  /*
-		    Push our current directory state onto the stack.
-		  */
-		  ifdstack[level]=ifdp;
-		  de++; /* bump to the next entry */
-		  destack[level]=de;
- 		  gpsfoundstack[level]=gpsfound;
-		  level++;
-		  /*
-		    Push new state onto of stack to cause a jump.
-		  */
-		  ifdstack[level]=tiffp+gpsoffset;
-		  destack[level]=0;
-		  gpsfoundstack[level]=MagickTrue;
-		  level++;
-		}
-	      gpsoffset=0;
-	      break; /* break out of the for loop */
-	    }
+                  if (strlen(final) != 0)
+                    (void) ConcatenateString(&final,EXIF_DELIMITER);
+                  description=(const char *) NULL;
+                  switch (all)
+                    {
+                    case 1:
+                      {
+                        description=EXIFTagToDescription(t,tag_description);
+                        FormatString(s,"%.1024s=",description);
+                        (void) ConcatenateString(&final,s);
+                        break;
+                      }
+                    case 2:
+                      {
+                        FormatString(s,"#%04x=",t);
+                        (void) ConcatenateString(&final,s);
+                        break;
+                      }
+                    }
+                  (void) ConcatenateString(&final,value);
+                  MagickFreeMemory(value);
+                }
+            }
+          if (t == GPS_OFFSET && (gpsoffset != 0))
+            {
+              if ((gpsoffset < length) && (level < (DE_STACK_SIZE-2)))
+                {
+                  /*
+                    Push our current directory state onto the stack.
+                  */
+                  ifdstack[level]=ifdp;
+                  de++; /* bump to the next entry */
+                  destack[level]=de;
+                  gpsfoundstack[level]=gpsfound;
+                  level++;
+                  /*
+                    Push new state onto of stack to cause a jump.
+                  */
+                  ifdstack[level]=tiffp+gpsoffset;
+                  destack[level]=0;
+                  gpsfoundstack[level]=MagickTrue;
+                  level++;
+                }
+              gpsoffset=0;
+              break; /* break out of the for loop */
+            }
 
-	  if ((t == TAG_EXIF_OFFSET) || (t == TAG_INTEROP_OFFSET))
-	    {
-	      offset=Read32u(morder,pval);
-	      if ((offset < length) && (level < (DE_STACK_SIZE-2)))
-		{
-		  /*
-		    Push our current directory state onto the stack.
-		  */
-		  ifdstack[level]=ifdp;
-		  de++; /* bump to the next entry */
-		  destack[level]=de;
-		  gpsfoundstack[level]=gpsfound;
-		  level++;
-		  /*
-		    Push new state onto of stack to cause a jump.
-		  */
-		  ifdstack[level]=tiffp+offset;
-		  destack[level]=0;
-		  gpsfoundstack[level]=MagickFalse;
-		  level++;
-		}
-	      break; /* break out of the for loop */
-	    }
-	}
+          if ((t == TAG_EXIF_OFFSET) || (t == TAG_INTEROP_OFFSET))
+            {
+              offset=Read32u(morder,pval);
+              if ((offset < length) && (level < (DE_STACK_SIZE-2)))
+                {
+                  /*
+                    Push our current directory state onto the stack.
+                  */
+                  ifdstack[level]=ifdp;
+                  de++; /* bump to the next entry */
+                  destack[level]=de;
+                  gpsfoundstack[level]=gpsfound;
+                  level++;
+                  /*
+                    Push new state onto of stack to cause a jump.
+                  */
+                  ifdstack[level]=tiffp+offset;
+                  destack[level]=0;
+                  gpsfoundstack[level]=MagickFalse;
+                  level++;
+                }
+              break; /* break out of the for loop */
+            }
+        }
     } while (level > 0);
   if (strlen(final) == 0)
     (void) ConcatenateString(&final,"unknown");
@@ -2290,7 +2290,7 @@ GetImageClippingPathAttribute(const Image *image)
 */
 MagickExport const ImageAttribute *
 GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
-		      const char *key)
+                      const char *key)
 {
   char
     attribute[MaxTextExtent],
@@ -2301,191 +2301,191 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
     {
     case 'b':
       {
-	if (LocaleNCompare("base",key,2) == 0)
-	  {
-	    GetPathComponent(image->magick_filename,BasePath,filename);
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("base",key,2) == 0)
+          {
+            GetPathComponent(image->magick_filename,BasePath,filename);
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'd':
       {
-	if (LocaleNCompare("depth",key,2) == 0)
-	  {
-	    FormatString(attribute,"%u",image->depth);
-	    break;
-	  }
-	if (LocaleNCompare("directory",key,2) == 0)
-	  {
-	    GetPathComponent(image->magick_filename,HeadPath,filename);
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("depth",key,2) == 0)
+          {
+            FormatString(attribute,"%u",image->depth);
+            break;
+          }
+        if (LocaleNCompare("directory",key,2) == 0)
+          {
+            GetPathComponent(image->magick_filename,HeadPath,filename);
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'e':
       {
-	if (LocaleNCompare("extension",key,2) == 0)
-	  {
-	    GetPathComponent(image->magick_filename,ExtensionPath,filename);
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("extension",key,2) == 0)
+          {
+            GetPathComponent(image->magick_filename,ExtensionPath,filename);
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'g':
       {
-	if (LocaleNCompare("group",key,2) == 0)
-	  {
-	    FormatString(attribute,"0x%lx",image_info->group);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("group",key,2) == 0)
+          {
+            FormatString(attribute,"0x%lx",image_info->group);
+            break;
+          }
+        break;
       }
     case 'h':
       {
-	if (LocaleNCompare("height",key,2) == 0)
-	  {
-	    FormatString(attribute,"%lu",
-			 image->magick_rows ? image->magick_rows : 256L);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("height",key,2) == 0)
+          {
+            FormatString(attribute,"%lu",
+                         image->magick_rows ? image->magick_rows : 256L);
+            break;
+          }
+        break;
       }
     case 'i':
       {
-	if (LocaleNCompare("input",key,2) == 0)
-	  {
-	    (void) strlcpy(attribute,image->filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("input",key,2) == 0)
+          {
+            (void) strlcpy(attribute,image->filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'm':
       {
-	if (LocaleNCompare("magick",key,2) == 0)
-	  {
-	    (void) strlcpy(attribute,image->magick,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("magick",key,2) == 0)
+          {
+            (void) strlcpy(attribute,image->magick,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'n':
       {
-	if (LocaleNCompare("name",key,2) == 0)
-	  {
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("name",key,2) == 0)
+          {
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 's':
       {
-	if (LocaleNCompare("size",key,2) == 0)
-	  {
-	    char
-	      format[MaxTextExtent];
+        if (LocaleNCompare("size",key,2) == 0)
+          {
+            char
+              format[MaxTextExtent];
 
-	    FormatSize(GetBlobSize(image),format);
-	    FormatString(attribute,"%.1024s",format);
-	    break;
-	  }
-	if (LocaleNCompare("scene",key,2) == 0)
-	  {
-	    FormatString(attribute,"%lu",image->scene);
-	    if (image_info->subrange != 0)
-	      FormatString(attribute,"%lu",image_info->subimage);
-	    break;
-	  }
-	if (LocaleNCompare("scenes",key,6) == 0)
-	  {
-	    FormatString(attribute,"%lu",
-			 (unsigned long) GetImageListLength(image));
-	    break;
-	  }
-	break;
+            FormatSize(GetBlobSize(image),format);
+            FormatString(attribute,"%.1024s",format);
+            break;
+          }
+        if (LocaleNCompare("scene",key,2) == 0)
+          {
+            FormatString(attribute,"%lu",image->scene);
+            if (image_info->subrange != 0)
+              FormatString(attribute,"%lu",image_info->subimage);
+            break;
+          }
+        if (LocaleNCompare("scenes",key,6) == 0)
+          {
+            FormatString(attribute,"%lu",
+                         (unsigned long) GetImageListLength(image));
+            break;
+          }
+        break;
       }
     case 'o':
       {
-	if (LocaleNCompare("output",key,2) == 0)
-	  {
-	    (void) strlcpy(attribute,image_info->filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("output",key,2) == 0)
+          {
+            (void) strlcpy(attribute,image_info->filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'p':
       {
-	if (LocaleNCompare("page",key,2) == 0)
-	  {
-	    register const Image
-	      *p;
+        if (LocaleNCompare("page",key,2) == 0)
+          {
+            register const Image
+              *p;
 
-	    unsigned int
-	      page;
+            unsigned int
+              page;
 
-	    p=image;
-	    for (page=1; p->previous != (Image *) NULL; page++)
-	      p=p->previous;
-	    FormatString(attribute,"%u",page);
-	    break;
-	  }
-	break;
+            p=image;
+            for (page=1; p->previous != (Image *) NULL; page++)
+              p=p->previous;
+            FormatString(attribute,"%u",page);
+            break;
+          }
+        break;
       }
     case 'u':
       {
-	if (LocaleNCompare("unique",key,2) == 0)
-	  {
-	    (void) strlcpy(filename,image_info->unique,MaxTextExtent);
-	    if (*filename == '\0')
-	      if(!AcquireTemporaryFileName(filename))
-		return((ImageAttribute *) NULL);
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("unique",key,2) == 0)
+          {
+            (void) strlcpy(filename,image_info->unique,MaxTextExtent);
+            if (*filename == '\0')
+              if(!AcquireTemporaryFileName(filename))
+                return((ImageAttribute *) NULL);
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     case 'w':
       {
-	if (LocaleNCompare("width",key,2) == 0)
-	  {
-	    FormatString(attribute,"%lu",
-			 image->magick_columns ? image->magick_columns : 256L);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("width",key,2) == 0)
+          {
+            FormatString(attribute,"%lu",
+                         image->magick_columns ? image->magick_columns : 256L);
+            break;
+          }
+        break;
       }
     case 'x':
       {
-	if (LocaleNCompare("xresolution",key,2) == 0)
-	  {
-	    FormatString(attribute,"%g",image->x_resolution);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("xresolution",key,2) == 0)
+          {
+            FormatString(attribute,"%g",image->x_resolution);
+            break;
+          }
+        break;
       }
     case 'y':
       {
-	if (LocaleNCompare("yresolution",key,2) == 0)
-	  {
-	    FormatString(attribute,"%g",image->y_resolution);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("yresolution",key,2) == 0)
+          {
+            FormatString(attribute,"%g",image->y_resolution);
+            break;
+          }
+        break;
       }
     case 'z':
       {
-	if (LocaleNCompare("zero",key,2) == 0)
-	  {
-	    (void) strlcpy(filename,image_info->zero,MaxTextExtent);
-	    if (*filename == '\0')
-	      if(!AcquireTemporaryFileName(filename))
-		return((ImageAttribute *) NULL);
-	    (void) strlcpy(attribute,filename,MaxTextExtent);
-	    break;
-	  }
-	break;
+        if (LocaleNCompare("zero",key,2) == 0)
+          {
+            (void) strlcpy(filename,image_info->zero,MaxTextExtent);
+            if (*filename == '\0')
+              if(!AcquireTemporaryFileName(filename))
+                return((ImageAttribute *) NULL);
+            (void) strlcpy(attribute,filename,MaxTextExtent);
+            break;
+          }
+        break;
       }
     }
   if (strlen(image->magick_filename) != 0)

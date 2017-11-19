@@ -363,7 +363,7 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                     LoadImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           {
             status=MagickFail;
             break;
@@ -605,7 +605,7 @@ static MagickPassFail EncodeImage(const ImageInfo *image_info,Image *image,
       waiting_code=index;
     }
     if ((image_info->interlace == NoInterlace) ||
-	(image_info->interlace == UndefinedInterlace))
+        (image_info->interlace == UndefinedInterlace))
       offset++;
     else
       switch (pass)
@@ -651,7 +651,7 @@ static MagickPassFail EncodeImage(const ImageInfo *image_info,Image *image,
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
   }
   /*
@@ -772,7 +772,7 @@ static size_t ReadBlobBlock(Image *image,unsigned char *data)
   if (ReadBlob(image,1,&block_count) == 1)
     {
       if ((count=ReadBlob(image,(size_t) block_count,data)) != (size_t) block_count)
-	count=0;
+        count=0;
     }
   return count;
 }
@@ -907,10 +907,10 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         count=ReadBlob(image,1,(char *) &c);
         if (count != 1) {
-	  MagickFreeMemory(global_colormap);
-          ThrowReaderException(CorruptImageError,UnableToReadExtensionBlock,	 
+          MagickFreeMemory(global_colormap);
+          ThrowReaderException(CorruptImageError,UnableToReadExtensionBlock,
             image);
-	}
+        }
         switch (c)
         {
           case 0xf9:
@@ -1023,14 +1023,14 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     dispose=0;
     iterations=1;
     if ((image->columns == 0) || (image->rows == 0)) {
-      MagickFreeMemory(global_colormap);    
+      MagickFreeMemory(global_colormap);
       ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
     }
     /*
       Inititialize colormap.
     */
     if (!AllocateImageColormap(image,image->colors)) {
-      MagickFreeMemory(global_colormap);    
+      MagickFreeMemory(global_colormap);
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
     if (!BitSet(flag,0x80))
@@ -1046,7 +1046,7 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->colormap[i].green=ScaleCharToQuantum(*p++);
           image->colormap[i].blue=ScaleCharToQuantum(*p++);
           if ((long) i == opacity)
-	    image->colormap[i].opacity=(Quantum) TransparentOpacity;
+            image->colormap[i].opacity=(Quantum) TransparentOpacity;
         }
         image->background_color=
           image->colormap[Min(background,image->colors-1)];
@@ -1067,11 +1067,11 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                  image);
           }
         if (ReadBlob(image,3*image->colors,(char *) colormap) != 3*image->colors)
-	  {
-	    MagickFreeMemory(global_colormap);
-	    MagickFreeMemory(colormap);
-	    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
-	  }
+          {
+            MagickFreeMemory(global_colormap);
+            MagickFreeMemory(colormap);
+            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+          }
         p=colormap;
         for (i=0; i < image->colors; i++)
         {
@@ -1324,7 +1324,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
     Write images to file.
   */
   interlace=(image_info->interlace == UndefinedInterlace ? NoInterlace :
-	     image_info->interlace);
+             image_info->interlace);
   if (image_info->adjoin && (image->next != (Image *) NULL))
     interlace=NoInterlace;
   opacity=(-1);

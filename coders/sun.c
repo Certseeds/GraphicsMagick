@@ -490,7 +490,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
       default:
         ThrowReaderException(CoderError,ColormapTypeNotSupported,image)
-    } 
+    }
     image->matte=(sun_info.depth == 32);
     image->columns=sun_info.width;
     image->rows=sun_info.height;
@@ -633,7 +633,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,exception,
                                         LoadImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
       }
     else
@@ -663,10 +663,10 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,exception,
                                             LoadImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
-	}
+        }
       else
         {
           /*
@@ -709,10 +709,10 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,exception,
                                             LoadImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
-	}
+        }
     MagickFreeMemory(sun_pixels);
     if (EOFBlob(image))
       {
@@ -1013,7 +1013,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         MagickFreeMemory(pixels);
@@ -1065,7 +1065,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
         }
@@ -1100,7 +1100,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
         }

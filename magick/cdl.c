@@ -77,12 +77,12 @@ typedef struct _CdlImageParameters_t
 
   const PixelPacket
     *lut;
-		
+
 } CdlImageParameters_t;
 
 static Quantum
 CdlQuantum(const Quantum quantum, const double slope, const double offset,
-	   const double power, const double saturation)
+           const double power, const double saturation)
 {
   double
     v,
@@ -99,46 +99,46 @@ CdlQuantum(const Quantum quantum, const double slope, const double offset,
 
 static MagickPassFail
 CdlImagePixels(void *mutable_data,         /* User provided mutable data */
-	       const void *immutable_data, /* User provided immutable data */
-	       Image *image,               /* Modify image */
-	       PixelPacket *pixels,        /* Pixel row */
-	       IndexPacket *indexes,       /* Pixel row indexes */
-	       const long npixels,         /* Number of pixels in row */
-	       ExceptionInfo *exception)   /* Exception report */
+               const void *immutable_data, /* User provided immutable data */
+               Image *image,               /* Modify image */
+               PixelPacket *pixels,        /* Pixel row */
+               IndexPacket *indexes,       /* Pixel row indexes */
+               const long npixels,         /* Number of pixels in row */
+               ExceptionInfo *exception)   /* Exception report */
 {
   const CdlImageParameters_t
     param = *(const CdlImageParameters_t *) immutable_data;
-	
+
   register long
     i;
-	
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
-  ARG_NOT_USED(exception);	
+  ARG_NOT_USED(exception);
 
   if (param.lut != (PixelPacket *) NULL)
     {
       for(i = 0; i < npixels; i++)
-	{
-	  pixels[i].red=param.lut[pixels[i].red].red;
-	  pixels[i].green=param.lut[pixels[i].green].green;
-	  pixels[i].blue=param.lut[pixels[i].blue].blue;
-	}
+        {
+          pixels[i].red=param.lut[pixels[i].red].red;
+          pixels[i].green=param.lut[pixels[i].green].green;
+          pixels[i].blue=param.lut[pixels[i].blue].blue;
+        }
     }
   else
     {
       for(i = 0; i < npixels; i++)
-	{
-	  pixels[i].red=CdlQuantum(pixels[i].red,param.redslope,param.redoffset,
-				   param.redpower,param.saturation);
-	  pixels[i].green=CdlQuantum(pixels[i].green,param.greenslope,param.greenoffset,
-				     param.greenpower,param.saturation);
-	  pixels[i].blue=CdlQuantum(pixels[i].blue,param.blueslope,param.blueoffset,
-				    param.bluepower,param.saturation);
-	}
+        {
+          pixels[i].red=CdlQuantum(pixels[i].red,param.redslope,param.redoffset,
+                                   param.redpower,param.saturation);
+          pixels[i].green=CdlQuantum(pixels[i].green,param.greenslope,param.greenoffset,
+                                     param.greenpower,param.saturation);
+          pixels[i].blue=CdlQuantum(pixels[i].blue,param.blueslope,param.blueoffset,
+                                    param.bluepower,param.saturation);
+        }
     }
-	
+
   return MagickPass;
 }
 
@@ -178,12 +178,12 @@ MagickExport MagickPassFail CdlImage(Image *image,const char *cdl)
   param.lut=(PixelPacket *) NULL;
 
   (void) sscanf(cdl,
-		"%lf%*[,/]%lf%*[,/]%lf%*[:/]%lf%*[,/]%lf%*[,/]%lf%*"
-		"[:/]%lf%*[,/]%lf%*[,/]%lf%*[:/]%lf",
-		&param.redslope,&param.redoffset,&param.redpower,
-		&param.greenslope,&param.greenoffset,&param.greenpower
-		,&param.blueslope,&param.blueoffset,&param.bluepower,
-		&param.saturation);
+                "%lf%*[,/]%lf%*[,/]%lf%*[:/]%lf%*[,/]%lf%*[,/]%lf%*"
+                "[:/]%lf%*[,/]%lf%*[,/]%lf%*[:/]%lf",
+                &param.redslope,&param.redoffset,&param.redpower,
+                &param.greenslope,&param.greenoffset,&param.greenpower
+                ,&param.blueslope,&param.blueoffset,&param.bluepower,
+                &param.saturation);
 
   param.redslope=AbsoluteValue(param.redslope);
   param.redpower=AbsoluteValue(param.redpower);
@@ -193,11 +193,11 @@ MagickExport MagickPassFail CdlImage(Image *image,const char *cdl)
   param.bluepower=AbsoluteValue(param.bluepower);
 
   FormatString(progress_message,
-	       "[%%s] cdl %g/%g/%g/%g/%g/%g/%g/%g/%g/%g image...",
-	       param.redslope,param.redoffset,param.redpower,
-	       param.greenslope,param.greenoffset,param.greenpower,
-	       param.blueslope,param.blueoffset,param.bluepower,
-	       param.saturation);
+               "[%%s] cdl %g/%g/%g/%g/%g/%g/%g/%g/%g/%g image...",
+               param.redslope,param.redoffset,param.redpower,
+               param.greenslope,param.greenoffset,param.greenpower,
+               param.blueslope,param.blueoffset,param.bluepower,
+               param.saturation);
 
   if (!IsRGBCompatibleColorspace(image->colorspace))
     TransformColorspace(image,RGBColorspace);
@@ -209,7 +209,7 @@ MagickExport MagickPassFail CdlImage(Image *image,const char *cdl)
     {
       lut=MagickAllocateMemory(PixelPacket *,(MaxMap+1)*sizeof(PixelPacket));
       if (lut != (PixelPacket *) NULL)
-	{
+        {
 #if (MaxMap > 256) && defined(HAVE_OPENMP)
 #  if defined(USE_STATIC_SCHEDULING_ONLY)
 #    pragma omp parallel for schedule(static,4)
@@ -217,36 +217,34 @@ MagickExport MagickPassFail CdlImage(Image *image,const char *cdl)
 #    pragma omp parallel for schedule(guided)
 #  endif
 #endif
-	  for (i=0; i <= (long) MaxMap; i++)
-	    {
-	      lut[i].red=CdlQuantum((Quantum) i,param.redslope,param.redoffset,
-				       param.redpower,param.saturation);
-	      lut[i].green=CdlQuantum((Quantum) i,param.greenslope,param.greenoffset,
-					 param.greenpower,param.saturation);
-	      lut[i].blue=CdlQuantum((Quantum) i,param.blueslope,param.blueoffset,
-					param.bluepower,param.saturation);
-	    }
-	  param.lut=lut;
-	}
+          for (i=0; i <= (long) MaxMap; i++)
+            {
+              lut[i].red=CdlQuantum((Quantum) i,param.redslope,param.redoffset,
+                                       param.redpower,param.saturation);
+              lut[i].green=CdlQuantum((Quantum) i,param.greenslope,param.greenoffset,
+                                         param.greenpower,param.saturation);
+              lut[i].blue=CdlQuantum((Quantum) i,param.blueslope,param.blueoffset,
+                                        param.bluepower,param.saturation);
+            }
+          param.lut=lut;
+        }
     }
 
   if (image->storage_class == PseudoClass)
     {
       (void) CdlImagePixels(NULL,&param,image,image->colormap,
-			    (IndexPacket *) NULL,image->colors,
-			    &image->exception);
+                            (IndexPacket *) NULL,image->colors,
+                            &image->exception);
       status=SyncImage(image);
     }
   else
     {
       status=PixelIterateMonoModify(CdlImagePixels,NULL,progress_message,
-				    NULL,&param,0,0,image->columns,image->rows,
-				    image,&image->exception);
+                                    NULL,&param,0,0,image->columns,image->rows,
+                                    image,&image->exception);
     }
 
   MagickFreeMemory(lut);
 
   return(status);
 }
-
-	

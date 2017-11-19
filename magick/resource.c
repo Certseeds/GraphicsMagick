@@ -151,7 +151,7 @@ static ResourceInfo *GetResourceInfo(const ResourceType type)
 
 MagickExport MagickPassFail
 AcquireMagickResource(const ResourceType type,
-		      const magick_uint64_t size)
+                      const magick_uint64_t size)
 {
   magick_uint64_t
     value;
@@ -577,12 +577,12 @@ MagickExport void InitializeMagickResources(void)
 #if defined(HAVE_OPENMP)
     max_threads=omp_get_num_procs();
     (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-			  "%i CPU cores are available",(int) max_threads);
+                          "%i CPU cores are available",(int) max_threads);
     if ((envp=getenv("OMP_NUM_THREADS")))
       {
-	max_threads=MagickSizeStrToInt64(envp,1024);
-	(void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-			      "OMP_NUM_THREADS requests %i threads",(int) max_threads);
+        max_threads=MagickSizeStrToInt64(envp,1024);
+        (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                              "OMP_NUM_THREADS requests %i threads",(int) max_threads);
       }
     if (max_threads < 1)
       max_threads=1;
@@ -595,67 +595,67 @@ MagickExport void InitializeMagickResources(void)
 #  if defined(HAVE_GETRLIMIT) && defined(RLIMIT_NOFILE)
     {
       struct rlimit
-	rlimits;
+        rlimits;
 
       rlim_t
-	margin,
-	target;
+        margin,
+        target;
 
       margin=128;
       target=(rlim_t) max_files+margin;
       if (getrlimit(RLIMIT_NOFILE, &rlimits) != -1)
-	{
-	  (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-				"System file open limits are %lu soft,"
-				" %lu hard",
-				(unsigned long) rlimits.rlim_cur,
-				(unsigned long) rlimits.rlim_max);
+        {
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "System file open limits are %lu soft,"
+                                " %lu hard",
+                                (unsigned long) rlimits.rlim_cur,
+                                (unsigned long) rlimits.rlim_max);
 #    if defined(HAVE_SETRLIMIT)
-	  if (rlimits.rlim_max < target)
-	    rlimits.rlim_cur=rlimits.rlim_max;
-	  if (rlimits.rlim_cur < target)
-	    {
-	      (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-				    "Increasing file open soft limit from %lu "
-				    "to %lu",
-				    (unsigned long) rlimits.rlim_cur,
-				    (unsigned long) target);
-	      rlimits.rlim_cur=target;
-	      (void) setrlimit(RLIMIT_NOFILE, &rlimits);
-	    }
-	  if (getrlimit(RLIMIT_NOFILE, &rlimits) != -1)
-	    {
-	      if (rlimits.rlim_cur < target)
-		{
-		  if (rlimits.rlim_cur > margin*2)
-		    max_files=rlimits.rlim_cur-margin;
-		  else
-		    max_files=rlimits.rlim_cur/2;
-		}
-	    }
+          if (rlimits.rlim_max < target)
+            rlimits.rlim_cur=rlimits.rlim_max;
+          if (rlimits.rlim_cur < target)
+            {
+              (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                    "Increasing file open soft limit from %lu "
+                                    "to %lu",
+                                    (unsigned long) rlimits.rlim_cur,
+                                    (unsigned long) target);
+              rlimits.rlim_cur=target;
+              (void) setrlimit(RLIMIT_NOFILE, &rlimits);
+            }
+          if (getrlimit(RLIMIT_NOFILE, &rlimits) != -1)
+            {
+              if (rlimits.rlim_cur < target)
+                {
+                  if (rlimits.rlim_cur > margin*2)
+                    max_files=rlimits.rlim_cur-margin;
+                  else
+                    max_files=rlimits.rlim_cur/2;
+                }
+            }
 #    endif
-	}
+        }
     }
 #  elif defined(HAVE_SYSCONF) && defined(_SC_OPEN_MAX)
     {
       long
-	margin,
-	open_max,
-	target;
+        margin,
+        open_max,
+        target;
 
       margin=128;
       target=max_files+margin;
       open_max=sysconf(_SC_OPEN_MAX);
       (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-			    "System file open limit is %lu",
-			    (unsigned long) open_max);
+                            "System file open limit is %lu",
+                            (unsigned long) open_max);
       if (open_max < target)
-	{
-	  if (open_max > margin*2)
-	    max_files=open_max-margin;
-	  else
-	    max_files=open_max/2;
-	}
+        {
+          if (open_max > margin*2)
+            max_files=open_max-margin;
+          else
+            max_files=open_max/2;
+        }
     }
 #  endif
 
@@ -812,7 +812,7 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
     index;
 
   ARG_NOT_USED(exception);
-  
+
   LockSemaphoreInfo(resource_semaphore);
   if (file == (const FILE *) NULL)
     file=stdout;
@@ -917,10 +917,10 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
 
 
           FormatSize((magick_int64_t) limit, f_limit);
-	  info->maximum = limit;
+          info->maximum = limit;
 #if defined(HAVE_OPENMP)
-	  if (ThreadsResource == type)
-	    omp_set_num_threads((int) limit);
+          if (ThreadsResource == type)
+            omp_set_num_threads((int) limit);
 #endif /* HAVE_OPENMP */
           (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
                                 "Set %s resource limit to %s%s",

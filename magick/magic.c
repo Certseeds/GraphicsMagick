@@ -204,7 +204,7 @@ DestroyMagicInfo(void)
 %  MagickPass is returned if the format was successfully identified.  The
 %  value MagickFail is returned if the format was not identified or an
 %  exception occured.
-%  
+%
 %
 %  The format of the GetMagickFileFormat method is:
 %
@@ -244,25 +244,25 @@ GetMagickFileFormat(const unsigned char *header, const size_t header_length,
   ARG_NOT_USED(exception);
 
   if (!((header == (const unsigned char *) NULL) || (header_length == 0) ||
-	(format_length < 2)))
+        (format_length < 2)))
     {
       /*
-	Search for requested magic.
+        Search for requested magic.
       */
       for (i=0; i < sizeof(StaticMagic)/sizeof(StaticMagic[0]); i++)
-	{
-	  if (StaticMagic[i].offset+StaticMagic[i].length <= header_length)
-	    {
-	      if ((header[StaticMagic[i].offset] == StaticMagic[i].magic[0]) &&
-		  (memcmp(header+StaticMagic[i].offset,StaticMagic[i].magic,
-			  StaticMagic[i].length) == 0))
-		{
-		  if (strlcpy(format,StaticMagic[i].name,format_length) < format_length)
-		    status=MagickPass;
-		  break;
-		}
-	    }
-	}
+        {
+          if (StaticMagic[i].offset+StaticMagic[i].length <= header_length)
+            {
+              if ((header[StaticMagic[i].offset] == StaticMagic[i].magic[0]) &&
+                  (memcmp(header+StaticMagic[i].offset,StaticMagic[i].magic,
+                          StaticMagic[i].length) == 0))
+                {
+                  if (strlcpy(format,StaticMagic[i].name,format_length) < format_length)
+                    status=MagickPass;
+                  break;
+                }
+            }
+        }
     }
   return status;
 }
@@ -332,48 +332,48 @@ ListMagicInfo(FILE *file,ExceptionInfo *exception)
 
   (void) fprintf(file,"Name      Offset Target\n");
   (void) fprintf(file,"-------------------------------------------------"
-		 "------------------------------\n");
+                 "------------------------------\n");
   for (i=0; i < sizeof(StaticMagic)/sizeof(StaticMagic[0]); i++)
     {
       register const unsigned char
-	*c;
+        *c;
 
       (void) fprintf(file,"%.1024s",StaticMagic[i].name);
       for (j= (unsigned int) strlen(StaticMagic[i].name); j <= 9; j++)
-	(void) fprintf(file," ");
+        (void) fprintf(file," ");
       (void) fprintf(file,"%6u ",StaticMagic[i].offset);
 
       (void) fprintf(file,"\"");
       c=StaticMagic[i].magic;
       for (j=0; j < StaticMagic[i].length; j++)
-	{
-/* 	    else if ('\b' == c[j]) */
-/* 	      (void) fprintf(file,"\\b"); */
-/* 	    else if ('\f' == c[j]) */
-/* 	      (void) fprintf(file,"\\f"); */
-	  if ('\n' == c[j])
-	    (void) fprintf(file,"\\n");
-	  else if ('\r' == c[j])
-	    (void) fprintf(file,"\\r");
-	  else if ('\t' == c[j])
-	      (void) fprintf(file,"\\t");
-/* 	    else if ('\v' == c[j]) */
-/* 	      (void) fprintf(file,"\\v"); */
-/* 	    else if ('\a' == c[j]) */
-/* 	      (void) fprintf(file,"\\a"); */
-	  else if ('\\' == c[j])
-	    (void) fprintf(file,"\\");
-	  else if ('\?' == c[j])
-	    (void) fprintf(file,"\\?");
-	  else if ('"' == c[j])
-	    (void) fprintf(file,"\\\"");
-	  else if (isprint((int) c[j]))
-	    (void) fprintf(file,"%c",(int) c[j]);
-	  else
-	    {
-	      (void) fprintf(file,"\\%03o",c[j]);
-	    }
-	}
+        {
+/*          else if ('\b' == c[j]) */
+/*            (void) fprintf(file,"\\b"); */
+/*          else if ('\f' == c[j]) */
+/*            (void) fprintf(file,"\\f"); */
+          if ('\n' == c[j])
+            (void) fprintf(file,"\\n");
+          else if ('\r' == c[j])
+            (void) fprintf(file,"\\r");
+          else if ('\t' == c[j])
+              (void) fprintf(file,"\\t");
+/*          else if ('\v' == c[j]) */
+/*            (void) fprintf(file,"\\v"); */
+/*          else if ('\a' == c[j]) */
+/*            (void) fprintf(file,"\\a"); */
+          else if ('\\' == c[j])
+            (void) fprintf(file,"\\");
+          else if ('\?' == c[j])
+            (void) fprintf(file,"\\?");
+          else if ('"' == c[j])
+            (void) fprintf(file,"\\\"");
+          else if (isprint((int) c[j]))
+            (void) fprintf(file,"%c",(int) c[j]);
+          else
+            {
+              (void) fprintf(file,"\\%03o",c[j]);
+            }
+        }
       (void) fprintf(file,"\"\n");
     }
   (void) fflush(file);

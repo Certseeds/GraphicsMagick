@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 - 2009 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Modules Methods.
 */
 #ifndef _MAGICK_MODULE_H
@@ -33,12 +33,12 @@ extern MagickExport MagickPassFail
 typedef struct _ModuleInfo
 {
   char
-    *path,		/* Path to modules.mgk which created alias */
-    *magick,		/* Format name */
-    *name;		/* Name of module supporting format. */
+    *path,              /* Path to modules.mgk which created alias */
+    *magick,            /* Format name */
+    *name;              /* Name of module supporting format. */
 
   unsigned int
-    stealth;		/* If true, hide when printing module list */
+    stealth;            /* If true, hide when printing module list */
 
   unsigned long
     signature;
@@ -53,7 +53,7 @@ extern MagickExport const ModuleInfo
 
 extern MagickExport MagickPassFail
   ExecuteModuleProcess(const char *tag,Image **image,
-		       const int argc,char **argv),
+                       const int argc,char **argv),
   ExecuteStaticModuleProcess(const char *,Image **,const int,char **),
   ListModuleInfo(FILE *file,ExceptionInfo *exception),
   OpenModule(const char *module,ExceptionInfo *exception),

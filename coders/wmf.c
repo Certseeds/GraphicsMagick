@@ -292,7 +292,7 @@ static void draw_color_fill_rgb( wmfAPI* API, const wmfRGB* rgb )
   fill_color.opacity = OpaqueOpacity;
 
   DrawSetFillColor(WmfDrawContext,&fill_color);
-  
+
 }
 
 /* Set stroke color */
@@ -300,12 +300,12 @@ static void draw_color_stroke_rgb( wmfAPI* API, const wmfRGB* rgb )
 {
   PixelPacket
     stroke_color;
-  
+
   stroke_color.red     = ScaleCharToQuantum(rgb->r);
   stroke_color.green   = ScaleCharToQuantum(rgb->g);
   stroke_color.blue    = ScaleCharToQuantum(rgb->b);
   stroke_color.opacity = OpaqueOpacity;
-  
+
   DrawSetStrokeColor(WmfDrawContext,&stroke_color);
 }
 
@@ -333,7 +333,7 @@ static void ipa_rop_draw(wmfAPI * API, wmfROP_Draw_t * rop_draw)
 {
 /*   wmfBrush */
 /*     *brush = WMF_DC_BRUSH(rop_draw->dc); */
-  
+
 /*   wmfBMP */
 /*     *brush_bmp = WMF_BRUSH_BITMAP(brush); */
 
@@ -348,12 +348,12 @@ static void ipa_rop_draw(wmfAPI * API, wmfROP_Draw_t * rop_draw)
   /*
   struct _wmfROP_Draw_t
   {       wmfDC* dc;
-    
+
     wmfD_Coord TL;
     wmfD_Coord BR;
-    
+
     U32 ROP;
-    
+
     double pixel_width;
     double pixel_height;
   };
@@ -540,7 +540,7 @@ static void ipa_bmp_read(wmfAPI * API, wmfBMP_Read_t * bmp_read) {
     {
       char
         size[MaxTextExtent];
-      
+
       FormatString(size,"%ux%u",bmp_read->width,bmp_read->height);
       (void) CloneString(&image_info->size,size);
     }
@@ -667,7 +667,7 @@ static void ipa_device_begin(wmfAPI * API)
 
       ImageInfo
         *image_info;
-      
+
       ExceptionInfo
         exception;
 
@@ -1226,7 +1226,7 @@ static void ipa_functions(wmfAPI *API)
 
 static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
 {
-  double    
+  double
     angle = 0,      /* text rotation angle */
     pointsize = 0;  /* pointsize to output font with desired height */
 
@@ -1320,7 +1320,7 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
     {
       Image
         *image = ddata->image;
-      
+
       DrawInfo
         *draw_info;
 
@@ -1336,7 +1336,7 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
             {
               double
                 text_width = metrics.width * (ddata->scale_y / ddata->scale_x);
-              
+
 #if defined(HasWMFlite)
               point.x -= text_width / 2;
 #else
@@ -1564,7 +1564,7 @@ static void util_set_brush(wmfAPI * API, wmfDC * dc, const BrushApply brush_appl
         DrawPushDefs(WmfDrawContext);
         draw_pattern_push(API, ddata->pattern_id, 8, 8);
         DrawPushGraphicContext(WmfDrawContext);
-        
+
         if (WMF_DC_OPAQUE(dc))
           {
             if( brush_apply == BrushApplyStroke )
@@ -1577,12 +1577,12 @@ static void util_set_brush(wmfAPI * API, wmfDC * dc, const BrushApply brush_appl
 
         DrawSetStrokeAntialias(WmfDrawContext, False);
         DrawSetStrokeWidth(WmfDrawContext, 1);
-        
+
         draw_color_stroke_rgb(API,WMF_BRUSH_COLOR(brush));
-        
+
         switch ((unsigned int) WMF_BRUSH_HATCH(brush))
           {
-            
+
           case HS_HORIZONTAL:  /* ----- */
             {
               DrawLine(WmfDrawContext, 0, 3, 7,3);
@@ -1657,7 +1657,7 @@ static void util_set_brush(wmfAPI * API, wmfDC * dc, const BrushApply brush_appl
 
         if (brush_bmp && brush_bmp->data != 0)
           {
-            CompositeOperator            
+            CompositeOperator
               mode;
 
             const Image
@@ -1972,7 +1972,7 @@ static double util_pointsize( wmfAPI* API, wmfFont* font, char* str, double font
           draw_info->pointsize = pointsize;
           if (GetTypeMetrics(image, draw_info, &metrics) != False)
             pointsize *= (font_height / metrics.height);
-          
+
         }
 
 
@@ -2130,7 +2130,7 @@ static const wmfFontMap WMFFontMap[] = {
 
 /* Mapping between base name and Ghostscript family name */
 static const wmfMapping SubFontMap[] = {
-  { "Arial",      "Helvetica",	(FT_Encoding) 0 },
+  { "Arial",      "Helvetica",  (FT_Encoding) 0 },
   { "Courier",    "Courier",    (FT_Encoding) 0 },
   { "Fixed",      "Courier",    (FT_Encoding) 0 },
   { "Helvetica",  "Helvetica",  (FT_Encoding) 0 },
@@ -2209,7 +2209,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
                 weight;
 
               /* printf("Considering font %s\n", type_info->description); */
-              
+
               if( WMF_FONT_ITALIC(font) && !(strstr(type_info->description,"Italic") ||
                                              strstr(type_info->description,"Oblique")) )
                 continue;
@@ -2296,7 +2296,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
   printf("WMF_FONT_PSNAME         = \"%s\"\n", WMF_FONT_PSNAME(font));
   fflush(stdout);
 #endif
-  
+
 }
 
 /* Initialize API font structures */
@@ -2402,7 +2402,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
         }
       ThrowReaderException(FileOpenError,UnableToOpenFile,image);
     }
-  
+
   /*
    * Create WMF API
    *
@@ -2571,7 +2571,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Placeable metafile:          %s",
                      (API)->File->placeable ? "Yes" : "No");
-      
+
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Size in metafile units:      %.4gx%.4g",
                      wmf_width, wmf_height);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Metafile units/inch:         %.4g",
@@ -2601,7 +2601,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
       wmfPen   default_pen;
       wmfBrush default_brush;
       wmfFont  default_font;
-      
+
       wmfDC* dc; /* current dc */
     };
 
@@ -2694,7 +2694,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
       if (logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				"  Playing WMF failed with wmf_error_code %d", wmf_error_code);
+                                "  Playing WMF failed with wmf_error_code %d", wmf_error_code);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"leave ReadWMFImage()");
         }
       ipa_device_close(API);
@@ -2761,7 +2761,7 @@ ModuleExport void RegisterWMFImage(void)
     *entry;
 
   static const char
-    *WMFNote = 
+    *WMFNote =
     {
       "Use density to adjust scale (default 72DPI). Use background or\n"
       "texture to apply a background color or texture under the image."

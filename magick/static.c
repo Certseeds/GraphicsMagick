@@ -120,7 +120,7 @@ MagickExport unsigned int ExecuteModuleProcess(const char *tag,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  
+%
 RegisterStaticModules() statically registers all the available module
 %  handlers.
 %

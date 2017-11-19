@@ -66,7 +66,7 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
 
   double
     number_scenes;
-    
+
   unsigned long
     number_pixels;
 
@@ -86,7 +86,7 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
   {
     const Image
       *next;
-      
+
     for (next=image; next != (Image *) NULL; next=next->next)
       {
         if ((next->columns != image->columns) || (next->rows != image->rows))
@@ -222,7 +222,7 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
                                       "[%s,...,%s] Average image sequence...",
                                       image->filename,last_image->filename))
             thread_status=MagickFail;
-      
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -238,4 +238,3 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
 
   return(average_image);
 }
-

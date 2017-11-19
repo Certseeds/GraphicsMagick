@@ -181,7 +181,7 @@ MagickExport const char *AccessDefinition(const ImageInfo *image_info,
 */
 MagickExport MagickPassFail
 AddDefinition(ImageInfo *image_info,const char *magick, const char *key,
-	      const char *value, ExceptionInfo *exception)
+              const char *value, ExceptionInfo *exception)
 {
   MagickPassFail
     status = MagickFail;
@@ -191,16 +191,16 @@ AddDefinition(ImageInfo *image_info,const char *magick, const char *key,
 
   if (image_info->definitions == 0)
     image_info->definitions=MagickMapAllocateMap(MagickMapCopyString,
-						 MagickMapDeallocateString);
+                                                 MagickMapDeallocateString);
   if (image_info->definitions != 0)
     {
       /*
-	Format string like "magick:key"
+        Format string like "magick:key"
       */
       FormatString(search_key, "%.60s:%.1024s", magick, key);
-      
+
       /*
-	Add entry to map
+        Add entry to map
       */
       status = MagickMapAddEntry((MagickMap) image_info->definitions,search_key,value,0,exception);
     }
@@ -382,10 +382,10 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   if (image_info->size != (char *) NULL)
     {
       (void) GetGeometry(image_info->size,
-			 &allocate_image->tile_info.x,
-			 &allocate_image->tile_info.y,
-			 &allocate_image->columns,
-			 &allocate_image->rows);
+                         &allocate_image->tile_info.x,
+                         &allocate_image->tile_info.y,
+                         &allocate_image->columns,
+                         &allocate_image->rows);
       allocate_image->offset=allocate_image->tile_info.x;
       allocate_image->tile_info.width=allocate_image->columns;
       allocate_image->tile_info.height=allocate_image->rows;
@@ -394,14 +394,14 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
     if (!IsSubimage(image_info->tile,False))
       {
         (void) GetGeometry(image_info->tile,
-			   &allocate_image->tile_info.x,
-			   &allocate_image->tile_info.y,
-			   &allocate_image->tile_info.width,
-			   &allocate_image->tile_info.height);
-	if (0 == allocate_image->columns)
-	  allocate_image->columns=allocate_image->tile_info.width;
-	if (0 == allocate_image->rows)
-	  allocate_image->rows=allocate_image->tile_info.height;
+                           &allocate_image->tile_info.x,
+                           &allocate_image->tile_info.y,
+                           &allocate_image->tile_info.width,
+                           &allocate_image->tile_info.height);
+        if (0 == allocate_image->columns)
+          allocate_image->columns=allocate_image->tile_info.width;
+        if (0 == allocate_image->rows)
+          allocate_image->rows=allocate_image->tile_info.height;
       }
   allocate_image->compression=image_info->compression;
   allocate_image->dither=image_info->dither;
@@ -547,7 +547,7 @@ MagickExport MagickPassFail AnimateImages(const ImageInfo *image_info,
   resource.image_info=CloneImageInfo(image_info);
   resource.immutable=True;
   (void) MagickXAnimateImages(display,&resource,(char **) &client_name,
-			      1,image);
+                              1,image);
   (void) XCloseDisplay(display);
   DestroyImageInfo(resource.image_info);
   return(image->exception.severity == UndefinedException);
@@ -660,10 +660,10 @@ MagickExport Image *AppendImages(const Image *image,const unsigned int stack,
       for (next=image; next != (Image *) NULL; next=next->next)
       {
         (void) CompositeImage(append_image,CopyCompositeOp,next,0,y);
-	if (append_image->columns > next->columns)
-	  SetImageColorRegion(append_image,next->columns,y,
-			      append_image->columns-next->columns,next->rows,
-			      &append_image->background_color);
+        if (append_image->columns > next->columns)
+          SetImageColorRegion(append_image,next->columns,y,
+                              append_image->columns-next->columns,next->rows,
+                              &append_image->background_color);
         y+=next->rows;
         status=MagickMonitorFormatted(scene,GetImageListLength(image),
                                       exception,AppendImageText,
@@ -683,9 +683,9 @@ MagickExport Image *AppendImages(const Image *image,const unsigned int stack,
     (void) CompositeImage(append_image,CopyCompositeOp,next,x,0);
     if (append_image->rows > next->rows)
       SetImageColorRegion(append_image,x,next->rows,
-			  next->columns,
-			  append_image->rows-next->rows,
-			  &append_image->background_color);
+                          next->columns,
+                          append_image->rows-next->rows,
+                          &append_image->background_color);
     x+=next->columns;
     status=MagickMonitorFormatted(scene++,GetImageListLength(image),
                                   exception,AppendImageText,
@@ -1394,7 +1394,7 @@ MagickExport MagickPassFail DisplayImages(const ImageInfo *image_info,
   {
     state=DefaultState;
     (void) MagickXDisplayImage(display,&resource_info,(char **) &client_name,
-			       1,&next,&state);
+                               1,&next,&state);
     if (state & ExitState)
       break;
   }
@@ -2013,8 +2013,8 @@ ResetImagePage(Image *image,const char *page)
   else
     {
       /* If values are not absolute, then use offset values, and page
-	 width and height based on image width and height plus page
-	 offsets */
+         width and height based on image width and height plus page
+         offsets */
       if (flags & XValue)
         {
           image->page.x=page_geometry.x;
@@ -2077,7 +2077,7 @@ SetImageColorCallBack(void *mutable_data,         /* User provided mutable data 
   */
   const PixelPacket
     background_color = *(const PixelPacket *) immutable_data;
-  
+
   register long
     i;
 
@@ -2196,7 +2196,7 @@ MagickExport MagickPassFail SetImage(Image *image,const Quantum opacity)
 %
 */
 MagickExport MagickPassFail SetImageColor(Image *image,
-					  const PixelPacket *pixel)
+                                          const PixelPacket *pixel)
 {
   image->is_grayscale=IsGray(*pixel);
   image->is_monochrome=IsMonochrome(*pixel);
@@ -2237,11 +2237,11 @@ MagickExport MagickPassFail SetImageColor(Image *image,
 */
 MagickExport MagickPassFail
 SetImageColorRegion(Image *image,
-		    long x,
-		    long y,
-		    unsigned long width,
-		    unsigned long height,
-		    const PixelPacket *pixel)
+                    long x,
+                    long y,
+                    unsigned long width,
+                    unsigned long height,
+                    const PixelPacket *pixel)
 {
   MagickPassFail
     status;
@@ -2265,10 +2265,10 @@ SetImageColorRegion(Image *image,
   image->storage_class=DirectClass;
 
   status=PixelIterateMonoModify(SetImageColorCallBack,NULL,
-				SetImageColorText,
-				NULL,pixel,x,y,
-				width,height,
-				image,&image->exception);
+                                SetImageColorText,
+                                NULL,pixel,x,y,
+                                width,height,
+                                image,&image->exception);
 
   image->is_grayscale=is_grayscale;
   image->is_monochrome=is_monochrome;
@@ -2475,7 +2475,7 @@ MagickParseSubImageSpecification(const char *subimage_spec,
   assert(subrange_ptr != (unsigned long *) NULL);
 
   (void) strlcpy(spec,subimage_spec,sizeof(spec));
-  
+
   do
     {
       const char
@@ -2550,14 +2550,14 @@ MagickParseSubImageSpecification(const char *subimage_spec,
           long
             x,
             y;
-          
+
           unsigned int
             flags;
-          
+
           unsigned long
             height,
             width;
-          
+
           /* Require Width and Height */
           flags=GetGeometry((char *) spec,&x,&y,&width,&height);
           if ((flags & WidthValue) && (flags & HeightValue))
@@ -2604,7 +2604,7 @@ ParseSubImageFileSpecification(char *filename,
       ((spec_start=strrchr(filename,'[')) != (const char *) NULL))
     {
       char
-	spec[MaxTextExtent];
+        spec[MaxTextExtent];
 
       /*
         Example of supported formats (as per documentation):
@@ -2628,18 +2628,18 @@ ParseSubImageFileSpecification(char *filename,
         {
           status=MagickFail;
           ThrowException(exception,OptionError,
-			 InvalidSubimageSpecification,spec);
+                         InvalidSubimageSpecification,spec);
         }
       if (status == MagickPass)
-	{
-	  /* Truncate filename */
-	  *(spec_start-1)='\0';
+        {
+          /* Truncate filename */
+          *(spec_start-1)='\0';
           (void) CloneString(tile_ptr,spec);
-	}
+        }
 #if 0
       fprintf(stderr,"subimage=%lu subrange=%lu tile=\"%s\"\n",
-	      *subimage_ptr,*subrange_ptr,
-	      (*tile_ptr ? *tile_ptr : "(null)"));
+              *subimage_ptr,*subrange_ptr,
+              (*tile_ptr ? *tile_ptr : "(null)"));
 #endif
     }
 
@@ -2648,7 +2648,7 @@ ParseSubImageFileSpecification(char *filename,
 
 MagickExport MagickPassFail
 SetImageInfo(ImageInfo *image_info,const unsigned int flags,
-	     ExceptionInfo *exception)
+             ExceptionInfo *exception)
 {
   static const char
     *virtual_delegates[] =
@@ -2711,10 +2711,10 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
 
 #if 0
   fprintf(stderr,"SetImageInfo \"%s\" Read=%d Write=%d Rectify=%d\n",
-	  image_info->filename,
-	  ((lflags & SETMAGICK_READ) > 0),
-	  ((lflags & SETMAGICK_WRITE) > 0),
-	  ((lflags & SETMAGICK_RECTIFY) > 0));
+          image_info->filename,
+          ((lflags & SETMAGICK_READ) > 0),
+          ((lflags & SETMAGICK_WRITE) > 0),
+          ((lflags & SETMAGICK_RECTIFY) > 0));
 #endif
 
   *magic='\0';
@@ -2722,23 +2722,23 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   if (lflags & SETMAGICK_READ)
     {
       /*
-	Look for sub-image specification (e.g. img0001.pcd[4]).
+        Look for sub-image specification (e.g. img0001.pcd[4]).
       */
       p=image_info->filename+Max((long) strlen(image_info->filename)-1,0);
       /*
-	Sometimes the provided argument is a real file and we need to
-	account for that.  If it is not a real file and the argument ends
-	with ']' then the trailing part is likely a sub-image or size
-	specification.
+        Sometimes the provided argument is a real file and we need to
+        account for that.  If it is not a real file and the argument ends
+        with ']' then the trailing part is likely a sub-image or size
+        specification.
       */
       if (*p == ']' && !IsAccessibleNoLogging(image_info->filename))
-	{
-	  (void) ParseSubImageFileSpecification(image_info->filename,
+        {
+          (void) ParseSubImageFileSpecification(image_info->filename,
                                                 &image_info->tile,
                                                 &image_info->subimage,
                                                 &image_info->subrange,
                                                 exception);
-	}
+        }
     }
 
   /*
@@ -2806,7 +2806,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
       while ((*p != '.') && (p > (image_info->filename+1)))
         p--;
       if ((LocaleCompare(p,".gz") == 0) ||
-	  (LocaleCompare(p,".Z") == 0) ||
+          (LocaleCompare(p,".Z") == 0) ||
           (LocaleCompare(p,".bz2") == 0))
         do
           {
@@ -2819,10 +2819,10 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           */
           unsigned int
             i;
-          
+
           MagickBool
             exclude;
-          
+
           (void) strlcpy(magic,p+1,MaxTextExtent);
           for (q=magic; *q != '\0'; q++)
             if (*q == '.')
@@ -2879,56 +2879,56 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   if (lflags & SETMAGICK_READ)
     {
       /*
-	Determine the file format from the first few bytes of the
-	file.
+        Determine the file format from the first few bytes of the
+        file.
       */
       image=AllocateImage(image_info);
       if (image == (Image *) NULL)
-	return(MagickFail);
+        return(MagickFail);
       (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
       status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
       if (status == MagickFail)
-	{
-	  DestroyImage(image);
-	  return(MagickFail);
-	}
+        {
+          DestroyImage(image);
+          return(MagickFail);
+        }
       if (!BlobIsSeekable(image))
-	{
-	  /*
-	    Copy standard input or pipe to temporary file.
-	  */
-	  if(!AcquireTemporaryFileName(filename))
-	    {
-	      CloseBlob(image);
-	      DestroyImage(image);
-	      return(MagickFail);
-	    }
-	  (void) ImageToFile(image,filename,exception);
-	  CloseBlob(image);
-	  (void) strcpy(image->filename,filename);
-	  status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-	  if (status == MagickFail)
-	    {
-	      DestroyImage(image);
-	      return(MagickFail);
-	    }
-	  (void) strcpy(image_info->filename,filename);
-	  image_info->temporary=MagickTrue;
-	}
+        {
+          /*
+            Copy standard input or pipe to temporary file.
+          */
+          if(!AcquireTemporaryFileName(filename))
+            {
+              CloseBlob(image);
+              DestroyImage(image);
+              return(MagickFail);
+            }
+          (void) ImageToFile(image,filename,exception);
+          CloseBlob(image);
+          (void) strcpy(image->filename,filename);
+          status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
+          if (status == MagickFail)
+            {
+              DestroyImage(image);
+              return(MagickFail);
+            }
+          (void) strcpy(image_info->filename,filename);
+          image_info->temporary=MagickTrue;
+        }
       magick[0]='\0';
       magick_length = ReadBlob(image,2*MaxTextExtent,magick);
       (void) SeekBlob(image,-(magick_off_t) magick_length,SEEK_CUR);
       CloseBlob(image);
       DestroyImage(image);
       /*
-	Check format using magic.mgk configuration file.  Use of an
-	external config file is absolutely necessary when using loadable
-	modules since otherwise the code necessary to perform the test
-	might not be available yet.
+        Check format using magic.mgk configuration file.  Use of an
+        external config file is absolutely necessary when using loadable
+        modules since otherwise the code necessary to perform the test
+        might not be available yet.
       */
       if (GetMagickFileFormat(magick,magick_length,image_info->magick,
-			      MaxTextExtent,exception))
-	return(MagickPass);
+                              MaxTextExtent,exception))
+        return(MagickPass);
     }
 
   return(MagickPass);
@@ -3114,7 +3114,7 @@ MagickExport MagickPassFail SetImageType(Image *image,const ImageType image_type
     {
       MagickBool
         is_monochrome;
-      
+
       if (!IsRGBColorspace(image->colorspace))
         {
           if (logging)

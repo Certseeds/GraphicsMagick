@@ -63,7 +63,7 @@ namespace Magick
     // specification
     void              gravity ( GravityType gravity_ );
     GravityType       gravity ( void ) const;
-    
+
     // Specifies the format used for the image label. Special format
     // characters may be embedded in the format string to include
     // information about the image.
@@ -103,7 +103,7 @@ namespace Magick
     // Specifies the montage title
     void              title ( const std::string &title_ );
     std::string       title ( void ) const;
-    
+
     // Specifies a montage color to set transparent. This option can
     // be set the same as the background color in order for the
     // thumbnails to appear without a background when rendered on an
@@ -118,7 +118,7 @@ namespace Magick
 
     // Update elements in existing MontageInfo structure
     virtual void      updateMontageInfo ( MagickLib::MontageInfo &montageInfo_ ) const;
-        
+
   protected:
 
   private:
@@ -176,15 +176,15 @@ namespace Magick
 
     // Update elements in existing MontageInfo structure
     /* virtual */ void updateMontageInfo ( MagickLib::MontageInfo &montageInfo_ ) const;
-    
+
   protected:
 
   private:
-    
-    Color          _borderColor;	// Frame border color
-    unsigned int   _borderWidth;	// Pixels between thumbnail and surrounding frame
-    Geometry       _frame;		// Frame geometry (width & height frame thickness)
-    Color          _matteColor;		// Frame foreground color
+
+    Color          _borderColor;        // Frame border color
+    unsigned int   _borderWidth;        // Pixels between thumbnail and surrounding frame
+    Geometry       _frame;              // Frame geometry (width & height frame thickness)
+    Color          _matteColor;         // Frame foreground color
   };
 } // namespace Magick
 

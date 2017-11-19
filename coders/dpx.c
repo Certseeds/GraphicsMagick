@@ -114,7 +114,7 @@
 %    does pad rows to the next word (16-bit or 32-bit) boundary.  It is not
 %    clear if the End-of-line padding field should reflect padding to a
 %    word boundary.
-%    
+%
 */
 
 /*
@@ -961,7 +961,7 @@ STATIC void DescribeDPXImageElement(const DPXImageElement *element_info,
   char txt_buffer[MaxTextExtent];
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "Element %u: data_sign=%s",element, 
+                        "Element %u: data_sign=%s",element,
                         element_info->data_sign == 0 ?
                         "unsigned(0)" : "signed(1)");
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1015,7 +1015,7 @@ STATIC unsigned int  DPXSamplesPerPixel(const DPXImageElementDescriptor element_
 {
   unsigned int
     samples_per_pixel=0;
-  
+
   switch (element_descriptor)
     {
     case ImageElementUnspecified:
@@ -1209,7 +1209,7 @@ STATIC inline Quantum ScaleFromVideo(const double sample,
   if (sample > ref_low)
     result = (sample - ref_low)*upscale;
   return RoundDoubleToQuantum(result);
-  
+
 }
 
 /*
@@ -1291,10 +1291,10 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
         {
           register magick_uint32_t
             packed_u32;
-          
+
           register unsigned int
             datum;
-          
+
           unsigned int
             shifts[3] = { 0, 0, 0 };
 
@@ -1509,7 +1509,7 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
   {
     ReadWordU32State
       read_state;
-    
+
     WordStreamReadHandle
       read_stream;
 
@@ -1686,7 +1686,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     original endianness.
   */
   image->endian = endian_type;
-  
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "%s endian DPX format",
@@ -1838,7 +1838,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       offset += ReadBlob(image,sizeof(dpx_tv_info),&dpx_tv_info);
       if (offset != (size_t) 2048L)
-        ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image); 
+        ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       if (swap_endian)
         SwabDPXTVInfo(&dpx_tv_info);
 
@@ -1870,17 +1870,17 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           */
           unsigned char
             *user_data;
-          
+
           const size_t
             block_size = 65536UL;
-          
+
           size_t
             read_size,
             user_data_length;
 
           DPXUserDefinedData
             *dpx_user_data;
-          
+
           user_data_length=0UL;
           user_data=(unsigned char *) NULL;
 
@@ -1988,7 +1988,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     DescribeImageElementDescriptor(txt_buffer,element_descriptor));
             }
           }
-        
+
         /*
           Check for a matte channel.
         */
@@ -2110,7 +2110,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             sizeof(Quantum));
   if (map_Y == (Quantum *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  
+
   map_CbCr=MagickAllocateArray(Quantum *,
                                MaxValueGivenBits(max_bits_per_sample)+1,
                                sizeof(Quantum));
@@ -2238,8 +2238,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (element_descriptor == ImageElementABGR) ||
           (element_descriptor == ImageElementCbYCrY422) ||
           (element_descriptor == ImageElementCbYACrYA4224) ||
-	  (element_descriptor == ImageElementCbYCr444) ||
-	  (element_descriptor == ImageElementCbYCrA4444))
+          (element_descriptor == ImageElementCbYCr444) ||
+          (element_descriptor == ImageElementCbYCrA4444))
         {
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
@@ -2255,16 +2255,16 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
       if (samples_per_pixel != 0)
         {
-	  double
+          double
             max_value,
-	    reference_low,
-	    reference_high,
-	    scale_to_quantum;           /* multiplier to scale to Quantum */
+            reference_low,
+            reference_high,
+            scale_to_quantum;           /* multiplier to scale to Quantum */
 
-	  max_value = (double) MaxValueGivenBits(bits_per_sample);
-	  reference_low = 0.0;
-	  reference_high = max_value;
-	  scale_to_quantum=MaxRGBDouble/max_value;
+          max_value = (double) MaxValueGivenBits(bits_per_sample);
+          reference_low = 0.0;
+          reference_high = max_value;
+          scale_to_quantum=MaxRGBDouble/max_value;
 
           /*
             Is this a video type space?
@@ -2284,20 +2284,20 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               */
               reference_low = ((max_value+1.0) * (64.0/1024.0));
               reference_high = ((max_value+1.0) * (940.0/1024.0));
-              
+
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_low_data_code))
                 reference_low=dpx_image_info.element_info[element].reference_low_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-low")))
                 reference_low=(double) strtol(definition_value, (char **)NULL, 10);
-              
+
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_high_data_code))
                 reference_high=dpx_image_info.element_info[element].reference_high_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-high")))
                 reference_high=(double) strtol(definition_value, (char **)NULL, 10);
-              
+
               ScaleY = ((max_value+1.0)/(reference_high-reference_low));
               ScaleCbCr = ScaleY*((940.0-64.0)/(960.0-64.0));
-	      reference_low=reference_low*scale_to_quantum;
+              reference_low=reference_low*scale_to_quantum;
 
               for(i=0; i <= (unsigned long) max_value; i++)
                 {
@@ -2308,7 +2308,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           else
             {
               for(i=0; i <= (unsigned long) max_value; i++)
-		map_Y[i]=scale_to_quantum*i+0.5;
+                map_Y[i]=scale_to_quantum*i+0.5;
             }
 
           /*
@@ -2326,7 +2326,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               */
               element_size=DPXRowOctets(image->rows,samples_per_row,
                                         bits_per_sample,packing_method);
-              
+
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Samples per row %u, octets per row %lu, element size %lu",
                                     samples_per_row, (unsigned long) row_octets,
@@ -2359,7 +2359,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
               register long
                 x;
-              
+
               register PixelPacket
                 *q;
 
@@ -2371,7 +2371,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
               sample_t
                 *samples;                   /* parsed sample array */
-              
+
               unsigned char
                 *scanline;
 
@@ -2394,7 +2394,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 void
                   *scanline_data;
-                
+
                 scanline_data=scanline;
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp critical (GM_ReadDPXImage)
@@ -2408,10 +2408,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (QuantumTick(thread_row_count,image->rows))
                     if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
                                                 LoadImageText,image->filename,
-						image->columns,image->rows))
+                                                image->columns,image->rows))
                       thread_status=MagickFail;
                 }
-                  
+
                 if (thread_status != MagickFail)
                   ReadRowSamples((const unsigned char*) scanline_data,samples_per_row,bits_per_sample,
                                  packing_method,endian_type,swap_word_datums,samples);
@@ -2497,10 +2497,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         Quantum
                           Cb,
                           Cr;
-                        
+
                         Cb=map_CbCr[*samples_itr++]; /* Cb */
                         Cr=map_CbCr[*samples_itr++]; /* Cr */
-                    
+
                         SetCbSample(q,Cb);  /* Cb */
                         SetCrSample(q,Cr);  /* Cr */
                         q++;
@@ -2647,7 +2647,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
               /*
                 FIXME: Add support for optional EOL padding.
-              */              
+              */
               if (thread_status == MagickFail)
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp critical (GM_ReadDPXImage)
@@ -2674,7 +2674,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ThrowDPXReaderException(CoderError,ColorTypeNotSupported,image);
         }
     }
-    
+
   if (EOFBlob(image))
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
                    image->filename);
@@ -2978,10 +2978,10 @@ STATIC void WriteRowSamples(const sample_t *samples,
         {
           register magick_uint32_t
             packed_u32;
-          
+
           register unsigned int
             datum;
-          
+
           unsigned int
             shifts[3] = { 0, 0, 0 };
 
@@ -3193,7 +3193,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   {
       WriteWordU32State
         write_state;
-      
+
       WordStreamWriteHandle
         write_stream;
 
@@ -3290,7 +3290,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
     member.f=strtod(definition_value_, (char **) NULL); \
   else if ((attribute_=GetImageAttribute(image,key))) \
-    member.f=strtod(attribute_->value, (char **) NULL);	\
+    member.f=strtod(attribute_->value, (char **) NULL); \
   else \
     SET_UNDEFINED_R32(member); \
 }
@@ -3371,7 +3371,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
 
   register const PixelPacket
     *p;
-  
+
   register unsigned long
     i,
     x;
@@ -3655,7 +3655,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
      primaries (for additive color systems like television) or color
      responses (for printing density). */
   /* Reference low data code.  For printing density the default is 0
-     but for ITU-R 601-5 luma, the default is 16 */ 
+     but for ITU-R 601-5 luma, the default is 16 */
   /* Reference low quantity represented. For printing density the
      default is a density of 0.00. For ITU-R 601-5, the luma default
      is 0 mv */
@@ -3911,7 +3911,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   if (dpx_file_info.creator[0] == '\0')
 #endif
     (void) strlcpy(dpx_file_info.creator,GetMagickVersion((unsigned long *) NULL),
-		   sizeof(dpx_file_info.creator));
+                   sizeof(dpx_file_info.creator));
   AttributeToString(image_info,image,"DPX:file.project.name",dpx_file_info.project_name);
   AttributeToString(image_info,image,"DPX:file.copyright",dpx_file_info.copyright);
   AttributeToU32(image_info,image,"DPX:file.encryption.key",dpx_file_info.encryption_key);
@@ -4081,7 +4081,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   while (offset < dpx_image_info.element_info[0].data_offset)
     {
       if (WriteBlobByte(image,0U) != 1)
-	break;
+        break;
       offset += 1;
     }
   /*
@@ -4104,63 +4104,63 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
 
 
       /*
-	Validate that what we are writing matches the header offsets.
+        Validate that what we are writing matches the header offsets.
       */
       {
-	magick_off_t
-	  reported_file_offset;
-	  
-	if (((reported_file_offset = TellBlob(image)) != -1) &&
-	    ((magick_off_t) dpx_image_info.element_info[element].data_offset !=
-	     reported_file_offset))
-	  {
-	    (void) fprintf(stderr,"### Descriptor %u offset %u, TellBlob says %" MAGICK_OFF_F "d\n",
-			   element+1, dpx_image_info.element_info[element].data_offset,
-			   reported_file_offset);
-	  }
+        magick_off_t
+          reported_file_offset;
+
+        if (((reported_file_offset = TellBlob(image)) != -1) &&
+            ((magick_off_t) dpx_image_info.element_info[element].data_offset !=
+             reported_file_offset))
+          {
+            (void) fprintf(stderr,"### Descriptor %u offset %u, TellBlob says %" MAGICK_OFF_F "d\n",
+                           element+1, dpx_image_info.element_info[element].data_offset,
+                           reported_file_offset);
+          }
       }
       DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
 
       bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
       transfer_characteristic=(DPXTransferCharacteristic)
-	dpx_image_info.element_info[element].transfer_characteristic;
+        dpx_image_info.element_info[element].transfer_characteristic;
 
       {
-	double
-	  max_value,
-	  reference_low,
-	  reference_high,
-	  scale_from_maxmap;           /* multiplier to scale from MaxMap */
+        double
+          max_value,
+          reference_low,
+          reference_high,
+          scale_from_maxmap;           /* multiplier to scale from MaxMap */
 
-	max_value = (double) MaxValueGivenBits(bits_per_sample);
-	reference_low = 0.0;
-	reference_high = max_value;
-	scale_from_maxmap=max_value/((double) MaxMap);
+        max_value = (double) MaxValueGivenBits(bits_per_sample);
+        reference_low = 0.0;
+        reference_high = max_value;
+        scale_from_maxmap=max_value/((double) MaxMap);
 
-	if ((transfer_characteristic == TransferCharacteristicITU_R709) ||
-	    (transfer_characteristic == TransferCharacteristicITU_R601_625L) ||
-	    (transfer_characteristic == TransferCharacteristicITU_R601_525L))
-	  {
-	    double
-	      ScaleY = 0.0,
-	      ScaleCbCr = 0.0;
+        if ((transfer_characteristic == TransferCharacteristicITU_R709) ||
+            (transfer_characteristic == TransferCharacteristicITU_R601_625L) ||
+            (transfer_characteristic == TransferCharacteristicITU_R601_525L))
+          {
+            double
+              ScaleY = 0.0,
+              ScaleCbCr = 0.0;
 
-	    reference_low = ((MaxRGBDouble+1.0)*(64.0/1024.0));
-	    reference_high = ((MaxRGBDouble+1.0)*(940.0/1024.0));
-	    ScaleY = (reference_high-reference_low)/(MaxRGBDouble+1.0);
-	    ScaleCbCr = ScaleY*((960.0-64.0)/(940.0-64.0));
+            reference_low = ((MaxRGBDouble+1.0)*(64.0/1024.0));
+            reference_high = ((MaxRGBDouble+1.0)*(940.0/1024.0));
+            ScaleY = (reference_high-reference_low)/(MaxRGBDouble+1.0);
+            ScaleCbCr = ScaleY*((960.0-64.0)/(940.0-64.0));
 
-	    for (i=0; i <= MaxMap ; i++)
-	      {
-		map_Y[i]=(i*ScaleY+reference_low)*scale_from_maxmap+0.5;
-		map_CbCr[i]=(i*ScaleCbCr+reference_low)*scale_from_maxmap+0.5;
-	      }
-	  }
-	else
-	  {
-	    for (i=0; i <= MaxMap ; i++)
-	      map_Y[i]=i*scale_from_maxmap+0.5;
-	  }
+            for (i=0; i <= MaxMap ; i++)
+              {
+                map_Y[i]=(i*ScaleY+reference_low)*scale_from_maxmap+0.5;
+                map_CbCr[i]=(i*ScaleCbCr+reference_low)*scale_from_maxmap+0.5;
+              }
+          }
+        else
+          {
+            for (i=0; i <= MaxMap ; i++)
+              map_Y[i]=i*scale_from_maxmap+0.5;
+          }
       }
 
       element_descriptor=(DPXImageElementDescriptor)
@@ -4187,8 +4187,8 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
           (element_descriptor == ImageElementABGR) ||
           (element_descriptor == ImageElementCbYCrY422) ||
           (element_descriptor == ImageElementCbYACrYA4224) ||
-	  (element_descriptor == ImageElementCbYCr444) ||
-	  (element_descriptor == ImageElementCbYCrA4444))
+          (element_descriptor == ImageElementCbYCr444) ||
+          (element_descriptor == ImageElementCbYCrA4444))
         {
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
@@ -4285,12 +4285,12 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
                 /* CbCr */
                 const PixelPacket
                   *chroma_pixels;
-                
+
                 chroma_pixels=AcquireImagePixels(chroma_image,0,y,chroma_image->columns,1,
                                                  &image->exception);
                 if (chroma_pixels == (const PixelPacket *) NULL)
                   break;
-                
+
                 for (x=image->columns; x != 0; x -= 2)
                   {
                     *samples_itr++=map_CbCr[ScaleQuantumToMap(GetCbSample(chroma_pixels))]; /* Cb */
@@ -4422,11 +4422,11 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
     }
-  
+
   /*
     Validate that what we are writing matches the header offsets.
   */
@@ -4436,14 +4436,14 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
 
     reported_file_offset = TellBlob(image);
     if ((reported_file_offset != -1) &&
-	((magick_off_t) dpx_file_info.file_size != reported_file_offset))
+        ((magick_off_t) dpx_file_info.file_size != reported_file_offset))
       {
-	(void) fprintf(stderr,"### File length %u, TellBlob says %" MAGICK_OFF_F "d\n",
-		       dpx_file_info.file_size,
-		       reported_file_offset);
+        (void) fprintf(stderr,"### File length %u, TellBlob says %" MAGICK_OFF_F "d\n",
+                       dpx_file_info.file_size,
+                       reported_file_offset);
       }
   }
-  
+
   MagickFreeMemory(map_CbCr);
   MagickFreeMemory(map_Y);
   MagickFreeMemory(samples);

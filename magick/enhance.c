@@ -95,7 +95,7 @@ BuildChannelHistograms(const Image *image, ExceptionInfo *exception)
 
   DoublePixelPacket
     *histogram;
-  
+
   histogram=MagickAllocateArray(DoublePixelPacket *,(MaxMap+1),
                                 sizeof(DoublePixelPacket));
   if (histogram == (DoublePixelPacket *) NULL)
@@ -110,7 +110,7 @@ BuildChannelHistograms(const Image *image, ExceptionInfo *exception)
   {
     PixelIteratorOptions
       iterator_options;
-    
+
     InitializePixelIteratorOptions(&iterator_options,exception);
     iterator_options.max_threads=1;
     status=PixelIterateMonoRead(BuildChannelHistogramsCB,
@@ -123,7 +123,7 @@ BuildChannelHistograms(const Image *image, ExceptionInfo *exception)
 
   if (status == MagickFail)
     MagickFreeMemory(histogram);
-  
+
   return histogram;
 }
 
@@ -170,10 +170,10 @@ ContrastImagePixels(void *mutable_data,         /* User provided mutable data */
 
   static const double
     alpha=0.5+MagickEpsilon;
-      
+
   register long
     i;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
@@ -298,7 +298,7 @@ ApplyLevels(void *mutable_data,          /* User provided mutable data */
     level_green=options->level_green,
     level_blue=options->level_blue,
     level_opacity=options->level_opacity;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
@@ -369,7 +369,7 @@ MagickExport MagickPassFail EqualizeImage(Image *image)
   /*
     Integrate the histogram to get the equalization map.
   */
-  (void) memset(&intensity,0,sizeof(DoublePixelPacket));  
+  (void) memset(&intensity,0,sizeof(DoublePixelPacket));
   for (i=0; i <= (long) MaxMap; i++)
     {
       intensity.red+=histogram[i].red;
@@ -473,12 +473,12 @@ typedef struct _ApplyLevelsDiscrete_t
 
 static MagickPassFail
 ApplyLevelsDiscrete(void *mutable_data,             /* User provided mutable data */
-		    const void *immutable_data,     /* User provided immutable data */
-		    Image *image,                   /* Modify image */
-		    PixelPacket * restrict pixels,  /* Pixel row */
-		    IndexPacket * restrict indexes, /* Pixel row indexes */
-		    const long npixels,             /* Number of pixels in row */
-		    ExceptionInfo *exception)       /* Exception report */
+                    const void *immutable_data,     /* User provided immutable data */
+                    Image *image,                   /* Modify image */
+                    PixelPacket * restrict pixels,  /* Pixel row */
+                    IndexPacket * restrict indexes, /* Pixel row indexes */
+                    const long npixels,             /* Number of pixels in row */
+                    ExceptionInfo *exception)       /* Exception report */
 {
   /*
     Apply a levels transformation based on a supplied look-up table.
@@ -497,20 +497,20 @@ ApplyLevelsDiscrete(void *mutable_data,             /* User provided mutable dat
   for (i=0; i < npixels; i++)
     {
       if (levels.color)
-	{
-	  pixels[i].red=levels.color[ScaleQuantumToMap(pixels[i].red)];
-	  pixels[i].green=levels.color[ScaleQuantumToMap(pixels[i].green)];
-	  pixels[i].blue=levels.color[ScaleQuantumToMap(pixels[i].blue)];
-	}
+        {
+          pixels[i].red=levels.color[ScaleQuantumToMap(pixels[i].red)];
+          pixels[i].green=levels.color[ScaleQuantumToMap(pixels[i].green)];
+          pixels[i].blue=levels.color[ScaleQuantumToMap(pixels[i].blue)];
+        }
       else
-	{
-	  if (levels.red)
-	    pixels[i].red=levels.red[ScaleQuantumToMap(pixels[i].red)];
-	  if (levels.green)
-	    pixels[i].green=levels.green[ScaleQuantumToMap(pixels[i].green)];
-	  if (levels.blue)
-	    pixels[i].blue=levels.blue[ScaleQuantumToMap(pixels[i].blue)];
-	}
+        {
+          if (levels.red)
+            pixels[i].red=levels.red[ScaleQuantumToMap(pixels[i].red)];
+          if (levels.green)
+            pixels[i].green=levels.green[ScaleQuantumToMap(pixels[i].green)];
+          if (levels.blue)
+            pixels[i].blue=levels.blue[ScaleQuantumToMap(pixels[i].blue)];
+        }
       if (levels.opacity)
         pixels[i].opacity=levels.opacity[ScaleQuantumToMap(pixels[i].opacity)];
     }
@@ -533,12 +533,12 @@ typedef DoublePixelPacket GammaCorrectPixelsOptions_t;
 
 static MagickPassFail
 GammaCorrectPixels(void *mutable_data,             /* User provided mutable data */
-		   const void *immutable_data,     /* User provided immutable data */
-		   Image *image,                   /* Modify image */
-		   PixelPacket * restrict pixels,  /* Pixel row */
-		   IndexPacket * restrict indexes, /* Pixel row indexes */
-		   const long npixels,             /* Number of pixels in row */
-		   ExceptionInfo *exception)       /* Exception report */
+                   const void *immutable_data,     /* User provided immutable data */
+                   Image *image,                   /* Modify image */
+                   PixelPacket * restrict pixels,  /* Pixel row */
+                   IndexPacket * restrict indexes, /* Pixel row indexes */
+                   const long npixels,             /* Number of pixels in row */
+                   ExceptionInfo *exception)       /* Exception report */
 {
   /*
     Apply a gamma transformation based on slow accurate math.
@@ -566,23 +566,23 @@ GammaCorrectPixels(void *mutable_data,             /* User provided mutable data
   for (i=0; i < npixels; i++)
     {
       double
-	value;
+        value;
 
       if (red_flag)
-	{
-	  value=MaxRGBDouble*GammaCorrect(pixels[i].red/MaxRGBDouble,options.red);
-	  pixels[i].red=RoundDoubleToQuantum(value);
-	}
+        {
+          value=MaxRGBDouble*GammaCorrect(pixels[i].red/MaxRGBDouble,options.red);
+          pixels[i].red=RoundDoubleToQuantum(value);
+        }
       if (green_flag)
-	{
-	  value=MaxRGBDouble*GammaCorrect(pixels[i].green/MaxRGBDouble,options.green);
-	  pixels[i].green=RoundDoubleToQuantum(value);
-	}
+        {
+          value=MaxRGBDouble*GammaCorrect(pixels[i].green/MaxRGBDouble,options.green);
+          pixels[i].green=RoundDoubleToQuantum(value);
+        }
       if (blue_flag)
-	{
-	  value=MaxRGBDouble*GammaCorrect(pixels[i].blue/MaxRGBDouble,options.blue);
-	  pixels[i].blue=RoundDoubleToQuantum(value);
-	}
+        {
+          value=MaxRGBDouble*GammaCorrect(pixels[i].blue/MaxRGBDouble,options.blue);
+          pixels[i].blue=RoundDoubleToQuantum(value);
+        }
     }
 
   return MagickPass;
@@ -620,7 +620,7 @@ MagickExport MagickPassFail GammaImage(Image *image,const char *level)
   if (level == (char *) NULL)
     return(MagickFail);
   count=sscanf(level,"%lf%*[,/]%lf%*[,/]%lf",&gamma_red,&gamma_green,
-	       &gamma_blue);
+               &gamma_blue);
   if (count == 1)
     {
       gamma_green=gamma_red;
@@ -669,54 +669,54 @@ MagickExport MagickPassFail GammaImage(Image *image,const char *level)
     if (level_blue)
       levels.blue=MagickAllocateArray(Quantum *,(MaxMap+1),sizeof(Quantum));
     if ((level_color && !levels.color) ||
-	(level_red && !levels.red) ||
-	(level_green && !levels.green) ||
-	(level_blue && !levels.blue))
+        (level_red && !levels.red) ||
+        (level_green && !levels.green) ||
+        (level_blue && !levels.blue))
       {
-	MagickFreeMemory(levels.color);
-	MagickFreeMemory(levels.red);
-	MagickFreeMemory(levels.green);
-	MagickFreeMemory(levels.blue);
-	ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-			      UnableToGammaCorrectImage);
+        MagickFreeMemory(levels.color);
+        MagickFreeMemory(levels.red);
+        MagickFreeMemory(levels.green);
+        MagickFreeMemory(levels.blue);
+        ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
+                              UnableToGammaCorrectImage);
       }
 #if (MaxMap > 256) && defined(HAVE_OPENMP)
 #  pragma omp parallel for
 #endif
     for (i=0; i <= (long) MaxMap; i++)
       {
-	if (levels.color)
-	  levels.color[i]=
-	    ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_color));
-	if (levels.red)
-	  levels.red[i]=
-	    ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_red));
-	if (levels.green)
-	  levels.green[i]=
-	    ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_green));
-	if (levels.blue)
-	  levels.blue[i]=
-	    ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_blue));
+        if (levels.color)
+          levels.color[i]=
+            ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_color));
+        if (levels.red)
+          levels.red[i]=
+            ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_red));
+        if (levels.green)
+          levels.green[i]=
+            ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_green));
+        if (levels.blue)
+          levels.blue[i]=
+            ScaleMapToQuantum(MaxMap*GammaCorrect((double) i/MaxMap,gamma_blue));
       }
     /*
       Apply gamma.
     */
     if (image->storage_class == PseudoClass)
       {
-	(void) ApplyLevelsDiscrete(NULL,&levels,image,image->colormap,
-				   (IndexPacket *) NULL,image->colors,
-				   &image->exception);
-	status=SyncImage(image);
+        (void) ApplyLevelsDiscrete(NULL,&levels,image,image->colormap,
+                                   (IndexPacket *) NULL,image->colors,
+                                   &image->exception);
+        status=SyncImage(image);
       }
     else
       {
-	status=PixelIterateMonoModify(ApplyLevelsDiscrete,
-				      NULL,
-				      "[%s] Applying gamma correction...",
-				      NULL,&levels,
-				      0,0,image->columns,image->rows,
-				      image,
-				      &image->exception);
+        status=PixelIterateMonoModify(ApplyLevelsDiscrete,
+                                      NULL,
+                                      "[%s] Applying gamma correction...",
+                                      NULL,&levels,
+                                      0,0,image->columns,image->rows,
+                                      image,
+                                      &image->exception);
       }
     MagickFreeMemory(levels.color);
     MagickFreeMemory(levels.red);
@@ -738,23 +738,23 @@ MagickExport MagickPassFail GammaImage(Image *image,const char *level)
     */
     if (image->storage_class == PseudoClass)
       {
-	(void) GammaCorrectPixels(NULL,&levels,image,image->colormap,
-				   (IndexPacket *) NULL,image->colors,
-				   &image->exception);
-	status=SyncImage(image);
+        (void) GammaCorrectPixels(NULL,&levels,image,image->colormap,
+                                   (IndexPacket *) NULL,image->colors,
+                                   &image->exception);
+        status=SyncImage(image);
       }
     else
       {
-	status=PixelIterateMonoModify(GammaCorrectPixels,
-				      NULL,
-				      "[%s] Applying gamma correction...",
-				      NULL,&levels,
-				      0,0,image->columns,image->rows,
-				      image,
-				      &image->exception);
+        status=PixelIterateMonoModify(GammaCorrectPixels,
+                                      NULL,
+                                      "[%s] Applying gamma correction...",
+                                      NULL,&levels,
+                                      0,0,image->columns,image->rows,
+                                      image,
+                                      &image->exception);
       }
   }
-  
+
 #endif/* if MaxMap != MaxRGB */
 
   if (image->gamma != 0.0)
@@ -803,7 +803,7 @@ MagickExport MagickPassFail LevelImage(Image *image,const char *levels)
     black_point,
     mid_point,
     white_point;
-  
+
   MagickPassFail
     status=MagickPass;
 
@@ -829,7 +829,7 @@ MagickExport MagickPassFail LevelImage(Image *image,const char *levels)
 
     const char
       *lp;
-    
+
     char
       *cp;
 
@@ -975,7 +975,7 @@ MagickExport MagickPassFail LevelImageChannel(Image *image,
       break;
     default:
       break;
-    }    
+    }
   /*
     Build leveling map.
   */
@@ -1076,7 +1076,7 @@ ModulateImagePixels(void *mutable_data,         /* User provided mutable data */
 
   register long
     i;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
@@ -1097,7 +1097,7 @@ ModulateImagePixels(void *mutable_data,         /* User provided mutable data */
       saturation*=(0.01+MagickEpsilon)*param.percent_saturation;
       if (saturation > 1.0)
         saturation=1.0;
-      
+
       hue += (param.percent_hue/200.0 - 0.5);
       while (hue < 0.0)
         hue += 1.0;
@@ -1207,7 +1207,7 @@ NegateImagePixels(void *mutable_data,         /* User provided mutable data */
 
   register long
     i;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
@@ -1306,50 +1306,50 @@ MagickExport MagickPassFail NegateImage(Image *image,const unsigned int grayscal
 /*
   Find histogram bounds based on a minimum threshold value.
 */
-#define FindHistogramBoundsAlg(Q,threshold,low,high,histogram)	\
-  {								\
-    double							\
-      intensity;						\
-								\
-    intensity=0.0;						\
-    for (low.Q=0.0; low.Q < MaxMapDouble; low.Q += 1.0)		\
-      {								\
-	intensity+=histogram[(long) low.Q].Q;			\
-	if (intensity > threshold)				\
-	  break;						\
-      }								\
-    intensity=0.0;						\
-    for (high.Q=MaxMapDouble; high.Q >= 1.0; high.Q -= 1.0)	\
-      {								\
-	intensity+=histogram[(long) high.Q].Q;			\
-	if (intensity > threshold)				\
-	  break;						\
-      }								\
+#define FindHistogramBoundsAlg(Q,threshold,low,high,histogram)  \
+  {                                                             \
+    double                                                      \
+      intensity;                                                \
+                                                                \
+    intensity=0.0;                                              \
+    for (low.Q=0.0; low.Q < MaxMapDouble; low.Q += 1.0)         \
+      {                                                         \
+        intensity+=histogram[(long) low.Q].Q;                   \
+        if (intensity > threshold)                              \
+          break;                                                \
+      }                                                         \
+    intensity=0.0;                                              \
+    for (high.Q=MaxMapDouble; high.Q >= 1.0; high.Q -= 1.0)     \
+      {                                                         \
+        intensity+=histogram[(long) high.Q].Q;                  \
+        if (intensity > threshold)                              \
+          break;                                                \
+      }                                                         \
 }
 /*
   Find histogram bounds, but with additional fallback in case
   contrast is not reasonable.
 */
-#define FindHistogramBounds(Q,threshold,low,high,histogram)	\
-  {								\
-    FindHistogramBoundsAlg(Q,threshold,low,high,histogram);	\
-    if (low.red == high.red)					\
-      FindHistogramBoundsAlg(Q,0.0,low,high,histogram);		\
+#define FindHistogramBounds(Q,threshold,low,high,histogram)     \
+  {                                                             \
+    FindHistogramBoundsAlg(Q,threshold,low,high,histogram);     \
+    if (low.red == high.red)                                    \
+      FindHistogramBoundsAlg(Q,0.0,low,high,histogram);         \
 }
 /*
   Compute levels map entry for a quantum.
 */
-#define ComputeHistogramMapQuantum(Q,levels,low,high)			\
-{									\
-  if (i < (long) low.Q)							\
-    levels.map[i].Q=0;							\
-  else									\
-    if (i > (long) high.Q)						\
-      levels.map[i].Q=MaxRGB;						\
-    else								\
-      if (low.Q != high.Q)						\
-	levels.map[i].Q=						\
-	  ScaleMapToQuantum((MaxMapDouble*(i-low.Q))/(high.Q-low.Q));	\
+#define ComputeHistogramMapQuantum(Q,levels,low,high)                   \
+{                                                                       \
+  if (i < (long) low.Q)                                                 \
+    levels.map[i].Q=0;                                                  \
+  else                                                                  \
+    if (i > (long) high.Q)                                              \
+      levels.map[i].Q=MaxRGB;                                           \
+    else                                                                \
+      if (low.Q != high.Q)                                              \
+        levels.map[i].Q=                                                \
+          ScaleMapToQuantum((MaxMapDouble*(i-low.Q))/(high.Q-low.Q));   \
 }
 MagickExport MagickPassFail NormalizeImage(Image *image)
 {
@@ -1395,12 +1395,12 @@ MagickExport MagickPassFail NormalizeImage(Image *image)
     }
   /*
     Find the histogram boundaries by locating the 0.1 percent levels.
-  */ 
+  */
   threshold_percent=0.1;
   MagickAttributeToDouble(image,"histogram-threshold",threshold_percent);
   threshold=(long) ((double) image->columns*image->rows*0.01*threshold_percent);
   (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-			"Histogram Threshold = %g%% (%g)", threshold_percent, threshold);
+                        "Histogram Threshold = %g%% (%g)", threshold_percent, threshold);
   FindHistogramBounds(red,threshold,low,high,histogram);
   FindHistogramBounds(green,threshold,low,high,histogram);
   FindHistogramBounds(blue,threshold,low,high,histogram);
@@ -1423,7 +1423,7 @@ MagickExport MagickPassFail NormalizeImage(Image *image)
       ComputeHistogramMapQuantum(blue,levels,low,high);
       levels.map[i].opacity=OpaqueOpacity;
       if (image->matte)
-	ComputeHistogramMapQuantum(opacity,levels,low,high);
+        ComputeHistogramMapQuantum(opacity,levels,low,high);
     }
 
   /*

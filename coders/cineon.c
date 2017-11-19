@@ -130,7 +130,7 @@ typedef struct _CineonImageInfo
   U8    sense;                     /* Image sense: 0=positive, 1=negative */
   U32   eol_pad;                   /* End of line padding */
   U32   eoc_pad;                   /* End of channel padding */
-  ASCII reserved2[20];             /* Reserved for future use */  
+  ASCII reserved2[20];             /* Reserved for future use */
 } CineonImageInfo;
 
 typedef struct _CineonImageOriginationInfo
@@ -348,7 +348,7 @@ static void SwabCineonImageInfo(CineonImageInfo *image_info)
   MagickSwabFloat(&image_info->blue_primary_chromaticity[0].f);
   MagickSwabFloat(&image_info->blue_primary_chromaticity[1].f);
   MagickSwabUInt32(&image_info->eol_pad);
-  MagickSwabUInt32(&image_info->eoc_pad);  
+  MagickSwabUInt32(&image_info->eoc_pad);
 }
 
 static void SwabCineonImageOriginationInfo(CineonImageOriginationInfo *image_info)
@@ -472,14 +472,14 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
     i;
 
   size_t
-    offset;    
+    offset;
 
   unsigned int
     channel,
     max_bits_per_sample,
     max_lines_per_image,
     max_pixels_per_line,
-    number_of_channels;    
+    number_of_channels;
 
   MagickPassFail
     status;
@@ -492,7 +492,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
 
   unsigned char
     *scandata;
-  
+
   void
     *scanline;
 
@@ -614,7 +614,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
       max_lines_per_image=Max(max_lines_per_image,
                               cin_image_info.channel_info[channel].lines_per_image);
     }
-  
+
   image->depth=max_bits_per_sample;
   image->columns=max_pixels_per_line;
   image->rows=max_lines_per_image;
@@ -705,14 +705,14 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
     {
       unsigned char
         *user_data;
-      
+
       const size_t
         block_size = 65536UL;
-      
+
       size_t
         read_size,
         user_data_length;
-      
+
       user_data_length=0UL;
       user_data=(unsigned char *) NULL;
       while (user_data_length < cin_file_info.user_defined_length)
@@ -810,7 +810,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           MagickFreeMemory(scandata);
@@ -861,7 +861,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           MagickFreeMemory(scandata);
@@ -1129,7 +1129,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
 
   register const PixelPacket
     *p;
-  
+
   register long
     x;
 
@@ -1267,7 +1267,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
   cin_image_info.eol_pad = 0;
   /* End of channel padding */
   cin_image_info.eoc_pad = 0;
-  
+
   /*
     Image origination header.
   */
@@ -1332,7 +1332,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
   AttributeToString(image_info,image,"DPX:mp.frame.id",cin_mp_info.frame_id);
   /* Slate information */
   AttributeToString(image_info,image,"DPX:mp.slate.info",cin_mp_info.slate_info);
-  
+
   /*
     Open output image file.
   */
@@ -1446,9 +1446,9 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
         p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
         if (p == (const PixelPacket *) NULL)
           break;
-        
+
         MagickBitStreamInitializeWrite(&bit_stream,scanline);
-        
+
         for (x=0; x < (long) image->columns; x++)
           {
             red   = ScaleQuantumToShort(p->red)/scale_from_short;
@@ -1476,7 +1476,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
       }
     MagickFreeMemory(scanline);

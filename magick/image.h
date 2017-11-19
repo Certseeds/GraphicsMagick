@@ -2,11 +2,11 @@
   Copyright (C) 2003 - 2015 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Image Methods.
 */
 #ifndef _MAGICK_IMAGE_H
@@ -683,7 +683,7 @@ typedef struct _Image
 
   MagickBool
     dither,             /* True if image is to be dithered */
-    matte;              /* True if image has an opacity (alpha) channel */ 
+    matte;              /* True if image has an opacity (alpha) channel */
 
   unsigned long
     columns,            /* Number of image columns */
@@ -1048,7 +1048,7 @@ extern MagickExport MagickPassFail
   SetImageEx(Image *image,const Quantum opacity,ExceptionInfo *exception),
   SetImageColor(Image *image,const PixelPacket *pixel),
   SetImageColorRegion(Image *image,long x,long y,unsigned long width,
-		      unsigned long height,const PixelPacket *pixel),
+                      unsigned long height,const PixelPacket *pixel),
   SetImageClipMask(Image *image,const Image *clip_mask),
   SetImageDepth(Image *image,const unsigned long),
   SetImageInfo(ImageInfo *image_info,const unsigned int flags,ExceptionInfo *exception),

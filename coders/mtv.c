@@ -134,7 +134,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
   {
     size_t
       row_size;
-    
+
     /*
       Initialize image structure.
     */
@@ -176,7 +176,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                       image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     MagickFreeMemory(pixels);
@@ -380,7 +380,7 @@ static unsigned int WriteMTVImage(const ImageInfo *image_info,Image *image)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                       SaveImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     MagickFreeMemory(pixels);

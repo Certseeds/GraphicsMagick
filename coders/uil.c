@@ -335,7 +335,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   CloseBlob(image);

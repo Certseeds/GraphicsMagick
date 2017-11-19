@@ -143,12 +143,12 @@ The licenses which components of this software fall under are as follows.
 
   Many of the pattern images in coders/logo.c are derived from XFig,
   which is distributed under the following license:
- 
+
   | FIG : Facility for Interactive Generation of figures
   | Copyright (c) 1985-1988 by Supoj Sutanthavibul
   | Parts Copyright (c) 1989-2000 by Brian V. Smith
   | Parts Copyright (c) 1991 by Paul King
- 
+
   Any party obtaining a copy of these files is granted, free of charge, a
   full and unrestricted irrevocable, world-wide, paid up, royalty-free,
   nonexclusive right and license to deal in this software and
@@ -167,19 +167,19 @@ The licenses which components of this software fall under are as follows.
   this manual page is as follows:
 
   Copyright (c) 1986, University of Utah
-  
+
   This software is copyrighted as noted below.  It may be freely copied,
-  modified, and redistributed, provided that the copyright notice is 
+  modified, and redistributed, provided that the copyright notice is
   preserved on all copies.
-  
+
   There is no warranty or other guarantee of fitness for this software,
   it is provided solely "as is".  Bug reports or fixes may be sent
   to the author, who may or may not act on them as he desires.
-  
+
   You may not include this software in a program or other software product
-  without supplying the source, or without informing the end-user that the 
+  without supplying the source, or without informing the end-user that the
   source is available for no extra charge.
-  
+
   If you modify this software, you should include a notice giving the
   name of the person performing the modification, the date of modification,
   and the reason for such modification.
@@ -192,23 +192,23 @@ The licenses which components of this software fall under are as follows.
   | Copyright (c) 1988-1997 Sam Leffler
   | Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
-  Permission to use, copy, modify, distribute, and sell this software and 
+  Permission to use, copy, modify, distribute, and sell this software and
   its documentation for any purpose is hereby granted without fee, provided
   that (i) the above copyright notices and this permission notice appear in
   all copies of the software and related documentation, and (ii) the names of
   Sam Leffler and Silicon Graphics may not be used in any advertising or
   publicity relating to the software without the specific, prior written
   permission of Sam Leffler and Silicon Graphics.
-   
-  THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
-  EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
-  WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
- 
+
+  THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+  WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
   IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
   ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
   OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-  WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
-  LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+  WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF
+  LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
   OF THIS SOFTWARE.
 
 8)
@@ -217,7 +217,7 @@ The licenses which components of this software fall under are as follows.
   directory, is distributed under the following license:
 
   Copyright 1999 - 2012 Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
-                                                                          
+
   Permission is hereby granted, free of charge, to any person
   obtaining a copy of this software and associated documentation files
   ("Magick++"), to deal in the Software without restriction, including

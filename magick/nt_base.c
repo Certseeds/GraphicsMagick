@@ -125,7 +125,7 @@ MagickExport int NTclosedir(DIR *entry)
 %  A description of each parameter follows:
 %
 %    o hinstDLL: handle to the DLL module
-%   
+%
 %    o fdwReason: reason for calling function.
 %
 %          May have values:
@@ -158,9 +158,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved)
         char
           dll_path[DLL_PATH_MAX],
           current_path[ENV_VAR_MAX];
-        
+
         long count;
-        
+
         count = GetModuleFileName(hinstDLL,dll_path,DLL_PATH_MAX);
         if (count) {
           for ( ; count>0 ; --count)
@@ -440,7 +440,7 @@ MagickUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *info)
     ULONG_PTR                ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
     } EXCEPTION_RECORD, *PEXCEPTION_RECORD;
 
-    https://msdn.microsoft.com/en-us/library/windows/desktop/ms679284%28v=vs.85%29.aspx 
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms679284%28v=vs.85%29.aspx
     We don't care about PCONTEXT because it is processor-specific and includes low level
     details such as register contents.
 
@@ -1155,7 +1155,7 @@ char *NTGetLastError(void)
  */
 static int
 NTGetRegistryValue(HKEY hkeyroot, const char *key, const char *name,
-		   char *ptr, int *plen)
+                   char *ptr, int *plen)
 {
   HKEY
     hkey;
@@ -1177,22 +1177,22 @@ NTGetRegistryValue(HKEY hkeyroot, const char *key, const char *name,
       keytype = REG_SZ;
       cbData = *plen;
       if (bptr == (BYTE *) NULL)
-	bptr = &b;  /* Registry API won't return ERROR_MORE_DATA */
+        bptr = &b;  /* Registry API won't return ERROR_MORE_DATA */
       /* if ptr is NULL */
       rc = RegQueryValueExA(hkey, (char *)name, 0, &keytype, bptr, &cbData);
       RegCloseKey(hkey);
       if (rc == ERROR_SUCCESS)
-	{
-	  *plen = cbData;
-	  return 0;  /* found environment variable and copied it */
-	}
+        {
+          *plen = cbData;
+          return 0;  /* found environment variable and copied it */
+        }
       else
-	if (rc == ERROR_MORE_DATA)
-	  {
-	    /* buffer wasn't large enough */
-	    *plen = cbData;
-	    return -1;
-	  }
+        if (rc == ERROR_MORE_DATA)
+          {
+            /* buffer wasn't large enough */
+            *plen = cbData;
+            return -1;
+          }
     }
   return 1;  /* not found */
 }
@@ -1203,8 +1203,8 @@ NTGetRegistryValue(HKEY hkeyroot, const char *key, const char *name,
 */
 static MagickPassFail
 NTGhostscriptFind(const char **gs_productfamily,
-		  int *gs_major_version,
-		  int *gs_minor_version)
+                  int *gs_major_version,
+                  int *gs_minor_version)
 {
   /*
     These are the Ghostscript product versions we will search for.
@@ -1214,7 +1214,7 @@ NTGhostscriptFind(const char **gs_productfamily,
       "GPL Ghostscript",
       "GNU Ghostscript",
       "AFPL Ghostscript",
-      "Aladdin Ghostscript" 
+      "Aladdin Ghostscript"
     };
 
   unsigned int
@@ -1227,7 +1227,7 @@ NTGhostscriptFind(const char **gs_productfamily,
   *gs_productfamily=NULL;
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			"Searching for Ghostscript...");
+                        "Searching for Ghostscript...");
 
   /* Minimum version of Ghostscript is 5.50 */
   *gs_major_version=5;
@@ -1236,126 +1236,126 @@ NTGhostscriptFind(const char **gs_productfamily,
        ++product_index)
     {
       HKEY
-	hkey,
-	hkeyroot;
+        hkey,
+        hkeyroot;
 
       LONG
-	winstatus;
+        winstatus;
 
       REGSAM
-	open_key_mode;
+        open_key_mode;
 
       char
-	key[MaxTextExtent],
-	last_error_msg[MaxTextExtent];
+        key[MaxTextExtent],
+        last_error_msg[MaxTextExtent];
 
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			    "  Searching for %s...",
-			    products[product_index]);
+                            "  Searching for %s...",
+                            products[product_index]);
       FormatString(key,"SOFTWARE\\%s",products[product_index]);
       hkeyroot = HKEY_LOCAL_MACHINE;
       /*
-	long WINAPI RegOpenKeyEx(const HKEY hKey, const LPCTSTR
-	lpSubKey, const DWORD ulOptions, const REGSAM samDesired,
-	PHKEY phkResult)
+        long WINAPI RegOpenKeyEx(const HKEY hKey, const LPCTSTR
+        lpSubKey, const DWORD ulOptions, const REGSAM samDesired,
+        PHKEY phkResult)
       */
       open_key_mode=KEY_READ;
       if ((winstatus=RegOpenKeyExA(hkeyroot, key, 0, open_key_mode, &hkey))
-	  == ERROR_SUCCESS)
-	{
-	  DWORD
-	    cbData;
+          == ERROR_SUCCESS)
+        {
+          DWORD
+            cbData;
 
-	  int
-	    n;
+          int
+            n;
 
-	  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				"    RegOpenKeyExA() opened "
-				"\"HKEY_LOCAL_MACHINE\\%s\"",
-				key);
-	  /* Now enumerate the keys */
-	  cbData = sizeof(key) / sizeof(char);
-	  n=0;
-	  /*
-	    LONG WINAPI RegEnumKeyEx(HKEY hKey, DWORD dwIndex, LPTSTR
-	    lpName, LPDWORD lpcName, LPDWORD lpReserved, LPTSTR
-	    lpClass, LPDWORD lpcClass, PFILETIME lpftLastWriteTime)
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "    RegOpenKeyExA() opened "
+                                "\"HKEY_LOCAL_MACHINE\\%s\"",
+                                key);
+          /* Now enumerate the keys */
+          cbData = sizeof(key) / sizeof(char);
+          n=0;
+          /*
+            LONG WINAPI RegEnumKeyEx(HKEY hKey, DWORD dwIndex, LPTSTR
+            lpName, LPDWORD lpcName, LPDWORD lpReserved, LPTSTR
+            lpClass, LPDWORD lpcClass, PFILETIME lpftLastWriteTime)
 
-	    Enumerates the subkeys of the specified open registry key. 
+            Enumerates the subkeys of the specified open registry key.
 
-	    RegEnumKeyA is is provided only for compatibility with
-	    16-bit versions of Windows.
-	  */
-	  while ((winstatus=RegEnumKeyA(hkey, n, key, cbData)) == ERROR_SUCCESS)
-	    {
-	      int
-		major_version,
-		minor_version;
+            RegEnumKeyA is is provided only for compatibility with
+            16-bit versions of Windows.
+          */
+          while ((winstatus=RegEnumKeyA(hkey, n, key, cbData)) == ERROR_SUCCESS)
+            {
+              int
+                major_version,
+                minor_version;
 
-	      (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				    "      RegEnumKeyA enumerated \"%s\"",key);
-	      n++;
-	      major_version=0;
-	      minor_version=0;
-	      if (sscanf(key,"%d.%d",&major_version,&minor_version) != 2)
-		continue;
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "      RegEnumKeyA enumerated \"%s\"",key);
+              n++;
+              major_version=0;
+              minor_version=0;
+              if (sscanf(key,"%d.%d",&major_version,&minor_version) != 2)
+                continue;
 
-	      (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				    "      Found Ghostscript (%s) version %d.%02d",
-				    products[product_index],
-				    major_version,
-				    minor_version);
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "      Found Ghostscript (%s) version %d.%02d",
+                                    products[product_index],
+                                    major_version,
+                                    minor_version);
 
-	      if ((major_version > *gs_major_version) ||
-		  ((major_version == *gs_major_version) &&
-		   (minor_version > *gs_minor_version)))
-		{
-		  *gs_productfamily=products[product_index];
-		  *gs_major_version=major_version;
-		  *gs_minor_version=minor_version;
-		  status=MagickPass;
-		}
-	    }
-	  if (winstatus != ERROR_NO_MORE_ITEMS)
-	    {
-	      (void) NTstrerror_r(winstatus,last_error_msg,sizeof(last_error_msg));
-	      (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				    "      RegEnumKeyA (%s)",
-				    last_error_msg);
-	    }
-	  /*
-	    LONG WINAPI RegCloseKey(HKEY hKey)
-	    
-	    Close the registry key.
-	  */
-	  winstatus=RegCloseKey(hkey);
-	}
+              if ((major_version > *gs_major_version) ||
+                  ((major_version == *gs_major_version) &&
+                   (minor_version > *gs_minor_version)))
+                {
+                  *gs_productfamily=products[product_index];
+                  *gs_major_version=major_version;
+                  *gs_minor_version=minor_version;
+                  status=MagickPass;
+                }
+            }
+          if (winstatus != ERROR_NO_MORE_ITEMS)
+            {
+              (void) NTstrerror_r(winstatus,last_error_msg,sizeof(last_error_msg));
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "      RegEnumKeyA (%s)",
+                                    last_error_msg);
+            }
+          /*
+            LONG WINAPI RegCloseKey(HKEY hKey)
+
+            Close the registry key.
+          */
+          winstatus=RegCloseKey(hkey);
+        }
       else
-	{
-	  /*
-	    If the function fails, the return value is a nonzero error
-	    code defined in Winerror.h. You can use the FormatMessage
-	    function with the FORMAT_MESSAGE_FROM_SYSTEM flag to get a
-	    generic description of the error.
-	   */
-	  (void) NTstrerror_r(winstatus,last_error_msg,sizeof(last_error_msg));
-	  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				"    RegOpenKeyExA() failed to open "
-				"\"HKEY_LOCAL_MACHINE\\%s\" (%s)",
-				key,last_error_msg);
-	}
+        {
+          /*
+            If the function fails, the return value is a nonzero error
+            code defined in Winerror.h. You can use the FormatMessage
+            function with the FORMAT_MESSAGE_FROM_SYSTEM flag to get a
+            generic description of the error.
+           */
+          (void) NTstrerror_r(winstatus,last_error_msg,sizeof(last_error_msg));
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "    RegOpenKeyExA() failed to open "
+                                "\"HKEY_LOCAL_MACHINE\\%s\" (%s)",
+                                key,last_error_msg);
+        }
     }
   if (status != MagickFail)
     {
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			    "Selected Ghostscript (%s) version %d.%02d",
-			    *gs_productfamily,*gs_major_version,
-			    *gs_minor_version);
+                            "Selected Ghostscript (%s) version %d.%02d",
+                            *gs_productfamily,*gs_major_version,
+                            *gs_minor_version);
     }
   else
     {
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			    "Failed to find Ghostscript!");
+                            "Failed to find Ghostscript!");
       *gs_major_version=0;
       *gs_minor_version=0;
     }
@@ -1393,7 +1393,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   int
     length;
-  
+
   char
     key[MaxTextExtent];
 
@@ -1401,30 +1401,30 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   if (NULL == gs_productfamily)
     (void) NTGhostscriptFind(&gs_productfamily,&gs_major_version,
-			     &gs_minor_version);
+                             &gs_minor_version);
 
   if (NULL == gs_productfamily)
     return MagickFail;
 
   FormatString(key,"SOFTWARE\\%s\\%d.%02d",gs_productfamily,
-	       gs_major_version, gs_minor_version);
-  
+               gs_major_version, gs_minor_version);
+
   for (i=0; i < sizeof(hkeys)/sizeof(hkeys[0]); ++i)
     {
       length = (int) len;
       if (NTGetRegistryValue(hkeys[i].hkey, key, name, ptr, &length) == 0)
-	{
-	  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				"Registry: \"%s\\%s\\%s\"=\"%s\"",
-				hkeys[i].name,key,name,ptr);
-	  return MagickPass;
-	}
+        {
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Registry: \"%s\\%s\\%s\"=\"%s\"",
+                                hkeys[i].name,key,name,ptr);
+          return MagickPass;
+        }
       else
-	{
-	  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-				"Failed lookup: \"%s\\%s\\%s\"",
-				hkeys[i].name,key,name);
-	}
+        {
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Failed lookup: \"%s\\%s\\%s\"",
+                                hkeys[i].name,key,name);
+        }
     }
 
   return MagickFail;
@@ -1570,14 +1570,14 @@ MagickExport int NTGhostscriptEXE(char *path, int path_length)
       (void) strlcpy(cache,gsexe,sizeof(cache));
 
       if (NTGhostscriptDLL(cache,sizeof(cache)))
-	{
-	  p = strrchr(cache, '\\');
-	  if (p) {
-	    p++;
-	    *p = 0;
+        {
+          p = strrchr(cache, '\\');
+          if (p) {
+            p++;
+            *p = 0;
             (void) strlcat(cache,gsexe,sizeof(cache));
-	  }
-	}
+          }
+        }
       result=cache;
     }
 
@@ -1643,20 +1643,20 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
     const char
       *end = NULL,
       *start = gs_lib_path;
-        
+
     end=start+strlen(start);
     while ( start < end )
       {
         char
           font_dir[MaxTextExtent],
           font_dir_file[MaxTextExtent];
-            
+
         const char
           *separator;
-            
+
         int
           length;
-            
+
         separator = strchr(start,DirectoryListSeparator);
         if (separator)
           length=separator-start;
@@ -1883,7 +1883,7 @@ MagickExport unsigned char *NTRegistryKeyLookup(const char *subkey)
 
       LONG
         res;
-      
+
       FormatString(package_key,"SOFTWARE\\%s\\%s\\Q:%d", MagickPackageName,
                    MagickLibVersionText,QuantumDepth);
 
@@ -1903,14 +1903,14 @@ MagickExport unsigned char *NTRegistryKeyLookup(const char *subkey)
   {
     unsigned char
       *dest;
-    
+
     DWORD
       size,
       type;
 
     LONG
       res;
-    
+
     size = 32;
     dest = MagickAllocateMemory(unsigned char *,size);
 
@@ -1922,13 +1922,13 @@ MagickExport unsigned char *NTRegistryKeyLookup(const char *subkey)
             MagickReallocMemory(unsigned char *,dest,size);
             res = RegQueryValueExA (reg_key, subkey, 0, &type, dest, &size);
           }
-    
+
         if (type != REG_SZ || res != ERROR_SUCCESS)
           {
             MagickFreeMemory(dest);
           }
       }
-    
+
     return dest;
   }
 }
@@ -2077,20 +2077,20 @@ NTstrerror_r(LONG errnum, char *strerrbuf, size_t  buflen)
   if (buflen > 0)
     strerrbuf[0]='\0';
   if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		    FORMAT_MESSAGE_FROM_SYSTEM,NULL,errnum,
-		    MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
-		    (LPTSTR) &buffer,0,NULL))
+                    FORMAT_MESSAGE_FROM_SYSTEM,NULL,errnum,
+                    MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
+                    (LPTSTR) &buffer,0,NULL))
     {
       if (strlcpy(strerrbuf,buffer,buflen) < buflen)
-	{
-	  size_t
-	    index;
+        {
+          size_t
+            index;
 
-	  for (index=0; strerrbuf[index] != 0; index++)
-	    if (strerrbuf[index] == '\015')
-	      strerrbuf[index]='\0';
-	  status=MagickPass;
-	}
+          for (index=0; strerrbuf[index] != 0; index++)
+            if (strerrbuf[index] == '\015')
+              strerrbuf[index]='\0';
+          status=MagickPass;
+        }
       LocalFree(buffer);
     }
   return status;
@@ -2358,11 +2358,11 @@ MagickExport int NTftruncate(int filedes, off_t length)
     The CreateFileMapping() function may also be used to extend a
     file's length. The filler byte values are not defined in the
     documentation.
-  */ 
+  */
   status=chsize(filedes,length);
 
   /*
-    It is not documented if _chsize preserves the seek 
+    It is not documented if _chsize preserves the seek
     position, so restore the seek position like ftruncate
     does
   */

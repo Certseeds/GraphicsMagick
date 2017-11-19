@@ -790,7 +790,7 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
     {
       png_size_t
         check;
-    
+
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
       check=(png_size_t) ReadBlob(image,(size_t) length,(char *) data);
@@ -798,7 +798,7 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
         {
           char
             msg[MaxTextExtent];
-        
+
             (void) sprintf(msg,"Expected %lu bytes; found %lu bytes",
                            (unsigned long) length,(unsigned long) check);
           png_warning(png_ptr,msg);
@@ -901,7 +901,7 @@ static void png_put_data(png_structp png_ptr,png_bytep data,png_size_t length)
     {
       png_size_t
         check;
-    
+
       check=(png_size_t) WriteBlob(image,(unsigned long) length,(char *) data);
       if (check != length)
         png_error(png_ptr,"WriteBlob Failed");
@@ -986,7 +986,7 @@ static void MngInfoFreeStruct(MngInfo *mng_info,int *have_mng_structure)
     {
       register long
         i;
-    
+
       for (i=1; i < MNG_MAX_OBJECTS; i++)
         MngInfoDiscardObject(mng_info,i);
       mng_info->image=(Image *)NULL;
@@ -1015,7 +1015,7 @@ static MngBox mng_minimum_box(MngBox box1,MngBox box2)
 
 static long mng_get_long(unsigned char *p)
 {
-  return ((long) (((magick_uint32_t) p[0] << 24) | 
+  return ((long) (((magick_uint32_t) p[0] << 24) |
                   ((magick_uint32_t) p[1] << 16) |
                   ((magick_uint32_t) p[2] <<  8) |
                   (magick_uint32_t)  p[3]));
@@ -1723,7 +1723,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     }
 
   /* Too big? */
-  if (ping_width > 
+  if (ping_width >
     (magick_uint64_t) GetMagickResourceLimit(PixelsResource)/ping_height)
   {
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1970,7 +1970,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     }
 
 #if defined(PNG_READ_bKGD_SUPPORTED)
-  if (mng_info->have_global_bkgd && 
+  if (mng_info->have_global_bkgd &&
               !(png_get_valid(ping,ping_info, PNG_INFO_bKGD)))
     image->background_color=mng_info->mng_global_bkgd;
   if (png_get_valid(ping, ping_info, PNG_INFO_bKGD))
@@ -3078,7 +3078,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
   read_JSEP=MagickFalse;
   reading_idat=MagickFalse;
-  
+
   width_resource = GetMagickResourceLimit(WidthResource);
   height_resource = GetMagickResourceLimit(HeightResource);
 
@@ -3114,7 +3114,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 "length: %" MAGICK_SIZE_T_F "u",
                                 type[0],type[1],type[2],type[3],
                                 (MAGICK_SIZE_T) length);
-      
+
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "   count=%u",count);
         }
@@ -3887,7 +3887,7 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
     image=(Image *) NULL;
     return((Image *)NULL);
   }
-    
+
   /*
     Allocate a MngInfo structure.
   */
@@ -7123,7 +7123,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                     }
                   if (x != 0)
                     break;
-                } 
+                }
               if (x != 0)
                 {
                   ping_valid_trns = 0;
@@ -7675,7 +7675,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                       (png_uint_32) profile_length);
               }
             else if (LocaleCompare(profile_name,"exif") == 0)
-              /* Do not write exif; we'll write it later as eXIf */ 
+              /* Do not write exif; we'll write it later as eXIf */
               ;
             else
               {
@@ -7713,7 +7713,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         (void) png_set_sRGB(ping,ping_info,PerceptualIntent);
       png_set_gAMA(ping,ping_info,0.45455);
     }
-  if ((!mng_info->write_mng) || 
+  if ((!mng_info->write_mng) ||
        !png_get_valid(ping, ping_info, PNG_INFO_sRGB))
 #endif
     {
@@ -8099,10 +8099,10 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         text;
 
       if (*attribute->key == '[')
-        continue; 
+        continue;
       if (LocaleCompare(attribute->key,"png:IHDR.color-type-orig") == 0 ||
           LocaleCompare(attribute->key,"png:IHDR.bit-depth-orig") == 0)
-        continue; 
+        continue;
 #if PNG_LIBPNG_VER >= 14000
             text=(png_textp) png_malloc(ping,
                  (png_alloc_size_t) sizeof(png_text));
@@ -8306,7 +8306,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 %    o PNG32: An 8-bit per sample RGBA PNG is written.  Partial
 %             transparency is permitted, i.e., the alpha sample for
 %             each pixel can have any value from 0 to 255. The alpha
-%             channel is present even if the image is fully opaque. 
+%             channel is present even if the image is fully opaque.
 %
 %    o PNG48:   A 16-bit per sample RGB PNG datastream is written.  The tRNS
 %               chunk can be present to convey binary transparency by naming

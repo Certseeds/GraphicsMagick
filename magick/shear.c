@@ -85,7 +85,7 @@
 */
 MagickExport Image *
 AffineTransformImage(const Image *image,const AffineMatrix *affine,
-		     ExceptionInfo *exception)
+                     ExceptionInfo *exception)
 {
   AffineMatrix
     transform;
@@ -171,7 +171,7 @@ AffineTransformImage(const Image *image,const AffineMatrix *affine,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  AutoOrientImage() returns an image adjusted so that its orientation is
-%  suitable for viewing (i.e. top-left orientation).  
+%  suitable for viewing (i.e. top-left orientation).
 %
 %  The format of the AutoOrientImage method is:
 %
@@ -319,9 +319,9 @@ AutoOrientImage(const Image *image,
 */
 static MagickPassFail
 CropToFitImage(Image **image,
-	       const double x_shear,const double y_shear,
-	       const double width,const double height,
-	       const unsigned int rotate,ExceptionInfo *exception)
+               const double x_shear,const double y_shear,
+               const double width,const double height,
+               const unsigned int rotate,ExceptionInfo *exception)
 {
   Image
     *crop_image;
@@ -424,7 +424,7 @@ CropToFitImage(Image **image,
 #endif
 static Image *
 IntegralRotateImage(const Image *image,unsigned int rotations,
-		    ExceptionInfo *exception)
+                    ExceptionInfo *exception)
 {
   char
     message[MaxTextExtent];
@@ -456,58 +456,58 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
     unsigned long
       clone_columns=0,
       clone_rows=0;
-    
+
     switch (rotations)
       {
       case 0:
-	clone_columns=0;
-	clone_rows=0;
-	break;
+        clone_columns=0;
+        clone_rows=0;
+        break;
       case 2:
-	clone_columns=image->columns;
-	clone_rows=image->rows;
-	break;
+        clone_columns=image->columns;
+        clone_rows=image->rows;
+        break;
       case 1:
       case 3:
-	clone_columns=image->rows;
-	clone_rows=image->columns;
-	break;
+        clone_columns=image->rows;
+        clone_rows=image->columns;
+        break;
       }
     rotate_image=CloneImage(image,clone_columns,clone_rows,True,exception);
     if (rotate_image == (Image *) NULL)
       return((Image *) NULL);
     if (rotations != 0)
       if (ModifyCache(rotate_image,exception) != MagickPass)
-	{
-	  DestroyImage(rotate_image);
-	  return (Image *) NULL;
-	}
+        {
+          DestroyImage(rotate_image);
+          return (Image *) NULL;
+        }
   }
 
   tile_height_max=tile_width_max=2048/sizeof(PixelPacket); /* 2k x 2k = 4MB */
   if ((rotations == 1) || (rotations == 3))
     {
       /*
-	Allow override of tile geometry for testing.
+        Allow override of tile geometry for testing.
       */
       const char *
-	value;
+        value;
 
       if (!GetPixelCacheInCore(image) || !GetPixelCacheInCore(rotate_image))
-	tile_height_max=tile_width_max=8192/sizeof(PixelPacket); /* 8k x 8k = 64MB */
+        tile_height_max=tile_width_max=8192/sizeof(PixelPacket); /* 8k x 8k = 64MB */
 
       if ((value=getenv("MAGICK_ROTATE_TILE_GEOMETRY")))
-	{
-	  double
-	    width,
-	    height;
-	  
-	  if (GetMagickDimension(value,&width,&height,NULL,NULL) == 2)
-	    {
-	      tile_height_max=(unsigned long) height;
-	      tile_width_max=(unsigned long) width;
-	    }
-	}
+        {
+          double
+            width,
+            height;
+
+          if (GetMagickDimension(value,&width,&height,NULL,NULL) == 2)
+            {
+              tile_height_max=(unsigned long) height;
+              tile_width_max=(unsigned long) width;
+            }
+        }
     }
 
   /*
@@ -520,10 +520,10 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
         /*
           Rotate 0 degrees (nothing more to do).
         */
-	(void) strlcpy(message,"[%s] Rotate: 0 degrees...",sizeof(message));
-	if (!MagickMonitorFormatted(image->rows-1,image->rows,exception,
-				    message,image->filename))
-	  status=MagickFail;
+        (void) strlcpy(message,"[%s] Rotate: 0 degrees...",sizeof(message));
+        if (!MagickMonitorFormatted(image->rows-1,image->rows,exception,
+                                    message,image->filename))
+          status=MagickFail;
         break;
       }
     case 1:
@@ -549,7 +549,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
         (void) strlcpy(message,"[%s] Rotate: 90 degrees...",sizeof(message));
         total_tiles=(((image->rows/tile_height_max)+1)*
-                     ((image->columns/tile_width_max)+1));        
+                     ((image->columns/tile_width_max)+1));
         tile=0;
 
 #if defined(IntegralRotateImageUseOpenMP)
@@ -627,13 +627,13 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                   {
                     register const PixelPacket
                       *p;
-                    
+
                     register PixelPacket
                       *q;
 
                     register const IndexPacket
                       *indexes;
-        
+
                     IndexPacket
                       *rotate_indexes;
 
@@ -651,7 +651,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                       DirectClass pixels
                     */
                     p=tile_pixels+(tile_height-1)*tile_width + y;
-                    for (x=tile_height; x != 0; x--) 
+                    for (x=tile_height; x != 0; x--)
                       {
                         *q = *p;
                         q++;
@@ -668,13 +668,13 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                           {
                             register IndexPacket
                               *iq;
-                            
+
                             register const IndexPacket
                               *ip;
 
                             iq=rotate_indexes;
                             ip=indexes+(tile_height-1)*tile_width + y;
-                            for (x=tile_height; x != 0; x--) 
+                            for (x=tile_height; x != 0; x--)
                               {
                                 *iq = *ip;
                                 iq++;
@@ -700,7 +700,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                     if (!MagickMonitorFormatted(tile,total_tiles,exception,
                                                 message,image->filename))
                       thread_status=MagickFail;
-                  
+
                   if (thread_status == MagickFail)
                     status=MagickFail;
                 }
@@ -749,7 +749,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
             register const IndexPacket
               *indexes;
-        
+
             IndexPacket
               *rotate_indexes;
 
@@ -798,7 +798,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                 if (!MagickMonitorFormatted(row_count,image->rows,exception,
                                             message,image->filename))
                   thread_status=MagickFail;
-                  
+
               if (thread_status == MagickFail)
                 status=MagickFail;
             }
@@ -874,7 +874,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
                 const PixelPacket
                   *tile_pixels;
-                    
+
                 /*
                   Compute image region corresponding to tile.
                 */
@@ -908,7 +908,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                   {
                     register const PixelPacket
                       *p;
-                    
+
                     register PixelPacket
                       *q;
 
@@ -949,7 +949,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                           {
                             register IndexPacket
                               *iq;
-                            
+
                             register const IndexPacket
                               *ip;
 
@@ -982,12 +982,12 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                                                 message,image->filename))
                       thread_status=MagickFail;
 
-		  if (thread_status == MagickFail)
-		    status=MagickFail;
+                  if (thread_status == MagickFail)
+                    status=MagickFail;
                 }
 
                 if (thread_status == MagickFail)
-		  break;
+                  break;
               }
           }
         Swap(page.width,page.height);
@@ -1041,8 +1041,8 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
 static MagickPassFail
 XShearImage(Image *image,const double degrees,
-	    const unsigned long width,const unsigned long height,
-	    const long x_offset,long y_offset,ExceptionInfo *exception)
+            const unsigned long width,const unsigned long height,
+            const long x_offset,long y_offset,ExceptionInfo *exception)
 {
 #define XShearImageText  "[%s] X Shear: %+g degrees, region %lux%lu%+ld%+ld...  "
 
@@ -1188,10 +1188,10 @@ XShearImage(Image *image,const double degrees,
             if (QuantumTick(row_count,height))
               if (!MagickMonitorFormatted(row_count,height,exception,
                                           XShearImageText,image->filename,
-					  degrees,width,height,
-					  x_offset,y_offset))
+                                          degrees,width,height,
+                                          x_offset,y_offset))
                 thread_status=MagickFail;
-            
+
             if (thread_status == MagickFail)
               status=MagickFail;
           }
@@ -1275,10 +1275,10 @@ XShearImage(Image *image,const double degrees,
         if (QuantumTick(row_count,height))
           if (!MagickMonitorFormatted(row_count,height,exception,
                                           XShearImageText,image->filename,
-					  degrees,width,height,
-					  x_offset,y_offset))
+                                          degrees,width,height,
+                                          x_offset,y_offset))
             thread_status=MagickFail;
-        
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -1327,8 +1327,8 @@ XShearImage(Image *image,const double degrees,
 */
 static MagickPassFail
 YShearImage(Image *image,const double degrees,
-	    const unsigned long width,const unsigned long height,long x_offset,
-	    const long y_offset,ExceptionInfo *exception)
+            const unsigned long width,const unsigned long height,long x_offset,
+            const long y_offset,ExceptionInfo *exception)
 {
 #define YShearImageText  "[%s] Y Shear: %+g degrees, region %lux%lu%+ld%+ld...  "
 
@@ -1474,10 +1474,10 @@ YShearImage(Image *image,const double degrees,
             if (QuantumTick(row_count,width))
               if (!MagickMonitorFormatted(row_count,width,exception,
                                           YShearImageText,image->filename,
-					  degrees,width,height,
-					  x_offset,y_offset))
+                                          degrees,width,height,
+                                          x_offset,y_offset))
                 thread_status=MagickFail;
-            
+
             if (thread_status == MagickFail)
               status=MagickFail;
           }
@@ -1562,10 +1562,10 @@ YShearImage(Image *image,const double degrees,
         if (QuantumTick(row_count,width))
           if (!MagickMonitorFormatted(row_count,width,exception,
                                       YShearImageText,image->filename,
-				      degrees,width,height,
-				      x_offset,y_offset))
+                                      degrees,width,height,
+                                      x_offset,y_offset))
             thread_status=MagickFail;
-        
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -1707,19 +1707,19 @@ RotateImage(const Image *image,const double degrees,ExceptionInfo *exception)
   */
   rotate_image->storage_class=DirectClass;
   rotate_image->matte|=rotate_image->background_color.opacity != OpaqueOpacity;
-  
+
   if (XShearImage(rotate_image,shear.x,width,height,
           x_offset,y_offset,exception) != MagickPass)
     goto rotate_image_exception;
 
   if (YShearImage(rotate_image,shear.y,shear1_width,height,
-		  (long) (rotate_image->columns-shear1_width)/2,y_offset,exception)
+                  (long) (rotate_image->columns-shear1_width)/2,y_offset,exception)
       != MagickPass)
     goto rotate_image_exception;
 
   if (XShearImage(rotate_image,shear.x,shear1_width,shear2_height,
-		  (long) (rotate_image->columns-shear1_width)/2,
-		  (long) (rotate_image->rows-shear2_height)/2,exception)
+                  (long) (rotate_image->columns-shear1_width)/2,
+                  (long) (rotate_image->rows-shear2_height)/2,exception)
      != MagickPass)
     goto rotate_image_exception;
 
@@ -1785,7 +1785,7 @@ RotateImage(const Image *image,const double degrees,ExceptionInfo *exception)
 */
 MagickExport Image *
 ShearImage(const Image *image,const double x_shear,
-	   const double y_shear,ExceptionInfo *exception)
+           const double y_shear,ExceptionInfo *exception)
 {
   Image
     *integral_image = (Image *) NULL,
@@ -1820,7 +1820,7 @@ ShearImage(const Image *image,const double x_shear,
   shear.x=(-tan(DegreesToRadians(x_shear)/2.0));
   shear.y=sin(DegreesToRadians(y_shear));
   (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-			"Shear angles x,y: %g,%g degrees", shear.x, shear.y);
+                        "Shear angles x,y: %g,%g degrees", shear.x, shear.y);
   if ((shear.x == 0.0) && (shear.y == 0.0))
     return(integral_image);
 
@@ -1846,19 +1846,19 @@ ShearImage(const Image *image,const double x_shear,
   */
   shear_image->storage_class=DirectClass;
   shear_image->matte|=shear_image->background_color.opacity != OpaqueOpacity;
- 
+
   if (XShearImage(shear_image,shear.x,image->columns,image->rows,x_offset,
-		  (long) (shear_image->rows-image->rows)/2,exception)
+                  (long) (shear_image->rows-image->rows)/2,exception)
       != MagickPass)
     goto shear_image_exception;
-  
+
   if (YShearImage(shear_image,shear.y,y_width,image->rows,
-		  (long) (shear_image->columns-y_width)/2,y_offset,exception)
+                  (long) (shear_image->columns-y_width)/2,y_offset,exception)
       != MagickPass)
     goto shear_image_exception;
-  
+
   if (CropToFitImage(&shear_image,shear.x,shear.y,image->columns,image->rows,
-		     False,exception) != MagickPass)
+                     False,exception) != MagickPass)
     goto shear_image_exception;
 
   shear_image->page.width=0;

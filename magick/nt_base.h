@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 - 2016 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Windows NT Utility Methods for GraphicsMagick.
 */
 #ifndef _MAGICK_NTBASE_H
@@ -121,7 +121,7 @@ extern "C" {
 #endif
 
 #if !defined(_MSC_VER) || (defined(_MSC_VER) && _MSC_VER < 1500)
-#define vsnprintf _vsnprintf 
+#define vsnprintf _vsnprintf
 #endif
 
 #if defined(_MT) && defined(MSWINDOWS)
@@ -430,7 +430,7 @@ extern MagickExport const char
 #define lt_dlsetsearchpath(path) NTdlsetsearchpath(path)
 #define lt_dlsym(handle,name) NTdlsym(handle,name)
 #endif /* !defined(HasLTDL) */
-  
+
 extern MagickExport unsigned char
   *NTResourceToBlob(const char *);
 

@@ -351,55 +351,55 @@ ColorMatrixImagePixels(void *mutable_data,         /* User provided mutable data
   for (i=0; i < npixels; i++)
     {
       unsigned int
-	row;
+        row;
 
       /*
-	Accumulate float input pixel
+        Accumulate float input pixel
       */
       column[0]=(double) pixels[i].red;
       column[1]=(double) pixels[i].green;
       column[2]=(double) pixels[i].blue;
       if (image->matte)
-	column[3]=(MaxRGBDouble-(double) pixels[i].opacity);
+        column[3]=(MaxRGBDouble-(double) pixels[i].opacity);
 
       /*
-	Compute row sums.
+        Compute row sums.
       */
       for (row=0; row < 4; row++)
-	{
-	  const double
-	    *m;
+        {
+          const double
+            *m;
 
-	  if ((m = options->matrix[row]) != (const double *) NULL)
-	    sums[row]=m[0]*column[0] + m[1]*column[1] + m[2]*column[2] +
-	      m[3]*column[3] + m[4]*column[4];
-	}
+          if ((m = options->matrix[row]) != (const double *) NULL)
+            sums[row]=m[0]*column[0] + m[1]*column[1] + m[2]*column[2] +
+              m[3]*column[3] + m[4]*column[4];
+        }
 
       /*
-	Assign results.
+        Assign results.
       */
       for (row=0; row < 4; row++)
-	{
-	  if (options->matrix[row] != (const double *) NULL)
-	    {
-	      switch (row)
-		{
-		case 0:
-		  pixels[i].red = RoundDoubleToQuantum(sums[row]);
-		  break;
-		case 1:
-		  pixels[i].green = RoundDoubleToQuantum(sums[row]);
-		  break;
-		case 2:
-		  pixels[i].blue = RoundDoubleToQuantum(sums[row]);
-		  break;
-		case 3:
-		  sums[row]=(MaxRGBDouble-sums[row]);
-		  pixels[i].opacity = RoundDoubleToQuantum(sums[row]);
-		  break;
-		}
-	    }
-	}
+        {
+          if (options->matrix[row] != (const double *) NULL)
+            {
+              switch (row)
+                {
+                case 0:
+                  pixels[i].red = RoundDoubleToQuantum(sums[row]);
+                  break;
+                case 1:
+                  pixels[i].green = RoundDoubleToQuantum(sums[row]);
+                  break;
+                case 2:
+                  pixels[i].blue = RoundDoubleToQuantum(sums[row]);
+                  break;
+                case 3:
+                  sums[row]=(MaxRGBDouble-sums[row]);
+                  pixels[i].opacity = RoundDoubleToQuantum(sums[row]);
+                  break;
+                }
+            }
+        }
     }
 
   return MagickPass;
@@ -433,7 +433,7 @@ ColorMatrixImage(Image *image,const unsigned int order,const double *color_matri
 
   if ((order < 1) || (order > 5))
     ThrowBinaryException(OptionError,MatrixOrderOutOfRange,
-			 MagickMsg(OptionError,UnableToColorMatrixImage));
+                         MagickMsg(OptionError,UnableToColorMatrixImage));
 
   assert(color_matrix != (const double *) NULL);
 
@@ -453,16 +453,16 @@ ColorMatrixImage(Image *image,const unsigned int order,const double *color_matri
     u = color_matrix;
     for (i=0; i < order; i++)
       {
-	d = &matrix[i*5];
-	for (j=0; j < order; j++)
-	  {
-	    if (d[j] != *u)
-	      {
-		d[j]=*u;
-		options.matrix[i]=&matrix[i*5];
-	      }
-	    u++;
-	  }
+        d = &matrix[i*5];
+        for (j=0; j < order; j++)
+          {
+            if (d[j] != *u)
+              {
+                d[j]=*u;
+                options.matrix[i]=&matrix[i*5];
+              }
+            u++;
+          }
       }
 
     /*
@@ -519,18 +519,18 @@ ColorMatrixImage(Image *image,const unsigned int order,const double *color_matri
     {
       image->storage_class=DirectClass;
       /*
-	We don't currently handle CMYK(A) colorspaces, although
-	manipulation in other alternate colorspaces may be useful.
+        We don't currently handle CMYK(A) colorspaces, although
+        manipulation in other alternate colorspaces may be useful.
       */
       if (image->colorspace == CMYKColorspace)
-	(void) TransformColorspace(image,RGBColorspace);
+        (void) TransformColorspace(image,RGBColorspace);
       status=PixelIterateMonoModify(ColorMatrixImagePixels,
-				    NULL,
-				    ColorMatrixImageText,
-				    NULL,&options,
-				    0,0,image->columns,image->rows,
-				    image,
-				    &image->exception);
+                                    NULL,
+                                    ColorMatrixImageText,
+                                    NULL,&options,
+                                    0,0,image->columns,image->rows,
+                                    image,
+                                    &image->exception);
     }
 
   return status;
@@ -957,7 +957,7 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
 
   unsigned long
     row_count=0;
-  
+
   MagickPassFail
     status=MagickPass;
 
@@ -994,10 +994,10 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
       const PixelPacket
         *p,
         *r;
-    
+
       PixelPacket
         *q;
-    
+
       long
         x;
 
@@ -1060,7 +1060,7 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
                         intensity=ru->red;
                       else
                         intensity=PixelIntensityToQuantum(ru);
-                        
+
                       hp=histogram+ScaleQuantumToChar(intensity);
                       (*hp)++;
                       if (*hp > count)
@@ -1086,7 +1086,7 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
           if (!MagickMonitorFormatted(row_count,image->rows,exception,
                                       OilPaintImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -1138,7 +1138,7 @@ SolarizeImagePixelsCB(void *mutable_data,         /* User provided mutable data 
     threshold = *((const double *) immutable_data);
 
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
@@ -1534,7 +1534,7 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
       {
         register PixelPacket
           *q;
-    
+
         register long
           x;
 
@@ -1578,7 +1578,7 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
                       cosine,
                       factor,
                       sine;
-            
+
                     /*
                       Swirl the pixel.
                     */
@@ -1651,7 +1651,7 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
 
   VirtualPixelMethod
     virtual_pixel_method;
-    
+
   double
     *sine_map;
 
@@ -1747,7 +1747,7 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
-        
+
         image_view=AccessDefaultCacheView(image);
         q=SetImagePixelsEx(wave_image,0,y,wave_image->columns,1,exception);
         if (q == (PixelPacket *) NULL)
@@ -1772,7 +1772,7 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
             if (!MagickMonitorFormatted(row_count,wave_image->rows,exception,
                                         WaveImageText,image->filename))
               thread_status=MagickFail;
-          
+
           if (thread_status == MagickFail)
             status=MagickFail;
         }

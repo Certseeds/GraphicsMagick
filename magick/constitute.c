@@ -214,15 +214,15 @@ MagickExport Image *ConstituteImage(const unsigned long width,
         dispatch_type=UndefinedDispatchType;
 
       if (LocaleCompare(map,"BGR") == 0)
-	dispatch_type=BGRDispatchType;
+        dispatch_type=BGRDispatchType;
       else if (LocaleCompare(map,"BGRA") == 0)
-	dispatch_type=BGRADispatchType;
+        dispatch_type=BGRADispatchType;
       else if (LocaleCompare(map,"BGRP") == 0)
-	dispatch_type=BGRPDispatchType;
+        dispatch_type=BGRPDispatchType;
       else if (LocaleCompare(map,"RGB") == 0)
-	dispatch_type=RGBDispatchType;
+        dispatch_type=RGBDispatchType;
       else if (LocaleCompare(map,"RGBA") == 0)
-	dispatch_type=RGBADispatchType;
+        dispatch_type=RGBADispatchType;
       else if (LocaleCompare(map,"I") == 0)
         {
           if (!AllocateImageColormap(image,MaxColormapSize))
@@ -259,7 +259,7 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                   }
                 case BGRADispatchType:
                   {
-		    image->matte=True;
+                    image->matte=True;
                     for (x=(long) image->columns; x != 0; x--)
                       {
                         SetBlueSample(q,ScaleCharToQuantum(*p++));
@@ -297,7 +297,7 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                   }
                 case RGBADispatchType:
                   {
-		    image->matte=True;
+                    image->matte=True;
                     for (x=(long) image->columns; x != 0; x--)
                       {
                         SetRedSample(q,ScaleCharToQuantum(*p++));
@@ -442,9 +442,9 @@ MagickExport Image *ConstituteImage(const unsigned long width,
       indexes=AccessMutableIndexes(image);
       for (x=0; x < (long) image->columns; x++)
         {
-	  SetRedSample(q,0);
-	  SetGreenSample(q,0);
-	  SetBlueSample(q,0);
+          SetRedSample(q,0);
+          SetGreenSample(q,0);
+          SetBlueSample(q,0);
           if (image->colorspace == CMYKColorspace)
             {
               SetBlackSample(q,0);
@@ -460,7 +460,7 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                 Input a quantum
               */
               quantum=0U;
-              
+
               switch (type)
                 {
                 case CharPixel:
@@ -510,7 +510,7 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                     break;
                   }
                 }
-              
+
               /*
                 Transfer quantum to image
               */
@@ -560,7 +560,7 @@ MagickExport Image *ConstituteImage(const unsigned long width,
       if (!SyncImagePixels(image))
         break;
     }
-  
+
   if (image->storage_class == PseudoClass)
     {
       /*
@@ -611,7 +611,7 @@ MagickExport void DestroyConstitute(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DispatchImage() extracts pixel data from an Image into a raw memory array.
-%  The pixel data is written in scanline order top-to-bottom using an 
+%  The pixel data is written in scanline order top-to-bottom using an
 %  arbitrary quantum order specified by 'map', and with quantum size
 %  specified by 'type'.
 %
@@ -716,7 +716,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
         {
           register unsigned char
             * restrict q = (unsigned char*) pixels;
-          
+
           for (y=0; y < (long) rows; y++)
             {
               p=AcquireImagePixels(image,x_offset,y_offset+y,columns,1,exception);
@@ -725,7 +725,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
                   status=MagickFail;
                   break;
                 }
-              
+
               switch (dispatch_type)
                 {
                 case BGRDispatchType:
@@ -900,7 +900,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
           }
         }
     }
-  
+
   for (y=0; y < (long) rows; y++)
     {
       p=AcquireImagePixels(image,x_offset,y_offset+y,columns,1,exception);
@@ -957,7 +957,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
                 case OpacityMapQuantum:
                   {
                     if ((image->matte) ||
-			(image->colorspace == CMYKColorspace))
+                        (image->colorspace == CMYKColorspace))
                       quantum=GetOpacitySample(p);
                     break;
                   }
@@ -1037,7 +1037,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
 %  MagickFindRawImageMinMax() obtains the minimum and maximum sample values
 %  for a raw image.  The image blob must already be open with its current
 %  seek offset pointing to the start of the raw data.  The seek offset is
-%  restored when this function returns.  File data is processed on a 
+%  restored when this function returns.  File data is processed on a
 %  scanline basis in order to minimize memory consumption.  The purpose of
 %  this function is to support pre-scanning a raw image to find its maximum
 %  values so that appropriate scaling may be applied when the data is read a
@@ -1085,7 +1085,7 @@ MagickExport MagickPassFail DispatchImage(const Image *image,const long x_offset
           x;                                                            \
                                                                         \
         basic_type                                                      \
-          * restrict scanline;						\
+          * restrict scanline;                                          \
                                                                         \
         scanline=(basic_type *) scanline_buffer;                        \
         if ((read_func)(image, scanline_octets, scanline) !=            \
@@ -1136,7 +1136,7 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
             size_t (*read_func)(Image * image, size_t octets, void *data);
 
             read_func = ReadBlob;
-            
+
             MagickFindMinMax(status,image,read_func,char,scanline_octets,
                              scanline_buffer,min,max)
               break;
@@ -1493,7 +1493,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
     ExceptionInfo
       module_exception,
       delegate_exception;
-    
+
     GetExceptionInfo(&module_exception);
     GetExceptionInfo(&delegate_exception);
     magick_info=GetMagickInfo(clone_info->magick,&module_exception);
@@ -1501,7 +1501,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
     if ((magick_info == (const MagickInfo *) NULL) ||
         (magick_info->decoder == NULL))
       delegate_info=GetDelegateInfo(clone_info->magick,(char *) NULL,&delegate_exception);
-    
+
     if (((magick_info == (const MagickInfo *) NULL) ||
          (magick_info->decoder == NULL)) &&
         ((delegate_info == (const DelegateInfo *) NULL) ||
@@ -1547,7 +1547,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         DestroyImageInfo(clone_info);
         return((Image *) NULL);
       }
-    
+
     DestroyExceptionInfo(&module_exception);
     DestroyExceptionInfo(&delegate_exception);
   }
@@ -1600,10 +1600,10 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         LockSemaphoreInfo(constitute_semaphore);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Invoking \"%.1024s\" decoder (%.1024s) subimage=%lu subrange=%lu",
-			    magick_info->name,
-			    magick_info->description,
-			    clone_info->subimage,
-			    clone_info->subrange);
+                            magick_info->name,
+                            magick_info->description,
+                            clone_info->subimage,
+                            clone_info->subrange);
       image=(magick_info->decoder)(clone_info,exception);
       if (!magick_info->thread_support)
         UnlockSemaphoreInfo(constitute_semaphore);
@@ -1613,7 +1613,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
           "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
                               magick_info->name,
                               GetImageListLength(image),
-			      (GetPixelCachePresent(image) ? "present" : "missing"),
+                              (GetPixelCachePresent(image) ? "present" : "missing"),
                               MagickBoolToString(image->is_monochrome),
                               MagickBoolToString(image->is_grayscale),
                               ClassTypeToString(image->storage_class),
@@ -1622,7 +1622,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "Returned from \"%.1024s\" decoder, returned image is NULL!",
                               magick_info->name);
-      
+
       /*
         Enforce that returned images do not have open blobs.
       */
@@ -1709,10 +1709,10 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         LockSemaphoreInfo(constitute_semaphore);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Invoking \"%.1024s\" decoder (%.1024s) subimage=%lu subrange=%lu",
-			    magick_info->name,
-			    magick_info->description,
-			    clone_info->subimage,
-			    clone_info->subrange);
+                            magick_info->name,
+                            magick_info->description,
+                            clone_info->subimage,
+                            clone_info->subrange);
       image=(magick_info->decoder)(clone_info,exception);
       if (!magick_info->thread_support)
         UnlockSemaphoreInfo(constitute_semaphore);
@@ -1722,7 +1722,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
           "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
                               magick_info->name,
                               GetImageListLength(image),
-			      (GetPixelCachePresent(image) ? "present" : "missing"),
+                              (GetPixelCachePresent(image) ? "present" : "missing"),
                               MagickBoolToString(image->is_monochrome),
                               MagickBoolToString(image->is_grayscale),
                               ClassTypeToString(image->storage_class),
@@ -1860,7 +1860,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
     {
       const ImageAttribute
         *attribute;
-      
+
 /*       if ((image_info->attributes) && */
 /*           (attribute=GetImageAttribute(image_info->attributes,"colorspace-override"))) */
       if ((attribute=GetImageAttribute(image,"colorspace-override")))
@@ -2150,7 +2150,7 @@ WriteImage(const ImageInfo *image_info,Image *image)
       (clone_info->page == (char *) NULL) && !IsTaintImage(image))
     {
       delegate_info=GetDelegateInfo(image->magick,clone_info->magick,
-				    &image->exception);
+                                    &image->exception);
       if ((delegate_info != (const DelegateInfo *) NULL) &&
           (delegate_info->mode == 0) && IsAccessible(image->magick_filename))
         {
@@ -2158,9 +2158,9 @@ WriteImage(const ImageInfo *image_info,Image *image)
             Let our bi-modal delegate process the image.
           */
           (void) strlcpy(image->filename,image->magick_filename,
-			 MaxTextExtent);
+                         MaxTextExtent);
           status=InvokeDelegate(clone_info,image,image->magick,
-				clone_info->magick,&image->exception);
+                                clone_info->magick,&image->exception);
           DestroyImageInfo(clone_info);
           return(!status);
         }
@@ -2176,82 +2176,82 @@ WriteImage(const ImageInfo *image_info,Image *image)
       (magick_info->encoder != NULL))
     {
       char
-	tempfile[MaxTextExtent];
+        tempfile[MaxTextExtent];
 
       tempfile[0]='\0';
 
       if (magick_info->seekable_stream == MagickTrue)
-	{
-	  /*
-	    Divert output to temporary file if coder requires a
-	    seekable stream and output is not seekable.
-	  */
-	  if (OpenBlob(clone_info,image,WriteBinaryBlobMode,&image->exception))
-	    {
-	      if (!BlobIsSeekable(image))
-		{
-		  if(!AcquireTemporaryFileName(tempfile))
-		    {
-		      ThrowException(&image->exception,FileOpenError,
-				     UnableToCreateTemporaryFile,image->filename);
-		      DestroyImageInfo(clone_info);
-		      return(MagickFail);
-		    }
-		  (void) strlcpy(image->filename,tempfile,sizeof(image->filename));
-		}
-	      else
-		{
-		  /*
-		    OpenBlob may expand image->filename so we need to restore it.
-		  */
-		  (void) strlcpy(image->filename,clone_info->filename,sizeof(image->filename));
-		}
-	      CloseBlob(image);
-	    }
-	}
+        {
+          /*
+            Divert output to temporary file if coder requires a
+            seekable stream and output is not seekable.
+          */
+          if (OpenBlob(clone_info,image,WriteBinaryBlobMode,&image->exception))
+            {
+              if (!BlobIsSeekable(image))
+                {
+                  if(!AcquireTemporaryFileName(tempfile))
+                    {
+                      ThrowException(&image->exception,FileOpenError,
+                                     UnableToCreateTemporaryFile,image->filename);
+                      DestroyImageInfo(clone_info);
+                      return(MagickFail);
+                    }
+                  (void) strlcpy(image->filename,tempfile,sizeof(image->filename));
+                }
+              else
+                {
+                  /*
+                    OpenBlob may expand image->filename so we need to restore it.
+                  */
+                  (void) strlcpy(image->filename,clone_info->filename,sizeof(image->filename));
+                }
+              CloseBlob(image);
+            }
+        }
 
       if (!magick_info->thread_support)
         LockSemaphoreInfo(constitute_semaphore);
       if (image->logging)
-	(void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			      "Invoking \"%.1024s\" encoder (%.1024s): "
-			      "cache=%s "
-			      "adjoin=%s type=%s monochrome=%s grayscale=%s "
-			      "class=%s colorspace=%s",
-			      magick_info->name,
-			      magick_info->description,
-			      (GetPixelCachePresent(image) ? "present" : "missing"),
-			      MagickBoolToString(clone_info->adjoin),
-			      ImageTypeToString(clone_info->type),
-			      MagickBoolToString(image->is_monochrome),
-			      MagickBoolToString(image->is_grayscale),
-			      ClassTypeToString(image->storage_class),
-			      ColorspaceTypeToString(image->colorspace));
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Invoking \"%.1024s\" encoder (%.1024s): "
+                              "cache=%s "
+                              "adjoin=%s type=%s monochrome=%s grayscale=%s "
+                              "class=%s colorspace=%s",
+                              magick_info->name,
+                              magick_info->description,
+                              (GetPixelCachePresent(image) ? "present" : "missing"),
+                              MagickBoolToString(clone_info->adjoin),
+                              ImageTypeToString(clone_info->type),
+                              MagickBoolToString(image->is_monochrome),
+                              MagickBoolToString(image->is_grayscale),
+                              ClassTypeToString(image->storage_class),
+                              ColorspaceTypeToString(image->colorspace));
       status=(magick_info->encoder)(clone_info,image);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "Returned from \"%.1024s\" encoder",magick_info->name);
+                            "Returned from \"%.1024s\" encoder",magick_info->name);
       if (!magick_info->thread_support)
         UnlockSemaphoreInfo(constitute_semaphore);
 
       if (tempfile[0] != '\0')
-	{
-	  /*
-	    Send temporary file to stream.
-	  */
-	  (void) strlcpy(image->filename,clone_info->filename,MaxTextExtent);	  
-	  if ((status &= OpenBlob(clone_info,image,WriteBinaryBlobMode,
-				  &image->exception)))
-	    {
-	      status &= WriteBlobFile(image,tempfile);
-	      CloseBlob(image);
-	    }
-	  LiberateTemporaryFile(tempfile);
-	}
+        {
+          /*
+            Send temporary file to stream.
+          */
+          (void) strlcpy(image->filename,clone_info->filename,MaxTextExtent);
+          if ((status &= OpenBlob(clone_info,image,WriteBinaryBlobMode,
+                                  &image->exception)))
+            {
+              status &= WriteBlobFile(image,tempfile);
+              CloseBlob(image);
+            }
+          LiberateTemporaryFile(tempfile);
+        }
     }
   else
     {
       delegate_info=GetDelegateInfo((char *) NULL,clone_info->magick,
-				    &image->exception);
+                                    &image->exception);
       if (delegate_info != (DelegateInfo *) NULL)
         {
           /*
@@ -2260,12 +2260,12 @@ WriteImage(const ImageInfo *image_info,Image *image)
           if(!AcquireTemporaryFileName(image->filename))
             {
               ThrowException(&image->exception,FileOpenError,
-			     UnableToCreateTemporaryFile,image->filename);
+                             UnableToCreateTemporaryFile,image->filename);
               DestroyImageInfo(clone_info);
               return(MagickFail);
             }
           status=InvokeDelegate(clone_info,image,(char *) NULL,
-				clone_info->magick,&image->exception);
+                                clone_info->magick,&image->exception);
           (void) LiberateTemporaryFile(image->filename);
           DestroyImageInfo(clone_info);
           return(!status);
@@ -2279,9 +2279,9 @@ WriteImage(const ImageInfo *image_info,Image *image)
         {
           DestroyImageInfo(clone_info);
           ThrowBinaryException(MissingDelegateError,
-			       NoEncodeDelegateForThisImageFormat,
-			       image->filename)
-	    }
+                               NoEncodeDelegateForThisImageFormat,
+                               image->filename)
+            }
       if (!magick_info->thread_support)
         LockSemaphoreInfo(constitute_semaphore);
       status=(magick_info->encoder)(clone_info,image);
@@ -2379,9 +2379,9 @@ WriteImages(const ImageInfo *image_info,Image *image,
                 status &= MagickFail;
         }
       (void) SetImageInfo(clone_info,
-			  (SETMAGICK_WRITE |
-			   (!clone_info->adjoin ? SETMAGICK_RECTIFY : 0U)),
-			  exception);
+                          (SETMAGICK_WRITE |
+                           (!clone_info->adjoin ? SETMAGICK_RECTIFY : 0U)),
+                          exception);
       for (p=image; p != (Image *) NULL; p=p->next)
         {
           status &= WriteImage(clone_info,p);
@@ -2433,7 +2433,7 @@ WriteImages(const ImageInfo *image_info,Image *image,
 %
 */
 MagickExport MagickPassFail WriteImagesFile(const ImageInfo *image_info,Image *image,
-					    FILE * file ,ExceptionInfo *exception)
+                                            FILE * file ,ExceptionInfo *exception)
 {
   ImageInfo
     *clone_info;
@@ -2458,9 +2458,9 @@ MagickExport MagickPassFail WriteImagesFile(const ImageInfo *image_info,Image *i
 
       clone_info->file=file;
       (void) SetImageInfo(clone_info,
-			  (SETMAGICK_WRITE |
-			   (!clone_info->adjoin ? SETMAGICK_RECTIFY : 0U)),
-			  exception);
+                          (SETMAGICK_WRITE |
+                           (!clone_info->adjoin ? SETMAGICK_RECTIFY : 0U)),
+                          exception);
       for (p=image; p != (Image *) NULL; p=p->next)
         {
           status &= WriteImage(clone_info,p);

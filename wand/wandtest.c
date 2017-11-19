@@ -101,7 +101,7 @@ int main(int argc,char **argv)
   MagickWand
     *clone_wand,
     *magick_wand;
- 
+
   PixelWand
     *background,
     *fill;
@@ -132,7 +132,7 @@ int main(int argc,char **argv)
     char
       *p,
       path[MaxTextExtent];
-    
+
     path[0]=0;
     p=getenv("SRCDIR");
     if (p)
@@ -142,7 +142,7 @@ int main(int argc,char **argv)
           strcat(path,"/");
       }
     strcat(path,"sequence.miff");
-    
+
     status=MagickReadImage(magick_wand,path);
   }
   if (status == False)

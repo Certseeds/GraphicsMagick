@@ -148,16 +148,16 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
     {
       register const PixelPacket
         *p;
-    
+
       register const IndexPacket
         *indexes;
-    
+
       register IndexPacket
         *chop_indexes;
-    
+
       register long
         x;
-    
+
       register PixelPacket
         *q;
 
@@ -204,7 +204,7 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
           if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
                                       ChopImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -223,16 +223,16 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
     {
       register const PixelPacket
         *p;
-    
+
       register const IndexPacket
         *indexes;
-    
+
       register IndexPacket
         *chop_indexes;
-    
+
       register long
         x;
-    
+
       register PixelPacket
         *q;
 
@@ -279,7 +279,7 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
           if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
                                       ChopImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -333,7 +333,7 @@ MagickExport Image *CoalesceImages(const Image *image,ExceptionInfo *exception)
 
   register long
     i;
-  
+
   MagickBool
     found_transparency=False;
 
@@ -373,8 +373,8 @@ MagickExport Image *CoalesceImages(const Image *image,ExceptionInfo *exception)
       case BackgroundDispose:
       {
         /*
-	  Fill image with transparent color, if one exists.
-	*/
+          Fill image with transparent color, if one exists.
+        */
         coalesce_image->next=CloneImage(coalesce_image,0,0,True,exception);
         if (coalesce_image->next != (Image *) NULL) {
           for (i = 0; i < (long) coalesce_image->colors; i++) {
@@ -596,7 +596,7 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
                                       crop_image->columns,crop_image->rows,
                                       page.x,page.y))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -838,7 +838,7 @@ MagickExport Image *DeconstructImages(const Image *image,
 %
 */
 MagickExport Image *ExtentImage(const Image *image,const RectangleInfo *geometry,
-				ExceptionInfo *exception)
+                                ExceptionInfo *exception)
 {
   Image
     *extent_image;
@@ -853,7 +853,7 @@ MagickExport Image *ExtentImage(const Image *image,const RectangleInfo *geometry
     Allocate canvas image
   */
   if ((extent_image=CloneImage(image,geometry->width,geometry->height,
-			       MagickTrue,exception)) == (Image *) NULL)
+                               MagickTrue,exception)) == (Image *) NULL)
     return((Image *) NULL);
 
   /*
@@ -871,7 +871,7 @@ MagickExport Image *ExtentImage(const Image *image,const RectangleInfo *geometry
     operator.
   */
   if ((CompositeImage(extent_image,image->compose,image,geometry->x,
-		      geometry->y)) == MagickFail)
+                      geometry->y)) == MagickFail)
     {
       CopyException(exception,&extent_image->exception);
       DestroyImage(extent_image);
@@ -932,18 +932,18 @@ MagickExport Image *FlattenImages(const Image *image,ExceptionInfo *exception)
   */
   if ((flatten_image != (Image *) NULL) && (flatten_image->matte))
     (void) MagickCompositeImageUnderColor(flatten_image,
-					  &flatten_image->background_color,
-					  exception);
+                                          &flatten_image->background_color,
+                                          exception);
 
   if ((flatten_image != (Image *) NULL) &&
       (image->next != (Image *) NULL))
     {
       /*
-	Flatten remaining images onto canvas
+        Flatten remaining images onto canvas
       */
       for (next=image->next; next != (Image *) NULL; next=next->next)
-	(void) CompositeImage(flatten_image,next->compose,next,next->page.x,
-			      next->page.y);
+        (void) CompositeImage(flatten_image,next->compose,next,next->page.x,
+                              next->page.y);
     }
   return(flatten_image);
 }
@@ -1069,7 +1069,7 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
           if (!MagickMonitorFormatted(row_count,flip_image->rows,exception,
                                       FlipImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -1203,7 +1203,7 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
           if (!MagickMonitorFormatted(row_count,flop_image->rows,exception,
                                       FlopImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -1530,7 +1530,7 @@ MagickExport Image *ShaveImage(const Image *image,
 %   T r a n s f o r m I m a g e                                               %
 %                                                                             %
 %                                                                             %
-%                                                                             % 
+%                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  TransformImage() is a convenience method that behaves like ResizeImage() or
@@ -1556,7 +1556,7 @@ MagickExport Image *ShaveImage(const Image *image,
 %
 */
 MagickExport void TransformImage(Image **image,const char *crop_geometry,
-				 const char *image_geometry)
+                                 const char *image_geometry)
 {
   Image
     *previous,
@@ -1585,9 +1585,9 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
       if ((geometry.width == 0) || (geometry.height == 0) ||
           ((flags & XValue) != 0) || ((flags & YValue) != 0) ||
           (flags & PercentValue))
-	{
-	  crop_image=CropImage(transform_image,&geometry,&(*image)->exception);
-	}
+        {
+          crop_image=CropImage(transform_image,&geometry,&(*image)->exception);
+        }
       else
         if ((transform_image->columns > geometry.width) ||
             (transform_image->rows > geometry.height))
@@ -1610,38 +1610,38 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
             height=geometry.height;
             next=(Image *) NULL;
             for (y=0; y < (long) transform_image->rows; y+=height)
-	      {
-		for (x=0; x < (long) transform_image->columns; x+=width)
-		  {
-		    geometry.width=width;
-		    geometry.height=height;
-		    geometry.x=x;
-		    geometry.y=y;
-		    next=CropImage(transform_image,&geometry,&(*image)->exception);
-		    if (next == (Image *) NULL)
-		      break;
-		    if (crop_image == (Image *) NULL)
-		      crop_image=next;
-		    else
-		      {
-			next->previous=crop_image;
-			crop_image->next=next;
-			crop_image=crop_image->next;
-		      }
-		  }
-		if (next == (Image *) NULL)
-		  break;
-	      }
+              {
+                for (x=0; x < (long) transform_image->columns; x+=width)
+                  {
+                    geometry.width=width;
+                    geometry.height=height;
+                    geometry.x=x;
+                    geometry.y=y;
+                    next=CropImage(transform_image,&geometry,&(*image)->exception);
+                    if (next == (Image *) NULL)
+                      break;
+                    if (crop_image == (Image *) NULL)
+                      crop_image=next;
+                    else
+                      {
+                        next->previous=crop_image;
+                        crop_image->next=next;
+                        crop_image=crop_image->next;
+                      }
+                  }
+                if (next == (Image *) NULL)
+                  break;
+              }
           }
       if (crop_image != (Image *) NULL)
         {
-	  previous=transform_image->previous;
-	  crop_image->next=transform_image->next;
+          previous=transform_image->previous;
+          crop_image->next=transform_image->next;
           DestroyImage(transform_image);
-	  transform_image=(Image *) NULL;
+          transform_image=(Image *) NULL;
           while (crop_image->previous != (Image *) NULL)
             crop_image=crop_image->previous;
-	  crop_image->previous=previous;
+          crop_image->previous=previous;
           transform_image=crop_image;
         }
       *image=transform_image;
@@ -1654,16 +1654,16 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
   */
   SetGeometry(transform_image,&geometry);
   flags=GetMagickGeometry(image_geometry,&geometry.x,&geometry.y,
-			  &geometry.width,&geometry.height);
+                          &geometry.width,&geometry.height);
   if ((transform_image->columns == geometry.width) &&
       (transform_image->rows == geometry.height))
     return;
-  
+
   /*
     Resize image.
   */
   resize_image=ZoomImage(transform_image,geometry.width,geometry.height,
-			 &(*image)->exception);
+                         &(*image)->exception);
   if (resize_image == (Image *) NULL)
     return;
 

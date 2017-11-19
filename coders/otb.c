@@ -178,7 +178,7 @@ static Image *ReadOTBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                   image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   (void) SyncImage(image);
@@ -365,7 +365,7 @@ static unsigned int WriteOTBImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   CloseBlob(image);

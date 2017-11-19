@@ -51,8 +51,8 @@ void Magick::affineTransformImage::operator()( Magick::Image &image_ ) const
 Magick::annotateImage::annotateImage ( const std::string &text_,
                                        const Magick::Geometry &geometry_ )
       : _text( text_ ),
-	_geometry( geometry_ ),
-	_gravity( Magick::NorthWestGravity ),
+        _geometry( geometry_ ),
+        _gravity( Magick::NorthWestGravity ),
         _degrees( 0 )
 {
 }
@@ -186,7 +186,7 @@ void Magick::cdlImage::operator()( Image &image_ ) const
 // Apply a color matrix to the image channels.  The user supplied
 // matrix may be of order 1 to 5 (1x1 through 5x5).
 Magick::colorMatrixImage::colorMatrixImage( const unsigned int order_,
-					    const double *color_matrix_ )
+                                            const double *color_matrix_ )
   : _order( order_ ),
     _color_matrix( color_matrix_ )
 {
@@ -350,7 +350,7 @@ Magick::extentImage::extentImage( const Geometry &geometry_ )
   : _geometry( geometry_ ),
     _backgroundColor( ),
     _gravity( Magick::ForgetGravity )
-    
+
 {
 }
 Magick::extentImage::extentImage( const Geometry &geometry_,
@@ -898,7 +898,7 @@ void Magick::segmentImage::operator()( Magick::Image &image_ ) const
 // Shade image using distant light source
 Magick::shadeImage::shadeImage( const double azimuth_,
                                 const double elevation_,
-				const bool colorShading_)
+                                const bool colorShading_)
   : _azimuth( azimuth_ ),
     _elevation( elevation_ ),
     _colorShading (colorShading_)

@@ -4,7 +4,7 @@
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Magick API common definitions support.
 */
 #ifndef _MAGICK_COMMON_H
@@ -23,7 +23,7 @@ extern "C" {
 #  define _MAGICKLIB_
 #  undef BuildMagickModules
 #  define SupportMagickModules
-#endif 
+#endif
 
 #if defined(MSWINDOWS) && !defined(__CYGWIN__)
 #  if defined(_MT) && defined(_DLL) && !defined(_MAGICKDLL_) && !defined(_LIB)
@@ -53,12 +53,12 @@ extern "C" {
 #  if defined(_DLL) && !defined(_LIB)
 #    define ModuleExport  __declspec(dllexport)
 #    if defined(_VISUALC_)
-#      pragma message( "Magick module DLL export interface" ) 
+#      pragma message( "Magick module DLL export interface" )
 #    endif
 #  else
 #    define ModuleExport
 #    if defined(_VISUALC_)
-#      pragma message( "Magick module static interface" ) 
+#      pragma message( "Magick module static interface" )
 #    endif
 #  endif
 #  define MagickGlobal __declspec(thread)

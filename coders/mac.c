@@ -13,7 +13,7 @@
 %                            MM MM  A   A  C                                  %
 %                            M M M  AAAAA  C                                  %
 %                            M   M  A   A  C                                  %
-%                            M   M  A   A   CCC       			      %                              %
+%                            M   M  A   A   CCC                               %                              %
 %                                                                             %
 %                Read MAC: MacPaint Image Format.                                     %
 %                                                                             %
@@ -77,7 +77,7 @@
 static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image *image;
-  unsigned int y;  
+  unsigned int y;
   unsigned char x8, rep, b;
   long ldblk;
   unsigned char *BImgBuff = NULL;
@@ -85,7 +85,7 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int status;
   const PixelPacket *q;
 
-	/* Open image file. */
+        /* Open image file. */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -95,15 +95,15 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if(status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
-	/* Read MAC image. */
+        /* Read MAC image. */
   ldblk = ReadBlobLSBShort(image);
   if((ldblk & 0xFF)!=0)
-	ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
-  if(ldblk==0)		/* ???? don't know why */
-	SeekBlob(image,0x200,SEEK_SET);
+  if(ldblk==0)          /* ???? don't know why */
+        SeekBlob(image,0x200,SEEK_SET);
   else
-	SeekBlob(image,0x280,SEEK_SET);
+        SeekBlob(image,0x280,SEEK_SET);
 
   image->columns = 576;
   image->rows = 720;
@@ -121,8 +121,8 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if(BImgBuff==NULL)
     NoMemory:
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  
-  DataPtr = BImgBuff;  
+
+  DataPtr = BImgBuff;
   x8=0; y=0;
 
   while(y<image->rows)
@@ -141,21 +141,21 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
         x8++;
         rep--;
         if(x8>=ldblk)
-	{
-	  x8=0;
+        {
+          x8=0;
 
           q = SetImagePixels(image,0,y,image->columns,1);
           if(q == (PixelPacket *)NULL) break;
           (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
           if(!SyncImagePixels(image)) break;
 
-	  DataPtr = BImgBuff;
-	  y++;
-	  if(y>=image->rows)
-	  {
-	    break;	    
-	  }
-	}
+          DataPtr = BImgBuff;
+          y++;
+          if(y>=image->rows)
+          {
+            break;
+          }
+        }
       }
     }
     else
@@ -169,19 +169,19 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
         rep--;
         if(x8>=ldblk)
         {
- 	  x8=0;
+          x8=0;
 
           q = SetImagePixels(image,0,y,image->columns,1);
           if(q == (PixelPacket *)NULL) break;
           (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
           if (!SyncImagePixels(image)) break;
 
-	  DataPtr = BImgBuff;
-	  y++;
-	  if(y>=image->rows)
-	  {
-	    break;
-	  }
+          DataPtr = BImgBuff;
+          y++;
+          if(y>=image->rows)
+          {
+            break;
+          }
         }
       }
     }

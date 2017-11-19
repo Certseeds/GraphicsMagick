@@ -115,7 +115,7 @@ static unsigned int IsSFW(const unsigned char *magick,const size_t length)
 */
 
 static unsigned char *SFWScan(const unsigned char *p,const unsigned char *q,
-			      const unsigned char *target,const size_t length)
+                              const unsigned char *target,const size_t length)
 {
   register size_t
     i;
@@ -267,7 +267,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Find the start of the JFIF data
   */
   header=SFWScan(buffer,buffer_end,
-		 (unsigned char *)"\377\310\377\320",4);
+                 (unsigned char *)"\377\310\377\320",4);
   if ((header == (unsigned char *) NULL) ||
       (header+6+134 > buffer_end)) /* 134 ~ Minimum JFIF size */
     {
@@ -289,8 +289,8 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   {
     if (offset+4 > buffer_end)
       {
-	MagickFreeMemory(buffer);
-	ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
+        MagickFreeMemory(buffer);
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
       }
     TranslateSFWMarker(offset);
     if (offset[1] == 0xda)

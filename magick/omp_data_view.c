@@ -51,7 +51,7 @@ DestroyThreadViewDataSet(ThreadViewDataSet *data_set)
 {
   unsigned int
     i;
-  
+
   if (data_set != (ThreadViewDataSet *) NULL)
     {
       if (data_set->view_data != (void *) NULL)
@@ -81,10 +81,10 @@ AllocateThreadViewDataSet(const MagickFreeFunc destructor,
 {
   ThreadViewDataSet
     *data_set;
-  
+
   MagickPassFail
     status=MagickPass;
-  
+
   data_set=MagickAllocateMemory(ThreadViewDataSet *,sizeof(ThreadViewDataSet));
   if (data_set == (ThreadViewDataSet *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
@@ -101,7 +101,7 @@ AllocateThreadViewDataSet(const MagickFreeFunc destructor,
 
   if (data_set->view_data != (void *) NULL)
     (void) memset(data_set->view_data,0,data_set->nviews*sizeof(void *));
-  
+
   if (status == MagickFail)
     {
       DestroyThreadViewDataSet(data_set);
@@ -126,10 +126,10 @@ AllocateThreadViewDataArray(const Image *image,
   */
   ThreadViewDataSet
     *data_set;
-  
+
   MagickPassFail
     alloc_status=MagickFail;
-          
+
   data_set=AllocateThreadViewDataSet(MagickFree,image,exception);
   if (data_set != (ThreadViewDataSet *) NULL)
     {
@@ -138,15 +138,15 @@ AllocateThreadViewDataArray(const Image *image,
 
       unsigned int
         i;
-              
+
       alloc_status=MagickPass;
       allocated_views=GetThreadViewDataSetAllocatedViews(data_set);
-              
+
       for (i=0; i < allocated_views; i++)
         {
           unsigned char
             *data;
-                  
+
           data=MagickAllocateArray(unsigned char *,count,size);
           if (data == (unsigned char *) NULL)
             {

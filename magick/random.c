@@ -56,11 +56,11 @@ MagickExport MagickRandomKernel* AcquireMagickRandomKernel()
   if (kernel == (MagickRandomKernel *) NULL)
     {
       kernel=MagickAllocateAlignedMemory(MagickRandomKernel *,
-					 MAGICK_CACHE_LINE_SIZE,
-					 sizeof(MagickRandomKernel));
+                                         MAGICK_CACHE_LINE_SIZE,
+                                         sizeof(MagickRandomKernel));
       if (kernel == (MagickRandomKernel *) NULL)
-	MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-			  UnableToAllocateRandomKernel);
+        MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                          UnableToAllocateRandomKernel);
       InitializeMagickRandomKernel(kernel);
       MagickTsdSetSpecific(kernel_key,(const void *) kernel);
     }
@@ -91,7 +91,7 @@ void DestroyMagickRandomGenerator()
   if (initialized)
     {
       MagickRandomKernel
-	*kernel;
+        *kernel;
 
       /* FIXME: This only frees memory associated with one thread */
       kernel=(MagickRandomKernel *) MagickTsdGetSpecific(kernel_key);
@@ -128,9 +128,9 @@ InitializeMagickRandomKernel(MagickRandomKernel *kernel)
 
     if ((file=open("/dev/urandom",O_RDONLY | O_BINARY)) != -1)
       {
-	if (read(file,(void *) kernel,sizeof(*kernel)) == sizeof(*kernel))
+        if (read(file,(void *) kernel,sizeof(*kernel)) == sizeof(*kernel))
           done=MagickTrue;
-	(void) close(file);
+        (void) close(file);
       }
     if (!done)
       MagickFatalError(ResourceLimitFatalError,UnableToObtainRandomEntropy,
@@ -188,7 +188,7 @@ InitializeMagickRandomKernel(MagickRandomKernel *kernel)
       pthread_t thread_id;
       magick_uint32_t intval;
     } pthread_union;
-    
+
     pthread_union.intval=0U;
     pthread_union.thread_id=pthread_self();
     kernel->w ^= pthread_union.intval;

@@ -672,7 +672,7 @@ DestroyColorInfoEntry(ColorInfo *entry)
       MagickFreeMemory(entry->path);
       MagickFreeMemory(entry->name);
     }
-  MagickFreeMemory(entry);    
+  MagickFreeMemory(entry);
 }
 MagickExport void
 DestroyColorInfo(void)
@@ -759,16 +759,16 @@ GetColorInfo(const char *name,ExceptionInfo *exception)
     {
       /* Check common synonyms */
       const char
-	*pos;
+        *pos;
 
       LocaleUpper(colorname);
       if ((pos = strstr(colorname,"GREY")) != (const char *) NULL)
-	{
-	  colorname[pos-colorname+2]='A';
-	  for (p=color_list; p != (ColorInfo *) NULL; p=p->next)
-	    if (LocaleCompare(colorname,p->name) == 0)
-	      break;
-	}
+        {
+          colorname[pos-colorname+2]='A';
+          for (p=color_list; p != (ColorInfo *) NULL; p=p->next)
+            if (LocaleCompare(colorname,p->name) == 0)
+              break;
+        }
     }
   if (p == (ColorInfo *) NULL)
     ThrowException(exception,OptionWarning,UnrecognizedColor,name);
@@ -1046,15 +1046,15 @@ ListColorInfo(FILE *file,ExceptionInfo *exception)
 
     if (p->color.opacity == OpaqueOpacity)
       (void) fprintf(file,"%5d,%5d,%5d       ",
-		     ScaleQuantumToChar(p->color.red),
-		     ScaleQuantumToChar(p->color.green),
-		     ScaleQuantumToChar(p->color.blue));
+                     ScaleQuantumToChar(p->color.red),
+                     ScaleQuantumToChar(p->color.green),
+                     ScaleQuantumToChar(p->color.blue));
     else
       (void) fprintf(file,"%5d,%5d,%5d,%5d ",
-		     ScaleQuantumToChar(p->color.red),
-		     ScaleQuantumToChar(p->color.green),
-		     ScaleQuantumToChar(p->color.blue),
-		     ScaleQuantumToChar(p->color.opacity));
+                     ScaleQuantumToChar(p->color.red),
+                     ScaleQuantumToChar(p->color.green),
+                     ScaleQuantumToChar(p->color.blue),
+                     ScaleQuantumToChar(p->color.opacity));
     if ((unsigned int) p->compliance & (unsigned int) SVGCompliance)
       (void) fprintf(file,"SVG ");
     if ((unsigned int) p->compliance & (unsigned int) X11Compliance)
@@ -1127,7 +1127,7 @@ InitializeColorInfo(void)
 */
 MagickExport unsigned int
 QueryColorDatabase(const char *name,PixelPacket *color,
-		   ExceptionInfo *exception)
+                   ExceptionInfo *exception)
 {
   double
     scale;
@@ -1234,7 +1234,7 @@ QueryColorDatabase(const char *name,PixelPacket *color,
       {
         unsigned int
           divisor=1;
-        
+
         n<<=2;
         for( i=n-1; i; i--)
           {
@@ -1257,7 +1257,7 @@ QueryColorDatabase(const char *name,PixelPacket *color,
   if (LocaleNCompare(name,"rgb(",4) == 0)
     {
       DoublePixelPacket
-	pixel;
+        pixel;
 
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
@@ -1272,7 +1272,7 @@ QueryColorDatabase(const char *name,PixelPacket *color,
   if (LocaleNCompare(name,"rgba(",5) == 0)
     {
       DoublePixelPacket
-	pixel;
+        pixel;
 
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
@@ -1336,8 +1336,8 @@ QueryColorDatabase(const char *name,PixelPacket *color,
 */
 MagickExport unsigned int
 QueryColorname(const Image *image,const PixelPacket *color,
-	       const ComplianceType compliance,char *name,
-	       ExceptionInfo *exception)
+               const ComplianceType compliance,char *name,
+               ExceptionInfo *exception)
 {
   register const ColorInfo
     *p;
@@ -1402,8 +1402,8 @@ QueryColorname(const Image *image,const PixelPacket *color,
 */
 static MagickPassFail
 ReadColorConfigureFile(const char *basename,
-		       const unsigned int depth,
-		       ExceptionInfo *exception)
+                       const unsigned int depth,
+                       ExceptionInfo *exception)
 {
   size_t
     length;
@@ -1415,40 +1415,40 @@ ReadColorConfigureFile(const char *basename,
   if (depth == 0)
     {
       size_t
-	i;
+        i;
 
       /*
-	Load default set of colors from the static color table.
+        Load default set of colors from the static color table.
       */
       for (i=0 ; i < sizeof(StaticColors)/sizeof(StaticColors[0]); i++)
-	{
-	  ColorInfo
-	    *color_info;
+        {
+          ColorInfo
+            *color_info;
 
-	  color_info=MagickAllocateMemory(ColorInfo *,sizeof(ColorInfo));
-	  if (color_info == (ColorInfo *) NULL)
-	    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-			      UnableToAllocateColorInfo);
-	  color_info->path=(char *) BuiltInPath;
-	  color_info->name=(char *) StaticColors[i].name;
-	  color_info->compliance=(ComplianceType) StaticColors[i].compliance;
-	  color_info->color.red=ScaleCharToQuantum(StaticColors[i].red);
-	  color_info->color.green=ScaleCharToQuantum(StaticColors[i].green);
-	  color_info->color.blue=ScaleCharToQuantum(StaticColors[i].blue);
-	  color_info->color.opacity=ScaleCharToQuantum(StaticColors[i].opacity);
-	  color_info->stealth=MagickFalse;
-	  color_info->signature=MagickSignature;
-	  color_info->previous=(ColorInfo *) NULL;
-	  color_info->next=(ColorInfo *) NULL;
-	  if (color_list == (ColorInfo *) NULL)
-	    {
-	      color_list=color_info;
-	      continue;
-	    }
-	  color_list->next=color_info;
-	  color_info->previous=color_list;
-	  color_list=color_list->next;
-	}
+          color_info=MagickAllocateMemory(ColorInfo *,sizeof(ColorInfo));
+          if (color_info == (ColorInfo *) NULL)
+            MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                              UnableToAllocateColorInfo);
+          color_info->path=(char *) BuiltInPath;
+          color_info->name=(char *) StaticColors[i].name;
+          color_info->compliance=(ComplianceType) StaticColors[i].compliance;
+          color_info->color.red=ScaleCharToQuantum(StaticColors[i].red);
+          color_info->color.green=ScaleCharToQuantum(StaticColors[i].green);
+          color_info->color.blue=ScaleCharToQuantum(StaticColors[i].blue);
+          color_info->color.opacity=ScaleCharToQuantum(StaticColors[i].opacity);
+          color_info->stealth=MagickFalse;
+          color_info->signature=MagickSignature;
+          color_info->previous=(ColorInfo *) NULL;
+          color_info->next=(ColorInfo *) NULL;
+          if (color_list == (ColorInfo *) NULL)
+            {
+              color_list=color_info;
+              continue;
+            }
+          color_list->next=color_info;
+          color_info->previous=color_list;
+          color_list=color_list->next;
+        }
     }
 
   /*
@@ -1458,12 +1458,12 @@ ReadColorConfigureFile(const char *basename,
   if (depth == 0)
     {
       ExceptionInfo
-	exception_local;
+        exception_local;
 
       GetExceptionInfo(&exception_local);
       xml=(char *) GetConfigureBlob(basename,path,&length,&exception_local);
       if (exception_local.severity != ConfigureError)
-	CopyException(exception,&exception_local);
+        CopyException(exception,&exception_local);
       DestroyExceptionInfo(&exception_local);
     }
   else
@@ -1473,220 +1473,220 @@ ReadColorConfigureFile(const char *basename,
   if (xml != (char *) NULL)
     {
       char
-	keyword[MaxTextExtent],
-	*q,
-	*token;
+        keyword[MaxTextExtent],
+        *q,
+        *token;
 
       size_t
         token_max_length;
 
       MagickBool
-	in_entry;
+        in_entry;
 
       token=AcquireString(xml);
       token_max_length=strlen(token);
       in_entry=MagickFalse;
       for (q=xml; *q != '\0'; )
-	{
-	  /*
-	    Interpret XML.
-	  */
-	  MagickGetToken(q,&q,token,token_max_length);
-	  if (*token == '\0')
-	    break;
-	  (void) strlcpy(keyword,token,sizeof(keyword));
-	  if (LocaleNCompare(keyword,"<!--",4) == 0)
-	    {
-	      /*
-		Comment element.
-	      */
-	      while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
-		MagickGetToken(q,&q,token,token_max_length);
-	      continue;
-	    }
-	  if (LocaleCompare(keyword,"<include") == 0)
-	    {
-	      /*
-		Include element.
-	      */
-	      while ((*token != '>') && (*q != '\0'))
-		{
-		  (void) strlcpy(keyword,token,MaxTextExtent);
-		  MagickGetToken(q,&q,token,token_max_length);
-		  if (*token != '=')
-		    continue;
-		  MagickGetToken(q,&q,token,token_max_length);
-		  if (LocaleCompare(keyword,"file") == 0)
-		    {
-		      if (depth > 200)
-			ThrowException(exception,ConfigureError,
-				       IncludeElementNestedTooDeeply,path);
-		      else
-			{
-			  char
-			    filename[MaxTextExtent];
+        {
+          /*
+            Interpret XML.
+          */
+          MagickGetToken(q,&q,token,token_max_length);
+          if (*token == '\0')
+            break;
+          (void) strlcpy(keyword,token,sizeof(keyword));
+          if (LocaleNCompare(keyword,"<!--",4) == 0)
+            {
+              /*
+                Comment element.
+              */
+              while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
+                MagickGetToken(q,&q,token,token_max_length);
+              continue;
+            }
+          if (LocaleCompare(keyword,"<include") == 0)
+            {
+              /*
+                Include element.
+              */
+              while ((*token != '>') && (*q != '\0'))
+                {
+                  (void) strlcpy(keyword,token,MaxTextExtent);
+                  MagickGetToken(q,&q,token,token_max_length);
+                  if (*token != '=')
+                    continue;
+                  MagickGetToken(q,&q,token,token_max_length);
+                  if (LocaleCompare(keyword,"file") == 0)
+                    {
+                      if (depth > 200)
+                        ThrowException(exception,ConfigureError,
+                                       IncludeElementNestedTooDeeply,path);
+                      else
+                        {
+                          char
+                            filename[MaxTextExtent];
 
-			  GetPathComponent(path,HeadPath,filename);
-			  if (*filename != '\0')
-			    (void) strlcat(filename,DirectorySeparator,sizeof(filename));
-			  (void) strlcat(filename,token,sizeof(filename));
-			  (void) ReadColorConfigureFile(filename,depth+1,exception);
-			}
-		      if (color_list != (ColorInfo *) NULL)
-			while (color_list->next != (ColorInfo *) NULL)
-			  color_list=color_list->next;
-		    }
-		}
-	      continue;
-	    }
-	  if (LocaleCompare(keyword,"<color") == 0)
-	    {
-	      ColorInfo
-		*color_info;
+                          GetPathComponent(path,HeadPath,filename);
+                          if (*filename != '\0')
+                            (void) strlcat(filename,DirectorySeparator,sizeof(filename));
+                          (void) strlcat(filename,token,sizeof(filename));
+                          (void) ReadColorConfigureFile(filename,depth+1,exception);
+                        }
+                      if (color_list != (ColorInfo *) NULL)
+                        while (color_list->next != (ColorInfo *) NULL)
+                          color_list=color_list->next;
+                    }
+                }
+              continue;
+            }
+          if (LocaleCompare(keyword,"<color") == 0)
+            {
+              ColorInfo
+                *color_info;
 
-	      /*
-		Allocate memory for the color list.
-	      */
-	      in_entry=MagickTrue;
-	      color_info=MagickAllocateMemory(ColorInfo *,sizeof(ColorInfo));
-	      if (color_info == (ColorInfo *) NULL)
-		MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-				  UnableToAllocateColorInfo);
-	      (void) memset(color_info,0,sizeof(ColorInfo));
-	      color_info->path=AcquireString(path);
-	      color_info->signature=MagickSignature;
-	      if (color_list == (ColorInfo *) NULL)
-		{
-		  color_list=color_info;
-		  continue;
-		}
-	      color_list->next=color_info;
-	      color_info->previous=color_list;
-	      color_list=color_list->next;
-	      continue;
-	    }
-	  if (LocaleCompare(keyword,"/>") == 0)
-	    {
-	      /*
-		Closing a color specification.
-	      */
-	      if (in_entry)
-		{
-		  /*
-		    Remove any existing entry with same name (last one wins).
-		  */
-		  {
-		    ColorInfo
-		      *color_info;
-	      
-		    for (color_info=color_list->previous;
-			 color_info != (ColorInfo *) NULL;
-			 color_info=color_info->previous)
-		      {
-			if ((LocaleCompare(color_list->name,color_info->name) == 0) &&
-			    (color_list->compliance == color_info->compliance))
-			  {
-			    DestroyColorInfoEntry(color_info);
-			    break;
-			  }
-		      }
-		  }
-		  in_entry=MagickFalse;
-		}
-	    }
-	  if (color_list == (ColorInfo *) NULL)
-	    continue;
-	  MagickGetToken(q,(char **) NULL,token,token_max_length);
-	  if (*token != '=')
-	    continue;
-	  MagickGetToken(q,&q,token,token_max_length);
-	  MagickGetToken(q,&q,token,token_max_length);
-	  switch (*keyword)
-	    {
-	    case 'B':
-	    case 'b':
-	      {
-		if (LocaleCompare((char *) keyword,"blue") == 0)
-		  {
-		    color_list->color.blue=ScaleCharToQuantum(MagickAtoL(token));
-		    break;
-		  }
-		break;
-	      }
-	    case 'C':
-	    case 'c':
-	      {
-		if (LocaleCompare((char *) keyword,"compliance") == 0)
-		  {
-		    long
-		      compliance;
+              /*
+                Allocate memory for the color list.
+              */
+              in_entry=MagickTrue;
+              color_info=MagickAllocateMemory(ColorInfo *,sizeof(ColorInfo));
+              if (color_info == (ColorInfo *) NULL)
+                MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                                  UnableToAllocateColorInfo);
+              (void) memset(color_info,0,sizeof(ColorInfo));
+              color_info->path=AcquireString(path);
+              color_info->signature=MagickSignature;
+              if (color_list == (ColorInfo *) NULL)
+                {
+                  color_list=color_info;
+                  continue;
+                }
+              color_list->next=color_info;
+              color_info->previous=color_list;
+              color_list=color_list->next;
+              continue;
+            }
+          if (LocaleCompare(keyword,"/>") == 0)
+            {
+              /*
+                Closing a color specification.
+              */
+              if (in_entry)
+                {
+                  /*
+                    Remove any existing entry with same name (last one wins).
+                  */
+                  {
+                    ColorInfo
+                      *color_info;
 
-		    compliance=color_list->compliance;
-		    if (GlobExpression(token,"*SVG*"))
-		      compliance|=SVGCompliance;
-		    if (GlobExpression(token,"*X11*"))
-		      compliance|=X11Compliance;
-		    if (GlobExpression(token,"*XPM*"))
-		      compliance|=XPMCompliance;
-		    color_list->compliance=(ComplianceType) compliance;
-		    break;
-		  }
-		break;
-	      }
-	    case 'G':
-	    case 'g':
-	      {
-		if (LocaleCompare((char *) keyword,"green") == 0)
-		  {
-		    color_list->color.green=ScaleCharToQuantum(MagickAtoL(token));
-		    break;
-		  }
-		break;
-	      }
-	    case 'N':
-	    case 'n':
-	      {
-		if (LocaleCompare((char *) keyword,"name") == 0)
-		  {
-		    color_list->name=AcquireString(token);
-		    break;
-		  }
-		break;
-	      }
-	    case 'O':
-	    case 'o':
-	      {
-		if (LocaleCompare((char *) keyword,"opacity") == 0)
-		  {
-		    color_list->color.opacity=ScaleCharToQuantum(MagickAtoL(token));
-		    break;
-		  }
-		break;
-	      }
-	    case 'R':
-	    case 'r':
-	      {
-		if (LocaleCompare((char *) keyword,"red") == 0)
-		  {
-		    color_list->color.red=ScaleCharToQuantum(MagickAtoL(token));
-		    break;
-		  }
-		break;
-	      }
-	    case 'S':
-	    case 's':
-	      {
-		if (LocaleCompare((char *) keyword,"stealth") == 0)
-		  {
-		    color_list->stealth=LocaleCompare(token,"True") == 0;
-		    break;
-		  }
-		break;
-	      }
-	    default:
-	      break;
-	    }
-	}
+                    for (color_info=color_list->previous;
+                         color_info != (ColorInfo *) NULL;
+                         color_info=color_info->previous)
+                      {
+                        if ((LocaleCompare(color_list->name,color_info->name) == 0) &&
+                            (color_list->compliance == color_info->compliance))
+                          {
+                            DestroyColorInfoEntry(color_info);
+                            break;
+                          }
+                      }
+                  }
+                  in_entry=MagickFalse;
+                }
+            }
+          if (color_list == (ColorInfo *) NULL)
+            continue;
+          MagickGetToken(q,(char **) NULL,token,token_max_length);
+          if (*token != '=')
+            continue;
+          MagickGetToken(q,&q,token,token_max_length);
+          MagickGetToken(q,&q,token,token_max_length);
+          switch (*keyword)
+            {
+            case 'B':
+            case 'b':
+              {
+                if (LocaleCompare((char *) keyword,"blue") == 0)
+                  {
+                    color_list->color.blue=ScaleCharToQuantum(MagickAtoL(token));
+                    break;
+                  }
+                break;
+              }
+            case 'C':
+            case 'c':
+              {
+                if (LocaleCompare((char *) keyword,"compliance") == 0)
+                  {
+                    long
+                      compliance;
+
+                    compliance=color_list->compliance;
+                    if (GlobExpression(token,"*SVG*"))
+                      compliance|=SVGCompliance;
+                    if (GlobExpression(token,"*X11*"))
+                      compliance|=X11Compliance;
+                    if (GlobExpression(token,"*XPM*"))
+                      compliance|=XPMCompliance;
+                    color_list->compliance=(ComplianceType) compliance;
+                    break;
+                  }
+                break;
+              }
+            case 'G':
+            case 'g':
+              {
+                if (LocaleCompare((char *) keyword,"green") == 0)
+                  {
+                    color_list->color.green=ScaleCharToQuantum(MagickAtoL(token));
+                    break;
+                  }
+                break;
+              }
+            case 'N':
+            case 'n':
+              {
+                if (LocaleCompare((char *) keyword,"name") == 0)
+                  {
+                    color_list->name=AcquireString(token);
+                    break;
+                  }
+                break;
+              }
+            case 'O':
+            case 'o':
+              {
+                if (LocaleCompare((char *) keyword,"opacity") == 0)
+                  {
+                    color_list->color.opacity=ScaleCharToQuantum(MagickAtoL(token));
+                    break;
+                  }
+                break;
+              }
+            case 'R':
+            case 'r':
+              {
+                if (LocaleCompare((char *) keyword,"red") == 0)
+                  {
+                    color_list->color.red=ScaleCharToQuantum(MagickAtoL(token));
+                    break;
+                  }
+                break;
+              }
+            case 'S':
+            case 's':
+              {
+                if (LocaleCompare((char *) keyword,"stealth") == 0)
+                  {
+                    color_list->stealth=LocaleCompare(token,"True") == 0;
+                    break;
+                  }
+                break;
+              }
+            default:
+              break;
+            }
+        }
       MagickFreeMemory(token);
       MagickFreeMemory(xml);
     }

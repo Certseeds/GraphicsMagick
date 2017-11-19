@@ -679,7 +679,7 @@ typedef struct _PalmHeader
   /* Version:
      0: Palm OS 1
      1: Palm OS 3, no transparency, no RLE compression.
-     2: Palm OS 3.5; transparency and RLE compression supported 
+     2: Palm OS 3.5; transparency and RLE compression supported
   */
   magick_uint8_t  version;
   /* Offset (in four byte words) to start of next image frame. */
@@ -1637,7 +1637,7 @@ OptimizePALMImage(const ImageInfo *image_info,
 
                   DestroyImage(palm_image);
                   palm_image = (Image *) NULL;
- 
+
                   break;
                 }
 

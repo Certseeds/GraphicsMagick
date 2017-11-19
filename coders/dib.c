@@ -406,7 +406,7 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   /*
@@ -806,7 +806,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -853,7 +853,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -891,7 +891,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -941,7 +941,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -977,7 +977,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -1320,7 +1320,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
          if (QuantumTick(y,image->rows))
            if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                        SaveImageText,image->filename,
-				       image->columns,image->rows))
+                                       image->columns,image->rows))
              break;
       }
       break;
@@ -1349,7 +1349,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
       }
       break;
@@ -1386,7 +1386,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
                break;
       }
       break;

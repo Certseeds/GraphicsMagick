@@ -32,7 +32,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Patterns accepted:
-%     0,0: 129,129,129,255 
+%     0,0: 129,129,129,255
 %     0,0: 129,129,129
 %     0,0: (129,129,129) #818181
 %     0,0: (3411594072,2774050136,1883729991) #CB58CB58A558A55870477047
@@ -118,7 +118,7 @@ static long ReadInt(Image *image, int *pch)
     {
       ch = ReadBlobByte(image);
       if (ch == EOF)
-	return (0);
+        return (0);
     }
 
   while (isdigit(ch))
@@ -126,7 +126,7 @@ static long ReadInt(Image *image, int *pch)
       n=10*n+(ch-'0');
       ch = ReadBlobByte(image);
       if (ch == EOF)
-	return (n);
+        return (n);
     }
 
   if (pch)
@@ -343,50 +343,50 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       } while (0);
 
       unsigned
-	x,
-	y;
+        x,
+        y;
 
       unsigned
-	x_min,
-	x_max,
-	y_curr;
+        x_min,
+        x_max,
+        y_curr;
 
       int
-	ch;
+        ch;
 
       unsigned long
-	max,
-	i;
+        max,
+        i;
 
       char
-	NumOfPlanes;
+        NumOfPlanes;
 
       unsigned char
-	*BImgBuff=0;
+        *BImgBuff=0;
 
       magick_uint16_t
-	*WImgBuff;
+        *WImgBuff;
 
       magick_uint32_t
-	*DImgBuff;
+        *DImgBuff;
 
       magick_uint32_t
-	R,
-	G,
-	B,
-	A;
+        R,
+        G,
+        B,
+        A;
 
       const PixelPacket
-	*q;
+        *q;
 
       ExtendedSignedIntegralType NextImagePos = 0;
 
       ImportPixelAreaOptions
-	import_options;
+        import_options;
 
       if (logging)
-	(void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			      "File RAW TXT type: %d", (int) txt_subformat);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "File RAW TXT type: %d", (int) txt_subformat);
 
       do {
         (void) SeekBlob(image,NextImagePos,SEEK_SET);
@@ -415,8 +415,8 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
           case TXT_GM16B_HEX:
           case TXT_GM16B_HEX_Q:
             max=65535;
-            break;	
-          case TXT_GM32B_HEX:	
+            break;
+          case TXT_GM32B_HEX:
           case TXT_GM32B_HEX_Q:
             max=65536;
             break;
@@ -450,7 +450,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         ch=0;
         if (x == 0 && y == 0)
-          while (!EOFBlob(image))	/* auto detect sizes and num of planes */
+          while (!EOFBlob(image))       /* auto detect sizes and num of planes */
             {
               while (!(ch >= '0' && ch <= '9'))
                 {
@@ -458,7 +458,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   ch = ReadBlobByte(image);
                   if (ch == EOF)
                     goto EndReading;
-                  if (ch == '#') 
+                  if (ch == '#')
                     {
                       readln(image,&ch);
                       continue;
@@ -467,17 +467,17 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       (ch >= 'a' && ch <= 'z') ||
                       (ch >= 'A' && ch <= 'Z'))
                     {
-                    TXT_FAIL:			/* not a text data */
+                    TXT_FAIL:                   /* not a text data */
                       ThrowNOTXTReaderException(CoderError,ImageTypeNotSupported,image);
                     }
                 }
               /* x,y: (R,G,B) */
-              x_min = ReadInt(image,&ch);		/* x */	     
+              x_min = ReadInt(image,&ch);               /* x */
               if (x_min > x)
                 x = x_min;
 
               while (ch != ',')
-                {  
+                {
                   ch = ReadBlobByte(image);
                   if (ch==EOF)
                     break;
@@ -485,11 +485,11 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     goto TXT_FAIL;
                 }
               ch=0;
-              i=ReadInt(image,&ch);		/* y */
+              i=ReadInt(image,&ch);             /* y */
 
               /* Check for next image start. */
-              if(x_min==0 && i==0 && x>0 && y>0) 
-	    	goto EndReading;
+              if(x_min==0 && i==0 && x>0 && y>0)
+                goto EndReading;
 
               if (i > y)
                 y=i;
@@ -512,12 +512,12 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       break;
                   }
               ch=0;
-              R = ReadInt(image,&ch);		/* R */
+              R = ReadInt(image,&ch);           /* R */
               if (R > max)
                 max=R;
 
               while (ch != ',')
-                { 
+                {
                   ch = ReadBlobByte(image);
                   if (ch == 10 || ch == 13)
                     goto TXT_FAIL;
@@ -525,7 +525,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     break;
                 }
               ch=0;
-              G = ReadInt(image,&ch);		/* G */
+              G = ReadInt(image,&ch);           /* G */
               if (G > max)
                 max=G;
 
@@ -538,7 +538,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     break;
                 }
               ch=0;
-              B = ReadInt(image,&ch);		/* B */
+              B = ReadInt(image,&ch);           /* B */
               if (B > max)
                 max=B;
 
@@ -553,7 +553,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         break;
                     }
                   ch=0;
-                  A = ReadInt(image,&ch);		/* A */
+                  A = ReadInt(image,&ch);               /* A */
                   if (A > max)
                     max=A;
                 }
@@ -592,16 +592,16 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         image->depth = Min(QuantumDepth,NumOfPlanes);
         ImportPixelAreaOptionsInit(&import_options);
         import_options.endian = NativeEndian;
-  
+
         BImgBuff = MagickAllocateArray(unsigned char *,
                                        (size_t)(x+1),
                                        ( ((image->matte) ? 4 : 3)
                                          * NumOfPlanes/8));
         WImgBuff = (magick_uint16_t *)BImgBuff;
-        DImgBuff = (magick_uint32_t *)BImgBuff;  
-        if (BImgBuff == NULL) 
+        DImgBuff = (magick_uint32_t *)BImgBuff;
+        if (BImgBuff == NULL)
           ThrowNOTXTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  
+
         image->columns = x+1;
         image->rows = y+1;
 
@@ -623,23 +623,23 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (EOFBlob(image))
                   goto FINISH;
                 ch = ReadBlobByte(image);
-                if (ch == '#') 
+                if (ch == '#')
                   {
                     readln(image,&ch);
                     continue;
                   }
               }
-    
-            x = ReadInt(image,&ch);		/* x */
+
+            x = ReadInt(image,&ch);             /* x */
 
             while (ch != ',')
               {
-                ch = ReadBlobByte(image);       
+                ch = ReadBlobByte(image);
                 if (ch == EOF)
                   break;
               }
             ch = 0;
-            y = ReadInt(image,&ch);		/* y */
+            y = ReadInt(image,&ch);             /* y */
 
             /* New image detected. */
             if(x==0 && y==0 && y_curr>0 && x_max>0)
@@ -661,7 +661,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
               }
             ch=0;
-            R = ReadInt(image,&ch);		/* R */
+            R = ReadInt(image,&ch);             /* R */
 
             while (ch != ',')
               {
@@ -670,7 +670,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
               }
             ch=0;
-            G = ReadInt(image,&ch);		/* G */
+            G = ReadInt(image,&ch);             /* G */
 
             while (ch != ',')
               {
@@ -679,18 +679,18 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
               }
             ch=0;
-            B = ReadInt(image,&ch);		/* B */
+            B = ReadInt(image,&ch);             /* B */
 
             if (image->matte)
               {
                 while (ch != ',')
                   {
-                    ch = ReadBlobByte(image);       
+                    ch = ReadBlobByte(image);
                     if (ch == EOF)
                       break;
                   }
                 ch=0;
-                A = ReadInt(image,&ch);		/* A */
+                A = ReadInt(image,&ch);         /* A */
                 if (A > max)
                   max=A;
               }
@@ -750,7 +750,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         DImgBuff[2+4*x] = B;
                         DImgBuff[3+4*x] = 4294967295U-A;
                         break;
-                      }    
+                      }
                   }
                 else
                   {
@@ -771,7 +771,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         DImgBuff[1+3*x] = G;
                         DImgBuff[2+3*x] = B;
                         break;
-                      }    
+                      }
                   }
                 if (x_min > x_max)
                   {
@@ -792,10 +792,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       FINISH:
         if (x_min <= x_max)
           {
-            q = SetImagePixels(image,x_min,y_curr,x_max-x_min+1,1);	  
+            q = SetImagePixels(image,x_min,y_curr,x_max-x_min+1,1);
             if (q != (PixelPacket *)NULL)
               {
-                if (image->matte)        
+                if (image->matte)
                   (void)ImportImagePixelArea(image, RGBAQuantum, NumOfPlanes,
                                              BImgBuff + 4*x_min*(NumOfPlanes/8),
                                              &import_options, 0);
@@ -814,7 +814,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
         /* Note that DImgBuff and WImgBuff point to BImgBuff */
         MagickFreeMemory(BImgBuff);
-      } while(!EOFBlob(image) && NextImagePos>0);	
+      } while(!EOFBlob(image) && NextImagePos>0);
 
       goto FINISH_TXT;
     }
@@ -844,10 +844,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     DrawInfo
       *draw_info = (DrawInfo *) NULL;
-    
+
     RectangleInfo
       page;
-    
+
     TypeMetric
       metrics;
 
@@ -858,14 +858,14 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     dy_resolution=72.0;
     if ((image->x_resolution == 0.0) || (image->y_resolution == 0.0))
       {
-	char
-	  density[MaxTextExtent];
+        char
+          density[MaxTextExtent];
 
-	(void) strlcpy(density,PSDensityGeometry,sizeof(density));
-	count=GetMagickDimension(density,&image->x_resolution,
-				 &image->y_resolution,NULL,NULL);
-	if (count != 2)
-	  image->y_resolution=image->x_resolution;
+        (void) strlcpy(density,PSDensityGeometry,sizeof(density));
+        count=GetMagickDimension(density,&image->x_resolution,
+                                 &image->y_resolution,NULL,NULL);
+        if (count != 2)
+          image->y_resolution=image->x_resolution;
       }
     SetGeometry(image,&page);
     page.width=612;
@@ -873,11 +873,11 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (void) GetGeometry("612x792+43+43",&page.x,&page.y,&page.width,&page.height);
     if (image_info->page != (char *) NULL)
       (void) GetGeometry(image_info->page,&page.x,&page.y,&page.width,
-			 &page.height);
+                         &page.height);
     if (logging)
       (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-			   "Page Geometry: %lux%lu%+ld%+ld",
-			   page.width,page.height,page.x,page.y);
+                           "Page Geometry: %lux%lu%+ld%+ld",
+                           page.width,page.height,page.x,page.y);
     /*
       Initialize Image structure.
     */
@@ -892,15 +892,15 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     texture=(Image *) NULL;
     if (image_info->texture != (char *) NULL)
       {
-	ImageInfo
-	  *clone_info;
+        ImageInfo
+          *clone_info;
 
-	clone_info=CloneImageInfo(image_info);
-	clone_info->blob=(void *) NULL;
-	clone_info->length=0;
-	(void) strlcpy(clone_info->filename,image_info->texture,MaxTextExtent);
-	texture=ReadImage(clone_info,exception);
-	DestroyImageInfo(clone_info);
+        clone_info=CloneImageInfo(image_info);
+        clone_info->blob=(void *) NULL;
+        clone_info->length=0;
+        (void) strlcpy(clone_info->filename,image_info->texture,MaxTextExtent);
+        texture=ReadImage(clone_info,exception);
+        DestroyImageInfo(clone_info);
       }
     /*
       Annotate the text image.
@@ -921,91 +921,91 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
     if (logging)
       (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-			   "Type metrics: ascent=%g descent=%g"
-			   " height=%g max_advance=%g",
-			   metrics.ascent,metrics.descent,
-			   metrics.height,metrics.max_advance);
+                           "Type metrics: ascent=%g descent=%g"
+                           " height=%g max_advance=%g",
+                           metrics.ascent,metrics.descent,
+                           metrics.height,metrics.max_advance);
     pixels_per_line=(long) (metrics.ascent-metrics.descent);
     margins=2*page.y;
     lines_per_page=((image->rows+1)-margins)/pixels_per_line+1;
     if (logging)
       (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-			   "Pixels per line: %ld",
-			   pixels_per_line);
+                           "Pixels per line: %ld",
+                           pixels_per_line);
     if (logging)
       (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-			   "Lines per page: %ld",
-			   lines_per_page);
+                           "Lines per page: %ld",
+                           lines_per_page);
     (void) strlcpy(filename,image_info->filename,MaxTextExtent);
     if (draw_info->text != '\0')
-      *draw_info->text='\0';  
+      *draw_info->text='\0';
 
     page_num=1;
     line_num=0;
     while (p != (char *) NULL)
       {
-	/*
-	  Annotate image with text.
+        /*
+          Annotate image with text.
 
-	  Text lines are concatenated so that a full page is
-	  rendered at a time via AnnotateImage().
-	*/
-	(void) ConcatenateString(&draw_info->text,text);
-	(void) ConcatenateString(&draw_info->text,"\\n");
-	line_num++;
+          Text lines are concatenated so that a full page is
+          rendered at a time via AnnotateImage().
+        */
+        (void) ConcatenateString(&draw_info->text,text);
+        (void) ConcatenateString(&draw_info->text,"\\n");
+        line_num++;
 
-	if (image->previous == (Image *) NULL)
-	  if (QuantumTick(line_num,lines_per_page))
-	    if (!MagickMonitorFormatted(line_num,lines_per_page,&image->exception,
-					LoadImageText,image->filename,
-					image->columns,image->rows))
-	      break;
+        if (image->previous == (Image *) NULL)
+          if (QuantumTick(line_num,lines_per_page))
+            if (!MagickMonitorFormatted(line_num,lines_per_page,&image->exception,
+                                        LoadImageText,image->filename,
+                                        image->columns,image->rows))
+              break;
 
-	p=ReadBlobString(image,text);
-	if ((line_num < lines_per_page) && (p != (char *) NULL))
-	  continue;
-	if (texture != (Image *) NULL)
-	  {
-	    MonitorHandler
-	      handler;
+        p=ReadBlobString(image,text);
+        if ((line_num < lines_per_page) && (p != (char *) NULL))
+          continue;
+        if (texture != (Image *) NULL)
+          {
+            MonitorHandler
+              handler;
 
-	    handler=SetMonitorHandler((MonitorHandler) NULL);
-	    (void) TextureImage(image,texture);
-	    (void) SetMonitorHandler(handler);
-	  }
-	(void) AnnotateImage(image,draw_info);
-	if (p == (char *) NULL)
-	  break;
+            handler=SetMonitorHandler((MonitorHandler) NULL);
+            (void) TextureImage(image,texture);
+            (void) SetMonitorHandler(handler);
+          }
+        (void) AnnotateImage(image,draw_info);
+        if (p == (char *) NULL)
+          break;
 
-	if (logging)
-	  (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-			       "page %ld scene %ld ",page_num, image->scene);
+        if (logging)
+          (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                               "page %ld scene %ld ",page_num, image->scene);
 
-	if ((image_info->subimage != 0) || (image_info->subrange != 0))
-	  if (image->scene >= (image_info->subimage+image_info->subrange-1))
-	    break;
+        if ((image_info->subimage != 0) || (image_info->subrange != 0))
+          if (image->scene >= (image_info->subimage+image_info->subrange-1))
+            break;
 
-	/*
-	  Page is full-- allocate next image structure.
-	*/
-	*draw_info->text='\0';
-	page_num++;
-	line_num=0;
-	AllocateNextImage(image_info,image);
-	if (image->next == (Image *) NULL)
-	  {
+        /*
+          Page is full-- allocate next image structure.
+        */
+        *draw_info->text='\0';
+        page_num++;
+        line_num=0;
+        AllocateNextImage(image_info,image);
+        if (image->next == (Image *) NULL)
+          {
             DestroyDrawInfo(draw_info);
-	    DestroyImageList(image);
-	    return ((Image *) NULL);
-	  }
-	image->next->columns=image->columns;
-	image->next->rows=image->rows;
-	image=SyncNextImageInList(image);
-	(void) strlcpy(image->filename,filename,MaxTextExtent);
-	(void) SetImage(image,OpaqueOpacity);
-	if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),exception,
-				    LoadImagesText,image->filename))
-	  break;
+            DestroyImageList(image);
+            return ((Image *) NULL);
+          }
+        image->next->columns=image->columns;
+        image->next->rows=image->rows;
+        image=SyncNextImageInList(image);
+        (void) strlcpy(image->filename,filename,MaxTextExtent);
+        (void) SetImage(image,OpaqueOpacity);
+        if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),exception,
+                                    LoadImagesText,image->filename))
+          break;
       }
 
     if (texture != (Image *) NULL)
@@ -1026,9 +1026,9 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
  FINISH_TXT:
   CloseBlob(image);
   {
-    Image *p;    
+    Image *p;
     long scene=0;
-    
+
     /*
       Rewind list, removing any empty images while rewinding.
     */
@@ -1045,7 +1045,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
           p=p->previous;
         }
       }
-    
+
     /*
       Fix scene numbers
     */
@@ -1053,7 +1053,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       p->scene=scene++;
   }
 
-  if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");  
+  if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return (image);
 }
 
@@ -1191,15 +1191,15 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   do
     {
       unsigned int
-	depth;
-  	 
+        depth;
+
       (void) TransformColorspace(image,RGBColorspace);
       if (image->depth <= 8)
-	depth=8;
+        depth=8;
       else if (image->depth <= 16)
-	depth=16;
+        depth=16;
       else
-	depth=32;    
+        depth=32;
 
       if ((AccessDefinition(image_info,"txt","with-im-header")))
         {
@@ -1211,39 +1211,39 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
                        "# ImageMagick pixel enumeration: %.20g,%.20g,%.20g,rgb%c\n",
                        (double) image->columns, (double) image->rows, (double) depth, a);
 
-	  (void) WriteBlobString(image,buffer);
+          (void) WriteBlobString(image,buffer);
         }
 
       /*
-	Convert MIFF to TXT raster pixels.
+        Convert MIFF to TXT raster pixels.
       */
       for (y=0; y < (long) image->rows; y++)
-	{
-	  p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-	  if (p == (const PixelPacket *) NULL)
-	    break;
-	  for (x=0; x < (long) image->columns; x++)
-	    {
-	      FormatString(buffer,"%ld,%ld: ",x,y);
-	      (void) WriteBlobString(image,buffer);
-	      GetColorTuple(p,depth,image->matte,MagickFalse,tuple);
-	      (void) strlcat(tuple," ",sizeof(tuple));
-	      (void) WriteBlobString(image,tuple);
-	      /* (void) QueryColorname(image,p,SVGCompliance,tuple,&image->exception); */
-	      GetColorTuple(p,depth,image->matte,MagickTrue,tuple);
-	      (void) WriteBlobString(image,tuple);
-	      (void) WriteBlobString(image,"\n");
-	      p++;
-	    }
-	}
+        {
+          p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+          if (p == (const PixelPacket *) NULL)
+            break;
+          for (x=0; x < (long) image->columns; x++)
+            {
+              FormatString(buffer,"%ld,%ld: ",x,y);
+              (void) WriteBlobString(image,buffer);
+              GetColorTuple(p,depth,image->matte,MagickFalse,tuple);
+              (void) strlcat(tuple," ",sizeof(tuple));
+              (void) WriteBlobString(image,tuple);
+              /* (void) QueryColorname(image,p,SVGCompliance,tuple,&image->exception); */
+              GetColorTuple(p,depth,image->matte,MagickTrue,tuple);
+              (void) WriteBlobString(image,tuple);
+              (void) WriteBlobString(image,"\n");
+              p++;
+            }
+        }
       if (image->next == (Image *) NULL)
-	break;
+        break;
       image=SyncNextImageInList(image);
       status=MagickMonitorFormatted(scene++,GetImageListLength(image),
-				    &image->exception,SaveImagesText,
-				    image->filename);
+                                    &image->exception,SaveImagesText,
+                                    image->filename);
       if (status == False)
-	break;
+        break;
     } while (image_info->adjoin);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)

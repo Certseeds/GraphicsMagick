@@ -155,61 +155,61 @@ bool Magick::Geometry::fillArea ( void ) const
 
 
 int Magick::operator == ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return (
-	  ( left_.isValid()     == right_.isValid() ) &&
-	  ( left_.width()       == right_.width() ) &&
-	  ( left_.height()      == right_.height() ) &&
-	  ( left_.xOff()        == right_.xOff() ) &&
-	  ( left_.yOff()        == right_.yOff() ) &&
-	  ( left_.xNegative()   == right_.xNegative() ) &&
-	  ( left_.yNegative()   == right_.yNegative() ) &&
-	  ( left_.percent()     == right_.percent() ) &&
-	  ( left_.aspect()      == right_.aspect() ) &&
-	  ( left_.greater()     == right_.greater() ) &&
-	  ( left_.less()        == right_.less() ) &&
-	  ( left_.limitPixels() == right_.limitPixels() ) &&
+          ( left_.isValid()     == right_.isValid() ) &&
+          ( left_.width()       == right_.width() ) &&
+          ( left_.height()      == right_.height() ) &&
+          ( left_.xOff()        == right_.xOff() ) &&
+          ( left_.yOff()        == right_.yOff() ) &&
+          ( left_.xNegative()   == right_.xNegative() ) &&
+          ( left_.yNegative()   == right_.yNegative() ) &&
+          ( left_.percent()     == right_.percent() ) &&
+          ( left_.aspect()      == right_.aspect() ) &&
+          ( left_.greater()     == right_.greater() ) &&
+          ( left_.less()        == right_.less() ) &&
+          ( left_.limitPixels() == right_.limitPixels() ) &&
           ( left_.fillArea()    == right_.fillArea() )
-	  );
+          );
 }
 int Magick::operator != ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return ( ! (left_ == right_) );
 }
 int Magick::operator >  ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return ( !( left_ < right_ ) && ( left_ != right_ ) );
 }
 int Magick::operator <  ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return (
-	  ( left_.width() * left_.height() )
-	  <
-	  ( right_.width() * right_.height() )
-	  );
+          ( left_.width() * left_.height() )
+          <
+          ( right_.width() * right_.height() )
+          );
 }
 int Magick::operator >= ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return ( ( left_ > right_ ) || ( left_ == right_ ) );
 }
 int Magick::operator <= ( const Magick::Geometry& left_,
-			  const Magick::Geometry& right_ )
+                          const Magick::Geometry& right_ )
 {
   return ( ( left_ < right_ ) || ( left_ == right_ ) );
 }
 
 // Construct using parameterized arguments
 Magick::Geometry::Geometry ( unsigned int width_,
-			     unsigned int height_,
-			     unsigned int xOff_,
-			     unsigned int yOff_,
-			     bool xNegative_,
-			     bool yNegative_ )
+                             unsigned int height_,
+                             unsigned int xOff_,
+                             unsigned int yOff_,
+                             bool xNegative_,
+                             bool yNegative_ )
   : _width( width_ ),
     _height( height_ ),
     _xOff( xOff_ ),
@@ -349,10 +349,10 @@ Magick::Geometry::operator = ( const std::string &geometry_ )
     {
       char *pageptr = GetPageGeometry( geom );
       if ( pageptr != 0 )
-	{
-	  strlcpy(geom,pageptr,sizeof(geom));
+        {
+          strlcpy(geom,pageptr,sizeof(geom));
           MagickFreeMemory(pageptr);
-	}
+        }
     }
 
   long x = 0;

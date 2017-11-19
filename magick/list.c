@@ -858,7 +858,7 @@ MagickExport void SpliceImageIntoList(Image **images,const unsigned long length,
 
   register long
     i;
-  
+
   assert(images != (Image **) NULL);
   assert(splice != (Image *) NULL);
   assert(splice->signature == MagickSignature);

@@ -167,14 +167,14 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
                      image->filename);
     }
-  
-  FormatString(img_label_str,"%.20g,%.20g", 
-               (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF, 
+
+  FormatString(img_label_str,"%.20g,%.20g",
+               (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF,
                (double) TileInfo->TileBounds.NorthEast.lon*180.0/0x7FFFFFFF);
   SetImageAttribute(image,"jnx:northeast",img_label_str);
 
   FormatString(img_label_str,"%.20g,%.20g",
-               (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF, 
+               (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF,
                (double) TileInfo->TileBounds.SouthWest.lon*180.0/0x7FFFFFFF);
   SetImageAttribute(image,"jnx:southwest",img_label_str);
 
@@ -472,7 +472,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
     (void) LogMagickEvent(CoderEvent, GetMagickModule(), "return");
   if (image == NULL)
     ThrowReaderException(CorruptImageError, ImageFileDoesNotContainAnyImageData,
-			 image);
+                         image);
 
   return (image);
 }
@@ -488,7 +488,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Function WriteJNXImage writes an JNX image to a file.  
+%  Function WriteJNXImage writes an JNX image to a file.
 %
 %  The format of the WriteJNXImage method is:
 %

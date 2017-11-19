@@ -275,7 +275,7 @@ static PCL_CompressionType PCL_ChooseCompression(unsigned long row_width,
       */
       RLE_cost += 2*(unrep+((rep+255)/256));
       TiffRLE_cost += unrep + ((unrep+127)/128) + 2*((rep+127)/128);
-    } 
+    }
   /*
     Special case #1 - row is all zero
   */
@@ -339,7 +339,7 @@ static PCL_CompressionType PCL_ChooseCompression(unsigned long row_width,
 
   /* Choose compression to use, starting with most likely */
   least_cost=delta_cost;
-  compression=PCL_DeltaCompression; 
+  compression=PCL_DeltaCompression;
   if (TiffRLE_cost < least_cost)
     {
       least_cost=TiffRLE_cost;
@@ -475,9 +475,9 @@ static unsigned long PCL_DeltaCompress(unsigned long row_width,
             }
           if (rep_this_time == 255)
             *out++ = (unsigned char)0;
-        } 
+        }
       /* Now skip back to beginning of unreplicated data and start outputting it */
-      q -= unrep; 
+      q -= unrep;
       while (1)
         {
           unrep -= unrep_this_time;
@@ -942,7 +942,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
         Start raster image
       */
       if  ((AccessDefinition(image_info,"pcl","fit-to-page") != NULL) ||
-	   (AccessDefinition(image_info,"pcl","fit_to_page") != NULL))
+           (AccessDefinition(image_info,"pcl","fit_to_page") != NULL))
         (void) WriteBlobString(image,"\033*r3A");  /* start raster graphics with scaling */
       else
         (void) WriteBlobString(image,"\033*r1A");  /* start raster graphics */
@@ -1115,7 +1115,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
                           (void) WriteBlobString(image,buffer);
                           WriteBlob(image,bytes_to_write,output_row);
                           break;
-                        } 
+                        }
                       case PCL_TiffRLECompression:
                         {
                           if (compression != last_row_compression)
@@ -1127,7 +1127,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
                           bytes_to_write=PCL_TiffRLECompress(bytes_per_line,pixels,output_row);
                           FormatString(buffer,"\033*b%luW",bytes_to_write);
                           (void) WriteBlobString(image,buffer);
-                          WriteBlob(image,bytes_to_write,output_row);         
+                          WriteBlob(image,bytes_to_write,output_row);
                           break;
                         }
                       case PCL_RLECompression:
@@ -1141,7 +1141,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
                           bytes_to_write=PCL_RLECompress(bytes_per_line,pixels,output_row);
                           FormatString(buffer,"\033*b%luW",bytes_to_write);
                           (void) WriteBlobString(image,buffer);
-                          WriteBlob(image,bytes_to_write,output_row);         
+                          WriteBlob(image,bytes_to_write,output_row);
                           break;
                         }
                       case PCL_RepeatedRowCompression:
@@ -1156,7 +1156,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
                           FormatString(buffer,"\033*b0W");  /* no data -> replicate row */
                           (void) WriteBlobString(image,buffer);
                           break;
-                        } 
+                        }
                       case PCL_NoCompression:
                         {
                           if (compression != last_row_compression)

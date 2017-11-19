@@ -23,27 +23,27 @@ namespace Magick
 
     // Destroy pixel view
     ~Pixels( void );
-    
+
     // Transfer pixels from the image to the pixel view as defined by
     // the specified region. Modified pixels may be subsequently
     // transferred back to the image via sync.
     PixelPacket* get ( const int x_, const int y_,
-		       const unsigned int columns_,const  unsigned int rows_ );
+                       const unsigned int columns_,const  unsigned int rows_ );
 
     // Transfer read-only pixels from the image to the pixel view as
     // defined by the specified region.
     const PixelPacket* getConst ( const int x_, const int y_,
                                   const unsigned int columns_,
                                   const unsigned int rows_ );
-    
+
     // Transfers the image view pixels to the image.
     void sync ( void );
-    
+
     // Allocate a pixel view region to store image pixels as defined
     // by the region rectangle.  This area is subsequently transferred
     // from the pixel view to the image via sync.
     PixelPacket* set ( const int x_, const int y_,
-		       const unsigned int columns_, const unsigned int rows_ );
+                       const unsigned int columns_, const unsigned int rows_ );
 
     // Return pixel colormap index array
     IndexPacket* indexes ( void );
@@ -65,17 +65,17 @@ namespace Magick
     // into the image pixel view of an image.  Used to support image
     // decoders.
     void decode ( const QuantumType quantum_,
-		  const unsigned char *source_ )
+                  const unsigned char *source_ )
       {
-	MagickLib::ReadPixelCache( _image.image(), quantum_, source_ );
+        MagickLib::ReadPixelCache( _image.image(), quantum_, source_ );
       }
-    
+
     // Transfer one or more pixel components from the image pixel
     // view to a buffer or file.  Used to support image encoders.
     void encode ( const QuantumType quantum_,
-		  const unsigned char *destination_ )
+                  const unsigned char *destination_ )
       {
-	MagickLib::WritePixelCache( _image.image(), quantum_, destination_ );
+        MagickLib::WritePixelCache( _image.image(), quantum_, destination_ );
       }
 #endif
   private:

@@ -182,7 +182,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
           (void) fprintf(file," (%s pixels/s)",format);
         }
       (void) fprintf(file,"\n");
-    
+
       return (ferror(file) ? MagickFail : MagickPass);
     }
   /*
@@ -576,8 +576,8 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
   FormatSize(GetBlobSize(image),format);
   (void) fprintf(file,"  Filesize: %.1024s\n",format);
   fprintf(file,"  Interlace: %s\n",
-	  InterlaceTypeToString(image->interlace == UndefinedInterlace ?
-				NoInterlace : image->interlace));
+          InterlaceTypeToString(image->interlace == UndefinedInterlace ?
+                                NoInterlace : image->interlace));
   (void) fprintf(file,"  Orientation: %s\n",
                  OrientationTypeToString(image->orientation));
   (void) QueryColorname(image,&image->background_color,SVGCompliance,color,
@@ -593,7 +593,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
     (void) fprintf(file,"  Page geometry: %lux%lu%+ld%+ld\n",image->page.width,
                    image->page.height,image->page.x,image->page.y);
   (void) fprintf(file,"  Compose: %s\n",
-		 CompositeOperatorToString(image->compose));
+                 CompositeOperatorToString(image->compose));
   (void) fprintf(file,"  Dispose: ");
   switch (image->dispose)
     {
@@ -618,7 +618,7 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
     if (image->scene != 0)
       (void) fprintf(file,"  Scene: %lu\n",image->scene);
   (void) fprintf(file,"  Compression: %s\n",
-		 CompressionTypeToString(image->compression));
+                 CompressionTypeToString(image->compression));
   /*
     Display formatted image attributes. This must happen before we access
     any pseudo attributes like EXIF since doing so causes real attributes
@@ -629,15 +629,15 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
     for ( ; attribute != (const ImageAttribute *) NULL;
           attribute=attribute->next)
       {
-	if (LocaleNCompare("EXIF",attribute->key,4) != 0)
-	  {
-	    (void) fprintf(file,"  %c", toupper((int)attribute->key[0]));
-	    if (strlen(attribute->key) > 1)
-	      (void) fprintf(file,"%.1024s",attribute->key+1);
-	    
-	    (void) fprintf(file,": ");
-	    (void) fprintf(file,"%s\n",attribute->value);
-	  }
+        if (LocaleNCompare("EXIF",attribute->key,4) != 0)
+          {
+            (void) fprintf(file,"  %c", toupper((int)attribute->key[0]));
+            if (strlen(attribute->key) > 1)
+              (void) fprintf(file,"%.1024s",attribute->key+1);
+
+            (void) fprintf(file,": ");
+            (void) fprintf(file,"%s\n",attribute->value);
+          }
       }
   }
   if((profile=GetImageProfile(image,"ICM",&profile_length)) != 0)
@@ -756,13 +756,13 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
   {
     const char
       *profile_name;
-    
+
     size_t
       profile_length;
-              
+
     const unsigned char *
       profile_info;
-    
+
     ImageProfileIterator
       profile_iterator;
 
@@ -788,10 +788,10 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
               {
                 char
                   **values;
-                
+
                 register char
                   *p;
-                
+
                 values=StringToList(attribute->value);
                 if (values != (char **) NULL)
                   {

@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2004-2016 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
@@ -19,7 +19,7 @@
   be safely used by other applications/libraries.
 
   Written by Bob Friesenhahn, March 2004, Updated for regions 2008.
- 
+
 */
 #ifndef _PIXEL_ROW_ITERATOR_H
 #define _PIXEL_ROW_ITERATOR_H

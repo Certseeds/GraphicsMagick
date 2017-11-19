@@ -246,33 +246,33 @@ static int MvgPrintf(DrawingWand *drawing_wand,const char *format,...)
     */
     {
       size_t
-		space_available;
-      
+                space_available;
+
       space_available=drawing_wand->mvg_alloc-drawing_wand->mvg_length-1;
       formatted_length = -1;
       if (space_available > 0)
-	{
-	  
-	  va_start(argp, format);
+        {
+
+          va_start(argp, format);
 #if defined(HAVE_VSNPRINTF)
-	  formatted_length=vsnprintf(drawing_wand->mvg+drawing_wand->mvg_length,
-				     (size_t) space_available,format,argp);
+          formatted_length=vsnprintf(drawing_wand->mvg+drawing_wand->mvg_length,
+                                     (size_t) space_available,format,argp);
 #else
-	  formatted_length=vsprintf(drawing_wand->mvg+drawing_wand->mvg_length,
-				    format,argp);
+          formatted_length=vsprintf(drawing_wand->mvg+drawing_wand->mvg_length,
+                                    format,argp);
 #endif
-	  va_end(argp);
-	}
+          va_end(argp);
+        }
       if ((formatted_length < 0) || ((size_t) formatted_length > space_available))
-	{
-	  ThrowException(&drawing_wand->exception,DrawError,
-			 UnableToPrint,format);
-	}
+        {
+          ThrowException(&drawing_wand->exception,DrawError,
+                         UnableToPrint,format);
+        }
       else
-	{
-	  drawing_wand->mvg_length+=formatted_length;
-	  drawing_wand->mvg_width+=formatted_length;
-	}
+        {
+          drawing_wand->mvg_length+=formatted_length;
+          drawing_wand->mvg_width+=formatted_length;
+        }
     }
     drawing_wand->mvg[drawing_wand->mvg_length]=0;
     if ((drawing_wand->mvg_length > 1) &&
@@ -305,7 +305,7 @@ static int MvgAutoWrapPrintf(DrawingWand *drawing_wand,const char *format,...)
   if (formatted_length < 0)
     {
       ThrowException(&drawing_wand->exception,DrawError,
-		     UnableToPrint,format);
+                     UnableToPrint,format);
     }
   else
     {
@@ -396,20 +396,20 @@ static void AdjustAffine(DrawingWand *drawing_wand,const AffineMatrix *affine)
 %
 */
 WandExport DrawingWand *CloneDrawingWand(const DrawingWand *drawing_wand)
-{  
+{
   DrawingWand
     *clone_wand;
 
   ExceptionInfo
     exeption_info;
-  
+
   assert(drawing_wand != (DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
-  
+
   clone_wand=MagickAllocateMemory(DrawingWand *,sizeof(*clone_wand));
   if (clone_wand == (DrawingWand *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateDrawingWand);
+                      UnableToAllocateDrawingWand);
 
   GetExceptionInfo(&exeption_info);
   (void) memcpy(clone_wand,drawing_wand,sizeof(*clone_wand));
@@ -418,25 +418,25 @@ WandExport DrawingWand *CloneDrawingWand(const DrawingWand *drawing_wand)
   clone_wand->mvg=(char *) NULL;
   clone_wand->pattern_id=(char *) NULL;
   clone_wand->graphic_context=(DrawInfo **) NULL;
-  
+
   clone_wand->own_image=MagickTrue;
   if (drawing_wand->image != (Image *) NULL)
     {
       clone_wand->image=CloneImage(drawing_wand->image,0,0,MagickTrue,
-				   &exeption_info);
+                                   &exeption_info);
       if (clone_wand->image == (Image *) NULL)
-	goto clone_drawing_wand_fail;
+        goto clone_drawing_wand_fail;
     }
-  
+
   if (drawing_wand->mvg)
     {
       clone_wand->mvg=MagickAllocateMemory(char *,drawing_wand->mvg_alloc);
       if (clone_wand->mvg == (char *) NULL)
-	{
-	  ThrowException3(&exeption_info,ResourceLimitError,
-			  MemoryAllocationFailed,UnableToCloneDrawingWand);
-	  goto clone_drawing_wand_fail;
-	}
+        {
+          ThrowException3(&exeption_info,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToCloneDrawingWand);
+          goto clone_drawing_wand_fail;
+        }
       (void) memcpy(clone_wand->mvg,drawing_wand->mvg,drawing_wand->mvg_length+1);
     }
 
@@ -446,28 +446,28 @@ WandExport DrawingWand *CloneDrawingWand(const DrawingWand *drawing_wand)
   if (drawing_wand->graphic_context != (DrawInfo **) NULL)
     {
       clone_wand->graphic_context=MagickAllocateArray(DrawInfo **,
-						      drawing_wand->index+1,
-						      sizeof(DrawInfo *));
+                                                      drawing_wand->index+1,
+                                                      sizeof(DrawInfo *));
       if (clone_wand->graphic_context == (DrawInfo **) NULL)
-	{
-	  ThrowException3(&exeption_info,ResourceLimitError,
-			  MemoryAllocationFailed,UnableToCloneDrawingWand);
-	  goto clone_drawing_wand_fail;
-	}
+        {
+          ThrowException3(&exeption_info,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToCloneDrawingWand);
+          goto clone_drawing_wand_fail;
+        }
       (void) memset(clone_wand->graphic_context,0,
-		    (drawing_wand->index+1)*sizeof(DrawInfo *));
+                    (drawing_wand->index+1)*sizeof(DrawInfo *));
 
       for (clone_wand->index=0; clone_wand->index <= drawing_wand->index; clone_wand->index++)
-	{
-	  clone_wand->graphic_context[clone_wand->index]=
-	    CloneDrawInfo((ImageInfo*)NULL,drawing_wand->graphic_context[clone_wand->index]);
-	  if (clone_wand->graphic_context[clone_wand->index] == (DrawInfo*) NULL)
-	    {
-	      ThrowException3(&exeption_info,ResourceLimitError,
-			      MemoryAllocationFailed,UnableToCloneDrawingWand);
-	      goto clone_drawing_wand_fail;
-	    }
-	}
+        {
+          clone_wand->graphic_context[clone_wand->index]=
+            CloneDrawInfo((ImageInfo*)NULL,drawing_wand->graphic_context[clone_wand->index]);
+          if (clone_wand->graphic_context[clone_wand->index] == (DrawInfo*) NULL)
+            {
+              ThrowException3(&exeption_info,ResourceLimitError,
+                              MemoryAllocationFailed,UnableToCloneDrawingWand);
+              goto clone_drawing_wand_fail;
+            }
+        }
       clone_wand->index=drawing_wand->index;
     }
 
@@ -482,11 +482,11 @@ clone_drawing_wand_fail:
   if (clone_wand->graphic_context != (DrawInfo **) NULL)
     {
       for ( ; clone_wand->index >= 0; clone_wand->index--)
-	{
-	  if (clone_wand->graphic_context[clone_wand->index] != (DrawInfo*) NULL)
-	    DestroyDrawInfo(clone_wand->graphic_context[clone_wand->index]);
-	  clone_wand->graphic_context[clone_wand->index]=(DrawInfo*) NULL;
-	}
+        {
+          if (clone_wand->graphic_context[clone_wand->index] != (DrawInfo*) NULL)
+            DestroyDrawInfo(clone_wand->graphic_context[clone_wand->index]);
+          clone_wand->graphic_context[clone_wand->index]=(DrawInfo*) NULL;
+        }
       MagickFreeMemory(clone_wand->graphic_context);
     }
   (void) memset(clone_wand,0,sizeof(*clone_wand));
@@ -538,11 +538,11 @@ WandExport void DestroyDrawingWand(DrawingWand *drawing_wand)
   if (drawing_wand->graphic_context != (DrawInfo **) NULL)
     {
       for ( ; drawing_wand->index >= 0; drawing_wand->index--)
-	{
-	  if (drawing_wand->graphic_context[drawing_wand->index] != (DrawInfo*) NULL)
-	    DestroyDrawInfo(drawing_wand->graphic_context[drawing_wand->index]);
-	  drawing_wand->graphic_context[drawing_wand->index]=(DrawInfo*) NULL;
-	}
+        {
+          if (drawing_wand->graphic_context[drawing_wand->index] != (DrawInfo*) NULL)
+            DestroyDrawInfo(drawing_wand->graphic_context[drawing_wand->index]);
+          drawing_wand->graphic_context[drawing_wand->index]=(DrawInfo*) NULL;
+        }
       MagickFreeMemory(drawing_wand->graphic_context);
     }
 
@@ -1040,12 +1040,12 @@ WandExport ClipPathUnits DrawGetClipUnits(const DrawingWand *drawing_wand)
 %
 */
 WandExport char *DrawGetException(const DrawingWand *drawing_wand,
-				  ExceptionType *severity)
+                                  ExceptionType *severity)
 {
   char
     buffer[MaxTextExtent],
     *description;
-  
+
   assert(drawing_wand != (const DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
   assert(drawing_wand->exception.signature == MagickSignature);
@@ -1056,12 +1056,12 @@ WandExport char *DrawGetException(const DrawingWand *drawing_wand,
   if (drawing_wand->exception.severity != UndefinedException)
     {
       if (drawing_wand->exception.description)
-	FormatString(buffer,"%.1024s (%.1024s)",
-		     drawing_wand->exception.reason,
-		     drawing_wand->exception.description);
+        FormatString(buffer,"%.1024s (%.1024s)",
+                     drawing_wand->exception.reason,
+                     drawing_wand->exception.description);
       else
-	FormatString(buffer,"%.1024s",
-		     drawing_wand->exception.reason);
+        FormatString(buffer,"%.1024s",
+                     drawing_wand->exception.reason);
       CloneString(&description,buffer);
     }
 

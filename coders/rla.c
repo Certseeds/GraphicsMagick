@@ -344,7 +344,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       const char
         *storage_type = "Unknown";
-      
+
       switch (rla_info.storage_type)
         {
         case 0:
@@ -416,7 +416,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                 "Time           : %.12s", rla3_extra_info.time);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Filter         : %.32s", rla3_extra_info.filter);
-          
+
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "BitsPerChannel : %u", rla3_extra_info.bits_per_channel);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -459,7 +459,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (LocaleNCompare(rla_info.chan,"rgb",3) != 0)
     ThrowRLAReaderException(CoderError,ColorTypeNotSupported,image);
-                          
+
   /*
     Initialize image structure.
   */
@@ -649,7 +649,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                   image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         {
           status=MagickFail;
           break;

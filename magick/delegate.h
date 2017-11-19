@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Methods to Read/Write/Invoke Delegates.
 */
 #ifndef _MAGICK_DELEGATE_H
@@ -60,7 +60,7 @@ extern MagickExport DelegateInfo
 
 extern MagickExport MagickPassFail
   InvokePostscriptDelegate(const unsigned int verbose,const char *command,
-			   ExceptionInfo *exception),
+                           ExceptionInfo *exception),
   InvokeDelegate(ImageInfo *image_info,Image *image,const char *decode,
                  const char *encode,ExceptionInfo *exception),
   ListDelegateInfo(FILE *file,ExceptionInfo *exception);

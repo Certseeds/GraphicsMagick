@@ -55,7 +55,7 @@
 */
 
 static Image *ReadIdentityImage(const ImageInfo *image_info,
-				ExceptionInfo *exception)
+                                ExceptionInfo *exception)
 {
 #define IdentityImageText  "[%s] Generating Hald CLUT identity image..."
 
@@ -89,7 +89,7 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
     order=MagickAtoL(image_info->filename);
   if (order < 2)
     order=8;
-  
+
   image=AllocateImage(image_info);
   cube_size=order*order;
   image->columns=image->rows=order*order*order;
@@ -122,29 +122,29 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
 
       if (q != (PixelPacket *) NULL)
         {
-	  double
-	    value;
+          double
+            value;
 
-	  unsigned int
-	    red,
-	    green,
-	    blue;
+          unsigned int
+            red,
+            green,
+            blue;
 
-	  blue=y/order;
-	  for(green = 0; green < cube_size; green++)
-	    {
-	      for(red = 0; red < cube_size; red++)
-		{
-		  value=MaxRGBDouble * (double)red / (double)(cube_size - 1);
-		  q->red   = RoundDoubleToQuantum(value);
-		  value     = MaxRGBDouble * (double)green / (double)(cube_size - 1);
-		  q->green = RoundDoubleToQuantum(value);
-		  value    = MaxRGBDouble * (double)blue / (double)(cube_size - 1);
-		  q->blue  = RoundDoubleToQuantum(value);
-		  q->opacity = OpaqueOpacity;
-		  q++;
-		}
-	    }
+          blue=y/order;
+          for(green = 0; green < cube_size; green++)
+            {
+              for(red = 0; red < cube_size; red++)
+                {
+                  value=MaxRGBDouble * (double)red / (double)(cube_size - 1);
+                  q->red   = RoundDoubleToQuantum(value);
+                  value     = MaxRGBDouble * (double)green / (double)(cube_size - 1);
+                  q->green = RoundDoubleToQuantum(value);
+                  value    = MaxRGBDouble * (double)blue / (double)(cube_size - 1);
+                  q->blue  = RoundDoubleToQuantum(value);
+                  q->opacity = OpaqueOpacity;
+                  q++;
+                }
+            }
 
           if (!SyncImagePixelsEx(image,&image->exception))
             thread_status=MagickFail;

@@ -394,7 +394,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,exception,
                                         LoadImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
       else
@@ -419,7 +419,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,exception,
                                         LoadImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
       break;
@@ -465,7 +465,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,
                                       LoadImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
       }
       break;

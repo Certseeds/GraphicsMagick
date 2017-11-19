@@ -175,7 +175,7 @@ QuantumOperatorImageMultivalue(Image *image,
                &options.values.green,
                &options.values.blue,
                &options.values.opacity);
-  
+
   if ((count > 3) && (options.values.opacity >= 0.0))
     options.opacity_enabled = MagickTrue;
   if ((count > 2) && (options.values.blue >= 0.0))
@@ -381,7 +381,7 @@ QuantumAddCB(void *mutable_data,
         {
           Quantum
             intensity;
-          
+
           intensity = PixelIntensity(&pixels[i]);
           ApplyArithmeticOperator(intensity,+,context->double_value);
           pixels[i].red = pixels[i].green = pixels[i].blue = intensity;
@@ -583,7 +583,7 @@ QuantumDepthCB(void *mutable_data,
           mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
           if (mutable_context->channel_lut == (Quantum *) NULL)
             status=MagickFail;
-          
+
           if (mutable_context->channel_lut != (Quantum *) NULL)
             {
               for (i=0; i <= (long) MaxMap; i++)
@@ -643,7 +643,7 @@ QuantumDepthCB(void *mutable_data,
             {
               Quantum
                 intensity;
-                
+
               intensity = PixelIntensity(&pixels[i]);
               intensity=CrushChannelDepth(intensity);
               pixels[i].red = pixels[i].green = pixels[i].blue = intensity;
@@ -651,7 +651,7 @@ QuantumDepthCB(void *mutable_data,
           break;
         }
     }
-  
+
   return MagickPass;
 }
 static MagickPassFail
@@ -665,15 +665,15 @@ QuantumDivideCB(void *mutable_data,
 {
   const QuantumImmutableContext
     *context=(const QuantumImmutableContext *) immutable_data;
-  
+
   register long
     i;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
-  
+
   switch (context->channel)
     {
     case RedChannel:
@@ -740,13 +740,13 @@ QuantumGammaCB(void *mutable_data,
 
   const QuantumImmutableContext
     *immutable_context=(const QuantumImmutableContext *) immutable_data;
-  
+
   register long
     i;
 
   MagickPassFail
     status=MagickPass;
-  
+
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
@@ -763,7 +763,7 @@ QuantumGammaCB(void *mutable_data,
       mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
       if (mutable_context->channel_lut == (Quantum *) NULL)
         status=MagickFail;
-      
+
       if (mutable_context->channel_lut != (Quantum *) NULL)
         {
           for (i=0; i <= (long) MaxMap; i++)
@@ -844,7 +844,7 @@ QuantumNegateCB(void *mutable_data,
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
-  
+
   switch (context->channel)
     {
     case RedChannel:
@@ -914,13 +914,13 @@ QuantumLogCB(void *mutable_data,
 
   const QuantumImmutableContext
     *immutable_context=(const QuantumImmutableContext *) immutable_data;
-  
+
   register long
     i;
 
   MagickPassFail
     status=MagickPass;
-  
+
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
@@ -937,7 +937,7 @@ QuantumLogCB(void *mutable_data,
       mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
       if (mutable_context->channel_lut == (Quantum *) NULL)
         status=MagickFail;
-      
+
       if (mutable_context->channel_lut != (Quantum *) NULL)
         {
           for (i=0; i <= (long) MaxMap; i++)
@@ -1445,7 +1445,7 @@ QuantumNoisePoissonCB(void *mutable_data,
 
 static MagickPassFail
 QuantumNoiseRandomCB(void *mutable_data,
-		     const void *immutable_data,
+                     const void *immutable_data,
                       Image *image,
                       PixelPacket *pixels,
                       IndexPacket *indexes,
@@ -1554,13 +1554,13 @@ QuantumPowCB(void *mutable_data,
 
   const QuantumImmutableContext
     *immutable_context=(const QuantumImmutableContext *) immutable_data;
-  
+
   register long
     i;
 
   MagickPassFail
     status=MagickPass;
-  
+
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
@@ -1577,7 +1577,7 @@ QuantumPowCB(void *mutable_data,
       mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
       if (mutable_context->channel_lut == (Quantum *) NULL)
         status=MagickFail;
-      
+
       if (mutable_context->channel_lut != (Quantum *) NULL)
         {
           for (i=0; i <= (long) MaxMap; i++)
@@ -1839,7 +1839,7 @@ QuantumThresholdCB(void *mutable_data,
             intensity;
 
           intensity = PixelIntensity(&pixels[i]);
-          pixels[i].red = pixels[i].green = pixels[i].blue = 
+          pixels[i].red = pixels[i].green = pixels[i].blue =
             ApplyThresholdOperator(intensity,context->quantum_value);
         }
       break;

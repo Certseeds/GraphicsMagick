@@ -1161,10 +1161,10 @@ SVGStartElement(void *context,const xmlChar *name,
               {
                 DrawInfo
                   *draw_info;
-                
+
                 TypeMetric
                   metrics;
-                
+
                 char
                   *text;
 
@@ -1354,7 +1354,7 @@ SVGStartElement(void *context,const xmlChar *name,
                     affine,
                     current,
                     transform;
-                  
+
                   IdentityAffine(&transform);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
                   tokens=GetTransformTokens(context,value,&number_tokens);
@@ -1411,7 +1411,7 @@ SVGStartElement(void *context,const xmlChar *name,
                                   {
                                     double
                                       angle;
-                                    
+
                                     angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                                     affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                                     affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -1584,7 +1584,7 @@ SVGStartElement(void *context,const xmlChar *name,
                 {
                   double
                     angle;
-                  
+
                   angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                   MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,
                             svg_info->bounds.y);
@@ -1663,7 +1663,7 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
                 {
                   double stroke_miterlimit;
-                  if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || 
+                  if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) ||
                       stroke_miterlimit < 1.0)
                     {
                       errno=0;
@@ -1964,7 +1964,7 @@ SVGStartElement(void *context,const xmlChar *name,
                     affine,
                     current,
                     transform;
-                  
+
                   IdentityAffine(&transform);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
                   tokens=GetTransformTokens(context,value,&number_tokens);
@@ -2019,7 +2019,7 @@ SVGStartElement(void *context,const xmlChar *name,
                                   {
                                     double
                                       angle;
-                                    
+
                                     angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                                     affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                                     affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -2226,7 +2226,7 @@ SVGStartElement(void *context,const xmlChar *name,
           double
             sx,
             sy;
-          
+
           if ((svg_info->view_box.width == 0.0) ||
               (svg_info->view_box.height == 0.0))
             svg_info->view_box=svg_info->bounds;
@@ -2240,10 +2240,10 @@ SVGStartElement(void *context,const xmlChar *name,
           {
             char
               tuple[MaxTextExtent];
-            
+
             GetColorTuple(&svg_info->image_info->background_color,8,True,True,
                           tuple);
-            
+
             MVGPrintf(svg_info->file,"push graphic-context\n");
             MVGPrintf(svg_info->file,"fill %s\n", tuple);
             MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",
@@ -2267,14 +2267,14 @@ SVGStartElement(void *context,const xmlChar *name,
           char
             *geometry,
             *p;
-          
+
           RectangleInfo
             page;
-          
+
           double
             sx,
             sy;
-          
+
           if (svg_info->bounds.width < 0.0 || svg_info->bounds.height < 0.0)
             {
               ThrowException(svg_info->exception,CorruptImageError,
@@ -2333,7 +2333,7 @@ SVGStartElement(void *context,const xmlChar *name,
 #endif
   /* Error dispatch point */
  svg_start_element_error:;
-  
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  )");
   MagickFreeMemory(units);
   MagickFreeMemory(color);
@@ -2391,7 +2391,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             register char
               *p;
-            
+
             Strip(svg_info->text);
             if (*svg_info->text == '\0')
               break;
@@ -2415,7 +2415,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             double
               angle;
-            
+
             angle=svg_info->element.angle;
             MVGPrintf(svg_info->file,"ellipse %g,%g %g,%g 0,360\n",
                       svg_info->element.cx,svg_info->element.cy,

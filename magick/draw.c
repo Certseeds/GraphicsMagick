@@ -430,36 +430,36 @@ static int MvgPrintf(DrawContext context, const char *format, ...)
     */
     {
       ssize_t
-	space_available;
-      
+        space_available;
+
       space_available=(ssize_t) context->mvg_alloc - (ssize_t) context->mvg_length - 1;
       formatted_length = -1;
       if (space_available > 0)
-	{
-	  va_start(argp, format);
+        {
+          va_start(argp, format);
 #if defined(HAVE_VSNPRINTF)
-	  formatted_length =
-	    vsnprintf(context->mvg + context->mvg_length,(size_t) space_available, format, argp);
+          formatted_length =
+            vsnprintf(context->mvg + context->mvg_length,(size_t) space_available, format, argp);
 #else
 #  if defined(HAVE_VSPRINTF)
-	  formatted_length = vsprintf(context->mvg + context->mvg_length, format, argp);
+          formatted_length = vsprintf(context->mvg + context->mvg_length, format, argp);
 #  else
 #    error Neither vsnprintf or vsprintf is available.
 #  endif
 #endif
-	  va_end(argp);
-	}
-      
+          va_end(argp);
+        }
+
       if ((formatted_length < 0) || (formatted_length > space_available))
-	{
-	  ThrowException(&context->image->exception,DrawError,UnableToPrint,
-			 format);
-	}
+        {
+          ThrowException(&context->image->exception,DrawError,UnableToPrint,
+                         format);
+        }
       else
-	{
-	  context->mvg_length += formatted_length;
-	  context->mvg_width += formatted_length;
-	}
+        {
+          context->mvg_length += formatted_length;
+          context->mvg_width += formatted_length;
+        }
     }
     context->mvg[context->mvg_length] = 0;
 
@@ -2380,7 +2380,7 @@ MagickExport void DrawComposite(DrawContext context,
   assert(width != 0);
   assert(height != 0);
   assert(*image->magick != '\0');
-  
+
 /*   LogMagickEvent(CoderEvent,GetMagickModule(),"DrawComposite columns=%ld rows=%ld magick=%s ", */
 /*                  image->columns, image->rows, image->magick ); */
 
@@ -5527,7 +5527,7 @@ MagickExport DecorationType DrawGetTextDecoration(DrawContext context)
 {
   assert(context != (DrawContext)NULL);
   assert(context->signature == MagickSignature);
-  
+
   return CurrentContext->decorate;
 }
 

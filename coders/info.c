@@ -138,7 +138,7 @@ WriteINFOImage(const ImageInfo *image_info,Image *image)
   format=AccessDefinition(image_info,"info","format");
   if (format != (char *) NULL)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "info:format=\"%s\"",format);
+                          "info:format=\"%s\"",format);
 
   /*
     Open blob.
@@ -154,62 +154,62 @@ WriteINFOImage(const ImageInfo *image_info,Image *image)
   if ((file=GetBlobFileHandle(image)) == (FILE *) NULL)
     {
       if(!AcquireTemporaryFileName(temporary_filename))
-	ThrowWriterException(FileOpenError,UnableToCreateTemporaryFile,image);
+        ThrowWriterException(FileOpenError,UnableToCreateTemporaryFile,image);
       if ((file=fopen(temporary_filename,"w")) == (FILE *) NULL)
-	{
-	  (void) LiberateTemporaryFile(temporary_filename);
-	  ThrowWriterException(FileOpenError,UnableToCreateTemporaryFile,image);
-	}
-      
+        {
+          (void) LiberateTemporaryFile(temporary_filename);
+          ThrowWriterException(FileOpenError,UnableToCreateTemporaryFile,image);
+        }
+
     }
   list_entry=image;
-  
+
   while (list_entry != (Image *) NULL)
     {
       /*
-	Avoid convert style output syntax by restoring original filename.
+        Avoid convert style output syntax by restoring original filename.
       */
       (void) strlcpy(list_entry->filename,list_entry->magick_filename,
-		     sizeof(list_entry->filename));
+                     sizeof(list_entry->filename));
 
       /*
-	Describe image.
+        Describe image.
       */
       if (format != (char *) NULL)
-	{
-	  char
-	    *text;
+        {
+          char
+            *text;
 
-	  text=TranslateText(image_info,list_entry,format);
-	  if (text != (char *) NULL)
-	    {
-	      (void) fputs(text,file);
-	      (void) fputs("\n",file);
-	      MagickFreeMemory(text);
-	    }
-	}
+          text=TranslateText(image_info,list_entry,format);
+          if (text != (char *) NULL)
+            {
+              (void) fputs(text,file);
+              (void) fputs("\n",file);
+              MagickFreeMemory(text);
+            }
+        }
       else
-	{
-	  if ((status=DescribeImage(list_entry,file,image_info->verbose))
-	      == MagickFail)
-	    break;
-	}
-      
+        {
+          if ((status=DescribeImage(list_entry,file,image_info->verbose))
+              == MagickFail)
+            break;
+        }
+
       list_entry=GetNextImageInList(list_entry);
     }
 
   if ('\0' != temporary_filename[0])
     {
       /*
-	Close temporary file.
+        Close temporary file.
       */
       (void) fclose(file);
 
       /*
-	Send content of temporary file to blob stream.
+        Send content of temporary file to blob stream.
       */
       if (WriteBlobFile(image,temporary_filename) == MagickFail)
-	status=MagickFail;
+        status=MagickFail;
       (void) LiberateTemporaryFile(temporary_filename);
     }
 

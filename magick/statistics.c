@@ -204,15 +204,15 @@ static MagickPassFail GetImageStatisticsVariance(void *mutable_data,
       normalized=(double) pixel[i].red/MaxRGB;
       lstatistics.red.variance +=
         Square(normalized-lstatistics.red.mean)/context->variance_divisor;
-      
+
       normalized=(double) pixel[i].green/MaxRGB;
       lstatistics.green.variance +=
         Square(normalized-lstatistics.green.mean)/context->variance_divisor;
-      
+
       normalized=(double) pixel[i].blue/MaxRGB;
       lstatistics.blue.variance +=
         Square(normalized-lstatistics.blue.mean)/context->variance_divisor;
-      
+
       if (process_opacity)
         {
           normalized=(double) pixel[i].opacity/MaxRGB;
@@ -239,7 +239,7 @@ MagickExport MagickPassFail GetImageStatistics(const Image *image,
 {
   StatisticsContext
     context;
-  
+
   MagickPassFail
     status=MagickPass;
 
@@ -260,7 +260,7 @@ MagickExport MagickPassFail GetImageStatistics(const Image *image,
   samples=(double) image->rows*image->columns;
   context.samples=samples;
   context.variance_divisor=samples-1;
-  
+
   /*
     Compute Mean, Max, and Min
   */
@@ -292,4 +292,3 @@ MagickExport MagickPassFail GetImageStatistics(const Image *image,
 
   return status;
 }
-

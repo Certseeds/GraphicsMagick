@@ -224,7 +224,7 @@ namespace Magick
   using MagickLib::UndefinedClass;
   using MagickLib::DirectClass;
   using MagickLib::PseudoClass;
-  
+
   // Channel types
   using MagickLib::ChannelType;
   using MagickLib::UndefinedChannel;
@@ -239,7 +239,7 @@ namespace Magick
   using MagickLib::MatteChannel;
   using MagickLib::AllChannels;
   using MagickLib::GrayChannel;
-  
+
   // Color-space types
   using MagickLib::ColorspaceType;
   using MagickLib::UndefinedColorspace;
@@ -262,7 +262,7 @@ namespace Magick
   using MagickLib::Rec601LumaColorspace;
   using MagickLib::Rec709LumaColorspace;
   using MagickLib::Rec709YCbCrColorspace;
-  
+
   // Composition operations
   using MagickLib::AddCompositeOp;
   using MagickLib::AtopCompositeOp;
@@ -313,7 +313,7 @@ namespace Magick
   using MagickLib::VividLightCompositeOp;
   using MagickLib::PinLightCompositeOp;
   using MagickLib::HardMixCompositeOp;
-  
+
   // Compression algorithms
   using MagickLib::CompressionType;
   using MagickLib::UndefinedCompression;
@@ -473,7 +473,7 @@ namespace Magick
   using MagickLib::UndefinedRule;
   using MagickLib::EvenOddRule;
   using MagickLib::NonZeroRule;
-  
+
   // Filter types
   using MagickLib::FilterTypes;
   using MagickLib::UndefinedFilter;
@@ -520,7 +520,7 @@ namespace Magick
   using MagickLib::ColorSeparationType;
   using MagickLib::ColorSeparationMatteType;
   using MagickLib::OptimizeType;
-  
+
   // Interlace types
   using MagickLib::InterlaceType;
   using MagickLib::UndefinedInterlace;
@@ -564,7 +564,7 @@ namespace Magick
   using MagickLib::RightTopOrientation;
   using MagickLib::RightBottomOrientation;
   using MagickLib::LeftBottomOrientation;
-  
+
   // Paint methods
   using MagickLib::PaintMethod;
   using MagickLib::PointMethod;
@@ -671,7 +671,7 @@ namespace Magick
   using MagickLib::PerceptualIntent;
   using MagickLib::AbsoluteIntent;
   using MagickLib::RelativeIntent;
-  
+
   // Resolution units
   using MagickLib::ResolutionType;
   using MagickLib::UndefinedResolution;

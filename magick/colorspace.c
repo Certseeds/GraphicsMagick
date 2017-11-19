@@ -83,19 +83,19 @@ RGBToCMYKTransform(void *mutable_data,          /* User provided mutable data */
     Transform RGB to CMYK(A) pixels.
   */
   register long
-    i;  
-  
+    i;
+
   Quantum
     black,
     cyan,
     magenta,
     yellow;
-  
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(exception);
-  
+
   for (i=0; i < npixels; i++)
     {
       cyan=(Quantum) (MaxRGB-pixels[i].red);
@@ -108,7 +108,7 @@ RGBToCMYKTransform(void *mutable_data,          /* User provided mutable data */
       indexes[i]=pixels[i].opacity;
       pixels[i].opacity=black;
     }
-  
+
   return MagickPass;
 }
 
@@ -127,22 +127,22 @@ RGBToCineonLogTransform(void *mutable_data,          /* User provided mutable da
   */
   const unsigned int
     *logmap = (const unsigned int *) immutable_data;
-  
+
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
-  
+
   for (i=0; i < npixels; i++)
     {
       pixels[i].red   = logmap[ScaleQuantumToMap(pixels[i].red)];
       pixels[i].green = logmap[ScaleQuantumToMap(pixels[i].green)];
       pixels[i].blue  = logmap[ScaleQuantumToMap(pixels[i].blue)];
     }
-  
+
   return MagickPass;
 }
 
@@ -162,16 +162,16 @@ RGBToHSLTransform(void *mutable_data,          /* User provided mutable data */
     h,
     s,
     l;
-  
+
   register long
-    i;  
-  
+    i;
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(image);
   ARG_NOT_USED(indexes);
   ARG_NOT_USED(exception);
-  
+
   for (i=0; i < npixels; i++)
     {
       TransformHSL(pixels[i].red,pixels[i].green,pixels[i].blue,&h,&s,&l);
@@ -204,7 +204,7 @@ RGBToHWBTransform(void *mutable_data,          /* User provided mutable data */
     b;
 
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
@@ -351,7 +351,7 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
       */
       if (image->storage_class == PseudoClass)
         {
-          
+
           status=SyncImage(image);
           image->storage_class=DirectClass;
         }
@@ -364,7 +364,7 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
                                       image,
                                       &image->exception);
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -521,7 +521,7 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
                                         &image->exception);
         }
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -552,7 +552,7 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
                                         &image->exception);
         }
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -954,11 +954,11 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
                ((xform.x[i].x)),
                ((xform.x[i].y)),
                ((xform.x[i].z)),
-             
+
                ((xform.y[i].x)),
                ((xform.y[i].y)),
                ((xform.y[i].z)),
-             
+
                ((xform.z[i].x)),
                ((xform.z[i].y)),
                ((xform.z[i].z)));
@@ -1007,7 +1007,7 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
   image->is_grayscale=IsGrayColorspace(colorspace);
   (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                         "Transform to colorspace %s completed",
-                        ColorspaceTypeToString(colorspace)); 
+                        ColorspaceTypeToString(colorspace));
   return(status);
 }
 
@@ -1122,7 +1122,7 @@ CMYKToRGBTransform(void *mutable_data,          /* User provided mutable data */
     Transform CMYK(A) pixels to RGB.
   */
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
@@ -1131,18 +1131,18 @@ CMYKToRGBTransform(void *mutable_data,          /* User provided mutable data */
   for (i=0; i < npixels; i++)
     {
       double
-	black_factor;
+        black_factor;
 
       black_factor=MaxRGBDouble-GetBlackSample(&pixels[i]);
       SetRedSample(&pixels[i],
-		   (Quantum) (((MaxRGBDouble-GetCyanSample(&pixels[i]))*
-			       black_factor)/MaxRGBDouble+0.5));
+                   (Quantum) (((MaxRGBDouble-GetCyanSample(&pixels[i]))*
+                               black_factor)/MaxRGBDouble+0.5));
       SetGreenSample(&pixels[i],
-		     (Quantum) (((MaxRGBDouble-GetMagentaSample(&pixels[i]))*
-				 black_factor)/MaxRGBDouble+0.5));
+                     (Quantum) (((MaxRGBDouble-GetMagentaSample(&pixels[i]))*
+                                 black_factor)/MaxRGBDouble+0.5));
       SetBlueSample(&pixels[i],
-		    (Quantum) (((MaxRGBDouble-GetYellowSample(&pixels[i]))*
-				black_factor)/ MaxRGBDouble+0.5));
+                    (Quantum) (((MaxRGBDouble-GetYellowSample(&pixels[i]))*
+                                black_factor)/ MaxRGBDouble+0.5));
       SetOpacitySample(&pixels[i],(image->matte ? indexes[i] : OpaqueOpacity));
     }
 
@@ -1166,7 +1166,7 @@ CineonLogToRGBTransform(void *mutable_data,         /* User provided mutable dat
     *linearmap = (const Quantum *) immutable_data;
 
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(image);
@@ -1196,7 +1196,7 @@ HSLToRGBTransform(void *mutable_data,         /* User provided mutable data */
     Transform pixels from HSL space to RGB space.
   */
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
@@ -1226,7 +1226,7 @@ HWBToRGBTransform(void *mutable_data,         /* User provided mutable data */
     Transform pixels from HWB space to RGB space.
   */
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
@@ -1298,11 +1298,11 @@ RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
       r_index = ScaleQuantumToMap(pixels[i].red);
       g_index = ScaleQuantumToMap(pixels[i].green);
       b_index = ScaleQuantumToMap(pixels[i].blue);
-  
+
       r = (xform->r[r_index].r + xform->g[g_index].r + xform->b[b_index].r);
       g = (xform->r[r_index].g + xform->g[g_index].g + xform->b[b_index].g);
       b = (xform->r[r_index].b + xform->g[g_index].b + xform->b[b_index].b);
-  
+
       r = r < 0.0f ? 0.0f : r > MaxMapFloat ? MaxMapFloat : (r + 0.5f);
       g = g < 0.0f ? 0.0f : g > MaxMapFloat ? MaxMapFloat : (g + 0.5f);
       b = b < 0.0f ? 0.0f : b > MaxMapFloat ? MaxMapFloat : (b + 0.5f);
@@ -1365,7 +1365,7 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
       254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 255, 255,
       255, 255, 255, 255, 255
     };
-  
+
   static const unsigned char
     YCCMap[351] =  /* Photo CD information beyond 100% white, Gamma 2.2 */
     {
@@ -1445,7 +1445,7 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
                                       &image->exception);
       image->colorspace=RGBColorspace;
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -1600,7 +1600,7 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
         }
       image->colorspace=RGBColorspace;
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -1632,7 +1632,7 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
         }
       image->colorspace=RGBColorspace;
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                            "Colorspace transform completed"); 
+                            "Colorspace transform completed");
       return(status);
     }
 
@@ -1970,11 +1970,11 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
                ((xform.r[i].r)),
                ((xform.r[i].g)),
                ((xform.r[i].b)),
-             
+
                ((xform.g[i].r)),
                ((xform.g[i].g)),
                ((xform.g[i].b)),
-             
+
                ((xform.b[i].r)),
                ((xform.b[i].g)),
                ((xform.b[i].b)));
@@ -2011,7 +2011,7 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
                                       image,
                                       &image->exception);
       }
-    
+
 
     /*
       Free allocated memory.
@@ -2023,6 +2023,6 @@ MagickExport MagickPassFail TransformRGBImage(Image *image,
   image->is_grayscale=is_grayscale;
   image->colorspace=RGBColorspace;
   (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                        "Colorspace transform completed"); 
+                        "Colorspace transform completed");
   return(status);
 }

@@ -237,15 +237,15 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     import_options.endian=image_info->endian;
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Depth: %u bits, "
+                          "Depth: %u bits, "
                           "Type: %s, "
                           "Samples/Pixel: %u, "
                           "Endian %s, "
                           "Tile: %lux%lu%+ld%+ld",
-			  quantum_size,
+                          quantum_size,
                           QuantumTypeToString(quantum_type),
                           samples_per_pixel,
-			  EndianTypeToString(import_options.endian),
+                          EndianTypeToString(import_options.endian),
                           image->tile_info.width,
                           image->tile_info.height,
                           image->tile_info.x,
@@ -289,14 +289,14 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
       if (!is_grayscale)
         (void) memset(q,0,sizeof(PixelPacket)*image->columns);
       (void) ImportImagePixelArea(image,quantum_type,quantum_size,scanline+x,
-        			  &import_options,0);
+                                  &import_options,0);
       if (!SyncImagePixelsEx(image,exception))
         break;
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,
                                       LoadImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     image->is_grayscale=is_grayscale;
@@ -566,7 +566,7 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   quantum_type=MagickToQuantumType(image_info->magick,MagickFalse);
-  
+
   /*
     Support depth in multiples of 8 bits.
   */
@@ -651,13 +651,13 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       if (p == (const PixelPacket *) NULL)
         break;
       (void) ExportImagePixelArea(image,quantum_type,quantum_size,scanline,
-				  &export_options,&export_info);
+                                  &export_options,&export_info);
       (void) WriteBlob(image,export_info.bytes_exported,scanline);
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                       SaveImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     MagickFreeMemory(scanline);

@@ -86,7 +86,7 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
 
   RectangleInfo
     geometry;
-    
+
 
   /*
     Initialize Image structure.

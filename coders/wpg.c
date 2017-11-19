@@ -57,134 +57,134 @@ typedef struct
 
 /* Default palette for WPG level 1 */
 const RGB_Record WPG1_Palette[256]={
-{  0,  0,  0},		{  0,  0,168},
-{  0,168,  0},		{  0,168,168},
-{168,  0,  0},		{168,  0,168},
-{168, 84,  0},		{168,168,168},
-{ 84, 84, 84},		{ 84, 84,252},
-{ 84,252, 84},		{ 84,252,252},
-{252, 84, 84},		{252, 84,252},
-{252,252, 84},		{252,252,252},  /*16*/
-{  0,  0,  0},		{ 20, 20, 20},
-{ 32, 32, 32},		{ 44, 44, 44},
-{ 56, 56, 56},		{ 68, 68, 68},
-{ 80, 80, 80},		{ 96, 96, 96},
-{112,112,112},		{128,128,128},
-{144,144,144},		{160,160,160},
-{180,180,180},		{200,200,200},
-{224,224,224},		{252,252,252},  /*32*/
-{  0,  0,252},		{ 64,  0,252},
-{124,  0,252},		{188,  0,252},
-{252,  0,252},		{252,  0,188},
-{252,  0,124},		{252,  0, 64},
-{252,  0,  0},		{252, 64,  0},
-{252,124,  0},		{252,188,  0},
-{252,252,  0},		{188,252,  0},
-{124,252,  0},		{ 64,252,  0},	/*48*/
-{  0,252,  0},		{  0,252, 64},
-{  0,252,124},		{  0,252,188},
-{  0,252,252},		{  0,188,252},
-{  0,124,252},		{  0, 64,252},
-{124,124,252},		{156,124,252},
-{188,124,252},		{220,124,252},
-{252,124,252},		{252,124,220},
-{252,124,188},		{252,124,156},	/*64*/
-{252,124,124},		{252,156,124},
-{252,188,124},		{252,220,124},
-{252,252,124},		{220,252,124},
-{188,252,124},		{156,252,124},
-{124,252,124},		{124,252,156},
-{124,252,188},		{124,252,220},
-{124,252,252},		{124,220,252},
-{124,188,252},		{124,156,252},	/*80*/
-{180,180,252},		{196,180,252},
-{216,180,252},		{232,180,252},
-{252,180,252},		{252,180,232},
-{252,180,216},		{252,180,196},
-{252,180,180},		{252,196,180},
-{252,216,180},		{252,232,180},
-{252,252,180},		{232,252,180},
-{216,252,180},		{196,252,180},	/*96*/
-{180,220,180},		{180,252,196},
-{180,252,216},		{180,252,232},
-{180,252,252},		{180,232,252},
-{180,216,252},		{180,196,252},
-{0,0,112},		{28,0,112},
-{56,0,112},		{84,0,112},
-{112,0,112},		{112,0,84},
-{112,0,56},		{112,0,28},	/*112*/
-{112,0,0},		{112,28,0},
-{112,56,0},		{112,84,0},
-{112,112,0},		{84,112,0},
-{56,112,0},		{28,112,0},
-{0,112,0},		{0,112,28},
-{0,112,56},		{0,112,84},
-{0,112,112},		{0,84,112},
-{0,56,112},		{0,28,112}, 	/*128*/
-{56,56,112},		{68,56,112},
-{84,56,112},		{96,56,112},
-{112,56,112},		{112,56,96},
-{112,56,84},		{112,56,68},
-{112,56,56},		{112,68,56},
-{112,84,56},		{112,96,56},
-{112,112,56},		{96,112,56},
-{84,112,56},		{68,112,56},	/*144*/
-{56,112,56},		{56,112,69},
-{56,112,84},		{56,112,96},
-{56,112,112},		{56,96,112},
-{56,84,112},		{56,68,112},
-{80,80,112},		{88,80,112},
-{96,80,112},		{104,80,112},
-{112,80,112},		{112,80,104},
-{112,80,96},		{112,80,88},	/*160*/
-{112,80,80},		{112,88,80},
-{112,96,80},		{112,104,80},
-{112,112,80},		{104,112,80},
-{96,112,80},		{88,112,80},
-{80,112,80},		{80,112,88},
-{80,112,96},		{80,112,104},
-{80,112,112},		{80,114,112},
-{80,96,112},		{80,88,112},	/*176*/
-{0,0,64},		{16,0,64},
-{32,0,64},		{48,0,64},
-{64,0,64},		{64,0,48},
-{64,0,32},		{64,0,16},
-{64,0,0},		{64,16,0},
-{64,32,0},		{64,48,0},
-{64,64,0},		{48,64,0},
-{32,64,0},		{16,64,0},	/*192*/
-{0,64,0},		{0,64,16},
-{0,64,32},		{0,64,48},
-{0,64,64},		{0,48,64},
-{0,32,64},		{0,16,64},
-{32,32,64},		{40,32,64},
-{48,32,64},		{56,32,64},
-{64,32,64},		{64,32,56},
-{64,32,48},		{64,32,40},	/*208*/
-{64,32,32},		{64,40,32},
-{64,48,32},		{64,56,32},
-{64,64,32},		{56,64,32},
-{48,64,32},		{40,64,32},
-{32,64,32},		{32,64,40},
-{32,64,48},		{32,64,56},
-{32,64,64},		{32,56,64},
-{32,48,64},		{32,40,64},	/*224*/
-{44,44,64},		{48,44,64},
-{52,44,64},		{60,44,64},
-{64,44,64},		{64,44,60},
-{64,44,52},		{64,44,48},
-{64,44,44},		{64,48,44},
-{64,52,44},		{64,60,44},
-{64,64,44},		{60,64,44},
-{52,64,44},		{48,64,44},	/*240*/
-{44,64,44},		{44,64,48},
-{44,64,52},		{44,64,60},
-{44,64,64},		{44,60,64},
-{44,55,64},		{44,48,64},
-{0,0,0},		{0,0,0},
-{0,0,0},		{0,0,0},
-{0,0,0},		{0,0,0},
-{0,0,0},		{0,0,0}		/*256*/
+{  0,  0,  0},          {  0,  0,168},
+{  0,168,  0},          {  0,168,168},
+{168,  0,  0},          {168,  0,168},
+{168, 84,  0},          {168,168,168},
+{ 84, 84, 84},          { 84, 84,252},
+{ 84,252, 84},          { 84,252,252},
+{252, 84, 84},          {252, 84,252},
+{252,252, 84},          {252,252,252},  /*16*/
+{  0,  0,  0},          { 20, 20, 20},
+{ 32, 32, 32},          { 44, 44, 44},
+{ 56, 56, 56},          { 68, 68, 68},
+{ 80, 80, 80},          { 96, 96, 96},
+{112,112,112},          {128,128,128},
+{144,144,144},          {160,160,160},
+{180,180,180},          {200,200,200},
+{224,224,224},          {252,252,252},  /*32*/
+{  0,  0,252},          { 64,  0,252},
+{124,  0,252},          {188,  0,252},
+{252,  0,252},          {252,  0,188},
+{252,  0,124},          {252,  0, 64},
+{252,  0,  0},          {252, 64,  0},
+{252,124,  0},          {252,188,  0},
+{252,252,  0},          {188,252,  0},
+{124,252,  0},          { 64,252,  0},  /*48*/
+{  0,252,  0},          {  0,252, 64},
+{  0,252,124},          {  0,252,188},
+{  0,252,252},          {  0,188,252},
+{  0,124,252},          {  0, 64,252},
+{124,124,252},          {156,124,252},
+{188,124,252},          {220,124,252},
+{252,124,252},          {252,124,220},
+{252,124,188},          {252,124,156},  /*64*/
+{252,124,124},          {252,156,124},
+{252,188,124},          {252,220,124},
+{252,252,124},          {220,252,124},
+{188,252,124},          {156,252,124},
+{124,252,124},          {124,252,156},
+{124,252,188},          {124,252,220},
+{124,252,252},          {124,220,252},
+{124,188,252},          {124,156,252},  /*80*/
+{180,180,252},          {196,180,252},
+{216,180,252},          {232,180,252},
+{252,180,252},          {252,180,232},
+{252,180,216},          {252,180,196},
+{252,180,180},          {252,196,180},
+{252,216,180},          {252,232,180},
+{252,252,180},          {232,252,180},
+{216,252,180},          {196,252,180},  /*96*/
+{180,220,180},          {180,252,196},
+{180,252,216},          {180,252,232},
+{180,252,252},          {180,232,252},
+{180,216,252},          {180,196,252},
+{0,0,112},              {28,0,112},
+{56,0,112},             {84,0,112},
+{112,0,112},            {112,0,84},
+{112,0,56},             {112,0,28},     /*112*/
+{112,0,0},              {112,28,0},
+{112,56,0},             {112,84,0},
+{112,112,0},            {84,112,0},
+{56,112,0},             {28,112,0},
+{0,112,0},              {0,112,28},
+{0,112,56},             {0,112,84},
+{0,112,112},            {0,84,112},
+{0,56,112},             {0,28,112},     /*128*/
+{56,56,112},            {68,56,112},
+{84,56,112},            {96,56,112},
+{112,56,112},           {112,56,96},
+{112,56,84},            {112,56,68},
+{112,56,56},            {112,68,56},
+{112,84,56},            {112,96,56},
+{112,112,56},           {96,112,56},
+{84,112,56},            {68,112,56},    /*144*/
+{56,112,56},            {56,112,69},
+{56,112,84},            {56,112,96},
+{56,112,112},           {56,96,112},
+{56,84,112},            {56,68,112},
+{80,80,112},            {88,80,112},
+{96,80,112},            {104,80,112},
+{112,80,112},           {112,80,104},
+{112,80,96},            {112,80,88},    /*160*/
+{112,80,80},            {112,88,80},
+{112,96,80},            {112,104,80},
+{112,112,80},           {104,112,80},
+{96,112,80},            {88,112,80},
+{80,112,80},            {80,112,88},
+{80,112,96},            {80,112,104},
+{80,112,112},           {80,114,112},
+{80,96,112},            {80,88,112},    /*176*/
+{0,0,64},               {16,0,64},
+{32,0,64},              {48,0,64},
+{64,0,64},              {64,0,48},
+{64,0,32},              {64,0,16},
+{64,0,0},               {64,16,0},
+{64,32,0},              {64,48,0},
+{64,64,0},              {48,64,0},
+{32,64,0},              {16,64,0},      /*192*/
+{0,64,0},               {0,64,16},
+{0,64,32},              {0,64,48},
+{0,64,64},              {0,48,64},
+{0,32,64},              {0,16,64},
+{32,32,64},             {40,32,64},
+{48,32,64},             {56,32,64},
+{64,32,64},             {64,32,56},
+{64,32,48},             {64,32,40},     /*208*/
+{64,32,32},             {64,40,32},
+{64,48,32},             {64,56,32},
+{64,64,32},             {56,64,32},
+{48,64,32},             {40,64,32},
+{32,64,32},             {32,64,40},
+{32,64,48},             {32,64,56},
+{32,64,64},             {32,56,64},
+{32,48,64},             {32,40,64},     /*224*/
+{44,44,64},             {48,44,64},
+{52,44,64},             {60,44,64},
+{64,44,64},             {64,44,60},
+{64,44,52},             {64,44,48},
+{64,44,44},             {64,48,44},
+{64,52,44},             {64,60,44},
+{64,64,44},             {60,64,44},
+{52,64,44},             {48,64,44},     /*240*/
+{44,64,44},             {44,64,48},
+{44,64,52},             {44,64,60},
+{44,64,64},             {44,60,64},
+{44,55,64},             {44,48,64},
+{0,0,0},                {0,0,0},
+{0,0,0},                {0,0,0},
+{0,0,0},                {0,0,0},
+{0,0,0},                {0,0,0}         /*256*/
 };
 
 
@@ -270,7 +270,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
     {
     case 1:  /* Convert bitmap scanline. WP seems to ignore palette even if it is present. */
         RetVal = ImportImagePixelArea(image,GrayQuantum,bpp,p,NULL,0);
-        break; 
+        break;
 
     case 4:  /* Convert PseudoColor scanline. */
     case 8:  /* Convert PseudoColor scanline. */
@@ -303,7 +303,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
             indexes[x++]=index;
             *q++ = image->colormap[index];
             p++;
-		  }
+                  }
         if(x < (long) image->columns)
           {
             index = (IndexPacket) ((*p >> 6) & 0x3);
@@ -325,12 +325,12 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
                   }
               }
             /* p++; */
-          }       
+          }
         RetVal = MagickPass;
         break;
       }
-          
-    case 24:     /*  Convert DirectColor scanline.  */      
+
+    case 24:     /*  Convert DirectColor scanline.  */
       RetVal = ImportImagePixelArea(image,RGBQuantum,8,p,NULL,0);
       break;
 
@@ -350,7 +350,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"SyncImagePixels failed for row: %ld, bpp: %d", y, bpp);
     return MagickFail;
   }
-          
+
 return RetVal;
 }
 
@@ -369,7 +369,7 @@ return RetVal;
 }
 
 /* WPG1 raster reader.
- * @return	0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl 
+ * @return      0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl
                 -5 - blob read error; -6 - row insert problem  */
 static int UnpackWPGRaster(Image *image,int bpp)
 {
@@ -452,7 +452,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
-                
+
             }
         }
       }
@@ -497,7 +497,7 @@ static int UnpackWPG2Raster(Image *image, int bpp)
 
   unsigned char
     bbuf,
-    *BImgBuff = (unsigned char *) NULL,	  /* Buffer for a current line. */
+    *BImgBuff = (unsigned char *) NULL,   /* Buffer for a current line. */
     *UpImgBuff = (unsigned char *) NULL,  /* Buffer for previous line. */
     *tmpImgBuff = (unsigned char *) NULL,
     RunCount,
@@ -557,9 +557,9 @@ static int UnpackWPG2Raster(Image *image, int bpp)
             }
           break;
         case 0x7E:
-          if(y==0)			   /* XOR */
-	    (void)fprintf(stderr,"\nWPG token XOR on the first line is not supported, please report!");
-	  XorMe=!XorMe; /* or XorMe=1 ?? */
+          if(y==0)                         /* XOR */
+            (void)fprintf(stderr,"\nWPG token XOR on the first line is not supported, please report!");
+          XorMe=!XorMe; /* or XorMe=1 ?? */
           break;
         case 0x7F:
           if ((c = ReadBlobByte(image)) == EOF) /* BLK */
@@ -579,8 +579,8 @@ static int UnpackWPG2Raster(Image *image, int bpp)
               FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
               return(-4);
             }
-	  RunCount=c;
-	  for(i=0; i<= RunCount;i++)
+          RunCount=c;
+          for(i=0; i<= RunCount;i++)
             for(bbuf=0; bbuf < SampleSize; bbuf++)
               InsertByte6(SampleBuffer[bbuf]);
           break;
@@ -602,18 +602,18 @@ static int UnpackWPG2Raster(Image *image, int bpp)
           {
             /* duplicate the previous row RunCount x */
             for(i=0;i<=RunCount;i++)
-              {      
+              {
                 if(InsertRow(UpImgBuff,(long)((image->rows>y) ? y : image->rows-1),image,bpp) == MagickFail)
                   {
                     FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
                     return(-4);
-                  }                 
+                  }
                 y++;
-              }    
+              }
           }
           break;
         case 0xFF:
-          if ((c = ReadBlobByte(image)) == EOF)	 /* WHT */
+          if ((c = ReadBlobByte(image)) == EOF)  /* WHT */
             {
               FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
               return(-4);
@@ -627,15 +627,15 @@ static int UnpackWPG2Raster(Image *image, int bpp)
         default:
           RunCount=bbuf & 0x7F;
 
-          if(bbuf & 0x80)		 /* REP */
-            {  
+          if(bbuf & 0x80)                /* REP */
+            {
               for(i=0; i < SampleSize; i++)
                 SampleBuffer[i]=ReadBlobByte(image);
               for(i=0;i<=RunCount;i++)
                 for(bbuf=0;bbuf<SampleSize;bbuf++)
                   InsertByte6(SampleBuffer[bbuf]);
             }
-          else {			/* NRP */
+          else {                        /* NRP */
             for(i=0; i< SampleSize*(RunCount+1);i++)
               {
                 bbuf=ReadBlobByte(image);
@@ -669,50 +669,50 @@ unsigned Flags;
  (*CTM)[2][2]=1;
 
  Flags=ReadBlobLSBShort(image);
- if(Flags & LCK) /*x=*/ (void) ReadBlobLSBLong(image);	/*Edit lock*/
+ if(Flags & LCK) /*x=*/ (void) ReadBlobLSBLong(image);  /*Edit lock*/
  if(Flags & OID)
-	{
-	if(Precision==0)
-	  {/*x=*/ (void) ReadBlobLSBShort(image);}	/*ObjectID*/
-	else
-	  {/*x=*/ (void) ReadBlobLSBLong(image);}	/*ObjectID (Double precision)*/
-	}
+        {
+        if(Precision==0)
+          {/*x=*/ (void) ReadBlobLSBShort(image);}      /*ObjectID*/
+        else
+          {/*x=*/ (void) ReadBlobLSBLong(image);}       /*ObjectID (Double precision)*/
+        }
  if(Flags & ROT)
-	{
-        x=ReadBlobLSBLong(image);	/*Rot Angle*/
-	if(Angle) *Angle=x/65536.0;
-	}
+        {
+        x=ReadBlobLSBLong(image);       /*Rot Angle*/
+        if(Angle) *Angle=x/65536.0;
+        }
  if(Flags & (ROT|SCL))
-	{
-	x=ReadBlobLSBLong(image);	/*Sx*cos()*/
-	(*CTM)[0][0] = (float)x/0x10000;
-	x=ReadBlobLSBLong(image);	/*Sy*cos()*/
-	(*CTM)[1][1] = (float)x/0x10000;
-	}
+        {
+        x=ReadBlobLSBLong(image);       /*Sx*cos()*/
+        (*CTM)[0][0] = (float)x/0x10000;
+        x=ReadBlobLSBLong(image);       /*Sy*cos()*/
+        (*CTM)[1][1] = (float)x/0x10000;
+        }
  if(Flags & (ROT|SKW))
-	{
-	x=ReadBlobLSBLong(image);       /*Kx*sin()*/
-	(*CTM)[1][0] = (float)x/0x10000;
-	x=ReadBlobLSBLong(image);       /*Ky*sin()*/
-	(*CTM)[0][1] = (float)x/0x10000;
-	}
+        {
+        x=ReadBlobLSBLong(image);       /*Kx*sin()*/
+        (*CTM)[1][0] = (float)x/0x10000;
+        x=ReadBlobLSBLong(image);       /*Ky*sin()*/
+        (*CTM)[0][1] = (float)x/0x10000;
+        }
  if(Flags & TRN)
-	{
-	x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Tx*/
+        {
+        x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Tx*/
         if(x>=0) (*CTM)[0][2] = (float)x+(float)DenX/0x10000;
             else (*CTM)[0][2] = (float)x-(float)DenX/0x10000;
-	x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Ty*/
-	(*CTM)[1][2]=(float)x + ((x>=0)?1:-1)*(float)DenX/0x10000;
+        x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Ty*/
+        (*CTM)[1][2]=(float)x + ((x>=0)?1:-1)*(float)DenX/0x10000;
         if(x>=0) (*CTM)[1][2] = (float)x+(float)DenX/0x10000;
             else (*CTM)[1][2] = (float)x-(float)DenX/0x10000;
-	}
+        }
  if(Flags & TPR)
-	{
-	x=ReadBlobLSBShort(image); DenX=ReadBlobLSBShort(image);  /*Px*/
-	(*CTM)[2][0] = x + (float)DenX/0x10000;;
-	x=ReadBlobLSBShort(image);  DenX=ReadBlobLSBShort(image); /*Py*/
-	(*CTM)[2][1] = x + (float)DenX/0x10000;
-	}
+        {
+        x=ReadBlobLSBShort(image); DenX=ReadBlobLSBShort(image);  /*Px*/
+        (*CTM)[2][0] = x + (float)DenX/0x10000;;
+        x=ReadBlobLSBShort(image);  DenX=ReadBlobLSBShort(image); /*Py*/
+        (*CTM)[2][1] = x + (float)DenX/0x10000;
+        }
  return(Flags);
 }
 
@@ -731,13 +731,13 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 
   Image
     *image2;
-    
+
   unsigned char
     magick[2*MaxTextExtent];
 
   size_t
     magick_size;
-    
+
 
   if ((clone_info=CloneImageInfo(image_info)) == NULL)
     return(image);
@@ -755,19 +755,19 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   /* Copy postscript to temporary file */
   (void) SeekBlob(image,PS_Offset,SEEK_SET);
   magick_size=ReadBlob(image, sizeof(magick), magick);
-  
+
   (void) SeekBlob(image,PS_Offset,SEEK_SET);
   while(PS_Size-- > 0)
     {
       (void) fputc(ReadBlobByte(image),ps_file);
     }
   (void) fclose(ps_file);
-  
+
   /* Detect file format - Check magic.mgk configuration file. */
   if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
                            MaxTextExtent,exception) == MagickFail)
     goto FINISH_UNL;
-  
+
   /* Read nested image */
   /*FormatString(clone_info->filename,"%s:%.1024s",magic_info->name,postscript_file);*/
   FormatString(clone_info->filename,"%.1024s",postscript_file);
@@ -792,7 +792,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 
   AppendImageToList(&image,image2);
 
- FINISH_UNL:    
+ FINISH_UNL:
   (void) LiberateTemporaryFile(postscript_file);
  FINISH:
   DestroyImageInfo(clone_info);
@@ -862,8 +862,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
   typedef struct
   {
-    unsigned	HorizontalUnits;
-    unsigned	VerticalUnits;
+    unsigned    HorizontalUnits;
+    unsigned    VerticalUnits;
     unsigned char PosSizePrecision;
   } WPG2Start;
 
@@ -965,7 +965,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter"); 
+  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
 
   image=AllocateImage(image_info);
   image->depth=8;
@@ -1061,13 +1061,13 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     ScaleCharToQuantum(ReadBlobByte(image));
                 }
               break;
-     
+
             case 0x11:  /* Start PS l1 */
               if(Rec.RecordLength > 8)
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+8,   /* skip PS header in the wpg */
                                         (long) Rec.RecordLength-8,exception);
-              break;     
+              break;
 
             case 0x14:  /* bitmap type 2 */
               BitmapHeader2.RotAngle=ReadBlobLSBShort(image);
@@ -1099,7 +1099,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->rows=BitmapHeader2.Heigth;
               bpp=BitmapHeader2.Depth;
 
-            UnpackRaster:	    
+            UnpackRaster:
               if ((image->storage_class != PseudoClass) && (bpp != 24))
                 {
                   image->colors=1 << bpp;
@@ -1112,7 +1112,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->storage_class = PseudoClass;
                   /* printf("Load default colormap \n"); */
                   for (i=0; (i < (int) image->colors) && (i < 256); i++)
-                    {               
+                    {
                       image->colormap[i].red=ScaleCharToQuantum(WPG1_Palette[i].Red);
                       image->colormap[i].green=ScaleCharToQuantum(WPG1_Palette[i].Green);
                       image->colormap[i].blue=ScaleCharToQuantum(WPG1_Palette[i].Blue);
@@ -1125,7 +1125,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       MagickReallocMemory(PixelPacket *,image->colormap,
                                           (size_t) (1U<<bpp)*sizeof(PixelPacket));
                 }
-          
+
               if (bpp == 1)
                 {
                   if(image->colormap[0].red==0 &&
@@ -1139,17 +1139,17 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                         image->colormap[1].green =
                         image->colormap[1].blue = MaxRGB;
                     }
-                }      
+                }
 
               if(!image_info->ping)
-                if(UnpackWPGRaster(image,bpp) < 0)                
-                {		/* The raster cannot be unpacked */
+                if(UnpackWPGRaster(image,bpp) < 0)
+                {               /* The raster cannot be unpacked */
                 DecompressionFailed:
                   ThrowReaderException(CoderError,UnableToDecompressImage,image)
                 }
 
               if(Rec.RecType==0x14 && BitmapHeader2.RotAngle!=0 && !image_info->ping)
-                {  
+                {
                   /* flop command */
                   if(BitmapHeader2.RotAngle & 0x8000)
                     {
@@ -1174,8 +1174,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                           ReplaceImageInList(&image,rotated_image);
                         }
                     }
-		
-		  /* rotate command */
+
+                  /* rotate command */
                   if(BitmapHeader2.RotAngle & 0x0FFF)
                     {
                       rotated_image = RotateImage(image,
@@ -1188,7 +1188,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                           image->blob = TmpBlob;
                           ReplaceImageInList(&image,rotated_image);
                         }
-                    } 
+                    }
                 }
 
               /* Allocate next image structure. */
@@ -1238,7 +1238,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           switch(Rec2.RecType)
             {
-	    case 1:
+            case 1:
               StartWPG.HorizontalUnits=ReadBlobLSBShort(image);
               StartWPG.VerticalUnits=ReadBlobLSBShort(image);
               StartWPG.PosSizePrecision=ReadBlobByte(image);
@@ -1253,7 +1253,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
               if (WPG_Palette.NumOfEntries > MaxMap+1)
                 ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
- 
+
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
                    (((WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
@@ -1284,7 +1284,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 continue; /*Unknown compression method */
               switch(Bitmap2Header1.Depth)
                 {
-                case 1: bpp=1; 
+                case 1: bpp=1;
                   break;
                 case 2: bpp=2;
                   break;
@@ -1298,7 +1298,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   continue;  /*Ignore raster with unknown depth*/
                 }
               image->columns=Bitmap2Header1.Width;
-              image->rows=Bitmap2Header1.Heigth;  
+              image->rows=Bitmap2Header1.Heigth;
 
               if ((image->colors == 0) && (bpp != 24))
                 {
@@ -1343,13 +1343,13 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     if( UnpackWPG2Raster(image,bpp) < 0)
                       goto DecompressionFailed;
                     break;
-                  }   
+                  }
                 }
 
 
               if(CTM[0][0]<0 && !image_info->ping)
-		{		/*?? RotAngle=360-RotAngle;*/
-		  rotated_image = FlopImage(image, exception);
+                {               /*?? RotAngle=360-RotAngle;*/
+                  rotated_image = FlopImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
                       TmpBlob = rotated_image->blob;
@@ -1357,15 +1357,15 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       image->blob = TmpBlob;
                       ReplaceImageInList(&image,rotated_image);
                     }
-                  /* Try to change CTM according to Flip - I am not sure, must be checked.		  
+                  /* Try to change CTM according to Flip - I am not sure, must be checked.
                      Tx(0,0)=-1;      Tx(1,0)=0;   Tx(2,0)=0;
                      Tx(0,1)= 0;      Tx(1,1)=1;   Tx(2,1)=0;
                      Tx(0,2)=(WPG._2Rect.X_ur+WPG._2Rect.X_ll);
-                     Tx(1,2)=0;   Tx(2,2)=1; */                  
+                     Tx(1,2)=0;   Tx(2,2)=1; */
                 }
               if(CTM[1][1]<0 && !image_info->ping)
-		{		/*?? RotAngle=360-RotAngle;*/
-		  rotated_image = FlipImage(image, exception);
+                {               /*?? RotAngle=360-RotAngle;*/
+                  rotated_image = FlipImage(image, exception);
                   if (rotated_image != (Image *) NULL)
                     {
                       TmpBlob = rotated_image->blob;
@@ -1378,9 +1378,9 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                      Tx(0,0)= 1;   Tx(1,0)= 0;   Tx(2,0)=0;
                      Tx(0,1)= 0;   Tx(1,1)=-1;   Tx(2,1)=0;
                      Tx(0,2)= 0;   Tx(1,2)=(WPG._2Rect.Y_ur+WPG._2Rect.Y_ll);
-                     Tx(2,2)=1; */		  
-		}		
-		
+                     Tx(2,2)=1; */
+                }
+
 
               /* Allocate next image structure. */
               AllocateNextImage(image_info,image);
@@ -1393,14 +1393,14 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               break;
 
             case 0x12:  /* Postscript WPG2*/
-	      i=ReadBlobLSBShort(image);
+              i=ReadBlobLSBShort(image);
               if(Rec2.RecordLength > (unsigned int) i)
                 image=ExtractPostscript(image,image_info,
-                                        TellBlob(image)+i,		/*skip PS header in the wpg2*/
+                                        TellBlob(image)+i,              /*skip PS header in the wpg2*/
                                         (long) (Rec2.RecordLength-i-2),exception);
               break;
 
-	    case 0x1B:          /*bitmap rectangle*/
+            case 0x1B:          /*bitmap rectangle*/
               (void) LoadWPG2Flags(image,StartWPG.PosSizePrecision,NULL,&CTM); /* WPG2Flags */
               break;
             }
@@ -1420,10 +1420,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   {
     Image
       *p;
-    
+
     long
       scene=0;
-    
+
     /*
       Rewind list, removing any empty images while rewinding.
     */
@@ -1440,7 +1440,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
           p=p->previous;
         }
       }
-    
+
     /*
       Fix scene numbers
     */
@@ -1448,10 +1448,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
       p->scene=scene++;
   }
 
-  if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");  
+  if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   if(image==NULL)
     ThrowReaderException(CorruptImageError,ImageFileDoesNotContainAnyImageData,image);
-  return(image);   
+  return(image);
 }
 
 /*

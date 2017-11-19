@@ -235,7 +235,7 @@ MagickConstrainColormapIndex(Image *image, unsigned int index)
     {
       char
         colormapIndexBuffer[MaxTextExtent];
-      
+
       FormatString(colormapIndexBuffer,"index %u >= %u colors, %.1024s",
                    index, image->colors, image->filename);
       errno=0;
@@ -418,7 +418,7 @@ ReplaceImageColormap(Image *image,
 
   image->is_grayscale=IsGrayImage(image,&image->exception);
   image->is_monochrome=IsMonochromeImage(image,&image->exception);
-  
+
   return status;
 }
 
@@ -555,4 +555,3 @@ MagickExport MagickPassFail SortColormapByIntensity(Image *image)
   image->is_monochrome=is_monochrome;
   return(status);
 }
-

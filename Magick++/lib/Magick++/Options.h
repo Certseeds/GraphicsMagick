@@ -35,31 +35,31 @@ namespace Magick
     // Remove pixel aliasing
     void            antiAlias( bool flag_ );
     bool            antiAlias( void ) const;
-    
+
     // Join images into a single multi-image file
     void            adjoin ( bool flag_ );
     bool            adjoin ( void ) const;
-    
+
     // Image background color
     void            backgroundColor ( const Color &color_ );
     Color           backgroundColor ( void ) const;
-    
+
     // Name of texture image to tile onto the image background
     void            backgroundTexture ( const std::string &backgroundTexture_ );
     std::string     backgroundTexture ( void ) const;
-    
+
     // Image border color
     void            borderColor ( const Color &color_ );
     Color           borderColor ( void ) const;
-    
+
     // Text bounding-box base color (default none)
     void            boxColor ( const Color &boxColor_ );
     Color           boxColor ( void ) const;
-    
+
     // Colors within this distance are considered equal
     void            colorFuzz ( double fuzz_ );
     double          colorFuzz ( void ) const;
-    
+
     // Compression type ( NoCompression, BZipCompression,
     // FaxCompression, JPEGCompression, LZWCompression,
     // RLECompression, or ZipCompression )
@@ -69,7 +69,7 @@ namespace Magick
     // Enable printing of debug messages from ImageMagick
     void            debug ( bool flag_ );
     bool            debug ( void ) const;
-    
+
     // Vertical and horizontal resolution in pixels of the image
     void            density ( const Geometry &geomery_ );
     Geometry        density ( void ) const;
@@ -106,17 +106,17 @@ namespace Magick
     // Font point size
     void            fontPointsize ( double pointSize_ );
     double          fontPointsize ( void ) const;
-    
+
     std::string     format ( void ) const;
 
     // Image interlace scheme
     void            interlaceType ( InterlaceType interlace_ );
     InterlaceType   interlaceType ( void ) const;
-    
+
    // Image format to write or read
     void            magick ( const std::string &magick_ );
     std::string     magick ( void ) const;
-    
+
     // Transparent color
     void            matteColor ( const Color &matteColor_ );
     Color           matteColor ( void ) const;
@@ -132,19 +132,19 @@ namespace Magick
     // Desired image quality factor
     void            quality ( unsigned int quality_ );
     unsigned int    quality ( void ) const;
-    
+
     // Maximum number of colors to quantize to
     void            quantizeColors ( unsigned int colors_ );
     unsigned int    quantizeColors ( void ) const;
-    
+
     // Colorspace to quantize in.
     void            quantizeColorSpace ( ColorspaceType colorSpace_ );
     ColorspaceType  quantizeColorSpace ( void ) const;
-    
+
     // Dither image during quantization.
     void            quantizeDither ( bool ditherFlag_ );
     bool            quantizeDither ( void ) const;
-    
+
     // Quantization tree-depth
     void            quantizeTreeDepth ( unsigned int treeDepth_ );
     unsigned int    quantizeTreeDepth ( void ) const;
@@ -187,7 +187,7 @@ namespace Magick
     // RoundCap, and SquareCap.
     void            strokeLineCap ( LineCap lineCap_ );
     LineCap         strokeLineCap ( void ) const;
-    
+
     // Specify the shape to be used at the corners of paths (or other
     // vector shapes) when they are stroked. Values of LineJoin are
     // UndefinedJoin, MiterJoin, RoundJoin, and BevelJoin.
@@ -221,7 +221,7 @@ namespace Magick
     // Annotation text encoding (e.g. "UTF-16")
     void            textEncoding ( const std::string &encoding_ );
     std::string     textEncoding ( void ) const;
-    
+
     void            tileName ( const std::string &tileName_ );
     std::string     tileName ( void ) const;
 
@@ -250,14 +250,14 @@ namespace Magick
     // Return verbose information about an image, or an operation
     void            verbose ( bool verboseFlag_ );
     bool            verbose ( void ) const;
-    
+
     void            view ( const std::string &view_ );
     std::string     view ( void ) const;
 
     // X11 display name
     void            x11Display ( const std::string &display_ );
     std::string     x11Display ( void ) const;
-    
+
     //
     // Internal implementation methods.  Please do not use.
     //
@@ -274,7 +274,7 @@ namespace Magick
   protected:
 
   private:
-    
+
     // Assignment not supported
     Options& operator= ( const Options& );
 

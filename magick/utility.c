@@ -935,104 +935,104 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
   for (i=0; i < *argc; i++)
     {
       char
-	**filelist,
-	filename[MaxTextExtent],
-	magick[MaxTextExtent],
-	path[MaxTextExtent],
-	subimage[MaxTextExtent];
+        **filelist,
+        filename[MaxTextExtent],
+        magick[MaxTextExtent],
+        path[MaxTextExtent],
+        subimage[MaxTextExtent];
 
       option=(*argv)[i];
       /* Never throw options away, so copy here, then perhaps modify later */
       vector[count++]=AcquireString(option);
 
       /*
-	Don't expand or process any VID: argument since the VID coder
-	does its own expansion
+        Don't expand or process any VID: argument since the VID coder
+        does its own expansion
       */
       if (LocaleNCompare("VID:",option,4) == 0)
-	continue;
+        continue;
 
       /*
-	Don't attempt to expand the argument to these options.
+        Don't attempt to expand the argument to these options.
       */
       if ((LocaleNCompare("+define",option,7) == 0) ||
-	  (LocaleNCompare("+profile",option,8) == 0) ||
-	  (LocaleNCompare("-comment",option,8) == 0) ||
-	  (LocaleNCompare("-convolve",option,9) == 0) ||
-	  (LocaleNCompare("-draw",option,5) == 0) ||
-	  (LocaleNCompare("-font",option,5) == 0) ||
-	  (LocaleNCompare("-format",option,7) == 0) ||
-	  (LocaleNCompare("-label",option,6) == 0))
-	{
-	  i++;
-	  if (i == *argc)
+          (LocaleNCompare("+profile",option,8) == 0) ||
+          (LocaleNCompare("-comment",option,8) == 0) ||
+          (LocaleNCompare("-convolve",option,9) == 0) ||
+          (LocaleNCompare("-draw",option,5) == 0) ||
+          (LocaleNCompare("-font",option,5) == 0) ||
+          (LocaleNCompare("-format",option,7) == 0) ||
+          (LocaleNCompare("-label",option,6) == 0))
+        {
+          i++;
+          if (i == *argc)
             continue;
-	  option=(*argv)[i];
-	  vector[count++]=AcquireString(option);
-	  continue;
-	}
+          option=(*argv)[i];
+          vector[count++]=AcquireString(option);
+          continue;
+        }
 
       /* Pass quotes through to the command-line parser */
       if ((*option == '"') || (*option == '\''))
-	continue;
+        continue;
 
       /*
-	Expand @filename to a list of arguments.
+        Expand @filename to a list of arguments.
       */
       j=0;
       if (option[0] == '@')
-	{
-	  FILE
-	    *file;
+        {
+          FILE
+            *file;
 
-	  file=fopen(option+1,"r");
-	  if (file != (FILE *) NULL)
-	    {
+          file=fopen(option+1,"r");
+          if (file != (FILE *) NULL)
+            {
 
-	      first=MagickTrue;
-	      number_files=0;
-	      while (fgets(filename,sizeof(filename),file) != (char *) NULL)
-		{
-		  for (j=0; filename[j] != '\0'; j++)
-		    if (filename[j] == '\n')
-		      filename[j] = '\0';
-	      
-		  if (filename[0] != '\0')
-		    {
-		      if ((number_files % prealloc_entries) == 0)
-			{
-			  MagickReallocMemory(char **,vector,
-					      (*argc+count+prealloc_entries)*
-					      sizeof(char *));
-			  if (vector == (char **) NULL)
-			    {
-			      fclose(file);
-			      return(MagickFail);
-			    }
-			}
+              first=MagickTrue;
+              number_files=0;
+              while (fgets(filename,sizeof(filename),file) != (char *) NULL)
+                {
+                  for (j=0; filename[j] != '\0'; j++)
+                    if (filename[j] == '\n')
+                      filename[j] = '\0';
 
-		      if (first)
-			{
-			  /* Deallocate original option assigned above */
-			  --count;
-			  MagickFreeMemory(vector[count]);
-			  first=MagickFalse;
-			}
-		      number_files++;
-		      vector[count++]=AcquireString(filename);
-		    }
-		}
+                  if (filename[0] != '\0')
+                    {
+                      if ((number_files % prealloc_entries) == 0)
+                        {
+                          MagickReallocMemory(char **,vector,
+                                              (*argc+count+prealloc_entries)*
+                                              sizeof(char *));
+                          if (vector == (char **) NULL)
+                            {
+                              fclose(file);
+                              return(MagickFail);
+                            }
+                        }
 
-	      fclose(file);
-	    }
-	}
+                      if (first)
+                        {
+                          /* Deallocate original option assigned above */
+                          --count;
+                          MagickFreeMemory(vector[count]);
+                          first=MagickFalse;
+                        }
+                      number_files++;
+                      vector[count++]=AcquireString(filename);
+                    }
+                }
 
-      /* 
-	 Fast cycle options that are not expandable filename patterns.
-	 ListFiles only expands patterns in the filename.  We also check
-	 if the full option resolves to a file since ListFiles() obtains
-	 a list of all the files in the directory and is thus very slow
-	 if there are thousands of files.
+              fclose(file);
+            }
+        }
+
+      /*
+         Fast cycle options that are not expandable filename patterns.
+         ListFiles only expands patterns in the filename.  We also check
+         if the full option resolves to a file since ListFiles() obtains
+         a list of all the files in the directory and is thus very slow
+         if there are thousands of files.
       */
       GetPathComponent(option,TailPath,filename);
       if ((!IsGlob(filename)) || IsAccessibleNoLogging(option))
@@ -1045,110 +1045,110 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
 
       /* GetPathComponent throws away the colon */
       if (*magick != '\0')
-	(void) strlcat(magick,":",sizeof(magick));
+        (void) strlcat(magick,":",sizeof(magick));
       ExpandFilename(path);
 
       if ('\0' == current_directory[0])
-	if (getcwd(current_directory,MaxTextExtent-1) == NULL)
+        if (getcwd(current_directory,MaxTextExtent-1) == NULL)
           MagickFatalError(ConfigureFatalError,UnableToGetCurrentDirectory,
                            NULL);
 
       /* Get the list of matching file names. */
       filelist=ListFiles(*path=='\0' ? current_directory : path,
-			 filename,&number_files);
+                         filename,&number_files);
 
       if (filelist != (char **) NULL)
-	for (j=0; j < number_files; j++)
-	  if (IsDirectory(filelist[j]) <= 0)
-	    break;
+        for (j=0; j < number_files; j++)
+          if (IsDirectory(filelist[j]) <= 0)
+            break;
 
       /* ListFiles() may change current directory without restoring. */
       if ((strlen(current_directory) > 0) && (chdir(current_directory) != 0))
         {
           for (j=0; j < number_files; j++)
-	    MagickFreeMemory(filelist[j]);
+            MagickFreeMemory(filelist[j]);
           MagickFreeMemory(filelist);
           MagickFatalError(ConfigureFatalError,UnableToRestoreCurrentDirectory,
                            NULL);
         }
 
       if (filelist == 0)
-	continue;
+        continue;
 
       if (j == number_files)
-	{
-	  /*
-	    Bourne/Bash shells passes through unchanged any glob patterns
-	    not matching anything (abc* and there's no file starting with
-	    abc). Do the same for behaviour consistent with that.
-	  */
-	  for (j=0; j < number_files; j++)
-	    MagickFreeMemory(filelist[j]);
-	  MagickFreeMemory(filelist);
-	  continue;
-	}
+        {
+          /*
+            Bourne/Bash shells passes through unchanged any glob patterns
+            not matching anything (abc* and there's no file starting with
+            abc). Do the same for behaviour consistent with that.
+          */
+          for (j=0; j < number_files; j++)
+            MagickFreeMemory(filelist[j]);
+          MagickFreeMemory(filelist);
+          continue;
+        }
 
       /*
-	There's at least one matching filename.
-	Transfer file list to argument vector.
+        There's at least one matching filename.
+        Transfer file list to argument vector.
       */
       MagickReallocMemory(char **,vector,
-			  (*argc+count+number_files+prealloc_entries)*sizeof(char *));
+                          (*argc+count+number_files+prealloc_entries)*sizeof(char *));
       if (vector == (char **) NULL)
-	return(MagickFail);
+        return(MagickFail);
 
       first=MagickTrue;
       for (j=0; j < number_files; j++)
-	{
-	  char
-	    filename_buffer[MaxTextExtent];
+        {
+          char
+            filename_buffer[MaxTextExtent];
 
-	  *filename_buffer='\0';
-	  if (strlcat(filename_buffer,path,sizeof(filename_buffer))
-	      >= sizeof(filename_buffer))
-	    MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-			      filename_buffer);
-	  if (*path != '\0')
-	    {
-	      if (strlcat(filename_buffer,DirectorySeparator,sizeof(filename_buffer))
-		  >= sizeof(filename_buffer))
-		MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-				  filename_buffer);
-	    }
-	  if (strlcat(filename_buffer,filelist[j],sizeof(filename_buffer))
-	      >= sizeof(filename_buffer))
-	    MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-			      filename_buffer);
-	  /* If it's a filename (not a directory) ... */
-	  if (IsDirectory(filename_buffer) == 0) 
-	    {
-	      char
-		formatted_buffer[MaxTextExtent];
+          *filename_buffer='\0';
+          if (strlcat(filename_buffer,path,sizeof(filename_buffer))
+              >= sizeof(filename_buffer))
+            MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                              filename_buffer);
+          if (*path != '\0')
+            {
+              if (strlcat(filename_buffer,DirectorySeparator,sizeof(filename_buffer))
+                  >= sizeof(filename_buffer))
+                MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                                  filename_buffer);
+            }
+          if (strlcat(filename_buffer,filelist[j],sizeof(filename_buffer))
+              >= sizeof(filename_buffer))
+            MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                              filename_buffer);
+          /* If it's a filename (not a directory) ... */
+          if (IsDirectory(filename_buffer) == 0)
+            {
+              char
+                formatted_buffer[MaxTextExtent];
 
-	      *formatted_buffer='\0';
-	      if (strlcat(formatted_buffer,magick,sizeof(formatted_buffer))
-		  >= sizeof(formatted_buffer))
-		MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-				  formatted_buffer);
-	      if (strlcat(formatted_buffer,filename_buffer,sizeof(formatted_buffer))
-		  >= sizeof(formatted_buffer))
-		MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-				  formatted_buffer);
-	      if (strlcat(formatted_buffer,subimage,sizeof(formatted_buffer))
-		  >= sizeof(formatted_buffer))
-		MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
-				  formatted_buffer);
-	      if (first)
-		{
-		  /* Deallocate original option assigned above */
-		  --count;
-		  MagickFreeMemory(vector[count]);
-		  first=MagickFalse;
-		}
-	      vector[count++]=AcquireString(formatted_buffer);
-	    }
-	  MagickFreeMemory(filelist[j]);
-	}
+              *formatted_buffer='\0';
+              if (strlcat(formatted_buffer,magick,sizeof(formatted_buffer))
+                  >= sizeof(formatted_buffer))
+                MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                                  formatted_buffer);
+              if (strlcat(formatted_buffer,filename_buffer,sizeof(formatted_buffer))
+                  >= sizeof(formatted_buffer))
+                MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                                  formatted_buffer);
+              if (strlcat(formatted_buffer,subimage,sizeof(formatted_buffer))
+                  >= sizeof(formatted_buffer))
+                MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
+                                  formatted_buffer);
+              if (first)
+                {
+                  /* Deallocate original option assigned above */
+                  --count;
+                  MagickFreeMemory(vector[count]);
+                  first=MagickFalse;
+                }
+              vector[count++]=AcquireString(formatted_buffer);
+            }
+          MagickFreeMemory(filelist[j]);
+        }
       MagickFreeMemory(filelist);
     }
   *argc=count;
@@ -1239,7 +1239,7 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
 %
 %
 */
-MagickExport void FormatStringList(char *string,const char *format, 
+MagickExport void FormatStringList(char *string,const char *format,
                                    va_list operands)
 {
 #if defined(HAVE_VSNPRINTF)
@@ -1334,7 +1334,7 @@ MagickExport MagickPassFail GetExecutionPath(char *path)
     char
       executable_path[PATH_MAX*2],
       real_path[PATH_MAX+1];
-    
+
     bufsize=sizeof(executable_path);
     if (_NSGetExecutablePath(executable_path,&bufsize) == 0)
       if (realpath(executable_path,real_path) != NULL)
@@ -1357,7 +1357,7 @@ MagickExport MagickPassFail GetExecutionPath(char *path)
     long
       pid;
 
-    char 
+    char
       link_path[MaxTextExtent],
       real_path[PATH_MAX+1];
 
@@ -1476,16 +1476,16 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
         const char
           *end = NULL,
           *start = search_path;
-        
+
         end=start+strlen(start);
         while ( start < end )
           {
             const char
               *separator;
-            
+
             int
               length;
-            
+
             separator = strchr(start,DirectoryListSeparator);
             if (separator)
               length=separator-start;
@@ -1850,9 +1850,9 @@ static int MagickStrToD(const char *start,char **end,double *value)
   int
     i,
     n=0;
-  
+
   p=start;
-  
+
   for (i=0; (*p != 0) && (*p != 'x') && (*p != ',') && (i < MaxTextExtent-2); i++)
     buff[i]=*p++;
   buff[i]=0;
@@ -2608,7 +2608,7 @@ MagickExport void GetToken(const char *start,char **end,char *token)
 %  if the specification may be a subimage specification.  If the pattern is
 %  ultimately determined to be a subimage specification, then globbing is
 %  not performed.
-%  
+%
 %
 %  The format of the GlobExpression function is:
 %
@@ -3648,7 +3648,7 @@ double MagickFmax(const double x, const double y)
 */
 MagickExport void MagickFormatStringList(char *string,
                                          const size_t length,
-                                         const char *format, 
+                                         const char *format,
                                          va_list operands)
 {
 #if defined(HAVE_VSNPRINTF)
@@ -4029,14 +4029,14 @@ MagickSpawnVP(const unsigned int verbose,const char *file, char *const argv[])
     */
     ExceptionInfo
       exception;
-    
+
     GetExceptionInfo(&exception);
     if (MagickConfirmAccess(FileExecuteConfirmAccessMode,argv[0],&exception)
-	== MagickFail)
+        == MagickFail)
       {
-	errno=EPERM;
-	DestroyExceptionInfo(&exception);
-	return -1;
+        errno=EPERM;
+        DestroyExceptionInfo(&exception);
+        return -1;
       }
   }
 
@@ -4053,47 +4053,47 @@ MagickSpawnVP(const unsigned int verbose,const char *file, char *const argv[])
     child_pid = fork( );
     if ( (pid_t)-1 == child_pid)
       {
-	/* Failed to fork, errno contains reason */
-	status = -1;
-	FormatString(message,"fork failed: %.1024s", strerror(errno));
+        /* Failed to fork, errno contains reason */
+        status = -1;
+        FormatString(message,"fork failed: %.1024s", strerror(errno));
       }
     else if ( 0 == child_pid )
       {
-	/* We are the child process, exec program with arguments. */
-	status = execvp(file, argv);
+        /* We are the child process, exec program with arguments. */
+        status = execvp(file, argv);
 
-	/* If we get here, then execvp must have failed. */
-	(void) fprintf(stderr, "execvp failed, errno = %d (%s)\n",errno,strerror(errno));
+        /* If we get here, then execvp must have failed. */
+        (void) fprintf(stderr, "execvp failed, errno = %d (%s)\n",errno,strerror(errno));
 
-	/* If there is an execvp error, then call _exit() */
-	_exit(1);
+        /* If there is an execvp error, then call _exit() */
+        _exit(1);
       }
     else
       {
-	/* We are the parent process, wait for child. */
-	pid_t waitpid_status;
-	int child_status = 0;
-	waitpid_status = waitpid(child_pid, &child_status, 0);
-	if ( (pid_t)-1 == waitpid_status )
-	  {
-	    /* Waitpid error */
-	    status = -1;
-	    FormatString(message, "waitpid failed: %.1024s", strerror(errno));
-	  }
-	else if ( waitpid_status == child_pid )
-	  {
-	    /* Status is available for child process */
-	    if ( WIFEXITED( child_status ) )
-	      {
-		status =  WEXITSTATUS( child_status );
-	      }
-	    else if ( WIFSIGNALED( child_status ) )
-	      {
-		int sig_num = WTERMSIG( child_status );
-		status = -1;
-		FormatString(message, "child process quit due to signal %d", sig_num);
-	      }
-	  }
+        /* We are the parent process, wait for child. */
+        pid_t waitpid_status;
+        int child_status = 0;
+        waitpid_status = waitpid(child_pid, &child_status, 0);
+        if ( (pid_t)-1 == waitpid_status )
+          {
+            /* Waitpid error */
+            status = -1;
+            FormatString(message, "waitpid failed: %.1024s", strerror(errno));
+          }
+        else if ( waitpid_status == child_pid )
+          {
+            /* Status is available for child process */
+            if ( WIFEXITED( child_status ) )
+              {
+                status =  WEXITSTATUS( child_status );
+              }
+            else if ( WIFSIGNALED( child_status ) )
+              {
+                int sig_num = WTERMSIG( child_status );
+                status = -1;
+                FormatString(message, "child process quit due to signal %d", sig_num);
+              }
+          }
       }
   }
 #endif
@@ -4105,29 +4105,29 @@ MagickSpawnVP(const unsigned int verbose,const char *file, char *const argv[])
   if (verbose || (status != 0))
     {
       const char
-	*message_p = (const char *) NULL;
+        *message_p = (const char *) NULL;
 
       char
-	*command;
+        *command;
 
       unsigned int
-	i;
+        i;
 
       command = AllocateString((const char*) NULL);
       for (i = 0; argv[i] != (const char*) NULL; i++)
-	{
-	  char
-	    buffer[MaxTextExtent];
+        {
+          char
+            buffer[MaxTextExtent];
 
-	  FormatString(buffer,"\"%.1024s\"", argv[i]);
+          FormatString(buffer,"\"%.1024s\"", argv[i]);
 
-	  if (0 != i)
-	    (void) ConcatenateString(&command," ");
+          if (0 != i)
+            (void) ConcatenateString(&command," ");
 
-	  (void) ConcatenateString(&command,buffer);
-	}
+          (void) ConcatenateString(&command,buffer);
+        }
       if (message[0] != '\0')
-	message_p = message;
+        message_p = message;
       MagickError2(DelegateError,command,message_p);
       MagickFreeMemory(command);
     }
@@ -4483,13 +4483,13 @@ MagickExport size_t MagickStrlCat(char *dst, const char *src, const size_t size)
   if (size >= 1)
     {
       char
-	*p;
+        *p;
 
       for ( p = dst + length ;
-	    (*q != 0) && (length < size - 1) ;
-	    length++, p++, q++ )
-	*p = *q;
-      
+            (*q != 0) && (length < size - 1) ;
+            length++, p++, q++ )
+        *p = *q;
+
       dst[length]='\0';
     }
 
@@ -4563,13 +4563,13 @@ MagickExport size_t MagickStrlCpy(char *dst, const char *src, const size_t size)
   if (size >= 1)
     {
       char
-	*p;
+        *p;
 
       for ( p=dst ;
-	    (*q != 0) && (length < size-1) ;
-	    length++, p++, q++ )
-	*p = *q;
-      
+            (*q != 0) && (length < size-1) ;
+            length++, p++, q++ )
+        *p = *q;
+
       dst[length]='\0';
     }
 
@@ -4632,13 +4632,13 @@ MagickExport size_t MagickStrlCpyTrunc(char *dst, const char *src, const size_t 
   if (size >= 1)
     {
       char
-	*p;
+        *p;
 
       for ( p=dst, q=src;
-	    (*q != 0) && (length < size-1) ;
-	    length++, p++, q++ )
-	*p = *q;
-      
+            (*q != 0) && (length < size-1) ;
+            length++, p++, q++ )
+        *p = *q;
+
       dst[length]='\0';
     }
 
@@ -5092,12 +5092,12 @@ MagickExport char **StringToList(const char *text)
         if (textlist[i] == (char *) NULL)
           MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
             UnableToConvertText);
-	/*
-	  Don't use strlcpy here because it spends too much time
-	  looking for the trailing null in order to report the
-	  characters not copied.
-	*/
-	(void) strncpy(textlist[i],p,q-p);
+        /*
+          Don't use strlcpy here because it spends too much time
+          looking for the trailing null in order to report the
+          characters not copied.
+        */
+        (void) strncpy(textlist[i],p,q-p);
         textlist[i][q-p]='\0';
         if (*q == '\r')
           q++;
@@ -5262,30 +5262,30 @@ SubstituteString(char **buffer,const char *search,const char *replace)
   for (i=0; p[i] != '\0'; i++)
     {
       if ((p[i] == search[0]) && (strncmp(&p[i],search,search_len) == 0))
-	{
-	  if (0 == replace_len)
-	    replace_len=strlen(replace);
-	  if (replace_len > search_len)
-	    {
-	      size_t
-		allocation_len;
+        {
+          if (0 == replace_len)
+            replace_len=strlen(replace);
+          if (replace_len > search_len)
+            {
+              size_t
+                allocation_len;
 
-	      allocation_len=strlen(p)+(replace_len-search_len)+1;
-	      MagickRoundUpStringLength(allocation_len);
-	      MagickReallocMemory(char *,p,allocation_len);
-	      *buffer=p;
-	      if (p == (char *) NULL)
-		MagickFatalError3(ResourceLimitFatalError,
-				  MemoryAllocationFailed,
-				  UnableToAllocateString);
-	    }
-	  if (search_len != replace_len)
-	    (void) MagickCloneMemory(&p[i+replace_len],&p[i+search_len],
-				     strlen(&p[i+search_len])+1);
-	  (void) MagickCloneMemory(&p[i],replace,replace_len);
-	  i += replace_len;
-	  replaced=MagickTrue;
-	}
+              allocation_len=strlen(p)+(replace_len-search_len)+1;
+              MagickRoundUpStringLength(allocation_len);
+              MagickReallocMemory(char *,p,allocation_len);
+              *buffer=p;
+              if (p == (char *) NULL)
+                MagickFatalError3(ResourceLimitFatalError,
+                                  MemoryAllocationFailed,
+                                  UnableToAllocateString);
+            }
+          if (search_len != replace_len)
+            (void) MagickCloneMemory(&p[i+replace_len],&p[i+search_len],
+                                     strlen(&p[i+search_len])+1);
+          (void) MagickCloneMemory(&p[i],replace,replace_len);
+          i += replace_len;
+          replaced=MagickTrue;
+        }
     }
   return replaced;
 }
@@ -5349,11 +5349,11 @@ MagickExport int SystemCommand(const unsigned int verbose,const char *command)
     program[0]='\0';
     MagickGetToken(command,&end,program,MaxTextExtent);
     if (MagickConfirmAccess(FileExecuteConfirmAccessMode,program,&exception)
-	== MagickFail)
+        == MagickFail)
       {
-	errno=EPERM;
-	DestroyExceptionInfo(&exception);
-	return -1;
+        errno=EPERM;
+        DestroyExceptionInfo(&exception);
+        return -1;
       }
   }
 

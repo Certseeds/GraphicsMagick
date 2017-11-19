@@ -1,5 +1,9 @@
 2017-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* README.txt: Comprehensive white-space clean-up across
+	GraphicsMagick core source files.  Hard TAB character is converted
+	to spaces.  Trailing white-space garbage is stripped.
+
 	* magick/colormap.c (MagickConstrainColormapIndex): Deprecate use
 	of MagickConstrainColormapIndex() and prefer use of
 	VerifyColormapIndex() and VerifyColormapIndexWithColors() due to

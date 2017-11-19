@@ -93,7 +93,7 @@ MagickExport MagickPassFail GradientImage(Image *image,
 
       register long
         x;
-      
+
       register PixelPacket
         *q;
 

@@ -41,7 +41,7 @@ namespace Magick
     explicit Warning ( const std::string& what_ );
     ~Warning() throw ();
   };
-  
+
   class MagickDLLDecl WarningUndefined : public Warning
   {
   public:
@@ -227,14 +227,14 @@ namespace Magick
     explicit ErrorCorruptImage ( const std::string& what_ );
     ~ErrorCorruptImage() throw ();
   };
-  
+
   class MagickDLLDecl ErrorDelegate : public Error
   {
   public:
     explicit ErrorDelegate ( const std::string& what_ );
     ~ErrorDelegate() throw ();
   };
-  
+
   class MagickDLLDecl ErrorDraw : public Error
   {
   public:
@@ -311,7 +311,7 @@ namespace Magick
     explicit ErrorType ( const std::string& what_ );
     ~ErrorType() throw ();
   };
-  
+
   class MagickDLLDecl ErrorXServer : public Error
   {
   public:

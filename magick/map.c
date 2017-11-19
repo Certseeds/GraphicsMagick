@@ -382,7 +382,7 @@ MagickMapAddEntry(MagickMap map,const char *key, const void *object,
               p->previous=0;
               p->next=0;
               spliced_in=MagickTrue;
-              
+
               /*
                 Remove old object
               */
@@ -682,7 +682,7 @@ MagickMapDeallocateMap(MagickMap map)
         current=p;
         p=p->next;
         MagickMapDestroyObject(current);
-      }        
+      }
   }
 
   (void) UnlockSemaphoreInfo(map->semaphore);
@@ -906,7 +906,7 @@ MagickMapIterateNext(MagickMapIterator iterator,const char **key)
     *key=iterator->member->key;
 
   UnlockSemaphoreInfo(iterator->map->semaphore);
-  
+
   return (iterator->member != 0);
 }
 
@@ -1038,7 +1038,7 @@ MagickMapRemoveEntry(MagickMap map,const char *key)
                 {
                   if (p->previous)
                     p->previous->next=p->next;
-                  
+
                   if (p->next)
                     p->next->previous=p->previous;
                 }

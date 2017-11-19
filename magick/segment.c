@@ -252,15 +252,15 @@ typedef struct _Cluster
 {
   struct _Cluster
     *next;
-  
+
   ExtentPacket
     red,
     green,
     blue;
-  
+
   magick_int64_t
     count;
-  
+
   short
     id;
 } Cluster;
@@ -630,7 +630,7 @@ Classify(Image *image,short **extrema,
         thread_status;
 
       int
-	num_threads;
+        num_threads;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_Classify)
@@ -676,13 +676,13 @@ Classify(Image *image,short **extrema,
                     q[x]=image->colormap[indexes[x]];
                     classified=MagickTrue;
 
-		    /*
-		      Re-sort array so that most frequent occurs first.
+                    /*
+                      Re-sort array so that most frequent occurs first.
 
-		      Updating cluster_array causes a multithread race
-		      condition so this chunk is only enabled in the
-		      case of one thread.
-		    */
+                      Updating cluster_array causes a multithread race
+                      condition so this chunk is only enabled in the
+                      case of one thread.
+                    */
                     if ((num_threads == 1) && (count > 0) &&
                         (cluster_array[count]->count > cluster_array[count-1]->count))
                       {
@@ -1274,7 +1274,7 @@ InitializeIntervalTree(const ZeroCrossing *zero_crossing,
   return(root);
 
  interval_tree_alloc_failure:
-  
+
   MagickFreeMemory(list);
   FreeNodes(root);
   return ((IntervalTree *) NULL);

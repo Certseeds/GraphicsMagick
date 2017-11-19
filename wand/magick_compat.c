@@ -506,7 +506,7 @@ WandExport unsigned int ParseGeometry(const char *geometry,
         */
         GetExceptionInfo(&exception);
         image_info=CloneImageInfo((ImageInfo *) NULL);
-	(void) strlcpy(image_info->filename,geometry,sizeof(image_info->filename));
+        (void) strlcpy(image_info->filename,geometry,sizeof(image_info->filename));
         image=PingImage(image_info,&exception);
         if (image != (Image *) NULL)
           {

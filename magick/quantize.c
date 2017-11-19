@@ -1705,7 +1705,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
                 {
                   register int
                     intensity;
-                  
+
                   /*
                     If index is new, create index to colormap
                   */
@@ -1742,7 +1742,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
                   *indexes=ScaleQuantumToIndex(q->red);
                   q++;
                   indexes++;
-                } 
+                }
               if (!SyncImagePixels(image))
                 break;
            }
@@ -1770,7 +1770,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
               return;
             }
         }
-      
+
       /*
         Assign index values to colormap entries.
       */
@@ -1810,7 +1810,7 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
                 j++;
                 new_colormap[j]=image->colormap[i];
               }
-            
+
             colormap_index[image->colormap[i].opacity]=j;
           }
         image->colors=j+1;
@@ -2599,8 +2599,8 @@ MagickExport MagickPassFail QuantizeImages(const QuantizeInfo *quantize_info,
     image=image->next;
     (void) SetMonitorHandler(handler);
     if ((image != (Image *) NULL) &&
-	(!MagickMonitorFormatted(i,number_images,&image->exception,
-				 ClassifyImageText,image->filename)))
+        (!MagickMonitorFormatted(i,number_images,&image->exception,
+                                 ClassifyImageText,image->filename)))
       break;
   }
   if (status != MagickFail)
@@ -2621,8 +2621,8 @@ MagickExport MagickPassFail QuantizeImages(const QuantizeInfo *quantize_info,
         image=image->next;
         (void) SetMonitorHandler(handler);
         if ((image != (Image *) NULL) &&
-	    (!MagickMonitorFormatted(i,number_images,&image->exception,
-				     AssignImageText,image->filename)))
+            (!MagickMonitorFormatted(i,number_images,&image->exception,
+                                     AssignImageText,image->filename)))
           {
             status=MagickFail;
             break;
@@ -2768,8 +2768,8 @@ static void ReduceImageColors(const char *filename,CubeInfo *cube_info,
     status=MagickMonitorFormatted(span-cube_info->colors,
                                   span-number_colors+1,exception,
                                   ReduceImageText,
-				  filename,
-				  number_colors);
+                                  filename,
+                                  number_colors);
     if (status == False)
       break;
   }

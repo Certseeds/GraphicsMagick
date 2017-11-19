@@ -154,7 +154,7 @@ MagickExport void *CropImageToHBITMAP(Image *image,
   bitmap_bitsH = (HANDLE) GlobalAlloc (GMEM_MOVEABLE | GMEM_DDESHARE,
                page.width*page.height*bitmap.bmBitsPixel);
   if (bitmap_bitsH == NULL)
-    return( NULL ); 
+    return( NULL );
 
   bitmap_bits = (RGBQUAD *) GlobalLock((HGLOBAL) bitmap_bitsH);
 
@@ -199,7 +199,7 @@ MagickExport void *CropImageToHBITMAP(Image *image,
 #endif
     if (QuantumTick(y,page.height))
       if (!MagickMonitorFormatted(y,page.height-1,exception,CropImageText,
-				  image->filename))
+                                  image->filename))
         break;
   }
   if (y < (long) page.height)
@@ -581,7 +581,7 @@ MagickExport TypeInfo* NTGetTypeList( void )
             type_array[array_index]->previous = type_array[array_index-1];
             type_array[array_index]->next=(TypeInfo *) NULL;
           }
-        
+
         MagickFreeMemory(type_array);
       }
   }
@@ -614,7 +614,7 @@ MagickExport TypeInfo* NTGetTypeList( void )
 */
 MagickExport void *ImageToHBITMAP(Image* image)
 {
-  unsigned long 
+  unsigned long
     nPixels,
     row;
 
@@ -651,8 +651,8 @@ MagickExport void *ImageToHBITMAP(Image* image)
   bitmap_bitsH = (HANDLE) GlobalAlloc (GMEM_MOVEABLE | GMEM_DDESHARE, memSize);
 
   if (bitmap_bitsH == NULL)
-    return( NULL ); 
-  
+    return( NULL );
+
   bitmap_bits = (RGBQUAD *) GlobalLock((HGLOBAL) bitmap_bitsH);
   pDestPixel = bitmap_bits;
 

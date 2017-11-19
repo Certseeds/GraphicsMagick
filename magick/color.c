@@ -155,16 +155,16 @@ ComputeCubeInfo(const Image *image,ExceptionInfo *exception)
 
   CubeInfo
     *cube_info;
-  
+
   long
     y;
-  
+
   NodeInfo
     *node_info;
-  
+
   register const PixelPacket
     *p;
-  
+
   register long
     i,
     x;

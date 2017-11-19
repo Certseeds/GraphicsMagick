@@ -136,7 +136,7 @@ static void ComposeTemporaryFileName(char *name)
   for (c=name; *c; c++)
     {
       if (*c == 'X')
-	*c=SafeChars[MagickRandomInteger() % (sizeof(SafeChars)-1)];
+        *c=SafeChars[MagickRandomInteger() % (sizeof(SafeChars)-1)];
     }
 }
 
@@ -312,10 +312,10 @@ MagickExport int AcquireTemporaryFileDescriptor(char *filename)
     {
       char
         tempname[16];
-      
+
       int
         tries=0;
-      
+
       for (tries=0; tries < 256; tries++)
         {
           (void) strlcpy(tempname,"gmXXXXXX",sizeof(tempname));

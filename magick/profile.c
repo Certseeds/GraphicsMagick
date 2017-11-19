@@ -77,7 +77,7 @@
 %  referencing.  However, it is safe to delete a profile that the iterator
 %  is not currently referencing. Inserting additional profiles does not
 %  invalidate the current iterator.
-%  
+%
 %
 %  The format of the AllocateImageProfileIterator method is:
 %
@@ -137,9 +137,9 @@ AllocateImageProfileIterator(const Image *image)
 */
 MagickExport MagickPassFail
 AppendImageProfile(Image *image,
-		   const char *name,
-		   const unsigned char *profile_chunk,
-		   const size_t chunk_length)
+                   const char *name,
+                   const unsigned char *profile_chunk,
+                   const size_t chunk_length)
 {
   const unsigned char
     *existing_profile;
@@ -164,17 +164,17 @@ AppendImageProfile(Image *image,
   else
     {
       unsigned char
-	*profile;
+        *profile;
 
       size_t
-	profile_length;
+        profile_length;
 
       profile_length=existing_length+chunk_length;
-      if ((profile_length < existing_length) || 
-	  ((profile=MagickAllocateMemory(unsigned char *,(size_t) profile_length)) ==
-	   (unsigned char *) NULL))
-	ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-			     (char *) NULL);
+      if ((profile_length < existing_length) ||
+          ((profile=MagickAllocateMemory(unsigned char *,(size_t) profile_length)) ==
+           (unsigned char *) NULL))
+        ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
+                             (char *) NULL);
       (void) memcpy(profile,existing_profile,existing_length);
       (void) memcpy(profile+existing_length,profile_chunk,chunk_length);
       status=SetImageProfile(image,name,profile,profile_length);
@@ -401,7 +401,7 @@ NextImageProfile(ImageProfileIterator profile_iterator,
 %  If there is no ICM profile currently associated with the image, then
 %  the profile is simply associated with the image and the image pixels
 %  are not altered.
-%  
+%
 %  If there is already a ICM profile associated with the image, then
 %  the colorspace transform described by the existing and new profiles
 %  is applied to the image pixels, and the new profile is associated
@@ -473,12 +473,12 @@ lcmsReplacementErrorHandler(cmsContext ContextID, cmsUInt32Number ErrorCode, con
   }
 
   (void) LogMagickEvent(type,GetMagickModule(),"lcms: #%u, %s",
-			ErrorCode,(ErrorText != (char *) NULL) ? ErrorText : "No error text");
+                        ErrorCode,(ErrorText != (char *) NULL) ? ErrorText : "No error text");
 
   if (xform != (TransformInfo *) NULL)
     {
       ThrowException2(&xform->image->exception,type,"UnableToTransformColorspace",
-		     (ErrorText != (char *) NULL) ? ErrorText : "No error text");
+                     (ErrorText != (char *) NULL) ? ErrorText : "No error text");
     }
 }
 
@@ -709,13 +709,13 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
 
       const char
         *profile_name;
-      
+
       size_t
         profile_length;
-      
+
       const unsigned char *
         profile_info;
-      
+
       ImageProfileIterator
         profile_iterator;
 
@@ -747,7 +747,7 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
           for (i=1 ; i < argc ; i++)
             {
               if ((*argv[i] == '!') && (LocaleCompare(profile_name,argv[i]+1) == 0))
-                break;                
+                break;
               if (GlobExpression(profile_name,argv[i]))
                 {
                   (void) strlcpy(profile_remove,profile_name,sizeof(profile_remove));
@@ -817,17 +817,17 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
           /*
             Transform pixel colors as defined by the color profiles.
           */
-	  (void) memset(&xform,0,sizeof(xform));
-	  xform.signature=MagickSignature;
-	  xform.image=image;
+          (void) memset(&xform,0,sizeof(xform));
+          xform.signature=MagickSignature;
+          xform.image=image;
           cmsSetLogErrorHandler(lcmsReplacementErrorHandler);
 
           xform.source_profile=cmsOpenProfileFromMemTHR((cmsContext) &xform,
-							(unsigned char *) existing_profile,
-							(cmsUInt32Number) existing_profile_length);
+                                                        (unsigned char *) existing_profile,
+                                                        (cmsUInt32Number) existing_profile_length);
           xform.target_profile=cmsOpenProfileFromMemTHR((cmsContext) &xform,
-							(unsigned char *) profile,
-							(cmsUInt32Number) length);
+                                                        (unsigned char *) profile,
+                                                        (cmsUInt32Number) length);
           if ((xform.source_profile == (cmsHPROFILE) NULL) ||
               (xform.target_profile == (cmsHPROFILE) NULL))
             ThrowBinaryException3(ResourceLimitError,UnableToManageColor,
@@ -975,7 +975,7 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
           /* Verify that source colorspace type is supported */
           if (!IsGrayColorspace(xform.source_colorspace) &&
               !IsCMYKColorspace(xform.source_colorspace) &&
-	      !IsLABColorspace(xform.source_colorspace) &&
+              !IsLABColorspace(xform.source_colorspace) &&
               !IsYCbCrColorspace(xform.source_colorspace) &&
               !IsRGBColorspace(image->colorspace))
             {
@@ -987,8 +987,8 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
 
           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                                 "Source pixel format: COLORSPACE=%s SWAPFIRST=%d "
-				"FLAVOR=%d PLANAR=%d ENDIAN16=%d DOSWAP=%d "
-				"EXTRA=%d CHANNELS=%d BYTES=%d",
+                                "FLAVOR=%d PLANAR=%d ENDIAN16=%d DOSWAP=%d "
+                                "EXTRA=%d CHANNELS=%d BYTES=%d",
                                 PixelTypeToString((int) T_COLORSPACE(xform.source_type)),
                                 (int) T_SWAPFIRST(xform.source_type),
                                 (int) T_FLAVOR(xform.source_type),
@@ -1001,8 +1001,8 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
 
           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                                 "Target pixel format: COLORSPACE=%s SWAPFIRST=%d "
-				"FLAVOR=%d PLANAR=%d ENDIAN16=%d DOSWAP=%d "
-				"EXTRA=%d CHANNELS=%d BYTES=%d",
+                                "FLAVOR=%d PLANAR=%d ENDIAN16=%d DOSWAP=%d "
+                                "EXTRA=%d CHANNELS=%d BYTES=%d",
                                 PixelTypeToString((int) T_COLORSPACE(xform.target_type)),
                                 (int) T_SWAPFIRST(xform.target_type),
                                 (int) T_FLAVOR(xform.target_type),
@@ -1018,17 +1018,17 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
             case AbsoluteIntent:
               xform.intent=INTENT_ABSOLUTE_COLORIMETRIC;
               break;
-            case PerceptualIntent: 
-              xform.intent=INTENT_PERCEPTUAL; 
+            case PerceptualIntent:
+              xform.intent=INTENT_PERCEPTUAL;
               break;
-            case RelativeIntent: 
+            case RelativeIntent:
               xform.intent=INTENT_RELATIVE_COLORIMETRIC;
               break;
-            case SaturationIntent: 
-              xform.intent=INTENT_SATURATION; 
+            case SaturationIntent:
+              xform.intent=INTENT_SATURATION;
               break;
-            default: 
-              xform.intent=INTENT_PERCEPTUAL; 
+            default:
+              xform.intent=INTENT_PERCEPTUAL;
               break;
             }
 
@@ -1044,44 +1044,44 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
             ((xform.source_colorspace != GRAYColorspace) ||
              (xform.source_colorspace == xform.target_colorspace));
 
-	  /* build pre-computed transforms? */
-	  xform.flags=(transform_colormap ? cmsFLAGS_NOOPTIMIZE : 0);
+          /* build pre-computed transforms? */
+          xform.flags=(transform_colormap ? cmsFLAGS_NOOPTIMIZE : 0);
 
-	  xform.transform=AllocateThreadViewDataSet(MagickFreeCMSTransform,
-						    image,&image->exception);
-	  if (xform.transform == (ThreadViewDataSet *) NULL)
-	    status=MagickFail;
-	  if (status != MagickFail)
-	    {
-	      cmsHTRANSFORM
-		transform;
+          xform.transform=AllocateThreadViewDataSet(MagickFreeCMSTransform,
+                                                    image,&image->exception);
+          if (xform.transform == (ThreadViewDataSet *) NULL)
+            status=MagickFail;
+          if (status != MagickFail)
+            {
+              cmsHTRANSFORM
+                transform;
 
-	      unsigned int
-		index;
+              unsigned int
+                index;
 
-	      for (index=0 ; index < GetThreadViewDataSetAllocatedViews(xform.transform); index++)
-		{
-		  transform=cmsCreateTransformTHR((cmsContext) &xform,/* transform handle */
-					       xform.source_profile,  /* input profile */
-					       xform.source_type,     /* input pixel format */
-					       xform.target_profile,  /* output profile */
-					       xform.target_type,     /* output pixel format */
-					       xform.intent,          /* rendering intent */
-					       xform.flags            /* pre-computed transforms? */
-					       );
-		  if (transform == (cmsHTRANSFORM) NULL)
-		    {
-		      status=MagickFail;
-		      break;
-		    }
-		  AssignThreadViewData(xform.transform,index,transform);
-		}
-	    }
+              for (index=0 ; index < GetThreadViewDataSetAllocatedViews(xform.transform); index++)
+                {
+                  transform=cmsCreateTransformTHR((cmsContext) &xform,/* transform handle */
+                                               xform.source_profile,  /* input profile */
+                                               xform.source_type,     /* input pixel format */
+                                               xform.target_profile,  /* output profile */
+                                               xform.target_type,     /* output pixel format */
+                                               xform.intent,          /* rendering intent */
+                                               xform.flags            /* pre-computed transforms? */
+                                               );
+                  if (transform == (cmsHTRANSFORM) NULL)
+                    {
+                      status=MagickFail;
+                      break;
+                    }
+                  AssignThreadViewData(xform.transform,index,transform);
+                }
+            }
           (void) cmsCloseProfile(xform.source_profile);
           (void) cmsCloseProfile(xform.target_profile);
-	  if (status == MagickFail)
+          if (status == MagickFail)
             {
-	      DestroyThreadViewDataSet(xform.transform);
+              DestroyThreadViewDataSet(xform.transform);
               ThrowBinaryException3(ResourceLimitError,UnableToManageColor,
                                     UnableToCreateColorTransform);
             }
@@ -1132,7 +1132,7 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
           */
           image->is_grayscale=IsGrayColorspace(xform.target_colorspace);
           image->is_monochrome=False;
-	  DestroyThreadViewDataSet(xform.transform);
+          DestroyThreadViewDataSet(xform.transform);
 
           /*
             Throw away the old profile after conversion before we
@@ -1154,7 +1154,7 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
         We might be trying to assign a CMYK profile to an RGB image,
         for instance.
       */
-      
+
       (void) SetImageProfile(image,"ICM",profile,length);
       if (!clone)
         MagickFreeMemory(profile);
@@ -1257,7 +1257,7 @@ SetImageProfile(Image *image,const char *name, const unsigned char *profile,
 
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                             "Adding %s profile with length %ld bytes",name,
-			    (unsigned long) length);
+                            (unsigned long) length);
       if (profile != 0)
         {
           status &= MagickMapAddEntry(image->profiles,name,profile,length,

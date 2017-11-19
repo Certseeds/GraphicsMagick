@@ -27,7 +27,7 @@ Magick::ImageRef::ImageRef ( MagickLib::Image * image_ )
 // Construct with an image and options
 // Inserts Image* in image, but copies Options into image.
 Magick::ImageRef::ImageRef ( MagickLib::Image * image_,
-			     const Options * options_ )
+                             const Options * options_ )
   : _image(image_),
     _options(0),
     _id(-1),
