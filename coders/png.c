@@ -666,12 +666,12 @@ static void PNGType(png_bytep p,png_byte const * type)
   (void) memcpy(p,type,4*sizeof(png_byte));
 }
 
-static void LogPNGChunk(int logging, png_byte const * type, unsigned long length)
+static void LogPNGChunk(int logging, png_byte const * type, size_t length)
 {
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        "  Writing %c%c%c%c chunk, length: %lu",
-        type[0],type[1],type[2],type[3],length);
+        "  Writing %c%c%c%c chunk, length: %" MAGICK_SIZE_T_F "u",
+        type[0],type[1],type[2],type[3],(MAGICK_SIZE_T) length);
 }
 #endif /* PNG_LIBPNG_VER > 10011 */
 
@@ -3423,7 +3423,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (void) WriteBlob(alpha_image,4,(char *) data);
               (void) WriteBlob(alpha_image,length,(char *) chunk);
               (void) WriteBlobMSBULong(alpha_image,
-                                       crc32(crc32(0,data,4),chunk,length));
+                                       crc32(crc32(0,data,4),chunk,(uInt) length));
             }
           MagickFreeMemory(chunk);
           continue;
