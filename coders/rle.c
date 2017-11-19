@@ -44,34 +44,26 @@
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/utility.h"
-
-static unsigned int
-RLEConstrainColormapIndex(Image *image, unsigned int index,
-                          unsigned int colormap_entries)
-{
-  if (index >= colormap_entries)
-    {
-      if (image->exception.severity < CorruptImageError)
-        {
-          char
-            colormapIndexBuffer[MaxTextExtent];
 
-          FormatString(colormapIndexBuffer,"index %u >= %u, %.1024s",
-                       (unsigned int) index, colormap_entries, image->filename);
-          errno=0;
-          ThrowException(&image->exception,CorruptImageError,
-                         InvalidColormapIndex,colormapIndexBuffer);
-        }
-      index=0U;
-    }
-
-  return index;
-}
 #define RLEVerifyColormapIndex(image,index,colormap_entries)    \
 { \
   if (index >= colormap_entries) \
-    index=RLEConstrainColormapIndex(image,index,colormap_entries);      \
+    { \
+      if (image->exception.severity < CorruptImageError) \
+        { \
+          char \
+            colormapIndexBuffer[MaxTextExtent]; \
+\
+          FormatString(colormapIndexBuffer,"index %u >= %u, %.1024s", \
+                       (unsigned int) index, colormap_entries, image->filename); \
+          errno=0; \
+          ThrowException(&image->exception,CorruptImageError, \
+                         InvalidColormapIndex,colormapIndexBuffer); \
+        } \
+      index=0U; \
+    } \
 }
+
 typedef struct _RLE_Header
 {
   magick_uint8_t   Magic[2];    /* Magic number */
@@ -236,7 +228,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pixel,
     status;
 
-  unsigned int
+  size_t
     colormap_entries;
 
   unsigned int
@@ -333,7 +325,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->matte=rle_header.Flags & AlphaFlag;
   number_planes=rle_header.Ncolors;
   number_colormaps=rle_header.Ncmap;
-  map_length=(1U << rle_header.Cmaplen);
+  map_length=(size_t) (1UL << rle_header.Cmaplen);
 
   (void) memset(background_color,0,sizeof(background_color));
   if (rle_header.Flags & NoBackgroundFlag)
@@ -403,7 +395,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       image);
             *p++=(ReadBlobLSBShort(image) >> 8);
           }
-      colormap_entries=number_colormaps*map_length;
+      colormap_entries=MagickArraySize(number_colormaps,map_length);
     }
   if (rle_header.Flags & CommentsFlag)
     {
@@ -627,13 +619,13 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Apply colormap affineation to image.
       */
-      mask=(map_length-1);
+      mask=(unsigned int) (map_length-1);
       p=rle_pixels;
       if (number_colormaps == 1)
         for (i=0; i < number_pixels; i++)
           {
             index=*p & mask;
-            RLEVerifyColormapIndex(image,index,colormap_entries);
+			RLEVerifyColormapIndex(image,index,colormap_entries);
             *p=colormap[index];
             p++;
           }
@@ -642,8 +634,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
           for (i=0; i < number_pixels; i++)
             for (x=0; x < number_planes; x++)
               {
-                index=x*map_length+(*p & mask);
-                RLEVerifyColormapIndex(image,index,colormap_entries);
+                index=x*(unsigned int) map_length+(*p & mask);
+				RLEVerifyColormapIndex(image,index,colormap_entries);
                 *p=colormap[index];
                 p++;
               }
@@ -688,7 +680,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       if (number_colormaps == 0)
         map_length=256;
-      if (!AllocateImageColormap(image,map_length))
+      if (((unsigned long) map_length != map_length) ||
+			(!AllocateImageColormap(image,(unsigned long) map_length)))
         ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
                                 image);
       p=colormap;
