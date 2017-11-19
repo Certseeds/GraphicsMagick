@@ -54,8 +54,9 @@
           char \
             colormapIndexBuffer[MaxTextExtent]; \
 \
-          FormatString(colormapIndexBuffer,"index %u >= %u, %.1024s", \
-                       (unsigned int) index, colormap_entries, image->filename); \
+          FormatString(colormapIndexBuffer, \
+                       "index %" MAGICK_SIZE_T_F "u >= %" MAGICK_SIZE_T_F "u, %.1024s",        \
+                       (MAGICK_SIZE_T) index, (MAGICK_SIZE_T) colormap_entries, image->filename); \
           errno=0; \
           ThrowException(&image->exception,CorruptImageError, \
                          InvalidColormapIndex,colormapIndexBuffer); \
