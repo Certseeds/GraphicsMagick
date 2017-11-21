@@ -2,11 +2,11 @@
   Copyright (C) 2003 - 2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
-
+ 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
-
+ 
   GraphicsMagick version and copyright.
 */
 #ifndef _MAGICK_VERSION_H
@@ -38,9 +38,9 @@ extern "C" {
 #define MagickLibVersion  0x191600
 #define MagickLibVersionText  "1.4"
 #define MagickLibVersionNumber 19,16,0
-#define MagickChangeDate   "20171119"
-#define MagickReleaseDate  "snapshot-20171119"
-
+#define MagickChangeDate   "20171121"
+#define MagickReleaseDate  "snapshot-20171121"
+	
 /*
   The MagickLibInterfaceNewest and MagickLibInterfaceOldest defines
   provide both the newest and oldest interfaces supported by the

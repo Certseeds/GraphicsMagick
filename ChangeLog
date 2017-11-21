@@ -1,3 +1,10 @@
+2017-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): Fix excessive use of disk resources
+	due to unreasonable record length.  Addresses CVE-2017-14341.
+	Notified of this issue (with suggested patch) via email by Petr
+	Gajdos on Tue, 21 Nov 2017.
+
 2017-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* README.txt: Comprehensive white-space clean-up across

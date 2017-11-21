@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1011,6 +1011,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
           if(i==EOF)
             break;
           Rd_WP_DWORD(image,&Rec.RecordLength);
+          if ((magick_off_t) Rec.RecordLength > GetBlobSize(image))
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if(EOFBlob(image))
             break;
 
