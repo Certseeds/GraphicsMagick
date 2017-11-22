@@ -1,3 +1,8 @@
+2017-11-22  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Additional check for wrong bpp CVE-2017-14342.
+
+
 2017-11-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/download.rst: Change "Czechoslovakian ftp mirror" to "Czech
