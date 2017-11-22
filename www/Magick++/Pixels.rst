@@ -88,7 +88,7 @@ text)::
   view.sync();
 
   // Set pixel at position 108,94 to red
-  *(view.get(108,94,1,1)) = Color("red");  
+  *(view.get(108,94,1,1)) = Color("red");
 
   // Save changes to image.
   view.sync();
@@ -104,27 +104,27 @@ The following is the definition of the Magick::Pixels class::
 
     // Destroy pixel view
     ~Pixels( void );
-    
+
     // Transfer pixels from the image to the pixel view as defined by
     // the specified region. Modified pixels may be subsequently
     // transferred back to the image via sync.
     PixelPacket* get ( const int x_, const int y_,
-		       const unsigned int columns_,const  unsigned int rows_ );
+                       const unsigned int columns_,const  unsigned int rows_ );
 
     // Transfer read-only pixels from the image to the pixel view as
     // defined by the specified region.
     const PixelPacket* getConst ( const int x_, const int y_,
                                   const unsigned int columns_,
                                   const unsigned int rows_ );
-    
+
     // Transfers the image view pixels to the image.
     void sync ( void );
-    
+
     // Allocate a pixel view region to store image pixels as defined
     // by the region rectangle.  This area is subsequently transferred
     // from the pixel view to the image via sync.
     PixelPacket* set ( const int x_, const int y_,
-		       const unsigned int columns_, const unsigned int rows_ );
+                       const unsigned int columns_, const unsigned int rows_ );
 
     // Return pixel colormap index array
     IndexPacket* indexes ( void );
@@ -146,4 +146,3 @@ The following is the definition of the Magick::Pixels class::
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

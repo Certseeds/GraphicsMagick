@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2015
+// Copyright Bob Friesenhahn, 1999 - 2017
 //
 // Definition of Image, the representation of a single image in Magick++
 //
@@ -161,6 +161,12 @@ namespace Magick
     // gravity.
     void            annotate ( const std::string &text_,
                                const GravityType gravity_ );
+
+    // Orient image to be right-side up based on its current
+    // orientation attribute.  This allows the image to be viewed
+    // correctly when the orientation attribute is not available, or
+    // is not respected.
+    void            autoOrient( void );
 
     // Blur image with specified blur factor
     // The radius_ parameter specifies the radius of the Gaussian, in

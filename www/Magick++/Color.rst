@@ -87,12 +87,12 @@ The following is the definition of the Color class::
   {
   public:
     Color ( Quantum red_,
-	    Quantum green_,
-	    Quantum blue_ );
+            Quantum green_,
+            Quantum blue_ );
     Color ( Quantum red_,
-	    Quantum green_,
-	    Quantum blue_,
-	    Quantum alpha_ );
+            Quantum green_,
+            Quantum blue_,
+            Quantum alpha_ );
     Color ( const std::string &x11color_ );
     Color ( const char * x11color_ );
     Color ( void );
@@ -119,11 +119,11 @@ The following is the definition of the Color class::
     // (range opaque=0 to transparent=1.0)
     void           alpha ( double alpha_ );
     double         alpha ( void ) const;
-        
+
     // Does object contain valid color?
     void           isValid ( bool valid_ );
     bool           isValid ( void ) const;
-    
+
     // Set color via X11 color specification string
     const Color& operator= ( const std::string &x11color_ );
     const Color& operator= ( const char * x11color_ );
@@ -180,13 +180,13 @@ set via the alpha() method in the Color base class::
     ColorRGB ( void );
     ColorRGB ( const Color & color_ );
     /* virtual */  ~ColorRGB ( void );
-    
+
     void           red ( double red_ );
     double         red ( void ) const;
-    
+
     void           green ( double green_ );
     double         green ( void ) const;
-    
+
     void           blue ( double blue_ );
     double         blue ( void ) const;
 
@@ -237,7 +237,7 @@ pixel)::
     ColorMono ( void );
     ColorMono ( const Color & color_ );
     /* virtual */ ~ColorMono ();
-    
+
     void           mono ( bool mono_ );
     bool           mono ( void ) const;
 
@@ -259,13 +259,13 @@ Representation of a color in Hue/Saturation/Luminosity (HSL) colorspace::
     ColorHSL ( void );
     ColorHSL ( const Color & color_ );
     /* virtual */  ~ColorHSL ( );
-    
+
     void           hue ( double hue_ );
     double         hue ( void ) const;
-    
+
     void           saturation ( double saturation_ );
     double         saturation ( void ) const;
-    
+
     void           luminosity ( double luminosity_ );
     double         luminosity ( void ) const;
 
@@ -284,7 +284,7 @@ television transmission).  Argument ranges are
   ==  =================
   Y   0.0 through 1.0
   U   -0.5 through 0.5
-  V   -0.5 through 0.5 
+  V   -0.5 through 0.5
   ==  =================
 
 ::
@@ -296,13 +296,13 @@ television transmission).  Argument ranges are
     ColorYUV ( void );
     ColorYUV ( const Color & color_ );
     /* virtual */ ~ColorYUV ( void );
-    
+
     void           u ( double u_ );
     double         u ( void ) const;
-    
+
     void           v ( double v_ );
     double         v ( void ) const;
-    
+
     void           y ( double y_ );
     double         y ( void ) const;
 
@@ -314,4 +314,3 @@ television transmission).  Argument ranges are
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

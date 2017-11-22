@@ -42,7 +42,7 @@ The pseudo code for the main loop of your program may look like::
       // Construct an image instance first so that we don't have to worry
       // about object construction failure due to a minor warning exception
       // being thrown.
-      Magick::Image image; 
+      Magick::Image image;
 
       // Determine if Warning exceptions are thrown.
       // Use is optional.  Set to true to block Warning exceptions.
@@ -66,8 +66,8 @@ The pseudo code for the main loop of your program may look like::
         // Handle any other Magick++ warning.
         cerr << “Warning: “ << warning.what() << endl;
       }
-      catch( Magick::ErrorFileOpen &error ) 
-      { 
+      catch( Magick::ErrorFileOpen &error )
+      {
         // Process Magick++ file open error
         cerr << “Error: “ << error.what() << endl;
         continue; // Try next image.
@@ -82,16 +82,16 @@ The pseudo code for the main loop of your program may look like::
          cerr << “Caught Magick++ exception: “ << error.what() << endl;
       }
     }
-    catch( std::exception &error ) 
-    { 
+    catch( std::exception &error )
+    {
        // Process any other exceptions derived from standard C++ exception
        cerr << “Caught C++ STD exception: “ << error.what() << endl;
-    } 
-    catch( ... ) 
-    { 
+    }
+    catch( ... )
+    {
       // Process *any* exception (last-ditch effort). There is not a lot
       // you can do here other to retry the operation that failed, or exit
-      // the program. 
+      // the program.
     }
   }
 
@@ -120,7 +120,7 @@ and continuing on. Exceptions derived from *Error* are thrown to
 represent fatal errors that can not produce a valid result
 (e.g. attempting to read a file which does not exist).
 
-The specific derived exception classes are shown in the following tables: 
+The specific derived exception classes are shown in the following tables:
 
 .. table:: Warning (Suspect but completed) Sub-Classes
 
@@ -181,4 +181,3 @@ GraphicsMagick is unable to figure out how to open the file.
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

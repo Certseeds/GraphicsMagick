@@ -478,6 +478,21 @@ void Magick::Image::annotate ( const std::string &text_,
   throwImageException();
 }
 
+// Orient image to be right-side up based on its current orientation
+// attribute.  This allows the image to be viewed correctly when the
+// orientation attribute is not available, or is not respected.
+void Magick::Image::autoOrient( void )
+{
+  ExceptionInfo exceptionInfo;
+  GetExceptionInfo( &exceptionInfo );
+  MagickLib::Image* newImage =
+    AutoOrientImage ( image(),
+                      orientation(),
+                      &exceptionInfo );
+  replaceImage( newImage );
+  throwImageException( exceptionInfo );
+}
+
 // Blur image
 void Magick::Image::blur( const double radius_, const double sigma_ )
 {
