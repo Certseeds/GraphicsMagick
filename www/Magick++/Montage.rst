@@ -92,7 +92,7 @@ The following is the definition of the Magick::Montage class::
     // specification
     void              gravity ( GravityType gravity_ );
     GravityType       gravity ( void ) const;
-    
+
     // Specifies the format used for the image label. Special format
     // characters may be embedded in the format string to include
     // information about the image.
@@ -132,7 +132,7 @@ The following is the definition of the Magick::Montage class::
     // Specifies the montage title
     void              title ( const std::string &title_ );
     std::string       title ( void ) const;
-    
+
     // Specifies a montage color to set transparent. This option can
     // be set the same as the background color in order for the
     // thumbnails to appear without a background when rendered on an
@@ -198,4 +198,3 @@ The following is the definition of the Magick::MontageFramed class::
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

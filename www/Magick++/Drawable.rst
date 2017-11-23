@@ -313,7 +313,7 @@ Draw an ellipse using the stroke color and thickness, specified
 origin, x & y radius, as well as specified start and end of arc in
 degrees. If a fill color is specified, then the object is filled::
 
-  DrawableEllipse ( double originX_, double originY_, 
+  DrawableEllipse ( double originX_, double originY_,
                     double radiusX_, double radiusY_,
                     double arcStart_, double arcEnd_ )
 
@@ -1052,4 +1052,3 @@ Draw multiple arc segments::
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

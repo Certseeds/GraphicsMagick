@@ -41,7 +41,7 @@ pixel format.
 ClassType
 ---------
 
-*ClassType* specifies the image storage class. 
+*ClassType* specifies the image storage class.
 
 .. table:: ClassType
 
@@ -181,7 +181,7 @@ algorithm.
    CopyMagentaCompositeOp
    CopyYellowCompositeOp
    CopyBlackCompositeOp     Copy CMYK Black (K) channel.
-   DivideCompositeOp        Change-image / base-image. This is useful for 
+   DivideCompositeOp        Change-image / base-image. This is useful for
                             improving the readability of text on unevenly
                             illuminated photos. (by using a gaussian blurred
                             copy of change-image as base-image)
@@ -336,7 +336,7 @@ gravity is *NorthWestGravity*.
 ImageType
 ---------
 
-*ImageType* indicates the type classification of the image. 
+*ImageType* indicates the type classification of the image.
 
 .. table:: ImageType
 
@@ -680,4 +680,3 @@ enumeration may be specified for a wildcard match.
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

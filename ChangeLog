@@ -5,6 +5,11 @@
 
 2017-11-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Image.cpp (autoOrient): Add method to auto-orient
+	an image so it looks right-side up by default.  Based on patch by
+	Przemysław Sobala submitted as SourceForge patch #53 "Add
+	Magick::Image::autoOrient() method to Magick++ library".
+
 	* www/download.rst: Change "Czechoslovakian ftp mirror" to "Czech
 	ftp mirror".  Resolves SourceForge bug #520 "[web] Download sites:
 	non-existent country".

@@ -34,7 +34,7 @@ The following code fragment illustrates how CoderInfo may be used::
       cout << "true";
     else
       cout << "false";
-    cout << endl; 
+    cout << endl;
 
 The definition of class 'Magick::CoderInfo' is::
 
@@ -45,9 +45,9 @@ The definition of class 'Magick::CoderInfo' is::
     public:
 
       enum MatchType {
-        AnyMatch,	// match any coder
-        TrueMatch,	// match coder if true
-        FalseMatch	// match coder if false
+        AnyMatch,       // match any coder
+        TrueMatch,      // match coder if true
+        FalseMatch      // match coder if false
       };
 
       // Default constructor
@@ -86,4 +86,3 @@ The definition of class 'Magick::CoderInfo' is::
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-

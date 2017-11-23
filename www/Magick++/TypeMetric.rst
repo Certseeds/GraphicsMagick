@@ -38,7 +38,7 @@ The following is the definition of the Magick::TypeMetric class::
   {
     friend class Image;
   public:
-    
+
     TypeMetric ( void );
     ~TypeMetric ( void );
 
@@ -65,4 +65,3 @@ The following is the definition of the Magick::TypeMetric class::
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| Bob Friesenhahn 1999 - 2017
-
