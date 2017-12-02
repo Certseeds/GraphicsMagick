@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -162,13 +162,14 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,pwp_image);
   count=ReadBlob(pwp_image,5,(char *) magick);
-  if ((count == 0) || (LocaleNCompare((char *) magick,"SFW95",5) != 0))
+  if ((count != 5) || (LocaleNCompare((char *) magick,"SFW95",5) != 0))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,pwp_image);
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
   for ( ; ; )
   {
+    (void) memset(magick,0,sizeof(magick));
     for (c=ReadBlobByte(pwp_image); c != EOF; c=ReadBlobByte(pwp_image))
     {
       for (i=0; i < 17; i++)
@@ -178,10 +179,16 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
     }
     if (c == EOF)
-      break;
+      {
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                       clone_info->filename);
+        break;
+      }
     if (LocaleNCompare((char *) (magick+12),"SFW94A",6) != 0)
       {
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,pwp_image);
+        ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                       clone_info->filename);
+        break;
       }
     /*
       Dump SFW image to a temporary file.
@@ -189,12 +196,9 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
     if (file == (FILE *) NULL)
       {
-        char
-          filename[MaxTextExtent];
-
-        (void) strcpy(filename,clone_info->filename);
-        DestroyImageInfo(clone_info);
-        ThrowReaderTemporaryFileException(filename);
+        ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile,
+                       clone_info->filename);
+        break;
       }
     (void) fwrite("SFW94A",1,6,file);
     filesize=(65535L*magick[2]+256L*magick[1]+magick[0]) & 0xFFFFFFFF;
@@ -206,7 +210,11 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
     (void) fclose(file);
     if (c == EOF)
-      break;
+      {
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                       clone_info->filename);
+        break;
+      }
     handler=SetMonitorHandler((MonitorHandler) NULL);
     next_image=ReadImage(clone_info,exception);
     (void) LiberateTemporaryFile(clone_info->filename);
@@ -237,10 +245,13 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   DestroyImageInfo(clone_info);
   CloseBlob(pwp_image);
   DestroyImage(pwp_image);
-  if (EOFBlob(image))
-    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-      image->filename);
-  CloseBlob(image);
+  if (image != (Image *) NULL)
+    {
+      if (EOFBlob(image))
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                       image->filename);
+      CloseBlob(image);
+    }
   return(image);
 }
 

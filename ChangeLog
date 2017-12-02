@@ -1,3 +1,10 @@
+2017-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pwp.c (ReadPWPImage): Eliminate dereference of null image
+	pointer.  Addresses CVE-2017-11640.  Also address access to
+	uninitialized memory.  Problem was reported via email from Petr
+	Gajdos on Wed, 29 Nov 2017.
+
 2017-11-22  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Additional check for wrong bpp CVE-2017-14342.
