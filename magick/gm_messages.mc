@@ -1847,6 +1847,12 @@ Subimage specification returns no images
 .
 
 MessageId       = +1
+SymbolicName    = OptionErrorTileNotBoundedByImageDimensions
+Language        = English
+Tile is not bounded by image dimensions
+.
+
+MessageId       = +1
 SymbolicName    = OptionErrorUnableToAddOrRemoveProfile
 Language        = English
 Unable to add or remove profile

@@ -97,14 +97,15 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
     y;
 
   register long
-    x,
     i;
 
   register PixelPacket
     *q;
 
   size_t
-    count;
+    count,
+    tile_packets,
+    x;
 
   unsigned char
     *scanline = (unsigned char *) NULL;
@@ -124,8 +125,33 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Size %lux%lu", image->columns, image->rows);
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Tile %lux%lu%+ld%+ld, Offset %lu",
+                          image->tile_info.width,image->tile_info.height,
+                          image->tile_info.x,image->tile_info.y,
+                          image->offset);
+  /*
+    There is the option to either require that the tile be within the
+    image bounds or to return only the portion of the tile which is
+    within the image bounds (returned image is smaller than requested
+    tile size).  For the moment we choose the former.
+  */
+  if ((image->tile_info.width > image->columns) ||
+      (image->tile_info.x < 0) ||
+      (image->tile_info.width+image->tile_info.x > image->columns) ||
+      (image->tile_info.height > image->rows) ||
+      (image->tile_info.y < 0) ||
+      (image->tile_info.height+image->tile_info.y > image->rows)
+      )
+    ThrowReaderException(OptionError,TileNotBoundedByImageDimensions,image);
+
   if (image_info->interlace != PartitionInterlace)
     {
       /*
@@ -142,22 +168,16 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
     }
 
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Tile %lux%lu%+ld%+ld",
-                          image->tile_info.width,image->tile_info.height,
-                          image->tile_info.x,image->tile_info.y);
-
   /*
     Allocate memory for a scanline.
   */
 
   if (image->depth <= 8)
-    quantum_size=8;
+    quantum_size=8U;
   else if (image->depth <= 16)
-    quantum_size=16;
+    quantum_size=16U;
   else
-    quantum_size=32;
+    quantum_size=32U;
 
   packet_size=(quantum_size*4)/8;
   if (LocaleCompare(image_info->magick,"CMYKA") == 0)
@@ -166,9 +186,17 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       packet_size=(quantum_size*5)/8;
     }
   scanline=MagickAllocateArray(unsigned char *,
-                               packet_size,image->tile_info.width);
+                               packet_size,image->columns);
   if (scanline == (unsigned char *) NULL)
     ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  tile_packets=(size_t) packet_size*image->tile_info.width;
+  x=(size_t) (packet_size*image->tile_info.x);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "image->tile_info.x=%lu, packet_size=%u, "
+                          "x=%" MAGICK_SIZE_T_F "u",
+                          image->tile_info.x, packet_size,
+                          (MAGICK_SIZE_T) x);
   /*
     Initialize import options.
   */
@@ -193,9 +221,9 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       */
       image->scene++;
       for (y=0; y < (long) image->rows; y++)
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
     }
-  x=(long) (packet_size*image->tile_info.x);
   do
   {
     /*
@@ -214,11 +242,13 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           No interlacing:  CMYKCMYKCMYKCMYKCMYKCMYK...
         */
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -239,7 +269,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         break;
       }
       case LineInterlace:
@@ -249,29 +280,34 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         */
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,CyanQuantum,quantum_size,scanline+x,
                                       &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,MagentaQuantum,quantum_size,scanline+x,
                                       &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,YellowQuantum,quantum_size,scanline+x,
                                       &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,BlackQuantum,quantum_size,scanline+x,
                                       &import_options,0);
           if (image->matte)
             {
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
               (void) ImportImagePixelArea(image,AlphaQuantum,quantum_size,scanline+x,
                                           &import_options,0);
             }
@@ -286,7 +322,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         break;
       }
       case PlaneInterlace:
@@ -307,13 +344,15 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           }
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         i=0;
         span=image->rows*(image->matte ? 5 : 4);
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -331,7 +370,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
@@ -341,10 +381,12 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
               ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -362,7 +404,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
@@ -372,10 +415,12 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
               ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -393,7 +438,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
@@ -403,10 +449,12 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
               ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -424,7 +472,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image->matte)
           {
             /*
@@ -439,12 +488,12 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                   ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
               }
             for (y=0; y < image->tile_info.y; y++)
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
             for (y=0; y < (long) image->rows; y++)
             {
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline)  != tile_packets)
+                break;
               q=GetImagePixels(image,0,y,image->columns,1);
               if (q == (PixelPacket *) NULL)
                 break;
@@ -462,8 +511,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             }
             count=image->tile_info.height-image->rows-image->tile_info.y;
             for (i=0; i < (long) count; i++)
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
           }
         if (image_info->interlace == PartitionInterlace)
           (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
@@ -484,8 +533,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         break;
     if (image_info->interlace == PartitionInterlace)
       break;
-    count=ReadBlob(image,packet_size*image->tile_info.width,scanline);
-    if (count != 0)
+    count=ReadBlob(image,tile_packets,scanline);
+    if (count == tile_packets)
       {
         /*
           Allocate next image structure.

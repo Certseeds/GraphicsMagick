@@ -1,3 +1,11 @@
+2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/cmyk.c (ReadCMYKImage): Fix SourceForge issue #521
+	"heap-buffer-overflow". The requested tile must be within the
+	bounds of the image.  As it happens, 'montage' passes size and
+	tile information which is useless for reading a raw image so it is
+	not possible to read raw CMYK using 'montage'.
+
 2017-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pwp.c (ReadPWPImage): Eliminate dereference of null image

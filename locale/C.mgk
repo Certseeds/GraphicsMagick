@@ -1181,6 +1181,9 @@
       <Message name="UsageError">
         Improper arguments supplied, please see manual
       </Message>
+      <Message name="TileNotBoundedByImageDimensions">
+        Tile is not bounded by image dimensions
+      </Message>
     </Error>
     <FatalError>
       <Message name="InvalidInterlaceType">
