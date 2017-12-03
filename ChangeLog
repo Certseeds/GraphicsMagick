@@ -1,5 +1,8 @@
 2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rgb.c (ReadRGBImage): Fix SourceForge issue #523
+	"heap-buffer-overflow".  Similar issue to cmyk.c.
+
 	* coders/gray.c (ReadGRAYImage): Fix SourceForge issue #522
 	"heap-buffer-overflow".  Similar issue to cmyk.c.
 
