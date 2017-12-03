@@ -1,5 +1,8 @@
 2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cut.c (GetCutColors): Fix Coverity CID 10181: "Null
+	pointer dereferences". SetImagePixels() may return NULL.
+
 	* coders/rgb.c (ReadRGBImage): Fix SourceForge issue #523
 	"heap-buffer-overflow".  Similar issue to cmyk.c.
 
