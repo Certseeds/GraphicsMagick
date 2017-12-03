@@ -1,5 +1,13 @@
 2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Image.cpp (colorMap): Try to eliminate Coverity CID
+	172796 "Dereference after null check" which seems to be bogus.
+
+	* coders/png.c (WriteOnePNGImage): Fix Coverity CID 168053
+	"Dereference after null check".  The check for null and the error
+	report which attempted to use the null value was not needed at
+	all.
+
 	* coders/cut.c (GetCutColors): Fix Coverity CID 10181: "Null
 	pointer dereferences". SetImagePixels() may return NULL.
 

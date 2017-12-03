@@ -2515,7 +2515,8 @@ Magick::Color Magick::Image::colorMap ( const unsigned int index_ ) const
     throwExceptionExplicit( OptionError,
                             "Index out of range");
 
-  return Magick::Color( (imageptr->colormap)[index_] );
+  return (imageptr->colormap ? Magick::Color( (imageptr->colormap)[index_] )
+          : Magick::Color());
 }
 
 // Colormap size (number of colormap entries)
@@ -2548,11 +2549,14 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
                             "Failed to allocate colormap");
 
   // Initialize any new new colormap entries as all black
-  Color black(0,0,0);
-  for( unsigned int i=imageptr->colors; i< (entries_-1); i++ )
-    (imageptr->colormap)[i] = black;
+  if (imageptr->colormap)
+    {
+      Color black(0,0,0);
+      for( unsigned int i=imageptr->colors; i< (entries_-1); i++ )
+        (imageptr->colormap)[i] = black;
 
-  imageptr->colors = entries_;
+      imageptr->colors = entries_;
+    }
 }
 unsigned int Magick::Image::colorMapSize ( void )
 {

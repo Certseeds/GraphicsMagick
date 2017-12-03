@@ -38,6 +38,12 @@
 <p>2017-12-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>Magick++/lib/Image.cpp (colorMap): Try to eliminate Coverity CID
+172796 &quot;Dereference after null check&quot; which seems to be bogus.</li>
+<li>coders/png.c (WriteOnePNGImage): Fix Coverity CID 168053
+&quot;Dereference after null check&quot;.  The check for null and the error
+report which attempted to use the null value was not needed at
+all.</li>
 <li>coders/cut.c (GetCutColors): Fix Coverity CID 10181: &quot;Null
 pointer dereferences&quot;. SetImagePixels() may return NULL.</li>
 <li>coders/rgb.c (ReadRGBImage): Fix SourceForge issue #523
