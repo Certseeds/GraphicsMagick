@@ -570,7 +570,4 @@ MagickDLLDecl void Magick::throwException( ExceptionInfo &exception_,
     default :
       throw ErrorUndefined( message );
     }
-
-  // Should never get here!
-  abort();
 }
