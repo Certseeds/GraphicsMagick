@@ -154,14 +154,15 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     y;
 
   register long
-    i,
-    x;
+    i;
 
   register PixelPacket
     *q;
 
   size_t
-    count;
+    count,
+    tile_packets,
+    x;
 
   unsigned char
     *scanline;
@@ -194,6 +195,27 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   image=AllocateImage(image_info);
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Tile %lux%lu%+ld%+ld, Offset %lu",
+                          image->tile_info.width,image->tile_info.height,
+                          image->tile_info.x,image->tile_info.y,
+                          image->offset);
+  /*
+    There is the option to either require that the tile be within the
+    image bounds or to return only the portion of the tile which is
+    within the image bounds (returned image is smaller than requested
+    tile size).  For the moment we choose the former.
+  */
+  if ((image->tile_info.width > image->columns) ||
+      (image->tile_info.x < 0) ||
+      (image->tile_info.width+image->tile_info.x > image->columns) ||
+      (image->tile_info.height > image->rows) ||
+      (image->tile_info.y < 0) ||
+      (image->tile_info.height+image->tile_info.y > image->rows)
+      )
+    ThrowReaderException(OptionError,TileNotBoundedByImageDimensions,image);
+
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
@@ -229,6 +251,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   scanline=MagickAllocateArray(unsigned char *,packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  tile_packets=(size_t) packet_size*image->tile_info.width;
+  x=(size_t) (packet_size*image->tile_info.x);
   /*
     Initialize import options.
   */
@@ -237,19 +261,12 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     import_options.endian=image_info->endian;
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Depth: %u bits, "
-                          "Type: %s, "
-                          "Samples/Pixel: %u, "
-                          "Endian %s, "
-                          "Tile: %lux%lu%+ld%+ld",
+                          "Depth: %u bits, Type: %s, "
+                          "Samples/Pixel: %u, Endian %s",
                           quantum_size,
                           QuantumTypeToString(quantum_type),
                           samples_per_pixel,
-                          EndianTypeToString(import_options.endian),
-                          image->tile_info.width,
-                          image->tile_info.height,
-                          image->tile_info.x,
-                          image->tile_info.y);
+                          EndianTypeToString(import_options.endian));
   /*
     Support starting at intermediate image frame.
   */
@@ -261,9 +278,9 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
       */
       image->scene++;
       for (y=0; y < (long) image->rows; y++)
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
     }
-  x=(long) (packet_size*image->tile_info.x);
   do
   {
     /*
@@ -273,7 +290,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     for (y=0; y < image->tile_info.y; y++)
-      (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+      if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+        break;
     /*
       Support GRAYA with matte channel
     */
@@ -282,7 +300,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     for (y=0; y < (long) image->rows; y++)
     {
       if ((y > 0) || (image->previous == (Image *) NULL))
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
       q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
@@ -302,7 +321,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     image->is_grayscale=is_grayscale;
     count=image->tile_info.height-image->rows-image->tile_info.y;
     for (j=0; j < count; j++)
-      (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+      if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+        break;
     if (EOFBlob(image))
       {
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
@@ -315,8 +335,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     if (image_info->subrange != 0)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
-    count=ReadBlob(image,packet_size*image->tile_info.width,scanline);
-    if (count != 0)
+    count=ReadBlob(image,tile_packets,scanline);
+    if (count == tile_packets)
       {
         /*
           Allocate next image structure.

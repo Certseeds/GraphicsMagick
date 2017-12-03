@@ -1,5 +1,8 @@
 2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/gray.c (ReadGRAYImage): Fix SourceForge issue #522
+	"heap-buffer-overflow".  Similar issue to cmyk.c.
+
 	* coders/cmyk.c (ReadCMYKImage): Fix SourceForge issue #521
 	"heap-buffer-overflow". The requested tile must be within the
 	bounds of the image.  As it happens, 'montage' passes size and
