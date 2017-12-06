@@ -1,3 +1,9 @@
+2017-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadElement): Eliminate huge memory allocation
+	based on bogus length value. Addresses CVE-2017-12140. Problem was
+	reported via email from Petr Gajdos on Tue, 5 Dec 2017.
+
 2017-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Image.cpp (colorMap): Try to eliminate Coverity CID

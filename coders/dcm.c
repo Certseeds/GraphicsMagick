@@ -3545,7 +3545,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
   dcm->datum=0;
   if (dcm->quantum == 4)
     {
-      dcm->datum=(long) dcm->funcReadLong(image);
+      dcm->datum=dcm->funcReadLong(image);
       if (EOFBlob(image))
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -3634,7 +3634,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
     }
   else if ((dcm->length == 1) && (dcm->quantum == 4))
     {
-      dcm->datum=(long) dcm->funcReadLong(image);
+      dcm->datum=dcm->funcReadLong(image);
       if (EOFBlob(image))
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -3646,6 +3646,12 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
       size_t
         size;
 
+      if (((magick_off_t) dcm->length < 0) ||
+          ((magick_off_t) dcm->length > GetBlobSize(image)))
+        {
+          ThrowException(exception,CorruptImageError,InsufficientImageDataInFile,image->filename);
+          return MagickFail;
+        }
       if (dcm->length > ((~0UL)/dcm->quantum))
         {
           ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
@@ -3657,7 +3663,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
-      size=dcm->quantum*dcm->length;
+      size=MagickArraySize(dcm->quantum,dcm->length);
       if (ReadBlob(image,size,(char *) dcm->data) != size)
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
