@@ -7033,6 +7033,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
               unsigned int
                 mask;
 
+              MagickBool
+                opaque = MagickTrue;
+
               mask=0xffff;
               if (ping_bit_depth == 8)
                 mask=0x00ff;
@@ -7055,14 +7058,16 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                   for (x=(long) image->columns; x > 0; x--)
                     {
                       if (p->opacity != OpaqueOpacity)
-                        break;
+                        {
+                          opaque=MagickFalse;
+                          break;
+                        }
                       p++;
                     }
-                  if (p->opacity != OpaqueOpacity)
+                  if (!opaque)
                     break;
                 }
-              if ((p != (const PixelPacket *) NULL) &&
-                  (p->opacity != OpaqueOpacity))
+              if ((!opaque) && (p != (const PixelPacket *) NULL))
                 {
                   ping_trans_color.red=ScaleQuantumToShort(p->red)&mask;
                   ping_trans_color.green=ScaleQuantumToShort(p->green)

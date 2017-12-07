@@ -1,3 +1,10 @@
+2017-12-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (WriteOnePNGImage): Fix heap read access outside of
+	allocated PixelPacket array while testing pixels for opacity.
+	Resolves SourceForge issue #526 "heap-buffer-overflow in
+	WriteOnePNGImage".
+
 2017-12-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pnm.c (WritePNMImage): Fix SourceForge bug #525
