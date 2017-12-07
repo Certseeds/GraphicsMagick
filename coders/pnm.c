@@ -859,19 +859,18 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             sample_scale=MaxRGBDouble/sample_max;
             use_scaling=(MaxRGB != sample_max);
             bytes_per_row=0;
+
             if (1 == samples_per_pixel)
               {
                 if (1 == bits_per_sample)
                   {
                     /* PBM */
-                    bytes_per_row=((image->columns+7U) >> 3);
                     import_options.grayscale_miniswhite=MagickTrue;
                     quantum_type=GrayQuantum;
                   }
                 else
                   {
                     /* PGM & XV_332 */
-                    bytes_per_row=MagickArraySize(((bits_per_sample+7U)/8U),image->columns);
                     if ((XV_332_Format == format) && (image->storage_class == PseudoClass))
                       {
                         quantum_type=IndexQuantum;
@@ -882,31 +881,57 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       }
                   }
               }
+            else if (2 == samples_per_pixel && image->matte)
+              {
+                quantum_type=GrayAlphaQuantum;
+              }
+            else if (3 == samples_per_pixel)
+              {
+                /* PPM */
+                quantum_type=RGBQuantum;
+              }
+            else if (4 == samples_per_pixel)
+              {
+                if (CMYKColorspace == image->colorspace)
+                  quantum_type=CMYKQuantum;
+                else
+                  quantum_type=RGBAQuantum;
+              }
+            else if (5 == samples_per_pixel)
+              {
+                if (CMYKColorspace == image->colorspace)
+                  quantum_type=CMYKAQuantum;
+              }
+
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Import Quantum Type: %s",
+                                    QuantumTypeToString(quantum_type));
+
+            samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Samples/Pixel: %u", samples_per_pixel);
+
+            if (1 == bits_per_sample)
+              {
+                /* bytes_per_row=(((size_t) image->columns*samples_per_pixel+7) >> 3); */
+                bytes_per_row=MagickArraySize(image->columns,samples_per_pixel);
+                if (bytes_per_row)
+                  bytes_per_row += 7;
+                if (bytes_per_row)
+                  bytes_per_row >>= 3;
+              }
             else
               {
-                bytes_per_row=MagickArraySize((((bits_per_sample+7)/8)*samples_per_pixel),
-                                              image->columns);
-                if (3 == samples_per_pixel)
-                  {
-                    /* PPM */
-                    quantum_type=RGBQuantum;
-                  }
-                else if (4 == samples_per_pixel)
-                  {
-                    if (CMYKColorspace == image->colorspace)
-                      quantum_type=CMYKQuantum;
-                    else
-                      quantum_type=RGBAQuantum;
-                  }
-                else if (5 == samples_per_pixel)
-                  {
-                    if (CMYKColorspace == image->colorspace)
-                      quantum_type=CMYKAQuantum;
-                  }
+                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                                              samples_per_pixel,image->columns);
               }
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "using %s QuantumType",
-                                  QuantumTypeToString(quantum_type));
+
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Bytes/Row: %" MAGICK_SIZE_T_F "u",
+                                    (MAGICK_SIZE_T) bytes_per_row);
 
             if (1 == samples_per_pixel)
               {
@@ -1851,13 +1876,35 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                       quantum_type=RGBQuantum;
                   }
               }
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Export Quantum Type: %s",
+                                    QuantumTypeToString(quantum_type));
 
             samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Samples/Pixel: %u", samples_per_pixel);
 
             if (1 == bits_per_sample)
-              bytes_per_row=((image->columns+7) >> 3);
+              {
+                /* bytes_per_row=(((size_t) image->columns*samples_per_pixel+7) >> 3); */
+                bytes_per_row=MagickArraySize(image->columns,samples_per_pixel);
+                if (bytes_per_row)
+                  bytes_per_row += 7;
+                if (bytes_per_row)
+                  bytes_per_row >>= 3;
+              }
             else
-              bytes_per_row=(((bits_per_sample+7)/8)*samples_per_pixel)*image->columns;
+              {
+                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                                              samples_per_pixel,image->columns);
+              }
+
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Bytes/Row: %" MAGICK_SIZE_T_F "u",
+                                    (MAGICK_SIZE_T) bytes_per_row);
 
             ExportPixelAreaOptionsInit(&export_options);
             export_options.grayscale_miniswhite=grayscale_miniswhite;
@@ -1903,9 +1950,18 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                 else if (CMYKAQuantum == quantum_type)
                   tuple_type="CMYK_ALPHA";
 
-                FormatString(buffer,"WIDTH %lu\nHEIGHT %lu\nDEPTH %u\nMAXVAL %lu\nTUPLTYPE %s\n",
+                FormatString(buffer,"WIDTH %lu\nHEIGHT %lu\nDEPTH %u"
+                             "\nMAXVAL %lu\nTUPLTYPE %s\n",
                              image->columns,image->rows,samples_per_pixel,
                              MaxValueGivenBits(bits_per_sample),tuple_type);
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "PAM Header: WIDTH %lu, HEIGHT %lu, "
+                                        "DEPTH %u, MAXVAL %lu, TUPLTYPE %s",
+                                        image->columns,
+                                        image->rows,samples_per_pixel,
+                                        MaxValueGivenBits(bits_per_sample),
+                                        tuple_type);
                 WriteBlobString(image,buffer);
 
                 (void) WriteBlobString(image,"ENDHDR\n");

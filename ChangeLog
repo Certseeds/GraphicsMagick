@@ -1,3 +1,8 @@
+2017-12-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pnm.c (WritePNMImage): Fix SourceForge bug #525
+	"heap-buffer-overflow in MagickBitStreamMSBWrite".
+
 2017-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_ReadElement): Eliminate huge memory allocation
