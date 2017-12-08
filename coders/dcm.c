@@ -3646,8 +3646,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
       size_t
         size;
 
-      if (((magick_off_t) dcm->length < 0) ||
-          ((magick_off_t) dcm->length > GetBlobSize(image)))
+      if (dcm->length > ((size_t) GetBlobSize(image)))
         {
           ThrowException(exception,CorruptImageError,InsufficientImageDataInFile,image->filename);
           return MagickFail;

@@ -1,3 +1,9 @@
+2017-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadElement): Change size checks addressing
+	CVE-2017-12140 to be based on size_t rather than magick_off_t due
+	to apparent instability of the previous check across compilers.
+
 2017-12-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (WriteOnePNGImage): Fix heap read access outside of
