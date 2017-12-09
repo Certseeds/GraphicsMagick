@@ -1286,7 +1286,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "id=\"%s\" version=%g class=%s colorspace=%s compression=%s matte=%s "
-			  "columns=%lu rows=%lu depth=%u",
+                          "columns=%lu rows=%lu depth=%u",
                           id,version,
                           ClassTypeToString(image->storage_class),
                           ColorspaceTypeToString(image->colorspace),
@@ -1358,7 +1358,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
           *p++=c;
         } while (c != '\0');
       }
- 
+
     /*
       Attached profiles.
     */
@@ -1531,8 +1531,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 #if defined(HasZLIB)
       case ZipCompression:
         {
-	  int
-	    code=0;
+          int
+            code=0;
 
           for (y=0; y < (long) image->rows; y++)
             {
@@ -1608,7 +1608,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           break;
@@ -1617,8 +1617,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 #if defined(HasBZLIB)
       case BZipCompression:
         {
-	  int
-	    code=0;
+          int
+            code=0;
 
           for (y=0; y < (long) image->rows; y++)
             {
@@ -1685,7 +1685,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           break;
@@ -1715,7 +1715,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
 
             }
@@ -1737,7 +1737,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           break;
@@ -2150,13 +2150,13 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 
   ImageProfileIterator
     profile_iterator;
-  
+
   const char
     *profile_name;
-  
+
   const unsigned char
     *profile_info;
-  
+
   size_t
     profile_length;
 
@@ -2589,8 +2589,8 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(HasZLIB)
         case ZipCompression:
         {
-	  int
-	    code;
+          int
+            code;
 
           if (y == 0)
             {
@@ -2638,8 +2638,8 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(HasBZLIB)
         case BZipCompression:
         {
-	  int
-	    code;
+          int
+            code;
 
           if (y == 0)
             {
@@ -2726,7 +2726,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                       SaveImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     MagickFreeMemory(pixels);

@@ -1614,7 +1614,7 @@ static size_t GetIPTCStream(const unsigned char *blob, size_t blob_length, size_
   size_t
     tag_length,
     blob_remaining;
-    
+
   p=blob;
   blob_remaining=blob_length;
   if ((*p == 0x1c) && (*(p+1) == 0x02))
@@ -1646,7 +1646,7 @@ static size_t GetIPTCStream(const unsigned char *blob, size_t blob_length, size_
     if (c >= blob_remaining) break;
     p+=c;
     blob_remaining-=c;
-      
+
     /* Read data length */
     if (blob_remaining < 4) break;
     tag_length=(((unsigned long)*p) << 24) | (((unsigned long)*(p+1)) << 16) |
@@ -1669,7 +1669,7 @@ static size_t GetIPTCStream(const unsigned char *blob, size_t blob_length, size_
     p+=tag_length;
     blob_remaining-=tag_length;
   }
-  
+
   /* Find the beginning of the IPTC info */
   p=blob;
   tag_length=0;
@@ -1733,11 +1733,11 @@ iptc_find:
     info_length++;
     if (c & (unsigned char) 0x80)
       {
-	/* long format */
-	tag_length=0;
-	for (i=0; i < 4; i++)
+        /* long format */
+        tag_length=0;
+        for (i=0; i < 4; i++)
         {
-	  tag_length <<= 8;
+          tag_length <<= 8;
           tag_length |= (*p++);
           blob_length--;
           if (blob_length == 0)
@@ -1747,7 +1747,7 @@ iptc_find:
       }
     else
       {
-	/* short format */
+        /* short format */
         tag_length=((long) c) << 8;
         c=(*p++);
         blob_length--;

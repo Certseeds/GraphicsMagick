@@ -53,7 +53,7 @@
   Typedef declarations.
 */
 typedef enum
-{ 
+{
   DisabledOutput = 0x0000,
   UndefinedOutput = 0x0000,
   StdoutOutput = 0x0001,
@@ -499,10 +499,10 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
     {
       unsigned int
         i;
-      
+
       unsigned int
         enabled;
-      
+
       /* first translate the base type of the event to a mask */
       enabled=False;
       for (i=0; eventmask_map[i].name != 0; i++)

@@ -299,7 +299,7 @@ Magick::DrawableBase* Magick::DrawableBezier::copy() const
 }
 
 //
-//Clip Path 
+//Clip Path
 //
 
 // Pop (terminate) Clip path definition
@@ -358,7 +358,7 @@ Magick::DrawableClipPath::~DrawableClipPath( void )
 }
 void Magick::DrawableClipPath::operator()( MagickLib::DrawContext context_ ) const
 {
-	DrawSetClipPath( context_, _id.c_str());
+        DrawSetClipPath( context_, _id.c_str());
 }
 Magick::DrawableBase* Magick::DrawableClipPath::copy() const
 {
@@ -1777,7 +1777,7 @@ MagickDLLDecl int Magick::operator >
 {
   return ( 0 );
 }
-MagickDLLDecl int Magick::operator < 
+MagickDLLDecl int Magick::operator <
 ( const Magick::PathQuadraticCurvetoArgs& /*left_*/,
   const Magick::PathQuadraticCurvetoArgs& /*right_*/ )
 {
@@ -1832,7 +1832,7 @@ Magick::PathQuadraticCurvetoAbs::PathQuadraticCurvetoAbs
   : _args(1,args_)
 {
 }
-Magick::PathQuadraticCurvetoAbs::PathQuadraticCurvetoAbs 
+Magick::PathQuadraticCurvetoAbs::PathQuadraticCurvetoAbs
 ( const PathQuadraticCurvetoArgsList &args_ )
   : _args(args_)
 {

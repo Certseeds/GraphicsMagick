@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -115,23 +115,21 @@ static unsigned int IsSFW(const unsigned char *magick,const size_t length)
 */
 
 static unsigned char *SFWScan(const unsigned char *p,const unsigned char *q,
-			      const unsigned char *target,const size_t length)
+                              const unsigned char *target,const size_t length)
 {
   register size_t
     i;
 
-  if (p+length < q)
+  while ((p+length) < q)
     {
-      while( p < q )
-	{
-	  for (i=0; i < length; i++)
-	    if (p[i] != target[i])
-	      break;
-	  if (i == length)
-	    return((unsigned char *) p);
-	  p++;
-	}
+      for (i=0; i < length; i++)
+        if (p[i] != target[i])
+          break;
+      if (i == length)
+        return((unsigned char *) p);
+      p++;
     }
+
   return((unsigned char *) NULL);
 }
 
@@ -251,7 +249,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if ((magick_off_t) buffer_size != blob_size)
       buffer_size=0;
   }
-  if (buffer_size < 7)
+  if (buffer_size < 141)
     {
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
@@ -269,8 +267,9 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Find the start of the JFIF data
   */
   header=SFWScan(buffer,buffer_end,
-		 (unsigned char *)"\377\310\377\320",4);
-  if (header == (unsigned char *) NULL)
+                 (unsigned char *)"\377\310\377\320",4);
+  if ((header == (unsigned char *) NULL) ||
+      (header+6+134 > buffer_end)) /* 134 ~ Minimum JFIF size */
     {
       MagickFreeMemory(buffer);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
@@ -290,8 +289,8 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   {
     if (offset+4 > buffer_end)
       {
-	MagickFreeMemory(buffer);
-	ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
+        MagickFreeMemory(buffer);
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
       }
     TranslateSFWMarker(offset);
     if (offset[1] == 0xda)
@@ -402,6 +401,7 @@ ModuleExport void RegisterSFWImage(void)
   entry->adjoin=False;
   entry->description="Seattle Film Works";
   entry->module="SFW";
+  entry->seekable_stream=True;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }

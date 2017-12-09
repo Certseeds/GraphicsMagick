@@ -705,7 +705,7 @@ static void output_switches(Image *image,struct locale_str *locstr, int indent, 
         if (flag)
           {
             FormatString(message, "\n%*scase '%c':  case '%c':\n",
-			 indent, "", tolower((int) *xl->name), toupper((int) *xl->name));
+                         indent, "", tolower((int) *xl->name), toupper((int) *xl->name));
             (void) WriteBlobString(image,message);
           }
 
@@ -1114,4 +1114,3 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
   CloseBlob(image);
   return(True);
 }
-

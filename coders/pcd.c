@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -562,7 +562,10 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   overview=LocaleNCompare((char *) header,"PCD_OPA",7) == 0;
   if ((count == 0) ||
       ((LocaleNCompare((char *) header+0x800,"PCD",3) != 0) && !overview))
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    {
+      MagickFreeMemory(header);
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    }
   rotate=header[0x0e02] & 0x03;
   number_images=((header[10] << 8) | header[11]) & 0xFFFF;
   MagickFreeMemory(header);
@@ -618,8 +621,14 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   chroma2=MagickAllocateMemory(unsigned char *,number_pixels+1);
   luma=MagickAllocateMemory(unsigned char *,number_pixels+1);
   if ((chroma1 == (unsigned char *) NULL) ||
-      (chroma2 == (unsigned char *) NULL) || (luma == (unsigned char *) NULL))
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      (chroma2 == (unsigned char *) NULL) ||
+      (luma == (unsigned char *) NULL))
+    {
+      MagickFreeMemory(chroma1);
+      MagickFreeMemory(chroma2);
+      MagickFreeMemory(luma);
+      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
   /*
     Advance to image data.
   */
@@ -715,7 +724,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) SetMonitorHandler(handler);
         if (!MagickMonitorFormatted(j-1,number_images,&image->exception,
                                     LoadImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
       }
       MagickFreeMemory(chroma2);
@@ -804,7 +813,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                   image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   MagickFreeMemory(chroma2);
@@ -1059,7 +1068,7 @@ static unsigned int WritePCDTile(const ImageInfo *image_info,
     if (QuantumTick(y,tile_image->rows))
       if (!MagickMonitorFormatted(y,tile_image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   for (i=0; i < 0x800; i++)

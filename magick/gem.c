@@ -175,8 +175,8 @@ MagickExport double ExpandAffine(const AffineMatrix *affine)
 #define TauGaussian    20.0
 
 MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
-					      const NoiseType noise_type,
-					      MagickRandomKernel *kernel)
+                                              const NoiseType noise_type,
+                                              MagickRandomKernel *kernel)
 {
   double
     alpha,
@@ -317,7 +317,7 @@ MagickExport Quantum GenerateNoise(const Quantum pixel,
     value;
 
   value=(double) pixel+GenerateDifferentialNoise(pixel,noise_type,
-						 AcquireMagickRandomKernel());
+                                                 AcquireMagickRandomKernel());
   return (RoundDoubleToQuantum(value));
 }
 
@@ -501,7 +501,7 @@ MagickExport void HSLTransform(const double hue,const double saturation,
       vsf=(v-y)*hue_fract;
       x=y+vsf;
       z=v-vsf;
-      
+
       switch (sextant)
         {
         case 0: r=v; g=x; b=y; break;
@@ -642,8 +642,8 @@ MagickExport void HWBTransform(const double hue,const double whiteness,
 */
 
 MagickExport void Hull(const long x_offset,const long y_offset,
-		       const unsigned long columns,const unsigned long rows,Quantum *f,Quantum *g,
-		       const int polarity)
+                       const unsigned long columns,const unsigned long rows,Quantum *f,Quantum *g,
+                       const int polarity)
 {
 #if QuantumDepth > 16
   typedef double SignedQuantum;
@@ -679,37 +679,37 @@ MagickExport void Hull(const long x_offset,const long y_offset,
   for (y=0; y < (long) rows; y++)
     {
       SignedQuantum
-	v;
+        v;
 
       unsigned long
-	x;
+        x;
 
       unsigned int
-	index;
+        index;
 
       index=(2*y+1)+y*columns;
       if (polarity > 0)
-	{
-	  for (x=columns ; x != 0; x--)
-	    {
-	      v=(p[index]);
-	      if (r[index] >= (v+ScaleCharToQuantum(2)))
-		v+=ScaleCharToQuantum(1);
-	      q[index]=(Quantum) v;
-	      index++;
-	    }
-	}
+        {
+          for (x=columns ; x != 0; x--)
+            {
+              v=(p[index]);
+              if (r[index] >= (v+ScaleCharToQuantum(2)))
+                v+=ScaleCharToQuantum(1);
+              q[index]=(Quantum) v;
+              index++;
+            }
+        }
       else
-	{
-	  for (x=columns ; x != 0; x--)
-	    {
-	      v=(p[index]);
-	      if (r[index] <= (v-(long) ScaleCharToQuantum(2)))
-		v-=(long) ScaleCharToQuantum(1);
-	      q[index]=(Quantum) v;
-	      index++;
-	    }
-	}
+        {
+          for (x=columns ; x != 0; x--)
+            {
+              v=(p[index]);
+              if (r[index] <= (v-(long) ScaleCharToQuantum(2)))
+                v-=(long) ScaleCharToQuantum(1);
+              q[index]=(Quantum) v;
+              index++;
+            }
+        }
     }
   p=f+(columns+2);
   q=g+(columns+2);
@@ -729,37 +729,37 @@ MagickExport void Hull(const long x_offset,const long y_offset,
   for (y=0; y < (long) rows; y++)
     {
       SignedQuantum
-	v;
+        v;
 
       unsigned long
-	x;
+        x;
 
       unsigned int
-	index;
+        index;
 
       index=(2*y+1)+y*columns;
       if (polarity > 0)
-	{
-	  for (x=columns ; x != 0; x--)
-	    {
-	      v=(q[index]);
-	      if ((s[index] >= (v+ScaleCharToQuantum(2))) && (r[index] > v))
-		v+=ScaleCharToQuantum(1);
-	      p[index]=(Quantum) v;
-	      index++;
-	    }
-	}
+        {
+          for (x=columns ; x != 0; x--)
+            {
+              v=(q[index]);
+              if ((s[index] >= (v+ScaleCharToQuantum(2))) && (r[index] > v))
+                v+=ScaleCharToQuantum(1);
+              p[index]=(Quantum) v;
+              index++;
+            }
+        }
       else
-	{
-	  for (x=columns ; x != 0; x--)
-	    {
-	      v=(q[index]);
-	      if ((s[index] <= (v-(long) ScaleCharToQuantum(2))) && (r[index] < v))
-		v-=(long) ScaleCharToQuantum(1);
-	      p[index]=(Quantum) v;
-	      index++;
-	    }
-	}
+        {
+          for (x=columns ; x != 0; x--)
+            {
+              v=(q[index]);
+              if ((s[index] <= (v-(long) ScaleCharToQuantum(2))) && (r[index] < v))
+                v-=(long) ScaleCharToQuantum(1);
+              p[index]=(Quantum) v;
+              index++;
+            }
+        }
     }
 }
 

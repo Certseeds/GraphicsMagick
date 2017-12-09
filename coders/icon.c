@@ -61,11 +61,11 @@ typedef struct _IconDirEntry
     height,
     colors,
     reserved;
-  
+
   magick_uint16_t
     planes,
     bits_per_pixel;
-  
+
   magick_uint32_t
     size,
     offset;
@@ -80,7 +80,7 @@ typedef struct _IconFile
     reserved,
     resource_type, /* 1 = ICON, 2 = CURSOR */
     count;
-  
+
   IconDirEntry
     directory[MaxIcons];
 } IconFile;

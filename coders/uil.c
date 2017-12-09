@@ -83,6 +83,7 @@ ModuleExport void RegisterUILImage(void)
   entry->adjoin=False;
   entry->description="X-Motif UIL table";
   entry->module="UIL";
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
@@ -231,6 +232,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
       colors=image->colors;
       if (transparent)
         {
+          i=0;
           colors++;
           for (y=0; y < (long) image->rows; y++)
           {
@@ -265,7 +267,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
   GetPathComponent(image->filename,BasePath,basename);
   FormatString(buffer,"value\n  %.1024s_ct : color_table(\n",basename);
   (void) WriteBlobString(image,buffer);
-  for (i=0; i < (long) colors; i++)
+  for (i=0; i < (long) image->colors; i++)
   {
     /*
       Define UIL color.
@@ -333,7 +335,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   CloseBlob(image);

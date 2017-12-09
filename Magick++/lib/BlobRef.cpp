@@ -20,7 +20,7 @@
 
 // Construct with data, making private copy of data
 Magick::BlobRef::BlobRef ( const void* data_,
-			   size_t length_ )
+                           size_t length_ )
   : _data(0),
     _length(length_),
     _allocator(Magick::Blob::NewAllocator),

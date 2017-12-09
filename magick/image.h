@@ -2,11 +2,11 @@
   Copyright (C) 2003 - 2015 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Image Methods.
 */
 #ifndef _MAGICK_IMAGE_H
@@ -393,17 +393,18 @@ typedef enum
 /*
   Image orientation.  Based on TIFF standard values (also EXIF).
 */
-typedef enum               /* Line direction / Frame Direction */
-{                          /* -------------- / --------------- */
-  UndefinedOrientation,    /* Unknown        / Unknown         */
-  TopLeftOrientation,      /* Left to right  / Top to bottom   */
-  TopRightOrientation,     /* Right to left  / Top to bottom   */
-  BottomRightOrientation,  /* Right to left  / Bottom to top   */
-  BottomLeftOrientation,   /* Left to right  / Bottom to top   */
-  LeftTopOrientation,      /* Top to bottom  / Left to right   */
-  RightTopOrientation,     /* Top to bottom  / Right to left   */
-  RightBottomOrientation,  /* Bottom to top  / Right to left   */
-  LeftBottomOrientation    /* Bottom to top  / Left to right   */
+typedef enum               /*    Exif     /  Row 0   / Column 0 */
+                           /* Orientation /  edge    /   edge   */
+{                          /* ----------- / -------- / -------- */
+  UndefinedOrientation,    /*      0      / Unknown  / Unknown  */
+  TopLeftOrientation,      /*      1      / Left     / Top      */
+  TopRightOrientation,     /*      2      / Right    / Top      */
+  BottomRightOrientation,  /*      3      / Right    / Bottom   */
+  BottomLeftOrientation,   /*      4      / Left     / Bottom   */
+  LeftTopOrientation,      /*      5      / Top      / Left     */
+  RightTopOrientation,     /*      6      / Top      / Right    */
+  RightBottomOrientation,  /*      7      / Bottom   / Right    */
+  LeftBottomOrientation    /*      8      / Bottom   / Left     */
 } OrientationType;
 
 typedef enum
@@ -682,7 +683,7 @@ typedef struct _Image
 
   MagickBool
     dither,             /* True if image is to be dithered */
-    matte;              /* True if image has an opacity (alpha) channel */ 
+    matte;              /* True if image has an opacity (alpha) channel */
 
   unsigned long
     columns,            /* Number of image columns */
@@ -1047,7 +1048,7 @@ extern MagickExport MagickPassFail
   SetImageEx(Image *image,const Quantum opacity,ExceptionInfo *exception),
   SetImageColor(Image *image,const PixelPacket *pixel),
   SetImageColorRegion(Image *image,long x,long y,unsigned long width,
-		      unsigned long height,const PixelPacket *pixel),
+                      unsigned long height,const PixelPacket *pixel),
   SetImageClipMask(Image *image,const Image *clip_mask),
   SetImageDepth(Image *image,const unsigned long),
   SetImageInfo(ImageInfo *image_info,const unsigned int flags,ExceptionInfo *exception),

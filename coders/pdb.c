@@ -516,7 +516,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                       image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
       }
       break;
@@ -557,7 +557,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                       image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
       }
       break;
@@ -590,7 +590,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                       image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
       }
       break;
@@ -788,12 +788,12 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
     *scanline = (unsigned char *) NULL;
 
   unsigned int
-    bits_per_pixel,    
+    bits_per_pixel,
     packet_size,
     status;
 
   size_t
-	packets;
+        packets;
 
   unsigned long
     literal,
@@ -957,7 +957,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   q=EncodeRLE(q,buffer,literal,repeat);

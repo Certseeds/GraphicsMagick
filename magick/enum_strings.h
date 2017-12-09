@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
- 
+
   extern MagickExport ChannelType StringToChannelType(const char *option);
   extern MagickExport ColorspaceType StringToColorspaceType(const char *colorspace_string);
   extern MagickExport CompositeOperator StringToCompositeOperator(const char *option);

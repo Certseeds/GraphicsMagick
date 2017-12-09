@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -76,7 +76,7 @@ typedef struct _DIBInfo
     blue_mask,
     alpha_mask;
 
-  long
+  magick_int32_t
     colorspace;
 
   PointInfo
@@ -107,7 +107,7 @@ static void LogDIBInfo(const DIBInfo *dib_info)
                         "    Bits Per Pixel:       %u\n"
                         "    Compression:          %u\n"
                         "    Size Of Bitmap:       %u\n"
-                        "    Horzontal Resolution: %u\n"
+                        "    Horizontal Resolution:%u\n"
                         "    Vertical Resolution:  %u\n"
                         "    Colors Used:          %u\n"
                         "    Colors Important:     %u",
@@ -156,19 +156,23 @@ static void LogDIBInfo(const DIBInfo *dib_info)
 %    o pixels:  The address of a byte (8 bits) array of pixel data created by
 %      the decoding process.
 %
+%    o pixels_size: The size of the allocated buffer array.
+%
 %
 */
 static unsigned int DecodeImage(Image *image,const unsigned long compression,
-  unsigned char *pixels)
+                                unsigned char *pixels, const size_t pixels_size)
 {
-  long
-    byte,
-    count,
+  unsigned long
+    x,
     y;
 
-  register long
-    i,
-    x;
+  unsigned int
+    i;
+
+  int
+    byte,
+    count;
 
   register unsigned char
     *q;
@@ -178,108 +182,145 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
 
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
-  (void) memset(pixels,0,image->columns*image->rows);
+  (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
   q=pixels;
-  end=pixels + (size_t) image->columns*image->rows;
-  for (y=0; y < (long) image->rows; )
-  {
-    if (q < pixels || q  >= end)
-      break;
-    count=ReadBlobByte(image);
-    if (count == EOF)
-      break;
-    if (count != 0)
-      {
-        count=Min(count, end - q);
-        /*
-          Encoded mode.
-        */
-        byte=ReadBlobByte(image);
-        for (i=0; i < count; i++)
+  end=pixels + pixels_size;
+  /*
+    Decompress sufficient data to support the number of pixels (or
+    rows) in the image and then return.
+
+    Do not wait to read the final EOL and EOI markers (if not yet
+    encountered) since we always read this marker just before we
+    return.
+  */
+  for (y=0; y < image->rows; )
+    {
+      if (q < pixels || q >= end)
         {
-          if (compression == 1)
-            *q++=(unsigned char) byte;
-          else
-            *q++=(unsigned char)
-              ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-          x++;
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Decode buffer full (y=%lu, "
+                                  "pixels_size=%" MAGICK_SIZE_T_F "u, "
+                                  "pixels=%p, q=%p, end=%p)",
+                                  y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
+          break;
         }
-      }
-    else
-      {
-        /*
-          Escape mode.
-        */
-        count=ReadBlobByte(image);
-        if (count == 0x01)
-          return(True);
-        switch ((int) count)
+      count=ReadBlobByte(image);
+      if (count == EOF)
+        return MagickFail;
+      if (count > 0)
         {
-          case 0x00:
-          {
-            /*
-              End of line.
-            */
-            x=0;
-            y++;
-            q=pixels+y*image->columns;
-            break;
-          }
-          case 0x02:
-          {
-            /*
-              Delta mode.
-            */
-            x+=ReadBlobByte(image);
-            y+=ReadBlobByte(image);
-            q=pixels+y*image->columns+x;
-            break;
-          }
-          default:
-          {
-            /*
-              Absolute mode.
-            */
-      	    count=Min(count, end - q);
-            for (i=0; i < count; i++)
+          count=Min(count, end - q);
+          /*
+            Encoded mode.
+          */
+          byte=ReadBlobByte(image);
+          if (byte == EOF)
+            return MagickFail;
+          for (i=0; i < (unsigned int) count; i++)
             {
               if (compression == 1)
-                *q++=ReadBlobByte(image);
+                *q++=(unsigned char) byte;
               else
-                {
-                  if ((i & 0x01) == 0)
-                    byte=ReadBlobByte(image);
-                  *q++=(unsigned char)
-                    ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-                }
+                *q++=(unsigned char)
+                  ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
               x++;
             }
-            /*
-              Read pad byte.
-            */
-            if (compression == 1)
-              {
-                if (count & 0x01)
-                  (void) ReadBlobByte(image);
-              }
-            else
-              if (((count & 0x03) == 1) || ((count & 0x03) == 2))
-                (void) ReadBlobByte(image);
-            break;
-          }
         }
-      }
-    if (QuantumTick(y,image->rows))
-      if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                  LoadImageText,image->filename,
-				  image->columns,image->rows))
-        break;
-  }
+      else
+        {
+          /*
+            Escape mode.
+          */
+          count=ReadBlobByte(image);
+          if (count == EOF)
+            return MagickFail;
+          if (count == 0x01)
+            return(MagickPass);
+          switch (count)
+            {
+            case 0x00:
+              {
+                /*
+                  End of line.
+                */
+                x=0;
+                y++;
+                q=pixels+y*image->columns;
+                break;
+              }
+            case 0x02:
+              {
+                /*
+                  Delta mode.
+                */
+                byte=ReadBlobByte(image);
+                if (byte == EOF)
+                  return MagickFail;
+                x+=byte;
+                byte=ReadBlobByte(image);
+                if (byte == EOF)
+                  return MagickFail;
+                y+=byte;
+                q=pixels+y*image->columns+x;
+                break;
+              }
+            default:
+              {
+                /*
+                  Absolute mode.
+                */
+                count=Min(count, end - q);
+                if (count < 0)
+                  return MagickFail;
+                for (i=0; i < (unsigned int) count; i++)
+                  {
+                    if (compression == 1)
+                      {
+                        byte=ReadBlobByte(image);
+                        if (byte == EOF)
+                          return MagickFail;
+                        *q++=byte;
+                      }
+                    else
+                      {
+                        if ((i & 0x01) == 0)
+                          byte=ReadBlobByte(image);
+                        if (byte == EOF)
+                          return MagickFail;
+                        *q++=(unsigned char)
+                          ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                      }
+                    x++;
+                  }
+                /*
+                  Read pad byte.
+                */
+                if (compression == 1)
+                  {
+                    if (count & 0x01)
+                      if (ReadBlobByte(image) == EOF)
+                        return MagickFail;
+                  }
+                else
+                  if (((count & 0x03) == 1) || ((count & 0x03) == 2))
+                    if (ReadBlobByte(image) == EOF)
+                      return MagickFail;
+                break;
+              }
+            }
+        }
+      if (QuantumTick(y,image->rows))
+        if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                    LoadImageText,image->filename,
+                                    image->columns,image->rows))
+          break;
+    }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
-  return(True);
+  return(MagickPass);
 }
 
 /*
@@ -365,7 +406,7 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   /*
@@ -486,7 +527,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   size_t
-    bytes_per_line;
+    bytes_per_line,
+    pixels_size;
 
   magick_off_t
     file_size;
@@ -677,9 +719,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   length=MagickArraySize(bytes_per_line,image->rows);
   if (length == 0)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  pixels=MagickAllocateArray(unsigned char *,
-                             image->rows,
-                             Max(bytes_per_line,image->columns+1));
+  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,image->columns+1));
+  pixels=MagickAllocateMemory(unsigned char *,pixels_size);
   if (pixels == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   if ((dib_info.compression == 0) || (dib_info.compression == 3))
@@ -700,9 +741,11 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       /*
         Convert run-length encoded raster pixels.
-        DecodeImage expects that pixels array is rows*columns bytes.
+
+        DecodeImage() normally decompresses to rows*columns bytes of data.
       */
-      status=DecodeImage(image,dib_info.compression,pixels);
+      status=DecodeImage(image,dib_info.compression,pixels,
+                         image->rows*image->columns);
       if (status == False)
         {
           MagickFreeMemory(pixels);
@@ -763,7 +806,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -810,7 +853,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -848,7 +891,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -898,7 +941,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -934,7 +977,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               status=MagickMonitorFormatted(image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
-					    image->columns,image->rows);
+                                            image->columns,image->rows);
               if (status == False)
                 break;
             }
@@ -1277,7 +1320,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
          if (QuantumTick(y,image->rows))
            if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                        SaveImageText,image->filename,
-				       image->columns,image->rows))
+                                       image->columns,image->rows))
              break;
       }
       break;
@@ -1306,7 +1349,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
       }
       break;
@@ -1343,7 +1386,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
                break;
       }
       break;

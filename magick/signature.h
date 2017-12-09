@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Digital signature methods.
 */
 #ifndef _MAGICK_SIGNATURE_H
@@ -24,7 +24,7 @@ extern "C" {
   Typedef declarations.
 */
 typedef struct _SignatureInfo
-{   
+{
   unsigned long
     digest[8],
     low_order,

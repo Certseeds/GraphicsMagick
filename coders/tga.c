@@ -240,7 +240,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "ImageType=%s CMapType=%u CMapStart=%u CMapLength=%u CMapDepth=%u\n"
-			    "  XOffset=%u YOffset=%u Width=%u Height=%u PixelDepth=%u Attributes=0x%.2x",
+                            "  XOffset=%u YOffset=%u Width=%u Height=%u PixelDepth=%u Attributes=0x%.2x",
                             ((tga_info.image_type == TGAColormap) ? "Colormapped" :
                              (tga_info.image_type == TGARGB) ? "TrueColor" :
                              (tga_info.image_type == TGAMonochrome) ? "Monochrome" :
@@ -335,7 +335,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             ((image->storage_class == DirectClass) ? "DirectClass" : "PseduoClass"),
                             MagickBoolToString(image->matte), image->depth,
                             MagickBoolToString(is_grayscale));
-    
+
       if (tga_info.id_length != 0)
         {
           /*
@@ -379,10 +379,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       packet;
 
                     if (ReadBlob(image, 2, readbuffer) != 2)
-		      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-		    readbufferpos = 0;
-		    packet = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-		    packet |= (((unsigned int) ReadBlobByteFromBuffer(readbuffer, &readbufferpos)) << 8);
+                      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                    readbufferpos = 0;
+                    packet = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+                    packet |= (((unsigned int) ReadBlobByteFromBuffer(readbuffer, &readbufferpos)) << 8);
 
                     pixel.red=(packet >> 10) & 0x1f;
                     pixel.red=ScaleCharToQuantum(ScaleColor5to8(pixel.red));
@@ -399,11 +399,11 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       8 bits each of blue, green and red.
                     */
                     if (ReadBlob(image, 3, readbuffer) != 3)
-		      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-		    readbufferpos = 0;
-		    pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-		    pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-		    pixel.red=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                    readbufferpos = 0;
+                    pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                    pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                    pixel.red=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
                     break;
                   }
                 }
@@ -494,13 +494,13 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         packet;
 
                       if (ReadBlob(image, 2, readbuffer) != 2)
-			{
-			  status=MagickFail;
-			  break;
-			}
-		      readbufferpos = 0;
-		      packet = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-		      packet |= (((unsigned int) ReadBlobByteFromBuffer(readbuffer, &readbufferpos)) << 8);
+                        {
+                          status=MagickFail;
+                          break;
+                        }
+                      readbufferpos = 0;
+                      packet = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+                      packet |= (((unsigned int) ReadBlobByteFromBuffer(readbuffer, &readbufferpos)) << 8);
 
                       pixel.red=(packet >> 10) & 0x1f;
                       pixel.red=ScaleCharToQuantum(ScaleColor5to8(pixel.red));
@@ -515,7 +515,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           else
                             pixel.opacity=TransparentOpacity;
                         }
-                
+
                       if (image->storage_class == PseudoClass)
                         {
                           index=(IndexPacket) (packet & 0x7fff);
@@ -528,10 +528,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       8 bits each of blue green and red.
                     */
                     if (ReadBlob(image, 3, readbuffer) != 3)
-		      {
-			status=MagickFail;
-			break;
-		      }
+                      {
+                        status=MagickFail;
+                        break;
+                      }
                     readbufferpos = 0;
                     pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
                     pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
@@ -543,10 +543,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         8 bits each of blue green and red.
                       */
                       if (ReadBlob(image, 4, readbuffer) != 4)
-			{
-			  status=MagickFail;
-			  break;
-			}
+                        {
+                          status=MagickFail;
+                          break;
+                        }
                       readbufferpos = 0;
                       pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
                       pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
@@ -588,7 +588,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       if (EOFBlob(image))
@@ -606,18 +606,18 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       status=MagickFalse;
       if (ReadBlob(image, 3, readbuffer) == 3)
-	{
-	  readbufferpos = 0;
-	  tga_info.id_length=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-	  tga_info.colormap_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-	  tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-	  status=((tga_info.image_type == TGAColormap) ||
-		  (tga_info.image_type == TGARGB) ||
-		  (tga_info.image_type == TGAMonochrome) ||
-		  (tga_info.image_type == TGARLEColormap) ||
-		  (tga_info.image_type == TGARLERGB) ||
-		  (tga_info.image_type == TGARLEMonochrome));
-	}
+        {
+          readbufferpos = 0;
+          tga_info.id_length=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+          tga_info.colormap_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+          tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+          status=((tga_info.image_type == TGAColormap) ||
+                  (tga_info.image_type == TGARGB) ||
+                  (tga_info.image_type == TGAMonochrome) ||
+                  (tga_info.image_type == TGARLEColormap) ||
+                  (tga_info.image_type == TGARLERGB) ||
+                  (tga_info.image_type == TGARLEMonochrome));
+        }
       if (!EOFBlob(image) && (status == MagickTrue))
         {
           /*
@@ -841,7 +841,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   do
     {
       ImageCharacteristics
-        characteristics;        
+        characteristics;
 
       write_grayscale=MagickFalse;
 
@@ -895,10 +895,10 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       targa_info.id_length=0;
       attribute=GetImageAttribute(image,"comment");
       if (attribute != (const ImageAttribute *) NULL)
-	    {
-		  unsigned char id_length =(unsigned char) strlen(attribute->value);
+            {
+                  unsigned char id_length =(unsigned char) strlen(attribute->value);
           targa_info.id_length=Min(id_length,255);
-	    }
+            }
       targa_info.colormap_type=0;
       targa_info.colormap_index=0;
       targa_info.colormap_length=0;
@@ -917,11 +917,11 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Writing Grayscale raster ...");
           targa_info.image_type=TargaMonochrome;
-	  targa_info.bits_per_pixel=8;
-	  targa_info.colormap_type=0;
+          targa_info.bits_per_pixel=8;
+          targa_info.colormap_type=0;
           targa_info.colormap_index=0;
           targa_info.colormap_length=0;
-          targa_info.colormap_size=0;	
+          targa_info.colormap_size=0;
         }
       else if (image->storage_class == DirectClass)
         {
@@ -1050,7 +1050,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       MagickFreeMemory(targa_pixels);

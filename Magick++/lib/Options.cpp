@@ -30,7 +30,7 @@ Magick::Options::Options( void )
 {
   // Initialize image info with defaults
   GetImageInfo( _imageInfo );
-  
+
   // Initialize quantization info
   GetQuantizeInfo( _quantizeInfo );
 
@@ -261,11 +261,11 @@ void Magick::Options::fillPattern ( const MagickLib::Image *fillPattern_ )
       ExceptionInfo exceptionInfo;
       GetExceptionInfo( &exceptionInfo );
       _drawInfo->fill_pattern =
-	CloneImage( const_cast<MagickLib::Image*>(fillPattern_),
-		    0,
-		    0,
-		    static_cast<int>(true),
-		    &exceptionInfo );
+        CloneImage( const_cast<MagickLib::Image*>(fillPattern_),
+                    0,
+                    0,
+                    static_cast<int>(true),
+                    &exceptionInfo );
       throwException( exceptionInfo, _quiet );
     }
 }
@@ -301,7 +301,7 @@ std::string Magick::Options::font ( void ) const
 {
   if ( _imageInfo->font )
     return std::string( _imageInfo->font );
-  
+
   return std::string();
 }
 
@@ -323,11 +323,11 @@ std::string Magick::Options::format ( void ) const
   GetExceptionInfo(&exception);
   if ( *_imageInfo->magick != '\0' )
     magick_info = GetMagickInfo( _imageInfo->magick , &exception);
-  
-  if (( magick_info != 0 ) && 
+
+  if (( magick_info != 0 ) &&
       ( *magick_info->description != '\0' ))
     return std::string( magick_info->description );
-  
+
   return std::string();
 }
 
@@ -349,14 +349,14 @@ void Magick::Options::magick ( const std::string &magick_ )
   SetImageInfo( _imageInfo, 1, &exception);
   if ( _imageInfo->magick[0] == '\0' )
     throwExceptionExplicit( OptionWarning,
-			    "Unrecognized image format",
-			    magick_.c_str() );
+                            "Unrecognized image format",
+                            magick_.c_str() );
 }
 std::string Magick::Options::magick ( void ) const
 {
   if ( _imageInfo->magick[0] != '\0' )
     return std::string( _imageInfo->magick );
-  
+
   return std::string();
 }
 
@@ -500,13 +500,18 @@ void Magick::Options::strokeDashArray ( const double* strokeDashArray_ )
 {
   MagickFreeMemory(_drawInfo->dash_pattern);
 
-  if(strokeDashArray_)
+  if (strokeDashArray_)
     {
       // Count elements in dash array
       unsigned int x;
       for (x=0; strokeDashArray_[x]; x++) {};
       // Allocate elements
       _drawInfo->dash_pattern = MagickAllocateMemory(double*,(x+1)*sizeof(double));
+
+      if (!_drawInfo->dash_pattern)
+        throwExceptionExplicit( ResourceLimitError,
+                                "Unable to allocate dash-pattern memory");
+
       // Copy elements
       memcpy(_drawInfo->dash_pattern,strokeDashArray_,
              (x+1)*sizeof(double));
@@ -573,11 +578,11 @@ void Magick::Options::strokePattern ( const MagickLib::Image *strokePattern_ )
       ExceptionInfo exceptionInfo;
       GetExceptionInfo( &exceptionInfo );
       _drawInfo->stroke_pattern =
-	CloneImage( const_cast<MagickLib::Image*>(strokePattern_),
-		    0,
-		    0,
-		    static_cast<int>(true),
-		    &exceptionInfo );
+        CloneImage( const_cast<MagickLib::Image*>(strokePattern_),
+                    0,
+                    0,
+                    static_cast<int>(true),
+                    &exceptionInfo );
       throwException( exceptionInfo, _quiet );
     }
 }
@@ -623,7 +628,7 @@ std::string Magick::Options::textEncoding ( void ) const
 {
   if ( _drawInfo->encoding && *_drawInfo->encoding )
     return std::string( _drawInfo->encoding );
-  
+
   return std::string();
 }
 

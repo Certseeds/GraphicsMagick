@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2009 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -212,7 +212,7 @@ ModuleExport void RegisterPLASMAImage(void)
   entry->adjoin=False;
   entry->description="Plasma fractal image";
   entry->module="PLASMA";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 
@@ -221,7 +221,7 @@ ModuleExport void RegisterPLASMAImage(void)
   entry->adjoin=False;
   entry->description="Plasma fractal image";
   entry->module="PLASMA";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 }

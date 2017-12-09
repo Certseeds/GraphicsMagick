@@ -167,7 +167,7 @@ the lines::
 
     image.quantizeColorSpace( GRAYColorspace );
     image.quantizeColors( 256 );
-    image.quantize( ); 
+    image.quantize( );
 
 or, more simply::
 
@@ -248,7 +248,7 @@ operators are available:
 Construct from image file or image specification::
 
     Image( const std::string &imageSpec_ )
-    
+
 Construct a blank image canvas of specified size and `color`_::
 
     Image( const Geometry &size_, const Color &color_ )
@@ -270,7 +270,7 @@ Construct Image of specified size, depth, and format from in-memory `Blob`_::
 
     Image ( const Blob &blob_, const Geometry &size,
             const unsigned int depth_,
-	    const std::string &magick_ )
+            const std::string &magick_ )
 
 Construct Image of specified size, and format from in-memory `Blob`_::
 
@@ -293,7 +293,7 @@ Default constructor::
 Copy constructor::
 
     Image ( const Image & image_ )
-    
+
 Assignment operator::
 
     Image& operator= ( const Image &image_ )
@@ -314,7 +314,7 @@ Other attributes may also be available.  The image pixels are not
 valid after calling ping::
 
     void            ping ( const std::string &imageSpec_ )
-    
+
 Ping is similar to read except only enough of the image is read
 to determine the image columns, rows, and filesize.  Access the
 columns(), rows(), and fileSize() attributes after invoking
@@ -324,7 +324,7 @@ ping.  The image pixels are not valid after calling ping::
 
 read
 ++++
-    
+
 Read single image frame into current object.  Use ping_ instead if you
 want to obtain the basic attributes of the image without reading the
 whole file/blob::
@@ -334,7 +334,7 @@ whole file/blob::
 Read single image frame of specified size into current object::
 
     void            read ( const Geometry &size_,
-			   const std::string &imageSpec_ )
+                           const std::string &imageSpec_ )
 
 Read single image frame from in-memory `Blob`_::
 
@@ -343,29 +343,29 @@ Read single image frame from in-memory `Blob`_::
 Read single image frame of specified size from in-memory `Blob`_::
 
     void            read ( const Blob        &blob_,
-			   const Geometry    &size_ )
+                           const Geometry    &size_ )
 
 Read single image frame of specified size and depth from in-memory
 `Blob`_::
 
     void            read ( const Blob         &blob_,
-			   const Geometry     &size_,
-			   const unsigned int depth_ )
+                           const Geometry     &size_,
+                           const unsigned int depth_ )
 
 Read single image frame of specified size, depth, and format from
 in-memory `Blob`_::
 
     void            read ( const Blob         &blob_,
-			   const Geometry     &size_,
-			   const unsigned int depth_,
-			   const std::string  &magick_ )
+                           const Geometry     &size_,
+                           const unsigned int depth_,
+                           const std::string  &magick_ )
 
 Read single image frame of specified size, and format from in-memory
 `Blob`_::
 
     void            read ( const Blob         &blob_,
-			   const Geometry     &size_,
-			   const std::string  &magick_ )
+                           const Geometry     &size_,
+                           const std::string  &magick_ )
 
 Read single image frame from an array of raw pixels, with
 specified storage type (ConstituteImage), e.g.
@@ -379,7 +379,7 @@ specified storage type (ConstituteImage), e.g.
 
 write
 +++++
-    
+
 Write single image frame to a file::
 
     void            write ( const std::string &imageSpec_ )
@@ -390,11 +390,11 @@ adjoin parameters::
     void            write ( Blob *blob_ )
 
     void            write ( Blob *blob_,
-			    const std::string &magick_ )
+                            const std::string &magick_ )
 
     void            write ( Blob *blob_,
-			    const std::string &magick_,
-			    const unsigned int depth_ )
+                            const std::string &magick_,
+                            const unsigned int depth_ )
 
 Write single image frame to an array of pixels with storage type
 specified by user (DispatchImage), e.g.  ``image.write( 0, 0, 640, 1,
@@ -503,31 +503,41 @@ SouthEastGravity
 Annotate using specified text, and placement location::
 
     void            annotate ( const std::string &text_,
-			       const Geometry &location_ )
+                               const Geometry &location_ )
 
 Annotate using specified text, bounding area, and placement gravity::
 
     void            annotate ( const std::string &text_,
-			       const Geometry &boundingArea_,
-			       const GravityType gravity_ )
+                               const Geometry &boundingArea_,
+                               const GravityType gravity_ )
 
 Annotate with text using specified text, bounding area, placement
 gravity, and rotation::
 
     void            annotate ( const std::string &text_,
-			       const Geometry &boundingArea_,
-			       const GravityType gravity_,
-			       const double degrees_ )
+                               const Geometry &boundingArea_,
+                               const GravityType gravity_,
+                               const double degrees_ )
 
 Annotate with text (bounding area is entire image) and placement
 gravity::
 
     void            annotate ( const std::string &text_,
-			       const GravityType gravity_ )
+                               const GravityType gravity_ )
+
+autoOrient
+++++++++++
+
+Automatically orient image to be right-side up based on its current
+orientation attribute.  This allows the image to be viewed correctly
+when the orientation attribute is not available, or is not respected::
+
+    void            autoOrient( void )
+
 
 blur
 ++++
-    
+
 Blur an image with the specified blur factor.
 
 The `radius` parameter specifies the radius of the Gaussian, in
@@ -620,12 +630,12 @@ red, green, and blue quantums::
     void            colorize ( const unsigned int opacityRed_,
                                const unsigned int opacityGreen_,
                                const unsigned int opacityBlue_,
-			       const Color &penColor_ )
+                               const Color &penColor_ )
 
 Colorize image with pen `color`_, using specified percent opacity::
 
     void            colorize ( const unsigned int opacity_,
-			       const Color &penColor_ )
+                               const Color &penColor_ )
 
 colorMatrix
 +++++++++++
@@ -634,13 +644,13 @@ Apply a color matrix to the image channels.  The user supplied matrix
 may be of order 1 to 5 (1x1 through 5x5)::
 
     void            colorMatrix (const unsigned int order_,
-				 const double *color_matrix_)
+                                 const double *color_matrix_)
 
 See `ColorMatrixImage <../api/fx.html#colormatriximage>`_ for more details.
 
 comment
 +++++++
-    
+
 Comment image (add comment string to image). By default, each image is
 commented with its file name. Use this method to assign a specific
 comment to the image.  Optionally you can include the image filename,
@@ -667,24 +677,24 @@ Compose an image onto another at specified x and y offset and using a
 specified algorithm::
 
     void            composite ( const Image &compositeImage_,
-				const int xOffset_,
-				const int yOffset_,
-				const CompositeOperator compose_
+                                const int xOffset_,
+                                const int yOffset_,
+                                const CompositeOperator compose_
                                 = InCompositeOp )
 
     void            composite ( const Image &compositeImage_,
-				const Geometry &offset_,
-				const CompositeOperator compose_
+                                const Geometry &offset_,
+                                const CompositeOperator compose_
                                 = InCompositeOp )
 
     void            composite ( const Image &compositeImage_,
-				const GravityType gravity_,
-				const CompositeOperator compose_
+                                const GravityType gravity_,
+                                const CompositeOperator compose_
                                 = InCompositeOp )
 
 contrast
 ++++++++
-    
+
 Contrast image (enhance intensity differences in image)::
 
     void            contrast ( const unsigned int sharpen_ )
@@ -709,7 +719,7 @@ Crop image (return subregion of original image)::
 
 cycleColormap
 +++++++++++++
-    
+
 Cycle (rotate) image colormap::
 
     void            cycleColormap ( const int amount_ )
@@ -733,7 +743,7 @@ original if this is a problem:
 
 draw
 ++++
-    
+
 Draw shape or text on image using a single `drawable`_ object::
 
     void            draw ( const Drawable &drawable_ );
@@ -756,7 +766,7 @@ selection::
 
 emboss
 ++++++
-    
+
 Emboss image (hilight edges with 3D effect).  The `radius` parameter
 specifies the radius of the Gaussian, in pixels, not counting the
 center pixel.  The `sigma` parameter specifies the standard deviation
@@ -767,14 +777,14 @@ of the Laplacian, in pixels::
 
 enhance
 +++++++
-    
+
 Enhance image (minimize noise)::
 
     void            enhance ( void );
 
 equalize
 ++++++++
-    
+
 Equalize image (histogram equalization)::
 
     void            equalize ( void )
@@ -811,7 +821,7 @@ and backgroundColor) update those image properties as a side-effect::
 
 flip
 ++++
-    
+
 Flip image (reflect each scanline in the vertical direction)::
 
     void            flip ( void )
@@ -825,10 +835,10 @@ setting when determining `color`_ match::
 
     void            floodFillColor( const unsigned int x_,
                                     const unsigned int y_,
-				    const Color &fillColor_ )
+                                    const Color &fillColor_ )
 
     void            floodFillColor( const Geometry &point_,
-				    const Color &fillColor_ )
+                                    const Color &fillColor_ )
 
 Flood-fill `color`_ across pixels starting at target-pixel and stopping
 at pixels matching specified border `color`_.  Uses current fuzz setting
@@ -836,12 +846,12 @@ when determining `color`_ match::
 
     void            floodFillColor( const unsigned int x_,
                                     const unsigned int y_,
-				    const Color &fillColor_,
-				    const Color &borderColor_ )
+                                    const Color &fillColor_,
+                                    const Color &borderColor_ )
 
     void            floodFillColor( const Geometry &point_,
-				    const Color &fillColor_,
-				    const Color &borderColor_ )
+                                    const Color &fillColor_,
+                                    const Color &borderColor_ )
 
 floodFillOpacity
 ++++++++++++++++
@@ -863,10 +873,10 @@ Uses current fuzz setting when determining `color`_ match::
 
     void            floodFillTexture( const unsigned int x_,
                                       const unsigned int y_,
-				      const Image &texture_ )
+                                      const Image &texture_ )
 
     void            floodFillTexture( const Geometry &point_,
-				      const Image &texture_ )
+                                      const Image &texture_ )
 
 Flood-fill texture across pixels starting at target-pixel and
 stopping at pixels matching specified border `color`_.
@@ -874,12 +884,12 @@ Uses current fuzz setting when determining `color`_ match::
 
     void            floodFillTexture( const unsigned int x_,
                                       const unsigned int y_,
-				      const Image &texture_,
-				      const Color &borderColor_ )
+                                      const Image &texture_,
+                                      const Color &borderColor_ )
 
     void            floodFillTexture( const Geometry &point_,
-				      const Image &texture_,
-				      const Color &borderColor_ )
+                                      const Image &texture_,
+                                      const Color &borderColor_ )
 
 flop
 ++++
@@ -890,26 +900,26 @@ Flop image (reflect each scanline in the horizontal direction)::
 
 frame
 +++++
-    
+
 Draw a decorative frame around the image::
 
     void            frame ( const Geometry &geometry_ = frameGeometryDefault )
 
     void            frame ( const unsigned int width_,
                             const unsigned int height_,
-			    const int innerBevel_ = 6,
+                            const int innerBevel_ = 6,
                             const int outerBevel_ = 6 )
 
 gamma
 +++++
-    
+
 Gamma correct the image or individual image channels::
 
     void            gamma ( const double gamma_ )
 
     void            gamma ( const double gammaRed_,
-			    const double gammaGreen_,
-			    const double gammaBlue_ )
+                            const double gammaGreen_,
+                            const double gammaBlue_ )
 
 gaussianBlur
 ++++++++++++
@@ -934,7 +944,7 @@ standard deviation of the gaussian bell curve is specified by
 
 implode
 +++++++
-    
+
 Implode image (special effect)::
 
     void            implode ( const double factor_ )
@@ -950,7 +960,7 @@ See `HaldClutImage <../api/hclut.html#haldclutimage>`_ for more details.
 
 label
 +++++
-    
+
 Assign a label to an image. Use this option to assign a specific label
 to the image. Optionally you can include the image filename, type,
 width, height, or scene number in the label by embedding `special
@@ -1009,7 +1019,7 @@ Magnify image by integral size (double the dimensions)::
 
 map
 +++
-    
+
 Remap image colors with closest color from a reference image. Set
 `dither` to true in to apply Floyd/Steinberg error diffusion to the
 image. By default, color reduction chooses an optimal set of colors
@@ -1021,13 +1031,13 @@ a particular set of colors from an image file with this option::
 
 matteFloodfill
 ++++++++++++++
-    
+
 Floodfill designated area with a replacement opacity value::
 
     void            matteFloodfill ( const Color &target_ ,
-				     const unsigned int opacity_,
-				     const int x_, const int y_,
-				     const PaintMethod method_ )
+                                     const unsigned int opacity_,
+                                     const int x_, const int y_,
+                                     const PaintMethod method_ )
 
 medianFilter
 ++++++++++++
@@ -1039,7 +1049,7 @@ in a circular neighborhood::
 
 minify
 ++++++
-    
+
 Reduce image by integral (half) size::
 
     void            minify ( void )
@@ -1059,7 +1069,7 @@ multiple references::
 
 modulate
 ++++++++
-    
+
 Modulate percent hue, saturation, and brightness of an image.
 Modulation of saturation and brightness is as a ratio of the current
 value (1.0 for no change). Modulation of hue is an absolute rotation
@@ -1067,8 +1077,8 @@ of -180 degrees to +180 degrees from the current position
 corresponding to an argument range of 0 to 2.0 (1.0 for no change)::
 
     void            modulate ( const double brightness_,
-			       const double saturation_,
-			       const double hue_ )
+                               const double saturation_,
+                               const double hue_ )
 
 motionBlur
 ++++++++++
@@ -1086,7 +1096,7 @@ degrees is from the right)::
 
 negate
 ++++++
-    
+
 Negate colors in image.  Set `grayscale` to only negate grayscale
 values in image::
 
@@ -1094,7 +1104,7 @@ values in image::
 
 normalize
 +++++++++
-    
+
 Normalize image (increase contrast by normalizing the pixel values to
 span the full range of color values)::
 
@@ -1102,7 +1112,7 @@ span the full range of color values)::
 
 oilPaint
 ++++++++
-    
+
 Oilpaint image (image looks like an oil painting)::
 
     void            oilPaint ( const double radius_ = 3.0 )
@@ -1125,7 +1135,7 @@ opaque
 Change `color`_ of specified opaque pixel to specified pen `color`_::
 
     void            opaque ( const Color &opaqueColor_,
-			     const Color &penColor_ )
+                             const Color &penColor_ )
 
 quantize
 ++++++++
@@ -1170,7 +1180,7 @@ Raise image (lighten or darken the edges of an image to give a 3-D
 raised or lowered effect)::
 
     void            raise ( const Geometry &geometry_ = "6x6+0+0",
-			    const bool raisedFlag_ = false )
+                            const bool raisedFlag_ = false )
 
 randomThreshold
 +++++++++++++++
@@ -1238,32 +1248,32 @@ from Image default.  Provides the same result as the `zoom` method::
 
 roll
 ++++
-    
+
 Roll image (rolls image vertically and horizontally) by specified
 number of columnms and rows)::
 
     void            roll ( const Geometry &roll_ )
 
     void            roll ( const unsigned int columns_,
-			   const unsigned int rows_ )
+                           const unsigned int rows_ )
 
 rotate
 ++++++
-    
+
 Rotate image counter-clockwise by specified number of degrees::
 
     void            rotate ( const double degrees_ )
 
 sample
 ++++++
-    
+
 Resize image by using pixel sampling algorithm::
 
     void            sample ( const Geometry &geometry_ )
 
 scale
 +++++
-    
+
 Resize image by using simple ratio algorithm which provides good
 quality::
 
@@ -1280,7 +1290,7 @@ but usually works well for any image resizing purpose::
 
 segment
 +++++++
-    
+
 Segment (coalesce similar image components) by analyzing the
 histograms of the color components and identifying units that are
 homogeneous with the fuzzy c-means technique.  A histogram is built
@@ -1296,24 +1306,24 @@ valid. `SmoothingThreshold` eliminates noise in the second derivative
 of the histogram. As the value is increased, you can expect a smoother
 second derivative.  The default is 1.5::
 
-    void            segment ( const double clusterThreshold_ = 1.0, 
-			      const double smoothingThreshold_ = 1.5 )
+    void            segment ( const double clusterThreshold_ = 1.0,
+                              const double smoothingThreshold_ = 1.5 )
 
 shade
 +++++
-    
+
 Shade image using distant light source. Specify `azimuth` and
 `elevation` as the position of the light source. By default, the
 shading results as a grayscale image.. Set `colorShading` to true to
 shade the red, green, and blue components of the image::
 
     void            shade ( const double azimuth_ = 30,
-			    const double elevation_ = 30,
-			    const bool   colorShading_ = false )
+                            const double elevation_ = 30,
+                            const bool   colorShading_ = false )
 
 sharpen
 +++++++
-    
+
 Sharpen pixels in image.  The `radius` parameter specifies the radius
 of the Gaussian, in pixels, not counting the center pixel.  The
 `sigma` parameter specifies the standard deviation of the Laplacian,
@@ -1343,7 +1353,7 @@ Shave pixels from image edges::
 
 shear
 +++++
-    
+
 Shear image (create parallelogram by sliding image by X or Y
 axis). Shearing slides one edge of an image along the X or Y axis,
 creating a parallelogram.  An X direction shear slides an edge along
@@ -1355,11 +1365,11 @@ the X axis. Empty triangles left over from shearing the image are
 filled with the `color`_ defined as borderColor::
 
     void            shear ( const double xShearAngle_,
-			    const double yShearAngle_ )
+                            const double yShearAngle_ )
 
 solarize
 ++++++++
-    
+
 Solarize image (similar to effect seen when exposing a photographic
 film to light during the development process)::
 
@@ -1367,21 +1377,21 @@ film to light during the development process)::
 
 spread
 ++++++
-    
+
 Spread pixels randomly within image by specified ammount::
 
     void            spread ( const unsigned int amount_ = 3 )
 
 stegano
 +++++++
-    
+
 Add a digital watermark to the image (based on second image)::
 
     void            stegano ( const Image &watermark_ )
 
 stereo
 ++++++
-    
+
 Create an image which appears in stereo when viewed with red-blue
 glasses (Red image on left, blue on right)::
 
@@ -1396,21 +1406,21 @@ Remove all profiles and text attributes from the image.
 
 swirl
 +++++
-    
+
 Swirl image (image pixels are rotated by degrees)::
 
     void            swirl ( const double degrees_ )
 
 texture
 +++++++
-    
+
 Channel a texture on pixels matching image background `color`_::
 
     void            texture ( const Image &texture_ )
 
 threshold
 +++++++++
-    
+
 Threshold image channels (below threshold becomes black, above
 threshold becomes white).  The range of the threshold parameter is 0
 to MaxRGB::
@@ -1419,14 +1429,14 @@ to MaxRGB::
 
 transform
 +++++++++
-    
+
 Transform image based on image and crop geometries. Crop geometry is
 optional::
 
     void            transform ( const Geometry &imageGeometry_ )
 
     void            transform ( const Geometry &imageGeometry_,
-				const Geometry &cropGeometry_  )
+                                const Geometry &cropGeometry_  )
 
 transparent
 +++++++++++
@@ -1438,7 +1448,7 @@ transparent::
 
 trim
 ++++
-    
+
 Trim edges that are the background `color`_ from the image::
 
     void            trim ( void )
@@ -1540,7 +1550,7 @@ Map image pixels to a sine wave::
 
 zoom
 ++++
-    
+
 Zoom (resize) image to specified size::
 
     void            zoom ( const Geometry &geometry_ )
@@ -1581,7 +1591,7 @@ Join images into a single multi-image file::
 
 antiAlias
 +++++++++
-    
+
 Control antialiasing of rendered Postscript and Postscript or TrueType
 fonts. Enabled by default::
 
@@ -1591,7 +1601,7 @@ fonts. Enabled by default::
 
 animationDelay
 ++++++++++++++
-    
+
 Time in 1/100ths of a second (0 to 65535) which must expire before
 displaying the next image in an animated sequence. This option is
 useful for regulating the animation of a sequence of GIF images within
@@ -1603,7 +1613,7 @@ Netscape::
 
 animationIterations
 +++++++++++++++++++
-    
+
 Number of iterations to loop an animation (e.g. Netscape loop
 extension) for::
 
@@ -1635,7 +1645,7 @@ syntax "EXIF:<tag>" to request an EXIF tag similar to
 
 backgroundColor
 +++++++++++++++
-    
+
 Image background `color`_::
 
     void            backgroundColor ( const Color &color_ )
@@ -1644,7 +1654,7 @@ Image background `color`_::
 
 backgroundTexture
 +++++++++++++++++
-    
+
 Image file name to use as the background texture. Does not modify
 image pixels::
 
@@ -1654,14 +1664,14 @@ image pixels::
 
 baseColumns
 +++++++++++
-    
+
 Base image width (before transformations)::
 
     unsigned int    baseColumns ( void ) const
 
 baseFilename
 ++++++++++++
-    
+
 Base image filename (before transformations)::
 
     std::string     baseFilename ( void ) const
@@ -1675,7 +1685,7 @@ Base image height (before transformations)::
 
 borderColor
 +++++++++++
-    
+
 Image border `color`_::
 
     void            borderColor ( const Color &color_ )
@@ -1693,7 +1703,7 @@ This is the crop bounding box used by ``crop(Geometry(0,0))``::
 
 boxColor
 ++++++++
-    
+
 Base `color`_ that annotation text is rendered on (default none)::
 
     void            boxColor ( const Color &boxColor_ )
@@ -1711,7 +1721,7 @@ This setting is shared by all Image objects::
 
 chromaBluePrimary
 +++++++++++++++++
-    
+
 Chromaticity blue primary point (e.g. x=0.15, y=0.06)::
 
     void            chromaBluePrimary ( const double x_, const double y_ )
@@ -1720,7 +1730,7 @@ Chromaticity blue primary point (e.g. x=0.15, y=0.06)::
 
 chromaGreenPrimary
 ++++++++++++++++++
-    
+
 Chromaticity green primary point (e.g. x=0.3, y=0.6)::
 
     void            chromaGreenPrimary ( const double x_, const double y_ )
@@ -1729,7 +1739,7 @@ Chromaticity green primary point (e.g. x=0.3, y=0.6)::
 
 chromaRedPrimary
 ++++++++++++++++
-    
+
 Chromaticity red primary point (e.g. x=0.64, y=0.33)::
 
     void            chromaRedPrimary ( const double x_, const double y_ )
@@ -1738,7 +1748,7 @@ Chromaticity red primary point (e.g. x=0.64, y=0.33)::
 
 chromaWhitePoint
 ++++++++++++++++
-    
+
 Chromaticity white point (e.g. x=0.3127, y=0.329)::
 
     void            chromaWhitePoint ( const double x_, const double y_ )
@@ -1746,7 +1756,7 @@ Chromaticity white point (e.g. x=0.3127, y=0.329)::
 
 classType
 +++++++++
-    
+
 Image class (DirectClass or PseudoClass).  NOTE: setting a DirectClass
 image to PseudoClass will result in the loss of color information if
 the number of colors in the image is greater than the maximum palette
@@ -1772,7 +1782,7 @@ existing clip mask::
 
 colorFuzz
 +++++++++
-    
+
 Colors within this distance are considered equal. A number of
 algorithms search for a target color. By default the color must be
 exact. Use this option to match colors that are close to the target
@@ -1784,7 +1794,7 @@ color in RGB space::
 
 colorMap
 ++++++++
-    
+
 `Color`_ at colormap position `index`::
 
     void            colorMap ( const unsigned int index_,
@@ -1825,7 +1835,7 @@ Image width::
 
 comment
 +++++++
-    
+
 Image comment::
 
     std::string     comment ( void ) const
@@ -1842,7 +1852,7 @@ used (such as for image flattening)::
 
 compressType
 ++++++++++++
-    
+
 Image compresion type. The default is the compression type of the
 input image file::
 
@@ -2170,7 +2180,7 @@ File type magick identifier (.e.g "GIF")::
 
 matte
 +++++
-    
+
 Image supports transparency (matte channel)::
 
     void            matte ( const bool matteFlag_ )
@@ -2179,7 +2189,7 @@ Image supports transparency (matte channel)::
 
 matteColor
 ++++++++++
-    
+
 Image matte (frame) `color`_::
 
     void            matteColor ( const Color &matteColor_ )
@@ -2188,7 +2198,7 @@ Image matte (frame) `color`_::
 
 meanErrorPerPixel
 +++++++++++++++++
-    
+
 The mean error per pixel computed when an image is color reduced. This
 parameter is only valid if verbose is set to true and the image has
 just been quantized::
@@ -2277,7 +2287,7 @@ Get/set pixel `color`_ at location x & y::
 
     void            pixelColor ( const unsigned int x_,
                                  const unsigned int y_,
-				 const Color &color_ )
+                                 const Color &color_ )
 
     Color           pixelColor ( const unsigned int x_,
                                  const unsigned int y_ ) const
@@ -2309,7 +2319,7 @@ JPEG/MIFF/PNG compression level (default 75)::
 
 quantizeColors
 ++++++++++++++
-    
+
 Maximum number of colors to quantize to::
 
     void            quantizeColors ( const unsigned int colors_ )
@@ -2318,7 +2328,7 @@ Maximum number of colors to quantize to::
 
 quantizeColorSpace
 ++++++++++++++++++
-    
+
 Colorspace to quantize in (default RGB). Empirical evidence suggests
 that distances in color spaces such as YUV or YIQ correspond to
 perceptual color differences more closely than do distances in RGB
@@ -2331,7 +2341,7 @@ an image::
 
 quantizeDither
 ++++++++++++++
-    
+
 Apply Floyd/Steinberg error diffusion to the image. The basic strategy
 of dithering is to trade intensity resolution for spatial resolution
 by averaging the intensities of several neighboring pixels. Images
@@ -2492,7 +2502,7 @@ RoundCap, and SquareCap::
 
 strokeLineJoin
 ++++++++++++++
-    
+
 Specify the shape to be used at the corners of paths (or other
 vector shapes) when they are stroked. Values of LineJoin are
 UndefinedJoin, MiterJoin, RoundJoin, and BevelJoin::
@@ -2629,7 +2639,7 @@ Print detailed information about the image::
 
 view
 ++++
-    
+
 FlashPix viewing parameters::
 
     void            view ( const std::string &view_ )
@@ -2771,7 +2781,7 @@ to the image via syncPixels.  This method is valid for DirectClass
 images::
 
     PixelPacket* getPixels ( const int x_, const int y_,
-			     const unsigned int columns_,
+                             const unsigned int columns_,
                              const unsigned int rows_ )
 
 setPixels
@@ -2782,7 +2792,7 @@ region rectangle.  This area is subsequently transferred from the
 pixel cache to the image via syncPixels::
 
     PixelPacket* setPixels ( const int x_, const int y_,
-			     const unsigned int columns_,
+                             const unsigned int columns_,
                              const unsigned int rows_ )
 
 syncPixels
@@ -2799,19 +2809,18 @@ Transfers one or more pixel components from a buffer or file into the
 image pixel cache of an image.  Used to support image decoders::
 
     void readPixels ( const QuantumType quantum_,
-		      const unsigned char *source_ )
+                      const unsigned char *source_ )
 
 writePixels
 +++++++++++
-    
+
 Transfers one or more pixel components from the image pixel cache to a
 buffer or file.  Used to support image encoders::
 
     void writePixels ( const QuantumType quantum_,
-		       unsigned char *destination_ )
+                       unsigned char *destination_ )
 
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
 Copyright |copy| `Bob Friesenhahn`_ 1999 - 2017
-

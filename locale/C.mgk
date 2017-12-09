@@ -509,6 +509,9 @@
         <Message name="UnsupportedNumberOfPlanes">
           Unsupported number of planes
         </Message>
+        <Message name="ImageFileHasNoScenes">
+          Image file has no scenes
+        </Message>
      </Error>
       <FatalError>
         <Message name="UnableToPersistKey">
@@ -724,6 +727,12 @@
       <Message name="ImageDoesNotContainResolution">
         image does not contain resolution
       </Message>
+      <Message name="ImageIsNotColormapped">
+        image is not colormapped
+      </Message>
+      <Message name="CMYKAImageLacksAlphaChannel">
+        CMYKA image lacks an alpha channel (indexes)
+      </Message>
       <Message name="ImageOpacityDiffers">
         image opacity differs
       </Message>
@@ -795,6 +804,12 @@
       </Message>
       <Message name="WidthOrHeightExceedsLimit">
         width or height exceeds limit
+      </Message>
+      <Message name="UnableToExportImagePixels">
+        unable to export image pixels
+      </Message>
+      <Message name="UnableToImportImagePixels">
+        unable to import image pixels
       </Message>
     </Error>
     <FatalError>
@@ -1166,6 +1181,9 @@
       <Message name="UsageError">
         Improper arguments supplied, please see manual
       </Message>
+      <Message name="TileNotBoundedByImageDimensions">
+        Tile is not bounded by image dimensions
+      </Message>
     </Error>
     <FatalError>
       <Message name="InvalidInterlaceType">
@@ -1314,6 +1332,9 @@
         </Message>
         <Message name="UnableToAddIPTCProfile">
           unable to add IPTC profile
+        </Message>
+        <Message name="UnableToAddOrRemoveProfile">
+          unable to add or remove profile
         </Message>
         <Message name="UnableToAllocateColormap">
           Unable to allocate colormap
@@ -1613,6 +1634,9 @@
         </Message>
         <Message name="UnableToObtainRandomEntropy">
           unable to obtain random bytes from operating system
+        </Message>
+        <Message name="UnableToAllocateMagickMap">
+          unable to allocate magick map
         </Message>
       </FatalError>
       <Warning>

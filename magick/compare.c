@@ -546,7 +546,7 @@ GetImageChannelDifference(const Image *reference_image,
 
       char
         description[MaxTextExtent];
-      
+
       FormatString(description,"[%%s]*[%%s] Compute image difference using %s metric...",
                    MetricTypeToString(metric));
 
@@ -937,7 +937,7 @@ IsImagesEqual(Image *image,const Image *reference)
   /*
     Compute final error statistics.
   */
-  
+
   if (image->matte)
     normalize = sqrt(4.0); /* sqrt(1.0*1.0+1.0*1.0+1.0*1.0+1.0*1.0) */
   else

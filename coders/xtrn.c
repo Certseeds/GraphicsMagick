@@ -209,13 +209,13 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
                   if (filename[0] != '\0')
                     (void) strcpy(clone_info->filename, filename);
                   else
-		    clone_info->filename[0] = '\0';
+                    clone_info->filename[0] = '\0';
                   *clone_info->magick = '\0';
                   image=BlobToImage(clone_info,blob_data,blob_length,exception);
                   hr = SafeArrayUnaccessData(pSafeArray);
                   if (exception->severity != UndefinedException)
                     MagickWarning2(exception->severity,exception->reason,
-				   exception->description);
+                                   exception->description);
                 }
             }
         }
@@ -360,32 +360,32 @@ int SafeArrayFifo(const Image *image,const void *data,const size_t length)
       /* First see how big the buffer currently is */
       hr = SafeArrayGetLBound(pSafeArray, 1, &lBoundl);
       if (FAILED(hr))
-	return MagickFalse;
+        return MagickFalse;
       hr = SafeArrayGetUBound(pSafeArray, 1, &lBoundu);
       if (FAILED(hr))
-	return MagickFalse;
+        return MagickFalse;
       lCount = lBoundu - lBoundl + 1;
 
       if (length>0)
-	{
-	  unsigned char       *pReturnBuffer = NULL;
-	  NewArrayBounds[0].lLbound = 0;   /* Start-Index 0 */
-	  NewArrayBounds[0].cElements = (unsigned long) length+lCount;  /* # Elemente */
-	  hr = SafeArrayRedim(pSafeArray, NewArrayBounds);
-	  if (FAILED(hr))
-	    return 0;
-	  hr = SafeArrayAccessData(pSafeArray, (void**)&pReturnBuffer);
-	  if( FAILED(hr) )
-	    return 0;
-	  memcpy( pReturnBuffer+lCount, (unsigned char *)data, length );
-	  hr = SafeArrayUnaccessData(pSafeArray);
-	  if( FAILED(hr) )
-	    return 0;
-	}
+        {
+          unsigned char       *pReturnBuffer = NULL;
+          NewArrayBounds[0].lLbound = 0;   /* Start-Index 0 */
+          NewArrayBounds[0].cElements = (unsigned long) length+lCount;  /* # Elemente */
+          hr = SafeArrayRedim(pSafeArray, NewArrayBounds);
+          if (FAILED(hr))
+            return 0;
+          hr = SafeArrayAccessData(pSafeArray, (void**)&pReturnBuffer);
+          if( FAILED(hr) )
+            return 0;
+          memcpy( pReturnBuffer+lCount, (unsigned char *)data, length );
+          hr = SafeArrayUnaccessData(pSafeArray);
+          if( FAILED(hr) )
+            return 0;
+        }
       else
-	{
-	  /* Adjust the length of the buffer to fit */
-	}
+        {
+          /* Adjust the length of the buffer to fit */
+        }
     }
   return((int) tlen);
 }
@@ -458,7 +458,7 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
       if (clone_info->filename[0])
         {
           (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x,%s",
-	      (MAGICK_SIZE_T *)&param1, (MAGICK_SIZE_T *)&param2,&filename);
+              (MAGICK_SIZE_T *)&param1, (MAGICK_SIZE_T *)&param2,&filename);
 
           blob_data=(char **) param1;
           blob_length=(size_t *) param2;
@@ -466,10 +466,10 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
           scene = 0;
           (void) strcpy(clone_info->filename, filename);
           for (p=image; p != (Image *) NULL; p=p->next)
-	    {
-	      (void) strcpy(p->filename, filename);
-	      p->scene=scene++;
-	    }
+            {
+              (void) strcpy(p->filename, filename);
+              p->scene=scene++;
+            }
           SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
           (void) strcpy(image->magick,clone_info->magick);
           GetExceptionInfo(&exception);
@@ -501,18 +501,18 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
       if (clone_info->filename[0])
         {
           (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%s",
-	      (MAGICK_SIZE_T *)&param1,&filename);
+              (MAGICK_SIZE_T *)&param1,&filename);
 
           image->client_data=param1;
 
           scene = 0;
-	  blob_length = 0;
+          blob_length = 0;
           (void) strcpy(clone_info->filename, filename);
           for (p=image; p != (Image *) NULL; p=p->next)
-	    {
-	      (void) strcpy(p->filename, filename);
-	      p->scene=scene++;
-	    }
+            {
+              (void) strcpy(p->filename, filename);
+              p->scene=scene++;
+            }
           SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
           (void) strcpy(image->magick,clone_info->magick);
           GetExceptionInfo(&exception);

@@ -1,39 +1,39 @@
-/* 
-% Copyright (C) 2003, 2004 GraphicsMagick Group 
-% 
-% This program is covered by multiple licenses, which are described in 
-% Copyright.txt. You should have received a copy of Copyright.txt with this 
-% package; otherwise see http://www.graphicsmagick.org/www/Copyright.html. 
-% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%                                                                             % 
-%                                                                             % 
-%                                                                             % 
-%                  L       OOO    CCCC   AAA   L      EEEEE                   % 
-%                  L      O   O  C      A   A  L      E                       % 
-%                  L      O   O  C      AAAAA  L      EEE                     % 
-%                  L      O   O  C      A   A  L      E                       % 
-%                  LLLLL   OOO    CCCC  A   A  LLLLL  EEEEE                   % 
-%                                                                             % 
-%                                                                             % 
-%                   GraphicsMagick Locale Message Methods                     % 
-%                                                                             % 
-%                                                                             % 
-%                              Software Design                                % 
-%                            William T. Radcliffe                             % 
-%                                 July 2003                                   % 
-%                                                                             % 
-%                                                                             % 
-%                                                                             % 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% 
-*/ 
+/*
+% Copyright (C) 2003, 2004 GraphicsMagick Group
+%
+% This program is covered by multiple licenses, which are described in
+% Copyright.txt. You should have received a copy of Copyright.txt with this
+% package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%                  L       OOO    CCCC   AAA   L      EEEEE                   %
+%                  L      O   O  C      A   A  L      E                       %
+%                  L      O   O  C      AAAAA  L      EEE                     %
+%                  L      O   O  C      A   A  L      E                       %
+%                  LLLLL   OOO    CCCC  A   A  LLLLL  EEEEE                   %
+%                                                                             %
+%                                                                             %
+%                   GraphicsMagick Locale Message Methods                     %
+%                                                                             %
+%                                                                             %
+%                              Software Design                                %
+%                            William T. Radcliffe                             %
+%                                 July 2003                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+*/
  
-/* 
-  Include declarations. 
-*/ 
+/*
+  Include declarations.
+*/
 #include "studio.h"
-#include "utility.h" 
+#include "utility.h"
 #define _INCLUDE_CATEGORYMAP_TABLE_
 #define _INCLUDE_SEVERITYMAP_TABLE_
 #define _INCLUDE_TAGMAP_TABLE_
@@ -238,29 +238,29 @@ GetLocaleMessageFromTag(const char *tag)
   return tag;
 }
 
-/* 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%                                                                             % 
-%                                                                             % 
-%                                                                             % 
-%   G e t L o c a l e M e s s a g e                                           % 
-%                                                                             % 
-%                                                                             % 
-%                                                                             % 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% 
-%  GetLocaleMessage() returns a message in the current locale that matches the 
-%  supplied tag. 
-% 
-%  The format of the GetLocaleMessage method is: 
-% 
-%      const char *GetLocaleMessage(const char *tag) 
-% 
-%  A description of each parameter follows: 
-% 
-%    o tag: Return a message that matches this tag in the current locale. 
-% 
-% 
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   G e t L o c a l e M e s s a g e                                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  GetLocaleMessage() returns a message in the current locale that matches the
+%  supplied tag.
+%
+%  The format of the GetLocaleMessage method is:
+%
+%      const char *GetLocaleMessage(const char *tag)
+%
+%  A description of each parameter follows:
+%
+%    o tag: Return a message that matches this tag in the current locale.
+%
+%
 */
 MagickExport const char *
 GetLocaleMessage(const char *tag)

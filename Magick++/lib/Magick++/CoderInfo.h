@@ -20,9 +20,9 @@ namespace Magick
   public:
 
     enum MatchType {
-      AnyMatch,		// match any coder
-      TrueMatch,	// match coder if true
-      FalseMatch	// match coder if false
+      AnyMatch,         // match any coder
+      TrueMatch,        // match coder if true
+      FalseMatch        // match coder if false
     };
 
     // Default constructor
@@ -62,12 +62,12 @@ namespace Magick
 
   private:
 
-    std::string		_name;
-    std::string		_description;
-    bool		_isReadable;
-    bool		_isWritable;
-    bool		_isMultiFrame;
-    
+    std::string         _name;
+    std::string         _description;
+    bool                _isReadable;
+    bool                _isWritable;
+    bool                _isMultiFrame;
+
   };
 } // namespace Magick
 

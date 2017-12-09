@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -82,6 +82,11 @@ static unsigned int
 %
 %
 */
+#define ThrowCMYKReaderException(code_,reason_,image_) \
+{ \
+  MagickFreeMemory(scanline);                 \
+  ThrowReaderException(code_,reason_,image_); \
+}
 static Image *ReadCMYKImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -92,17 +97,18 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
     y;
 
   register long
-    i,
-    x;
+    i;
 
   register PixelPacket
     *q;
 
   size_t
-    count;
+    count,
+    tile_packets,
+    x;
 
   unsigned char
-    *scanline;
+    *scanline = (unsigned char *) NULL;
 
   unsigned int
     status;
@@ -119,8 +125,33 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Size %lux%lu", image->columns, image->rows);
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Tile %lux%lu%+ld%+ld, Offset %lu",
+                          image->tile_info.width,image->tile_info.height,
+                          image->tile_info.x,image->tile_info.y,
+                          image->offset);
+  /*
+    There is the option to either require that the tile be within the
+    image bounds or to return only the portion of the tile which is
+    within the image bounds (returned image is smaller than requested
+    tile size).  For the moment we choose the former.
+  */
+  if ((image->tile_info.width > image->columns) ||
+      (image->tile_info.x < 0) ||
+      (image->tile_info.width+image->tile_info.x > image->columns) ||
+      (image->tile_info.height > image->rows) ||
+      (image->tile_info.y < 0) ||
+      (image->tile_info.height+image->tile_info.y > image->rows)
+      )
+    ThrowReaderException(OptionError,TileNotBoundedByImageDimensions,image);
+
   if (image_info->interlace != PartitionInterlace)
     {
       /*
@@ -128,7 +159,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       */
       status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
       if (status == False)
-        ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+        ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
       for (i=0; i < image->offset; i++)
         {
           if (EOF == ReadBlobByte(image))
@@ -137,22 +168,16 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         }
     }
 
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Tile %lux%lu%+ld%+ld",
-			  image->tile_info.width,image->tile_info.height,
-			  image->tile_info.x,image->tile_info.y);
-
   /*
     Allocate memory for a scanline.
   */
 
   if (image->depth <= 8)
-    quantum_size=8;
+    quantum_size=8U;
   else if (image->depth <= 16)
-    quantum_size=16;
+    quantum_size=16U;
   else
-    quantum_size=32;
+    quantum_size=32U;
 
   packet_size=(quantum_size*4)/8;
   if (LocaleCompare(image_info->magick,"CMYKA") == 0)
@@ -161,9 +186,17 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       packet_size=(quantum_size*5)/8;
     }
   scanline=MagickAllocateArray(unsigned char *,
-			       packet_size,image->tile_info.width);
+                               packet_size,image->columns);
   if (scanline == (unsigned char *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  tile_packets=(size_t) packet_size*image->tile_info.width;
+  x=(size_t) (packet_size*image->tile_info.x);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "image->tile_info.x=%lu, packet_size=%u, "
+                          "x=%" MAGICK_SIZE_T_F "u",
+                          image->tile_info.x, packet_size,
+                          (MAGICK_SIZE_T) x);
   /*
     Initialize import options.
   */
@@ -173,10 +206,10 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Depth %u bits, Endian %s, Interlace %s",
-			  quantum_size,
-			  EndianTypeToString(import_options.endian),
-			  InterlaceTypeToString(image_info->interlace));
+                          "Depth %u bits, Endian %s, Interlace %s",
+                          quantum_size,
+                          EndianTypeToString(import_options.endian),
+                          InterlaceTypeToString(image_info->interlace));
   /*
     Support starting at intermediate image frame.
   */
@@ -188,9 +221,9 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       */
       image->scene++;
       for (y=0; y < (long) image->rows; y++)
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
     }
-  x=(long) (packet_size*image->tile_info.x);
   do
   {
     /*
@@ -209,32 +242,35 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           No interlacing:  CMYKCMYKCMYKCMYKCMYKCMYK...
         */
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           if (!image->matte)
             (void) ImportImagePixelArea(image,CMYKQuantum,quantum_size,scanline+x,
-					&import_options,0);
+                                        &import_options,0);
           else
             (void) ImportImagePixelArea(image,CMYKAQuantum,quantum_size,scanline+x,
-					&import_options,0);
+                                        &import_options,0);
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         break;
       }
       case LineInterlace:
@@ -244,31 +280,36 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         */
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,CyanQuantum,quantum_size,scanline+x,
-				      &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+                                      &import_options,0);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,MagentaQuantum,quantum_size,scanline+x,
-				      &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+                                      &import_options,0);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,YellowQuantum,quantum_size,scanline+x,
-				      &import_options,0);
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+                                      &import_options,0);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           (void) ImportImagePixelArea(image,BlackQuantum,quantum_size,scanline+x,
-				      &import_options,0);
+                                      &import_options,0);
           if (image->matte)
             {
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
               (void) ImportImagePixelArea(image,AlphaQuantum,quantum_size,scanline+x,
-					  &import_options,0);
+                                          &import_options,0);
             }
           if (!SyncImagePixels(image))
             break;
@@ -276,12 +317,13 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         break;
       }
       case PlaneInterlace:
@@ -298,128 +340,140 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
             AppendImageFormat("C",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         packet_size=(quantum_size)/8;
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         i=0;
         span=image->rows*(image->matte ? 5 : 4);
         for (y=0; y < (long) image->rows; y++)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+            if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+              break;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,CyanQuantum,quantum_size,scanline+x,
-				      &import_options,0);
+                                      &import_options,0);
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(i,span))
               if (!MagickMonitorFormatted(i,span,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
           i++;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
             AppendImageFormat("M",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,MagentaQuantum,quantum_size,scanline+x,
-				      &import_options,0);
+                                      &import_options,0);
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(i,span))
               if (!MagickMonitorFormatted(i,span,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
           i++;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
             AppendImageFormat("Y",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,YellowQuantum,quantum_size,scanline+x,
-				      &import_options,0);
+                                      &import_options,0);
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(i,span))
               if (!MagickMonitorFormatted(i,span,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
           i++;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image_info->interlace == PartitionInterlace)
           {
             CloseBlob(image);
             AppendImageFormat("K",image->filename);
             status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
             if (status == False)
-              ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+              ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         for (y=0; y < image->tile_info.y; y++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         for (y=0; y < (long) image->rows; y++)
         {
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           (void) ImportImagePixelArea(image,BlackQuantum,quantum_size,scanline+x,
-				      &import_options,0);
+                                      &import_options,0);
           if (!SyncImagePixels(image))
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(i,span))
               if (!MagickMonitorFormatted(i,span,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
           i++;
         }
         count=image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
-          (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+          if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+            break;
         if (image->matte)
           {
             /*
@@ -431,34 +485,34 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 AppendImageFormat("A",image->filename);
                 status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
                 if (status == False)
-                  ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+                  ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
               }
             for (y=0; y < image->tile_info.y; y++)
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
             for (y=0; y < (long) image->rows; y++)
             {
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline)  != tile_packets)
+                break;
               q=GetImagePixels(image,0,y,image->columns,1);
               if (q == (PixelPacket *) NULL)
                 break;
               (void) ImportImagePixelArea(image,AlphaQuantum,quantum_size,scanline+x,
-					  &import_options,0);
+                                          &import_options,0);
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
                 if (QuantumTick(i,span))
                   if (!MagickMonitorFormatted(i,span,&image->exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
               i++;
             }
             count=image->tile_info.height-image->rows-image->tile_info.y;
             for (i=0; i < (long) count; i++)
-              (void) ReadBlob(image,packet_size*image->tile_info.width,
-                scanline);
+              if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+                break;
           }
         if (image_info->interlace == PartitionInterlace)
           (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
@@ -479,8 +533,8 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         break;
     if (image_info->interlace == PartitionInterlace)
       break;
-    count=ReadBlob(image,packet_size*image->tile_info.width,scanline);
-    if (count != 0)
+    count=ReadBlob(image,tile_packets,scanline);
+    if (count == tile_packets)
       {
         /*
           Allocate next image structure.
@@ -608,16 +662,17 @@ ModuleExport void UnregisterCMYKImage(void)
 */
 static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
 {
-  int
+  long
     y;
 
   register const PixelPacket
     *p;
 
   unsigned char
-    *pixels;
+    *pixels = (unsigned char *) NULL;
 
   unsigned int
+    depth,
     packet_size,
     quantum_size,
     scene,
@@ -629,27 +684,11 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
   ExportPixelAreaInfo
     export_info;
 
-  if (image->depth <= 8)
-    quantum_size=8;
-  else if (image->depth <= 16)
-    quantum_size=16;
-  else
-    quantum_size=32;
-  
-
-  /*
-    Allocate memory for pixels.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  packet_size=(quantum_size*4)/8;
-  if (LocaleCompare(image_info->magick,"CMYKA") == 0)
-    packet_size=(quantum_size*5)/8;
-  pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
-  if (pixels == (unsigned char *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
   if (image_info->interlace != PartitionInterlace)
     {
       /*
@@ -659,16 +698,39 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
       if (status == False)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
     }
+
+  /*
+    Support depth in multiples of 8 bits.
+  */
+  if (image->depth > 16)
+    depth=32;
+  else if (image->depth > 8)
+    depth=16;
+  else
+    depth=8;
+
+  if (depth <= 8)
+    quantum_size=8;
+  else if (depth <= 16)
+    quantum_size=16;
+  else
+    quantum_size=32;
+
+  packet_size=(quantum_size*4)/8;
+  if (LocaleCompare(image_info->magick,"CMYKA") == 0)
+    packet_size=(quantum_size*5)/8;
+
   scene=0;
   do
   {
     /*
-      Convert MIFF to CMYK raster pixels.
+      Allocate memory for pixels.
     */
-    (void) TransformColorspace(image,CMYKColorspace);
-    if (LocaleCompare(image_info->magick,"CMYKA") == 0)
-      if (!image->matte)
-        SetImageOpacity(image,OpaqueOpacity);
+    MagickReallocMemory(unsigned char *,pixels,
+                        MagickArraySize(packet_size,image->columns));
+    if (pixels == (unsigned char *) NULL)
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
     /*
       Initialize export options.
     */
@@ -677,10 +739,28 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
       export_options.endian=image->endian;
     else if (image_info->endian != UndefinedEndian)
       export_options.endian=image_info->endian;
-    if (image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "Image depth %u bits, Endian %s",quantum_size,
-			    EndianTypeToString(export_options.endian));
+
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "%lu: "
+                          "Geometry %lux%lu, "
+                          "Depth %u bits, "
+                          "Endian %s, Packet Size %u, "
+                          "Row bytes %" MAGICK_SIZE_T_F "u",
+                          image->scene,
+                          image->columns,image->rows,
+                          quantum_size,
+                          EndianTypeToString(export_options.endian),
+                          packet_size,
+                          (MAGICK_SIZE_T) MagickArraySize(packet_size,image->columns));
+
+    /*
+      Convert MIFF to CMYK raster pixels.
+    */
+    (void) TransformColorspace(image,CMYKColorspace);
+    if (LocaleCompare(image_info->magick,"CMYKA") == 0)
+      if (!image->matte)
+        SetImageOpacity(image,OpaqueOpacity);
+
     switch (image_info->interlace)
     {
       case NoInterlace:
@@ -689,28 +769,22 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
         /*
           No interlacing:  CMYKCMYKCMYKCMYKCMYKCMYK...
         */
+        const QuantumType quantum_type =
+          (LocaleCompare(image_info->magick,"CMYKA") == 0) ? CMYKAQuantum :
+          CMYKQuantum;
         for (y=0; y < (long) image->rows; y++)
         {
           p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
           if (p == (const PixelPacket *) NULL)
             break;
-          if (LocaleCompare(image_info->magick,"CMYKA") != 0)
-            {
-              (void) ExportImagePixelArea(image,CMYKQuantum,quantum_size,pixels,
-					  &export_options,&export_info);
-              (void) WriteBlob(image,export_info.bytes_exported,pixels);
-            }
-          else
-            {
-              (void) ExportImagePixelArea(image,CMYKAQuantum,quantum_size,pixels,
-					  &export_options,&export_info);
-              (void) WriteBlob(image,export_info.bytes_exported,pixels);
-            }
+          (void) ExportImagePixelArea(image,quantum_type,quantum_size,pixels,
+                                      &export_options,&export_info);
+          (void) WriteBlob(image,export_info.bytes_exported,pixels);
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
         break;
@@ -726,27 +800,27 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           if (p == (const PixelPacket *) NULL)
             break;
           (void) ExportImagePixelArea(image,CyanQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
           (void) ExportImagePixelArea(image,MagentaQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
           (void) ExportImagePixelArea(image,YellowQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
           (void) ExportImagePixelArea(image,BlackQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
           if (LocaleCompare(image_info->magick,"CMYKA") == 0)
             {
               (void) ExportImagePixelArea(image,AlphaQuantum,quantum_size,pixels,
-					  &export_options,&export_info);
+                                          &export_options,&export_info);
               (void) WriteBlob(image,export_info.bytes_exported,pixels);
             }
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
         break;
@@ -771,7 +845,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           if (p == (const PixelPacket *) NULL)
             break;
           (void) ExportImagePixelArea(image,CyanQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
         }
         if (image_info->interlace == PartitionInterlace)
@@ -785,7 +859,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           }
         if (!MagickMonitorFormatted(100,400,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
         for (y=0; y < (long) image->rows; y++)
         {
@@ -793,7 +867,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           if (p == (const PixelPacket *) NULL)
             break;
           (void) ExportImagePixelArea(image,MagentaQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
         }
         if (image_info->interlace == PartitionInterlace)
@@ -807,7 +881,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           }
         if (!MagickMonitorFormatted(200,400,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
         for (y=0; y < (long) image->rows; y++)
         {
@@ -815,7 +889,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           if (p == (const PixelPacket *) NULL)
             break;
           (void) ExportImagePixelArea(image,YellowQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
         }
         if (image_info->interlace == PartitionInterlace)
@@ -829,7 +903,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           }
         if (!MagickMonitorFormatted(200,400,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
         for (y=0; y < (long) image->rows; y++)
         {
@@ -837,14 +911,14 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
           if (p == (const PixelPacket *) NULL)
             break;
           (void) ExportImagePixelArea(image,BlackQuantum,quantum_size,pixels,
-				      &export_options,&export_info);
+                                      &export_options,&export_info);
           (void) WriteBlob(image,export_info.bytes_exported,pixels);
         }
         if (LocaleCompare(image_info->magick,"CMYKA") == 0)
           {
             if (!MagickMonitorFormatted(300,400,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
             if (image_info->interlace == PartitionInterlace)
               {
@@ -862,7 +936,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
               if (p == (const PixelPacket *) NULL)
                 break;
               (void) ExportImagePixelArea(image,AlphaQuantum,quantum_size,pixels,
-					  &export_options,&export_info);
+                                          &export_options,&export_info);
               (void) WriteBlob(image,export_info.bytes_exported,pixels);
             }
           }

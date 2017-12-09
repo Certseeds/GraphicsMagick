@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 - 2014 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Log methods.
 */
 #ifndef _MAGICK_LOG_H
@@ -45,7 +45,7 @@ extern "C" {
 
 /* NOTE: any changes to this effect PerlMagick */
 typedef enum
-{ 
+{
   UndefinedEventMask     = 0x00000000,
   NoEventsMask           = 0x00000000,
   ConfigureEventMask     = 0x00000001,

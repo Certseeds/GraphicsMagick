@@ -140,13 +140,13 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else if (LocaleCompare(image_info->magick,"file") == 0)
     access_mode=URLGetFileConfirmAccessMode;
 
- 
+
   /* Attempt to re-compose original URL */
   (void) strlcpy(filename,image_info->magick,MaxTextExtent);
   LocaleLower(filename);
   (void) strlcat(filename,":",MaxTextExtent);
   (void) strlcat(filename,image_info->filename,MaxTextExtent);
- 
+
   if (MagickConfirmAccess(access_mode,filename,exception)
       == MagickFail)
     return image;

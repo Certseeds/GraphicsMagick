@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   ImageMagick Spinlock  Methods. These are highly lightweight functions that
   are used to prevent deadlocks on access to global data when the normal
   semaphore system has not yet been initialized. They are intended to only
@@ -58,7 +58,7 @@ static void _spinlock_release (LONG volatile *sl)
 
     To operate on a pointer variable, use the
     InterlockedExchangePointer function.
-    
+
     To operate on a 64-bit variable, use the InterlockedExchange64
     function.
   */

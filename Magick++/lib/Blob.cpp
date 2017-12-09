@@ -166,4 +166,3 @@ size_t Magick::Blob::length( void ) const
 {
   return _blobRef->_length;
 }
-

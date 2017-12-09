@@ -576,7 +576,7 @@ static MagickPassFail load_tile_rle (Image* image,
 
               if (size < 0)
                 {
-		  goto bogus_rle;
+                  goto bogus_rle;
                 }
     
               if (xcfdata > xcfdatalimit)
@@ -630,7 +630,7 @@ static MagickPassFail load_tile_rle (Image* image,
             }
         }
       if (SyncImagePixelsEx(tile_image,&tile_image->exception) == MagickFail)
-	break;
+        break;
     }
   MagickFreeMemory(xcfodata);
   return MagickPass;
@@ -930,7 +930,7 @@ static MagickPassFail load_level (Image* image,
         if (!MagickMonitorFormatted(offset,inDocInfo->file_size,
                                     &image->exception,LoadImageText,
                                     image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
     }
 
@@ -943,7 +943,7 @@ static MagickPassFail load_level (Image* image,
       (void) MagickMonitorFormatted(inDocInfo->file_size,
                                     inDocInfo->file_size+1,&image->exception,
                                     LoadImageText,image->filename,
-				    image->columns,image->rows);
+                                    image->columns,image->rows);
     }
 
   return MagickPass;
@@ -1551,7 +1551,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         *layer_info;
 
       unsigned long
-	number_layers = 0,
+        number_layers = 0,
         num_layers = 0;
 
       long
@@ -1595,8 +1595,8 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			      "XCF number_layers=%lu first_layer=%ld last_layer=%ld",
-			      number_layers, first_layer, last_layer);
+                              "XCF number_layers=%lu first_layer=%ld last_layer=%ld",
+                              number_layers, first_layer, last_layer);
 
       /* XCF has layers backwards, so this gets a bit complicated */
       T = last_layer;
@@ -1606,8 +1606,8 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			      "XCF reading layers %ld to %ld inclusive", first_layer,
-			      last_layer);
+                              "XCF reading layers %ld to %ld inclusive", first_layer,
+                              last_layer);
 
       /* allocate our array of layer info blocks */
       layer_info=MagickAllocateArray(XCFLayerInfo *,
@@ -1646,24 +1646,24 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
 
           if ( first_layer <= current_layer && current_layer <= last_layer )
-	    {
-	      /* seek to the layer offset */
-	      if (SeekBlob(image, offset, SEEK_SET) != offset)
+            {
+              /* seek to the layer offset */
+              if (SeekBlob(image, offset, SEEK_SET) != offset)
                 {
                   /* FIXME: CID 64064: leaks layer_info */
                   DestroyLayerInfo(number_layers,layer_info);
                   ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
                 }
 
-	      /* read in the layer */
-	      layer_ok = ReadOneLayer( image, &doc_info, &layer_info[current_layer-first_layer] );
-	      if (!layer_ok)
-		{
+              /* read in the layer */
+              layer_ok = ReadOneLayer( image, &doc_info, &layer_info[current_layer-first_layer] );
+              if (!layer_ok)
+                {
 #if 0
-		  int
-		    j;
+                  int
+                    j;
 
-		  for (j=0; j <= (current_layer-first_layer); j++)
+                  for (j=0; j <= (current_layer-first_layer); j++)
                     {
                       if (layer_info[j].image)
                         {
@@ -1671,86 +1671,86 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           layer_info[j].image = (Image *) NULL;
                         }
                     }
-		  MagickFreeMemory(layer_info);
+                  MagickFreeMemory(layer_info);
 #endif
                   DestroyLayerInfo(number_layers,layer_info);
-		  CopyException(exception,&image->exception);
-		  CloseBlob(image);
-		  DestroyImageList(image);
-		  return (Image *) NULL;
-		}
-	      /* restore the saved position so we'll be ready to
-	       *  read the next offset.
-	       */
-	      if (SeekBlob(image, saved_pos, SEEK_SET) != saved_pos)
+                  CopyException(exception,&image->exception);
+                  CloseBlob(image);
+                  DestroyImageList(image);
+                  return (Image *) NULL;
+                }
+              /* restore the saved position so we'll be ready to
+               *  read the next offset.
+               */
+              if (SeekBlob(image, saved_pos, SEEK_SET) != saved_pos)
                 {
                   /* FIXME: CID 64064: leaks layer_info */
                   DestroyLayerInfo(number_layers,layer_info);
                   ThrowReaderException(BlobError,UnableToSeekToOffset,image);
                 }
-	    }
+            }
 
           current_layer++;
         }
 
       if ( number_layers == 1 )
-	{
-	  /* composite the layer data onto the main image & then dispose the layer */
-	  (void) CompositeImage(image, OverCompositeOp, layer_info[0].image,
-				layer_info[0].offset_x, layer_info[0].offset_y );
-	  DestroyImage( layer_info[0].image );
+        {
+          /* composite the layer data onto the main image & then dispose the layer */
+          (void) CompositeImage(image, OverCompositeOp, layer_info[0].image,
+                                layer_info[0].offset_x, layer_info[0].offset_y );
+          DestroyImage( layer_info[0].image );
           layer_info[0].image = (Image *) NULL;
-	}
+        }
       else
-	{
+        {
 #if 0
-	  {
-	    /* NOTE: XCF layers are REVERSED from composite order! */
-	    long
-	      j;
+          {
+            /* NOTE: XCF layers are REVERSED from composite order! */
+            long
+              j;
 
-	    for (j=number_layers-1; j>=0; j--) {
-	      /* BOGUS: need to consider layer blending modes!! */
-	      if ( layer_info[j].visible ) { /* only visible ones, please! */
-		CompositeImage(image, OverCompositeOp, layer_info[j].image,
-			       layer_info[j].offset_x, layer_info[j].offset_y );
-		DestroyImage( layer_info[j].image );
+            for (j=number_layers-1; j>=0; j--) {
+              /* BOGUS: need to consider layer blending modes!! */
+              if ( layer_info[j].visible ) { /* only visible ones, please! */
+                CompositeImage(image, OverCompositeOp, layer_info[j].image,
+                               layer_info[j].offset_x, layer_info[j].offset_y );
+                DestroyImage( layer_info[j].image );
                 layer_info[j].image = (Image *) NULL;
-	      }
-	    }
-	  }
+              }
+            }
+          }
 #else
-	  {
-	    /* NOTE: XCF layers are REVERSED from composite order! */
-	    long
-	      j;
+          {
+            /* NOTE: XCF layers are REVERSED from composite order! */
+            long
+              j;
 
-	    /* first we copy the last layer on top of the main image */
-	    (void) CompositeImage(image, CopyCompositeOp, layer_info[number_layers-1].image,
-				  layer_info[number_layers-1].offset_x,
-				  layer_info[number_layers-1].offset_y );
-	    DestroyImage( layer_info[number_layers-1].image );
+            /* first we copy the last layer on top of the main image */
+            (void) CompositeImage(image, CopyCompositeOp, layer_info[number_layers-1].image,
+                                  layer_info[number_layers-1].offset_x,
+                                  layer_info[number_layers-1].offset_y );
+            DestroyImage( layer_info[number_layers-1].image );
             layer_info[number_layers-1].image = (Image *) NULL;
 
-	    /* now reverse the order of the layers as they are put
-	       into subimages
-	    */
-	    image->next=layer_info[number_layers-2].image;
-	    layer_info[number_layers-2].image->previous=image;
-	    for (j=(long) number_layers-2; j >= 0; j--)
-	      {
-		if (j > 0)
-		  layer_info[j].image->next=layer_info[j-1].image;
-		if (j < ((long) number_layers-1))
-		  layer_info[j].image->previous=layer_info[j+1].image;
-		layer_info[j].image->page.x = layer_info[j].offset_x;
-		layer_info[j].image->page.y = layer_info[j].offset_y;
-		layer_info[j].image->page.width = layer_info[j].width;
-		layer_info[j].image->page.height = layer_info[j].height;
-	      }
-	  }
+            /* now reverse the order of the layers as they are put
+               into subimages
+            */
+            image->next=layer_info[number_layers-2].image;
+            layer_info[number_layers-2].image->previous=image;
+            for (j=(long) number_layers-2; j >= 0; j--)
+              {
+                if (j > 0)
+                  layer_info[j].image->next=layer_info[j-1].image;
+                if (j < ((long) number_layers-1))
+                  layer_info[j].image->previous=layer_info[j+1].image;
+                layer_info[j].image->page.x = layer_info[j].offset_x;
+                layer_info[j].image->page.y = layer_info[j].offset_y;
+                layer_info[j].image->page.width = layer_info[j].width;
+                layer_info[j].image->page.height = layer_info[j].height;
+              }
+          }
 #endif
-	}
+        }
 
       MagickFreeMemory(layer_info);
 

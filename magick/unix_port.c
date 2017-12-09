@@ -78,10 +78,10 @@ MagickExport long MagickGetMMUPageSize(void)
 #endif /* defined(HAVE_SYSCONF) && defined(_SC_PAGE_SIZE) */
 #if defined(HAVE_GETPAGESIZE)
       if (pagesize <= 0)
-	pagesize=getpagesize();
+        pagesize=getpagesize();
 #endif /* defined(HAVE_GETPAGESIZE) */
       if (pagesize <= 0)
-	pagesize=16384;
+        pagesize=16384;
     }
 
   return pagesize;

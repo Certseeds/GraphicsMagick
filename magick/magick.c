@@ -168,7 +168,7 @@ DestroyMagick(void)
     }
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			"Destroy Magick");
+                        "Destroy Magick");
 
   MagickDestroyCommandInfo();   /* Command parser */
 #if defined(HasX11)
@@ -394,7 +394,7 @@ GetMagickInfoEntryLocked(const char *name)
       for (p=magick_list; p != (MagickInfo *) NULL; p=p->next)
         if (LocaleCompare(p->name,name) == 0)
           break;
-      
+
       if (p != (MagickInfo *) NULL)
         if (p != magick_list)
           {
@@ -428,24 +428,24 @@ GetMagickInfo(const char *name,ExceptionInfo *exception)
     {
       LockSemaphoreInfo(module_semaphore);
       if (name[0] == '*')
-	{
-	  /*
-	    If all modules are requested, then use OpenModules to load all
-	    modules.
-	  */
-	  (void) OpenModules(exception);
-	}
+        {
+          /*
+            If all modules are requested, then use OpenModules to load all
+            modules.
+          */
+          (void) OpenModules(exception);
+        }
       else
-	{
-	  magick_info=GetMagickInfoEntryLocked(name);
-	  if (magick_info == (const MagickInfo *) NULL)
-	    {
-	      /*
-		Try to load a supporting module.
-	      */
-	      (void) OpenModule(name,exception);
-	    }
-	}
+        {
+          magick_info=GetMagickInfoEntryLocked(name);
+          if (magick_info == (const MagickInfo *) NULL)
+            {
+              /*
+                Try to load a supporting module.
+              */
+              (void) OpenModule(name,exception);
+            }
+        }
       UnlockSemaphoreInfo(module_semaphore);
     }
 #else
@@ -835,16 +835,16 @@ MagickPanicSignalHandler(int signo)
       MagickSignalHandlerMessage(signo,"abort");
 
       /*
-	Call abort so that we quit with core dump.
+        Call abort so that we quit with core dump.
       */
       abort();
     }
 }
 
 static MagickBool QuitProgressMonitor(const char *task,
-				      const magick_int64_t quantum,
-				      const magick_uint64_t span,
-				      ExceptionInfo *exception)
+                                      const magick_int64_t quantum,
+                                      const magick_uint64_t span,
+                                      ExceptionInfo *exception)
 {
   ARG_NOT_USED(task);
   ARG_NOT_USED(quantum);
@@ -870,13 +870,13 @@ MagickSignalHandler(int signo)
   if (1 == quit_signal_handler_call_count)
     {
       if (MagickInitialized == InitInitialized)
-	{
+        {
 
-	  /*
-	    Set progress monitor handler to one which always returns
-	    MagickFail.
-	  */
-	  (void) SetMonitorHandler(QuitProgressMonitor);
+          /*
+            Set progress monitor handler to one which always returns
+            MagickFail.
+          */
+          (void) SetMonitorHandler(QuitProgressMonitor);
 
           /*
             Release persistent resources
@@ -888,11 +888,11 @@ MagickSignalHandler(int signo)
           */
           if (signo != SIGINT)
             MagickSignalHandlerMessage(signo,"quitting");
-	}
+        }
 
       /*
-	Invoke _exit(signo) (or equivalent) which avoids invoking
-	registered atexit() functions.
+        Invoke _exit(signo) (or equivalent) which avoids invoking
+        registered atexit() functions.
       */
       SignalHandlerExit(signo);
     }
@@ -900,7 +900,7 @@ MagickSignalHandler(int signo)
 
 /*
    The goal of this routine is to determine whether the passed
-   string is a valid and complete path to a file within the 
+   string is a valid and complete path to a file within the
    filesystem
  */
 #if !defined(UseInstalledMagick)
@@ -916,7 +916,7 @@ IsValidFilesystemPath(const char *path)
       if ((*path == *DirectorySeparator))
         return IsAccessibleNoLogging(path);
 #elif defined(MSWINDOWS)
-      /* For Windows we check to see if the path passed seems to be a 
+      /* For Windows we check to see if the path passed seems to be a
          pathof any kind (contains delimiters) or seem to be either UNC
          path or one with a drive letter spec in it: \\Server\share, C:\
       */
@@ -1094,13 +1094,13 @@ InitializeMagick(const char *path)
       SPINLOCK_RELEASE;
       return;
     }
-  
+
 #if defined(MSWINDOWS)
 # if defined(_DEBUG) && !defined(__BORLANDC__)
   {
     int
       debug;
-    
+
     debug=_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     debug|=_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_DELAY_FREE_MEM_DF |
       _CRTDBG_LEAK_CHECK_DF;
@@ -1120,7 +1120,7 @@ InitializeMagick(const char *path)
   InitializeMagickRandomGenerator();
 
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			"Initialize Magick");
+                        "Initialize Magick");
 
   /*
     Set the filesystem block size.
@@ -1133,7 +1133,7 @@ InitializeMagick(const char *path)
       {
         long
           block_size_long;
-    
+
         block_size_long = MagickAtoL(p);
         if ((block_size_long > 0L) && (block_size_long <= 2097152L))
           block_size=(size_t) block_size_long;
@@ -1142,7 +1142,7 @@ InitializeMagick(const char *path)
                                 "Ignoring unreasonable MAGICK_IOBUF_SIZE of "
                                 "%ld bbytes", block_size_long);
       }
-    
+
     MagickSetFileSystemBlockSize(block_size);
   }
 
@@ -1169,13 +1169,13 @@ InitializeMagick(const char *path)
   if ((p=getenv("MAGICK_CODER_STABILITY")) != (const char *) NULL)
     {
       if (LocaleCompare(p,"BROKEN") == 0)
-	MinimumCoderClass=BrokenCoderClass;
+        MinimumCoderClass=BrokenCoderClass;
       else if (LocaleCompare(p,"UNSTABLE") == 0)
-	MinimumCoderClass=UnstableCoderClass;
+        MinimumCoderClass=UnstableCoderClass;
       else if (LocaleCompare(p,"STABLE") == 0)
-	MinimumCoderClass=StableCoderClass;
+        MinimumCoderClass=StableCoderClass;
       else if (LocaleCompare(p,"PRIMARY") == 0)
-	MinimumCoderClass=PrimaryCoderClass;
+        MinimumCoderClass=PrimaryCoderClass;
     }
 
 #if defined(MSWINDOWS)
@@ -1195,8 +1195,8 @@ InitializeMagick(const char *path)
 
   /* Let's log the three important setting as we exit this routine */
   (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-			"Path: \"%s\" Name: \"%s\" Filename: \"%s\"",
-			GetClientPath(),GetClientName(),GetClientFilename());
+                        "Path: \"%s\" Name: \"%s\" Filename: \"%s\"",
+                        GetClientPath(),GetClientName(),GetClientFilename());
 
   /* Now initialized */
   MagickInitialized=InitInitialized;
@@ -1424,8 +1424,8 @@ ListModuleMap(FILE *file,ExceptionInfo *exception)
          {
            (void) fprintf(file, "  <module magick=\"%s\" name=\"%s\" />\n",
                           magick_array[i]->name,
-			  (magick_array[i]->module == NULL ? "(null)" :
-			   magick_array[i]->module));
+                          (magick_array[i]->module == NULL ? "(null)" :
+                           magick_array[i]->module));
          }
      }
    (void) fprintf(file, "</modulemap>\n");

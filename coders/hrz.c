@@ -157,7 +157,7 @@ DONE_READING:
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Function WriteHRZImage writes an HRZ image to a file.  
+%  Function WriteHRZImage writes an HRZ image to a file.
 %
 %  The format of the WriteHRZImage method is:
 %
@@ -178,7 +178,7 @@ DONE_READING:
 {
     if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return HRZ");
-  
+
   return(status);
 } */
 

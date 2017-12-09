@@ -1,11 +1,11 @@
 /*
   Copyright (C) 2003 - 2010 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Image Composite Methods.
 */
 #ifndef _MAGICK_COMPOSITE_H
@@ -44,7 +44,7 @@ extern MagickExport MagickPassFail
                        const long canvas_y,
                        ExceptionInfo *exception),
   MagickCompositeImageUnderColor(Image *image,const PixelPacket *undercolor,
-				 ExceptionInfo *exception);
+                                 ExceptionInfo *exception);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

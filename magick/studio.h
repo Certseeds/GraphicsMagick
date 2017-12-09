@@ -1,11 +1,11 @@
 /*
-  Copyright (C) 2003 - 2016 GraphicsMagick Group
+  Copyright (C) 2003 - 2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Application Programming Interface declarations.
 */
 #ifndef _MAGICK_STUDIO_H
@@ -356,12 +356,12 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #endif
 #define Max(x,y)  (((x) > (y)) ? (x) : (y))
 #define Min(x,y)  (((x) < (y)) ? (x) : (y))
-#define NumberOfObjectsInArray(octets,size) ((octets+size-1)/size)
+#define NumberOfObjectsInArray(octets,size) (octets/size) /* rounds down */
 #define QuantumTick(i,span) \
   ((((i) % ((Max(101,span)-1)/100)) == 0) || \
     ((magick_int64_t) (i) == ((magick_int64_t) (span)-1)))
 #define RadiansToDegrees(x) (180.0*(x)/MagickPI)
-#define RoundUpToAlignment(offset,alignment)				\
+#define RoundUpToAlignment(offset,alignment)                            \
   (((offset)+((alignment)-1)) & ~((alignment)-1))
 #define AssertAlignment(offset,alignment) \
   (assert((((size_t) offset) % (size_t) alignment) == (size_t) 0))

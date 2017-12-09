@@ -283,7 +283,7 @@ MagickExport unsigned int PopImagePixels(const Image *image,
 {
   unsigned int
     quantum_size;
-  
+
   quantum_size=image->depth;
 
   if (quantum_size <= 8)
@@ -306,7 +306,7 @@ MagickExport unsigned int PopImagePixels(const Image *image,
   if (image->logging)
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
-  
+
   return ExportImagePixelArea(image,quantum_type,quantum_size,destination,0,0);
 }
 

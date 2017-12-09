@@ -20,7 +20,7 @@ extern "C" {
  * mutli-threaded DLLs using the multithreaded runtime DLLs.
  **/
 #  if defined(_MT) && defined(_DLL) && !defined(_LIB)
-#    pragma warning( disable: 4273 )	/* Disable the stupid dll linkage warnings */
+#    pragma warning( disable: 4273 )    /* Disable the stupid dll linkage warnings */
 #    if !defined(_WANDLIB_)
 #      define WandExport __declspec(dllimport)
 #    else

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -510,7 +510,10 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         */
         if (ReadBlob(image,viff_colormap_size,(char *) viff_colormap)
             != viff_colormap_size)
-          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          {
+            MagickFreeMemory(viff_colormap);
+            ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          }
 
         lsb_first=1;
         if (*(char *) &lsb_first &&
@@ -773,7 +776,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       }
@@ -797,7 +800,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       else
@@ -839,7 +842,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,exception,
                                             LoadImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
         }
@@ -1208,7 +1211,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       }
@@ -1251,7 +1254,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
         }
@@ -1303,7 +1306,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                               SaveImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
           }
@@ -1326,8 +1329,8 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
               if (image->previous == (Image *) NULL)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-					      SaveImageText,image->filename,
-					      image->columns,image->rows))
+                                              SaveImageText,image->filename,
+                                              image->columns,image->rows))
                     break;
             }
           }

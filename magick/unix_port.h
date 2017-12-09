@@ -1,12 +1,12 @@
 /*
   Copyright (C) 2007-2016 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
   Interfaces specific to Unix.
- 
+
 */
 #ifndef _UNIX_PORT_H
 #define _UNIX_PORT_H

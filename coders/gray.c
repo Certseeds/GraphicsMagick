@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -147,19 +147,22 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   Image
     *image;
 
+  unsigned long
+    j;
+
   long
-    j,
     y;
 
   register long
-    i,
-    x;
+    i;
 
   register PixelPacket
     *q;
 
   size_t
-    count;
+    count,
+    tile_packets,
+    x;
 
   unsigned char
     *scanline;
@@ -192,6 +195,27 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   image=AllocateImage(image_info);
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Tile %lux%lu%+ld%+ld, Offset %lu",
+                          image->tile_info.width,image->tile_info.height,
+                          image->tile_info.x,image->tile_info.y,
+                          image->offset);
+  /*
+    There is the option to either require that the tile be within the
+    image bounds or to return only the portion of the tile which is
+    within the image bounds (returned image is smaller than requested
+    tile size).  For the moment we choose the former.
+  */
+  if ((image->tile_info.width > image->columns) ||
+      (image->tile_info.x < 0) ||
+      (image->tile_info.width+image->tile_info.x > image->columns) ||
+      (image->tile_info.height > image->rows) ||
+      (image->tile_info.y < 0) ||
+      (image->tile_info.height+image->tile_info.y > image->rows)
+      )
+    ThrowReaderException(OptionError,TileNotBoundedByImageDimensions,image);
+
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
@@ -227,6 +251,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   scanline=MagickAllocateArray(unsigned char *,packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  tile_packets=(size_t) packet_size*image->tile_info.width;
+  x=(size_t) (packet_size*image->tile_info.x);
   /*
     Initialize import options.
   */
@@ -235,19 +261,12 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     import_options.endian=image_info->endian;
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			  "Depth: %u bits, "
-                          "Type: %s, "
-                          "Samples/Pixel: %u, "
-                          "Endian %s, "
-                          "Tile: %lux%lu%+ld%+ld",
-			  quantum_size,
+                          "Depth: %u bits, Type: %s, "
+                          "Samples/Pixel: %u, Endian %s",
+                          quantum_size,
                           QuantumTypeToString(quantum_type),
                           samples_per_pixel,
-			  EndianTypeToString(import_options.endian),
-                          image->tile_info.width,
-                          image->tile_info.height,
-                          image->tile_info.x,
-                          image->tile_info.y);
+                          EndianTypeToString(import_options.endian));
   /*
     Support starting at intermediate image frame.
   */
@@ -259,9 +278,9 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
       */
       image->scene++;
       for (y=0; y < (long) image->rows; y++)
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
     }
-  x=(long) (packet_size*image->tile_info.x);
   do
   {
     /*
@@ -271,7 +290,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     for (y=0; y < image->tile_info.y; y++)
-      (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+      if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+        break;
     /*
       Support GRAYA with matte channel
     */
@@ -280,27 +300,29 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     for (y=0; y < (long) image->rows; y++)
     {
       if ((y > 0) || (image->previous == (Image *) NULL))
-        (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+        if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+          break;
       q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
       if (!is_grayscale)
         (void) memset(q,0,sizeof(PixelPacket)*image->columns);
       (void) ImportImagePixelArea(image,quantum_type,quantum_size,scanline+x,
-        			  &import_options,0);
+                                  &import_options,0);
       if (!SyncImagePixelsEx(image,exception))
         break;
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,
                                       LoadImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     image->is_grayscale=is_grayscale;
     count=image->tile_info.height-image->rows-image->tile_info.y;
-    for (j=0; j < (long) count; j++)
-      (void) ReadBlob(image,packet_size*image->tile_info.width,scanline);
+    for (j=0; j < count; j++)
+      if (ReadBlob(image,tile_packets,scanline) != tile_packets)
+        break;
     if (EOFBlob(image))
       {
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
@@ -313,8 +335,8 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     if (image_info->subrange != 0)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
-    count=ReadBlob(image,packet_size*image->tile_info.width,scanline);
-    if (count != 0)
+    count=ReadBlob(image,tile_packets,scanline);
+    if (count == tile_packets)
       {
         /*
           Allocate next image structure.
@@ -526,14 +548,14 @@ ModuleExport void UnregisterGRAYImage(void)
 
 static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
 {
-  int
+  long
     y;
 
   register const PixelPacket
     *p;
 
   unsigned char
-    *scanline=0;
+    *scanline= (unsigned char *) NULL;
 
   unsigned int
     depth,
@@ -564,7 +586,7 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   quantum_type=MagickToQuantumType(image_info->magick,MagickFalse);
-  
+
   /*
     Support depth in multiples of 8 bits.
   */
@@ -574,23 +596,23 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     depth=16;
   else
     depth=8;
+
+  if (depth <= 8)
+    quantum_size=8;
+  else if (depth <= 16)
+    quantum_size=16;
+  else
+    quantum_size=32;
+
+  samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
+  packet_size=(quantum_size*samples_per_pixel)/8;
+
   /*
     Convert image to gray scale PseudoColor class.
   */
   scene=0;
   do
   {
-    /*
-      Allocate memory for scanline.
-    */
-    if (depth <= 8)
-      quantum_size=8;
-    else if (depth <= 16)
-      quantum_size=16;
-    else
-      quantum_size=32;
-    samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
-    packet_size=(quantum_size*samples_per_pixel)/8;
     /*
       Allocate scanline
     */
@@ -626,16 +648,20 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       export_options.endian=image->endian;
     else if (image_info->endian != UndefinedEndian)
       export_options.endian=image_info->endian;
-    if (image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Depth: %u bits, "
-                            "Type: %s, "
-                            "Samples/Pixel: %u, "
-                            "Endian %s",
-                            quantum_size,
-                            QuantumTypeToString(quantum_type),
-                            samples_per_pixel,
-                            EndianTypeToString(export_options.endian));
+
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "%lu: "
+                          "Geometry %lux%lu, "
+                          "Depth: %u bits, "
+                          "Type: %s, "
+                          "Samples/Pixel: %u, "
+                          "Endian %s",
+                          image->scene,
+                          image->columns,image->rows,
+                          quantum_size,
+                          QuantumTypeToString(quantum_type),
+                          samples_per_pixel,
+                          EndianTypeToString(export_options.endian));
     /*
       Convert MIFF to GRAY raster scanline.
     */
@@ -645,13 +671,13 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
       if (p == (const PixelPacket *) NULL)
         break;
       (void) ExportImagePixelArea(image,quantum_type,quantum_size,scanline,
-				  &export_options,&export_info);
+                                  &export_options,&export_info);
       (void) WriteBlob(image,export_info.bytes_exported,scanline);
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                       SaveImageText,image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     MagickFreeMemory(scanline);

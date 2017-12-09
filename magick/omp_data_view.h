@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2008 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick OpenMP Thread-Specific Data Methods.
 */
 #ifndef _MAGICK_OMP_DATA_VIEW
@@ -29,14 +29,14 @@ extern "C" {
 
     MagickFreeFunc
     destructor;
-    
+
     unsigned int
     nviews;
   } ThreadViewDataSet;
 
   extern MagickExport void
   DestroyThreadViewDataSet(ThreadViewDataSet *data_set);
-  
+
   extern MagickExport ThreadViewDataSet
   *AllocateThreadViewDataSet(const MagickFreeFunc destructor,
                              const Image *image,

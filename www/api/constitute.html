@@ -259,19 +259,20 @@ describes the reason for the failure.</p>
 <div class="section" id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-unsigned int WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
+MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
 </pre>
 </div>
 <div class="section" id="id10">
 <h2>Description</h2>
 <p>Use WriteImage() to write an image or an image sequence to a file or
 filehandle.  If writing to a file on disk, the name is defined by the
-filename member of the image structure.  Write() returns 0 is there is a
-memory shortage or if the image cannot be written.  Check the exception
-member of image to determine the cause for any failure.</p>
+filename member of the image structure.  WriteImage() returns
+MagickFailure is there is a memory shortage or if the image cannot be
+written.  Check the exception member of image to determine the cause
+for any failure.</p>
 <p>The format of the WriteImage method is:</p>
 <pre class="literal-block">
-unsigned int WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
+MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">
@@ -287,8 +288,8 @@ unsigned int WriteImage( const <a class="reference external" href="../api/types.
 <div class="section" id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-unsigned int WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
-                          const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
+MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
+                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
 </pre>
 </div>
 <div class="section" id="id12">
@@ -303,8 +304,8 @@ to include a printf-style formatting string for the frame number (e.g.
 &quot;image%02d.miff&quot;) so that the frames may be written.</p>
 <p>The format of the WriteImages method is:</p>
 <pre class="literal-block">
-unsigned int WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
-                          const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
+MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
+                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
 </pre>
 <dl class="docutils">
 <dt>image_info:</dt>

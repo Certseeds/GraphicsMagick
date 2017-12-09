@@ -38,46 +38,208 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated on July 4, 2017</p>
+<p>This file was last updated on December 9, 2017</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
-ChangeLog file for full details.</p>
+ChangeLog file, and/or the Mercurial changesets, for full details.</p>
+<p>Due to significant issues being discovered and addressed for almost
+every release, it is recommended to update to the most current
+release and not attempt to patch older releases.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#july-4-2017" id="id4">1.3.26 (July 4, 2017)</a></li>
-<li><a class="reference internal" href="#september-5-2016" id="id5">1.3.25 (September 5, 2016)</a></li>
-<li><a class="reference internal" href="#may-30-2016" id="id6">1.3.24 (May 30, 2016)</a></li>
-<li><a class="reference internal" href="#november-7-2015" id="id7">1.3.23 (November 7, 2015)</a></li>
-<li><a class="reference internal" href="#october-4-2015" id="id8">1.3.22 (October 4, 2015)</a></li>
-<li><a class="reference internal" href="#february-28-2015" id="id9">1.3.21 (February 28, 2015)</a></li>
-<li><a class="reference internal" href="#august-16-2014" id="id10">1.3.20 (August 16, 2014)</a></li>
-<li><a class="reference internal" href="#december-31-2013" id="id11">1.3.19 (December 31, 2013)</a></li>
-<li><a class="reference internal" href="#march-10-2013" id="id12">1.3.18 (March 10, 2013)</a></li>
-<li><a class="reference internal" href="#october-13-2012" id="id13">1.3.17 (October 13, 2012)</a></li>
-<li><a class="reference internal" href="#june-24-2012" id="id14">1.3.16 (June 24, 2012)</a></li>
-<li><a class="reference internal" href="#april-28-2012" id="id15">1.3.15 (April 28, 2012)</a></li>
-<li><a class="reference internal" href="#february-25-2012" id="id16">1.3.14 (February 25, 2012)</a></li>
-<li><a class="reference internal" href="#december-24-2011" id="id17">1.3.13 (December 24, 2011)</a></li>
-<li><a class="reference internal" href="#march-8-2010" id="id18">1.3.12 (March 8, 2010)</a></li>
-<li><a class="reference internal" href="#february-21-2010" id="id19">1.3.11 (February 21, 2010)</a></li>
-<li><a class="reference internal" href="#february-10-2010" id="id20">1.3.10 (February 10, 2010)</a></li>
-<li><a class="reference internal" href="#february-4-2010" id="id21">1.3.9 (February 4, 2010)</a></li>
-<li><a class="reference internal" href="#january-21-2010" id="id22">1.3.8 (January 21, 2010)</a></li>
-<li><a class="reference internal" href="#september-17-2009" id="id23">1.3.7 (September 17, 2009)</a></li>
-<li><a class="reference internal" href="#july-25-2009" id="id24">1.3.6 (July 25, 2009)</a></li>
-<li><a class="reference internal" href="#january-26-2009" id="id25">1.3.5 (January 26, 2009)</a></li>
-<li><a class="reference internal" href="#january-13-2009" id="id26">1.3.4 (January 13, 2009)</a></li>
-<li><a class="reference internal" href="#december-9-2008" id="id27">1.3.3 (December 9, 2008)</a></li>
-<li><a class="reference internal" href="#november-29-2008" id="id28">1.3.2 (November 29, 2008)</a></li>
-<li><a class="reference internal" href="#november-17-2008" id="id29">1.3.1 (November 17, 2008)</a></li>
-<li><a class="reference internal" href="#november-9-2008" id="id30">1.3 (November 9, 2008)</a></li>
-<li><a class="reference internal" href="#april-29-2008" id="id31">1.2 (April 29, 2008)</a></li>
-<li><a class="reference internal" href="#released-april-4-2004" id="id32">1.1 (Released April 4, 2004)</a></li>
-<li><a class="reference internal" href="#released-in-may-2003" id="id33">1.0 (Released in May, 2003)</a></li>
+<li><a class="reference internal" href="#december-9-2017" id="id2">1.3.27 (December 9, 2017)</a></li>
+<li><a class="reference internal" href="#july-4-2017" id="id3">1.3.26 (July 4, 2017)</a></li>
+<li><a class="reference internal" href="#september-5-2016" id="id4">1.3.25 (September 5, 2016)</a></li>
+<li><a class="reference internal" href="#may-30-2016" id="id5">1.3.24 (May 30, 2016)</a></li>
+<li><a class="reference internal" href="#november-7-2015" id="id6">1.3.23 (November 7, 2015)</a></li>
+<li><a class="reference internal" href="#october-4-2015" id="id7">1.3.22 (October 4, 2015)</a></li>
+<li><a class="reference internal" href="#february-28-2015" id="id8">1.3.21 (February 28, 2015)</a></li>
+<li><a class="reference internal" href="#august-16-2014" id="id9">1.3.20 (August 16, 2014)</a></li>
+<li><a class="reference internal" href="#december-31-2013" id="id10">1.3.19 (December 31, 2013)</a></li>
+<li><a class="reference internal" href="#march-10-2013" id="id11">1.3.18 (March 10, 2013)</a></li>
+<li><a class="reference internal" href="#october-13-2012" id="id12">1.3.17 (October 13, 2012)</a></li>
+<li><a class="reference internal" href="#june-24-2012" id="id13">1.3.16 (June 24, 2012)</a></li>
+<li><a class="reference internal" href="#april-28-2012" id="id14">1.3.15 (April 28, 2012)</a></li>
+<li><a class="reference internal" href="#february-25-2012" id="id15">1.3.14 (February 25, 2012)</a></li>
+<li><a class="reference internal" href="#december-24-2011" id="id16">1.3.13 (December 24, 2011)</a></li>
+<li><a class="reference internal" href="#march-8-2010" id="id17">1.3.12 (March 8, 2010)</a></li>
+<li><a class="reference internal" href="#february-21-2010" id="id18">1.3.11 (February 21, 2010)</a></li>
+<li><a class="reference internal" href="#february-10-2010" id="id19">1.3.10 (February 10, 2010)</a></li>
+<li><a class="reference internal" href="#february-4-2010" id="id20">1.3.9 (February 4, 2010)</a></li>
+<li><a class="reference internal" href="#january-21-2010" id="id21">1.3.8 (January 21, 2010)</a></li>
+<li><a class="reference internal" href="#september-17-2009" id="id22">1.3.7 (September 17, 2009)</a></li>
+<li><a class="reference internal" href="#july-25-2009" id="id23">1.3.6 (July 25, 2009)</a></li>
+<li><a class="reference internal" href="#january-26-2009" id="id24">1.3.5 (January 26, 2009)</a></li>
+<li><a class="reference internal" href="#january-13-2009" id="id25">1.3.4 (January 13, 2009)</a></li>
+<li><a class="reference internal" href="#december-9-2008" id="id26">1.3.3 (December 9, 2008)</a></li>
+<li><a class="reference internal" href="#november-29-2008" id="id27">1.3.2 (November 29, 2008)</a></li>
+<li><a class="reference internal" href="#november-17-2008" id="id28">1.3.1 (November 17, 2008)</a></li>
+<li><a class="reference internal" href="#november-9-2008" id="id29">1.3 (November 9, 2008)</a></li>
+<li><a class="reference internal" href="#april-29-2008" id="id30">1.2 (April 29, 2008)</a></li>
+<li><a class="reference internal" href="#released-april-4-2004" id="id31">1.1 (Released April 4, 2004)</a></li>
+<li><a class="reference internal" href="#released-in-may-2003" id="id32">1.0 (Released in May, 2003)</a></li>
+</ul>
+</div>
+<div class="section" id="december-9-2017">
+<h1><a class="toc-backref" href="#id2">1.3.27 (December 9, 2017)</a></h1>
+<p>Special Issues:</p>
+<ul class="simple">
+<li>None</li>
+</ul>
+<p>Security Fixes:</p>
+<ul class="simple">
+<li>CMYK: Fix heap overwrites in raw CMYK writer.  Fix heap overwrites
+in raw CMYK reader (noticed when doing montage).</li>
+<li>GIF: Assure that global colormap is initialized.</li>
+<li>DescribeImage(): Fix possible heap write overflow when describing
+visual image directory. Fix possible heap read overflow while
+accessing heap data, and possible information disclosure while
+describing the IPTC profile.</li>
+<li>DICOM: Fix huge memory allocation based on bogus length value (DOS
+opportunity).</li>
+<li>DrawDashPolygon(): Fix heap out of bounds read in render code.</li>
+<li>GRAY: Fix heap overwrites in raw GRAY reader (noticed when doing
+montage).</li>
+<li>JNG: Fix heap overruns.  Fix assertions.</li>
+<li>JNG: Prevent a crash due to zero-length color_image while reading a
+JNG image. (CVE-2017-11102).  Reject JNG files with unreasonable
+dimensions given the file size (avoid DOS).</li>
+<li>JNX: Fix DOS due to excessive memory allocations with corrupt file.</li>
+<li>JPEG: Do not allocate backing image pixels until a scanline has been
+successfully read.  Avoids DOS opportunity with suitably
+manufactured file.</li>
+<li>MAP: Fix null pointer dereference or segmentation violation.</li>
+<li>MAT: Fix heap write overflow.</li>
+<li>MNG: Reject over-large (65k by 65k) image.  Fix heap overwrites.</li>
+<li>PAM: Fix heap buffer overflow in PAM writer for 1 bit/sample + alpha.</li>
+<li>PICT: Fix excessive memory allocation due to malformed image file.</li>
+<li>PNG: Fix heap buffer overflow in PNG writer when promoting from
+indexed PNG to RGBA.</li>
+<li>PNM: Fix DOS due to excessive memory allocations with corrupt file.</li>
+<li>RGB: Fix heap overwrite in raw RGB writer. Fix heap overwrites in
+raw RGB reader (noticed when doing montage).</li>
+<li>RLE: Fix DOS opportunities due to false claims in image header.  Fix
+heap out of bounds read.</li>
+<li>SFW: Avoid possible heap write overflow.</li>
+<li>SUN: Fix heap read overflow.  Fix DOS due to excessive memory
+allocations with corrupt file.</li>
+<li>SVG: Fix heap write overflow.</li>
+<li>TIFF: Use heuristics to avoid DOS (excessive memory use) due to
+false claims by input file.  It is possible that this may reject
+some valid files.  Fix possible small heap overwrite beyond the
+allocated scanline buffer due to the NumberOfObjectsInArray() macro
+rounding up rather than down.</li>
+<li>UIL: Fix heap overwrite in writer.</li>
+<li>WPG: Fix DOS issues (memory, disk space, CPU time) due to
+insufficient validations.  Fix heap overwrites.</li>
+<li>XBM: Fix DOS issue where code remains stuck in loop and does not
+return.</li>
+<li>XV 332 (PNM): Fix null pointer dereference due to malformed file.</li>
+<li>TracePSClippingPath()/TraceSVGClippingPath(): Fix heap out of bounds
+read.</li>
+<li>Validate path entries in the MAGICK_CODER_MODULE_PATH and
+MAGICK_FILTER_MODULE_PATH environment variables and convert all
+paths to real paths if possible. This avoids possible use of
+relative paths to load modules (a possible security issue), or the
+possibility of adding a directory which was in the path, but
+missing, and may improve efficiency by removing non-existent paths.</li>
+</ul>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li>AVS: Memory leaks eliminated.</li>
+<li>CINEON: Fix possible use of NULL pointer.</li>
+<li>CMYK: Memory leaks eliminated.</li>
+<li>CUT: Memory leaks eliminated.  Fix possible use of NULL pointer.</li>
+<li>DCM: Fix possible use of NULL pointer.</li>
+<li>DrawImage(): Avoid &quot;negative&quot; strncpy().  This seems to be benign
+with glibc but perhaps not with other implementations.</li>
+<li>DPX: Memory leaks eliminated.</li>
+<li>EMF: Fix possible use of NULL pointer.</li>
+<li>FindMagickModule(): Fix possible use of NULL pointer.</li>
+<li>FITS: Fix memory leak.</li>
+<li>GIF: Fix memory leak.</li>
+<li>HDF: Memory leaks eliminated.</li>
+<li>HISTOGRAM: Fix memory leak.</li>
+<li>JNG: Memory leaks eliminated. Memory use after free and double-free
+issues eliminated.  Error reporting fixes.</li>
+<li>Magick::Options::strokeDashArray(): Fix possible use of NULL pointer.</li>
+<li>MagickXFileBrowserWidget(): Fix possible use of NULL pointer.</li>
+<li>MAT: Memory leaks eliminated.</li>
+<li>MagickMapCloneMap(): Fix possible assertion failure.</li>
+<li>MNG: Memory use after free issues eliminated.  Fix possible use of
+NULL pointer.  Fix memory leaks.</li>
+<li>MontageImageCommand(): Fix memory leaks.</li>
+<li>MPC: Fix memory leak in writer.</li>
+<li>MPEG: Fix memory leaks in writer.</li>
+<li>MTV: Memory leaks eliminated.</li>
+<li>NTRegistryKeyLookup(): Fix possible use of NULL pointer.</li>
+<li>NTGetTypeList(): Fix possible use of NULL pointer.</li>
+<li>PCD: Memory leaks eliminated.</li>
+<li>PCL: Fix null pointer dereference in PCL writer.</li>
+<li>PCX: Memory leaks eliminated.</li>
+<li>PALM: Fix possible use of NULL pointer. Fix memory leak.</li>
+<li>PICT: Memory leaks eliminated.</li>
+<li>PNG: Fix small (one-off) heap read overflow.</li>
+<li>PNM: Fix memory leaks.</li>
+<li>PS: Fix use of null pointer in error path.</li>
+<li>PWP: Fix possible use of null pointer.</li>
+<li>ReplaceImageColormap(): Throw an exception rather than assertion if
+the input image is not colormapped.</li>
+<li>RGB: Fix memory leak.</li>
+<li>SegmentImage(): Fix possible use of NULL pointer.</li>
+<li>SetImageProfile(): Fix possible assertion failure.</li>
+<li>SGI: Check for EOF while reading SGI file header.</li>
+<li>SUN: Fix memory leak.</li>
+<li>TIFF: Fix possible use of NULL pointer.  Fix memory leaks in writer.</li>
+<li>TIM: Fix memory leak.</li>
+<li>TOPOL: Fix possible use of NULL pointer.  Fix memory leaks.</li>
+<li>VIFF: Fix memory leak.</li>
+<li>WEBP: Detect partial write to output file.</li>
+<li>WPG: Fix possible use of null pointer. Fix excessive use of disk
+resources due to insufficient validations.</li>
+<li>WriteImage(): Restore use of GetBlobStatus() to test if an I/O error
+was encountered while writing output file. This assures that I/O
+failure in writers which do not themselves verify writes is assured
+to be reported.</li>
+<li>WMF: Memory use after free issues eliminated.</li>
+<li>YUV: Fix memory leaks.</li>
+</ul>
+<p>New Features:</p>
+<ul class="simple">
+<li>PNG: Implemented eXIf chunk support.</li>
+<li>WEBP: Add support for EXIF and ICC metadata provided that at least
+libwebp 0.5.0 is used.</li>
+<li>Magick++ Image autoOrient(): New Image method to auto-orient an
+image so it looks right-side up by default.</li>
+</ul>
+<p>Feature improvements:</p>
+<ul class="simple">
+<li>None</li>
+</ul>
+<p>Windows Delegate Updates/Additions:</p>
+<ul class="simple">
+<li>Libtiff is updated to libtiff 4.0.9.</li>
+</ul>
+<p>Build Changes:</p>
+<ul class="simple">
+<li>JPEG/PNG: The SETJMP_IS_THREAD_SAFE definition is used to determine
+if setjmp/longjmp are thread safe.  If these interfaces are thread
+safe, then concurrent reads/writes are possible.  This definition is
+false for Solaris but true for Linux.  JPEG and PNG will be fully
+concurrent if this definition is enabled.</li>
+</ul>
+<p>Behavior Changes:</p>
+<ul class="simple">
+<li>PALM: PALM writer is disabled.</li>
+<li>ThrowLoggedException(): Capture the first exception at
+ErrorException level or greater, or only capture exception if it is
+more severe than an already reported exception.</li>
+<li>DestroyJNG(): This internal function is now declared static and is
+removed from shared library or DLL namespace.</li>
 </ul>
 </div>
 <div class="section" id="july-4-2017">
-<h1><a class="toc-backref" href="#id4">1.3.26 (July 4, 2017)</a></h1>
+<h1><a class="toc-backref" href="#id3">1.3.26 (July 4, 2017)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
 <li>None</li>
@@ -136,33 +298,22 @@ library in state 0. (LibJpeg).&quot;).</li>
 <li>XCF: Error checking is improved.</li>
 </ul>
 <p>New Features:</p>
-<ul>
-<li><p class="first">EXIF rotation: Support is added such that the EXIF orientation tag
-is updated when the image is rotated.</p>
-</li>
-<li><p class="first">MAT: Now support reading multiple images from Matlab V4 format.</p>
-</li>
-<li><p class="first">Magick++: Orientation method now updates orientation in EXIF
-profile, if it exists.</p>
-</li>
-<li><p class="first">Magick++: Added Image attribute method which accepts a 'char <a href="#id1"><span class="problematic" id="id2">*</span></a>'
-argument, and will remove the attribute if the value argument is
-NULL.</p>
-<div class="system-message" id="id1">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">/home/bfriesen/src/graphics/GM/NEWS.txt</tt>, line 114); <em><a href="#id2">backlink</a></em></p>
-<p>Inline emphasis start-string without end-string.</p>
-</div>
-</li>
-<li><p class="first">-orient: The -orient command line option now also updates the
-orientation in the EXIF profile, if it exists.</p>
-</li>
-<li><p class="first">PGX: Support PGX JPEG 2000 format for reading and writing (within
-the bounds of what JasPer supports).</p>
-</li>
-<li><p class="first">Wand API: Added MagickAutoOrientImage(),
+<ul class="simple">
+<li>EXIF rotation: Support is added such that the EXIF orientation tag
+is updated when the image is rotated.</li>
+<li>MAT: Now support reading multiple images from Matlab V4 format.</li>
+<li>Magick++: Orientation method now updates orientation in EXIF
+profile, if it exists.</li>
+<li>Magick++: Added Image attribute method which accepts a character
+pointer argument, and will remove the attribute if the value
+argument is NULL.</li>
+<li>-orient: The -orient command line option now also updates the
+orientation in the EXIF profile, if it exists.</li>
+<li>PGX: Support PGX JPEG 2000 format for reading and writing (within
+the bounds of what JasPer supports).</li>
+<li>Wand API: Added MagickAutoOrientImage(),
 MagickGetImageOrientation(), MagickSetImageOrientation(),
-MagickRemoveImageOption(), and MagickClearException().</p>
-</li>
+MagickRemoveImageOption(), and MagickClearException().</li>
 </ul>
 <p>Feature improvements:</p>
 <ul class="simple">
@@ -191,7 +342,7 @@ source tree.  All of these depend on proprietary components.</li>
 </ul>
 </div>
 <div class="section" id="september-5-2016">
-<h1><a class="toc-backref" href="#id5">1.3.25 (September 5, 2016)</a></h1>
+<h1><a class="toc-backref" href="#id4">1.3.25 (September 5, 2016)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
 <li>None</li>
@@ -268,7 +419,7 @@ seconds precision in in elapsed time output.</li>
 </ul>
 </div>
 <div class="section" id="may-30-2016">
-<h1><a class="toc-backref" href="#id6">1.3.24 (May 30, 2016)</a></h1>
+<h1><a class="toc-backref" href="#id5">1.3.24 (May 30, 2016)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
 <li>A shell exploit (CVE-2016-5118) was discovered associated with a
@@ -390,7 +541,7 @@ delegate.mgk file.</li>
 </ul>
 </div>
 <div class="section" id="november-7-2015">
-<h1><a class="toc-backref" href="#id7">1.3.23 (November 7, 2015)</a></h1>
+<h1><a class="toc-backref" href="#id6">1.3.23 (November 7, 2015)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
 <li>Due to <a class="reference external" href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53967">GCC bug 53967</a>, several key agorithms (e.g. convolution)
@@ -455,7 +606,7 @@ available in recent Ghostscript.</li>
 </ul>
 </div>
 <div class="section" id="october-4-2015">
-<h1><a class="toc-backref" href="#id8">1.3.22 (October 4, 2015)</a></h1>
+<h1><a class="toc-backref" href="#id7">1.3.22 (October 4, 2015)</a></h1>
 <p>Thanks:</p>
 <ul class="simple">
 <li>Coverity: We thank Coverity for providing free service for free
@@ -564,7 +715,7 @@ The STL function-object equivalent of the deprecated method is removed
 entirely.</p>
 </div>
 <div class="section" id="february-28-2015">
-<h1><a class="toc-backref" href="#id9">1.3.21 (February 28, 2015)</a></h1>
+<h1><a class="toc-backref" href="#id8">1.3.21 (February 28, 2015)</a></h1>
 <p>Thanks:</p>
 <blockquote>
 <ul class="simple">
@@ -801,7 +952,7 @@ for an RGB image.</li>
 </blockquote>
 </div>
 <div class="section" id="august-16-2014">
-<h1><a class="toc-backref" href="#id10">1.3.20 (August 16, 2014)</a></h1>
+<h1><a class="toc-backref" href="#id9">1.3.20 (August 16, 2014)</a></h1>
 <p>Special Issues:</p>
 <blockquote>
 <ul class="simple">
@@ -965,7 +1116,7 @@ optimizations since their implementations have been problematic.</li>
 </blockquote>
 </div>
 <div class="section" id="december-31-2013">
-<h1><a class="toc-backref" href="#id11">1.3.19 (December 31, 2013)</a></h1>
+<h1><a class="toc-backref" href="#id10">1.3.19 (December 31, 2013)</a></h1>
 <p>Special Issues:</p>
 <blockquote>
 <ul class="simple">
@@ -1124,7 +1275,7 @@ multiple Ghostscript versions.</li>
 </blockquote>
 </div>
 <div class="section" id="march-10-2013">
-<h1><a class="toc-backref" href="#id12">1.3.18 (March 10, 2013)</a></h1>
+<h1><a class="toc-backref" href="#id11">1.3.18 (March 10, 2013)</a></h1>
 <p>Special Issues:</p>
 <blockquote>
 <ul class="simple">
@@ -1238,7 +1389,7 @@ color is in the same colorspace as the image.</li>
 </blockquote>
 </div>
 <div class="section" id="october-13-2012">
-<h1><a class="toc-backref" href="#id13">1.3.17 (October 13, 2012)</a></h1>
+<h1><a class="toc-backref" href="#id12">1.3.17 (October 13, 2012)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1325,7 +1476,7 @@ will search for firefox, google-chrome, mozilla (in that order).</li>
 </blockquote>
 </div>
 <div class="section" id="june-24-2012">
-<h1><a class="toc-backref" href="#id14">1.3.16 (June 24, 2012)</a></h1>
+<h1><a class="toc-backref" href="#id13">1.3.16 (June 24, 2012)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1390,7 +1541,7 @@ include OpenMP support for it by default.</li>
 None</blockquote>
 </div>
 <div class="section" id="april-28-2012">
-<h1><a class="toc-backref" href="#id15">1.3.15 (April 28, 2012)</a></h1>
+<h1><a class="toc-backref" href="#id14">1.3.15 (April 28, 2012)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1464,7 +1615,7 @@ anticipate the automatic file numbering.</li>
 </blockquote>
 </div>
 <div class="section" id="february-25-2012">
-<h1><a class="toc-backref" href="#id16">1.3.14 (February 25, 2012)</a></h1>
+<h1><a class="toc-backref" href="#id15">1.3.14 (February 25, 2012)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1521,7 +1672,7 @@ was using the filter setting from the Image structure instead.</li>
 </blockquote>
 </div>
 <div class="section" id="december-24-2011">
-<h1><a class="toc-backref" href="#id17">1.3.13 (December 24, 2011)</a></h1>
+<h1><a class="toc-backref" href="#id16">1.3.13 (December 24, 2011)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 None</blockquote>
@@ -1675,7 +1826,7 @@ static builds.</li>
 </blockquote>
 </div>
 <div class="section" id="march-8-2010">
-<h1><a class="toc-backref" href="#id18">1.3.12 (March 8, 2010)</a></h1>
+<h1><a class="toc-backref" href="#id17">1.3.12 (March 8, 2010)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1719,7 +1870,7 @@ would be written.</li>
 </blockquote>
 </div>
 <div class="section" id="february-21-2010">
-<h1><a class="toc-backref" href="#id19">1.3.11 (February 21, 2010)</a></h1>
+<h1><a class="toc-backref" href="#id18">1.3.11 (February 21, 2010)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1771,7 +1922,7 @@ opaque.</li>
 </blockquote>
 </div>
 <div class="section" id="february-10-2010">
-<h1><a class="toc-backref" href="#id20">1.3.10 (February 10, 2010)</a></h1>
+<h1><a class="toc-backref" href="#id19">1.3.10 (February 10, 2010)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1818,7 +1969,7 @@ scene number substition is desired in the output file names.</li>
 </blockquote>
 </div>
 <div class="section" id="february-4-2010">
-<h1><a class="toc-backref" href="#id21">1.3.9 (February 4, 2010)</a></h1>
+<h1><a class="toc-backref" href="#id20">1.3.9 (February 4, 2010)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -1878,7 +2029,7 @@ image in the list if it is not already opaque.</li>
 </blockquote>
 </div>
 <div class="section" id="january-21-2010">
-<h1><a class="toc-backref" href="#id22">1.3.8 (January 21, 2010)</a></h1>
+<h1><a class="toc-backref" href="#id21">1.3.8 (January 21, 2010)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2032,7 +2183,7 @@ distributed.</li>
 </blockquote>
 </div>
 <div class="section" id="september-17-2009">
-<h1><a class="toc-backref" href="#id23">1.3.7 (September 17, 2009)</a></h1>
+<h1><a class="toc-backref" href="#id22">1.3.7 (September 17, 2009)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2122,7 +2273,7 @@ structure is clean prior to invoking a function.</li>
 </blockquote>
 </div>
 <div class="section" id="july-25-2009">
-<h1><a class="toc-backref" href="#id24">1.3.6 (July 25, 2009)</a></h1>
+<h1><a class="toc-backref" href="#id23">1.3.6 (July 25, 2009)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2256,7 +2407,7 @@ progressive JPEG.</li>
 </blockquote>
 </div>
 <div class="section" id="january-26-2009">
-<h1><a class="toc-backref" href="#id25">1.3.5 (January 26, 2009)</a></h1>
+<h1><a class="toc-backref" href="#id24">1.3.5 (January 26, 2009)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2295,7 +2446,7 @@ not available.</li>
 </blockquote>
 </div>
 <div class="section" id="january-13-2009">
-<h1><a class="toc-backref" href="#id26">1.3.4 (January 13, 2009)</a></h1>
+<h1><a class="toc-backref" href="#id25">1.3.4 (January 13, 2009)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2334,7 +2485,7 @@ not available.</li>
 </blockquote>
 </div>
 <div class="section" id="december-9-2008">
-<h1><a class="toc-backref" href="#id27">1.3.3 (December 9, 2008)</a></h1>
+<h1><a class="toc-backref" href="#id26">1.3.3 (December 9, 2008)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2366,7 +2517,7 @@ used in a directory containing a million files.</li>
 </blockquote>
 </div>
 <div class="section" id="november-29-2008">
-<h1><a class="toc-backref" href="#id28">1.3.2 (November 29, 2008)</a></h1>
+<h1><a class="toc-backref" href="#id27">1.3.2 (November 29, 2008)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2400,7 +2551,7 @@ process the opacity channel unless the image has one.</li>
 </blockquote>
 </div>
 <div class="section" id="november-17-2008">
-<h1><a class="toc-backref" href="#id29">1.3.1 (November 17, 2008)</a></h1>
+<h1><a class="toc-backref" href="#id28">1.3.1 (November 17, 2008)</a></h1>
 <p>Security Fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2438,7 +2589,7 @@ encoding is used via jpeg:optimize-coding define.</li>
 </blockquote>
 </div>
 <div class="section" id="november-9-2008">
-<h1><a class="toc-backref" href="#id30">1.3 (November 9, 2008)</a></h1>
+<h1><a class="toc-backref" href="#id29">1.3 (November 9, 2008)</a></h1>
 <p>Security fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2646,7 +2797,7 @@ dither any named channel.</li>
 </blockquote>
 </div>
 <div class="section" id="april-29-2008">
-<h1><a class="toc-backref" href="#id31">1.2 (April 29, 2008)</a></h1>
+<h1><a class="toc-backref" href="#id30">1.2 (April 29, 2008)</a></h1>
 <p>Security fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -2902,7 +3053,7 @@ distributed).</li>
 </blockquote>
 </div>
 <div class="section" id="released-april-4-2004">
-<h1><a class="toc-backref" href="#id32">1.1 (Released April 4, 2004)</a></h1>
+<h1><a class="toc-backref" href="#id31">1.1 (Released April 4, 2004)</a></h1>
 <p>Bug fixes:</p>
 <blockquote>
 <ul class="simple">
@@ -3142,7 +3293,7 @@ logging system.</li>
 </div>
 <hr class="docutils" />
 <div class="section" id="released-in-may-2003">
-<h1><a class="toc-backref" href="#id33">1.0 (Released in May, 2003)</a></h1>
+<h1><a class="toc-backref" href="#id32">1.0 (Released in May, 2003)</a></h1>
 <p>GraphicsMagick support services:</p>
 <blockquote>
 <ul class="simple">

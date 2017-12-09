@@ -66,30 +66,30 @@
 
 typedef struct _HaldClutImageParameters_t
 {
-  unsigned int 
+  unsigned int
     level;
 
-  const PixelPacket 
+  const PixelPacket
     *ppcl;
 
 } HaldClutImageParameters_t;
 
 static MagickPassFail
 HaldClutImagePixels(void *mutable_data,         /* User provided mutable data */
-		    const void *immutable_data, /* User provided immutable data */
-		    Image *image,               /* Modify image */
-		    PixelPacket *pixels,        /* Pixel row */
-		    IndexPacket *indexes,       /* Pixel row indexes */
-		    const long npixels,         /* Number of pixels in row */
-		    ExceptionInfo *exception)   /* Exception report */
+                    const void *immutable_data, /* User provided immutable data */
+                    Image *image,               /* Modify image */
+                    PixelPacket *pixels,        /* Pixel row */
+                    IndexPacket *indexes,       /* Pixel row indexes */
+                    const long npixels,         /* Number of pixels in row */
+                    ExceptionInfo *exception)   /* Exception report */
 {
 
   const HaldClutImageParameters_t *
     param = (const HaldClutImageParameters_t *) immutable_data;
-	
+
   unsigned int
     level = param->level;
-	
+
   const PixelPacket
     *clut = param->ppcl;
 
@@ -118,24 +118,24 @@ HaldClutImagePixels(void *mutable_data,         /* User provided mutable data */
   ARG_NOT_USED(exception);
 
   level *= level;
-	
+
   for(k = 0; k < npixels ; k++)
     {
       /*
-	Calculate the position of each 3D axis pixel level.
+        Calculate the position of each 3D axis pixel level.
       */
       redaxis = (unsigned int) (((double) pixels[k].red/MaxRGBDouble) * (level-1));
       if (redaxis > level - 2)
-	redaxis = level - 2;
+        redaxis = level - 2;
       greenaxis = (unsigned int) (((double) pixels[k].green/MaxRGBDouble) * (level-1));
       if(greenaxis > level - 2)
-	greenaxis = level - 2;
+        greenaxis = level - 2;
       blueaxis = (unsigned int) (((double) pixels[k].blue/MaxRGBDouble) * (level-1));
       if(blueaxis > level - 2)
-	blueaxis = level - 2;
+        blueaxis = level - 2;
 
       /*
-	Convert between the value and the equivalent value position.
+        Convert between the value and the equivalent value position.
       */
       r = ((double) pixels[k].red/MaxRGBDouble) * (level - 1) - redaxis;
       g = ((double) pixels[k].green/MaxRGBDouble) * (level - 1) - greenaxis;
@@ -196,36 +196,36 @@ HaldClutImagePixels(void *mutable_data,         /* User provided mutable data */
       value=(sums[8] * (1 - b) + sums[2] * b);
       pixels[k].blue = RoundDoubleToQuantum(value);
     }
-	
+
   return MagickPass;
 }
 
 
 MagickExport MagickPassFail
 HaldClutImage(Image *image, const Image *clut)
-{	
+{
   unsigned int
     level;
 
   char
     progress_message[MaxTextExtent];
-	
+
   HaldClutImageParameters_t
     param;
-	
+
   MagickPassFail
     status=MagickPass;
-	
+
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-    
+
   /*
     Hald CLUT images are square.
   */
   if(clut->rows != clut->columns)
     {
       ThrowBinaryException(OptionError,HaldClutImageDimensionsInvalid,
-			   clut->filename);
+                           clut->filename);
     }
 
   /*
@@ -235,7 +235,7 @@ HaldClutImage(Image *image, const Image *clut)
   if((level * level * level > clut->rows) || (level < 2))
     {
       ThrowBinaryException(OptionError,HaldClutImageDimensionsInvalid,
-			   clut->filename);
+                           clut->filename);
     }
 
   param.level = level;
@@ -247,27 +247,26 @@ HaldClutImage(Image *image, const Image *clut)
   param.ppcl=AcquireImagePixels(clut,0,0,clut->columns,clut->rows,&image->exception);
   if (param.ppcl == (const PixelPacket *) NULL)
     return MagickFail;
-							 
+
   FormatString(progress_message,
-	       "[%%s] Applying Hald CLUT level %u (%lux%lu) ...",
-	       param.level,clut->columns,clut->rows);
+               "[%%s] Applying Hald CLUT level %u (%lux%lu) ...",
+               param.level,clut->columns,clut->rows);
 
   if (!IsRGBCompatibleColorspace(image->colorspace))
     TransformColorspace(image,RGBColorspace);
   if (image->storage_class == PseudoClass)
     {
       (void) HaldClutImagePixels(NULL,&param,image,image->colormap,
-				 (IndexPacket *) NULL,image->colors,
-				 &image->exception);
+                                 (IndexPacket *) NULL,image->colors,
+                                 &image->exception);
       status=SyncImage(image);
     }
   else
     {
       status=PixelIterateMonoModify(HaldClutImagePixels,NULL,progress_message,
-				    NULL,&param,0,0,image->columns,image->rows,
-				    image,&image->exception);
+                                    NULL,&param,0,0,image->columns,image->rows,
+                                    image,&image->exception);
     }
-	
+
   return(status);
 }
-	

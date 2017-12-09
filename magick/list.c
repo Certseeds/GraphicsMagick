@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002, 2003 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -209,7 +209,8 @@ MagickExport void DeleteImageFromList(Image **images)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DestroyImageList() destroys an image list.
+%  DestroyImageList() destroys an image list.  There is no effect if the
+%  image pointer is null.
 %
 %  The format of the DestroyImageList method is:
 %
@@ -857,7 +858,7 @@ MagickExport void SpliceImageIntoList(Image **images,const unsigned long length,
 
   register long
     i;
-  
+
   assert(images != (Image **) NULL);
   assert(splice != (Image *) NULL);
   assert(splice->signature == MagickSignature);

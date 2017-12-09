@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -53,7 +53,7 @@
 MagickExport MagickPassFail AllocateImageColormap(Image *image,
   const unsigned long colors)
 {
-  register long
+  register unsigned int
     i;
 
   size_t
@@ -71,7 +71,7 @@ MagickExport MagickPassFail AllocateImageColormap(Image *image,
     return (MagickFail);
   image->storage_class=PseudoClass;
   image->colors=colors;
-  length=image->colors*sizeof(PixelPacket);
+  length=MagickArraySize((size_t) image->colors,sizeof(PixelPacket));
   if (image->colormap == (PixelPacket *) NULL)
     image->colormap=MagickAllocateMemory(PixelPacket *,length);
   else
@@ -82,7 +82,7 @@ MagickExport MagickPassFail AllocateImageColormap(Image *image,
       image->storage_class=DirectClass;
       return(MagickFail);
     }
-  for (i=0; i < (long) image->colors; i++)
+  for (i=0; i < image->colors; i++)
   {
     quantum=(Quantum) (i*(MaxRGB/Max(colors-1,1)));
     image->colormap[i].red=quantum;
@@ -210,7 +210,7 @@ MagickExport MagickPassFail  CycleColormapImage(Image *image,const int amount)
 %  the VerifyColormapIndex macro.  If the colormap index is outside the
 %  bounds of the image colormap then zero is returned and an
 %  InvalidColormapIndex exception is thrown, otherwise the colormap
-%  index is returned.
+%  index is returned.  The use of this function is DEPRECATED.
 %
 %  The format of the MagickConstrainColormapIndex method is:
 %
@@ -235,7 +235,7 @@ MagickConstrainColormapIndex(Image *image, unsigned int index)
     {
       char
         colormapIndexBuffer[MaxTextExtent];
-      
+
       FormatString(colormapIndexBuffer,"index %u >= %u colors, %.1024s",
                    index, image->colors, image->filename);
       errno=0;
@@ -336,7 +336,18 @@ ReplaceImageColormap(Image *image,
   assert(image != (Image *) NULL);
   assert(colormap != (const PixelPacket *) NULL);
   assert(colors != 0);
-  assert(image->storage_class == PseudoClass);
+
+  /*
+    Input image is required to have a colormap
+  */
+  if ((image->storage_class != PseudoClass) ||
+      (image->colormap == (PixelPacket *) NULL) ||
+      (image->colors == 0U))
+    {
+      ThrowException(&image->exception,ImageError,
+                     ImageIsNotColormapped,image->filename);
+      return MagickFail;
+    }
 
   /*
     Allocate memory for colormap index
@@ -407,7 +418,7 @@ ReplaceImageColormap(Image *image,
 
   image->is_grayscale=IsGrayImage(image,&image->exception);
   image->is_monochrome=IsMonochromeImage(image,&image->exception);
-  
+
   return status;
 }
 
@@ -544,4 +555,3 @@ MagickExport MagickPassFail SortColormapByIntensity(Image *image)
   image->is_monochrome=is_monochrome;
   return(status);
 }
-

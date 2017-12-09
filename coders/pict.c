@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1090,7 +1090,10 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               {
                 ReadPixmap(pixmap);
                 if (!ValidatePixmap(pixmap))
+                {
+                  DestroyImage(tile_image);
                   ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+                }
                 tile_image->matte=pixmap.component_count == 4;
               }
             if ((code != 0x9a) && (code != 0x9b))
@@ -1142,10 +1145,16 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               }
             ReadRectangle(source);
             if (!ValidateRectangle(source))
+            {
+              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
             ReadRectangle(destination);
             if (!ValidateRectangle(destination))
+            {
+              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
             (void) ReadBlobMSBShort(image);
             if ((code == 0x91) || (code == 0x99) || (code == 0x9b))
               {
@@ -1230,7 +1239,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 if (QuantumTick(y,tile_image->rows))
                   if (!MagickMonitorFormatted(y,tile_image->rows,&image->exception,
                                               LoadImageText,image->filename,
-					      image->columns,image->rows))
+                                              image->columns,image->rows))
                     break;
             }
             MagickFreeMemory(pixels);
@@ -1243,7 +1252,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (destination.bottom != (long) image->rows)
               if (!MagickMonitorFormatted(destination.bottom,image->rows,&image->exception,
                                           LoadImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
             break;
           }
@@ -1263,7 +1272,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (length == 0)
               break;
             (void) ReadBlobMSBLong(image);
-            length-=4;
+            length-=Min(4,length);
             if (length == 0)
               break;
             info=MagickAllocateMemory(unsigned char *,length);
@@ -1560,7 +1569,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
 
   const unsigned char
     *profile_info;
-  
+
   size_t
     profile_length;
 
@@ -1892,7 +1901,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
     }
   else
@@ -1942,7 +1951,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
       }

@@ -304,7 +304,7 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
 
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp critical (GM_FrameImage)
-#endif    
+#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -348,13 +348,13 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
         if (QuantumTick(row_count,image->rows))
           if (!MagickMonitorFormatted(row_count,image->rows,exception,
                                       FrameImageText,image->filename,
-				      frame_info->width,frame_info->height,
-				      frame_info->x,
-				      frame_info->y,
-				      frame_info->inner_bevel,
-				      frame_info->outer_bevel))
+                                      frame_info->width,frame_info->height,
+                                      frame_info->x,
+                                      frame_info->y,
+                                      frame_info->inner_bevel,
+                                      frame_info->outer_bevel))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }
@@ -613,7 +613,7 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
           if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
                                       RaiseImageText,image->filename))
             thread_status=MagickFail;
-          
+
         if (thread_status == MagickFail)
           status=MagickFail;
       }

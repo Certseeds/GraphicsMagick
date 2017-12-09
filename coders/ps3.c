@@ -164,7 +164,7 @@ static unsigned int SerializeHuffman2DImage(const ImageInfo *image_info,
   huffman_image=CloneImage(image,0,0,True,&image->exception);
   if (huffman_image == (Image *) NULL)
     return(False);
-  /* 
+  /*
     TODO: If (image, then) huffman_image->compression is JPEG, huffman_image
     is changed to DirectClass in WriteTIFFImage and the huffman_image ends up
     broken. Change WriteTIFFIMage to not alter bilevel image to directclass
@@ -333,19 +333,19 @@ static MagickPassFail JPEGEncodeImage(const ImageInfo *image_info,
 
   MagickPassFail
     status=MagickFail;
-  
+
   blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
   if (blob != (unsigned char *) NULL)
     {
       register const unsigned char
-	*p;
+        *p;
 
       register size_t
-	i;
+        i;
 
         Ascii85Initialize(image);
       for (p=(const unsigned char*) blob,i=0; i < length; i++)
-	Ascii85Encode(image,(unsigned long) p[i]);
+        Ascii85Encode(image,(unsigned long) p[i]);
       Ascii85Flush(image);
       MagickFreeMemory(blob);
       status=MagickPass;
@@ -468,7 +468,7 @@ static unsigned int SerializePseudoClassImage(const ImageInfo *image_info,
         {
           status=MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows);
+                                        image->columns,image->rows);
           if (status == False)
             break;
         }
@@ -561,7 +561,7 @@ static unsigned int SerializeMultiChannelImage(const ImageInfo *image_info,
         {
           status=MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows);
+                                        image->columns,image->rows);
           if (status == False)
             break;
         }
@@ -678,7 +678,7 @@ static unsigned int SerializeSingleChannelImage(const ImageInfo *image_info,
           status=MagickMonitorFormatted(y,image->rows,
                                         &image->exception,SaveImageText,
                                         image->filename,
-					image->columns,image->rows);
+                                        image->columns,image->rows);
           if (status == False)
             break;
         }
@@ -1526,7 +1526,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,"%%PageResources: font Helvetica\n");
 
     /* PS clipping path from Photoshop clipping path */
-    if ((image->clip_mask != (Image *) NULL) && 
+    if ((image->clip_mask != (Image *) NULL) &&
       (LocaleNCompare("8BIM:",image->clip_mask->magick_filename,5) == 0))
       {
         const ImageAttribute
@@ -1603,7 +1603,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,"true\n");
     else
       (void) WriteBlobString(image,"false\n");
-  
+
     /* Compression seems to take precedence over anyting */
     if (compression == FaxCompression)
       (void) SetImageType(image, BilevelType);
@@ -1674,27 +1674,27 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
           (void) WriteBlobString(image,PS3_JPEGCompression"\n");
           break;
       }
-      
+
       /* Number of colors -- 0 for single component non-color mapped data */
       (void) WriteBlobString(image,"0\n");
 
       /* 1 bit or 8 bit components? */
-      FormatString(buffer,"%d\n", 
+      FormatString(buffer,"%d\n",
         IsMonochromeImage(image,&image->exception) ? 1 : 8);
       (void) WriteBlobString(image,buffer);
 
       /* Image data. Always ASCII85 encoded. */
       if (compression == JPEGCompression)
         {
-	  status=JPEGEncodeImage(image_info,image);
+          status=JPEGEncodeImage(image_info,image);
         }
       else
         if (compression == FaxCompression)
           {
-	    if (LocaleCompare(CCITTParam,"0") == 0)
-	      status=HuffmanEncodeImage(image_info,image);
-	    else
-	      status=Huffman2DEncodeImage(image_info,image);
+            if (LocaleCompare(CCITTParam,"0") == 0)
+              status=HuffmanEncodeImage(image_info,image);
+            else
+              status=Huffman2DEncodeImage(image_info,image);
           }
         else
           {
@@ -1803,7 +1803,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
         {
           /*
             Color mapped images.
-            
+
             Image class.
           */
           (void) WriteBlobString(image,PS3_PseudoClass"\n");
@@ -1828,7 +1828,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
               (void) WriteBlobString(image,PS3_ZipCompression"\n");
               break;
           }
-          
+
           /* Number of colors in color map */
           FormatString(buffer,"%u\n",image->colors);
           (void) WriteBlobString(image,buffer);
@@ -2054,4 +2054,3 @@ static unsigned int ZLIBEncode2Image(Image *image,const size_t length,
   return(False);
 }
 #endif
-

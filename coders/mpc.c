@@ -476,8 +476,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
                 if (LocaleCompare(keyword,"grayscale") == 0)
                   {
-		    if (LocaleCompare(values,"True") == 0)
-		      image->is_grayscale=MagickTrue;
+                    if (LocaleCompare(values,"True") == 0)
+                      image->is_grayscale=MagickTrue;
                     break;
                   }
                 if (LocaleCompare(keyword,"green-primary") == 0)
@@ -535,8 +535,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
                 if (LocaleCompare(keyword,"monochrome") == 0)
                   {
-		    if (LocaleCompare(values,"True") == 0)
-		      image->is_monochrome=MagickTrue;
+                    if (LocaleCompare(values,"True") == 0)
+                      image->is_monochrome=MagickTrue;
                     break;
                   }
                 if (LocaleCompare(keyword,"montage") == 0)
@@ -715,7 +715,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "id=\"%s\" class=%s compression=%s matte=%s "
-			  "columns=%lu rows=%lu depth=%u",
+                          "columns=%lu rows=%lu depth=%u",
                           id,ClassTypeToString(image->storage_class),
                           CompressionTypeToString(image->compression),
                           MagickBoolToString(image->matte),
@@ -1012,13 +1012,13 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
 
   ImageProfileIterator
     profile_iterator;
-  
+
   const char
     *profile_name;
-  
+
   const unsigned char
     *profile_info;
-  
+
   size_t
     profile_length;
 
@@ -1229,7 +1229,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
       }
     /*
       Attached profiles.
-    */    
+    */
     profile_iterator=AllocateImageProfileIterator(image);
     if (profile_iterator)
       {

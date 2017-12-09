@@ -5418,12 +5418,12 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       status=MagickXSaveImage(display,resource_info,windows,*image);
       if (status == MagickFail)
         {
-	  char reason[MaxTextExtent];
+          char reason[MaxTextExtent];
 
-	  FormatString(reason,"%s \"%s\"",
-		       (*image)->exception.reason ? (*image)->exception.reason : "",
-		       (*image)->exception.description ? (*image)->exception.description : "");
-	  MagickXNoticeWidget(display,windows,"Unable to save file:",reason);
+          FormatString(reason,"%s \"%s\"",
+                       (*image)->exception.reason ? (*image)->exception.reason : "",
+                       (*image)->exception.description ? (*image)->exception.description : "");
+          MagickXNoticeWidget(display,windows,"Unable to save file:",reason);
           break;
         }
       break;
@@ -5436,11 +5436,11 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       status=MagickXPrintImage(display,resource_info,windows,*image);
       if (status == False)
         {
-	  char reason[MaxTextExtent];
+          char reason[MaxTextExtent];
 
-	  FormatString(reason,"%s \"%s\"",
-		       (*image)->exception.reason ? (*image)->exception.reason : "",
-		       (*image)->exception.description ? (*image)->exception.description : "");
+          FormatString(reason,"%s \"%s\"",
+                       (*image)->exception.reason ? (*image)->exception.reason : "",
+                       (*image)->exception.description ? (*image)->exception.description : "");
           MagickXNoticeWidget(display,windows,"Unable to print image:",reason);
           break;
         }
@@ -6398,7 +6398,7 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       double
         azimuth,
         elevation;
-      
+
       /*
         Query user for the shade geometry.
       */
@@ -11827,7 +11827,7 @@ MagickExport unsigned int MagickXDisplayBackgroundImage(Display *display,
 
 MagickExport Image *
 MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
-		    char *argv[],int argc,Image **image,unsigned long *state)
+                    char *argv[],int argc,Image **image,unsigned long *state)
 {
 
   static const char
@@ -12485,19 +12485,19 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       (void ) CloneString(&windows->image.icon_name,"");
       GetPathComponent(display_image->filename,TailPath,filename);
       FormatString(windows->image.name,"%s: %.1024s[%lu]",MagickPackageName,
-		   filename,display_image->scene);
+                   filename,display_image->scene);
       q=display_image;
       while (q->previous != (Image *) NULL)
         q=q->previous;
       for (count=1; q->next != (Image *) NULL; count++)
         q=q->next;
       FormatString(windows->image.name,"%s: %.1024s[%lu of %lu]",
-		   MagickPackageName,filename,display_image->scene+1U,count);
+                   MagickPackageName,filename,display_image->scene+1U,count);
       if ((display_image->previous == (Image *) NULL) &&
           (display_image->next == (Image *) NULL) &&
           (display_image->scene == 0))
         FormatString(windows->image.name,"%s: %.1024s",MagickPackageName,
-		     filename);
+                     filename);
       (void) strlcpy(windows->image.icon_name,filename,MaxTextExtent);
     }
   if (resource_info->immutable)

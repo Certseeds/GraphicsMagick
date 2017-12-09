@@ -60,7 +60,7 @@ MagickExport const char *ChannelTypeToString(const ChannelType channel)
     case RedChannel:
       channel_type="red";
       break;
-    case CyanChannel: 
+    case CyanChannel:
       channel_type="cyan";
       break;
     case GreenChannel:
@@ -157,7 +157,7 @@ MagickExport const char *ColorspaceTypeToString(const ColorspaceType colorspace)
 {
   const char
     *colorspace_type = "?";
-  
+
   switch (colorspace)
     {
     case UndefinedColorspace:
@@ -633,12 +633,12 @@ MagickExport CompressionType StringToCompressionType(const char *option)
   else if (LocaleCompare("GZip",option) == 0)
     compression_type=ZipCompression;
   else if ((LocaleCompare("LZMA",option) == 0) ||
-	   (LocaleCompare("LZMA2",option) == 0))
+           (LocaleCompare("LZMA2",option) == 0))
     compression_type=LZMACompression;
   else if (LocaleCompare("JPEG2000",option) == 0)
     compression_type=JPEG2000Compression;
   else if ((LocaleCompare("JBIG",option) == 0) ||
-	   (LocaleCompare("JBIG1",option) == 0))
+           (LocaleCompare("JBIG1",option) == 0))
     compression_type=JBIG1Compression;
   else if (LocaleCompare("JBIG2",option) == 0)
     compression_type=JBIG2Compression;
@@ -1742,7 +1742,7 @@ MagickExport VirtualPixelMethod StringToVirtualPixelMethod(const char *option)
 {
   VirtualPixelMethod
     virtual_pixel_method = UndefinedVirtualPixelMethod;
-  
+
   if (LocaleCompare("Constant",option) == 0)
     virtual_pixel_method=ConstantVirtualPixelMethod;
   else if (LocaleCompare("Edge",option) == 0)

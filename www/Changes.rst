@@ -10,18 +10,15 @@ GraphicsMagick Change Logs
    :description: GraphicsMagick is a robust collection of tools and
                  libraries to read, write, and manipulate an image in any
                  of the more popular image formats including GIF, JPEG,
-                 PNG, PDF, and Photo CD. With GraphicsMagick you can
+                 PNG, PDF, and WebP. With GraphicsMagick you can
                  create GIFs dynamically making it suitable for Web
                  applications. You can also resize, rotate, sharpen,
                  color reduce, or add special effects to an image and
                  save your completed work in the same or differing image
                  format.
 
-   :keywords: GraphicsMagick, Image Magick, Image Magic, PerlMagick,
-              Perl Magick, Perl Magic, CineMagick, PixelMagick, Pixel
-              Magic, WebMagick, Web Magic, visualization, image
-              processing, software development, simulation, image,
-              software, AniMagick, Animagic, Magick++
+   :keywords: GraphicsMagick, GM, PerlMagick, Perl Magick, Perl Magic,
+              image processing, software development, TclMagick, Magick++
 
 .. _GraphicsMagick : index.html
 .. _2017 : Changelog.html
@@ -44,7 +41,7 @@ GraphicsMagick Change Logs
 
 The following are the ``GraphicsMagick`` change logs since 2001:
 
-  * 2017_ (1.3.26 released)
+  * 2017_ (1.3.26, 1.3.27 released)
 
   * 2016_ (1.3.24, 1.3.25 released)
 

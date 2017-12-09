@@ -41,9 +41,9 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 GraphicsMagick Vulnerabilities
 ==============================
 
-Search the CVE site at MITRE for `GraphicsMagick`__ vulnerabilities (seems to be stale).
+Search for `GraphicsMagick`__ CVEs.
 
-.. _CVE_GraphicsMagick : http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=GraphicsMagick
+.. _CVE_GraphicsMagick : https://www.cvedetails.com/vulnerability-list/vendor_id-2802/Graphicsmagick.html
 
 __ CVE_GraphicsMagick_
 

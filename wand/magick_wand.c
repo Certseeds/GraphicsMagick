@@ -219,7 +219,7 @@ static MagickWand *CloneMagickWandWithImages(const MagickWand *wand,
   clone_wand=MagickAllocateMemory(MagickWand *,sizeof(MagickWand));
   if (clone_wand == (MagickWand *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateWand);
+                      UnableToAllocateWand);
   (void) memset(clone_wand,0,sizeof(MagickWand));
   (void) MagickFormatString(clone_wand->id,MaxTextExtent,"MagickWand-%lu",
     GetMagickWandId());
@@ -1829,7 +1829,7 @@ WandExport char *MagickDescribeImage(MagickWand *wand)
   if ((file = AcquireTemporaryFileStream(filename, TextFileIOMode)) == (FILE *) NULL)
     {
       ThrowException(&wand->exception,FileOpenError,
-		     UnableToCreateTemporaryFile,filename);
+                     UnableToCreateTemporaryFile,filename);
     }
   else
     {
@@ -2227,9 +2227,9 @@ WandExport unsigned int MagickEqualizeImage(MagickWand *wand)
 %            on the new image.
 %
 */
-WandExport unsigned int 
+WandExport unsigned int
 MagickExtentImage(MagickWand *wand,const size_t width,const size_t height,
-		  const ssize_t x,const ssize_t y)
+                  const ssize_t x,const ssize_t y)
 {
   Image
     *extent_image;
@@ -2865,7 +2865,7 @@ WandExport MagickWand *MagickGetImage(MagickWand *wand)
 WandExport char *MagickGetImageAttribute(MagickWand *wand, const char *name)
 {
   const ImageAttribute
-	  *attribute;
+          *attribute;
 
   assert(wand != (MagickWand *) NULL);
   assert(wand->signature == MagickSignature);
@@ -3031,8 +3031,8 @@ WandExport unsigned int MagickGetImageBorderColor(MagickWand *wand,
 */
 WandExport unsigned int
 MagickGetImageBoundingBox(MagickWand *wand,const double fuzz,
-			  unsigned long *width, unsigned long *height,
-			  long *x, long *y)
+                          unsigned long *width, unsigned long *height,
+                          long *x, long *y)
 {
   RectangleInfo
     rectangle;
@@ -3282,7 +3282,7 @@ WandExport unsigned int MagickGetImageChannelMean(MagickWand *wand,
     }
   deviation *= MaxRGBDouble;
   *standard_deviation = RoundDoubleToQuantum(deviation);
-  
+
   meanf *= MaxRGBDouble;
   *mean = RoundDoubleToQuantum(meanf);
 
@@ -4303,10 +4303,10 @@ WandExport unsigned char *MagickGetImageProfile(MagickWand *wand,
 
   const unsigned char
     *profile=0;
-  
+
   unsigned char
     *result=0;
-  
+
   assert(wand != (MagickWand *) NULL);
   assert(wand->signature == MagickSignature);
   *length=0;
@@ -6977,7 +6977,7 @@ WandExport unsigned int MagickReadImageBlob(MagickWand *wand,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  MagickReadImageFile() reads an image or image sequence from an open file 
+%  MagickReadImageFile() reads an image or image sequence from an open file
 %  descriptor.
 %
 %  The format of the MagickReadImageFile method is:
@@ -7648,20 +7648,20 @@ WandExport unsigned int MagickSeparateImageChannel(MagickWand *wand,
 %  -sampling-factor option to specify the factors for chroma
 %  downsampling.  To use the same quality value as that found by the
 %  JPEG decoder, use the -define jpeg:preserve-settings flag.
-% 
+%
 %  For the MIFF image format, and the TIFF format while using ZIP
 %  compression, quality/10 is the zlib compres- sion level, which is 0
 %  (worst but fastest compression) to 9 (best but slowest). It has no
 %  effect on the image appearance, since the compression is always
 %  lossless.
-% 
+%
 %  For the JPEG-2000 image format, quality is mapped using a non-linear
 %  equation to the compression ratio required by the Jasper library.
 %  This non-linear equation is intended to loosely approximate the
 %  quality provided by the JPEG v1 format.  The default quality value 75
 %  results in a request for 16:1 compression. The quality value 100
 %  results in a request for non-lossy compres- sion.
-% 
+%
 %  For the MNG and PNG image formats, the quality value sets the zlib
 %  compression level (quality / 10) and filter-type (quality % 10).
 %  Compression levels range from 0 (fastest compression) to 100 (best
@@ -7669,38 +7669,38 @@ WandExport unsigned int MagickSeparateImageChannel(MagickWand *wand,
 %  used, which is fastest but not necessarily the worst compression.  If
 %  filter-type is 4 or less, the specified filter-type is used for all
 %  scanlines:
-% 
+%
 %       0) none
 %       1) sub
 %       2) up
 %       3) average
 %       4) Paeth
-% 
+%
 %  If filter-type is 5, adaptive filtering is used when quality is
 %  greater than 50 and the image does not have a color map, otherwise no
 %  filtering is used.
-% 
+%
 %  If filter-type is 6, adaptive filtering with minimum-
 %  sum-of-absolute-values is used.
-% 
+%
 %  Only if the output is MNG, if filter-type is 7, the LOCO color
 %  transformation and adaptive filtering with
 %  minimum-sum-of-absolute-values are used.
-% 
+%
 %  The default is quality is 75, which means nearly the best compression
 %  with adaptive filtering.  The quality setting has no effect on the
 %  appearance of PNG and MNG images, since the compression is always
 %  lossless.
-% 
+%
 %  For further information, see the PNG specification.
-% 
+%
 %  When writing a JNG image with transparency, two quality values are
 %  required, one for the main image and one for the grayscale image that
 %  conveys the opacity channel.  These are written as a single integer
 %  equal to the main image quality plus 1000 times the opacity quality.
 %  For example, if you want to use quality 75 for the main image and
 %  quality 90 to compress the opacity data, use -quality 90075.
-% 
+%
 %  For the PNM family of formats (PNM, PGM, and PPM) specify a quality
 %  factor of zero in order to obtain the ASCII variant of the
 %  format. Note that -compress none used to be used to trigger ASCII
@@ -7903,11 +7903,11 @@ WandExport unsigned int MagickSetImage(MagickWand *wand,
 %    o value: The value of the attribute
 %
 */
-WandExport unsigned int MagickSetImageAttribute(MagickWand *wand, const char *name, 
+WandExport unsigned int MagickSetImageAttribute(MagickWand *wand, const char *name,
   const char *value)
 {
   unsigned int status;
-  
+
   assert(wand != (MagickWand *) NULL);
   assert(wand->signature == MagickSignature);
   if (wand->images == (Image *) NULL)
@@ -8496,7 +8496,7 @@ WandExport unsigned int MagickSetImageGamma(MagickWand *wand,const double gamma)
  %                                                                             %
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  %
- %  MagickSetImageGeometry() sets the image geometry string. 
+ %  MagickSetImageGeometry() sets the image geometry string.
  %
  %  The format of the MagickSetImageGeometry method is:
  %
@@ -9470,7 +9470,7 @@ WandExport unsigned int MagickSetInterlaceScheme(MagickWand *wand,
 */
 WandExport unsigned int
 MagickSetResolution(MagickWand *wand,
-		    const double x_resolution,const double y_resolution)
+                    const double x_resolution,const double y_resolution)
 {
   char
     geometry[MaxTextExtent];
@@ -10736,7 +10736,7 @@ WandExport unsigned int MagickWriteImage(MagickWand *wand,const char *filename)
 %
 */
 WandExport unsigned int MagickWriteImagesFile(MagickWand *wand,FILE * file,
-					      const unsigned int adjoin)
+                                              const unsigned int adjoin)
 {
   ImageInfo
     *write_info;
@@ -10941,7 +10941,7 @@ WandExport MagickWand *NewMagickWand(void)
   wand=MagickAllocateMemory(MagickWand *,sizeof(MagickWand));
   if (wand == (MagickWand *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateWand);
+                      UnableToAllocateWand);
   (void) memset(wand,0,sizeof(MagickWand));
   (void) MagickFormatString(wand->id,MaxTextExtent,"MagickWand-%lu",
     GetMagickWandId());

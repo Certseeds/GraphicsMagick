@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2008 - 2011 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   16/24 bit floating point conversion functions.
 
   Written by Richard Nolde, 2008

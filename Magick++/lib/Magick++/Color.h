@@ -28,12 +28,12 @@ namespace Magick
   {
   public:
     Color ( Quantum red_,
-	    Quantum green_,
-	    Quantum blue_ );
+            Quantum green_,
+            Quantum blue_ );
     Color ( Quantum red_,
-	    Quantum green_,
-	    Quantum blue_,
-	    Quantum alpha_ );
+            Quantum green_,
+            Quantum blue_,
+            Quantum alpha_ );
     Color ( const std::string &x11color_ );
     Color ( const char * x11color_ );
     Color ( void );
@@ -60,11 +60,11 @@ namespace Magick
     // (range opaque=0 to transparent=1.0)
     void           alpha ( double alpha_ );
     double         alpha ( void ) const;
-        
+
     // Does object contain valid color?
     void           isValid ( bool valid_ );
     bool           isValid ( void ) const;
-    
+
     // Set color via X11 color specification string
     const Color& operator= ( const std::string &x11color_ );
     const Color& operator= ( const char * x11color_ );
@@ -163,7 +163,7 @@ namespace Magick
     bool                       _isValid;
 
     // Color type supported by _pixel
-    PixelType			_pixelType;
+    PixelType                   _pixelType;
 
   };
 
@@ -177,13 +177,13 @@ namespace Magick
     ColorHSL ( void );
     ColorHSL ( const Color & color_ );
     /* virtual */  ~ColorHSL ( );
-    
+
     void           hue ( double hue_ );
     double         hue ( void ) const;
-    
+
     void           saturation ( double saturation_ );
     double         saturation ( void ) const;
-    
+
     void           luminosity ( double luminosity_ );
     double         luminosity ( void ) const;
 
@@ -194,7 +194,7 @@ namespace Magick
     // Constructor to construct with PixelPacket*
     ColorHSL ( PixelPacket* rep_, PixelType pixelType_ );
   };
-  
+
   //
   // Grayscale RGB color
   //
@@ -218,7 +218,7 @@ namespace Magick
     // Constructor to construct with PixelPacket*
     ColorGray ( PixelPacket* rep_, PixelType pixelType_ );
   };
-  
+
   //
   // Monochrome color
   //
@@ -231,7 +231,7 @@ namespace Magick
     ColorMono ( void );
     ColorMono ( const Color & color_ );
     /* virtual */ ~ColorMono ();
-    
+
     void           mono ( bool mono_ );
     bool           mono ( void ) const;
 
@@ -242,7 +242,7 @@ namespace Magick
     // Constructor to construct with PixelPacket*
     ColorMono ( PixelPacket* rep_, PixelType pixelType_ );
   };
-  
+
   //
   // RGB color
   //
@@ -254,13 +254,13 @@ namespace Magick
     ColorRGB ( void );
     ColorRGB ( const Color & color_ );
     /* virtual */  ~ColorRGB ( void );
-    
+
     void           red ( double red_ );
     double         red ( void ) const;
-    
+
     void           green ( double green_ );
     double         green ( void ) const;
-    
+
     void           blue ( double blue_ );
     double         blue ( void ) const;
 
@@ -271,7 +271,7 @@ namespace Magick
     // Constructor to construct with PixelPacket*
     ColorRGB ( PixelPacket* rep_, PixelType pixelType_ );
   };
-  
+
   //
   // YUV Colorspace color
   //
@@ -286,13 +286,13 @@ namespace Magick
     ColorYUV ( void );
     ColorYUV ( const Color & color_ );
     /* virtual */ ~ColorYUV ( void );
-    
+
     void           u ( double u_ );
     double         u ( void ) const;
-    
+
     void           v ( double v_ );
     double         v ( void ) const;
-    
+
     void           y ( double y_ );
     double         y ( void ) const;
 

@@ -595,8 +595,8 @@ WindowsShellTextEscape(char *dst, const char *src, const size_t size)
       register const char c = *q;
 #if 0
       /*
-	FIXME: Currently the correct implementation is not known so we
-	don't alter arguments at the moment.
+        FIXME: Currently the correct implementation is not known so we
+        don't alter arguments at the moment.
       */
       if ((c == '\\') ||
           (c == '"') ||
@@ -826,10 +826,10 @@ MagickExport unsigned int InvokeDelegate(ImageInfo *image_info,Image *image,
           int
             arg_count,
             j;
-          
+
           char
             **arg_array;
-          
+
           /*
             Convert command template into an argument array.  Translate
             each argument array element individually in order to
@@ -884,12 +884,12 @@ MagickExport unsigned int InvokeDelegate(ImageInfo *image_info,Image *image,
           */
           command=TranslateTextEx(image_info,image,commands[i],
 #if defined(POSIX)
-				  UnixShellTextEscape
+                                  UnixShellTextEscape
 #endif /* POSIX */
 #if defined(MSWINDOWS)
-				  WindowsShellTextEscape
+                                  WindowsShellTextEscape
 #endif /* MSWINDOWS */
-				  );
+                                  );
           if (command == (char *) NULL)
             break;
           /*
@@ -957,7 +957,7 @@ MagickExport unsigned int InvokeDelegate(ImageInfo *image_info,Image *image,
 */
 MagickExport MagickPassFail
 InvokePostscriptDelegate(const unsigned int verbose,
-			 const char *command,ExceptionInfo *exception)
+                         const char *command,ExceptionInfo *exception)
 {
   register long
     i;
@@ -1002,68 +1002,68 @@ InvokePostscriptDelegate(const unsigned int verbose,
     {
 
       /*
-	Allocate an interpreter.
+        Allocate an interpreter.
       */
       interpreter = (gs_main_instance *) NULL;
       status=(gs_func->new_instance)(&interpreter,(void *) NULL);
       if (status < 0)
-	{
-	  ThrowException(exception,DelegateError,
-			 FailedToAllocateGhostscriptInterpreter,command);
-	  return(MagickFail);
-	}
+        {
+          ThrowException(exception,DelegateError,
+                         FailedToAllocateGhostscriptInterpreter,command);
+          return(MagickFail);
+        }
       /*
-	Initialize interpreter with argument list.
+        Initialize interpreter with argument list.
       */
       argv=StringToArgv(command,&argc);
       if (argv == (char **) NULL)
-	{
-	  ThrowException(exception,DelegateError,FailedToAllocateArgumentList,
-			 command);
-	  return(MagickFail);
-	}
+        {
+          ThrowException(exception,DelegateError,FailedToAllocateArgumentList,
+                         command);
+          return(MagickFail);
+        }
 
       if (verbose)
-	{
-	  char
-	    buffer[MaxTextExtent];
+        {
+          char
+            buffer[MaxTextExtent];
 
 #if defined(MSWINDOWS)
-	  (void) NTGhostscriptDLL(buffer,sizeof(buffer));
+          (void) NTGhostscriptDLL(buffer,sizeof(buffer));
 #else
-	  (void) strlcpy(buffer,"[ghostscript library]",sizeof(buffer));
+          (void) strlcpy(buffer,"[ghostscript library]",sizeof(buffer));
 #endif
-	  (void) fputs(buffer,stderr);
-	  for (i=2 ; i < argc ; i++)
-	    (void) fprintf(stderr," \"%s\"",argv[i]);
-	  (void) fflush(stderr);
-	}
+          (void) fputs(buffer,stderr);
+          for (i=2 ; i < argc ; i++)
+            (void) fprintf(stderr," \"%s\"",argv[i]);
+          (void) fflush(stderr);
+        }
       status=(gs_func->init_with_args)(interpreter,argc-1,argv+1);
       if (status == 0)
-	{
-	  status=(gs_func->run_string)
-	    (interpreter,"systemdict /start get exec\n",0,&pexit_code);
-	  if ((status == 0) || (status <= -100))
-	    {
-	      char
-		reason[MaxTextExtent];
+        {
+          status=(gs_func->run_string)
+            (interpreter,"systemdict /start get exec\n",0,&pexit_code);
+          if ((status == 0) || (status <= -100))
+            {
+              char
+                reason[MaxTextExtent];
 
-	      FormatString(reason,"Ghostscript returns status %d, exit code %d",
-			   status,pexit_code);
-	      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s",reason);
-	      ThrowException(exception,DelegateError,PostscriptDelegateFailed,command);
-	    }
-	}
+              FormatString(reason,"Ghostscript returns status %d, exit code %d",
+                           status,pexit_code);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s",reason);
+              ThrowException(exception,DelegateError,PostscriptDelegateFailed,command);
+            }
+        }
       /*
-	Exit interpreter.
+        Exit interpreter.
       */
       (gs_func->exit)(interpreter);
       /*
-	Deallocate interpreter.
+        Deallocate interpreter.
       */
       (gs_func->delete_instance)(interpreter);
       for (i=0; i < argc; i++)
-	MagickFreeMemory(argv[i]);
+        MagickFreeMemory(argv[i]);
       MagickFreeMemory(argv);
       if ((status == 0) || (status <= -100))
         {
@@ -1085,9 +1085,9 @@ InvokePostscriptDelegate(const unsigned int verbose,
     argv = StringToArgv(command,&argc);
     if (argv == (char **) NULL)
       {
-	ThrowException(exception,DelegateError,
-		       FailedToAllocateArgumentList,
-		       command);
+        ThrowException(exception,DelegateError,
+                       FailedToAllocateArgumentList,
+                       command);
       }
     else
       {
@@ -1109,9 +1109,9 @@ InvokePostscriptDelegate(const unsigned int verbose,
             if (MagickSpawnVP(verbose,argv[1],argv+1) == 0)
               status=MagickPass;
           }
-	for (i=0; i < argc; i++)
-	  MagickFreeMemory(argv[i]);
-	MagickFreeMemory(argv);
+        for (i=0; i < argc; i++)
+          MagickFreeMemory(argv[i]);
+        MagickFreeMemory(argv);
       }
   }
 
@@ -1187,7 +1187,7 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
     if (commands == (char **) NULL)
       continue;
     {
-	  size_t
+          size_t
         command_length,
          length=0;
 
@@ -1196,7 +1196,7 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
         formatted_chars=0,
         screen_width=79,
         strip_length;
-      
+
       char
         *s;
 
@@ -1270,8 +1270,8 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
 */
 #if defined(MSWINDOWS)
 static void CatDelegatePath(char *path,
-			    const char *binpath,
-			    const char *command)
+                            const char *binpath,
+                            const char *command)
 {
   strcpy(path,binpath);
   strcat(path,command);
@@ -1421,7 +1421,7 @@ static unsigned int ReadConfigureFile(const char *basename,
                       char
                         *key,
                         *key_value;
-                    
+
                       /* Obtain installation path from registry */
                       key="BinPath";
                       key_value=NTRegistryKeyLookup(key);

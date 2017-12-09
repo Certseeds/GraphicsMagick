@@ -46,9 +46,9 @@ Magick::Pixels::~Pixels( void )
 // the specified region. Modified pixels may be subsequently
 // transferred back to the image via sync.
 Magick::PixelPacket* Magick::Pixels::get ( const int x_,
-					   const int y_,
-					   const unsigned int columns_,
-					   const unsigned int rows_ )
+                                           const int y_,
+                                           const unsigned int columns_,
+                                           const unsigned int rows_ )
 {
   _x = x_;
   _y = y_;
@@ -79,7 +79,7 @@ const Magick::PixelPacket* Magick::Pixels::getConst ( const int x_, const int y_
 
   if ( !pixels )
     throwException( _exception, _image.quiet() );
-  
+
   return pixels;
 }
 
@@ -89,14 +89,14 @@ void Magick::Pixels::sync ( void )
   if( !SyncCacheViewPixels( _view, &_exception ) )
     throwException( _exception, _image.quiet() );
 }
-    
+
 // Allocate a pixel view region to store image pixels as defined
 // by the region rectangle.  This area is subsequently transferred
 // from the pixel view to the image via 'sync'.
 Magick::PixelPacket* Magick::Pixels::set ( const int x_,
-					   const int y_,
-					   const unsigned int columns_,
-					   const unsigned int rows_ )
+                                           const int y_,
+                                           const unsigned int columns_,
+                                           const unsigned int rows_ )
 {
   _x = x_;
   _y = y_;
@@ -107,7 +107,7 @@ Magick::PixelPacket* Magick::Pixels::set ( const int x_,
                                             columns_, rows_ , &_exception);
   if ( !pixels )
     throwException( _exception, _image.quiet() );
-  
+
   return pixels;
 }
 

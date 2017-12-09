@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 -2012 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -121,13 +121,15 @@ static unsigned int IsXBM(const unsigned char *magick,const size_t length)
 
 static int XBMInteger(Image *image,short int *hex_digits)
 {
+  unsigned int
+    flag;
+
   int
     c,
-    flag,
     value;
 
   value=0;
-  flag=0;
+  flag=0U;
   for ( ; ; )
   {
     c=ReadBlobByte(image);
@@ -158,18 +160,16 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Image
     *image;
 
-  int
-    bit;
-
-  long
-    y;
-
   register IndexPacket
     *indexes;
 
-  register long
-    i,
-    x;
+  register size_t
+    bytes_per_line,
+    i;
+
+  unsigned long
+    x,
+    y;
 
   register PixelPacket
     *q;
@@ -177,21 +177,23 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register unsigned char
     *p;
 
-  short int
-    hex_digits[256];
-
   unsigned char
     *data;
 
   unsigned int
-    status;
-
-  unsigned long
+    bit,
     byte,
-    bytes_per_line,
     padding,
-    value,
     version;
+
+  int
+    value;
+
+  short int
+    hex_digits[256];
+
+  MagickPassFail
+    status;
 
   /*
     Open image file.
@@ -207,6 +209,8 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read X bitmap header.
   */
+  (void) memset(buffer,0,sizeof(buffer));
+  name[0]='\0';
   while (ReadBlobString(image,buffer) != (char *) NULL)
     if (sscanf(buffer,"#define %s %lu",name,&image->columns) == 2)
       if ((strlen(name) >= 6) &&
@@ -278,6 +282,8 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Initialize hex values.
   */
+  for (i = 0; i < sizeof(hex_digits)/sizeof(hex_digits[0]); i++)
+    hex_digits[i]=(-1);
   hex_digits['0']=0;
   hex_digits['1']=1;
   hex_digits['2']=2;
@@ -311,47 +317,57 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   p=data;
   if (version == 10)
-    for (i=0; i < (long) (bytes_per_line*image->rows); (i+=2))
+    for (i=0; i < (bytes_per_line*image->rows); (i+=2))
     {
       value=XBMInteger(image,hex_digits);
+      if (value < 0)
+        {
+          MagickFreeMemory(data);
+          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
       *p++=(unsigned char) value;
       if (!padding || ((i+2) % bytes_per_line))
         *p++=(unsigned char) (value >> 8);
     }
   else
-    for (i=0; i < (long) (bytes_per_line*image->rows); i++)
+    for (i=0; i < (bytes_per_line*image->rows); i++)
     {
       value=XBMInteger(image,hex_digits);
+      if (value < 0)
+        {
+          MagickFreeMemory(data);
+          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
       *p++=(unsigned char) value;
     }
   /*
     Convert X bitmap image to pixel packets.
   */
   p=data;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     q=SetImagePixels(image,0,y,image->columns,1);
     if (q == (PixelPacket *) NULL)
       break;
     indexes=AccessMutableIndexes(image);
-    bit=0;
-    byte=0;
-    for (x=0; x < (long) image->columns; x++)
+    bit=0U;
+    byte=0U;
+    for (x=0; x < image->columns; x++)
     {
-      if (bit == 0)
+      if (bit == 0U)
         byte=(*p++);
       indexes[x]=byte & 0x01 ? 0x01 : 0x00;
       bit++;
-      byte>>=1;
-      if (bit == 8)
-        bit=0;
+      byte>>=1U;
+      if (bit == 8U)
+        bit=0U;
     }
     if (!SyncImagePixels(image))
       break;
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,exception,
                                   LoadImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
          break;
   }
   MagickFreeMemory(data);
@@ -570,7 +586,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
     if (QuantumTick(y,image->rows))
       if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                   SaveImageText,image->filename,
-				  image->columns,image->rows))
+                                  image->columns,image->rows))
         break;
   }
   (void) strcpy(buffer,"};\n");

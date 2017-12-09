@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -382,7 +382,7 @@ MagickMapAddEntry(MagickMap map,const char *key, const void *object,
               p->previous=0;
               p->next=0;
               spliced_in=MagickTrue;
-              
+
               /*
                 Remove old object
               */
@@ -507,7 +507,20 @@ MagickMapCloneMap(MagickMap map,ExceptionInfo *exception)
   /* LockSemaphoreInfo(map->semaphore); */
 
   map_clone=MagickMapAllocateMap(map->clone_function,map->deallocate_function);
+  if (map_clone == (MagickMap) NULL)
+    {
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     "MagickMapAllocateMap");
+      return (MagickMap) NULL;
+    }
   iterator=MagickMapAllocateIterator(map);
+  if (iterator == (MagickMapIterator) NULL)
+    {
+      MagickMapDeallocateMap(map_clone);
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     "MagickMapAllocateIterator");
+      return (MagickMap) NULL;
+    }
   while(MagickMapIterateNext(iterator,&key))
   {
     const void *object=MagickMapDereferenceIterator(iterator,&size);
@@ -669,7 +682,7 @@ MagickMapDeallocateMap(MagickMap map)
         current=p;
         p=p->next;
         MagickMapDestroyObject(current);
-      }        
+      }
   }
 
   (void) UnlockSemaphoreInfo(map->semaphore);
@@ -893,7 +906,7 @@ MagickMapIterateNext(MagickMapIterator iterator,const char **key)
     *key=iterator->member->key;
 
   UnlockSemaphoreInfo(iterator->map->semaphore);
-  
+
   return (iterator->member != 0);
 }
 
@@ -1025,7 +1038,7 @@ MagickMapRemoveEntry(MagickMap map,const char *key)
                 {
                   if (p->previous)
                     p->previous->next=p->next;
-                  
+
                   if (p->next)
                     p->next->previous=p->previous;
                 }

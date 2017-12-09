@@ -671,7 +671,7 @@ MSLStartElement(void *context,const xmlChar *name,
             {
               Image
                 *newImage;
-          
+
               newImage=BlurImage(msl_info->image[n],radius,sigma,
                                  &msl_info->image[n]->exception);
               if (newImage == (Image *) NULL)
@@ -4214,7 +4214,7 @@ MSLEndElement(void *context,const xmlChar *name)
                         DestroyImage(msl_info->image[msl_info->n]);
                         msl_info->image[msl_info->n]=(Image *) NULL;
                       }
-                    
+
                     DestroyDrawInfo(msl_info->draw_info[msl_info->n]);
                     msl_info->draw_info[msl_info->n]=(DrawInfo *) NULL;
 
@@ -4544,7 +4544,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
                      msl_image->filename);
       return(False);
     }
-    
+
   /*
     Parse MSL file.
   */
@@ -4659,7 +4659,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 
   CloseBlob(*image);
 
-  return((*image != (Image *) NULL) && 
+  return((*image != (Image *) NULL) &&
          ((*image)->exception.severity == UndefinedException));
 }
 

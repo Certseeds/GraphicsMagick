@@ -58,8 +58,8 @@ static ConfirmAccessHandler
 */
 MagickExport MagickPassFail
 MagickConfirmAccess(const ConfirmAccessMode mode,
-		    const char *path,
-		    ExceptionInfo *exception)
+                    const char *path,
+                    ExceptionInfo *exception)
 {
   MagickPassFail
     status;

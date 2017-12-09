@@ -180,14 +180,14 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  
-  if ((value=AccessDefinition(image_info,"pdf","use-cropbox"))) 
+
+  if ((value=AccessDefinition(image_info,"pdf","use-cropbox")))
     {
       if (strcmp(value,"true") == 0)
         use_crop_box = True;
     }
 
-   if ((value=AccessDefinition(image_info,"pdf","stop-on-error"))) 
+   if ((value=AccessDefinition(image_info,"pdf","stop-on-error")))
      {
        if (strcmp(value,"true") == 0)
          pdf_stop_on_error = True;
@@ -265,87 +265,87 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (void) memset(&box,0,sizeof(RectangleInfo));
     for (p=command; ; )
       {
-	c=ReadBlobByte(image);
-	if (c == EOF)
-	  break;
-	(void) fputc(c,file);
-	*p++=(char) c;
-	if ((c != '\n') && (c != '\r') && ((p-command) < (MaxTextExtent-1)))
-	  continue;
-	*p='\0';
-	p=command;
-	/*
-	  Continue unless this is a MediaBox statement.
-	*/
-	if (LocaleNCompare(command,"/Rotate ",8) == 0)
-	  {
-	    count=sscanf(command,"/Rotate %d",&rotate);
-	    if (count > 0)
-	      {
-		(void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				      "Rotate by %d degrees",rotate);
-	      }
-	  }
-	q=strstr(command,MediaBox);
-	if (q == (char *) NULL)
-	  continue;
-	count=sscanf(q,"/MediaBox [%lf %lf %lf %lf",&bounds.x1,&bounds.y1,
-		     &bounds.x2,&bounds.y2);
-	if (count != 4)
-	  count=sscanf(q,"/MediaBox[%lf %lf %lf %lf",&bounds.x1,&bounds.y1,
-		       &bounds.x2,&bounds.y2);
-	if (count == 4)
-	  {
-	    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				  "Parsed: MediaBox %lf %lf %lf %lf",
-				  bounds.x1,bounds.y1,
-				  bounds.x2,bounds.y2);
-	  }
-	if (count != 4)
-	  continue;
-	if ((bounds.x1 > bounds.x2) || (bounds.y1 > bounds.y2))
-	  continue;
-	/*
-	  Set Postscript render geometry.
-	*/
-	width=(unsigned long) (bounds.x2-bounds.x1+0.5);
-	height=(unsigned long) (bounds.y2-bounds.y1+0.5);
-	if ((width <= box.width) && (height <= box.height))
-	  continue;
-	page.width=width;
-	page.height=height;
-	box=page;
+        c=ReadBlobByte(image);
+        if (c == EOF)
+          break;
+        (void) fputc(c,file);
+        *p++=(char) c;
+        if ((c != '\n') && (c != '\r') && ((p-command) < (MaxTextExtent-1)))
+          continue;
+        *p='\0';
+        p=command;
+        /*
+          Continue unless this is a MediaBox statement.
+        */
+        if (LocaleNCompare(command,"/Rotate ",8) == 0)
+          {
+            count=sscanf(command,"/Rotate %d",&rotate);
+            if (count > 0)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Rotate by %d degrees",rotate);
+              }
+          }
+        q=strstr(command,MediaBox);
+        if (q == (char *) NULL)
+          continue;
+        count=sscanf(q,"/MediaBox [%lf %lf %lf %lf",&bounds.x1,&bounds.y1,
+                     &bounds.x2,&bounds.y2);
+        if (count != 4)
+          count=sscanf(q,"/MediaBox[%lf %lf %lf %lf",&bounds.x1,&bounds.y1,
+                       &bounds.x2,&bounds.y2);
+        if (count == 4)
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Parsed: MediaBox %lf %lf %lf %lf",
+                                  bounds.x1,bounds.y1,
+                                  bounds.x2,bounds.y2);
+          }
+        if (count != 4)
+          continue;
+        if ((bounds.x1 > bounds.x2) || (bounds.y1 > bounds.y2))
+          continue;
+        /*
+          Set Postscript render geometry.
+        */
+        width=(unsigned long) (bounds.x2-bounds.x1+0.5);
+        height=(unsigned long) (bounds.y2-bounds.y1+0.5);
+        if ((width <= box.width) && (height <= box.height))
+          continue;
+        page.width=width;
+        page.height=height;
+        box=page;
       }
     /*
       If page is rotated right or left, then swap width and height values.
     */
     if ((90 == AbsoluteValue(rotate)) || (270 == AbsoluteValue(rotate)))
       {
-	double
-	  value;
+        double
+          value;
 
-	value=page.width;
-	page.width=page.height;
-	page.height=value;
+        value=page.width;
+        page.width=page.height;
+        page.height=value;
       }
     if ((page.width == 0) || (page.height == 0))
       {
-	SetGeometry(image,&page);
-	(void) GetGeometry(PSPageGeometry,&page.x,&page.y,&page.width,
-			   &page.height);
+        SetGeometry(image,&page);
+        (void) GetGeometry(PSPageGeometry,&page.x,&page.y,&page.width,
+                           &page.height);
       }
     if (image_info->page != (char *) NULL)
       (void) GetGeometry(image_info->page,&page.x,&page.y,&page.width,
-			 &page.height);
+                         &page.height);
     geometry[0]='\0';
     FormatString(geometry,"%lux%lu",
-		 (unsigned long) ceil(page.width*image->x_resolution/dx_resolution-0.5),
-		 (unsigned long) ceil(page.height*image->y_resolution/dy_resolution-0.5));
+                 (unsigned long) ceil(page.width*image->x_resolution/dx_resolution-0.5),
+                 (unsigned long) ceil(page.height*image->y_resolution/dy_resolution-0.5));
     if (ferror(file))
       {
-	(void) fclose(file);
-	ThrowReaderException(CorruptImageError,AnErrorHasOccurredWritingToFile,
-			     image);
+        (void) fclose(file);
+        ThrowReaderException(CorruptImageError,AnErrorHasOccurredWritingToFile,
+                             image);
       }
   }
 
@@ -398,12 +398,12 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     clone_info=CloneImageInfo(image_info);
     if (!AcquireTemporaryFileName(clone_info->filename))
       {
-	DestroyImageInfo(clone_info);
-	ThrowReaderTemporaryFileException(clone_info->filename);
+        DestroyImageInfo(clone_info);
+        ThrowReaderTemporaryFileException(clone_info->filename);
       }
     FormatString(command,delegate_info->commands,antialias,
-		 antialias,density,options,clone_info->filename,
-		 postscript_filename);
+                 antialias,density,options,clone_info->filename,
+                 postscript_filename);
   }
   (void) MagickMonitorFormatted(0,8,&image->exception,RenderPostscriptText,
                                 image->filename);
@@ -415,7 +415,7 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (IsAccessibleAndNotEmpty(clone_info->filename))
     {
       /*
-	Read Ghostscript output.
+        Read Ghostscript output.
       */
       clone_info->blob=(void *) NULL;
       clone_info->length=0;
@@ -431,20 +431,20 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image == (Image *) NULL)
     {
       if (UndefinedException == exception->severity)
-	ThrowException(exception,DelegateError,PostscriptDelegateFailed,filename);
+        ThrowException(exception,DelegateError,PostscriptDelegateFailed,filename);
     }
   else
     {
       do
-	{
-	  (void) strlcpy(image->magick,"PDF",sizeof(image->magick));
-	  (void) strlcpy(image->filename,filename,sizeof(image->filename));
-	  next_image=SyncNextImageInList(image);
-	  if (next_image != (Image *) NULL)
-	    image=next_image;
-	} while (next_image != (Image *) NULL);
+        {
+          (void) strlcpy(image->magick,"PDF",sizeof(image->magick));
+          (void) strlcpy(image->filename,filename,sizeof(image->filename));
+          next_image=SyncNextImageInList(image);
+          if (next_image != (Image *) NULL)
+            image=next_image;
+        } while (next_image != (Image *) NULL);
       while (image->previous != (Image *) NULL)
-	image=image->previous;
+        image=image->previous;
       if (image_info->subimage != 0)
         {
           unsigned long
@@ -710,7 +710,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                time_meridian->tm_mon+1,time_meridian->tm_mday,time_meridian->tm_hour,
                time_meridian->tm_min,time_meridian->tm_sec);
   GetPathComponent(image->filename,BasePath,basename);
-  
+
   FormatString(buffer,"/Title (%.1024s)\n",EscapeParenthesis(basename));
   (void) WriteBlobString(image,buffer);
   FormatString(buffer,"/CreationDate (%.1024s)\n",date);
@@ -776,76 +776,76 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   do
     {
       ImageCharacteristics
-	characteristics;
+        characteristics;
 
       CompressionType
-	compression;
+        compression;
 
       /*
-	Analyze image properties.
+        Analyze image properties.
       */
       (void) GetImageCharacteristics(image,&characteristics,
-				     (OptimizeType == image_info->type),
-				     &image->exception);
+                                     (OptimizeType == image_info->type),
+                                     &image->exception);
 
       compression=image->compression;
       if (image_info->compression != UndefinedCompression)
-	{
-	  /*
-	    ImageInfo compression always prevails if it is set.
-	  */
-	  compression=image_info->compression;
-	}
+        {
+          /*
+            ImageInfo compression always prevails if it is set.
+          */
+          compression=image_info->compression;
+        }
       else
-	{
-	  /*
-	    Default to Zip compression unless the image was JPEG
-	    compressed and is not now monochrome or colormapped.
-	  */
-	  if ((JPEGCompression != compression) ||
-	      (characteristics.monochrome) ||
-	      (characteristics.palette))
-	    {
+        {
+          /*
+            Default to Zip compression unless the image was JPEG
+            compressed and is not now monochrome or colormapped.
+          */
+          if ((JPEGCompression != compression) ||
+              (characteristics.monochrome) ||
+              (characteristics.palette))
+            {
 #if defined(HasZLIB)
-	      compression=ZipCompression;
+              compression=ZipCompression;
 #else
-	      compression=LZWCompression;
+              compression=LZWCompression;
 #endif
-	    }
-	}
-      
+            }
+        }
+
       switch (compression)
-	{
+        {
 #if !defined(HasJPEG)
-	case JPEGCompression:
-	  {
-	    /*
-	      If JPEG compression is not supported, then use RLE compression
-	      and report a warning to user.
-	    */
-	    compression=RLECompression;
-	    ThrowException(&image->exception,MissingDelegateError,JPEGLibraryIsNotAvailable,image->filename);
-	    break;
-	  }
+        case JPEGCompression:
+          {
+            /*
+              If JPEG compression is not supported, then use RLE compression
+              and report a warning to user.
+            */
+            compression=RLECompression;
+            ThrowException(&image->exception,MissingDelegateError,JPEGLibraryIsNotAvailable,image->filename);
+            break;
+          }
 #endif
 #if !defined(HasZLIB)
-	case ZipCompression:
-	  {
-	    /*
-	      If ZIP compression is not supported, then use RLE compression
-	      and report a warning to user.
-	    */
-	    compression=RLECompression;
-	    ThrowException(&image->exception,MissingDelegateError,ZipLibraryIsNotAvailable,image->filename);
-	    break;
-	  }
+        case ZipCompression:
+          {
+            /*
+              If ZIP compression is not supported, then use RLE compression
+              and report a warning to user.
+            */
+            compression=RLECompression;
+            ThrowException(&image->exception,MissingDelegateError,ZipLibraryIsNotAvailable,image->filename);
+            break;
+          }
 #endif
-	default:
-	  break;
-	}
+        default:
+          break;
+        }
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "%s compression.",
-			    CompressionTypeToString(compression));
+                            "%s compression.",
+                            CompressionTypeToString(compression));
 
       /*
         Scale image to size of Portable Document page.
@@ -1063,9 +1063,9 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
             FormatString(buffer,CFormat,"ASCII85Decode");
             break;
           }
-        case JPEGCompression: 
+        case JPEGCompression:
           {
-            FormatString(buffer,CFormat,"DCTDecode"); 
+            FormatString(buffer,CFormat,"DCTDecode");
             if (image->colorspace != CMYKColorspace)
               break;
             (void) WriteBlobString(image,buffer);
@@ -1084,29 +1084,29 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
           }
         case FaxCompression:
           {
-	    char
-	      CCITTParam[4];
+            char
+              CCITTParam[4];
 
-	    ExceptionInfo
-	      exception;
+            ExceptionInfo
+              exception;
 
-	    /*
-	      Try compressing page to Group4 to see if it is
-	      supported, otherwise we will fall back to Group3.
-	    */
-	    (void) strlcpy(CCITTParam,"0",sizeof(CCITTParam));
-	    GetExceptionInfo(&exception);
-	    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				  "Executing ImageToHuffman2DBlob for CCITT Fax4 ...");
-	    fax_blob=ImageToHuffman2DBlob(image,image_info,&fax_blob_length,
-					  &exception);
-	    if (fax_blob != (unsigned char *) NULL)
-	      {
-		(void) strlcpy(CCITTParam,"-1",sizeof(CCITTParam));
-		(void) LogMagickEvent(CoderEvent,GetMagickModule(),
-				      "ImageToHuffman2DBlob reports success!");
-	      }
-	    DestroyExceptionInfo(&exception);
+            /*
+              Try compressing page to Group4 to see if it is
+              supported, otherwise we will fall back to Group3.
+            */
+            (void) strlcpy(CCITTParam,"0",sizeof(CCITTParam));
+            GetExceptionInfo(&exception);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Executing ImageToHuffman2DBlob for CCITT Fax4 ...");
+            fax_blob=ImageToHuffman2DBlob(image,image_info,&fax_blob_length,
+                                          &exception);
+            if (fax_blob != (unsigned char *) NULL)
+              {
+                (void) strlcpy(CCITTParam,"-1",sizeof(CCITTParam));
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "ImageToHuffman2DBlob reports success!");
+              }
+            DestroyExceptionInfo(&exception);
             (void) strlcpy(buffer,"/Filter [ /CCITTFaxDecode ]\n",sizeof(buffer));
             (void) WriteBlobString(image,buffer);
             (void) strlcpy(buffer,"/Interpolate false\n",sizeof(buffer));
@@ -1145,21 +1145,21 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
           ((image_info->type != TrueColorType) &&
            characteristics.grayscale))
         {
-	  /*
-	    Write grayscale output.
-	  */
+          /*
+            Write grayscale output.
+          */
           switch (compression)
             {
             case FaxCompression:
               {
-		/*
-		  Try Group4 first and use Group3 as a fallback.
-		*/
-		if (fax_blob != (unsigned char *) NULL)
-		  {
-		    (void) WriteBlob(image,fax_blob_length,fax_blob);
-		    MagickFreeMemory(fax_blob);
-		  }
+                /*
+                  Try Group4 first and use Group3 as a fallback.
+                */
+                if (fax_blob != (unsigned char *) NULL)
+                  {
+                    (void) WriteBlob(image,fax_blob_length,fax_blob);
+                    MagickFreeMemory(fax_blob);
+                  }
                 else
                   {
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1178,7 +1178,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 /*
                   Write image in JPEG format.
                 */
-		jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
+                jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
                 if (jpeg_blob == (unsigned char *) NULL)
                   ThrowWriterException2(CoderError,image->exception.reason,image);
                 (void) WriteBlob(image,length,jpeg_blob);
@@ -1218,7 +1218,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                         &image->exception,
                                                         SaveImageText,
                                                         image->filename,
-							image->columns,image->rows);
+                                                        image->columns,image->rows);
                           if (status == False)
                             break;
                         }
@@ -1265,7 +1265,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                         &image->exception,
                                                         SaveImageText,
                                                         image->filename,
-							image->columns,image->rows);
+                                                        image->columns,image->rows);
                           if (status == False)
                             break;
                         }
@@ -1288,7 +1288,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 /*
                   Write image in JPEG format.
                 */
-		jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
+                jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
                 if (jpeg_blob == (unsigned char *) NULL)
                   ThrowWriterException2(CoderError,image->exception.reason,image);
                 (void) WriteBlob(image,length,jpeg_blob);
@@ -1340,7 +1340,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                         &image->exception,
                                                         SaveImageText,
                                                         image->filename,
-							image->columns,image->rows);
+                                                        image->columns,image->rows);
                           if (status == False)
                             break;
                         }
@@ -1397,7 +1397,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                         &image->exception,
                                                         SaveImageText,
                                                         image->filename,
-							image->columns,image->rows);
+                                                        image->columns,image->rows);
                           if (status == False)
                             break;
                         }
@@ -1443,7 +1443,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                           &image->exception,
                                                           SaveImageText,
                                                           image->filename,
-							  image->columns,image->rows);
+                                                          image->columns,image->rows);
                             if (status == False)
                               break;
                           }
@@ -1487,7 +1487,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                                                           &image->exception,
                                                           SaveImageText,
                                                           image->filename,
-							  image->columns,image->rows);
+                                                          image->columns,image->rows);
                             if (status == False)
                               break;
                           }

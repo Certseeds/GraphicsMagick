@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2009 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -136,7 +136,7 @@ typedef struct _DicomStream
     msb_state;
 
   Dicom_PI
-    phot_interp;  
+    phot_interp;
 
   double
     window_center,
@@ -185,7 +185,7 @@ typedef struct _DicomStream
   Quantum
     *rescale_map;
 
-#if defined(USE_GRAYMAP)  
+#if defined(USE_GRAYMAP)
   unsigned short
     *graymap;
 #endif
@@ -2972,7 +2972,7 @@ static MagickPassFail funcDCM_TriggerTime(Image *image,DicomStream *dcm,Exceptio
   ARG_NOT_USED(exception);
 
   (void) SetImageAttribute(image,"TriggerTime",(char *) dcm->data);
-  return MagickPass;  
+  return MagickPass;
 }
 
 static MagickPassFail funcDCM_FieldOfView(Image *image,DicomStream *dcm,ExceptionInfo *exception)
@@ -3001,7 +3001,7 @@ static MagickPassFail funcDCM_ImageOrientation(Image *image,DicomStream *dcm,Exc
 {
   ARG_NOT_USED(exception);
   (void) SetImageAttribute(image,"ImageOrientation",(char *) dcm->data);
-  return MagickPass; 
+  return MagickPass;
 }
 
 static MagickPassFail funcDCM_SliceLocation(Image *image,DicomStream *dcm,ExceptionInfo *exception)
@@ -3262,7 +3262,7 @@ static MagickPassFail funcDCM_PaletteDescriptor(Image *image,DicomStream *dcm,Ex
 
 static MagickPassFail funcDCM_LUT(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
-#if defined(USE_GRAYMAP)  
+#if defined(USE_GRAYMAP)
   /*
     1200 = grey, LUT data 3006 = LUT data
   */
@@ -3367,7 +3367,7 @@ static magick_uint8_t DCM_RLE_ReadByte(Image *image, DicomStream *dcm)
         rep_ct,
         rep_char;
 
-      /* We need to read the next command pair */     
+      /* We need to read the next command pair */
       if (dcm->frag_bytes <= 2)
         dcm->frag_bytes = 0;
       else
@@ -3545,7 +3545,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
   dcm->datum=0;
   if (dcm->quantum == 4)
     {
-      dcm->datum=(long) dcm->funcReadLong(image);
+      dcm->datum=dcm->funcReadLong(image);
       if (EOFBlob(image))
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -3634,7 +3634,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
     }
   else if ((dcm->length == 1) && (dcm->quantum == 4))
     {
-      dcm->datum=(long) dcm->funcReadLong(image);
+      dcm->datum=dcm->funcReadLong(image);
       if (EOFBlob(image))
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -3646,6 +3646,11 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
       size_t
         size;
 
+      if (dcm->length > ((size_t) GetBlobSize(image)))
+        {
+          ThrowException(exception,CorruptImageError,InsufficientImageDataInFile,image->filename);
+          return MagickFail;
+        }
       if (dcm->length > ((~0UL)/dcm->quantum))
         {
           ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
@@ -3657,7 +3662,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
-      size=dcm->quantum*dcm->length;
+      size=MagickArraySize(dcm->quantum,dcm->length);
       if (ReadBlob(image,size,(char *) dcm->data) != size)
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -3808,7 +3813,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
         dcm->rescale_map[i]=dcm->max_value_out;
       else
         dcm->rescale_map[i]=(Quantum)(((Xr-Xw_min)/(win_width-1))*dcm->max_value_out+0.5);
-    }  
+    }
   if (dcm->phot_interp == DCM_PI_MONOCHROME1)
     for (i=0; i < (dcm->max_value_in+1); i++)
       dcm->rescale_map[i]=dcm->max_value_out-dcm->rescale_map[i];
@@ -4386,7 +4391,7 @@ static MagickPassFail DCM_ReadOffsetTable(Image *image,DicomStream *dcm,Exceptio
       return MagickFail;
     }
 
-  dcm->offset_arr=MagickAllocateArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));  
+  dcm->offset_arr=MagickAllocateArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));
   if (dcm->offset_arr == (magick_uint32_t *) NULL)
     {
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -4443,6 +4448,14 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
   */
   if (DCM_ReadOffsetTable(*image,dcm,exception) == MagickFail)
     return MagickFail;
+
+  if (dcm->number_scenes == 0U)
+    {
+      ThrowException(exception,CorruptImageError,
+                     ImageFileHasNoScenes,
+                     image_info->filename);
+      return MagickFail;
+    }
 
   status=MagickPass;
   for (scene=0; scene < dcm->number_scenes; scene++)
@@ -4676,7 +4689,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Now process the image data
   */
   if (status == MagickFail)
-    ; 
+    ;
   else
     if ((dcm.columns == 0) || (dcm.rows == 0))
       {
@@ -4841,7 +4854,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
 
   if (dcm.offset_arr != NULL)
-    MagickFreeMemory(dcm.offset_arr);    
+    MagickFreeMemory(dcm.offset_arr);
   if (dcm.data != NULL)
     MagickFreeMemory(dcm.data);
 #if defined(USE_GRAYMAP)
@@ -4852,10 +4865,21 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     MagickFreeMemory(dcm.rescale_map);
   if (status == MagickPass)
     {
-      while (image->previous != (Image *) NULL)
-        image=image->previous;
-      CloseBlob(image);
-      return(image);
+      /* It is possible to have success status yet have no image */
+      if (image != (Image *) NULL)
+        {
+          while (image->previous != (Image *) NULL)
+            image=image->previous;
+          CloseBlob(image);
+          return(image);
+        }
+      else
+        {
+          ThrowException(exception,CorruptImageError,
+                         ImageFileDoesNotContainAnyImageData,
+                         image_info->filename);
+          return (Image *) NULL;
+        }
     }
   else
     {

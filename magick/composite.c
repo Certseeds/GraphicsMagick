@@ -407,23 +407,23 @@ XorCompositePixels(void *mutable_data,                /* User provided mutable d
 
       source_alpha=(double) source.opacity/MaxRGBDouble;
       dest_alpha=(double) destination.opacity/MaxRGBDouble;
-      
+
       gamma=(1.0-source_alpha)+(1.0-dest_alpha)-
         2.0*(1.0-source_alpha)*(1.0-dest_alpha);
-          
+
       composite=MaxRGBDouble*(1.0-gamma);
       destination.opacity=RoundDoubleToQuantum(composite);
-          
+
       gamma=1.0/(gamma <= MagickEpsilon ? 1.0 : gamma);
-          
+
       composite=((1.0-source_alpha)*source.red*dest_alpha+
                  (1.0-dest_alpha)*destination.red*source_alpha)*gamma;
       destination.red=RoundDoubleToQuantum(composite);
-          
+
       composite=((1.0-source_alpha)*source.green*dest_alpha+
                  (1.0-dest_alpha)*destination.green*source_alpha)*gamma;
       destination.green=RoundDoubleToQuantum(composite);
-          
+
       composite=((1.0-source_alpha)*source.blue*dest_alpha+
                  (1.0-dest_alpha)*destination.blue*source_alpha)*gamma;
       destination.blue=RoundDoubleToQuantum(composite);
@@ -475,15 +475,15 @@ PlusCompositePixels(void *mutable_data,                /* User provided mutable 
       value=((double) (MaxRGBDouble-source.opacity)*source.red+(double)
                  (MaxRGBDouble-destination.opacity)*destination.red)/MaxRGBDouble;
       destination.red=RoundDoubleToQuantum(value);
-      
+
       value=((double) (MaxRGBDouble-source.opacity)*source.green+(double)
                    (MaxRGBDouble-destination.opacity)*destination.green)/MaxRGBDouble;
       destination.green=RoundDoubleToQuantum(value);
-      
+
       value=((double) (MaxRGBDouble-source.opacity)*source.blue+(double)
                   (MaxRGBDouble-destination.opacity)*destination.blue)/MaxRGBDouble;
       destination.blue=RoundDoubleToQuantum(value);
-      
+
       value=((double) (MaxRGBDouble-source.opacity)+
                      (double) (MaxRGBDouble-destination.opacity))/MaxRGBDouble;
       destination.opacity=MaxRGB-RoundDoubleToQuantum(value);
@@ -593,15 +593,15 @@ AddCompositePixels(void *mutable_data,                /* User provided mutable d
       value=(double) source.red+destination.red;
       if (value > MaxRGBDouble) value -= ((double) MaxRGBDouble+1.0);
       destination.red=RoundDoubleToQuantum(value);
-      
+
       value=(double) source.green+destination.green;
       if (value > MaxRGBDouble) value -= ((double) MaxRGBDouble+1.0);
       destination.green=RoundDoubleToQuantum(value);
-      
+
       value=(double) source.blue+destination.blue;
       if (value > MaxRGBDouble) value -= ((double) MaxRGBDouble+1.0);
       destination.blue=RoundDoubleToQuantum(value);
-      
+
       destination.opacity=OpaqueOpacity;
       ApplyPacketUpdates(update_pixels,update_indexes,update_image,&destination,i);
     }
@@ -917,7 +917,7 @@ CopyCompositePixels(void *mutable_data,                /* User provided mutable 
     {
       (void) memcpy(update_pixels,source_pixels,npixels*sizeof(PixelPacket));
     }
-      
+
   return MagickPass;
 }
 
@@ -954,7 +954,7 @@ CopyRedCompositePixels(void *mutable_data,                /* User provided mutab
     {
       update_pixels[i].red = source_pixels[i].red;
     }
-      
+
   return MagickPass;
 }
 
@@ -991,7 +991,7 @@ CopyGreenCompositePixels(void *mutable_data,                /* User provided mut
     {
       update_pixels[i].green = source_pixels[i].green;
     }
-      
+
   return MagickPass;
 }
 
@@ -1094,7 +1094,7 @@ CopyOpacityCompositePixels(void *mutable_data,                /* User provided m
             }
         }
     }
-      
+
   return MagickPass;
 }
 
@@ -1139,7 +1139,7 @@ ClearCompositePixels(void *mutable_data,                /* User provided mutable
           update_pixels[i].opacity = TransparentOpacity;
         }
     }
-      
+
   return MagickPass;
 }
 
@@ -1812,15 +1812,15 @@ OverlayCompositePixels(void *mutable_data,               /* User provided mutabl
 {
   register long
     i;
-    
+
   PixelPacket
     destination,
     source;
-    
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(exception);
-    
+
   /*
     Multiplies or screens, depending on the destination colour.
     Overlay(a,b) = HardLight(b,a)
@@ -1835,10 +1835,10 @@ OverlayCompositePixels(void *mutable_data,               /* User provided mutabl
 
       double
         value;
-        
+
       PrepareSourcePacket(&source,source_pixels,source_image,source_indexes,i);
       PrepareDestinationPacket(&destination,update_pixels,update_image,update_indexes,i);
-        
+
       source_alpha=(double) source.opacity/MaxRGBDouble;
       dest_alpha=(double) destination.opacity/MaxRGBDouble;
 
@@ -1958,9 +1958,9 @@ DivideCompositePixels(void *mutable_data,                /* User provided mutabl
   ARG_NOT_USED(exception);
 
   /*
-    The result of change-image / base-image. This is useful for 
+    The result of change-image / base-image. This is useful for
     improving the readability of text on unevenly illuminated photos.
-    (by using a gaussian blurred copy of change-image as base-image) 
+    (by using a gaussian blurred copy of change-image as base-image)
   */
 
   for (i=0; i < npixels; i++)
@@ -2011,15 +2011,15 @@ HardLightCompositePixels(void *mutable_data,               /* User provided muta
 {
   register long
     i;
-    
+
   PixelPacket
     destination,
     source;
-    
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(exception);
-    
+
   /*
     The result of base-image gets lighting effects by change-image.
   */
@@ -2033,10 +2033,10 @@ HardLightCompositePixels(void *mutable_data,               /* User provided muta
 
       double
         value;
-        
+
       PrepareSourcePacket(&source,source_pixels,source_image,source_indexes,i);
       PrepareDestinationPacket(&destination,update_pixels,update_image,update_indexes,i);
-        
+
       source_alpha=(double) source.opacity/MaxRGBDouble;
       dest_alpha=(double) destination.opacity/MaxRGBDouble;
 
@@ -2180,15 +2180,15 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
 {
   register long
     i;
-    
+
   PixelPacket
     destination,
     source;
-    
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(exception);
-    
+
   /*
     Brightens the destination color by an amount depending on the source color
   */
@@ -2202,10 +2202,10 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
 
       double
         value;
-        
+
       PrepareSourcePacket(&source,source_pixels,source_image,source_indexes,i);
       PrepareDestinationPacket(&destination,update_pixels,update_image,update_indexes,i);
-        
+
       source_alpha=(double) source.opacity/MaxRGBDouble;
       dest_alpha=(double) destination.opacity/MaxRGBDouble;
 
@@ -2219,7 +2219,7 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
       if(source.red == MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else
         value=MagickFmin(MaxRGBDouble,(double)destination.red/(1.0-(double) source.red/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2228,7 +2228,7 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
       destination.red=RoundDoubleToQuantum(composite);
 
       if(source.green == MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else
         value=MagickFmin(MaxRGBDouble,(double)destination.green/(1.0-(double) source.green/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2237,7 +2237,7 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
       destination.green=RoundDoubleToQuantum(composite);
 
       if(source.blue == MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else
         value=MagickFmin(MaxRGBDouble,(double)destination.blue/(1.0-(double) source.blue/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2267,15 +2267,15 @@ ColorBurnCompositePixels(void *mutable_data,               /* User provided muta
 {
   register long
     i;
-    
+
   PixelPacket
     destination,
     source;
-    
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(exception);
-    
+
   /*
     Darkens the destination color by an amount depending on the source color
   */
@@ -2289,10 +2289,10 @@ ColorBurnCompositePixels(void *mutable_data,               /* User provided muta
 
       double
         value;
-        
+
       PrepareSourcePacket(&source,source_pixels,source_image,source_indexes,i);
       PrepareDestinationPacket(&destination,update_pixels,update_image,update_indexes,i);
-        
+
       source_alpha=(double) source.opacity/MaxRGBDouble;
       dest_alpha=(double) destination.opacity/MaxRGBDouble;
 
@@ -2306,27 +2306,27 @@ ColorBurnCompositePixels(void *mutable_data,               /* User provided muta
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
       if(source.red == 0)
-	value=0;
+        value=0;
       else
-	value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.red)/((double) source.red/MaxRGBDouble));
+        value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.red)/((double) source.red/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
                  source.red*(1.0-source_alpha)*dest_alpha+
                  destination.red*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.red=RoundDoubleToQuantum(composite);
 
       if(source.green == 0)
-	value=0;
+        value=0;
       else
-	value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.green)/((double) source.green/MaxRGBDouble));
+        value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.green)/((double) source.green/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
                  source.green*(1.0-source_alpha)*dest_alpha+
                  destination.green*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.green=RoundDoubleToQuantum(composite);
 
       if(source.blue == 0)
-	value=0;
+        value=0;
       else
-	value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.blue)/((double) source.blue/MaxRGBDouble));
+        value = MaxRGBDouble-MagickFmin(MaxRGBDouble,(MaxRGBDouble-(double)destination.blue)/((double) source.blue/MaxRGBDouble));
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
                  source.blue*(1.0-source_alpha)*dest_alpha+
                  destination.blue*(1.0-dest_alpha)*source_alpha)*gamma;
@@ -2354,15 +2354,15 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
 {
   register long
     i;
-    
+
   PixelPacket
     destination,
     source;
-    
+
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(exception);
-    
+
   /*
     Darkens or lightens, depending on the source color
   */
@@ -2377,7 +2377,7 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
 
       double
         value;
-        
+
       PrepareSourcePacket(&source,source_pixels,source_image,source_indexes,i);
       PrepareDestinationPacket(&destination,update_pixels,update_image,update_indexes,i);
 
@@ -2393,15 +2393,15 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
 
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
-      
+
       if(source.red <= (0.5*MaxRGBDouble))
         value=destination.red*(1.0 - (1.0-(double)destination.red/MaxRGBDouble)*(1.0-2.0*(double)source.red/MaxRGBDouble));
       else
       {
-	if(destination.red <= (0.25*MaxRGBDouble))
-	  ramp = ((16.0*((double)destination.red/MaxRGBDouble)-12.0)*((double)destination.red/MaxRGBDouble)+4.0)*(double)destination.red/MaxRGBDouble;
-	else
-	  ramp = sqrt((double)destination.red/MaxRGBDouble);
+        if(destination.red <= (0.25*MaxRGBDouble))
+          ramp = ((16.0*((double)destination.red/MaxRGBDouble)-12.0)*((double)destination.red/MaxRGBDouble)+4.0)*(double)destination.red/MaxRGBDouble;
+        else
+          ramp = sqrt((double)destination.red/MaxRGBDouble);
         value=destination.red + ((2.0*source.red)-MaxRGBDouble)*(ramp-(double)destination.red/MaxRGBDouble);
       }
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2413,10 +2413,10 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
         value=destination.green*(1.0 - (1.0-(double)destination.green/MaxRGBDouble)*(1.0-2.0*(double)source.green/MaxRGBDouble));
       else
       {
-	if(destination.green <= (0.25*MaxRGBDouble))
-	  ramp = ((16.0*((double)destination.green/MaxRGBDouble)-12.0)*((double)destination.green/MaxRGBDouble)+4.0)*(double)destination.green/MaxRGBDouble;
-	else
-	  ramp = sqrt((double)destination.green/MaxRGBDouble);
+        if(destination.green <= (0.25*MaxRGBDouble))
+          ramp = ((16.0*((double)destination.green/MaxRGBDouble)-12.0)*((double)destination.green/MaxRGBDouble)+4.0)*(double)destination.green/MaxRGBDouble;
+        else
+          ramp = sqrt((double)destination.green/MaxRGBDouble);
         value=destination.green + ((2.0*source.green)-MaxRGBDouble)*(ramp-(double)destination.green/MaxRGBDouble);
       }
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2428,10 +2428,10 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
         value=destination.blue*(1.0 - (1.0-(double)destination.blue/MaxRGBDouble)*(1.0-2.0*(double)source.blue/MaxRGBDouble));
       else
       {
-	if(destination.blue <= (0.25*MaxRGBDouble))
-	  ramp = ((16.0*((double)destination.blue/MaxRGBDouble)-12.0)*((double)destination.blue/MaxRGBDouble)+4.0)*(double)destination.blue/MaxRGBDouble;
-	else
-	  ramp = sqrt((double)destination.blue/MaxRGBDouble);
+        if(destination.blue <= (0.25*MaxRGBDouble))
+          ramp = ((16.0*((double)destination.blue/MaxRGBDouble)-12.0)*((double)destination.blue/MaxRGBDouble)+4.0)*(double)destination.blue/MaxRGBDouble;
+        else
+          ramp = sqrt((double)destination.blue/MaxRGBDouble);
         value=destination.blue + ((2.0*source.blue)-MaxRGBDouble)*(ramp-(double)destination.blue/MaxRGBDouble);
       }
       composite=(value*(1.0-source_alpha)*(1.0-dest_alpha)+
@@ -2730,39 +2730,39 @@ VividLightCompositePixels(void *mutable_data,                /* User provided mu
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
       if(source.red==MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else if(source.red==0)
-	value = 0.;
+        value = 0.;
       else if(source.red>=(0.5*MaxRGBDouble))
-	value = MagickFmin(MaxRGBDouble,destination.red/(2.0-(2.0*(double)source.red/MaxRGBDouble)));
+        value = MagickFmin(MaxRGBDouble,destination.red/(2.0-(2.0*(double)source.red/MaxRGBDouble)));
       else
-	value = MagickFmax(0.0,((double)destination.red+2.0*source.red-MaxRGBDouble)/(2.0*(double)source.red/MaxRGBDouble));
+        value = MagickFmax(0.0,((double)destination.red+2.0*source.red-MaxRGBDouble)/(2.0*(double)source.red/MaxRGBDouble));
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.red*(1.0-source_alpha)*dest_alpha+
                  destination.red*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.red=RoundDoubleToQuantum(composite);
 
       if(source.green==MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else if(source.green==0)
-	value = 0.;
+        value = 0.;
       else if(source.green>=(0.5*MaxRGBDouble))
-	value = MagickFmin(MaxRGBDouble,destination.green/(2.0-(2.0*(double)source.green/MaxRGBDouble)));
+        value = MagickFmin(MaxRGBDouble,destination.green/(2.0-(2.0*(double)source.green/MaxRGBDouble)));
       else
-	value = MagickFmax(0.0,((double)destination.green+2.0*source.green-MaxRGBDouble)/(2.0*(double)source.green/MaxRGBDouble));
+        value = MagickFmax(0.0,((double)destination.green+2.0*source.green-MaxRGBDouble)/(2.0*(double)source.green/MaxRGBDouble));
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.green*(1.0-source_alpha)*dest_alpha+
                  destination.green*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.green=RoundDoubleToQuantum(composite);
 
       if(source.blue==MaxRGB)
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       else if(source.blue==0)
-	value = 0.;
+        value = 0.;
       else if(source.blue>=(0.5*MaxRGBDouble))
-	value = MagickFmin(MaxRGBDouble,destination.blue/(2.0-(2.0*(double)source.blue/MaxRGBDouble)));
+        value = MagickFmin(MaxRGBDouble,destination.blue/(2.0-(2.0*(double)source.blue/MaxRGBDouble)));
       else
-	value = MagickFmax(0.0,((double)destination.blue+2.0*source.blue-MaxRGBDouble)/(2.0*(double)source.blue/MaxRGBDouble));
+        value = MagickFmax(0.0,((double)destination.blue+2.0*source.blue-MaxRGBDouble)/(2.0*(double)source.blue/MaxRGBDouble));
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.blue*(1.0-source_alpha)*dest_alpha+
                  destination.blue*(1.0-dest_alpha)*source_alpha)*gamma;
@@ -2828,27 +2828,27 @@ PinLightCompositePixels(void *mutable_data,                /* User provided muta
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
       if(source.red>=(0.5*MaxRGBDouble))
-	value = MagickFmax((double)destination.red,2.0*((double)source.red-0.5*MaxRGBDouble));
+        value = MagickFmax((double)destination.red,2.0*((double)source.red-0.5*MaxRGBDouble));
       else
-	value = MagickFmin((double)destination.red,2.0*(double)source.red);
+        value = MagickFmin((double)destination.red,2.0*(double)source.red);
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.red*(1.0-source_alpha)*dest_alpha+
                  destination.red*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.red=RoundDoubleToQuantum(composite);
 
       if(source.green>=(0.5*MaxRGBDouble))
-	value = MagickFmax((double)destination.green,2.0*((double)source.green-0.5*MaxRGBDouble));
+        value = MagickFmax((double)destination.green,2.0*((double)source.green-0.5*MaxRGBDouble));
       else
-	value = MagickFmin((double)destination.green,2.0*(double)source.green);
+        value = MagickFmin((double)destination.green,2.0*(double)source.green);
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.green*(1.0-source_alpha)*dest_alpha+
                  destination.green*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.green=RoundDoubleToQuantum(composite);
 
       if(source.blue>=(0.5*MaxRGBDouble))
-	value = MagickFmax((double)destination.blue,2.0*((double)source.blue-0.5*MaxRGBDouble));
+        value = MagickFmax((double)destination.blue,2.0*((double)source.blue-0.5*MaxRGBDouble));
       else
-	value = MagickFmin((double)destination.blue,2.0*(double)source.blue);
+        value = MagickFmin((double)destination.blue,2.0*(double)source.blue);
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.blue*(1.0-source_alpha)*dest_alpha+
                  destination.blue*(1.0-dest_alpha)*source_alpha)*gamma;
@@ -2916,27 +2916,27 @@ HardMixCompositePixels(void *mutable_data,                /* User provided mutab
       gamma=1.0/(fabs(gamma) < MagickEpsilon ? MagickEpsilon : gamma);
 
       if(source.red + destination.red < MaxRGB)
-	value = 0.0;
+        value = 0.0;
       else
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.red*(1.0-source_alpha)*dest_alpha+
                  destination.red*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.red=RoundDoubleToQuantum(composite);
 
       if(source.green + destination.green < MaxRGB)
-	value = 0.0;
+        value = 0.0;
       else
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.green*(1.0-source_alpha)*dest_alpha+
                  destination.green*(1.0-dest_alpha)*source_alpha)*gamma;
       destination.green=RoundDoubleToQuantum(composite);
 
       if(source.blue + destination.blue < MaxRGB)
-	value = 0.0;
+        value = 0.0;
       else
-	value = MaxRGBDouble;
+        value = MaxRGBDouble;
       composite=((value*(1.0-source_alpha)*(1.0-dest_alpha))+
                  source.blue*(1.0-source_alpha)*dest_alpha+
                  destination.blue*(1.0-dest_alpha)*source_alpha)*gamma;
@@ -2996,8 +2996,8 @@ HardMixCompositePixels(void *mutable_data,                /* User provided mutab
 */
 static PixelIteratorDualModifyCallback
 GetCompositionPixelIteratorCallback(const CompositeOperator compose,
-				    const MagickBool canvas_matte,
-				    const MagickBool change_matte,
+                                    const MagickBool canvas_matte,
+                                    const MagickBool change_matte,
                                     MagickBool *clear)
 {
   PixelIteratorDualModifyCallback
@@ -3015,9 +3015,9 @@ GetCompositionPixelIteratorCallback(const CompositeOperator compose,
       break;
     case OverCompositeOp:
       if (canvas_matte || change_matte)
-	call_back=OverCompositePixels;
+        call_back=OverCompositePixels;
       else
-	call_back=CopyCompositePixels;
+        call_back=CopyCompositePixels;
       break;
     case InCompositeOp:
       call_back=InCompositePixels;
@@ -3027,9 +3027,9 @@ GetCompositionPixelIteratorCallback(const CompositeOperator compose,
       break;
     case AtopCompositeOp:
       if (canvas_matte || change_matte)
-	call_back=AtopCompositePixels;
+        call_back=AtopCompositePixels;
       else
-	call_back=CopyCompositePixels;
+        call_back=CopyCompositePixels;
       break;
     case XorCompositeOp:
       call_back=XorCompositePixels;
@@ -3298,9 +3298,9 @@ CompositeImage(Image *canvas_image,
                 if (update_image->matte)
                   y_displace=(vertical_scale*(p->opacity-
                                               (((double) MaxRGB+1.0)/2)))/(((double) MaxRGB+1.0)/2);
-		InterpolateViewColor(AccessDefaultCacheView(canvas_image),r,
-				     x_offset+x+x_displace,y_offset+y+y_displace,
-				     &canvas_image->exception);
+                InterpolateViewColor(AccessDefaultCacheView(canvas_image),r,
+                                     x_offset+x+x_displace,y_offset+y+y_displace,
+                                     &canvas_image->exception);
                 p++;
                 q++;
                 r++;
@@ -3435,8 +3435,8 @@ CompositeImage(Image *canvas_image,
 
 #if 0
     fprintf(stderr,
-	    "Parameters: canvas=%lux%lu | composite=%lux%lu | offset x=%ld y=%ld\n"
-	    "Overlap:    canvas x=%ld y=%ld | composite x=%ld y=%ld | size=%ldx%ld\n",
+            "Parameters: canvas=%lux%lu | composite=%lux%lu | offset x=%ld y=%ld\n"
+            "Overlap:    canvas x=%ld y=%ld | composite x=%ld y=%ld | size=%ldx%ld\n",
            canvas_image->columns,canvas_image->rows,
            change_image->columns,change_image->rows,
            x_offset,y_offset,
@@ -3456,22 +3456,22 @@ CompositeImage(Image *canvas_image,
         MagickBool
           clear_pixels = MagickFalse;
 
-	columns = Min(canvas_image->columns - canvas_x,
-		      change_image->columns - composite_x);
-	rows = Min(canvas_image->rows - canvas_y,
-		   change_image->rows - composite_y);
+        columns = Min(canvas_image->columns - canvas_x,
+                      change_image->columns - composite_x);
+        rows = Min(canvas_image->rows - canvas_y,
+                   change_image->rows - composite_y);
 
         call_back=GetCompositionPixelIteratorCallback(compose,
-						      canvas_image->matte,
-						      change_image->matte,
-						      &clear_pixels);
+                                                      canvas_image->matte,
+                                                      change_image->matte,
+                                                      &clear_pixels);
         if (call_back != (PixelIteratorDualModifyCallback) NULL)
           {
             char
               description[MaxTextExtent];
 
-	    FormatString(description,"[%%s] Composite %s image pixels ...",
-			 CompositeOperatorToString(compose));
+            FormatString(description,"[%%s] Composite %s image pixels ...",
+                         CompositeOperatorToString(compose));
 
             if (clear_pixels)
               {
@@ -3631,9 +3631,9 @@ CompositeImageRegion(const CompositeOperator compose,
   canvas_image->storage_class=DirectClass;
 
   call_back=GetCompositionPixelIteratorCallback(compose,
-						canvas_image->matte,
-						update_image->matte,
-						&clear_pixels);
+                                                canvas_image->matte,
+                                                update_image->matte,
+                                                &clear_pixels);
   if (call_back != (PixelIteratorDualModifyCallback) NULL)
     {
       const char
@@ -3667,7 +3667,7 @@ CompositeImageRegion(const CompositeOperator compose,
              columns,rows,canvas_x,canvas_y);
 #endif
 
-      if ((status == MagickPass) && 
+      if ((status == MagickPass) &&
           ((unsigned long) canvas_x < canvas_image->columns) &&
           ((unsigned long) canvas_y < canvas_image->rows) &&
           ((unsigned long) update_x < update_image->columns) &&
@@ -3756,12 +3756,12 @@ CompositeImageRegion(const CompositeOperator compose,
 */
 static MagickPassFail
 MagickCompositeImageUnderColorPixels(void *mutable_data,             /* User provided mutable data */
-				     const void *immutable_data,     /* User provided immutable data */
-				     Image *image,                   /* Modify image */
-				     PixelPacket * restrict pixels,  /* Pixel row */
-				     IndexPacket * restrict indexes, /* Pixel row indexes */
-				     const long npixels,             /* Number of pixels in row */
-				     ExceptionInfo *exception)       /* Exception report */
+                                     const void *immutable_data,     /* User provided immutable data */
+                                     Image *image,                   /* Modify image */
+                                     PixelPacket * restrict pixels,  /* Pixel row */
+                                     IndexPacket * restrict indexes, /* Pixel row indexes */
+                                     const long npixels,             /* Number of pixels in row */
+                                     ExceptionInfo *exception)       /* Exception report */
 {
   const PixelPacket
     * restrict background_color = (const PixelPacket *) immutable_data;
@@ -3777,7 +3777,7 @@ MagickCompositeImageUnderColorPixels(void *mutable_data,             /* User pro
   for (i=0; i < npixels; i++)
     {
       AlphaCompositePixel(&pixels[i],&pixels[i],pixels[i].opacity,background_color,
-			  background_color->opacity);
+                          background_color->opacity);
       pixels[i].opacity=OpaqueOpacity;
     }
 
@@ -3786,19 +3786,19 @@ MagickCompositeImageUnderColorPixels(void *mutable_data,             /* User pro
 
 MagickExport MagickPassFail
 MagickCompositeImageUnderColor(Image *image,const PixelPacket *undercolor,
-			       ExceptionInfo *exception)
+                               ExceptionInfo *exception)
 {
   MagickPassFail
     status;
 
   image->storage_class=DirectClass;
   status=PixelIterateMonoModify(MagickCompositeImageUnderColorPixels,
-				NULL,
-				"[%s] Applying undercolor...",
-				NULL,undercolor,
-				0,0,image->columns,image->rows,
-				image,
-				exception);
+                                NULL,
+                                "[%s] Applying undercolor...",
+                                NULL,undercolor,
+                                0,0,image->columns,image->rows,
+                                image,
+                                exception);
   image->matte=MagickFalse;
 
   return status;

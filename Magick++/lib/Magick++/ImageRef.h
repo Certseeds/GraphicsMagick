@@ -22,7 +22,7 @@ namespace Magick
   // Reference counted access to Image *
   //
   class MagickDLLDecl ImageRef {
-    friend class Image; 
+    friend class Image;
   private:
     // Construct with an image pointer and default options
     ImageRef ( MagickLib::Image * image_ );
@@ -36,16 +36,16 @@ namespace Magick
     // Copy constructor and assignment are not supported
     ImageRef(const ImageRef&);
     ImageRef& operator=(const ImageRef&);
-    
+
     void                 image ( MagickLib::Image * image_ );
     MagickLib::Image *&  image ( void );
-    
+
     void                 options ( Options * options_ );
     Options *            options ( void );
 
     void                 id ( const long id_ );
     long                 id ( void ) const;
-    
+
     MagickLib::Image *   _image;    // ImageMagick Image
     Options *            _options;  // User-specified options
     long                 _id;       // Registry ID (-1 if not registered)

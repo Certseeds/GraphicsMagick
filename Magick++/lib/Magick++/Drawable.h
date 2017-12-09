@@ -228,16 +228,16 @@ class MagickDLLDecl VPath
 public:
   // Constructor
   VPath ( void );
-    
+
   // Construct from VPathBase
   VPath ( const VPathBase& original_ );
-    
+
   // Destructor
   virtual ~VPath ( void );
 
   // Copy constructor
   VPath ( const VPath& original_ );
-    
+
   // Assignment operator
   VPath& operator= (const VPath& original_ );
 
@@ -296,7 +296,7 @@ public:
   // Return polymorphic copy of object
   /*virtual*/
   DrawableBase* copy() const;
-    
+
   void sx( const double sx_ )
     {
       _affine.sx = sx_;
@@ -323,7 +323,7 @@ public:
     {
       return _affine.rx;
     }
-  
+
   void ry( const double ry_ )
     {
       _affine.ry = ry_;
@@ -332,7 +332,7 @@ public:
     {
       return _affine.ry;
     }
-  
+
   void tx( const double tx_ )
     {
       _affine.tx = tx_;
@@ -341,7 +341,7 @@ public:
     {
       return _affine.tx;
     }
-  
+
   void ty( const double ty_ )
     {
       _affine.ty = ty_;
@@ -350,7 +350,7 @@ public:
     {
       return _affine.ty;
     }
-  
+
 private:
   MagickLib::AffineMatrix  _affine;
 };
@@ -386,7 +386,7 @@ public:
     {
       return _startX;
     }
-  
+
   void startY( double startY_ )
     {
       _startY = startY_;
@@ -395,7 +395,7 @@ public:
     {
       return _startY;
     }
-  
+
   void endX( double endX_ )
     {
       _endX = endX_;
@@ -413,7 +413,7 @@ public:
     {
       return _endY;
     }
-  
+
   void startDegrees( double startDegrees_ )
     {
       _startDegrees = startDegrees_;
@@ -431,7 +431,7 @@ public:
     {
       return _endDegrees;
     }
-  
+
 private:
   double _startX;
   double _startY;
@@ -459,7 +459,7 @@ public:
 
   // Return polymorphic copy of object
   /*virtual*/ DrawableBase* copy() const;
-  
+
 private:
   CoordinateList _coordinates;
 };
@@ -548,7 +548,7 @@ public:
     }
 
   /*virtual*/ ~DrawableCircle ( void );
-    
+
   // Operator to invoke equivalent draw API call
   /*virtual*/ void operator()( MagickLib::DrawContext context_ ) const;
 
@@ -694,7 +694,7 @@ public:
 
   // Return polymorphic copy of object
   /*virtual*/ DrawableBase* copy() const;
-    
+
   void composition( CompositeOperator composition_ )
     {
       _composition = composition_;
@@ -763,7 +763,7 @@ private:
 class MagickDLLDecl DrawableEllipse : public DrawableBase
 {
 public:
-  DrawableEllipse ( double originX_, double originY_, 
+  DrawableEllipse ( double originX_, double originY_,
                     double radiusX_, double radiusY_,
                     double arcStart_, double arcEnd_ )
     : _originX(originX_),
@@ -838,7 +838,7 @@ public:
 
 private:
   double _originX;
-  double _originY; 
+  double _originY;
   double _radiusX;
   double _radiusY;
   double _arcStart;
@@ -1327,10 +1327,10 @@ public:
 
 private:
   std::string         _id;
-  long		_x;
-  long		_y;
-  long		_width;
-  long		_height;
+  long          _x;
+  long          _y;
+  long          _width;
+  long          _height;
 };
 
 // Rectangle
@@ -1640,7 +1640,7 @@ public:
   DrawableDashArray& operator=(const Magick::DrawableDashArray &original_);
 
 private:
-  size_t	_size;
+  size_t        _size;
   double       *_dasharray;
 };
 
@@ -2208,13 +2208,13 @@ public:
     }
 
 private:
-  double	_radiusX;	// X radius
-  double	_radiusY;	// Y radius
-  double	_xAxisRotation;	// Rotation relative to X axis
-  bool        _largeArcFlag;	// Draw longer of the two matching arcs
-  bool        _sweepFlag;	// Draw arc matching clock-wise rotation
-  double	_x;		// End-point X
-  double	_y;		// End-point Y
+  double        _radiusX;       // X radius
+  double        _radiusY;       // Y radius
+  double        _xAxisRotation; // Rotation relative to X axis
+  bool        _largeArcFlag;    // Draw longer of the two matching arcs
+  bool        _sweepFlag;       // Draw arc matching clock-wise rotation
+  double        _x;             // End-point X
+  double        _y;             // End-point Y
 };
 
 // Compare two PathArcArgs objects regardless of LHS/RHS
@@ -2482,7 +2482,7 @@ public:
   /*virtual*/ void operator()( MagickLib::DrawContext context_ ) const;
 
   // Return polymorphic copy of object
-  /*virtual*/ 
+  /*virtual*/
   VPathBase* copy() const;
 
 private:
@@ -2507,7 +2507,7 @@ public:
   /*virtual*/ void operator()( MagickLib::DrawContext context_ ) const;
 
   // Return polymorphic copy of object
-  /*virtual*/ 
+  /*virtual*/
   VPathBase* copy() const;
 
 private:

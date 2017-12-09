@@ -889,7 +889,7 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
       {
         for (x=(long) image->columns; x > 0; x--)
           {
-            
+
             *q++=ScaleQuantumToChar(p->red);
             *q++=ScaleQuantumToChar(p->green);
             *q++=ScaleQuantumToChar(p->blue);
@@ -903,7 +903,7 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                     SaveImageText,image->filename,
-				    image->columns,image->rows))
+                                    image->columns,image->rows))
           break;
   }
   MagickFreeMemory(pixels);

@@ -267,11 +267,12 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
   char
     **tokens;
 
-  register const char
+  const char
     *p,
     *q;
 
-  register size_t
+  size_t
+    alloc_tokens,
     i;
 
   SVGInfo
@@ -279,21 +280,27 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
 
   svg_info=(SVGInfo *) context;
   *number_tokens=0;
+  alloc_tokens=0;
   if (text == (const char *) NULL)
     return((char **) NULL);
   /*
     Determine the number of arguments.
+
+    style="fill: red; stroke: blue; stroke-width: 3"
   */
   for (p=text; *p != '\0'; p++)
     if (*p == ':')
-      (*number_tokens)+=2;
-  tokens=MagickAllocateMemory(char **,(*number_tokens+2)*sizeof(*tokens));
+      alloc_tokens+=2;
+  if (alloc_tokens == 0)
+    return((char **) NULL);
+  tokens=MagickAllocateMemory(char **,(alloc_tokens+2)*sizeof(*tokens));
   if (tokens == (char **) NULL)
     {
       ThrowException3(svg_info->exception,ResourceLimitError,
                       MemoryAllocationFailed,UnableToConvertStringToTokens);
       return((char **) NULL);
     }
+  (void) memset(tokens,0,(alloc_tokens+2)*sizeof(*tokens));
   /*
     Convert string to an ASCII list.
   */
@@ -304,14 +311,36 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
       tokens[i]=AllocateString(p);
+      if (tokens[i] == NULL)
+        {
+          ThrowException3(svg_info->exception,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToConvertStringToTokens);
+          break;
+        }
       (void) strlcpy(tokens[i],p,q-p+1);
-      Strip(tokens[i++]);
+      Strip(tokens[i]);
+      i++;
+      if (i >= alloc_tokens)
+        break;
       p=q+1;
     }
-  tokens[i]=AllocateString(p);
-  (void) strlcpy(tokens[i],p,q-p+1);
-  Strip(tokens[i++]);
+  if (i < alloc_tokens)
+    {
+      tokens[i]=AllocateString(p);
+      if (tokens[i] == NULL)
+        {
+          ThrowException3(svg_info->exception,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToConvertStringToTokens);
+        }
+      else
+        {
+          (void) strlcpy(tokens[i],p,q-p+1);
+          Strip(tokens[i]);
+          i++;
+        }
+    }
   tokens[i]=(char *) NULL;
+  *number_tokens=i;
   return(tokens);
 }
 
@@ -1132,10 +1161,10 @@ SVGStartElement(void *context,const xmlChar *name,
               {
                 DrawInfo
                   *draw_info;
-                
+
                 TypeMetric
                   metrics;
-                
+
                 char
                   *text;
 
@@ -1325,7 +1354,7 @@ SVGStartElement(void *context,const xmlChar *name,
                     affine,
                     current,
                     transform;
-                  
+
                   IdentityAffine(&transform);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
                   tokens=GetTransformTokens(context,value,&number_tokens);
@@ -1382,7 +1411,7 @@ SVGStartElement(void *context,const xmlChar *name,
                                   {
                                     double
                                       angle;
-                                    
+
                                     angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                                     affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                                     affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -1555,7 +1584,7 @@ SVGStartElement(void *context,const xmlChar *name,
                 {
                   double
                     angle;
-                  
+
                   angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                   MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,
                             svg_info->bounds.y);
@@ -1634,7 +1663,7 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
                 {
                   double stroke_miterlimit;
-                  if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || 
+                  if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) ||
                       stroke_miterlimit < 1.0)
                     {
                       errno=0;
@@ -1935,7 +1964,7 @@ SVGStartElement(void *context,const xmlChar *name,
                     affine,
                     current,
                     transform;
-                  
+
                   IdentityAffine(&transform);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
                   tokens=GetTransformTokens(context,value,&number_tokens);
@@ -1990,7 +2019,7 @@ SVGStartElement(void *context,const xmlChar *name,
                                   {
                                     double
                                       angle;
-                                    
+
                                     angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
                                     affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
                                     affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -2197,7 +2226,7 @@ SVGStartElement(void *context,const xmlChar *name,
           double
             sx,
             sy;
-          
+
           if ((svg_info->view_box.width == 0.0) ||
               (svg_info->view_box.height == 0.0))
             svg_info->view_box=svg_info->bounds;
@@ -2211,10 +2240,10 @@ SVGStartElement(void *context,const xmlChar *name,
           {
             char
               tuple[MaxTextExtent];
-            
+
             GetColorTuple(&svg_info->image_info->background_color,8,True,True,
                           tuple);
-            
+
             MVGPrintf(svg_info->file,"push graphic-context\n");
             MVGPrintf(svg_info->file,"fill %s\n", tuple);
             MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",
@@ -2238,14 +2267,14 @@ SVGStartElement(void *context,const xmlChar *name,
           char
             *geometry,
             *p;
-          
+
           RectangleInfo
             page;
-          
+
           double
             sx,
             sy;
-          
+
           if (svg_info->bounds.width < 0.0 || svg_info->bounds.height < 0.0)
             {
               ThrowException(svg_info->exception,CorruptImageError,
@@ -2304,7 +2333,7 @@ SVGStartElement(void *context,const xmlChar *name,
 #endif
   /* Error dispatch point */
  svg_start_element_error:;
-  
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  )");
   MagickFreeMemory(units);
   MagickFreeMemory(color);
@@ -2362,7 +2391,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             register char
               *p;
-            
+
             Strip(svg_info->text);
             if (*svg_info->text == '\0')
               break;
@@ -2386,7 +2415,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             double
               angle;
-            
+
             angle=svg_info->element.angle;
             MVGPrintf(svg_info->file,"ellipse %g,%g %g,%g 0,360\n",
                       svg_info->element.cx,svg_info->element.cy,

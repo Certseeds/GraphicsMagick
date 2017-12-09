@@ -116,7 +116,7 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   image->depth=1;
   image->colors=1l << image->depth;
- 
+
   /* printf("ART header checked OK %d,%d\n",image->colors,image->depth); */
 
   if (!AllocateImageColormap(image,image->colors)) goto NoMemory;
@@ -163,7 +163,7 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Function WriteARTImage writes an ART image to a file.  
+%  Function WriteARTImage writes an ART image to a file.
 %
 %  The format of the WriteARTImage method is:
 %
@@ -203,7 +203,7 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   DataSize = (long)((image->columns+7) / 8);
-  Padding = (unsigned char)((-(long) DataSize) & 0x01);  
+  Padding = (unsigned char)((-(long) DataSize) & 0x01);
 
   pixels=MagickAllocateMemory(unsigned char *,(size_t) (DataSize));
   if (pixels == (unsigned char *) NULL)
@@ -223,25 +223,25 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
   for(y=0; y<(long)image->rows; y++)
   {
     if (AcquireImagePixels(image,0,y,image->columns,1,&image->exception)
-	== (const PixelPacket *) NULL)
+        == (const PixelPacket *) NULL)
       {
-	status=MagickFail;
-	break;
+        status=MagickFail;
+        break;
       }
     if (ExportImagePixelArea(image,GrayQuantum,1,pixels,0,0) != MagickPass)
       {
-	status=MagickFail;
-	break;
+        status=MagickFail;
+        break;
       }
     if (WriteBlob(image,DataSize,pixels) != DataSize)
       {
-	status=MagickFail;
-	break;
+        status=MagickFail;
+        break;
       }
     if (WriteBlob(image,Padding,(char *)&dummy) != Padding)
       {
-	status=MagickFail;
-	break;
+        status=MagickFail;
+        break;
       }
   }
 
@@ -250,7 +250,7 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
 
   if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return ART");
-  
+
   return(status);
 }
 

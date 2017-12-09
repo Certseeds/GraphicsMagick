@@ -6,7 +6,7 @@
 //
 // This class is a Magick++ implementation class and is not intended
 // for use by end-users.
-// 
+//
 #if !defined (Magick_Thread_header)
 #define Magick_Thread_header
 
@@ -16,11 +16,11 @@
 #include <windows.h>
 #if defined(_MT)
 struct win32_mutex {
-	HANDLE id;
+        HANDLE id;
 };
 
 // This is a binary semphore -- increase for a counting semaphore
-#define MAXSEMLEN	1
+#define MAXSEMLEN       1
 #endif // defined(_MT)
 #endif // defined(_VISUALC_)
 
@@ -50,7 +50,7 @@ namespace Magick
 
     // Don't support copy constructor
     MutexLock ( const MutexLock& original_ );
-    
+
     // Don't support assignment
     MutexLock& operator = ( const MutexLock& original_ );
 
@@ -75,7 +75,7 @@ namespace Magick
 
     // Don't support copy constructor
     Lock ( const Lock& original_ );
-    
+
     // Don't support assignment
     Lock& operator = ( const Lock& original_ );
 

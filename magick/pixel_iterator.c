@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2004-2016 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Interfaces to support simple iterative pixel read/update access
   within an image or between two images. These interfaces exist in
   order to eliminate large amounts of redundant code and to allow
@@ -38,7 +38,7 @@
 #if defined(HAVE_OPENMP)
 static int
 GetRegionThreads(const PixelIteratorOptions *options,
-		 const MagickBool in_core,
+                 const MagickBool in_core,
                  const unsigned long columns,
                  const unsigned long rows)
 {
@@ -221,7 +221,7 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
 #endif
       thread_status=status;
       if (thread_status == MagickFail)
-	continue;
+        continue;
 
       pixels=AcquireImagePixels(image,x, row, columns, 1, exception);
       if (!pixels)
@@ -373,7 +373,7 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
       if (!pixels)
         thread_status=MagickFail;
       indexes=AccessMutableIndexes(image);
-      
+
       if (thread_status != MagickFail)
         thread_status=(call_back)(mutable_data,immutable_data,image,pixels,indexes,columns,exception);
 
@@ -603,9 +603,9 @@ PixelIterateDualRead(PixelIteratorDualReadCallback call_back,
 
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
-				   (GetPixelCacheInCore(first_image) &&
-				    GetPixelCacheInCore(second_image)),
-				   columns,rows);
+                                   (GetPixelCacheInCore(first_image) &&
+                                    GetPixelCacheInCore(second_image)),
+                                   columns,rows);
 #else
   (void) options;
 #endif /* defined(HAVE_OPENMP) */
@@ -775,9 +775,9 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
 
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
-				   (GetPixelCacheInCore(source_image) &&
-				    GetPixelCacheInCore(update_image)),
-				   columns,rows);
+                                   (GetPixelCacheInCore(source_image) &&
+                                    GetPixelCacheInCore(update_image)),
+                                   columns,rows);
 #else
   (void) options;
 #endif /* defined(HAVE_OPENMP) */
@@ -828,7 +828,7 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
       if (!source_pixels)
         thread_status=MagickFail;
       source_indexes=AccessImmutableIndexes(source_image);
-      
+
       if (set)
         update_pixels=SetImagePixelsEx(update_image, update_x, update_row,
                                        columns, 1, exception);
@@ -844,7 +844,7 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
                                   source_image,source_pixels,source_indexes,
                                   update_image,update_pixels,update_indexes,
                                   columns,exception);
-      
+
       if (thread_status != MagickFail)
         if (!SyncImagePixelsEx(update_image,exception))
           thread_status=MagickFail;
@@ -1082,10 +1082,10 @@ PixelIterateTripleImplementation(PixelIteratorTripleModifyCallback call_back,
 
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
-				   (GetPixelCacheInCore(source1_image) &&
-				    GetPixelCacheInCore(source2_image) &&
-				    GetPixelCacheInCore(update_image)),
-				   columns,rows);
+                                   (GetPixelCacheInCore(source1_image) &&
+                                    GetPixelCacheInCore(source2_image) &&
+                                    GetPixelCacheInCore(update_image)),
+                                   columns,rows);
 #else
   (void) options;
 #endif /* defined(HAVE_OPENMP) */
@@ -1169,14 +1169,14 @@ PixelIterateTripleImplementation(PixelIteratorTripleModifyCallback call_back,
 
       if (thread_status != MagickFail)
         thread_status=(call_back)(mutable_data,immutable_data,
-				  source1_image,source1_pixels,source1_indexes,
-				  source2_image,source2_pixels,source2_indexes,
-				  update_image,update_pixels,update_indexes,
-				  columns,exception);
+                                  source1_image,source1_pixels,source1_indexes,
+                                  source2_image,source2_pixels,source2_indexes,
+                                  update_image,update_pixels,update_indexes,
+                                  columns,exception);
 
       if (thread_status != MagickFail)
-	if (!SyncImagePixelsEx(update_image,exception))
-	  thread_status=MagickFail;
+        if (!SyncImagePixelsEx(update_image,exception))
+          thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_PixelIterateTripleImplementation)

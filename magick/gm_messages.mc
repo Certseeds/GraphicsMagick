@@ -743,6 +743,12 @@ Image file or blob does not contain any image data
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorImageFileHasNoScenes
+Language        = English
+Image file has no scenes
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorImageTypeNotSupported
 Language        = English
 Image type not supported
@@ -1277,6 +1283,12 @@ angle is discontinuous
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorCMYKAImageLacksAlphaChannel
+Language        = English
+CMYKA image lacks an alpha channel (indexes)
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorColorspaceColorProfileMismatch
 Language        = English
 Colorspace color profile mismatch
@@ -1304,6 +1316,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorImageDoesNotContainResolution
 Language        = English
 image does not contain resolution
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorImageIsNotColormapped
+Language        = English
+image is not colormapped
 .
 
 MessageId       = +1
@@ -1409,6 +1427,12 @@ unable to deconstruct image sequence
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnableToExportImagePixels
+Language        = English
+unable to export image pixels
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorUnableToFlattenImage
 Language        = English
 unable to flatten image
@@ -1424,6 +1448,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorUnableToHandleImageChannel
 Language        = English
 unable to handle image channel
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnableToImportImagePixels
+Language        = English
+unable to import image pixels
 .
 
 MessageId       = +1
@@ -1814,6 +1844,12 @@ MessageId       = +1
 SymbolicName    = OptionErrorSubimageSpecificationReturnsNoImages
 Language        = English
 Subimage specification returns no images
+.
+
+MessageId       = +1
+SymbolicName    = OptionErrorTileNotBoundedByImageDimensions
+Language        = English
+Tile is not bounded by image dimensions
 .
 
 MessageId       = +1
@@ -2375,6 +2411,12 @@ unable to add IPTC profile
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorUnableToAddOrRemoveProfile
+Language        = English
+unable to add or remove profile
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorUnableToAllocateCoefficients
 Language        = English
 unable to allocate coefficients
@@ -2834,6 +2876,12 @@ MessageId       = +1
 SymbolicName    = LimitFatalErrorUnableToAllocateMagickInfo
 Language        = English
 unable to allocate magick info
+.
+
+MessageId       = +1
+SymbolicName    = LimitFatalErrorUnableToAllocateMagickMap
+Language        = English
+unable to allocate magick map
 .
 
 MessageId       = +1

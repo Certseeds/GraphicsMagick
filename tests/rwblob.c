@@ -231,6 +231,8 @@ int main ( int argc, char **argv )
   original = ReadImage ( imageInfo, &exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -270,6 +272,8 @@ int main ( int argc, char **argv )
   blob =(char *) ImageToBlob ( imageInfo, original, &blob_length, &exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -303,6 +307,8 @@ int main ( int argc, char **argv )
     ping_image = PingBlob(imageInfo, blob, blob_length, &exception );
     if (exception.severity != UndefinedException)
       {
+        if (exception.reason)
+          (void) printf("    reason:%s\n",exception.reason);
 	CatchException(&exception);
 	(void) fflush(stderr);
 	ping_error = MagickTrue;
@@ -338,6 +344,8 @@ int main ( int argc, char **argv )
   original = BlobToImage( imageInfo, blob, blob_length, &exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -364,6 +372,8 @@ int main ( int argc, char **argv )
 				&exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;
@@ -390,6 +400,8 @@ int main ( int argc, char **argv )
   final = BlobToImage( imageInfo, blob, blob_length, &exception );
   if (exception.severity != UndefinedException)
     {
+      if (exception.reason)
+        (void) printf("    reason:%s\n",exception.reason);
       CatchException(&exception);
       exit_status = 1;
       goto program_exit;

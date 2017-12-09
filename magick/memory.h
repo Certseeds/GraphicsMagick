@@ -1,10 +1,10 @@
 /*
   Copyright (C) 2003-2013 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   GraphicsMagick Memory Allocation Methods.
 */
 #ifndef _MAGICK_MEMORY_H
@@ -76,26 +76,26 @@ extern MagickExport size_t
 /*
   Allocate memory aligned to a specified alignment boundary
 */
-#define MagickAllocateAlignedMemory(type,alignment,size)		\
-  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :	\
+#define MagickAllocateAlignedMemory(type,alignment,size)                \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
    ((type) MAGICK_ASSUME_ALIGNED(MagickMallocAligned((size_t) alignment, (size_t) (size)),alignment)))
 
 /*
   Allocate array aligned to a specified alignment boundary
 */
-#define MagickAllocateAlignedArray(type,alignment,count,size)		\
-  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :	\
+#define MagickAllocateAlignedArray(type,alignment,count,size)           \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
    ((type) MAGICK_ASSUME_ALIGNED(MagickMallocAlignedArray((size_t) alignment, (size_t) (count), (size_t) (size)),alignment)))
 
 /*
   Free aligned memory (from MagickAllocateAlignedMemory()) and set pointer to
   NULL
 */
-#define MagickFreeAlignedMemory(memory)		\
-{						\
-  void *_magick_mp=memory;			\
-  MagickFreeAligned(_magick_mp);		\
-  memory=0;					\
+#define MagickFreeAlignedMemory(memory)         \
+{                                               \
+  void *_magick_mp=memory;                      \
+  MagickFreeAligned(_magick_mp);                \
+  memory=0;                                     \
 }
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */

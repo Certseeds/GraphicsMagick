@@ -50,8 +50,8 @@
     correct transform, and the transform is lossy.
   */
 static MagickPassFail ValidateChannelRequest(const ColorspaceType image_colorspace,
-					     const ChannelType channel,
-					     ExceptionInfo *exception)
+                                             const ChannelType channel,
+                                             ExceptionInfo *exception)
 {
   MagickPassFail
     status = MagickPass;
@@ -63,13 +63,13 @@ static MagickPassFail ValidateChannelRequest(const ColorspaceType image_colorspa
     case YellowChannel:
     case BlackChannel:
       if (image_colorspace != CMYKColorspace)
-	status = MagickFail;
+        status = MagickFail;
       break;
     case RedChannel:
     case GreenChannel:
     case BlueChannel:
       if (image_colorspace == CMYKColorspace)
-	status = MagickFail;;
+        status = MagickFail;;
       break;
     default:
       {
@@ -130,7 +130,7 @@ ChannelImagePixels(void *mutable_data,            /* User provided mutable data 
     channel = *((const ChannelType *) immutable_data);
 
   register long
-    i;  
+    i;
 
   ARG_NOT_USED(mutable_data);
   ARG_NOT_USED(exception);
@@ -243,7 +243,7 @@ MagickExport MagickPassFail ChannelImage(Image *image,const ChannelType channel)
   assert(image->signature == MagickSignature);
 
   FormatString(progress_message,"[%%s] Extract %s channel...  ",
-	       ChannelTypeToString(channel));
+               ChannelTypeToString(channel));
 
   /*
     Verify that image colorspace is compatible with with requested
@@ -369,7 +369,7 @@ ExportImageChannelPixels(void *mutable_data,                /* User provided mut
           {
             register long
               i;
-            
+
             for (i=0; i < npixels; i++)
               {
                 new_pixels[i].red=new_pixels[i].green=
@@ -392,7 +392,7 @@ ExportImageChannelPixels(void *mutable_data,                /* User provided mut
       {
       }
     }
-  
+
   return MagickPass;
 }
 #define ExportImageChannelText "[%s] Exporting channel...  "
@@ -402,7 +402,7 @@ MagickExport Image *ExportImageChannel(const Image *source_image,
 {
   ChannelType
     channel_type = channel;
-  
+
   Image
     *new_image;
 
@@ -433,7 +433,7 @@ MagickExport Image *ExportImageChannel(const Image *source_image,
                              source_image->columns,source_image->rows,
                              source_image,0,0,
                              new_image,0,0,
-                             exception); 
+                             exception);
 
   new_image->is_grayscale=True;
   new_image->is_monochrome=source_image->is_monochrome;
@@ -866,10 +866,10 @@ MagickPassFail ImportImageChannelsMasked(const Image *source_image,
 {
   ChannelType
     channel_type = channels;
-  
+
   MagickPassFail
     status=MagickPass;
-  
+
   assert(update_image != (Image *) NULL);
   assert(update_image->signature == MagickSignature);
   assert(source_image != (Image *) NULL);

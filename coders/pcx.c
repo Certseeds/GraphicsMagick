@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -433,11 +433,11 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if ((pcx_info.bits_per_pixel != 8) || (pcx_info.planes == 1))
       if ((pcx_info.version == 3) || (pcx_info.version == 5) ||
           ((pcx_info.bits_per_pixel*pcx_info.planes) == 1))
-	{
+        {
           image->colors=1 << (pcx_info.bits_per_pixel*pcx_info.planes);
-	  if (image->colors > 256)
-	    image->colors = 256;
-	}
+          if (image->colors > 256)
+            image->colors = 256;
+        }
     if (!AllocateImageColormap(image,image->colors))
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     if ((pcx_info.bits_per_pixel >= 8) && (pcx_info.planes != 1))
@@ -457,7 +457,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowPCXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
 
     /*
@@ -466,7 +466,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       double
         uncompressed_size;
-      
+
       uncompressed_size=((double) image->rows*pcx_info.bytes_per_line*pcx_info.planes);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Uncompressed size: %.0f", uncompressed_size);
@@ -474,15 +474,15 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           /* Not compressed */
           if (uncompressed_size > file_size)
-            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
-                                   image);
+            ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                    image);
         }
       else
         {
           /* RLE compressed */
           if (uncompressed_size > file_size*254.0)
-            ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
-                                 image);
+            ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                    image);
         }
     }
 
@@ -738,7 +738,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (QuantumTick(y,image->rows))
           if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                       image->filename,
-				      image->columns,image->rows))
+                                      image->columns,image->rows))
             break;
     }
     if (image->storage_class == PseudoClass)
@@ -1035,7 +1035,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   {
     if (logging && write_dcx)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-			    "Writing DCX frame %lu...",scene);
+                            "Writing DCX frame %lu...",scene);
     /*
       Ensure that image is in RGB space.
     */
@@ -1044,12 +1044,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       Analyze image to be written.
     */
     if (!GetImageCharacteristics(image,&characteristics,
-				 (OptimizeType == image_info->type),
-				 &image->exception))
+                                 (OptimizeType == image_info->type),
+                                 &image->exception))
       {
         LiberatePCXAllocations();
-	CloseBlob(image);
-	return MagickFail;
+        CloseBlob(image);
+        return MagickFail;
       }
     if (page_table != (ExtendedSignedIntegralType *) NULL)
       page_table[scene]=TellBlob(image);
@@ -1199,7 +1199,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                         SaveImageText,image->filename,
-					image->columns,image->rows))
+                                        image->columns,image->rows))
               break;
         }
       }
@@ -1225,7 +1225,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
-					  image->columns,image->rows))
+                                          image->columns,image->rows))
                 break;
         }
       else
@@ -1275,7 +1275,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
-					    image->columns,image->rows))
+                                            image->columns,image->rows))
                   break;
           }
         }

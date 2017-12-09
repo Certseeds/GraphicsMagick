@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -228,7 +228,7 @@ ModuleExport void RegisterSTEGANOImage(void)
   entry->decoder=(DecoderHandler) ReadSTEGANOImage;
   entry->description="Steganographic image";
   entry->module="STEGANO";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   entry->extension_treatment=IgnoreExtensionTreatment;
   (void) RegisterMagickInfo(entry);
 }

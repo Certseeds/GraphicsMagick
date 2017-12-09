@@ -116,7 +116,7 @@ MagickExport Image *ConstituteTextureImage(const unsigned long columns,
         {
           const IndexPacket
             *texture_indexes=(const IndexPacket *) NULL;
-          
+
           IndexPacket
             *canvas_indexes=(IndexPacket *) NULL;;
 

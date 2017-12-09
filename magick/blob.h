@@ -1,12 +1,12 @@
 /*
-  Copyright (C) 2003-2016 GraphicsMagick Group
+  Copyright (C) 2003-2017 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
- 
+
   Image Compression/Decompression Methods.
 */
 #ifndef _MAGICK_BLOB_H
@@ -144,7 +144,7 @@ extern "C" {
   /*
     Close I/O to the file or BLOB.
   */
-  extern MagickExport void CloseBlob(Image *image);
+  extern MagickExport MagickPassFail CloseBlob(Image *image);
 
 
   /*
@@ -189,9 +189,16 @@ extern "C" {
 
   /*
     Test to see if an error has been encountered while doing I/O to the file
-    or BLOB.
+    or BLOB.  Non-zero is returned if an error occured.
   */
   extern MagickExport int GetBlobStatus(const Image *image);
+
+  /*
+    Return the first errno present when an error has been encountered while
+    doing I/O to the file or BLOB.  This is only useful if GetBlobStatus() has
+    already reported that an error occured.
+  */
+  extern MagickExport int GetBlobFirstErrno(const Image *image);
 
   /*
     Test to see if blob is currently open.
