@@ -7,17 +7,18 @@ GraphicsMagick Image Processing System
 ======================================
 
 .. meta::
-   :description: GraphicsMagick is a robust collection of tools and libraries to read,
-                 write, and manipulate an image in any of the more popular
-                 image formats including GIF, JPEG, PNG, PDF, and WebP.
-                 With GraphicsMagick you can create GIFs dynamically making it
-                 suitable for Web applications.  You can also resize, rotate,
-                 sharpen, color reduce, or add special effects to an image and
-                 save your completed work in the same or different image format.
+   :description: GraphicsMagick is a robust collection of tools and
+                 libraries to read, write, and manipulate an image in any
+                 of the more popular image formats including GIF, JPEG,
+                 PNG, PDF, and WebP. With GraphicsMagick you can
+                 create GIFs dynamically making it suitable for Web
+                 applications. You can also resize, rotate, sharpen,
+                 color reduce, or add special effects to an image and
+                 save your completed work in the same or differing image
+                 format.
 
-   :keywords: GraphicsMagick, ImageMagick, PerlMagick, image processing, OpenMP
-              software development library, image, photo, software, Magick++,
-              TclMagick
+   :keywords: GraphicsMagick, GM, PerlMagick, Perl Magick, Perl Magic,
+              image processing, software development, TclMagick, Magick++
 
 
 .. _download GraphicsMagick release : http://sourceforge.net/projects/graphicsmagick/files/
@@ -27,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.26 (Released July 4, 2017) `download release`__
+Current Release              1.3.27 (Released December 9, 2017) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================

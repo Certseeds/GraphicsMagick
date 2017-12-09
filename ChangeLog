@@ -1,5 +1,11 @@
 2017-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/index.rst: Update to 1.3.27.
+
+	* www/Changes.rst: Add 1.3.27
+
+	* version.sh: Update library versioning.
+
 	* NEWS.txt: Update NEWS in preparation for releasing 1.3.27.
 
 2017-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
