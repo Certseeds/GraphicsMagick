@@ -1,3 +1,8 @@
+2017-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/{Magick.pm, Magick.pm.in, Makefile.PL.in}: Only base
+	PerlMagick version on numeric portion of PACKAGE_VERSION.
+
 2017-12-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* version.sh (PACKAGE_RELEASE_DATE): Fix syntax error in
