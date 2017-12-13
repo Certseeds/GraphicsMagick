@@ -1,3 +1,8 @@
+2017-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/{Magick.pm, Magick.pm.in, Makefile.PL.in}: Only base
+	PerlMagick version on numeric portion of PACKAGE_VERSION.
+
 2017-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/index.rst: Update to 1.3.27.
