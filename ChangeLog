@@ -1,3 +1,10 @@
+2017-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/palm.c (ReadPALMImage): Fix SourceForge issue #529
+	"global-buffer-overflow in ReadPALMImage".  This issue only
+	occured in builds with QuantumDepth=8 due to the small range of
+	IndexPacket.
+
 2017-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/{Magick.pm, Magick.pm.in, Makefile.PL.in}: Only base
