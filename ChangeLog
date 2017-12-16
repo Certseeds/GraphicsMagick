@@ -1,5 +1,10 @@
 2017-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): Fix SourceForge issue #530
+	"heap-buffer-overflow in ReadOneJNGImage".  In this case there is
+	a read one byte beyond the oFFs chunk allocation size due to an
+	error in specifying an offset into the chunk.
+
 	* coders/palm.c (ReadPALMImage): Fix SourceForge issue #529
 	"global-buffer-overflow in ReadPALMImage".  This issue only
 	occured in builds with QuantumDepth=8 due to the small range of

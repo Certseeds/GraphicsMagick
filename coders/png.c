@@ -3523,7 +3523,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               image->page.x=mng_get_long(p);
               image->page.y=mng_get_long(&p[4]);
-              if ((int) p[9] != 0)
+              if ((int) p[8] != 0)
                 {
                   image->page.x/=10000;
                   image->page.y/=10000;
