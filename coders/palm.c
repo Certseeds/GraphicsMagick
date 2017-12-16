@@ -1028,7 +1028,7 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
                               "%s %u bit palette with %" MAGICK_SIZE_T_F "u colors",
                               fixed_palette ? "Default" : "Custom",
                               palm_header.bits_per_pixel,
-                              palette_entries);
+                              (MAGICK_SIZE_T) palette_entries);
 
       if (fixed_palette)
         {
