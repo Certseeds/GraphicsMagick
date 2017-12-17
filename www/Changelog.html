@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2017-12-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/shear.c (IntegralRotateImage): Assure that reported error
+in rotate by 270 case does immediately terminate processing.
+Return a NULL Image pointer if there is a problem rather than a
+corrupted image.  Fix is related to SourceForge issue #532
+&quot;heap-buffer-overflow bug in ReadWPGImage&quot;.</li>
+<li>magick/pixel_cache.c (AcquireCacheNexus): Add a check that the
+pixel cache is compatible with the image dimensions.  Fix is
+related to SourceForge issue #532 &quot;heap-buffer-overflow bug in
+ReadWPGImage&quot;.</li>
+</ul>
+</blockquote>
 <p>2017-12-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

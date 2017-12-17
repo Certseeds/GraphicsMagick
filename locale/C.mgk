@@ -46,6 +46,9 @@
       <Message name="PixelCacheIsNotOpen">
         Pixel cache is not open
       </Message>
+      <Message name="PixelCacheDimensionsMisMatch">
+        Pixel cache dimensions incompatible with image dimensions
+      </Message>
       <Message name="UnableToAllocateCacheView">
         Unable to allocate cache view
       </Message>

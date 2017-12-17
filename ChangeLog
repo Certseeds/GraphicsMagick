@@ -1,3 +1,16 @@
+2017-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/shear.c (IntegralRotateImage): Assure that reported error
+	in rotate by 270 case does immediately terminate processing.
+	Return a NULL Image pointer if there is a problem rather than a
+	corrupted image.  Fix is related to SourceForge issue #532
+	"heap-buffer-overflow bug in ReadWPGImage".
+
+	* magick/pixel_cache.c (AcquireCacheNexus): Add a check that the
+	pixel cache is compatible with the image dimensions.  Fix is
+	related to SourceForge issue #532 "heap-buffer-overflow bug in
+	ReadWPGImage".
+
 2017-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Fix SourceForge issue #530
