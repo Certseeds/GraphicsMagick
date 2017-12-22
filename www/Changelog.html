@@ -38,6 +38,11 @@
 <p>2017-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (ReadMNGImage): Fix SourceForge issue #535
+&quot;heap-buffer-overflow in ReadMNGImage&quot;.  Problem was caused by
+accessing byte before testing that limit has been reached, rather
+than testing for limit before accessing the byte.  This means that
+it could only ever read one past the buffer allocation size.</li>
 <li>coders/webp.c (WriteWEBPImage): Fix SourceForge issue #536
 &quot;stack-buffer-overflow in WriteWEBPImage&quot;.  Due to a change to use
 WebPMemoryWriter as part of the EXIF and ICC profile support

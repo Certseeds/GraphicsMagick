@@ -4602,7 +4602,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Note the delay and frame clipping boundaries.
                   */
                   p++; /* framing mode */
-                  while (*p && ((p-chunk) < (long) length))
+                  while (((p-chunk) < (long) length) && *p)
                     p++;  /* frame name */
                   p++;  /* frame name terminator */
                   if ((p-chunk) < (long) (length-4))
