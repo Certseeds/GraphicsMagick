@@ -466,6 +466,8 @@ static int WriterCallback(const unsigned char *stream,size_t length,
     *image;
 
   image=(Image *) picture->custom_ptr;
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
   return (length != 0U ? (WriteBlob(image,length,stream) == length) :
           MagickTrue);
 }
@@ -483,6 +485,8 @@ static int ProgressCallback(int percent, const WebPPicture* picture)
     *image;
 
   image=(Image *) picture->custom_ptr;
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
   return MagickMonitorFormatted(percent, 101, &image->exception,
                                 SaveImageText, image->filename,
                                 image->columns, image->rows);
