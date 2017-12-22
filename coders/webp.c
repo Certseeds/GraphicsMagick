@@ -471,7 +471,6 @@ static int WriterCallback(const unsigned char *stream,size_t length,
   return (length != 0U ? (WriteBlob(image,length,stream) == length) :
           MagickTrue);
 }
-#endif /* !defined(SUPPORT_WEBP_MUX) */
 
 /*
   Called to provide progress indication ("It can return false to
@@ -484,6 +483,10 @@ static int ProgressCallback(int percent, const WebPPicture* picture)
   Image
     *image;
 
+  /*
+    When the WebPMemoryWriter is used, it commandeers custom_ptr
+    and the ProgressCallback no longer has access to image.
+   */
   image=(Image *) picture->custom_ptr;
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -491,7 +494,8 @@ static int ProgressCallback(int percent, const WebPPicture* picture)
                                 SaveImageText, image->filename,
                                 image->columns, image->rows);
 }
-#endif
+#endif /* defined(SUPPORT_PROGRESS) */
+#endif /* !defined(SUPPORT_WEBP_MUX) */
 
 static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 {
@@ -564,13 +568,13 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 #if !defined(SUPPORT_WEBP_MUX)
   picture.writer=WriterCallback;
   picture.custom_ptr=(void *) image;
+#  if defined(SUPPORT_PROGRESS)
+  picture.progress_hook=ProgressCallback;
+#  endif
 #else
   WebPMemoryWriterInit(&writer);
   picture.writer=WebPMemoryWrite;
   picture.custom_ptr=&writer;
-#endif
-#if defined(SUPPORT_PROGRESS)
-  picture.progress_hook=ProgressCallback;
 #endif
   picture.stats=(&statistics);
   picture.width=(int) image->columns;
