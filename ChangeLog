@@ -8,6 +8,8 @@
 	quite unfortunate since the progress indication is useful.  The
 	progress indication is temporarily disabled when the
 	WebPMemoryWriter is in use until a solution is implemented.
+	(ProgressCallback): Re-implement progress callback so that image
+	pointer is stored/retrieved as thread-specific data.
 
 	* coders/png.c (ReadMNGImage): Fix SourceForge issue #537 "null
 	pointer dereference in ReadMNGImage".  DEFI chunk must be at least

@@ -45,6 +45,7 @@
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
+#include "magick/tsd.h"
 #include "magick/utility.h"
 
 /*
@@ -104,6 +105,12 @@ static unsigned int WriteWEBPImage(const ImageInfo *,Image *);
 #endif
 #if WEBP_ENCODER_ABI_VERSION >= 0x020e /* >= 0.6.0 */
 #endif
+
+/*
+  Global declarations.
+*/
+static MagickTsdKey_t tsd_key = (MagickTsdKey_t) 0;
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -374,6 +381,12 @@ ModuleExport void RegisterWEBPImage(void)
   *version='\0';
 
   /*
+    Initialize thread specific data key.
+  */
+  if (tsd_key == (MagickTsdKey_t) 0)
+    (void) MagickTsdKeyCreate(&tsd_key);
+
+  /*
     Obtain the encoder's version number from the library, packed in
     hexadecimal using 8bits for each of major/minor/revision. E.g:
     v2.5.7 is 0x020507.
@@ -426,6 +439,15 @@ ModuleExport void RegisterWEBPImage(void)
 ModuleExport void UnregisterWEBPImage(void)
 {
   (void) UnregisterMagickInfo("WEBP");
+
+  /*
+    Destroy thread specific data key.
+  */
+  if (tsd_key != (MagickTsdKey_t) 0)
+    {
+      (void) MagickTsdKeyDelete(tsd_key);
+      tsd_key = (MagickTsdKey_t) 0;
+    }
 }
 
 #if defined(HasWEBP)
@@ -471,6 +493,7 @@ static int WriterCallback(const unsigned char *stream,size_t length,
   return (length != 0U ? (WriteBlob(image,length,stream) == length) :
           MagickTrue);
 }
+#endif /* !defined(SUPPORT_WEBP_MUX) */
 
 /*
   Called to provide progress indication ("It can return false to
@@ -486,8 +509,14 @@ static int ProgressCallback(int percent, const WebPPicture* picture)
   /*
     When the WebPMemoryWriter is used, it commandeers custom_ptr
     and the ProgressCallback no longer has access to image.
+
+    We use thread specific data instead.
    */
+  (void) picture;
+  image=(Image *) MagickTsdGetSpecific(tsd_key);
+#if 0
   image=(Image *) picture->custom_ptr;
+#endif
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   return MagickMonitorFormatted(percent, 101, &image->exception,
@@ -495,7 +524,6 @@ static int ProgressCallback(int percent, const WebPPicture* picture)
                                 image->columns, image->rows);
 }
 #endif /* defined(SUPPORT_PROGRESS) */
-#endif /* !defined(SUPPORT_WEBP_MUX) */
 
 static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 {
@@ -565,16 +593,18 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   (void) TransformColorspace(image,RGBColorspace);
   image->storage_class=DirectClass;
 
+  (void) MagickTsdSetSpecific(tsd_key,(void *) image);
+
 #if !defined(SUPPORT_WEBP_MUX)
   picture.writer=WriterCallback;
   picture.custom_ptr=(void *) image;
-#  if defined(SUPPORT_PROGRESS)
-  picture.progress_hook=ProgressCallback;
-#  endif
 #else
   WebPMemoryWriterInit(&writer);
   picture.writer=WebPMemoryWrite;
   picture.custom_ptr=&writer;
+#endif
+#if defined(SUPPORT_PROGRESS)
+  picture.progress_hook=ProgressCallback;
 #endif
   picture.stats=(&statistics);
   picture.width=(int) image->columns;

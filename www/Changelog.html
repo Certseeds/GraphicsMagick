@@ -45,7 +45,9 @@ addition (enabled with libwebp 0.5.0), the progress indicator
 callback is now passed a pointer to a wrong structure.  This is
 quite unfortunate since the progress indication is useful.  The
 progress indication is temporarily disabled when the
-WebPMemoryWriter is in use until a solution is implemented.</li>
+WebPMemoryWriter is in use until a solution is implemented.
+(ProgressCallback): Re-implement progress callback so that image
+pointer is stored/retrieved as thread-specific data.</li>
 <li>coders/png.c (ReadMNGImage): Fix SourceForge issue #537 &quot;null
 pointer dereference in ReadMNGImage&quot;.  DEFI chunk must be at least
 2 bytes long.</li>
