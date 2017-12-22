@@ -4333,10 +4333,24 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_DEFI,4))
             {
               if (mng_type == 3)
-                (void) ThrowException2(&image->exception,CoderError,
-                                       "DEFI chunk found in MNG-VLC"
-                                       " datastream",
-                                       (char *) NULL);
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "DEFI chunk found in MNG-VLC"
+                                          " datastream");
+                  MagickFreeMemory(chunk);
+                  continue;
+                }
+              if (length < 2)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  DEFI chunk must be at least"
+                                          " 2 bytes long");
+                  MagickFreeMemory(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
+                  ThrowReaderException(CorruptImageError,CorruptImage,image);
+                }
               object_id=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
               if (mng_type == 2 && object_id != 0)
                 (void) ThrowException2(&image->exception,CoderError,
@@ -4349,18 +4363,19 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Instead of issuing a warning we should allocate a larger
                     MngInfo structure and continue.
                   */
-                  (void) ThrowException2(&image->exception,CoderError,
-                                         "object id too large",(char *) NULL);
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "object id too large");
                   object_id=MNG_MAX_OBJECTS;
                 }
               if (mng_info->exists[object_id])
                 if (mng_info->frozen[object_id])
                   {
+                    if (logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "DEFI cannot redefine a frozen"
+                                           " MNG object");
                     MagickFreeMemory(chunk);
-                    (void) ThrowException2(&image->exception,CoderError,
-                                           "DEFI cannot redefine a frozen"
-                                           " MNG object",
-                                           (char *) NULL);
                     continue;
                   }
               mng_info->exists[object_id]=MagickTrue;

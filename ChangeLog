@@ -1,5 +1,9 @@
 2017-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Fix SourceForge issue #537 "null
+	pointer dereference in ReadMNGImage".  DEFI chunk must be at least
+	2 bytes long.
+
 	* coders/tiff.c (ReadNewsProfile): Fix SourceForge issue #533
 	"heap-buffer-overflow on LocaleNCompare".  LocaleNCompare() was
 	being allowed to read heap data beyond the allocated region.
