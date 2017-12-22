@@ -582,9 +582,6 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
 
 static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
 {
-  char
-    magick[MaxTextExtent];
-
   ErrorManager
     *error_manager;
 
@@ -637,19 +634,24 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   /*
     Validate that this was written as a Photoshop resource format slug.
   */
-  for (i=0; i < 10; i++)
-    magick[i]=GetCharacter(jpeg_info);
-  magick[10]='\0';
-  length-=10;
-  if (LocaleCompare(magick,"Photoshop ") != 0)
-    {
-      /*
-        Not a ICC profile, return.
-      */
-      for (i=0; i < length; i++)
-        (void) GetCharacter(jpeg_info);
-      return(True);
-    }
+  {
+    char
+      magick[MaxTextExtent];
+
+    for (i=0; i < 10; i++)
+      magick[i]=GetCharacter(jpeg_info);
+    magick[10]='\0';
+    length-=10;
+    if (LocaleCompare(magick,"Photoshop ") != 0)
+      {
+        /*
+          Not a ICC profile, return.
+        */
+        for (i=0; i < length; i++)
+          (void) GetCharacter(jpeg_info);
+        return(MagickFail);
+      }
+  }
   /*
     Remove the version number.
   */
@@ -659,7 +661,7 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   tag_length=0;
 #endif
   if (length <= 0)
-    return(True);
+    return(MagickFail);
 
   profile=MagickAllocateMemory(unsigned char *,(size_t) length+tag_length);
   if (profile == (unsigned char *) NULL)
