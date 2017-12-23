@@ -247,7 +247,7 @@ static char
   *LogEventTypes[] =
   {
     "No", "Configure", "Annotate", "Render", "Transform", "Locale",
-    "Coder", "X11", "Cache", "Blob", "Deprecate", "User", "Resource", 
+    "Coder", "X11", "Cache", "Blob", "Deprecate", "User", "Resource",
     "TemporaryFile", "Exception", "All", (char *) NULL
   },
   *MethodTypes[] =
@@ -1008,7 +1008,7 @@ static void MagickErrorHandler(const ExceptionType severity,const char *reason,
     (reason ? GetLocaleExceptionMessage(severity,reason) : "ERROR"),
     description ? " (" : "",
     description ? GetLocaleExceptionMessage(severity,description) : "",
-		description ? ")" : "",errno ? " [" : "",errno ? strerror(errno) : "",
+                description ? ")" : "",errno ? " [" : "",errno ? strerror(errno) : "",
     errno? "]" : "");
   if ((MY_CXT.error_list == NULL) || (MY_CXT.error_jump == NULL))
     {
@@ -5136,7 +5136,7 @@ Mogrify(ref,...)
                 {
                   register PixelPacket
                     *q;
-                  
+
                   if (!composite_image->matte)
                     SetImageOpacity(composite_image,OpaqueOpacity);
                   for (y=0; y < (long) composite_image->rows; y++)
@@ -6004,8 +6004,8 @@ Mogrify(ref,...)
         }
         case 77:  /* AdaptiveThreshold */
         {
-	  double
-	    offset;
+          double
+            offset;
 
           unsigned long
             height,
@@ -6785,15 +6785,15 @@ Ping(ref,...)
     else
       for (n=0, i=0; i < ac; i++)
       {
-	STRLEN
-	  length;
+        STRLEN
+          length;
 
         list[n]=(char *) SvPV(ST(i+1),length);
         if ((items >= 3) && strEQcase(list[n],"blob"))
           {
-	    package_info->image_info->blob=(void *) (SvPV(ST(i+2),length));
+            package_info->image_info->blob=(void *) (SvPV(ST(i+2),length));
             package_info->image_info->length=(size_t) length;
-	    continue;
+            continue;
           }
         if ((items >= 3) && strEQcase(list[n],"filename"))
           continue;
@@ -7985,9 +7985,9 @@ Write(ref,...)
       next->scene=scene++;
     }
     (void) SetImageInfo(package_info->image_info,
-			(SETMAGICK_WRITE |
-			 (!package_info->image_info->adjoin ? SETMAGICK_RECTIFY: 0U)),
-			&image->exception);
+                        (SETMAGICK_WRITE |
+                         (!package_info->image_info->adjoin ? SETMAGICK_RECTIFY: 0U)),
+                        &image->exception);
     for (next=image; next; next=next->next)
     {
       (void) WriteImage(package_info->image_info,next);
@@ -8014,4 +8014,3 @@ Write(ref,...)
 # c-basic-offset: 2
 # fill-column: 78
 # End:
-

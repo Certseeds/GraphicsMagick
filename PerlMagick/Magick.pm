@@ -51,14 +51,14 @@ sub AUTOLOAD {
     ($constname = $AUTOLOAD) =~ s/.*:://;
     my $val = constant($constname, @_ ? $_[0] : 0);
     if ($! != 0) {
-	if ($! =~ /Invalid/) {
-	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
-	    goto &AutoLoader::AUTOLOAD;
-	}
-	else {
-	    my($pack,$file,$line) = caller;
-	    die "Your vendor has not defined PerlMagick macro $pack\:\:$constname, used at $file line $line.\n";
-	}
+        if ($! =~ /Invalid/) {
+            $AutoLoader::AUTOLOAD = $AUTOLOAD;
+            goto &AutoLoader::AUTOLOAD;
+        }
+        else {
+            my($pack,$file,$line) = caller;
+            die "Your vendor has not defined PerlMagick macro $pack\:\:$constname, used at $file line $line.\n";
+        }
     }
     eval "sub $AUTOLOAD { $val }";
     goto &$AUTOLOAD;
@@ -116,11 +116,11 @@ It was originally developed to be used by CGI scripts for Web pages.
 
 A Web page has been set up for this extension. See:
 
-	http://www.GraphicsMagick.org/www/perl.html
+  http://www.GraphicsMagick.org/www/perl.html
 
 =head1 AUTHOR
 
-Kyle Shorter	magick@wizards.dupont.com
+Kyle Shorter    magick@wizards.dupont.com
 
 =head1 BUGS
 
