@@ -2742,15 +2742,23 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
           if (MagickConfirmAccess((type[0] == 'r' ? FileReadConfirmAccessMode :
                                    FileWriteConfirmAccessMode),filename,
                                   exception) != MagickFail)
-            image->blob->handle.gz=gzopen(filename,type);
+            image->blob->handle.gz=gzopen(filename,*type == 'w' ? "wb" : "rb" );
           if (image->blob->handle.gz != (gzFile) NULL)
             {
               image->blob->type=ZipStream;
               if (image->logging)
                 (void) LogMagickEvent(BlobEvent,GetMagickModule(),
                                       "  opened file %s as ZipStream image"
-                                      " %p, blob %p",
-                                      filename,image,image->blob);
+                                      " %p, blob %p, mode %s",
+                                      filename,image,image->blob,type);
+            }
+          else
+            {
+              if (image->logging)
+                (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                      "  failed to open file %s as ZipStream image"
+                                      " %p, blob %p, mode %s",
+                                      filename,image,image->blob,type);
             }
         }
       else

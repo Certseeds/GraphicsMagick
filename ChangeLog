@@ -1,3 +1,11 @@
+2017-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (OpenBlob): Zlib 1.2.8 does not accept an open
+	mode of "w+b" or "wb+".  It seems to be allergic to '+'.  As a
+	result, writing to ".gz" files was not working with Zlib 1.2.8.
+	Note that "w+b" must be used in the normal case since the test
+	suite fails otherwise!
+
 2017-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Fix SourceForge issue #535
