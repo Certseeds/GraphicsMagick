@@ -1,3 +1,7 @@
+2017-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.tap: Add tests for MIFF compressed sub-formats.
+
 2017-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (OpenBlob): Zlib 1.2.8 does not accept an open
