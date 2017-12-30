@@ -56,41 +56,41 @@ software was configured and the host system.</p>
 <p>To display the version information:</p>
 
 <pre>
-  % gm -version
-  GraphicsMagick 1.3.19 2013-12-31 Q16 http://www.GraphicsMagick.org/
-  Copyright (C) 2002-2013 GraphicsMagick Group.
+  GraphicsMagick 1.3.27a 2017-12-11 Q16 http://www.GraphicsMagick.org/
+  Copyright (C) 2002-2017 GraphicsMagick Group.
   Additional copyrights and licenses apply to this software.
   See http://www.GraphicsMagick.org/www/Copyright.html for details.
 
   Feature Support:
-    Thread Safe              yes
+    Native Thread Safe       yes
     Large Files (> 32 bit)   yes
-    Large Memory (> 32 bit)  no
+    Large Memory (> 32 bit)  yes
     BZIP                     yes
     DPS                      no
     FlashPix                 no
     FreeType                 yes
     Ghostscript (Library)    no
-    JBIG                     no
+    JBIG                     yes
     JPEG-2000                yes
     JPEG                     yes
     Little CMS               yes
     Loadable Modules         no
-    OpenMP                   yes (201107)
+    OpenMP                   yes (201307)
     PNG                      yes
     TIFF                     yes
     TRIO                     no
-    UMEM                     yes
-    WMF                      no
+    UMEM                     no
+    WebP                     yes
+    WMF                      yes
     X11                      yes
     XML                      yes
     ZLIB                     yes
 
-  Host type: i386-pc-solaris2.11
-  
+  Host type: x86_64-unknown-linux-gnu
+
   Configured using the command:
     ./configure  ...
-  
+
   Final Build Parameters:
     CC       = ...
     CFLAGS   = ...

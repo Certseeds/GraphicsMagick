@@ -3989,6 +3989,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2014.html \
 	$(WWWDIR)/ChangeLog-2015.html \
 	$(WWWDIR)/ChangeLog-2016.html \
+	$(WWWDIR)/ChangeLog-2017.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -4105,6 +4106,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2014.html \
 	$(WWWDIR)/ChangeLog-2015.html \
 	$(WWWDIR)/ChangeLog-2016.html \
+	$(WWWDIR)/ChangeLog-2017.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -9841,6 +9843,9 @@ uninstall-data-html:
 @MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< | $(OMP_DECIMAL_ALIGN) > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+
+@MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
