@@ -1,3 +1,10 @@
+2017-12-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c: Change static module initialization to be based
+	on an initialized list rather than a squence of function calls in
+	order to simplify maintenance and possibly address future
+	requirements.
+
 2017-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Copyright.txt: Bump copyright years and rotate ChangeLog.

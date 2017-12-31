@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2017 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -39,6 +39,152 @@
 #include "magick/module.h"
 #include "magick/static.h"
 #include "magick/utility.h"
+
+#if !defined(BuildMagickModules)
+static const struct
+{
+  char* name;
+  void (*register_fn)(void);
+  void (*unregister_fn)(void);
+
+} StaticModules[] =
+{
+#define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn}
+  STATICM("ART",RegisterARTImage,UnregisterARTImage),
+  STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
+  STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
+  STATICM("CALS",RegisterCALSImage,UnregisterCALSImage),
+  STATICM("CAPTION",RegisterCAPTIONImage,UnregisterCAPTIONImage),
+  STATICM("CINEON",RegisterCINEONImage,UnregisterCINEONImage),
+#if defined(HasWINGDI32)
+  STATICM("CLIPBOARD",RegisterCLIPBOARDImage,UnregisterCLIPBOARDImage),
+#endif
+  STATICM("CMYK",RegisterCMYKImage,UnregisterCMYKImage),
+  STATICM("CUT",RegisterCUTImage,UnregisterCUTImage),
+  STATICM("DCM",RegisterDCMImage,UnregisterDCMImage),
+  STATICM("DCRAW",RegisterDCRAWImage,UnregisterDCRAWImage),
+  STATICM("DIB",RegisterDIBImage,UnregisterDIBImage),
+#if defined(HasDPS)
+  STATICM("DPS",RegisterDPSImage,UnregisterDPSImage),
+#endif
+  STATICM("DPX",RegisterDPXImage,UnregisterDPXImage),
+#if defined(HasWINGDI32)
+  STATICM("EMF",RegisterEMFImage,UnregisterEMFImage),
+#endif
+#if defined(HasTIFF)
+  STATICM("EPT",RegisterEPTImage,UnregisterEPTImage),
+#endif
+  STATICM("FAX",RegisterFAXImage,UnregisterFAXImage),
+  STATICM("FITS",RegisterFITSImage,UnregisterFITSImage),
+#if defined(HasFPX)
+  STATICM("FPX",RegisterFPXImage,UnregisterFPXImage),
+#endif
+  STATICM("GIF",RegisterGIFImage,UnregisterGIFImage),
+  STATICM("GRAY",RegisterGRAYImage,UnregisterGRAYImage),
+  STATICM("GRADIENT",RegisterGRADIENTImage,UnregisterGRADIENTImage),
+  STATICM("HISTOGRAM",RegisterHISTOGRAMImage,UnregisterHISTOGRAMImage),
+  STATICM("HRZ",RegisterHRZImage,UnregisterHRZImage),
+  STATICM("HTML",RegisterHTMLImage,UnregisterHTMLImage),
+  STATICM("ICON",RegisterICONImage,UnregisterICONImage),
+  STATICM("IDENTITY",RegisterIDENTITYImage,UnregisterIDENTITYImage),
+  STATICM("INFO",RegisterINFOImage,UnregisterINFOImage),
+#if defined(HasJBIG)
+  STATICM("JBIG",RegisterJBIGImage,UnregisterJBIGImage),
+#endif
+#if defined(HasJPEG)
+  STATICM("JNX",RegisterJNXImage,UnregisterJNXImage),
+#endif
+#if defined(HasJPEG)
+  STATICM("JPEG",RegisterJPEGImage,UnregisterJPEGImage),
+#endif
+#if defined(HasJP2)
+  STATICM("JP2",RegisterJP2Image,UnregisterJP2Image),
+#endif
+  STATICM("LABEL",RegisterLABELImage,UnregisterLABELImage),
+  STATICM("LOCALE",RegisterLOCALEImage,UnregisterLOCALEImage),
+  STATICM("LOGO",RegisterLOGOImage,UnregisterLOGOImage),
+  STATICM("MAC",RegisterMACImage,UnregisterMACImage),
+  STATICM("MAP",RegisterMAPImage,UnregisterMAPImage),
+  STATICM("MAT",RegisterMATImage,UnregisterMATImage),
+  STATICM("MATTE",RegisterMATTEImage,UnregisterMATTEImage),
+  STATICM("META",RegisterMETAImage,UnregisterMETAImage),
+  STATICM("MIFF",RegisterMIFFImage,UnregisterMIFFImage),
+  STATICM("MONO",RegisterMONOImage,UnregisterMONOImage),
+  STATICM("MPC",RegisterMPCImage,UnregisterMPCImage),
+  STATICM("MPEG",RegisterMPEGImage,UnregisterMPEGImage),
+  STATICM("MPR",RegisterMPRImage,UnregisterMPRImage),
+  STATICM("MSL",RegisterMSLImage,UnregisterMSLImage),
+  STATICM("MTV",RegisterMTVImage,UnregisterMTVImage),
+  STATICM("MVG",RegisterMVGImage,UnregisterMVGImage),
+  STATICM("NULL",RegisterNULLImage,UnregisterNULLImage),
+  STATICM("OTB",RegisterOTBImage,UnregisterOTBImage),
+  STATICM("PALM",RegisterPALMImage,UnregisterPALMImage),
+  STATICM("PCD",RegisterPCDImage,UnregisterPCDImage),
+  STATICM("PCL",RegisterPCLImage,UnregisterPCLImage),
+  STATICM("PCX",RegisterPCXImage,UnregisterPCXImage),
+  STATICM("PDB",RegisterPDBImage,UnregisterPDBImage),
+  STATICM("PDF",RegisterPDFImage,UnregisterPDFImage),
+  STATICM("PICT",RegisterPICTImage,UnregisterPICTImage),
+  STATICM("PIX",RegisterPIXImage,UnregisterPIXImage),
+  STATICM("PLASMA",RegisterPLASMAImage,UnregisterPLASMAImage),
+#if defined(HasPNG)
+  STATICM("PNG",RegisterPNGImage,UnregisterPNGImage),
+#endif
+  STATICM("PNM",RegisterPNMImage,UnregisterPNMImage),
+  STATICM("PREVIEW",RegisterPREVIEWImage,UnregisterPREVIEWImage),
+  STATICM("PS",RegisterPSImage,UnregisterPSImage),
+  STATICM("PS2",RegisterPS2Image,UnregisterPS2Image),
+  STATICM("PS3",RegisterPS3Image,UnregisterPS3Image),
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
+  STATICM("PSD",RegisterPSDImage,UnregisterPSDImage),
+#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
+  STATICM("PWP",RegisterPWPImage,UnregisterPWPImage),
+  STATICM("RGB",RegisterRGBImage,UnregisterRGBImage),
+  STATICM("RLA",RegisterRLAImage,UnregisterRLAImage),
+  STATICM("RLE",RegisterRLEImage,UnregisterRLEImage),
+  STATICM("SCT",RegisterSCTImage,UnregisterSCTImage),
+  STATICM("SFW",RegisterSFWImage,UnregisterSFWImage),
+  STATICM("SGI",RegisterSGIImage,UnregisterSGIImage),
+  STATICM("STEGANO",RegisterSTEGANOImage,UnregisterSTEGANOImage),
+  STATICM("SUN",RegisterSUNImage,UnregisterSUNImage),
+  STATICM("SVG",RegisterSVGImage,UnregisterSVGImage),
+  STATICM("TGA",RegisterTGAImage,UnregisterTGAImage),
+#if defined(HasTIFF)
+  STATICM("TIFF",RegisterTIFFImage,UnregisterTIFFImage),
+#endif
+  STATICM("TILE",RegisterTILEImage,UnregisterTILEImage),
+  STATICM("TIM",RegisterTIMImage,UnregisterTIMImage),
+  STATICM("TOPOL",RegisterTOPOLImage,UnregisterTOPOLImage),
+  STATICM("TTF",RegisterTTFImage,UnregisterTTFImage),
+  STATICM("TXT",RegisterTXTImage,UnregisterTXTImage),
+  STATICM("UIL",RegisterUILImage,UnregisterUILImage),
+  STATICM("URL",RegisterURLImage,UnregisterURLImage),
+  STATICM("UYVY",RegisterUYVYImage,UnregisterUYVYImage),
+  STATICM("VICAR",RegisterVICARImage,UnregisterVICARImage),
+  STATICM("VID",RegisterVIDImage,UnregisterVIDImage),
+  STATICM("VIFF",RegisterVIFFImage,UnregisterVIFFImage),
+  STATICM("WBMP",RegisterWBMPImage,UnregisterWBMPImage),
+#if defined(HasWEBP)
+  STATICM("WEBP",RegisterWEBPImage,UnregisterWEBPImage),
+#endif
+  STATICM("WMF",RegisterWMFImage,UnregisterWMFImage),
+  STATICM("WPG",RegisterWPGImage,UnregisterWPGImage),
+#if defined(HasX11)
+  STATICM("X",RegisterXImage,UnregisterXImage),
+#endif /* defined(HasX11) */
+  STATICM("XBM",RegisterXBMImage,UnregisterXBMImage),
+  STATICM("XC",RegisterXCImage,UnregisterXCImage),
+  STATICM("XCF",RegisterXCFImage,UnregisterXCFImage),
+  STATICM("XPM",RegisterXPMImage,UnregisterXPMImage),
+#if defined(_VISUALC_)
+  STATICM("XTRN",RegisterXTRNImage,UnregisterXTRNImage),
+#endif /* defined(_VISUALC_) */
+#if defined(HasX11)
+  STATICM("XWD",RegisterXWDImage,UnregisterXWDImage),
+#endif /* defined(HasX11) */
+  STATICM("YUV",RegisterYUVImage,UnregisterYUVImage)
+};
+#endif /* !defined(BuildMagickModules) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,139 +279,12 @@ RegisterStaticModules() statically registers all the available module
 MagickExport void RegisterStaticModules(void)
 {
 #if !defined(BuildMagickModules)
-  RegisterARTImage();
-  RegisterAVSImage();
-  RegisterBMPImage();
-  RegisterCALSImage();
-  RegisterCAPTIONImage();
-  RegisterCINEONImage();
-#if defined(HasWINGDI32)
-  RegisterCLIPBOARDImage();
-#endif
-  RegisterCMYKImage();
-  RegisterCUTImage();
-  RegisterDCMImage();
-  RegisterDCRAWImage();
-  RegisterDIBImage();
-#if defined(HasDPS)
-  RegisterDPSImage();
-#endif
-  RegisterDPXImage();
-#if defined(HasWINGDI32)
-  RegisterEMFImage();
-#endif
-#if defined(HasTIFF)
-  RegisterEPTImage();
-#endif
-  RegisterFAXImage();
-  RegisterFITSImage();
-#if defined(HasFPX)
-  RegisterFPXImage();
-#endif
-  RegisterGIFImage();
-  RegisterGRAYImage();
-  RegisterGRADIENTImage();
-  RegisterHISTOGRAMImage();
-  RegisterHRZImage();
-  RegisterHTMLImage();
-  RegisterICONImage();
-  RegisterIDENTITYImage();
-  RegisterINFOImage();
-#if defined(HasJBIG)
-  RegisterJBIGImage();
-#endif
-#if defined(HasJPEG)
-  RegisterJNXImage();
-#endif
-#if defined(HasJPEG)
-  RegisterJPEGImage();
-#endif
-#if defined(HasJP2)
-  RegisterJP2Image();
-#endif
-  RegisterLABELImage();
-  RegisterLOCALEImage();
-  RegisterLOGOImage();
-  RegisterMACImage();
-  RegisterMAPImage();
-  RegisterMATImage();
-  RegisterMATTEImage();
-  RegisterMETAImage();
-  RegisterMIFFImage();
-  RegisterMONOImage();
-  RegisterMPCImage();
-  RegisterMPEGImage();
-  RegisterMPRImage();
-  RegisterMSLImage();
-  RegisterMTVImage();
-  RegisterMVGImage();
-  RegisterNULLImage();
-  RegisterOTBImage();
-  RegisterPALMImage();
-  RegisterPCDImage();
-  RegisterPCLImage();
-  RegisterPCXImage();
-  RegisterPDBImage();
-  RegisterPDFImage();
-  RegisterPICTImage();
-  RegisterPIXImage();
-  RegisterPLASMAImage();
-#if defined(HasPNG)
-  RegisterPNGImage();
-#endif
-  RegisterPNMImage();
-  RegisterPREVIEWImage();
-  RegisterPSImage();
-  RegisterPS2Image();
-  RegisterPS3Image();
-#if defined(EnableBrokenCoders) && EnableBrokenCoders
-  RegisterPSDImage();
-#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
-  RegisterPWPImage();
-  RegisterRGBImage();
-  RegisterRLAImage();
-  RegisterRLEImage();
-  RegisterSCTImage();
-  RegisterSFWImage();
-  RegisterSGIImage();
-  RegisterSTEGANOImage();
-  RegisterSUNImage();
-  RegisterSVGImage();
-  RegisterTGAImage();
-#if defined(HasTIFF)
-  RegisterTIFFImage();
-#endif
-  RegisterTILEImage();
-  RegisterTIMImage();
-  RegisterTOPOLImage();
-  RegisterTTFImage();
-  RegisterTXTImage();
-  RegisterUILImage();
-  RegisterURLImage();
-  RegisterUYVYImage();
-  RegisterVICARImage();
-  RegisterVIDImage();
-  RegisterVIFFImage();
-  RegisterWBMPImage();
-#if defined(HasWEBP)
-  RegisterWEBPImage();
-#endif
-  RegisterWMFImage();
-  RegisterWPGImage();
-#if defined(HasX11)
-  RegisterXImage();
-#endif /* defined(HasX11) */
-  RegisterXBMImage();
-  RegisterXCImage();
-  RegisterXCFImage();
-  RegisterXPMImage();
-#if defined(_VISUALC_)
-  RegisterXTRNImage();
-#endif /* defined(_VISUALC_) */
-#if defined(HasX11)
-  RegisterXWDImage();
-#endif /* defined(HasX11) */
-  RegisterYUVImage();
+  unsigned int index;
+
+  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+    {
+      (StaticModules[index].register_fn)();
+    }
 #endif /* !defined(BuildMagickModules) */
 }
 
@@ -292,138 +311,11 @@ MagickExport void RegisterStaticModules(void)
 MagickExport void UnregisterStaticModules(void)
 {
 #if !defined(BuildMagickModules)
-  UnregisterARTImage();
-  UnregisterAVSImage();
-  UnregisterBMPImage();
-  UnregisterCALSImage();
-  UnregisterCAPTIONImage();
-  UnregisterCINEONImage();
-#if defined(HasWINGDI32)
-  UnregisterCLIPBOARDImage();
-#endif
-  UnregisterCMYKImage();
-  UnregisterCUTImage();
-  UnregisterDCMImage();
-  UnregisterDCRAWImage();
-  UnregisterDIBImage();
-#if defined(HasDPS)
-  UnregisterDPSImage();
-#endif
-  UnregisterDPXImage();
-#if defined(HasWINGDI32)
-  UnregisterEMFImage();
-#endif
-#if defined(HasTIFF)
-  UnregisterEPTImage();
-#endif
-  UnregisterFAXImage();
-  UnregisterFITSImage();
-#if defined(HasFPX)
-  UnregisterFPXImage();
-#endif
-  UnregisterGIFImage();
-  UnregisterGRAYImage();
-  UnregisterGRADIENTImage();
-  UnregisterHISTOGRAMImage();
-  UnregisterHRZImage();
-  UnregisterHTMLImage();
-  UnregisterICONImage();
-  UnregisterIDENTITYImage();
-  UnregisterINFOImage();
-#if defined(HasJBIG)
-  UnregisterJBIGImage();
-#endif
-#if defined(HasJPEG)
-  UnregisterJNXImage();
-#endif
-#if defined(HasJPEG)
-  UnregisterJPEGImage();
-#endif
-#if defined(HasJP2)
-  UnregisterJP2Image();
-#endif
-  UnregisterLABELImage();
-  UnregisterLOCALEImage();
-  UnregisterLOGOImage();
-  UnregisterMACImage();
-  UnregisterMAPImage();
-  UnregisterMATImage();
-  UnregisterMATTEImage();
-  UnregisterMETAImage();
-  UnregisterMIFFImage();
-  UnregisterMONOImage();
-  UnregisterMPCImage();
-  UnregisterMPEGImage();
-  UnregisterMPRImage();
-  UnregisterMSLImage();
-  UnregisterMTVImage();
-  UnregisterMVGImage();
-  UnregisterNULLImage();
-  UnregisterOTBImage();
-  UnregisterPALMImage();
-  UnregisterPCDImage();
-  UnregisterPCLImage();
-  UnregisterPCXImage();
-  UnregisterPDBImage();
-  UnregisterPDFImage();
-  UnregisterPICTImage();
-  UnregisterPIXImage();
-  UnregisterPLASMAImage();
-#if defined(HasPNG)
-  UnregisterPNGImage();
-#endif
-  UnregisterPNMImage();
-  UnregisterPREVIEWImage();
-  UnregisterPSImage();
-  UnregisterPS2Image();
-  UnregisterPS3Image();
-#if defined(EnableBrokenCoders) && EnableBrokenCoders
-  UnregisterPSDImage();
-#endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
-  UnregisterPWPImage();
-  UnregisterRGBImage();
-  UnregisterRLAImage();
-  UnregisterRLEImage();
-  UnregisterSCTImage();
-  UnregisterSFWImage();
-  UnregisterSGIImage();
-  UnregisterSTEGANOImage();
-  UnregisterSUNImage();
-  UnregisterSVGImage();
-  UnregisterTGAImage();
-#if defined(HasTIFF)
-  UnregisterTIFFImage();
-#endif
-  UnregisterTILEImage();
-  UnregisterTIMImage();
-  UnregisterTOPOLImage();
-  UnregisterTTFImage();
-  UnregisterTXTImage();
-  UnregisterUILImage();
-  UnregisterURLImage();
-  UnregisterUYVYImage();
-  UnregisterVICARImage();
-  UnregisterVIDImage();
-  UnregisterVIFFImage();
-  UnregisterWBMPImage();
-#if defined(HasWEBP)
-  UnregisterWEBPImage();
-#endif
-  UnregisterWMFImage();
-  UnregisterWPGImage();
-#if defined(HasX11)
-  UnregisterXImage();
-#endif /* defined(HasX11) */
-  UnregisterXBMImage();
-  UnregisterXCImage();
-  UnregisterXCFImage();
-  UnregisterXPMImage();
-#if defined(_VISUALC_)
-  UnregisterXTRNImage();
-#endif /* defined(_VISUALC_) */
-#if defined(HasX11)
-  UnregisterXWDImage();
-#endif /* defined(HasX11) */
-  UnregisterYUVImage();
+  unsigned int index;
+
+  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+    {
+      (StaticModules[index].unregister_fn)();
+    }
 #endif /* !defined(BuildMagickModules) */
 }
