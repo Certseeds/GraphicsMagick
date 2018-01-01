@@ -1,3 +1,10 @@
+2018-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/describe.c (DescribeImage): Discriminate between
+	AcquireImagePixels() returning NULL or finding a transparent
+	pixel.  This voids use of a null pointer in the case where
+	AcquireImagePixels() returns NULL.
+
 2017-12-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c: Change static module initialization to be based
