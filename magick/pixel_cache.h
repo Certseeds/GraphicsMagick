@@ -338,7 +338,7 @@ extern "C" {
       const double y_offset,ExceptionInfo *exception)
       MAGICK_FUNC_DEPRECATED;
 
-  extern MagickExport void
+  extern MagickExport MagickPassFail
     InterpolateViewColor(const ViewInfo *view,PixelPacket *color,
        const double x_offset,const double y_offset,
        ExceptionInfo *exception);

@@ -1194,17 +1194,23 @@ DrawAffineImage(Image *image,const Image *composite,
 
               point.x=x*inverse_affine.sx+y*inverse_affine.ry+inverse_affine.tx;
               point.y=x*inverse_affine.rx+y*inverse_affine.sy+inverse_affine.ty;
-              InterpolateViewColor(AccessDefaultCacheView(composite),&pixel,
-                                   point.x,
-                                   point.y,
-                                   &image->exception);
+              if (InterpolateViewColor(AccessDefaultCacheView(composite),
+                                       &pixel,
+                                       point.x,
+                                       point.y,
+                                       &image->exception) == MagickFail)
+                {
+                  thread_status=MagickFail;
+                  break;
+                }
               if (!composite->matte)
                 pixel.opacity=OpaqueOpacity;
               AlphaCompositePixel(q,&pixel,pixel.opacity,q,q->opacity);
               q++;
             }
-          if (!SyncImagePixelsEx(image,&image->exception))
-            thread_status=MagickFail;
+          if (thread_status != MagickFail)
+            if (!SyncImagePixelsEx(image,&image->exception))
+              thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_DrawAffineImage)

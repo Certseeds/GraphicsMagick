@@ -71,12 +71,6 @@ Inconsistent persistent cache depth
 .
 
 MessageId       = +1
-SymbolicName    = CacheErrorPixelCacheDimensionsMisMatch
-Language        = English
-Pixel cache dimensions incompatible with image dimensions
-.
-
-MessageId       = +1
 SymbolicName    = CacheErrorPixelCacheIsNotOpen
 Language        = English
 Pixel cache is not open
