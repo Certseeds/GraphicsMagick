@@ -765,7 +765,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 
   /* Detect file format - Check magic.mgk configuration file. */
   if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
-                           MaxTextExtent,exception) == MagickFail)
+          MaxTextExtent,exception) == MagickFail)
     goto FINISH_UNL;
 
   /* Read nested image */
@@ -775,6 +775,12 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 
   if (!image2)
     goto FINISH_UNL;
+  if(image2->rows==0 || image2->columns == 0 || exception->severity>=ErrorException)
+  {
+    CloseBlob(image2);
+    DestroyImage(image2);  
+    goto FINISH_UNL;
+  }
 
   /*
     Replace current image with new image while copying base image
