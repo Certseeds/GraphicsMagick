@@ -786,15 +786,20 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     Replace current image with new image while copying base image
     attributes.
   */
-  (void) strlcpy(image2->filename,image->filename,MaxTextExtent);
-  (void) strlcpy(image2->magick_filename,image->magick_filename,MaxTextExtent);
-  (void) strlcpy(image2->magick,image->magick,MaxTextExtent);
-  //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
-  DestroyBlob(image2);
-  image2->blob=ReferenceBlob(image->blob);
-
-  if ((image->rows == 0) || (image->columns == 0))
-    DeleteImageFromList(&image);
+  {
+    Image *p;
+    p = image2;
+    do
+    {
+      (void) strlcpy(p->filename,image->filename,MaxTextExtent);
+      (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
+      (void) strlcpy(p->magick,image->magick,MaxTextExtent);
+      //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
+      DestroyBlob(p);
+      p->blob = ReferenceBlob(image->blob);
+      p = p->next;
+    } while(p!=NULL);
+  }  
 
   AppendImageToList(&image,image2);
 
