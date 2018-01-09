@@ -799,7 +799,12 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
       p->blob = ReferenceBlob(image->blob);
       p = p->next;
     } while(p!=NULL);
-  }  
+  }
+
+  if((image->rows==0 || image->columns==0) && (image->previous!=NULL || image->next!=NULL))
+  {
+    DeleteImageFromList(&image);
+  }
 
   AppendImageToList(&image,image2);
 
