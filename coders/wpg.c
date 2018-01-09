@@ -778,7 +778,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   if(image2->rows==0 || image2->columns == 0 || exception->severity>=ErrorException)
   {
     CloseBlob(image2);
-    DestroyImage(image2);  
+    DestroyImageList(image2);  
     goto FINISH_UNL;
   }
 
@@ -789,7 +789,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   (void) strlcpy(image2->filename,image->filename,MaxTextExtent);
   (void) strlcpy(image2->magick_filename,image->magick_filename,MaxTextExtent);
   (void) strlcpy(image2->magick,image->magick,MaxTextExtent);
-  image2->depth=image->depth;
+  //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
   DestroyBlob(image2);
   image2->blob=ReferenceBlob(image->blob);
 
