@@ -1,20 +1,14 @@
 /*
-  Copyright (C) 2012-2017 GraphicsMagick Group
- 
+  Copyright (C) 2012-2018 GraphicsMagick Group
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
-  Library symbol name-scoping support.     
-
-  Obtained via:                                          
-
-  nm -p wand/.libs/libGraphicsMagickWand.a | grep ' T ' | egrep -vi '(Gm)|(lt_)' | \
-  awk '{ printf("#define %s Gm%s\n", $3, $3); }' | sort > wand/wand_symbols.h
-
+  Library symbol name-scoping support.
 */
 
-#if !defined(_MAGICK_WAND_SYMBOLS_H)
+#if !defined(_MAGICK_SYMBOLS_H)
 #define _MAGICK_WAND_SYMBOLS_H
 
 #if defined(PREFIX_MAGICK_SYMBOLS)
@@ -420,3 +414,11 @@
 
 #endif /* defined(PREFIX_MAGICK_SYMBOLS) */
 #endif /* defined(_MAGICK_WAND_SYMBOLS_H) */
+
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 2
+ * fill-column: 78
+ * End:
+ */

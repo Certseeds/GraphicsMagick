@@ -4452,6 +4452,22 @@ COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL = GraphicsMagick.xz
 COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION = 'Ubuntu Q@QuantumDepth@'
+
+# Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
+#.PHONY: profile
+#profile:
+#	$(MAKE) clean
+#	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
+#	$(MAKE) check
+#	$(MAKE) mostlyclean
+#	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-use"
+#
+#CLEANFILES = *.gcda *.gcno
+
+# Generate magick/symbols.h and wand/wand_symbols.h based on archive
+# library symbols
+GMMAGICKSYMBOLS = $(srcdir)/magick/symbols.h
+GMWANDSYMBOLS = $(srcdir)/wand/wand_symbols.h
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -10177,16 +10193,9 @@ coverity:
 	https://scan.coverity.com/builds?project=GraphicsMagick
 	$(RM) $(COVERITY_TARBALL)
 
-# Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
-#.PHONY: profile
-#profile:
-#	$(MAKE) clean
-#	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
-#	$(MAKE) check
-#	$(MAKE) mostlyclean
-#	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-use"
-#
-#CLEANFILES = *.gcda *.gcno
+gmsymbols:
+	$(srcdir)/scripts/gmsymbols.sh magick/.libs/libGraphicsMagick.a MAGICK > $(GMMAGICKSYMBOLS)
+	$(srcdir)/scripts/gmsymbols.sh wand/.libs/libGraphicsMagickWand.a MAGICK_WAND > $(GMWANDSYMBOLS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

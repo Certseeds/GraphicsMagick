@@ -1,5 +1,8 @@
 2018-01-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/symbols.h: Fix SourceForge issue #538 "13 symbols in
+	common with ImageMagick despite --enable-symbol-prefix".
+
 	* coders/bmp.c (ReadBMPImage): Fix non-terminal loop due to
 	unexpected bit-field mask value.  Fixes SourceForge issue #541
 	"Infinite Loop in ReadBMPImage (coders/bmp.c)".
