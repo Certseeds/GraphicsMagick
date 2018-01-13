@@ -38,6 +38,9 @@
 <p>2018-01-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/bmp.c (ReadBMPImage): Fix non-terminal loop due to
+unexpected bit-field mask value.  Fixes SourceForge issue #541
+&quot;Infinite Loop in ReadBMPImage (coders/bmp.c)&quot;.</li>
 <li>coders/jpeg.c (JPEGMessageHandler): Revert code added on
 2017-07-08 to promote certain warnings from libjpeg to errors.
 Add code to rationalize claimed image dimensions based on file
