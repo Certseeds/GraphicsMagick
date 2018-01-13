@@ -1,3 +1,11 @@
+2018-01-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (JPEGMessageHandler): Revert code added on
+	2017-07-08 to promote certain warnings from libjpeg to errors.
+	Add code to rationalize claimed image dimensions based on file
+	size.  Resolves SourceForge issue #539 "Images with libjpeg
+	warnings result in error".
+
 2018-01-11  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Recursive ReadImage could return multiple scenes

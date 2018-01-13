@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -240,34 +240,10 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
                                 err->msg_parm.i[4], err->msg_parm.i[5],
                                 err->msg_parm.i[6], err->msg_parm.i[7]);
         }
-      /*
-        Treat some "warnings" as errors
-      */
-      switch (err->msg_code)
-        {
-        case JWRN_HIT_MARKER: /* Corrupt JPEG data: premature end of data segment */
-        case JWRN_JPEG_EOF: /* Premature end of JPEG file */
-          {
-            ThrowBinaryException2(CorruptImageError,(char *) message,
-                                  image->filename);
-            break;
-          }
-        case JWRN_HUFF_BAD_CODE: /* Corrupt JPEG data: bad Huffman code */
-        case JWRN_MUST_RESYNC: /* Corrupt JPEG data: found marker 0x%02x instead of RST%d */
-        case JWRN_NOT_SEQUENTIAL: /* "Invalid SOS parameters for sequential JPEG */
-          {
-            ThrowBinaryException2(CorruptImageError,(char *) message,
-                              image->filename);
-            break;
-          }
-        default:
-          {
-            if ((err->num_warnings == 0) ||
-                (err->trace_level >= 3))
-              ThrowBinaryException2(CorruptImageWarning,(char *) message,
+      if ((err->num_warnings == 0) ||
+          (err->trace_level >= 3))
+        ThrowBinaryException2(CorruptImageWarning,(char *) message,
                                     image->filename);
-          }
-        }
       err->num_warnings++;
     }
   else
@@ -1331,6 +1307,30 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     {
       jpeg_destroy_decompress(&jpeg_info);
       ThrowReaderException(CoderError,ImageTypeNotSupported,image);
+    }
+  /*
+    Verify that file size is reasonable (if we can)
+  */
+  if (BlobIsSeekable(image))
+    {
+      magick_off_t
+        blob_size;
+
+      blob_size = GetBlobSize(image);
+      if ((blob_size == 0) ||
+          (((double) image->columns*image->rows*
+            jpeg_info.output_components/blob_size) > 512.0))
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Unreasonable dimensions: "
+                                "geometry=%lux%lu, components=%d, "
+                                "blob size=%" MAGICK_OFF_F "d bytes",
+                                image->columns, image->rows,
+                                jpeg_info.output_components, blob_size);
+
+          jpeg_destroy_decompress(&jpeg_info);
+          ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+        }
     }
 
   jpeg_pixels=MagickAllocateArray(JSAMPLE *,
