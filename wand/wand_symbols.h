@@ -8,7 +8,7 @@
   Library symbol name-scoping support.
 */
 
-#if !defined(_MAGICK_SYMBOLS_H)
+#if !defined(_MAGICK_WAND_SYMBOLS_H)
 #define _MAGICK_WAND_SYMBOLS_H
 
 #if defined(PREFIX_MAGICK_SYMBOLS)

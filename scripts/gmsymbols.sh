@@ -17,7 +17,7 @@ cat <<EOF
   Library symbol name-scoping support.
 */
 
-#if !defined(_MAGICK_SYMBOLS_H)
+#if !defined(_${SYM}_SYMBOLS_H)
 #define _${SYM}_SYMBOLS_H
 
 #if defined(PREFIX_MAGICK_SYMBOLS)
