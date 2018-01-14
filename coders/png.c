@@ -4203,6 +4203,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (length < 16)
                 {
+                  MagickFree(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
@@ -4231,6 +4233,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "   MNG width or height too large: %lu, %lu",
                       mng_info->mng_width,mng_info->mng_height);
+                  MagickFree(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,
                       image);
                 }
