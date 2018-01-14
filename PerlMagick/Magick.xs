@@ -849,8 +849,11 @@ static Image *GetList(pTHX_ SV *reference,SV ***reference_vector,int *current,
                     MagickAllocateMemory(SV **,*last*sizeof(*reference_vector));
                 }
             }
-        (*reference_vector)[*current]=reference;
-        (*reference_vector)[++(*current)]=NULL;
+          if (*reference_vector)
+            {
+              (*reference_vector)[*current]=reference;
+              (*reference_vector)[++(*current)]=NULL;
+            }
       }
       return(image);
     }
@@ -3397,8 +3400,7 @@ Get(ref,...)
               if (image)
                 s=newSVpv(image->filename,0);
               else
-                if (info && info->image_info->filename &&
-                    *info->image_info->filename)
+                if (info && info->image_info->filename[0])
                   s=newSVpv(info->image_info->filename,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
