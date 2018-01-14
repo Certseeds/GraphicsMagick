@@ -1,7 +1,6 @@
 2018-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* PerlMagick/Magick.xs (Methods): Eliminate compiler warnings
-	about incomplete structure initialization.
+	* PerlMagick/Magick.xs: Compiler warnings reduction.
 
 	* magick/pixel_cache.h: Mark GetPixels(), GetIndexes(), and
 	GetOnePixel() as deprecated.  Compilers may produce a warning if
