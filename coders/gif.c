@@ -1088,7 +1088,10 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      {
+        MagickFreeMemory(global_colormap);
+        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      }
 
     /*
       Decode image.
