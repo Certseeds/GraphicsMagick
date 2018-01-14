@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -91,7 +91,8 @@ extern "C" {
     with the last call to SetImagePixels() or GetImagePixels().
   */
   extern MagickExport PixelPacket
-  *GetPixels(const Image *image);
+  *GetPixels(const Image *image)
+    MAGICK_FUNC_DEPRECATED; /* Prefer AccessMutablePixels instead */
   extern MagickExport PixelPacket
   *AccessMutablePixels(Image *image);
 
@@ -101,7 +102,8 @@ extern "C" {
     GetImagePixels().
   */
   extern MagickExport IndexPacket
-  *GetIndexes(const Image *image);
+  *GetIndexes(const Image *image)
+    MAGICK_FUNC_DEPRECATED; /* Prefer AccessMutableIndexes() instead */
   extern MagickExport IndexPacket
   *AccessMutableIndexes(Image *image);
 
@@ -113,7 +115,8 @@ extern "C" {
     is not reliably influenced by this function.
   */
   extern MagickExport PixelPacket
-  GetOnePixel(Image *image,const long x,const long y);
+  GetOnePixel(Image *image,const long x,const long y)
+    MAGICK_FUNC_DEPRECATED; /* Prefer AcquireOnePixel() instead */
 
   /*
     GetPixelCacheArea() returns the area (width * height in pixels)

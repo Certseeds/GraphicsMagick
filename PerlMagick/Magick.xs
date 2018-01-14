@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1527,7 +1527,7 @@ static void SetAttribute(pTHX_ struct PackageInfo *info,Image *image,
               (long) (y % image->rows),1,1);
             if (p == (PixelPacket *) NULL)
               break;
-            indexes=GetIndexes(image);
+            indexes=AccessMutableIndexes(image);
             (void) sscanf(SvPV(sval,na),"%ld",&index);
             if ((index >= 0) && (index < (long) image->colors))
               *indexes=(IndexPacket) index;
