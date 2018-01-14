@@ -1,5 +1,9 @@
 2018-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.h: Mark GetPixels(), GetIndexes(), and
+	GetOnePixel() as deprecated.  Compilers may produce a warning if
+	these functions are used.
+
 	* magick/pixel_cache.c (InterpolateColor): Return black pixel if
 	InterpolateViewColor() reports failure.
 
