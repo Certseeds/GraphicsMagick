@@ -2833,8 +2833,9 @@ MagickExport PixelPacket InterpolateColor(const Image *image,
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  InterpolateViewColor(AccessDefaultCacheView(image),&color,
-                       x_offset,y_offset,exception);
+  if (InterpolateViewColor(AccessDefaultCacheView(image),&color,
+                           x_offset,y_offset,exception) == MagickFail)
+    color.red=color.green=color.blue=color.opacity=0U;
   return color;
 }
 
