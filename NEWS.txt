@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on December 9, 2017
+This file was last updated on December 17, 2017
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,99 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.28 (January ??, 2017)
+=========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* BMP: Fix non-terminal loop due to unexpected bit-field mask value
+  (DOS opportunity).
+
+* PALM: Fix heap buffer underflow in builds with QuantumDepth=8.
+
+* SetNexus() Fix heap overwrite under certain conditions due to using
+  a wrong destination buffer.  This issue impacts all 1.3.X releases.
+
+* TIFF: Fix heap buffer read overflow in LocaleNCompare() when parsing
+  NEWS profile.
+
+Bug fixes:
+
+* DescribeImage(): Eliminate possible use of null pointer.
+
+* GIF: Fix memory leak of global colormap in error path.
+
+* GZ: Writing to gzip files with the extension ".gz" was not working
+  with Zlib 1.2.8.
+
+* JNG: Fix buffer read overflow (a tiny fixed overflow of just one byte).
+
+* JPEG: Promoting certain libjpeg warnings to errors caused much more
+  problems than expected.  The promotion of warnings to errors is
+  removed.  Claimed pixel dimensions are validated by file size before
+  allocating memory for the pixels.
+
+* IntegralRotateImage(): Assure that reported error in rotate by 270
+  case does immediately terminate processing.
+
+* MNG: Fix possible null pointer reference related to DEFI chunk
+  parsing.  Fix minor heap read overflow (constrained to just one
+  byte) due to an ordering issue in a limit check.  Fix memory leaks
+  in error path.
+
+* WebP: Fix stack buffer overflow in WriteWEBPImage() which occurs
+  with libwebp 0.5.0 or newer due to a structure type change in the
+  structure passed to the progress monitor callback.
+
+* WPG: Memory leaks fixed.
+
+New Features:
+
+* None
+
+API Updates:
+
+* InterpolateViewColor(): This function now returns MagickPassFail (an
+  unsigned int) rather than void so that errors can be efficiently
+  reported.
+
+* The magick/pixel_cache.h header is updated to add deprecation
+  attributes such that code using GetPixels(), GetIndexes(), and
+  GetOnePixel() will produce deprecation warnings for compilers which
+  support them.  These functions will not be removed in the 1.3.X
+  release series and when they are removed, pre-processor macros will
+  be added so a replacement function is used instead.  There is a
+  long-term objective to eliminate functionally-redundant pixel cache
+  functions to only the ones with the best properties since this
+  reduces maintenance and may reduce the depth of the call stack
+  (improving performance).
+
+Feature improvements:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* PerlMagick: Sanitize PACKAGE_VERSION so that Perl is not confused by
+  any trailing alpha character.
+
+* Improved symbol renaming due to adding --enable-symbol-prefix.  Some
+  symbols (for static const strings) were not being included in the
+  renaming.
+
+
+Behavior Changes:
+
+* None
 
 1.3.27 (December 9, 2017)
 =========================
