@@ -623,7 +623,7 @@ MagickExport MagickPassFail HuffmanDecodeImage(Image *image)
         }
     y++;
   }
-  image->rows=Max(y-3,1);
+  image->rows=Max(y-3,1); /* FIXME: Not synced with pixel cache dimensions */
   image->compression=FaxCompression;
   /*
     Free decoder memory.

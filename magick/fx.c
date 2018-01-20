@@ -688,15 +688,20 @@ MagickExport Image *ImplodeImage(const Image *image,const double amount,
                     factor=1.0;
                     if (distance > 0.0)
                       factor=pow(sin(MagickPI*sqrt(distance)/radius/2),-amount);
-                    InterpolateViewColor(image_view,q,
-                                         factor*x_distance/x_scale+x_center,
-                                         factor*y_distance/y_scale+y_center,
-                                         exception);
+                    if (InterpolateViewColor(image_view,q,
+                                             factor*x_distance/x_scale+x_center,
+                                             factor*y_distance/y_scale+y_center,
+                                             exception) == MagickFail)
+                      {
+                        thread_status=MagickFail;
+                        break;
+                      }
                   }
                 q++;
               }
-            if (!SyncImagePixelsEx(implode_image,exception))
-              thread_status=MagickFail;
+            if (thread_status != MagickFail)
+              if (!SyncImagePixelsEx(implode_image,exception))
+                thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_ImplodeImage)
@@ -1585,15 +1590,20 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
                     factor=1.0-sqrt(distance)/radius;
                     sine=sin(degrees*factor*factor);
                     cosine=cos(degrees*factor*factor);
-                    InterpolateViewColor(image_view,q,
-                                         (cosine*x_distance-sine*y_distance)/x_scale+x_center,
-                                         (sine*x_distance+cosine*y_distance)/y_scale+y_center,
-                                         exception);
+                    if (InterpolateViewColor(image_view,q,
+                                             (cosine*x_distance-sine*y_distance)/x_scale+x_center,
+                                             (sine*x_distance+cosine*y_distance)/y_scale+y_center,
+                                             exception) == MagickFail)
+                      {
+                        thread_status=MagickFail;
+                        break;
+                      }
                   }
                 q++;
               }
-            if (!SyncImagePixelsEx(swirl_image,exception))
-              thread_status=MagickFail;
+            if (thread_status != MagickFail)
+              if (!SyncImagePixelsEx(swirl_image,exception))
+                thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_SwirlImage)
@@ -1756,12 +1766,17 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
           {
             for (x=0; x < (long) wave_image->columns; x++)
               {
-                InterpolateViewColor(image_view,&q[x],(double) x,
-                                     (double) y-sine_map[x],
-                                     exception);
+                if (InterpolateViewColor(image_view,&q[x],(double) x,
+                                         (double) y-sine_map[x],
+                                         exception) == MagickFail)
+                  {
+                    thread_status=MagickFail;
+                    break;
+                  }
               }
-            if (!SyncImagePixelsEx(wave_image,exception))
-              thread_status=MagickFail;
+            if (thread_status != MagickFail)
+              if (!SyncImagePixelsEx(wave_image,exception))
+                thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_WaveImage)

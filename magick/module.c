@@ -874,9 +874,6 @@ GetModuleList(ExceptionInfo *exception)
   unsigned long
     max_entries;
 
-  if (InitializeModuleSearchPath(MagickCoderModule,exception) == MagickFail)
-    return ((char **) NULL);
-
   max_entries=MAX_MODULES;
   modules=MagickAllocateMemory(char **,(max_entries+1)*sizeof(char *));
   if (modules == (char **) NULL)

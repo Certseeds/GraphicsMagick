@@ -45,6 +45,15 @@
 #undef LoadImagesText
 #undef SaveImagesText
 
+#if defined(PREFIX_MAGICK_SYMBOLS)
+
+#define LoadImageText GmLoadImageText
+#define LoadImagesText GmLoadImagesText
+#define SaveImageText GmSaveImageText
+#define SaveImagesText GmSaveImagesText
+
+#endif /* defined(PREFIX_MAGICK_SYMBOLS) */
+
 extern MagickExport const char
   *LoadImageText,
   *LoadImagesText,

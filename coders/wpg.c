@@ -765,32 +765,63 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 
   /* Detect file format - Check magic.mgk configuration file. */
   if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
-                           MaxTextExtent,exception) == MagickFail)
+          MaxTextExtent,exception) == MagickFail)
     goto FINISH_UNL;
 
   /* Read nested image */
   /*FormatString(clone_info->filename,"%s:%.1024s",magic_info->name,postscript_file);*/
   FormatString(clone_info->filename,"%.1024s",postscript_file);
-  image2=ReadImage(clone_info,exception);
+  image2 = ReadImage(clone_info,exception);
 
   if (!image2)
     goto FINISH_UNL;
+  if(exception->severity>=ErrorException) /* When exception is raised, destroy image2 read. */
+  {
+    CloseBlob(image2);
+    DestroyImageList(image2);  
+    goto FINISH_UNL;
+  }
 
   /*
     Replace current image with new image while copying base image
     attributes.
   */
-  (void) strlcpy(image2->filename,image->filename,MaxTextExtent);
-  (void) strlcpy(image2->magick_filename,image->magick_filename,MaxTextExtent);
-  (void) strlcpy(image2->magick,image->magick,MaxTextExtent);
-  image2->depth=image->depth;
-  DestroyBlob(image2);
-  image2->blob=ReferenceBlob(image->blob);
+  {
+    Image *p;
+    p = image2;
+    do
+    {
+      (void) strlcpy(p->filename,image->filename,MaxTextExtent);
+      (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
+      (void) strlcpy(p->magick,image->magick,MaxTextExtent);
+      //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
+      DestroyBlob(p);      
 
-  if ((image->rows == 0) || (image->columns == 0))
+      if(p->rows==0 || p->columns==0)
+      {
+        DeleteImageFromList(&p);
+        if(p==NULL) 
+        {
+          image2 = NULL;
+          goto FINISH_UNL;	/* Nothing to add, skip. */
+        }
+      }
+      else
+      {
+        p->blob = ReferenceBlob(image->blob);
+        p = p->next;
+      }
+    } while(p!=NULL);
+  }  
+
+  if((image->rows==0 || image->columns==0) && (image->previous!=NULL || image->next!=NULL))
+  {
     DeleteImageFromList(&image);
+  }
 
-  AppendImageToList(&image,image2);
+  AppendImageToList(&image,image2);	/* This should append list 'image2' to the list 'image', image2 accepts NULL. */
+  while(image->next != NULL)
+    image = image->next;		/* Rewind the cursor to the end. */
 
  FINISH_UNL:
   (void) LiberateTemporaryFile(postscript_file);

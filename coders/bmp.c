@@ -1091,31 +1091,31 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) memset(&shift,0,sizeof(PixelPacket));
         (void) memset(&quantum_bits,0,sizeof(PixelPacket));
         if (bmp_info.red_mask != 0U)
-          while (((bmp_info.red_mask << shift.red) & 0x80000000U) == 0)
+          while ((shift.red < 32U) && (((bmp_info.red_mask << shift.red) & 0x80000000U) == 0))
             shift.red++;
         if (bmp_info.green_mask != 0)
-          while (((bmp_info.green_mask << shift.green) & 0x80000000U) == 0)
+          while ((shift.green < 32U) && (((bmp_info.green_mask << shift.green) & 0x80000000U) == 0))
             shift.green++;
         if (bmp_info.blue_mask != 0)
-          while (((bmp_info.blue_mask << shift.blue) & 0x80000000U) == 0)
+          while ((shift.blue < 32U) && (((bmp_info.blue_mask << shift.blue) & 0x80000000U) == 0))
             shift.blue++;
         if (bmp_info.alpha_mask != 0)
-          while (((bmp_info.alpha_mask << shift.opacity) & 0x80000000U) == 0)
+          while ((shift.opacity < 32U) && (((bmp_info.alpha_mask << shift.opacity) & 0x80000000U) == 0))
             shift.opacity++;
         sample=shift.red;
-        while (((bmp_info.red_mask << sample) & 0x80000000U) != 0)
+        while ((sample < 32U) && (((bmp_info.red_mask << sample) & 0x80000000U) != 0))
           sample++;
         quantum_bits.red=(Quantum) (sample-shift.red);
         sample=shift.green;
-        while (((bmp_info.green_mask << sample) & 0x80000000U) != 0)
+        while ((sample < 32U) && (((bmp_info.green_mask << sample) & 0x80000000U) != 0))
           sample++;
         quantum_bits.green=(Quantum) (sample-shift.green);
         sample=shift.blue;
-        while (((bmp_info.blue_mask << sample) & 0x80000000U) != 0)
+        while ((sample < 32U) && (((bmp_info.blue_mask << sample) & 0x80000000U) != 0))
           sample++;
         quantum_bits.blue=(Quantum) (sample-shift.blue);
         sample=shift.opacity;
-        while (((bmp_info.alpha_mask << sample) & 0x80000000U) != 0)
+        while ((sample < 32U) && (((bmp_info.alpha_mask << sample) & 0x80000000U) != 0))
           sample++;
         quantum_bits.opacity=(Quantum) (sample-shift.opacity);
       }

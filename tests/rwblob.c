@@ -74,7 +74,7 @@ int main ( int argc, char **argv )
     {
       char
         *option = argv[arg];
-    
+
       if (*option == '-')
         {
           if (LocaleCompare("compress",option+1) == 0)
@@ -117,10 +117,10 @@ int main ( int argc, char **argv )
                   goto program_exit;
                 }
               if(imageInfo->depth != 8 && imageInfo->depth != 16 &&
-		 imageInfo->depth != 32)
+                 imageInfo->depth != 32)
                 {
                   (void) printf("-depth (%ld) not 8, 16, or 32\n",
-				imageInfo->depth);
+                                imageInfo->depth);
                   (void) fflush(stdout);
                   exit_status = 1;
                   goto program_exit;
@@ -184,9 +184,9 @@ int main ( int argc, char **argv )
     {
       (void) printf("arg=%d, argc=%d\n", arg, argc);
       (void) printf ( "Usage: %s [-compress algorithm -debug events -depth "
-		      "integer -define value -log format -nocheck -quality quality "
+                      "integer -define value -log format -nocheck -quality quality "
                       "-size geometry -verbose] "
-		      "infile format\n", argv[0] );
+                      "infile format\n", argv[0] );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -240,7 +240,7 @@ int main ( int argc, char **argv )
   if ( original == (Image *)NULL )
     {
       (void) printf ( "Failed to read original image %s\n",
-		      imageInfo->filename );
+                      imageInfo->filename );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -281,7 +281,7 @@ int main ( int argc, char **argv )
   if ( blob == NULL )
     {
       (void) printf ( "Failed to write BLOB in format %s\n",
-		      imageInfo->magick );
+                      imageInfo->magick );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -309,28 +309,28 @@ int main ( int argc, char **argv )
       {
         if (exception.reason)
           (void) printf("    reason:%s\n",exception.reason);
-	CatchException(&exception);
-	(void) fflush(stderr);
-	ping_error = MagickTrue;
+        CatchException(&exception);
+        (void) fflush(stderr);
+        ping_error = MagickTrue;
       }
     if ( ping_image == (Image *)NULL )
       {
-	(void) printf ( "Failed to ping image from BLOB in format %s\n",
-			imageInfo->magick );
-	(void) fflush(stdout);
-	ping_error = MagickTrue;
+        (void) printf ( "Failed to ping image from BLOB in format %s\n",
+                        imageInfo->magick );
+        (void) fflush(stdout);
+        ping_error = MagickTrue;
       }
     else
       {
-	/* Print a short description of the image to stdout */
-	DescribeImage( ping_image, stdout, MagickFalse );
-	(void) fflush(stdout);
-	DestroyImageList( ping_image );
+        /* Print a short description of the image to stdout */
+        DescribeImage( ping_image, stdout, MagickFalse );
+        (void) fflush(stdout);
+        DestroyImageList( ping_image );
       }
     if (ping_error)
       {
-	exit_status = 1;
-	goto program_exit;
+        exit_status = 1;
+        goto program_exit;
       }
   }
 
@@ -353,7 +353,7 @@ int main ( int argc, char **argv )
   if ( original == (Image *)NULL )
     {
       (void) printf ( "Failed to read image from BLOB in format %s\n",
-		      imageInfo->magick );
+                      imageInfo->magick );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -369,7 +369,7 @@ int main ( int argc, char **argv )
   (void) strcpy( imageInfo->filename, "" );
   original->delay = 10;
   blob = (char *) ImageToBlob ( imageInfo, original, &blob_length,
-				&exception );
+                                &exception );
   if (exception.severity != UndefinedException)
     {
       if (exception.reason)
@@ -382,7 +382,7 @@ int main ( int argc, char **argv )
   if ( blob == NULL )
     {
       (void) printf ( "Failed to write BLOB in format %s\n",
-		      imageInfo->magick );
+                      imageInfo->magick );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -409,7 +409,7 @@ int main ( int argc, char **argv )
   if ( final == (Image *)NULL )
     {
       (void) printf ( "Failed to read image from BLOB in format %s\n",
-		      imageInfo->magick );
+                      imageInfo->magick );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;
@@ -423,10 +423,10 @@ int main ( int argc, char **argv )
        * Check final output
        */
       double
-	fuzz_factor = 0;
+        fuzz_factor = 0;
 
       /*
-	Some formats are lossy.
+        Some formats are lossy.
       */
       if ((!strcmp( "CIN", format ) && (QuantumDepth == 8)) ||
           (!strcmp( "CMYK", format )) ||
@@ -446,75 +446,75 @@ int main ( int argc, char **argv )
         fuzz_factor = 0.06;
 
       {
-	Image
-	  *o,
-	  *f;
-	
-	unsigned long
-	  frame=0;
+        Image
+          *o,
+          *f;
 
-	/*
-	  Verify that frame pixels are identical (or close enough).
-	*/
-	for (o=original, f=final, frame=0;
-	     ((o != (Image *) NULL) && (f != (Image *) NULL)) ;
-	     o = o->next, f = f->next, frame++)
-	  {
-	    printf("Checking frame %ld...\n",frame);
-	    if ( !IsImagesEqual(o, f ) &&
-		 (original->error.normalized_mean_error > fuzz_factor) )
-	      {
-		(void) printf( "R/W file check for format \"%s\" failed "
-			       "(frame = %ld): %.6f/%.6f/%.6fe\n",
-			       format,frame,
-			       original->error.mean_error_per_pixel,
-			       original->error.normalized_mean_error,
-			       original->error.normalized_maximum_error);
-		(void) fflush(stdout);
-		exit_status = 1;
-		goto program_exit;
-	      }
-	  }
+        unsigned long
+          frame=0;
 
-	if (check_for_added_frames)
-	  {
-	    /*
-	      Verify that reads from BLOB R/W #1 and BLOB R/W #2 did
-	      return the same number of frames.
-	    */
-	    if ((o != (Image *) NULL) && (f != (Image *) NULL))
-	      {
-		(void) printf("R/W file check for format \"%s\" failed due to "
-			      "differing number of returned frames (%ld vs %ld)\n",
-			      format,
-			      GetImageListLength(original),
-			      GetImageListLength(final));
-		exit_status = 1;
-		goto program_exit;
-	      }
+        /*
+          Verify that frame pixels are identical (or close enough).
+        */
+        for (o=original, f=final, frame=0;
+             ((o != (Image *) NULL) && (f != (Image *) NULL)) ;
+             o = o->next, f = f->next, frame++)
+          {
+            printf("Checking frame %ld...\n",frame);
+            if ( !IsImagesEqual(o, f ) &&
+                 (original->error.normalized_mean_error > fuzz_factor) )
+              {
+                (void) printf( "R/W file check for format \"%s\" failed "
+                               "(frame = %ld): %.6f/%.6f/%.6fe\n",
+                               format,frame,
+                               original->error.mean_error_per_pixel,
+                               original->error.normalized_mean_error,
+                               original->error.normalized_maximum_error);
+                (void) fflush(stdout);
+                exit_status = 1;
+                goto program_exit;
+              }
+          }
 
-	    /*
-	      If format supports multiple frames, then we should expect
-	      that frames are not lost (or spuriously added) due to
-	      read/write of format.
-	    */
-	    if (magick_info->adjoin)
-	      {
-		unsigned long
-		  final_frames;
+        if (check_for_added_frames)
+          {
+            /*
+              Verify that reads from BLOB R/W #1 and BLOB R/W #2 did
+              return the same number of frames.
+            */
+            if ((o != (Image *) NULL) && (f != (Image *) NULL))
+              {
+                (void) printf("R/W file check for format \"%s\" failed due to "
+                              "differing number of returned frames (%ld vs %ld)\n",
+                              format,
+                              GetImageListLength(original),
+                              GetImageListLength(final));
+                exit_status = 1;
+                goto program_exit;
+              }
 
-		final_frames=GetImageListLength(final);
-		if (original_frames != final_frames)
-		  {
-		    (void) printf("R/W file check for format \"%s\" failed due "
-				  "to differing number of returned frames (%ld "
-				  "vs %ld) from original file\n",
-				  format,original_frames,final_frames);
-		    exit_status = 1;
-		    goto program_exit;
-		  }
-	      }
-	  }
+            /*
+              If format supports multiple frames, then we should expect
+              that frames are not lost (or spuriously added) due to
+              read/write of format.
+            */
+            if (magick_info->adjoin)
+              {
+                unsigned long
+                  final_frames;
+
+                final_frames=GetImageListLength(final);
+                if (original_frames != final_frames)
+                  {
+                    (void) printf("R/W file check for format \"%s\" failed due "
+                                  "to differing number of returned frames (%ld "
+                                  "vs %ld) from original file\n",
+                                  format,original_frames,final_frames);
+                    exit_status = 1;
+                    goto program_exit;
+                  }
+              }
+          }
       }
     }
 

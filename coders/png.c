@@ -2443,141 +2443,147 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       }
 
   else /* image->storage_class != DirectClass */
-  {
-   image->matte=ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA;
-   mng_info->quantum_scanline=MagickAllocateMemory(Quantum *,
-      (image->matte ?  2 : 1) * image->columns*sizeof(Quantum));
-   if (mng_info->quantum_scanline == (Quantum *) NULL)
-     png_error(ping, "Could not allocate quantum_scanline");
-   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                         "      Allocated quantum_scanline");
+    {
+      image->matte=ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA;
+      mng_info->quantum_scanline=
+        MagickAllocateMemory(Quantum *,
+                             (image->matte ?  2 : 1) *
+                             image->columns*sizeof(Quantum));
+      if (mng_info->quantum_scanline == (Quantum *) NULL)
+        png_error(ping, "Could not allocate quantum_scanline");
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "      Allocated quantum_scanline");
 
-    for (pass=0; pass < num_passes; pass++)
-      {
-        register Quantum
-          *r;
+      for (pass=0; pass < num_passes; pass++)
+        {
+          register Quantum
+            *r;
 
-        /*
-          Convert grayscale image to PseudoClass pixel packets.
-        */
-        for (y=0; y < (long) image->rows; y++)
-          {
-            register unsigned char
-              *p;
+          /*
+            Convert grayscale image to PseudoClass pixel packets.
+          */
+          for (y=0; y < (long) image->rows; y++)
+            {
+              register unsigned char
+                *p;
 
-            if (num_passes > 1)
-              row_offset=ping_rowbytes*y;
+              if (num_passes > 1)
+                row_offset=ping_rowbytes*y;
 
-            else
-              row_offset=0;
+              else
+                row_offset=0;
 
-            png_read_row(ping,mng_info->png_pixels+row_offset,NULL);
-            q=SetImagePixels(image,0,y,image->columns,1);
-            if (q == (PixelPacket *) NULL)
-              break;
+              png_read_row(ping,mng_info->png_pixels+row_offset,NULL);
+              q=SetImagePixels(image,0,y,image->columns,1);
+              if (q == (PixelPacket *) NULL)
+                break;
 
-            if (pass < num_passes-1)
-              continue;
+              if (pass < num_passes-1)
+                continue;
 
-            indexes=AccessMutableIndexes(image);
-            p=mng_info->png_pixels+row_offset;
-            r=mng_info->quantum_scanline;
-            switch (ping_bit_depth)
-              {
-              case 8:
+              indexes=AccessMutableIndexes(image);
+              p=mng_info->png_pixels+row_offset;
+              r=mng_info->quantum_scanline;
+              switch (ping_bit_depth)
                 {
-                  if (ping_colortype == 4)
+                case 8:
+                  {
+                    if (ping_colortype == 4)
+                      for (x=(long) image->columns; x > 0; x--)
+                        {
+                          *r++=*p++;
+                          /* In image.h, OpaqueOpacity is 0
+                           * TransparentOpacity is MaxRGB
+                           * In a PNG datastream, Opaque is MaxRGB
+                           * and Transparent is 0.
+                           */
+                          q->opacity=ScaleCharToQuantum(255-(*p++));
+                          q++;
+                        }
+                    else
+                      for (x=(long) image->columns; x > 0; x--)
+                        *r++=*p++;
+                    break;
+                  }
+                case 16:
+                  {
                     for (x=(long) image->columns; x > 0; x--)
                       {
-                        *r++=*p++;
-                        /* In image.h, OpaqueOpacity is 0
-                         * TransparentOpacity is MaxRGB
-                         * In a PNG datastream, Opaque is MaxRGB
-                         * and Transparent is 0.
-                         */
-                        q->opacity=ScaleCharToQuantum(255-(*p++));
-                        q++;
-                      }
-                  else
-                    for (x=(long) image->columns; x > 0; x--)
-                      *r++=*p++;
-                  break;
-                }
-              case 16:
-                {
-                  for (x=(long) image->columns; x > 0; x--)
-                    {
 #if (QuantumDepth == 16)
-                      if (image->colors > 256)
-                        *r=(((magick_uint32_t) *p++) << 8);
-                      else
-                        *r=0;
-                      *r|=(*p++);
-                      r++;
-                      if (ping_colortype == 4)
-                        {
-                          q->opacity=(((magick_uint32_t) *p++) << 8);
-                          q->opacity|=((magick_uint32_t) *p++);
-                          q->opacity=(Quantum) (MaxRGB-q->opacity);
-                          q++;
-                        }
+                        if (image->colors > 256)
+                          *r=(((magick_uint32_t) *p++) << 8);
+                        else
+                          *r=0;
+                        *r|=(*p++);
+                        r++;
+                        if (ping_colortype == 4)
+                          {
+                            q->opacity=(((magick_uint32_t) *p++) << 8);
+                            q->opacity|=((magick_uint32_t) *p++);
+                            q->opacity=(Quantum) (MaxRGB-q->opacity);
+                            q++;
+                          }
 #else
 #if (QuantumDepth == 32)
-                      if (image->colors > 256)
-                        *r=(((magick_uint32_t) *p++) << 8);
-                      else
-                        *r=0;
-                      *r|=(*p++);
-                      r++;
-                      if (ping_colortype == 4)
-                        {
-                          q->opacity=(((magick_uint32_t) *p++) << 8);
-                          q->opacity|=((magick_uint32_t) *p++);
-                          q->opacity*=65537U;
-                          q->opacity=(Quantum) (MaxRGB-q->opacity);
-                          q++;
-                        }
+                        if (image->colors > 256)
+                          *r=(((magick_uint32_t) *p++) << 8);
+                        else
+                          *r=0;
+                        *r|=(*p++);
+                        r++;
+                        if (ping_colortype == 4)
+                          {
+                            q->opacity=(((magick_uint32_t) *p++) << 8);
+                            q->opacity|=((magick_uint32_t) *p++);
+                            q->opacity*=65537U;
+                            q->opacity=(Quantum) (MaxRGB-q->opacity);
+                            q++;
+                          }
 #else /* QuantumDepth == 8 */
-                      *r++=(*p++);
-                      p++; /* strip low byte */
-                      if (ping_colortype == 4)
-                        {
-                          q->opacity=(Quantum) (MaxRGB-(*p++));
-                          p++;
-                          q++;
-                        }
+                        *r++=(*p++);
+                        p++; /* strip low byte */
+                        if (ping_colortype == 4)
+                          {
+                            q->opacity=(Quantum) (MaxRGB-(*p++));
+                            p++;
+                            q++;
+                          }
 #endif
 #endif
-                    }
+                      }
+                    break;
+                  }
+                default:
                   break;
                 }
-              default:
+              /*
+                Transfer image scanline.
+              */
+              r=mng_info->quantum_scanline;
+
+              for (x=0; x < (long) image->columns; x++)
+                indexes[x]=(*r++);
+
+              if (!SyncImagePixels(image))
                 break;
-              }
-            /*
-              Transfer image scanline.
-            */
-            r=mng_info->quantum_scanline;
-
-            for (x=0; x < (long) image->columns; x++)
-              indexes[x]=(*r++);
-
-            if (!SyncImagePixels(image))
-              break;
             }
 
-        if (image->previous == (Image *) NULL)
-          if (QuantumTick(pass, num_passes))
-            if (!MagickMonitorFormatted(pass,num_passes,exception,LoadImageTag,
-                                        image->filename,
-                                            image->columns,image->rows))
+          /* Quit 'passes' loop if we encountered an error */
+          if (y < (long) image->rows)
+            break;
+
+          if (image->previous == (Image *) NULL)
+            if (QuantumTick(pass, num_passes))
+              if (!MagickMonitorFormatted(pass,num_passes,exception,LoadImageTag,
+                                          image->filename,
+                                          image->columns,image->rows))
               break;
       }
 
       MagickFreeMemory(mng_info->quantum_scanline);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "      Free'ed quantum_scanline after last pass");
-  }
+                            "      Free'ed quantum_scanline after last pass");
+    }
 
   if (image->storage_class == PseudoClass)
     (void) SyncImage(image);
@@ -2611,7 +2617,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       image->matte=MagickTrue;
       for (y=0; y < (long) image->rows; y++)
         {
-          image->storage_class=storage_class;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -3523,7 +3528,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             {
               image->page.x=mng_get_long(p);
               image->page.y=mng_get_long(&p[4]);
-              if ((int) p[9] != 0)
+              if ((int) p[8] != 0)
                 {
                   image->page.x/=10000;
                   image->page.y/=10000;
@@ -4198,6 +4203,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (length < 16)
                 {
+                  MagickFree(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
@@ -4226,6 +4233,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "   MNG width or height too large: %lu, %lu",
                       mng_info->mng_width,mng_info->mng_height);
+                  MagickFree(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,
                       image);
                 }
@@ -4333,10 +4342,24 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_DEFI,4))
             {
               if (mng_type == 3)
-                (void) ThrowException2(&image->exception,CoderError,
-                                       "DEFI chunk found in MNG-VLC"
-                                       " datastream",
-                                       (char *) NULL);
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "DEFI chunk found in MNG-VLC"
+                                          " datastream");
+                  MagickFreeMemory(chunk);
+                  continue;
+                }
+              if (length < 2)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  DEFI chunk must be at least"
+                                          " 2 bytes long");
+                  MagickFreeMemory(chunk);
+                  MngInfoFreeStruct(mng_info,&have_mng_structure);
+                  ThrowReaderException(CorruptImageError,CorruptImage,image);
+                }
               object_id=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
               if (mng_type == 2 && object_id != 0)
                 (void) ThrowException2(&image->exception,CoderError,
@@ -4349,18 +4372,19 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Instead of issuing a warning we should allocate a larger
                     MngInfo structure and continue.
                   */
-                  (void) ThrowException2(&image->exception,CoderError,
-                                         "object id too large",(char *) NULL);
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "object id too large");
                   object_id=MNG_MAX_OBJECTS;
                 }
               if (mng_info->exists[object_id])
                 if (mng_info->frozen[object_id])
                   {
+                    if (logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "DEFI cannot redefine a frozen"
+                                           " MNG object");
                     MagickFreeMemory(chunk);
-                    (void) ThrowException2(&image->exception,CoderError,
-                                           "DEFI cannot redefine a frozen"
-                                           " MNG object",
-                                           (char *) NULL);
                     continue;
                   }
               mng_info->exists[object_id]=MagickTrue;
@@ -4587,7 +4611,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Note the delay and frame clipping boundaries.
                   */
                   p++; /* framing mode */
-                  while (*p && ((p-chunk) < (long) length))
+                  while (((p-chunk) < (long) length) && *p)
                     p++;  /* frame name */
                   p++;  /* frame name terminator */
                   if ((p-chunk) < (long) (length-4))

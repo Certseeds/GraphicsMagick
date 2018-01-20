@@ -682,53 +682,122 @@ PhotometricTagToString(unsigned int photometric)
   return result;
 }
 
+/*
+  Locate and store Photoshop or IPTC profiles.
+
+  Arguments:
+
+  text - Pointer to octet buffer
+  length - Number of bytes or 32-bit words in buffer
+  image  - Image to store into
+  type   - TIFF tag (TIFFTAG_PHOTOSHOP or TIFFTAG_RICHTIFFIPTC)
+
+  If the tag is TIFFTAG_RICHTIFFIPTC then it appears that the length
+  represents the number of 32-bit words.  If the tag is
+  TIFFTAG_PHOTOSHOP then the length is in bytes, but the underlying
+  data is stored in units of 16-bit words.
+ */
+#define NEWSP_REMAINING(base_p,current_p,length) ((ssize_t) length-(current_p-base_p))
 static unsigned int
-ReadNewsProfile(char *text,long int length,Image *image,int type)
+ReadNewsProfile(const unsigned char *text,const size_t length,Image *image,const int type)
 {
-  register unsigned char
+  register const unsigned char
     *p;
 
-  if (length <= 0)
-    return(False);
+#if defined(GET_ONLY_IPTC_DATA)
+  static const char tag_header [] = "8BIM44";
+#else
+  static const char tag_header [] = "8BIM";
+#endif
+
+  MagickBool found_header=MagickFalse;
+
+  if ((length == 0) || ((ssize_t) length < 0))
+    return MagickFail;
+
   p=(unsigned char *) text;
   if (type == TIFFTAG_RICHTIFFIPTC)
     {
       /*
-        Handle IPTC tag.
+        Handle IPTC tag (length is number of 32-bit words).
       */
-      length*=4;
-      return SetImageProfile(image,"IPTC",p,(size_t) length);
+      return SetImageProfile(image,"IPTC",p,(size_t) length*4U);
     }
   /*
-    Handle PHOTOSHOP tag.
+    Handle PHOTOSHOP tag (length is in bytes, but data is organized as
+    array of 16-bit values.
   */
-  while (length > 0)
-  {
-#if defined(GET_ONLY_IPTC_DATA)
-    if (LocaleNCompare((char *) p,"8BIM44",6) == 0)
-#else
-    if (LocaleNCompare((char *) p,"8BIM",4) == 0)
-#endif
-      break;
-    length-=2;
-    p+=2;
-  }
-  if (length <= 0)
-    return(False);
+  while (NEWSP_REMAINING(text,p,length) > (ssize_t) sizeof(tag_header))
+    {
+      if (LocaleNCompare((char *) p,tag_header,sizeof(tag_header)-1) == 0)
+        {
+          found_header=MagickTrue;
+          break;
+        }
+      p+=2;
+    }
+  if (!found_header)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Failed to find %s header, ignoring profile.",
+                            tag_header);
+      return MagickFail;
+    }
 #if defined(GET_ONLY_IPTC_DATA)
   /*
     Eat OSType, IPTC ID code, and Pascal string length bytes.
   */
-  p+=6;
-  length=(*p++);
-  if (length)
-    p+=length;
-  if ((length & 0x01) == 0)
-    p++;  /* align to an even byte boundary */
-  length=(p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
-  p+=4;
+  do
+    {
+      magick_uint32_t
+        hdr_length;
+
+      p+=sizeof(tag_header)-1;
+      if (NEWSP_REMAINING(text,p,length) < 8)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Truncated profile: %" MAGICK_SIZE_T_F
+                                "u bytes, %" MAGICK_SSIZE_T_F "u remaining"
+                                ", ignoring profile.",
+                                (MAGICK_SIZE_T) length,
+                                (MAGICK_SSIZE_T) NEWSP_REMAINING(text,p,length));
+          break;
+        }
+      hdr_length=(*p++);
+      p+=hdr_length;
+      if (NEWSP_REMAINING(text,p,length) < 8)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Truncated profile: %" MAGICK_SIZE_T_F
+                                "u bytes, %" MAGICK_SSIZE_T_F "u remaining"
+                                ", ignoring profile.",
+                                (MAGICK_SIZE_T) length,
+                                (MAGICK_SSIZE_T) NEWSP_REMAINING(text,p,length));
+          break;
+        }
+      if ((hdr_length & 0x01) == 0)
+        p++;  /* align to an even byte boundary */
+      hdr_length=(p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
+      p+=4;
+      if (((ssize_t) hdr_length <= 0) ||
+          ((ssize_t) hdr_length > NEWSP_REMAINING(text,p,length)))
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Truncated profile: %" MAGICK_SIZE_T_F
+                                "u bytes, %" MAGICK_SSIZE_T_F "u "
+                                "remaining (need %u more bytes)"
+                                ", ignoring profile.",
+                                (MAGICK_SIZE_T) length,
+                                (MAGICK_SSIZE_T) NEWSP_REMAINING(text,p,length),
+                                hdr_length);
+          return MagickFail;
+        }
+      return SetImageProfile(image,"8BIM",p,hdr_length);
+    } while (0);
+  return MagickFail;
+#else
+  return SetImageProfile(image,"8BIM",p,(size_t) NEWSP_REMAINING(text,p,length));
 #endif
-  return SetImageProfile(image,"8BIM",p,(size_t) length);
 }
 
 /*
@@ -1903,7 +1972,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Photoshop embedded profile with length %lu bytes",
                                   (unsigned long) length);
-            (void) ReadNewsProfile(text,(long) length,image,TIFFTAG_PHOTOSHOP);
+            (void) ReadNewsProfile((unsigned char *) text,(long) length,image,TIFFTAG_PHOTOSHOP);
           }
 #elif defined(TIFFTAG_RICHTIFFIPTC)
         /* IPTC TAG from RichTIFF specifications */
@@ -1913,7 +1982,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               TIFFSwabArrayOfLong((uint32 *) text,length);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "IPTC Newsphoto embedded profile with length %u bytes",length);
-            ReadNewsProfile(text,length,image,TIFFTAG_RICHTIFFIPTC);
+            ReadNewsProfile((unsigned char *) text,length,image,TIFFTAG_RICHTIFFIPTC);
           }
 #endif
         /*

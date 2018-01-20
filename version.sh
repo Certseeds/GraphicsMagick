@@ -17,7 +17,7 @@ PACKAGE_BUGREPORT='graphicsmagick-bugs@lists.sourceforge.net'
 
 # Package base version.  This is is the numeric version suffix applied to
 # PACKAGE_NAME (e.g. "1.2").
-PACKAGE_VERSION='1.3.27a'
+PACKAGE_VERSION='1.3.28'
 
 #
 # Package name plus version string.
@@ -27,7 +27,7 @@ PACKAGE_STRING="$PACKAGE_NAME $PACKAGE_VERSION"
 #
 # Formal Package release date
 # Set to string "unreleased" if package is not a formal release.
-PACKAGE_RELEASE_DATE="2017-12-11"
+PACKAGE_RELEASE_DATE="2018-01-20"
 #PACKAGE_RELEASE_DATE="unreleased"
 
 #
@@ -50,7 +50,7 @@ fi
 #
 # Mercurial branch that this release is on.
 #
-HG_BRANCH_TAG=default
+HG_BRANCH_TAG=GraphicsMagick-1_3
 
 #
 # Libtool library revision control info
@@ -88,7 +88,7 @@ HG_BRANCH_TAG=default
 #
 MAGICK_LIBRARY_CURRENT=20
 
-MAGICK_LIBRARY_REVISION=1
+MAGICK_LIBRARY_REVISION=2
 MAGICK_LIBRARY_AGE=17
 
 #

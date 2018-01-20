@@ -1,6 +1,6 @@
 #!/bin/sh
 # -*- shell-script -*-
-# Copyright (C) 2004-2015 GraphicsMagick Group
+# Copyright (C) 2004-2017 GraphicsMagick Group
 . ./common.shi
 . ${top_srcdir}/tests/common.shi
 
@@ -11,7 +11,7 @@ rwfile=./rwfile
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 564
+test_plan_fn 576
 
 # ART format
 for type in ${check_types}
@@ -200,6 +200,21 @@ for type in ${check_types}
 do
   test_command_fn "MIFF ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" MIFF
   test_command_fn "MIFF ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" MIFF
+done
+
+for type in ${check_types}
+do
+    test_command_fn "MIFF RLE compressed ${type}" ${MEMCHECK} ${rwfile} -compress RLE -filespec "out_${type}_rle_%d" "${SRCDIR}/input_${type}.miff" MIFF
+done
+
+for type in ${check_types}
+do
+    test_command_fn "MIFF BZIP compressed ${type}" -F BZLIB ${MEMCHECK} ${rwfile} -compress BZIP -filespec "out_${type}_bzip_%d" "${SRCDIR}/input_${type}.miff" MIFF
+done
+
+for type in ${check_types}
+do
+    test_command_fn "MIFF ZIP compressed ${type}" -F ZLIB ${MEMCHECK} ${rwfile} -compress ZIP -filespec "out_${type}_zip_%d" "${SRCDIR}/input_${type}.miff" MIFF
 done
 
 # MNG format

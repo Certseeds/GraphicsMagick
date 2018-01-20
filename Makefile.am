@@ -399,3 +399,12 @@ coverity:
 #	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-use"
 #
 #CLEANFILES = *.gcda *.gcno
+
+# Generate magick/symbols.h and wand/wand_symbols.h based on archive
+# library symbols
+GMMAGICKSYMBOLS=$(srcdir)/magick/symbols.h
+GMWANDSYMBOLS=$(srcdir)/wand/wand_symbols.h
+
+gmsymbols:
+	$(srcdir)/scripts/gmsymbols.sh magick/.libs/libGraphicsMagick.a MAGICK > $(GMMAGICKSYMBOLS)
+	$(srcdir)/scripts/gmsymbols.sh wand/.libs/libGraphicsMagickWand.a MAGICK_WAND > $(GMWANDSYMBOLS)

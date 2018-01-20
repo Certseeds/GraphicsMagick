@@ -1,18 +1,11 @@
 /*
-  Copyright (C) 2003 - 2017 GraphicsMagick Group
+  Copyright (C) 2012-2018 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
   Library symbol name-scoping support.
-
-  Obtained via:
-
-  nm -p magick/.libs/libGraphicsMagick.a | grep ' T ' | egrep -vi '(Gm)|(lt_)' | \
-     egrep -v '(MagickError)|(MagickFatalError)|(MagickWarning)|(ThrowException)' | \
-     awk '{ printf("#define %s Gm%s\n", $3, $3); }' | sort
-
 */
 
 #if !defined(_MAGICK_SYMBOLS_H)
@@ -74,6 +67,7 @@
 #define AttachBlob GmAttachBlob
 #define AutoOrientImage GmAutoOrientImage
 #define AverageImages GmAverageImages
+#define BackgroundColor GmBackgroundColor
 #define Base64Decode GmBase64Decode
 #define Base64Encode GmBase64Encode
 #define BenchmarkImageCommand GmBenchmarkImageCommand
@@ -86,6 +80,7 @@
 #define BlobWriteByteHook GmBlobWriteByteHook
 #define BlurImage GmBlurImage
 #define BlurImageChannel GmBlurImageChannel
+#define BorderColor GmBorderColor
 #define BorderImage GmBorderImage
 #define CatchException GmCatchException
 #define CatchImageException GmCatchImageException
@@ -136,9 +131,11 @@
 #define CopyException GmCopyException
 #define CropImage GmCropImage
 #define CycleColormapImage GmCycleColormapImage
-#define DCM_SetRescaling GmDCM_SetRescaling
 #define DeallocateImageProfileIterator GmDeallocateImageProfileIterator
 #define DeconstructImages GmDeconstructImages
+#define DefaultTileFrame GmDefaultTileFrame
+#define DefaultTileGeometry GmDefaultTileGeometry
+#define DefaultTileLabel GmDefaultTileLabel
 #define DefineClientName GmDefineClientName
 #define DefineClientPathAndName GmDefineClientPathAndName
 #define DeleteImageFromList GmDeleteImageFromList
@@ -316,10 +313,12 @@
 #define FlattenImages GmFlattenImages
 #define FlipImage GmFlipImage
 #define FlopImage GmFlopImage
+#define ForegroundColor GmForegroundColor
 #define FormatSize GmFormatSize
 #define FormatString GmFormatString
 #define FormatStringList GmFormatStringList
 #define FrameImage GmFrameImage
+#define FreeFunc GmFreeFunc
 #define FuzzyColorMatch GmFuzzyColorMatch
 #define GammaImage GmGammaImage
 #define GaussianBlurImage GmGaussianBlurImage
@@ -327,6 +326,7 @@
 #define GenerateDifferentialNoise GmGenerateDifferentialNoise
 #define GenerateNoise GmGenerateNoise
 #define GetBlobFileHandle GmGetBlobFileHandle
+#define GetBlobFirstErrno GmGetBlobFirstErrno
 #define GetBlobInfo GmGetBlobInfo
 #define GetBlobIsOpen GmGetBlobIsOpen
 #define GetBlobSize GmGetBlobSize
@@ -432,6 +432,7 @@
 #define HSLTransform GmHSLTransform
 #define HWBTransform GmHWBTransform
 #define HaldClutImage GmHaldClutImage
+#define HighlightColor GmHighlightColor
 #define HighlightStyleToString GmHighlightStyleToString
 #define HuffmanDecodeImage GmHuffmanDecodeImage
 #define HuffmanEncode2Image GmHuffmanEncode2Image
@@ -514,7 +515,6 @@
 #define LocaleNCompare GmLocaleNCompare
 #define LocaleUpper GmLocaleUpper
 #define LockSemaphoreInfo GmLockSemaphoreInfo
-#define LogPALMHeader GmLogPALMHeader
 #define MSBOrderLong GmMSBOrderLong
 #define MSBOrderShort GmMSBOrderShort
 #define MagickAllocFunctions GmMagickAllocFunctions
@@ -683,10 +683,12 @@
 #define MagickXWindowByName GmMagickXWindowByName
 #define MagickXWindowByProperty GmMagickXWindowByProperty
 #define MagnifyImage GmMagnifyImage
+#define MallocFunc GmMallocFunc
 #define MapBlob GmMapBlob
 #define MapImage GmMapImage
 #define MapImages GmMapImages
 #define MapModeToString GmMapModeToString
+#define MatteColor GmMatteColor
 #define MatteFloodfillImage GmMatteFloodfillImage
 #define MedianFilterImage GmMedianFilterImage
 #define MetricTypeToString GmMetricTypeToString
@@ -715,6 +717,8 @@
 #define OpenCacheView GmOpenCacheView
 #define OrderedDitherImage GmOrderedDitherImage
 #define OrientationTypeToString GmOrientationTypeToString
+#define PSDensityGeometry GmPSDensityGeometry
+#define PSPageGeometry GmPSPageGeometry
 #define PackbitsEncode2Image GmPackbitsEncode2Image
 #define PackbitsEncodeImage GmPackbitsEncodeImage
 #define PanicDestroyMagick GmPanicDestroyMagick
@@ -778,6 +782,7 @@
 #define ReadBlobZC GmReadBlobZC
 #define ReadImage GmReadImage
 #define ReadInlineImage GmReadInlineImage
+#define ReallocFunc GmReallocFunc
 #define ReduceNoiseImage GmReduceNoiseImage
 #define ReferenceBlob GmReferenceBlob
 #define ReferenceCache GmReferenceCache

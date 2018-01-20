@@ -3298,18 +3298,23 @@ CompositeImage(Image *canvas_image,
                 if (update_image->matte)
                   y_displace=(vertical_scale*(p->opacity-
                                               (((double) MaxRGB+1.0)/2)))/(((double) MaxRGB+1.0)/2);
-                InterpolateViewColor(AccessDefaultCacheView(canvas_image),r,
-                                     x_offset+x+x_displace,y_offset+y+y_displace,
-                                     &canvas_image->exception);
+                if (InterpolateViewColor(AccessDefaultCacheView(canvas_image),r,
+                                         x_offset+x+x_displace,y_offset+y+y_displace,
+                                         &canvas_image->exception) == MagickFail)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 p++;
                 q++;
                 r++;
               }
-            if (!SyncImagePixels(change_image))
-              {
-                status=MagickFail;
-                break;
-              }
+            if (status != MagickFail)
+              if (!SyncImagePixels(change_image))
+                {
+                  status=MagickFail;
+                  break;
+                }
           }
         break;
       }

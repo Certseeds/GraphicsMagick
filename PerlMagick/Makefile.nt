@@ -37,7 +37,7 @@ WriteMakefile(
     'NAME'      => 'Graphics::Magick',
     'VERSION_FROM' => 'Magick.pm', # finds $VERSION
     'LIBS'      => ['-L..\VisualMagick\lib -L..\VisualMagick\bin -lCORE_RL_magick_.lib'],
-    'DEFINE'    => '-D_VISUALC_ -D_WINDOWS',     # e.g., '-DHAVE_SOMETHING' 
+    'DEFINE'    => '-D_VISUALC_ -D_WINDOWS',     # e.g., '-DHAVE_SOMETHING'
     'INC'       => '-I.. -I..\xlib\include',
     'BINARY_LOCATION'  => 'x86/Graphics-Magick.tar.gz',
     'dist' => {ZIP => "zip.exe", ZIPFLAGS=>"-r"},
@@ -46,12 +46,12 @@ WriteMakefile(
 );
 
 #
-# Add a targets for building ActiveState ppm distribution modules 
+# Add a targets for building ActiveState ppm distribution modules
 # Dylan Beattie <dylan@zepler.org>, April 2002
 #
 # Requires tar, gzip, and zip.  This produces PerlMagick.zip
 # Get GNU tar and gzip from http://sourceware.cygnus.com/
-# Get Win32 command line PKZIP from http://www.pkware.com/ 
+# Get Win32 command line PKZIP from http://www.pkware.com/
 # and rename PKZIP.EXE to ZIP.EXE and PKUNZIP.EXE to UNZIP.EXE
 # Make sure tar.exe, gzip.exe and zip.exe are in your system path
 #
@@ -62,8 +62,8 @@ sub MY::postamble
 {
         '
 Graphics-Magick.tar.gz: ppd pure_all #htmlifypods manifypods
-	if exist Graphics-Magick.tar.gz del Graphics-Magick.tar.gz
-	if exist Graphics-Magick.tar del Graphics-Magick.tar
+        if exist Graphics-Magick.tar.gz del Graphics-Magick.tar.gz
+        if exist Graphics-Magick.tar del Graphics-Magick.tar
         $(TAR) $(TARFLAGS) Graphics-Magick.tar blib
         $(COMPRESS) -q Graphics-Magick.tar
 
@@ -116,7 +116,6 @@ sub MY::test
    #  =======   ======================	======================================
    #   bzlib    BZip compression        BZip library
    #   cgm	CGM format		'ralcgm' program
-   #   hdf	HDF format		HDF library
    #   jbig	JBIG format		JBIG library
    #   jpeg 	JPEG format		JPEG library
    #   mpeg	MPEG format		'mpeg2decode' & 'mpeg2encode' programs

@@ -589,7 +589,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                   tile_height;
 
                 const PixelPacket
-                  *tile_pixels;
+                  *tile_pixels=(const PixelPacket *) NULL;
 
                 long
                   y;
@@ -704,6 +704,15 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                   if (thread_status == MagickFail)
                     status=MagickFail;
                 }
+              }
+            if (thread_status == MagickFail)
+              {
+#if defined(IntegralRotateImageUseOpenMP)
+#  if defined(HAVE_OPENMP)
+#    pragma omp critical (GM_IntegralRotateImage)
+#  endif
+#endif
+                    status = thread_status;
               }
           }
         Swap(page.width,page.height);
@@ -866,14 +875,14 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                   tile_height;
 
                 long
-                  dest_tile_x,
-                  dest_tile_y;
+                  dest_tile_x=0,
+                  dest_tile_y=0;
 
                 long
-                  y;
+                  y=0;
 
                 const PixelPacket
-                  *tile_pixels;
+                  *tile_pixels = (const PixelPacket *) NULL;
 
                 /*
                   Compute image region corresponding to tile.
@@ -989,6 +998,16 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                 if (thread_status == MagickFail)
                   break;
               }
+
+            if (thread_status == MagickFail)
+              {
+#if defined(IntegralRotateImageUseOpenMP)
+#  if defined(HAVE_OPENMP)
+#    pragma omp critical (GM_IntegralRotateImage)
+#  endif
+#endif
+                    status = thread_status;
+              }
           }
         Swap(page.width,page.height);
         Swap(page.x,page.y);
@@ -997,9 +1016,17 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
       }
     }
 
-  rotate_image->page=page;
-  rotate_image->is_grayscale=image->is_grayscale;
-  rotate_image->is_monochrome=image->is_monochrome;
+  if (status == MagickFail)
+    {
+      DestroyImage(rotate_image);
+      rotate_image = (Image *) NULL;
+    }
+  else
+    {
+      rotate_image->page=page;
+      rotate_image->is_grayscale=image->is_grayscale;
+      rotate_image->is_monochrome=image->is_monochrome;
+    }
   return(rotate_image);
 }
 

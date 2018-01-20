@@ -434,10 +434,14 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
       char
         tuple[MaxTextExtent];
 
+      MagickBool
+        found_transparency;
+
       register const PixelPacket
         *p;
 
       p=(PixelPacket *) NULL;
+      found_transparency = MagickFalse;
       for (y=0; y < image->rows; y++)
         {
           p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
@@ -446,13 +450,16 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
           for (x=0; x < image->columns; x++)
             {
               if (p->opacity == TransparentOpacity)
-                break;
+                {
+                  found_transparency=MagickTrue;
+                  break;
+                }
               p++;
             }
           if (x < image->columns)
             break;
         }
-      if ((x < image->columns) || (y < image->rows))
+      if (found_transparency)
         {
           GetColorTuple(p,image->depth,image->matte,False,tuple);
           (void) fprintf(file,"  Opacity: %.1024s\t",tuple);
