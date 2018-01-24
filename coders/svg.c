@@ -2314,12 +2314,9 @@ SVGStartElement(void *context,const xmlChar *name,
                                        &page.width,&page.height);
               MagickFreeMemory(geometry);
             }
-          if (svg_info->affine.sx != 1.0)
-            page.width=(unsigned long)
-              ceil(ExpandAffine(&svg_info->affine)*page.width-0.5);
-          if (svg_info->affine.sy != 0.0)
-            page.height=(unsigned long)
-              ceil(ExpandAffine(&svg_info->affine)*page.height-0.5);
+          /* NOTE: the scale factor returned by ExpandAffine() has already been applied
+             to page.width and page.height
+          */
           (void) MVGPrintf(svg_info->file,"viewbox 0 0 %g %g\n",
                            svg_info->view_box.width,svg_info->view_box.height);
           sx=(double) page.width/svg_info->view_box.width;

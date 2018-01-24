@@ -1,3 +1,11 @@
+2018-01-24  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement): When the density (DPI)
+	is specified using the ImageInfo::density member, the derived
+	scale factor is incorrectly applied a second time to the
+	width and height members of variable RectangleInfo page.
+	Fixes SourceForge ticket #451.
+
 2018-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c: Use a lazy-loader for static modules with the
