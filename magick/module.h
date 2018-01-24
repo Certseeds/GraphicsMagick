@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2009 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -63,8 +63,8 @@ extern MagickExport void
   DestroyModuleInfo(void),
   DestroyMagickModules(void),
   InitializeMagickModules(void),
-  RegisterStaticModules(void),
-  UnregisterStaticModules(void);
+  RegisterStaticModules(void) MAGICK_FUNC_DEPRECATED,
+  UnregisterStaticModules(void) MAGICK_FUNC_DEPRECATED;
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 

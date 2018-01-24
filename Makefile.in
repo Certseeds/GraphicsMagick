@@ -3586,6 +3586,7 @@ MAGICK_NOINST_HDRS = \
 	magick/floats.h \
 	magick/locale_c.h \
 	magick/map.h \
+	magick/module_aliases.h \
 	magick/nt_base.h \
 	magick/nt_feature.h \
 	magick/omp_data_view.h \

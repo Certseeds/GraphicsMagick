@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -80,10 +80,8 @@ static void
 static SemaphoreInfo
   *magick_semaphore = (SemaphoreInfo *) NULL;
 
-#if defined(SupportMagickModules)
 static SemaphoreInfo
   *module_semaphore = (SemaphoreInfo *) NULL;
-#endif /* #if defined(SupportMagickModules) */
 
 static MagickInfo
   *magick_list = (MagickInfo *) NULL;
@@ -267,22 +265,14 @@ DestroyMagickInfoList(void)
   register MagickInfo
     *p;
 
-#if defined(SupportMagickModules)
   DestroyMagickModules();
-#endif /* defined(SupportMagickModules) */
-
-#if !defined(BuildMagickModules)
-  UnregisterStaticModules();
-#endif /* !defined(BuildMagickModules) */
 
   /*
     At this point, the list should be empty, but check for remaining
     entries anyway.
   */
-#if defined(BuildMagickModules)
   if (magick_list != (MagickInfo *) NULL)
     (void) printf("Warning: module registrations are still present!\n");
-#endif /* defined(BuildMagickModules) */
   for (p=magick_list; p != (MagickInfo *) NULL; )
   {
     magick_info=p;
@@ -297,9 +287,7 @@ DestroyMagickInfoList(void)
   magick_list=(MagickInfo *) NULL;
   DestroySemaphoreInfo(&magick_semaphore);
 
-#if defined(SupportMagickModules)
   DestroySemaphoreInfo(&module_semaphore);
-#endif /* #if defined(SupportMagickModules) */
 }
 
 /*
@@ -422,7 +410,6 @@ GetMagickInfo(const char *name,ExceptionInfo *exception)
   const MagickInfo
     *magick_info=(const MagickInfo *) NULL;
 
-#if defined(SupportMagickModules)
   if ((name != (const char *) NULL) &&
       (name[0] != '\0'))
     {
@@ -448,9 +435,6 @@ GetMagickInfo(const char *name,ExceptionInfo *exception)
         }
       UnlockSemaphoreInfo(module_semaphore);
     }
-#else
-  ARG_NOT_USED(exception);
-#endif /* #if defined(SupportMagickModules) */
 
   /*
     Return whatever we've got
@@ -1230,18 +1214,10 @@ InitializeMagickInfoList(void)
   assert(magick_semaphore == (SemaphoreInfo *) NULL);
   magick_semaphore=AllocateSemaphoreInfo();
 
-#if defined(SupportMagickModules)
   assert(module_semaphore == (SemaphoreInfo *) NULL);
   module_semaphore=AllocateSemaphoreInfo();
-#endif /* #if defined(SupportMagickModules) */
 
-#if !defined(BuildMagickModules)
-  RegisterStaticModules();          /* Register all static modules */
-#endif /* !defined(BuildMagickModules) */
-
-#if defined(SupportMagickModules)
   InitializeMagickModules();        /* Module loader */
-#endif /* defined(SupportMagickModules) */
 
   return MagickPass;
 }
