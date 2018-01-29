@@ -2265,8 +2265,7 @@ SVGStartElement(void *context,const xmlChar *name,
       if (attributes != (const xmlChar **) NULL)
         {
           char
-            *geometry,
-            *p;
+            *geometry;
 
           RectangleInfo
             page;
@@ -2307,9 +2306,13 @@ SVGStartElement(void *context,const xmlChar *name,
               geometry=GetPageGeometry(svg_info->size);
           if (geometry != (char *) NULL)
             {
-              p=strchr(geometry,'>');
-              if (p != (char *) NULL)
-                *p='\0';
+              /*
+                A terminating '>' in a geometry string is interpreted to mean that
+                the dimensions of an image should only be changed if its width or
+                height exceeds the geometry specification.  For an unapparent and
+                undocumented reason, a terminating '>', if present, was being nulled
+                out, making this feature unusable for SVG files (now fixed).
+              */
               (void) GetMagickGeometry(geometry,&page.x,&page.y,
                                        &page.width,&page.height);
               MagickFreeMemory(geometry);

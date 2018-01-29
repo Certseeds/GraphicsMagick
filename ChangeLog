@@ -1,5 +1,15 @@
 2018-01-29  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* coders/svg.c (SVGStartElement): A terminating '>' in
+	a geometry string is interpreted to mean that the dimensions
+	of an image should only be changed if its width or height
+	exceeds the geometry specification.  For an unapparent and
+	undocumented reason, a terminating '>', if present, was
+	being nulled out, making this feature unusable for SVG files
+	(now fixed).
+
+2018-01-29  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* coders/svg.c (ReadSVGImage): If there is a geometry string
 	in image_info->size (e.g., gm convert -size "50x50%" in.svg
 	out.png), AllocateImage() sets image->columns and image->rows
