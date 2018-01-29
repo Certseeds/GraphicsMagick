@@ -1,3 +1,23 @@
+2018-01-29  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (ReadSVGImage): If there is a geometry string
+	in image_info->size (e.g., gm convert -size "50x50%" in.svg
+	out.png), AllocateImage() sets image->columns and image->rows
+	to the width and height values from the size string.  However,
+	this makes no sense if the size string was something like
+	"50x50%" (we'll get columns = rows = 50).  So we set columns
+	and rows to 0 after AllocateImage(), which is the same as if
+	no size string was supplied by the client.  This also results
+	in svg_info.bounds to be set to 0,0 (i.e., unknown), so that
+	svg_info.bounds will later be set using the image size
+	information from either the svg "canvas" width/height or from
+	the viewbox.  Later, variable "page" is set from
+	svg_info->bounds. Then the geometry string in image_info->size
+	gets applied to the (now known) "page" width and height when
+	SvgStartElement() calls GetMagickGeometry(), and the intended
+	result is obtained.
+
+
 2018-01-24  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement): When the density (DPI)

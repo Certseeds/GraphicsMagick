@@ -2907,6 +2907,24 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+  /*
+    If there is a geometry string in image_info->size (e.g., gm convert
+    -size "50x50%" in.svg out.png), AllocateImage() sets image->columns
+    and image->rows to the width and height values from the size string.
+    However, this makes no sense if the size string was something like
+    "50x50%" (we'll get columns = rows = 50).  So we set columns and
+    rows to 0 here, which is the same as if no size string was supplied
+    by the client.  This also results in svg_info.bounds to be set to
+    0,0 below (i.e., unknown), so that svg_info.bounds will be set using
+    the image size information from either the svg "canvas" width/height
+    or from the viewbox.  Later, variable "page" is set from
+    svg_info->bounds. Then the geometry string in image_info->size gets
+    applied to the (now known) "page" width and height when
+    SvgStartElement() calls GetMagickGeometry(), and the intended result
+    is obtained.
+  */
+  image->columns = 0;
+  image->rows = 0;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
