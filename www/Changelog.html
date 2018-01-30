@@ -35,6 +35,49 @@
 <div class="document">
 
 
+<p>2018-01-29  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement): A terminating '&gt;' in
+a geometry string is interpreted to mean that the dimensions
+of an image should only be changed if its width or height
+exceeds the geometry specification.  For an unapparent and
+undocumented reason, a terminating '&gt;', if present, was
+being nulled out, making this feature unusable for SVG files
+(now fixed).</li>
+</ul>
+</blockquote>
+<p>2018-01-29  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (ReadSVGImage): If there is a geometry string
+in image_info-&gt;size (e.g., gm convert -size &quot;50x50%&quot; in.svg
+out.png), AllocateImage() sets image-&gt;columns and image-&gt;rows
+to the width and height values from the size string.  However,
+this makes no sense if the size string was something like
+&quot;50x50%&quot; (we'll get columns = rows = 50).  So we set columns
+and rows to 0 after AllocateImage(), which is the same as if
+no size string was supplied by the client.  This also results
+in svg_info.bounds to be set to 0,0 (i.e., unknown), so that
+svg_info.bounds will later be set using the image size
+information from either the svg &quot;canvas&quot; width/height or from
+the viewbox.  Later, variable &quot;page&quot; is set from
+svg_info-&gt;bounds. Then the geometry string in image_info-&gt;size
+gets applied to the (now known) &quot;page&quot; width and height when
+SvgStartElement() calls GetMagickGeometry(), and the intended
+result is obtained.</li>
+</ul>
+</blockquote>
+<p>2018-01-24  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement): When the density (DPI)
+is specified using the ImageInfo::density member, the derived
+scale factor is incorrectly applied a second time to the
+width and height members of variable RectangleInfo page.
+Fixes SourceForge ticket #451.</li>
+</ul>
+</blockquote>
 <p>2018-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
