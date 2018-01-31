@@ -41,7 +41,7 @@
 #include "magick/static.h"
 #include "magick/utility.h"
 
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
 
 #include "magick/module_aliases.h"
 
@@ -392,7 +392,7 @@ OpenModules(ExceptionInfo *exception)
 
   return MagickPass;
 }
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -437,7 +437,7 @@ MagickExport unsigned int ExecuteModuleProcess(const char *tag,
   unsigned int
     status = False;
 
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int
     (*method)(Image **,const int,char **) = 0;
 
@@ -459,7 +459,7 @@ MagickExport unsigned int ExecuteModuleProcess(const char *tag,
   ARG_NOT_USED(image);
   ARG_NOT_USED(argc);
   ARG_NOT_USED(argv);
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
   return(status);
 }
 
@@ -486,7 +486,7 @@ RegisterStaticModules() statically registers all the available module
 */
 MagickExport void RegisterStaticModules(void)
 {
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int index;
 
   for (index=0; index < ArraySize(StaticModules); index++)
@@ -497,7 +497,7 @@ MagickExport void RegisterStaticModules(void)
           StaticModules[index].loaded = MagickTrue;
         }
     }
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
 }
 
 /*
@@ -522,7 +522,7 @@ MagickExport void RegisterStaticModules(void)
 */
 MagickExport void UnregisterStaticModules(void)
 {
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int index;
 
   for (index=0; index < ArraySize(StaticModules);index++)
@@ -533,5 +533,5 @@ MagickExport void UnregisterStaticModules(void)
           StaticModules[index].loaded = MagickFalse;
         }
     }
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
 }
