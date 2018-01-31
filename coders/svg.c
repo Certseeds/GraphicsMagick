@@ -847,6 +847,8 @@ SVGStartElement(void *context,const xmlChar *name,
     i,
     j;
 
+  MagickBool IsTSpan = MagickFalse;
+
   /*
     Called when an opening tag has been processed.
   */
@@ -867,6 +869,7 @@ SVGStartElement(void *context,const xmlChar *name,
   color=AllocateString("none");
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
+  IsTSpan = LocaleCompare((char *) name,"tspan") == 0;
   if (attributes != (const xmlChar **) NULL)
     for (i=0; (svg_info->exception->severity < ErrorException) &&
            (attributes[i] != (const xmlChar *) NULL); i+=2)
@@ -957,7 +960,11 @@ SVGStartElement(void *context,const xmlChar *name,
             {
               if (LocaleCompare(keyword,"x") == 0)
                 {
-                  svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  /* if processing a tspan, preserve the current bounds.x, which belongs to the
+                     previously processed text or tspan; the bounds.x for the current tspan will
+                     be set later */
+                  if (!IsTSpan)
+                    svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                   break;
                 }
               if (LocaleCompare(keyword,"x1") == 0)
@@ -979,7 +986,11 @@ SVGStartElement(void *context,const xmlChar *name,
             {
               if (LocaleCompare(keyword,"y") == 0)
                 {
-                  svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  /* if processing a tspan, preserve the current bounds.y, which belongs to the
+                     previously processed text or tspan; the bounds.y for the current tspan will
+                     be set later */
+                  if (!IsTSpan)
+                    svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
                   break;
                 }
               if (LocaleCompare(keyword,"y1") == 0)

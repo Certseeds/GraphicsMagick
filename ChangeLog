@@ -1,3 +1,12 @@
+2018-01-31  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement): Fixed a bug in which the
+	x,y location values for a <text> or <tspan> were overwritten
+	by the x,y values for the next <tspan> before the previous
+	values were used.  This caused the text associated with the
+	previous <text> or <tspan> to appear at the location
+	specified for the next <tspan>.
+
 2018-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c: Use !defined(SupportMagickModules) to enable
