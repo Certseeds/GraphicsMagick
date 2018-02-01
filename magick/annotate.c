@@ -1370,7 +1370,12 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
                     {
                       continue;
                     }
-                  opacity=((MaxRGB-opacity)*(MaxRGB-fill_color.opacity))/MaxRGB;
+                  /*
+                    At this point, opacity is 0==transparent to MaxRGB==opaque, and represents an
+                    anti-aliasing edge blending value.  The computation below integrates in the
+                    fill color opacity, and converts the result to 0=opaque to MaxRGB=transparent.
+                  */
+                  opacity=MaxRGB-(opacity*(MaxRGB-fill_color.opacity)+/*round*/(MaxRGB>>1))/MaxRGB;
                   AlphaCompositePixel(q,&fill_color,opacity,q,
                                       image->matte ? q->opacity : OpaqueOpacity);
                   if (!active)

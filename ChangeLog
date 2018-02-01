@@ -1,5 +1,12 @@
 2018-02-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* magick/annotate.c (RenderFreetype): Fixed the text
+	opacity computation in RenderFreeType(). This bug caused
+	the text fill color to bleed into the character cell when
+	the SVG "fill-opacity" is less than 1.0.
+
+2018-02-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/attribute.c (CloneImageAttributes): Fixed a bug
 	in which the source image attributes would always replace
 	the destination image attributes instead of being appended
