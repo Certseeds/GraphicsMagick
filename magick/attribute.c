@@ -61,7 +61,7 @@ static void DestroyImageAttribute(ImageAttribute *attribute);
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  CloneImageAttributes() copies the text attibutes from one image to another.
+%  CloneImageAttributes() copies the text attributes from one image to another.
 %  Any text attributes in the destination image are preserved.
 %  CloneImageAttributes returns MagickPass if all of the attribututes are
 %  successfully cloned or MagickFail if there is a memory allocation error.
@@ -98,9 +98,12 @@ CloneImageAttributes(Image* clone_image,
   /*
     Search for tail of list (if any)
   */
-  for(cloned_attributes=clone_image->attributes;
-      cloned_attributes != (ImageAttribute *) NULL;
-      cloned_attributes=cloned_attributes->next);
+  if ((cloned_attributes=clone_image->attributes))
+    {
+      for( ;
+          cloned_attributes->next != (ImageAttribute *) NULL;
+          cloned_attributes=cloned_attributes->next);
+    }
 
   attribute=GetImageAttribute(original_image,(char *) NULL);
   for ( ; attribute != (const ImageAttribute *) NULL;
