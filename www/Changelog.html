@@ -35,6 +35,36 @@
 <div class="document">
 
 
+<p>2018-02-01  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/annotate.c (RenderFreetype): Fixed the text
+opacity computation in RenderFreeType(). This bug caused
+the text fill color to bleed into the character cell when
+the SVG &quot;fill-opacity&quot; is less than 1.0.</li>
+</ul>
+</blockquote>
+<p>2018-02-01  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/attribute.c (CloneImageAttributes): Fixed a bug
+in which the source image attributes would always replace
+the destination image attributes instead of being appended
+to them, and the destination image attributes would become
+a memory leak.</li>
+</ul>
+</blockquote>
+<p>2018-01-31  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement): Fixed a bug in which the
+x,y location values for a &lt;text&gt; or &lt;tspan&gt; were overwritten
+by the x,y values for the next &lt;tspan&gt; before the previous
+values were used.  This caused the text associated with the
+previous &lt;text&gt; or &lt;tspan&gt; to appear at the location
+specified for the next &lt;tspan&gt;.</li>
+</ul>
+</blockquote>
 <p>2018-01-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
