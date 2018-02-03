@@ -4441,71 +4441,72 @@ MagickExport BlobInfo *ReferenceBlob(BlobInfo *blob)
 %
 */
 MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
-  const int whence)
+                                   const int whence)
 {
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(image->blob != (BlobInfo *) NULL);
   assert(image->blob->type != UndefinedStream);
   switch (image->blob->type)
-  {
+    {
     case UndefinedStream:
       break;
     case FileStream:
-    {
-      if (MagickFseek(image->blob->handle.std,offset,whence) < 0)
-        return(-1);
-      image->blob->offset=TellBlob(image);
-      break;
-    }
+      {
+        if (MagickFseek(image->blob->handle.std,offset,whence) < 0)
+          return(-1);
+        image->blob->offset=TellBlob(image);
+        break;
+      }
     case StandardStream:
     case PipeStream:
       return(-1);
     case ZipStream:
-    {
+      {
 #if defined(HasZLIB)
-      if (gzseek(image->blob->handle.gz,(off_t) offset,whence) < 0)
-        return(-1);
+        if (gzseek(image->blob->handle.gz,(off_t) offset,whence) < 0)
+          return(-1);
 #endif
-      image->blob->offset=TellBlob(image);
-      break;
-    }
+        image->blob->offset=TellBlob(image);
+        break;
+      }
     case BZipStream:
       return(-1);
     case BlobStream:
-    {
-      switch (whence)
       {
-        case SEEK_SET:
-        default:
-        {
-          if (offset < 0)
-            return(-1);
-          image->blob->offset=offset;
-          break;
-        }
-        case SEEK_CUR:
-        {
-          if ((image->blob->offset+offset) < 0)
-            return(-1);
-          image->blob->offset+=offset;
-          break;
-        }
-        case SEEK_END:
-        {
-          if ((magick_off_t)
-              (image->blob->offset+image->blob->length+offset) < 0)
-            return(-1);
-          image->blob->offset=image->blob->length+offset;
-          break;
-        }
-      }
-      if (image->blob->offset <= (magick_off_t) image->blob->length)
-        image->blob->eof=MagickFalse;
-      else
-        if (image->blob->mapped)
-          return(-1);
-        else
+        switch (whence)
+          {
+          case SEEK_SET:
+          default:
+            {
+              if (offset < 0)
+                return(-1);
+              image->blob->offset=offset;
+              break;
+            }
+          case SEEK_CUR:
+            {
+              if ((image->blob->offset+offset) < 0)
+                return(-1);
+              image->blob->offset+=offset;
+              break;
+            }
+          case SEEK_END:
+            {
+              if ((magick_off_t)
+                  (image->blob->offset+image->blob->length+offset) < 0)
+                return(-1);
+              image->blob->offset=image->blob->length+offset;
+              break;
+            }
+          }
+        if (image->blob->offset <= (magick_off_t) image->blob->length)
+          {
+            image->blob->eof=MagickFalse;
+          }
+        else if (!(image->blob->mapped) &&
+                 ((image->blob->mode == WriteBlobMode) ||
+                  (image->blob->mode == WriteBinaryBlobMode)))
           {
             image->blob->extent=image->blob->offset+image->blob->quantum;
             MagickReallocMemory(unsigned char *,image->blob->data,image->blob->extent+1);
@@ -4516,9 +4517,9 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
                 return(-1);
               }
           }
-      break;
+        break;
+      }
     }
-  }
   return(image->blob->offset);
 }
 
