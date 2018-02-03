@@ -159,6 +159,7 @@
 #define DestroyLogInfo GmDestroyLogInfo
 #define DestroyMagicInfo GmDestroyMagicInfo
 #define DestroyMagick GmDestroyMagick
+#define DestroyMagickModules GmDestroyMagickModules
 #define DestroyMagickRandomGenerator GmDestroyMagickRandomGenerator
 #define DestroyMagickRegistry GmDestroyMagickRegistry
 #define DestroyMagickResources GmDestroyMagickResources
@@ -463,6 +464,7 @@
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
 #define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
+#define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickRandomGenerator GmInitializeMagickRandomGenerator
 #define InitializeMagickRandomKernel GmInitializeMagickRandomKernel
 #define InitializeMagickRegistry GmInitializeMagickRegistry
@@ -715,6 +717,8 @@
 #define OpaqueImage GmOpaqueImage
 #define OpenBlob GmOpenBlob
 #define OpenCacheView GmOpenCacheView
+#define OpenModule GmOpenModule
+#define OpenModules GmOpenModules
 #define OrderedDitherImage GmOrderedDitherImage
 #define OrientationTypeToString GmOrientationTypeToString
 #define PSDensityGeometry GmPSDensityGeometry

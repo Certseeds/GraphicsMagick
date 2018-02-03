@@ -243,9 +243,14 @@
 #define MagickGetSize GmMagickGetSize
 #define MagickGetVersion GmMagickGetVersion
 #define MagickHaldClutImage GmMagickHaldClutImage
+#define MagickHasColormap GmMagickHasColormap
 #define MagickHasNextImage GmMagickHasNextImage
 #define MagickHasPreviousImage GmMagickHasPreviousImage
 #define MagickImplodeImage GmMagickImplodeImage
+#define MagickIsGrayImage GmMagickIsGrayImage
+#define MagickIsMonochromeImage GmMagickIsMonochromeImage
+#define MagickIsOpaqueImage GmMagickIsOpaqueImage
+#define MagickIsPaletteImage GmMagickIsPaletteImage
 #define MagickLabelImage GmMagickLabelImage
 #define MagickLevelImage GmMagickLevelImage
 #define MagickLevelImageChannel GmMagickLevelImageChannel

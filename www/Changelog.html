@@ -38,6 +38,19 @@
 <p>2018-02-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>wand/magick_wand.c (MagickHasColormap): New function to test if
+the image has a colormap.
+(MagickIsGrayImage): New function to test if the image uses only
+gray pixels.
+(MagickIsMonochromeImage): New function to test if the image uses
+only monochrome pixels.
+(MagickIsOpaqueImage): New function to test if the image uses only
+opaque pixels.
+(MagickIsPaletteImage): New function to test if the image is based
+on a color palette.  Above functions are written by Troy Patteson
+and submitted via SourceForge patch #54 &quot;Wand API patches: has
+colormap, is gray image, is monochrome image, is opaque image, is
+palette image&quot;.</li>
 <li>fuzzing: Added initial OSS-Fuzz integration by Alex Gaynor.
 From SourceForge patch #55 &quot;OSS-Fuzz integration&quot;</li>
 <li>coders/png.c (ReadMNGImage): Fix free using possibly unallocated
