@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4118,7 +4118,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             *p = 0;
 
           unsigned char
-            *chunk;
+            *chunk = (unsigned char *) NULL;
 
           /*
             Read a new chunk.
@@ -4157,7 +4157,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                      image);
               if (ReadBlob(image,length,chunk) < length)
                 {
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
@@ -4203,7 +4203,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (length < 16)
                 {
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
@@ -4233,7 +4233,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "   MNG width or height too large: %lu, %lu",
                       mng_info->mng_width,mng_info->mng_height);
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,
                       image);
