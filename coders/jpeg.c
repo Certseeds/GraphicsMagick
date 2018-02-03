@@ -625,7 +625,7 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
         */
         for (i=0; i < length; i++)
           (void) GetCharacter(jpeg_info);
-        return(MagickFail);
+        return(True);
       }
   }
   /*
@@ -637,7 +637,7 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   tag_length=0;
 #endif
   if (length <= 0)
-    return(MagickFail);
+    return(True);
 
   profile=MagickAllocateMemory(unsigned char *,(size_t) length+tag_length);
   if (profile == (unsigned char *) NULL)
