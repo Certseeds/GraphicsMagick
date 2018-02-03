@@ -1,5 +1,8 @@
 2018-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing: Added initial OSS-Fuzz integration by Alex Gaynor.
+	From SourceForge patch #55 "OSS-Fuzz integration"
+
 	* coders/png.c (ReadMNGImage): Fix free using possibly unallocated
 	pointer value.
 
