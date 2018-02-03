@@ -299,7 +299,7 @@ OpenModule(const char *module,ExceptionInfo *exception)
     index;
 
   MagickPassFail
-    status;
+    status = MagickFail;
 
   (void) exception;
   /*

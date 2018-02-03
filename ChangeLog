@@ -1,5 +1,8 @@
 2018-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/static.c (OpenModule): Assure that status is initialized.
+	Resolves Coverity 261207 "Uninitialized scalar variable".
+
 	* wand/magick_wand.c (MagickHasColormap): New function to test if
 	the image has a colormap.
 	(MagickIsGrayImage): New function to test if the image uses only
