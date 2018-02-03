@@ -4504,19 +4504,6 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
           {
             image->blob->eof=MagickFalse;
           }
-        else if (!(image->blob->mapped) &&
-                 ((image->blob->mode == WriteBlobMode) ||
-                  (image->blob->mode == WriteBinaryBlobMode)))
-          {
-            image->blob->extent=image->blob->offset+image->blob->quantum;
-            MagickReallocMemory(unsigned char *,image->blob->data,image->blob->extent+1);
-            (void) SyncBlob(image);
-            if (image->blob->data == (unsigned char *) NULL)
-              {
-                DetachBlob(image->blob);
-                return(-1);
-              }
-          }
         break;
       }
     }

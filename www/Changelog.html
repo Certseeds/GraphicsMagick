@@ -38,12 +38,14 @@
 <p>2018-02-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>magick/blob.c (SeekBlob): Do not reallocate/extend read-only
-blob in BlobStream mode.  Besides making an assumption about how
-the blob memory was allocated, this reallocation feature provides
-a memory DOS opportunity.  Resolves issue reported by Alex Gaynor
-via email entitled &quot;Security issue with memory management in
-Magick++&quot; to the graphicsmagick-security list on 31 Jan 2018.</li>
+<li>magick/blob.c (SeekBlob): Remove implicit extension of blob
+allocation size based on seek offset.  Besides making an
+assumption about how the blob memory was allocated, this
+reallocation feature provides a memory DOS opportunity.  Resolves
+issue reported by Alex Gaynor via email entitled &quot;Security issue
+with memory management in Magick++&quot; to the graphicsmagick-security
+list on 31 Jan 2018.
+(SeekBlob):</li>
 <li>coders/jpeg.c (ReadIPTCProfile): Revert inadvertent wrong return
 codes added by change on December 9, 2017.  Fixes SourceForge bug
 542 &quot;Improper call to JPEG library in state 201&quot; since 1.3.28.</li>
