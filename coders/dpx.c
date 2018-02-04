@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2017 GraphicsMagick Group
+% Copyright (C) 2005-2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -482,8 +482,8 @@ STATIC unsigned int IsDPX(const unsigned char *magick,const size_t length)
 \
   if (!IS_UNDEFINED_ASCII(member)) \
     { \
-      (void) strncpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
-      buffer_[Min(sizeof(member)+1,MaxTextExtent-1)]='\0';             \
+      (void) memcpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
+      buffer_[Min(sizeof(member),MaxTextExtent-1)]='\0';             \
       (void) SetImageAttribute(image,name,buffer_); \
       LogSetImageAttribute(name,buffer_); \
     } \
@@ -1891,7 +1891,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (user_data == (unsigned char *) NULL)
                 ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
               if (ReadBlob(image,read_size,user_data+user_data_length) != read_size)
-                ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                {
+                  MagickFreeMemory(user_data);
+                  ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                }
               user_data_length += read_size;
               offset += read_size;
             }

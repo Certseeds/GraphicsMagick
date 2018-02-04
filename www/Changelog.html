@@ -38,6 +38,10 @@
 <p>2018-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dpx.c (ReadDPXImage): Fix memory leak of user data if
+user data is truncated.  Fix consumption of one uninitialized
+stack bytes.  Fixes oss-fuzz issue 5973:
+graphicsmagick/enhance_fuzzer: Direct-leak in ReadDPXImage.</li>
 <li>coders/pnm.c (ReadPNMImage): Detect and avoid division by zero.
 Fixes Issue 5959 in oss-fuzz: graphicsmagick/coder_P7_fuzzer:
 Divide-by-zero in ReadPNMImage</li>
