@@ -1,5 +1,10 @@
 2018-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (ReadPDBImage): Fix heap buffer overflow if blob is
+	already at EOF when comment is read.  Fixes oss-fuzz issue 5997
+	"graphicsmagick/coder_PDB_fuzzer: Heap-buffer-overflow in
+	SetImageAttribute".
+
 	* coders/dpx.c (ReadDPXImage): Fix memory leak of user data if
 	user data is truncated.  Fix consumption of one uninitialized
 	stack bytes.  Fixes oss-fuzz issue 5973:

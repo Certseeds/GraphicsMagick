@@ -615,7 +615,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       register char
         *p;
 
-      unsigned int
+      size_t
         length;
 
       /*
@@ -625,10 +625,11 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       length=MaxTextExtent;
       comment=MagickAllocateMemory(char *,length+1);
       p=comment;
+      p[0]='\0';
       if (comment != (char *) NULL)
         for ( ; c != EOF; p++)
         {
-          if ((p-comment) >= (int) length)
+          if ((size_t) (p-comment) >= length)
             {
               length<<=1;
               length+=MaxTextExtent;
