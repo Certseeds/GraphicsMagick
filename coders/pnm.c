@@ -825,6 +825,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               use_scaling;
 
             unsigned long
+              max_value_given_bits,
               row_count=0;
 
             ThreadViewDataSet
@@ -854,8 +855,20 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             quantum_type=UndefinedQuantum;
             import_options.grayscale_miniswhite=MagickFalse;
-            sample_max=RoundDoubleToQuantum((MaxRGBDouble*max_value)/
-                                            MaxValueGivenBits(bits_per_sample));
+            max_value_given_bits=MaxValueGivenBits(bits_per_sample);
+            if (max_value_given_bits == 0UL)
+              {
+                ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                               image->filename);
+                break;
+              }
+            sample_max=RoundDoubleToQuantum((MaxRGBDouble*max_value)/max_value_given_bits);
+            if (sample_max == 0U)
+              {
+                ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                               image->filename);
+                break;
+              }
             sample_scale=MaxRGBDouble/sample_max;
             use_scaling=(MaxRGB != sample_max);
             bytes_per_row=0;

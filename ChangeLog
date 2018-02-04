@@ -1,5 +1,9 @@
 2018-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (ReadPNMImage): Detect and avoid division by zero.
+	Fixes Issue 5959 in oss-fuzz: graphicsmagick/coder_P7_fuzzer:
+	Divide-by-zero in ReadPNMImage
+
 	* magick/xwindow.c (MagickXClientMessage): Eliminate valgrind
 	gripe about use of uninitialized stack data by clearing allocation
 	to zero.
