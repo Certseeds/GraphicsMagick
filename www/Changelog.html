@@ -38,6 +38,11 @@
 <p>2018-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/xwindow.c (MagickXClientMessage): Eliminate valgrind
+gripe about use of uninitialized stack data by clearing allocation
+to zero.
+(MagickXMakeImage): Eliminate valgrind gripe about use of
+uninitialized heap data by clearing allocation to zero.</li>
 <li>coders/pwp.c (ReadPWPImage): Remove bogus EOF test on an image
 with a closed blob.  Fixes Issue 5957 in oss-fuzz:
 graphicsmagick/coder_PWP_fuzzer: ASSERT: image-&gt;blob-&gt;type !=
