@@ -22,7 +22,7 @@ GraphicsMagick Change Logs
 
 .. _GraphicsMagick : index.html
 .. _2018 : Changelog.html
-.. _2017 : Changelog-2017.html
+.. _2017 : ChangeLog-2017.html
 .. _2016 : ChangeLog-2016.html
 .. _2015 : ChangeLog-2015.html
 .. _2014 : ChangeLog-2014.html

@@ -1,3 +1,9 @@
+2018-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Changes.rst: Fix typo with spelling "ChangeLog-2017.html".
+	Resolves SourceForge issue #544 "dead link 2017 changelog page on
+	GraphicsMagick web site".
+
 2018-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c (OpenModule): Assure that status is initialized.
