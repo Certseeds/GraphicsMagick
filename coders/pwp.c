@@ -245,13 +245,6 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   DestroyImageInfo(clone_info);
   CloseBlob(pwp_image);
   DestroyImage(pwp_image);
-  if (image != (Image *) NULL)
-    {
-      if (EOFBlob(image))
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                       image->filename);
-      CloseBlob(image);
-    }
   return(image);
 }
 

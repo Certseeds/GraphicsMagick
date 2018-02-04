@@ -1,5 +1,10 @@
 2018-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pwp.c (ReadPWPImage): Remove bogus EOF test on an image
+	with a closed blob.  Fixes Issue 5957 in oss-fuzz:
+	graphicsmagick/coder_PWP_fuzzer: ASSERT: image->blob->type !=
+	UndefinedStream.
+
 	* www/Changes.rst: Fix typo with spelling "ChangeLog-2017.html".
 	Resolves SourceForge issue #544 "dead link 2017 changelog page on
 	GraphicsMagick web site".

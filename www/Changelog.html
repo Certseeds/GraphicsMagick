@@ -38,6 +38,10 @@
 <p>2018-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/pwp.c (ReadPWPImage): Remove bogus EOF test on an image
+with a closed blob.  Fixes Issue 5957 in oss-fuzz:
+graphicsmagick/coder_PWP_fuzzer: ASSERT: image-&gt;blob-&gt;type !=
+UndefinedStream.</li>
 <li>www/Changes.rst: Fix typo with spelling &quot;ChangeLog-2017.html&quot;.
 Resolves SourceForge issue #544 &quot;dead link 2017 changelog page on
 GraphicsMagick web site&quot;.</li>
