@@ -1236,7 +1236,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 if (!status)
                   {
                     CloseBlob(image);
-                    return(False);
+                    MagickFreeMemory(xref);
+                    return(MagickFail);
                   }
                 break;
               }
@@ -1631,7 +1632,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   MagickFreeMemory(xref);
   CloseBlob(image);
   MagickFreeMemory(fax_blob);
-  return(True);
+  return(MagickPass);
 }
 
 #if defined(HasZLIB)

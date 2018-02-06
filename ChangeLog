@@ -1,3 +1,9 @@
+2018-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pdf.c (WritePDFImage): Free 'xref' allocation before
+	error return.  Fixes oss-fuzz issue 5968
+	"graphicsmagick/coder_EPDF_fuzzer: Direct-leak in MagickRealloc".
+
 2018-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdb.c (ReadPDBImage): Fix heap buffer overflow if blob is
