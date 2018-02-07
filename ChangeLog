@@ -1,5 +1,10 @@
 2018-02-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cut.c (ReadCUTImage): Fix DestroyImageInfo() of NULL
+	pointer leading to assertion.  Fixes oss-fuzz issue 6067
+	"graphicsmagick/coder_CUT_fuzzer: Unknown signal in
+	DestroyImageInfo".
+
 	* coders/tga.c (ReadTGAImage): Throw exception rather than
 	assertion for unexpected comment size.  Fixes oss-fuzz issue 5961
 	"graphicsmagick/coder_ICB_fuzzer: ASSERT: (size_t)

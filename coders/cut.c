@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -295,14 +295,16 @@ static unsigned int GetCutColors(Image *image)
 */
 #define ThrowCUTReaderException(code_,reason_,image_) \
 { \
-  DestroyImage(palette);                      \
-  DestroyImageInfo(clone_info);               \
+  if (palette != (Image *) NULL)              \
+    DestroyImage(palette);                    \
+  if (clone_info != (ImageInfo *) NULL)       \
+    DestroyImageInfo(clone_info);             \
   ThrowReaderException(code_,reason_,image_); \
 }
 static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
-  Image *image,*palette;
-  ImageInfo *clone_info;
+  Image *image,*palette = (Image *) NULL;
+  ImageInfo *clone_info = (ImageInfo *) NULL;
   unsigned int status;
   unsigned long EncodedByte;
   unsigned char RunCount,RunValue,RunCountMasked;
@@ -327,8 +329,6 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read CUT image.
   */
-  palette=NULL;
-  clone_info=NULL;
   Header.Width=ReadBlobLSBShort(image);
   Header.Height=ReadBlobLSBShort(image);
   Header.Reserved=ReadBlobLSBShort(image);

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1305,7 +1305,9 @@ MagickExport void DestroyImage(Image *image)
 */
 MagickExport void DestroyImageInfo(ImageInfo *image_info)
 {
-  assert(image_info != (ImageInfo *) NULL);
+  if (image_info == (ImageInfo *) NULL)
+    return;
+
   assert(image_info->signature == MagickSignature);
   MagickFreeMemory(image_info->size);
   MagickFreeMemory(image_info->tile);
