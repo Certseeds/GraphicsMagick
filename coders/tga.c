@@ -341,7 +341,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             TGA image comment.
           */
-          assert((size_t) (tga_info.id_length+1) == commentsize);
+          if ((size_t) (tga_info.id_length+1) != commentsize)
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if (ReadBlob(image,tga_info.id_length,commentbuffer) != tga_info.id_length)
             ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           commentbuffer[tga_info.id_length]='\0';

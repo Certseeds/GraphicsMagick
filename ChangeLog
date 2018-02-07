@@ -1,3 +1,10 @@
+2018-02-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tga.c (ReadTGAImage): Throw exception rather than
+	assertion for unexpected comment size.  Fixes oss-fuzz issue 5961
+	"graphicsmagick/coder_ICB_fuzzer: ASSERT: (size_t)
+	(tga_info.id_length+1) == commentsize".
+
 2018-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdf.c (WritePDFImage): Free 'xref' allocation before
