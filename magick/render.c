@@ -1658,10 +1658,11 @@ IsPoint(const char *point)
   char
     *p;
 
-  long
+  double
     value;
 
-  value=strtol(point,&p,10);
+  /* check for a floating-point (vs. integer) value so .25 will not be rejected */
+  value=strtod(point,&p);
   (void) value;
   return(p != point);
 }

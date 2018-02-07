@@ -1,3 +1,10 @@
+2018-02-07  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (IsPoint): Fixed a bug in which
+	IsPoint() would reject as a valid coordinate value
+	strings that did not begin with an integer: e.g.,
+	"0.25" would be accepted, but ".25" would not.
+
 2018-02-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/cut.c (ReadCUTImage): Fix DestroyImageInfo() of NULL
