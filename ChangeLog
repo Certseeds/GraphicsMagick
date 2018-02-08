@@ -1,4 +1,18 @@
-2018-02-07  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+2018-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/import.c (ImportUInt32Quantum): Add casts to avoid
+	default type promotion from unsigned char to 'int' leading to
+	undefined behavior for 24 bit shift.  Fixes oss-fuzz
+	"graphicsmagick/coder_P7_fuzzer: Undefined-shift in
+	ImportRGBQuantumType". (Credit to OSS-Fuzz)
+
+2018-02-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Fix oss-fuzz issue 5964
+	"graphicsmagick/coder_MAT_fuzzer: Heap-use-after-free in
+	GetLocaleExceptionMessage". (Credit to OSS-Fuzz)
+
+	Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (IsPoint): Fixed a bug in which
 	IsPoint() would reject as a valid coordinate value
