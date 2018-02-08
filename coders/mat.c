@@ -455,6 +455,9 @@ typedef struct {
 } MAT4_HDR;
 
 
+#define RET_CHECK(image)  return((image->previous==NULL)?NULL:image)
+
+
 /* Load Matlab V4 file. */
 static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
 {
@@ -476,14 +479,14 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
   {
     ldblk = ReadBlobLSBLong(image);
     if(EOFBlob(image)) break;
-    if(ldblk>9999 || ldblk<0) return 0;
+    if(ldblk>9999 || ldblk<0) RET_CHECK(image);
     HDR.Type[3] = ldblk % 10;   ldblk /= 10;    /* T digit */
     HDR.Type[2] = ldblk % 10;   ldblk /= 10;    /* P digit */
     HDR.Type[1] = ldblk % 10;   ldblk /= 10;    /* O digit */
-    HDR.Type[0] = ldblk;                                /* M digit */
+    HDR.Type[0] = ldblk;                        /* M digit */
 
-    if(HDR.Type[3]!=0) return 0;                /* Data format */
-    if(HDR.Type[2]!=0) return 0;                /* Always 0 */
+    if(HDR.Type[3]!=0) RET_CHECK(image);  /* Data format */
+    if(HDR.Type[2]!=0) RET_CHECK(image);  /* Always 0 */
 
     ImportPixelAreaOptionsInit(import_options);
 
@@ -506,10 +509,10 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     HDR.nCols = ReadBlobXXXLong(image);
 
     HDR.imagf = ReadBlobXXXLong(image);
-    if(HDR.imagf!=0 && HDR.imagf!=1) return NULL;
+    if(HDR.imagf!=0 && HDR.imagf!=1) RET_CHECK(image);
 
     HDR.nameLen = ReadBlobXXXLong(image);
-    if(HDR.nameLen>0xFFFF) return NULL;
+    if(HDR.nameLen>0xFFFF) RET_CHECK(image);
     (void)SeekBlob(image,HDR.nameLen,SEEK_CUR); /* Skip a matrix name. */
 
     switch(HDR.Type[1])
@@ -517,7 +520,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       case 0: sample_size = 64;                         /* double-precision (64-bit) floating point numbers */
               image->depth = Min(QuantumDepth,32);        /* double type cell */
               import_options->sample_type = FloatQuantumSampleType;
-              if(sizeof(double) != 8) return NULL;      /* incompatible double size */
+              if(sizeof(double) != 8) RET_CHECK(image);      /* incompatible double size */
               ldblk = (long) (8 * HDR.nRows);
               break;
 
@@ -551,16 +554,16 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
               ldblk = (long) HDR.nRows;
               break;
 
-      default: return NULL;
+      default: RET_CHECK(image);
     }
 
     image->columns = HDR.nRows;
     image->rows = HDR.nCols;
     image->colors = 1l << image->depth;
-    if(image->columns == 0 || image->rows == 0) return NULL;
+    if(image->columns == 0 || image->rows == 0) RET_CHECK(image);
     if(CheckImagePixelLimits(image, exception) != MagickPass)
     {
-      return NULL;
+      RET_CHECK(image);
       /* ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image); */
     }
 
@@ -577,7 +580,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
         /* ----- Load raster data ----- */
     BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
-    if(BImgBuff == NULL) return 0;
+    if(BImgBuff == NULL) RET_CHECK(image);
 
     if(HDR.Type[1]==0)          /* Find Min and Max Values for doubles */
     {
@@ -683,7 +686,6 @@ skip_reading_current:
       /* row scan buffer is no longer needed */
     MagickFreeMemory(BImgBuff);
     BImgBuff = NULL;
-
   }
 
 ImportImagePixelAreaFailed:
@@ -781,7 +783,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
     image2 = ReadMATImageV4(image_info,image,&import_options,exception);
-    if(image2==NULL) goto MATLAB_KO;
+    if(image2==NULL) goto MATLAB_KO;    
     image = image2;
     goto END_OF_READING;
   }
