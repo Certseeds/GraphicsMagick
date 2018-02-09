@@ -1,5 +1,11 @@
 2018-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dcm.c (DCM_ReadOffsetTable): Add casts Add casts to avoid
+	default type promotion from unsigned char to 'int' leading to
+	undefined behavior for 16 bit shift. Fixes oss-fuzz issue 5980
+	"graphicsmagick/coder_DCM_fuzzer: Undefined-shift in
+	DCM_ReadOffsetTable". (Credit to OSS-Fuzz)
+
 	* magick/module_aliases.h (ModuleAliases): Add missing mapping
 	from "ICODIB" format to "DIB" module.
 

@@ -38,6 +38,11 @@
 <p>2018-02-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (DCM_ReadOffsetTable): Add casts Add casts to avoid
+default type promotion from unsigned char to 'int' leading to
+undefined behavior for 16 bit shift. Fixes oss-fuzz issue 5980
+&quot;graphicsmagick/coder_DCM_fuzzer: Undefined-shift in
+DCM_ReadOffsetTable&quot;. (Credit to OSS-Fuzz)</li>
 <li>magick/module_aliases.h (ModuleAliases): Add missing mapping
 from &quot;ICODIB&quot; format to &quot;DIB&quot; module.</li>
 <li>magick/import.c (ImportUInt32Quantum): Add casts to avoid

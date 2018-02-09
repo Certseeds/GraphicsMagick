@@ -4376,7 +4376,8 @@ static MagickPassFail DCM_ReadOffsetTable(Image *image,DicomStream *dcm,Exceptio
     length,
     i;
 
-  tag=(dcm->funcReadShort(image) << 16) | dcm->funcReadShort(image);
+  tag=((magick_uint32_t) dcm->funcReadShort(image) << 16) |
+    (magick_uint32_t) dcm->funcReadShort(image);
   length=dcm->funcReadLong(image);
   if (tag != 0xFFFEE000)
     return MagickFail;
