@@ -1,3 +1,11 @@
+2018-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (funcDCM_BitsStored): Validate DICOM datum size.
+	Use a different means to determine the maximum value which does
+	not use excessive shifting.  Resolves oss-fuzz issue 6165
+	"graphicsmagick/coder_DCM_fuzzer: Undefined-shift in
+	funcDCM_BitsStored". (Credit to OSS-Fuzz)
+
 2018-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (ReadWordU32BE): Add casts to avoid default type

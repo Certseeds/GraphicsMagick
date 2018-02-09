@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3110,9 +3110,18 @@ static MagickPassFail funcDCM_BitsStored(Image *image,DicomStream *dcm,Exception
 
   dcm->significant_bits=dcm->datum;
   dcm->bytes_per_pixel=1;
+  if ((dcm->significant_bits == 0U) || (dcm->significant_bits > 32U))
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "DICOM significant_bits = %u",
+                              dcm->significant_bits);
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      return MagickFail;
+    }
   if (dcm->significant_bits > 8)
     dcm->bytes_per_pixel=2;
-  dcm->max_value_in=(1 << dcm->significant_bits)-1;
+  dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
   dcm->max_value_out=dcm->max_value_in;
   image->depth=Min(dcm->significant_bits,QuantumDepth);
   return MagickPass;
