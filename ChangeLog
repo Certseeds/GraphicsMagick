@@ -1,5 +1,8 @@
 2018-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/module_aliases.h (ModuleAliases): Add missing mapping
+	from "ICODIB" format to "DIB" module.
+
 	* magick/import.c (ImportUInt32Quantum): Add casts to avoid
 	default type promotion from unsigned char to 'int' leading to
 	undefined behavior for 24 bit shift.  Fixes oss-fuzz
