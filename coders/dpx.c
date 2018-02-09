@@ -1224,10 +1224,10 @@ STATIC unsigned long ReadWordU32BE (void *state)
 {
   magick_uint32_t value;
   ReadWordU32State *read_state=(ReadWordU32State *) state;
-  value =  *read_state->words++ << 24;
-  value |= *read_state->words++ << 16;
-  value |= *read_state->words++ << 8;
-  value |= *read_state->words++;
+  value =  ((magick_uint32_t) *read_state->words++) << 24;
+  value |= ((magick_uint32_t) *read_state->words++) << 16;
+  value |= ((magick_uint32_t) *read_state->words++) << 8;
+  value |= ((magick_uint32_t) *read_state->words++);
   return value;
 }
 
@@ -1235,10 +1235,10 @@ STATIC unsigned long ReadWordU32LE (void *state)
 {
   magick_uint32_t value;
   ReadWordU32State *read_state=(ReadWordU32State *) state;
-  value = *read_state->words++;
-  value |= *read_state->words++ << 8;
-  value |= *read_state->words++ << 16;
-  value |=  *read_state->words++ << 24;
+  value = ((magick_uint32_t) *read_state->words++);
+  value |= ((magick_uint32_t) *read_state->words++) << 8;
+  value |= ((magick_uint32_t) *read_state->words++) << 16;
+  value |= ((magick_uint32_t) *read_state->words++) << 24;
   return value;
 }
 
