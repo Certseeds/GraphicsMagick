@@ -5,6 +5,10 @@
 	behavior for 24 bit shift. Fixes oss-fuzz issue 6058
 	"graphicsmagick/coder_DPX_fuzzer: Undefined-shift in
 	ReadWordU32BE". (Credit to OSS-Fuzz)
+	(ReadDPXImage): Require that the file has at least one element.
+	Add bountiful casts for values which are left-shifted.  Fixes
+	oss-fuzz issue 5962 "graphicsmagick/coder_DPX_fuzzer:
+	Undefined-shift in ReadDPXImage". (Credit to OSS-Fuzz)
 
 	* coders/dcm.c (DCM_ReadOffsetTable): Add casts Add casts to avoid
 	default type promotion from unsigned char to 'int' leading to

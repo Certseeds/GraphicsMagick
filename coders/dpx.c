@@ -1385,8 +1385,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++ << 8);
-                      sample |= (*scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
+                      sample |= ((sample_t) *scanline++);
                       sample >>= 4;
                       *sp++=sample;
                     }
@@ -1396,8 +1396,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++);
-                      sample |= (*scanline++ << 8);
+                      sample |= ((sample_t) *scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
                       sample >>= 4;
                       *sp++=sample;
                     }
@@ -1414,8 +1414,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++ << 8);
-                      sample |= (*scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
+                      sample |= ((sample_t) *scanline++);
                       sample &= 0xFFF;
                       *sp++=sample;
                     }
@@ -1425,8 +1425,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++);
-                      sample |= (*scanline++ << 8);
+                      sample |= ((sample_t) *scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
                       sample &= 0xFFF;
                       *sp++=sample;
                     }
@@ -1456,8 +1456,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
           for (i=samples_per_row; i != 0; i--)
             {
               sample=0;
-              sample |= (*scanline++ << 8);
-              sample |= (*scanline++);
+              sample |= (((sample_t) *scanline++) << 8);
+              sample |= ((sample_t) *scanline++);
               *sp++=sample;
             }
         }
@@ -1466,8 +1466,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
           for (i=samples_per_row; i != 0; i--)
             {
               sample=0;
-              sample |= (*scanline++);
-              sample |= (*scanline++ << 8);
+              sample |= ((sample_t) *scanline++);
+              sample |= (((sample_t) *scanline++) << 8);
               *sp++=sample;
             }
         }
@@ -1768,6 +1768,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (dpx_image_info.elements >
       sizeof(dpx_image_info.element_info)/sizeof(dpx_image_info.element_info[0]))
     ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+  if (dpx_image_info.elements == 0)
+    ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
   image->columns=dpx_image_info.pixels_per_line & 0xFFFFFFFF;
   image->rows=dpx_image_info.lines_per_image_element & 0xFFFFFFFF;
   U16ToAttribute(image,"DPX:image.orientation",dpx_image_info.orientation);
@@ -1925,6 +1927,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       colorimetric=ColorimetricUserDefined;
 
     transfer_characteristic=TransferCharacteristicUserDefined;
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Number of elements: %u",
+                            dpx_image_info.elements);
+
     for (element=0; element < dpx_image_info.elements; element++)
       {
         if (element == 0)
@@ -2008,6 +2014,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           }
       }
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Maximum number of bits per sample in any element: %u",
+                          max_bits_per_sample);
     if (has_cbcr)
       {
         image->colorspace=Rec709YCbCrColorspace;
@@ -2108,6 +2117,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Allocate sample translation map storage.
   */
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Maximum number of bits per sample in any element: %u",
+                        max_bits_per_sample);
   map_Y=MagickAllocateArray(Quantum *,
                             MaxValueGivenBits(max_bits_per_sample)+1,
                             sizeof(Quantum));
@@ -3032,9 +3044,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 {
                   datum=0;
                   packed_u32=0;
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
                   MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
               if ((samples_per_row % 3))
@@ -3042,7 +3054,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
                   datum=0;
                   packed_u32=0;
                   for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (*samples++ << shifts[datum++]);
+                    packed_u32 |= ((magick_uint32_t) *samples++ << shifts[datum++]);
                   MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
             }
@@ -3053,9 +3065,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 {
                   datum=0;
                   packed_u32=0;
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
                   LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
               if ((samples_per_row % 3))
@@ -3063,7 +3075,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
                   datum=0;
                   packed_u32=0;
                   for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (*samples++ << shifts[datum++]);
+                    packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
                   LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
             }
