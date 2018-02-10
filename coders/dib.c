@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -599,6 +599,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
   if (dib_info.height == 0)
       ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
+  if (dib_info.height < -2147483647)
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   image->matte=dib_info.bits_per_pixel == 32;
   image->columns=AbsoluteValue(dib_info.width);
   image->rows=AbsoluteValue(dib_info.height);

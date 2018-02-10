@@ -1,5 +1,11 @@
 2018-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (ReadDIBImage): Validate that image width is not
+	too negative such that it's absolute value can not fit in 32-bit
+	unsigned width. Resolves oss-fuzz issue 6179
+	"graphicsmagick/coder_ICO_fuzzer: Integer-overflow in
+	ReadDIBImage". (Credit to OSS-Fuzz)
+
 	* coders/dcm.c (funcDCM_BitsStored): Validate DICOM datum size.
 	Use a different means to determine the maximum value which does
 	not use excessive shifting.  Resolves oss-fuzz issue 6165
