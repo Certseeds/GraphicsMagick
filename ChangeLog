@@ -1,5 +1,10 @@
 2018-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdf.c (WritePDFImage): Assure that xref memory is not
+	leaked if an exception is thrown.  Fixes oss-fuzz issue 5968
+	"graphicsmagick/coder_EPDF_fuzzer: Direct-leak in MagickRealloc".
+	(Credit to OSS-Fuzz)
+
 	* coders/tim.c (ReadTIMImage): Verify that 4/8 bit PSX TIM
 	provides a CLUT and verify indexes.  Fixes oss-fuzz issue 5972
 	"graphicsmagick/coder_TIM_fuzzer: Null-dereference WRITE in
