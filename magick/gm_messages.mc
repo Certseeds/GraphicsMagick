@@ -149,6 +149,12 @@ default warning
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorArithmeticOverflow
+Language        = English
+Arithmetic overflow
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorColormapTooLarge
 Language        = English
 Colormap size exceeds limit
@@ -194,6 +200,12 @@ MessageId       = +1
 SymbolicName    = CoderErrorDeltaPNGNotSupported
 Language        = English
 Delta-PNG is not supported
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorDivisionByZero
+Language        = English
+Division by zero
 .
 
 MessageId       = +1

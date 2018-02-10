@@ -327,6 +327,12 @@
       <Message name="UnsupportedBitsPerSample">
         Unsupported bits per sample
       </Message>
+      <Message name="ArithmeticOverflow">
+        Arithmetic overflow
+      </Message>
+      <Message name="DivisionByZero">
+        Division by zero
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

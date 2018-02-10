@@ -1,3 +1,15 @@
+2018-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/export.c (ExportViewPixelArea): Only compute
+	unsigned_maxvalue if sample_bits <= 32.
+
+	* magick/import.c (ImportViewPixelArea): Assure that
+	double_maxvalue minus double_minvalue is not zero, or excessively
+	close to zero to avoid divide by zero exception or impossible
+	scaling factor. (Credit to OSS-Fuzz)
+	(ImportViewPixelArea): Only compute unsigned_maxvalue if
+	sample_bits <= 32.
+
 2018-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage): Validate that image width is not
