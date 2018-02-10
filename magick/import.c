@@ -3581,11 +3581,24 @@ ImportViewPixelArea(ViewInfo *view,
 
   /* printf("quantum_type=%d  quantum_size=%u\n",(int) quantum_type, quantum_size); */
 
-  /* Maximum value which may be represented by a sample */
-  unsigned_maxvalue=MaxValueGivenBits(sample_bits);
-  double_scale=(double) MaxRGB/(double_maxvalue-double_minvalue);
+  {
+    const double scale_denominator = double_maxvalue-double_minvalue;
+    if (scale_denominator < MagickEpsilon)
+      {
+        char error_message[MaxTextExtent];
+        FormatString(error_message,"import double max/min value: max=%g, min=%g",
+                     double_maxvalue,double_minvalue);
+        ThrowException(&GetCacheViewImage(view)->exception,CoderError,
+                       DivisionByZero,error_message);
+        return MagickFail;
+      }
+    double_scale=MaxRGBDouble/(scale_denominator);
+  }
   if ((sample_type != FloatQuantumSampleType) && (sample_bits <= 32U))
     {
+      /* Maximum value which may be represented by a sample */
+      unsigned_maxvalue=MaxValueGivenBits(sample_bits);
+
       if (QuantumDepth == sample_bits)
         {
         }
