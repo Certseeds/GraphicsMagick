@@ -385,11 +385,14 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
   */
   (void) memset(&Header, 0, sizeof(Header));
   (void) ReadBlob(image, 20, &Header.Name);
+
   Header.Rows = ReadBlobLSBShort(image);
   Header.Cols = ReadBlobLSBShort(image);
   Header.FileType = ReadBlobLSBShort(image);
   Header.Zoom = ReadBlobLSBLong(image);
   Header.Version = ReadBlobLSBShort(image);
+  if (EOFBlob(image))
+    ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (Header.Version >= 1)
     {
       Header.Komprese = ReadBlobLSBShort(image);
@@ -408,6 +411,8 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
           Header.TileCompression = ReadBlobByte(image);
           /* BYTE Dummy[423]; */
         }
+      if (EOFBlob(image))
+        ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
 
   for (i = 0; i < (long) sizeof(Header.Name); i++)
@@ -417,8 +422,13 @@ TOPOL_KO:              ThrowPDBReaderException(CorruptImageError,ImproperImageHe
     }
   if (Header.Komprese != 0 || (Header.Version >= 2 && Header.TileCompression != 0))
     ThrowPDBReaderException(CorruptImageError, UnrecognizedImageCompression, image);
-  if (Header.Rows == 0 || Header.Cols == 0)
-    goto TOPOL_KO;
+  if (((Header.Rows == 0 || Header.Cols == 0)) ||
+      ((Header.Version >= 2) &&
+       (Header.TileWidth == 0 ||
+        Header.TileHeight == 0 ||
+        Header.TileOffsets == 0 ||
+        Header.TileByteCounts == 0)))
+      ThrowPDBReaderException(CorruptImageError,ImproperImageHeader, image);
   if (Header.Version > 2)
     ThrowPDBReaderException(CorruptImageError, InvalidFileFormatVersion, image); /* unknown version */
 
