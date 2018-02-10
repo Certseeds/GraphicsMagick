@@ -1,5 +1,8 @@
 2018-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/bmp.c (ReadBMPImage): Avoid possible division by zero
+	when decoding CIE primary values. (Credit to OSS-Fuzz)
+
 	* magick/export.c (ExportViewPixelArea): Only compute
 	unsigned_maxvalue if sample_bits <= 32.
 

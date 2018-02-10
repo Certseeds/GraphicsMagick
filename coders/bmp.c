@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -792,6 +792,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             sum=bmp_info.red_primary.x+bmp_info.red_primary.y+
               bmp_info.red_primary.z;
+            sum=Max(MagickEpsilon,sum);
             bmp_info.red_primary.x/=sum;
             bmp_info.red_primary.y/=sum;
             image->chromaticity.red_primary.x=bmp_info.red_primary.x;
@@ -799,6 +800,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             sum=bmp_info.green_primary.x+bmp_info.green_primary.y+
               bmp_info.green_primary.z;
+            sum=Max(MagickEpsilon,sum);
             bmp_info.green_primary.x/=sum;
             bmp_info.green_primary.y/=sum;
             image->chromaticity.green_primary.x=bmp_info.green_primary.x;
@@ -806,6 +808,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             sum=bmp_info.blue_primary.x+bmp_info.blue_primary.y+
               bmp_info.blue_primary.z;
+            sum=Max(MagickEpsilon,sum);
             bmp_info.blue_primary.x/=sum;
             bmp_info.blue_primary.y/=sum;
             image->chromaticity.blue_primary.x=bmp_info.blue_primary.x;
