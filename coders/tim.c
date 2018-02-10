@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -38,6 +38,7 @@
 #include "magick/studio.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -120,6 +121,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     word;
 
   unsigned int
+    index,
     status;
 
   size_t
@@ -197,6 +199,18 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
         MagickFreeMemory(tim_colormap);
       }
+    if ((bits_per_pixel == 4) || (bits_per_pixel == 8))
+      {
+        if (image->storage_class != PseudoClass)
+          {
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "PSX-TIM %u bits/sample requires a CLUT!",
+                                    bits_per_pixel);
+            errno=0;
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+          }
+      }
 
     /*
       Read image data.
@@ -249,15 +263,23 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
+          if (indexes == (IndexPacket *) NULL)
+            break;
           p=tim_pixels+y*bytes_per_line;
           for (x=0; x < ((long) image->columns-1); x+=2)
           {
-            indexes[x]=(*p) & 0xf;
-            indexes[x+1]=(*p >> 4) & 0xf;
+            index=(*p) & 0xf;
+            VerifyColormapIndex(image,index);
+            indexes[x]=index;
+            index=(*p >> 4) & 0xf;
+            VerifyColormapIndex(image,index);
+            indexes[x+1]=index;
             p++;
           }
           if ((image->columns % 2) != 0)
             {
+              index=(*p >> 4) & 0xf;
+              VerifyColormapIndex(image,index);
               indexes[x]=(*p >> 4) & 0xf;
               p++;
             }
@@ -286,9 +308,15 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
+          if (indexes == (IndexPacket *) NULL)
+            break;
           p=tim_pixels+y*bytes_per_line;
           for (x=0; x < (long) image->columns; x++)
-            indexes[x]=(*p++);
+            {
+              index=(*p++);
+              VerifyColormapIndex(image,index);
+              indexes[x]=index;
+            }
           if (!SyncImagePixelsEx(image,exception))
             break;
           if (QuantumTick(y,image->rows))

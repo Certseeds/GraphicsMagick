@@ -1,5 +1,10 @@
 2018-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tim.c (ReadTIMImage): Verify that 4/8 bit PSX TIM
+	provides a CLUT and verify indexes.  Fixes oss-fuzz issue 5972
+	"graphicsmagick/coder_TIM_fuzzer: Null-dereference WRITE in
+	ReadTIMImage".  (Credit to OSS-Fuzz)
+
 	* coders/topol.c (ReadTOPOLImage): Add additional header
 	validations.  Fixes oss-fuzz issue 5975
 	"graphicsmagick/coder_TOPOL_fuzzer: Floating-point-exception in
