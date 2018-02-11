@@ -376,7 +376,6 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /* ----- Do something with palette ----- */
   if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoPalette;
 
-
   i=(long) strlen(clone_info->filename);
   j=i;
   while (--i>0)
@@ -393,10 +392,13 @@ static Image *ReadCUTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
     }
 
-  (void) strcpy(clone_info->filename+i,".PAL");
+  if (i <= 0)
+    goto NoPalette;
+
+  (void) strlcpy(clone_info->filename+i,".PAL",sizeof(clone_info->filename)-i);
   if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
     {
-      (void) strcpy(clone_info->filename+i,".pal");
+      (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
       if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
         {
           clone_info->filename[i]=0;

@@ -547,14 +547,17 @@ NoMEZ:          /*Clean up palette and clone_info*/
         }
     }
 
-  (void) strcpy(clone_info->filename+i,".PAL");
-  if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
+  if (i <= 0)
+    goto NoPalette;
+
+  (void) strlcpy(clone_info->filename+i,".PAL",sizeof(clone_info->filename)-i);
+  if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
     {
-      (void) strcpy(clone_info->filename+i,".pal");
-      if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
+      (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
+      if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
         {
           clone_info->filename[i]=0;
-          if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
+          if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
             {
               DestroyImageInfo(clone_info);
               clone_info=NULL;
