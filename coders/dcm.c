@@ -2851,6 +2851,7 @@ static MagickPassFail IsDCM(const unsigned char *magick,const size_t length)
 
 static MagickPassFail DCM_InitDCM(DicomStream *dcm,int verbose)
 {
+  (void) memset(dcm,0,sizeof(*dcm));
   dcm->columns=0;
   dcm->rows=0;
   dcm->samples_per_pixel=1;
@@ -2889,6 +2890,16 @@ static MagickPassFail DCM_InitDCM(DicomStream *dcm,int verbose)
   dcm->verbose=verbose;
 
   return MagickPass;
+}
+
+static void DCM_DestroyDCM(DicomStream *dcm)
+{
+  MagickFreeMemory(dcm->offset_arr);
+  MagickFreeMemory(dcm->data);
+#if defined(USE_GRAYMAP)
+  MagickFreeMemory(dcm->graymap);
+#endif
+  MagickFreeMemory(dcm->rescale_map);
 }
 
 /*
@@ -4623,6 +4634,11 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
 %
 %
 */
+#define ThrowDCMReaderException(code_,reason_,image_)   \
+  {                                                     \
+    DCM_DestroyDCM(&dcm);                               \
+    ThrowReaderException(code_,reason_,image_);         \
+}
 static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   char
@@ -4650,18 +4666,19 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  (void) DCM_InitDCM(&dcm,image_info->verbose);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    ThrowDCMReaderException(FileOpenError,UnableToOpenFile,image);
 
   /*
     Read DCM preamble
   */
   if ((count=ReadBlob(image,128,(char *) magick)) != 128)
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if ((count=ReadBlob(image,4,(char *) magick)) != 4)
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "magick: \"%.4s\"",magick);
@@ -4671,7 +4688,6 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Loop to read DCM image header one element at a time
   */
-  (void) DCM_InitDCM(&dcm,image_info->verbose);
   status=DCM_ReadElement(image,&dcm,exception);
   while ((status == MagickPass) && ((dcm.group != 0x7FE0) || (dcm.element != 0x0010)))
     {
@@ -4741,12 +4757,13 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
            Read fragment tag
           */
-          tag=(dcm.funcReadShort(image) << 16) | dcm.funcReadShort(image);
+          tag=(((magick_uint32_t) dcm.funcReadShort(image)) << 16) |
+            (magick_uint32_t) dcm.funcReadShort(image);
           length=dcm.funcReadLong(image);
           if ((tag != 0xFFFEE000) || (length <= 64) || EOFBlob(image))
             {
               status=MagickFail;
-              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
               break;
             }
 
@@ -4766,7 +4783,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (EOFBlob(image))
             {
               status=MagickFail;
-              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
               break;
             }
           if (dcm.rle_seg_ct > 1)
@@ -4797,7 +4814,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
 
       if (CheckImagePixelLimits(image, exception) != MagickPass)
-        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+        ThrowDCMReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
       /*
         Process image according to type
@@ -4862,17 +4879,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Free allocated resources
   */
-
-  if (dcm.offset_arr != NULL)
-    MagickFreeMemory(dcm.offset_arr);
-  if (dcm.data != NULL)
-    MagickFreeMemory(dcm.data);
-#if defined(USE_GRAYMAP)
-  if (dcm.graymap != (unsigned short *) NULL)
-    MagickFreeMemory(dcm.graymap);
-#endif
-  if (dcm.rescale_map != (Quantum *) NULL)
-    MagickFreeMemory(dcm.rescale_map);
+  DCM_DestroyDCM(&dcm);
   if (status == MagickPass)
     {
       /* It is possible to have success status yet have no image */

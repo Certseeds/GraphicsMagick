@@ -1,5 +1,10 @@
 2018-02-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dcm.c (ReadDCMImage): Avoid undefined left shift of
+	short.  Fix memory leaks in error reporting paths.  Fixes oss-fuzz
+	issue 6217 "graphicsmagick/coder_DCM_fuzzer: Undefined-shift in
+	ReadDCMImage". (Credit to OSS-Fuzz)
+
 	* coders/dpx.c (ReadDPXImage): Avoid divide by zero exception in
 	the case where reference high equals reference low. Fixes oss-fuzz
 	issue 6215 "graphicsmagick/coder_DPX_fuzzer: Divide-by-zero in
