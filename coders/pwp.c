@@ -193,13 +193,18 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Dump SFW image to a temporary file.
     */
-    file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
-    if (file == (FILE *) NULL)
-      {
-        ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile,
-                       clone_info->filename);
-        break;
-      }
+    {
+      char tmpfile[MaxTextExtent];
+      file=AcquireTemporaryFileStream(tmpfile,BinaryFileIOMode);
+      if (file == (FILE *) NULL)
+        {
+          ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile,
+                         clone_info->filename);
+          break;
+        }
+      (void) strlcpy(clone_info->filename,"SFW:",sizeof(clone_info->filename));
+      (void) strlcat(clone_info->filename,tmpfile,sizeof(clone_info->filename));
+    }
     (void) fwrite("SFW94A",1,6,file);
     filesize=(65535L*magick[2]+256L*magick[1]+magick[0]) & 0xFFFFFFFF;
     for (i=0; i < filesize; i++)

@@ -1,3 +1,10 @@
+2018-02-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pwp.c (ReadPWPImage): Force temporary file to be read as
+	a SFW file rather than autodetecting the format.  Fixes oss-fuzz
+	issue 6220 "graphicsmagick/coder_PWP_fuzzer: Indirect-leak in
+	AllocateImage".  (Credit to OSS-Fuzz)
+
 2018-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdf.c (WritePDFImage): Assure that xref memory is not
