@@ -2289,6 +2289,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (image->colorspace == Rec709LumaColorspace))
             {
               double
+                reference_low_prop,
+                reference_high_prop,
                 ScaleY = 0.0,
                 ScaleCbCr = 0.0;
 
@@ -2300,15 +2302,25 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               reference_low = ((max_value+1.0) * (64.0/1024.0));
               reference_high = ((max_value+1.0) * (940.0/1024.0));
 
+              reference_low_prop = reference_low;
+              reference_high_prop = reference_high;
+
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_low_data_code))
-                reference_low=dpx_image_info.element_info[element].reference_low_data_code;
+                reference_low_prop=dpx_image_info.element_info[element].reference_low_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-low")))
-                reference_low=(double) strtol(definition_value, (char **)NULL, 10);
+                reference_low_prop=(double) strtol(definition_value, (char **)NULL, 10);
 
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_high_data_code))
-                reference_high=dpx_image_info.element_info[element].reference_high_data_code;
+                reference_high_prop=dpx_image_info.element_info[element].reference_high_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-high")))
-                reference_high=(double) strtol(definition_value, (char **)NULL, 10);
+                reference_high_prop=(double) strtol(definition_value, (char **)NULL, 10);
+
+              if ((reference_high_prop > reference_low_prop) &&
+                  (reference_high_prop > MagickEpsilon))
+                {
+                  reference_low = reference_low_prop;
+                  reference_high = reference_high_prop;
+                }
 
               ScaleY = ((max_value+1.0)/(reference_high-reference_low));
               ScaleCbCr = ScaleY*((940.0-64.0)/(960.0-64.0));
