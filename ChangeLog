@@ -1,3 +1,7 @@
+2018-02-12  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Fix oss-fuzz issue 6021. (Credit to OSS-Fuzz)
+
 2018-02-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (ReadDCMImage): Avoid undefined left shift of
