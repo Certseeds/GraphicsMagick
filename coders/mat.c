@@ -167,26 +167,28 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
     if (*p > 0)
     {
       f = (*p / MaxVal) * (MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
-      if (f + q->red > MaxRGB)
+      if (f + q->red >= MaxRGB)
         q->red = MaxRGB;
       else
         q->red += (int) f;
-      if (f / 2.0 > q->green)
+      f = q->green - f/2.0;
+      if (f <= 0)
         q->green = q->blue = 0;
       else
-        q->green = q->blue -= (int) (f / 2.0);
+        q->green = q->blue = (int)f;
     }
     if (*p < 0)
     {
-      f = (*p / MinVal) * (MaxRGB - q->blue); /* first multiplier should be in a range <0;1> */
-      if (f + q->blue > MaxRGB)
+      f = (*p / MinVal) * (MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
+      if (f + q->blue >= MaxRGB)
         q->blue = MaxRGB;
       else
         q->blue += (int) f;
-      if (f / 2.0 > q->green)
+      f = q->green - f/2.0;
+      if(f <= 0)
         q->green = q->red = 0;
       else
-        q->green = q->red -= (int) (f / 2.0);
+        q->green = q->red = (int)f;
     }
     p++;
     q++;
