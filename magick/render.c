@@ -1846,6 +1846,35 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   (void) QueryColorDatabase("black",&start_color,&image->exception);
   (void) SetImageType(image,TrueColorType);
   status=MagickPass;
+  /*
+    The purpose of these next four variables is to attempt to handle cases like:
+
+    <rect stroke-opacity="0.5" stroke="green" ... />
+
+    I.e., when the stroke-opacity is set before the stroke color is specified (ditto
+    for fill-opacity and fill color).  This creates a problem when the current stroke
+    color is "none" (the typical inherited default).  A value of "none" causes the
+    stroke color to be set to transparent black, wiping out any current stroke-opacity
+    information.  Furthermore, as long as the stroke color is "none", any attempt to
+    set the stroke-opacity will be ignored.  I have not tested this, but I believe the
+    same condition can be arrived at by setting stroke="black" and stroke-opacity="0".
+
+    The real solution to this problem is to store the stroke="none" state without
+    affecting the current stroke-opacity value.  This would require additional data
+    structure members and code modifications, so for now we handle this situation
+    by remembering when there is a pending stroke-opacity request (same for
+    fill-opacity).  When the stroke (fill) color is eventually set, the pending
+    opacity value is also set.
+
+    The "pending" flags are reset to false whenever a graphic-context is pushed or
+    popped, so this fix may only solve a limited set of cases.  However, these cases
+    just happen to be the most common ones.
+  */
+  MagickBool FillOpacityPending = MagickFalse;
+  MagickBool StrokeOpacityPending = MagickFalse;
+  double FillOpacitySaved = 0.0;
+  double StrokeOpacitySaved = 0.0;
+
   for (q=primitive; *q != '\0'; )
   {
     /*
@@ -2074,14 +2103,32 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             FormatString(pattern,"[%.1024s]",token);
-            if (GetImageAttribute(image,pattern) == (ImageAttribute *) NULL)
-              (void) QueryColorDatabase(token,&graphic_context[n]->fill,
-                &image->exception);
-            else
+            if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
                 &graphic_context[n]->fill_pattern);
-            if (graphic_context[n]->fill.opacity != TransparentOpacity)
-              graphic_context[n]->fill.opacity=graphic_context[n]->opacity;
+            else
+              {/*fill color, not pattern*/
+
+                /* when setting new fill color, try to preserve fill-opacity */
+                Quantum FillOpacityOld = graphic_context[n]->fill.opacity;
+                (void) QueryColorDatabase(token,&graphic_context[n]->fill,&image->exception);
+
+                if (graphic_context[n]->fill.opacity != TransparentOpacity)
+                  {/*new fill color != 'none'*/
+
+                    if  ( FillOpacityOld != TransparentOpacity )
+                      graphic_context[n]->fill.opacity = FillOpacityOld;  /* already has group opacity included */
+                    else  /* combine fill color's opacity with group opacity per SVG spec */
+                      {
+                        Quantum FillOpacity = FillOpacityPending ?
+                          MaxRGB - (Quantum) (MaxRGBDouble * FillOpacitySaved + 0.5) : graphic_context[n]->fill.opacity;
+                        graphic_context[n]->fill.opacity = MaxRGB - (Quantum)((double)(MaxRGB - FillOpacity) * (double)(MaxRGB - graphic_context[n]->opacity) / MaxRGBDouble + 0.5);
+                      }
+                    FillOpacityPending = MagickFalse;
+
+                  }/*new fill color != 'none'*/
+
+              }/*fill color, not pattern*/
             break;
           }
         if (LocaleCompare("fill-rule",keyword) == 0)
@@ -2104,18 +2151,24 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
+            double opacity;
+            if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
+                (opacity < 0.0))
+              {
+                status=MagickFail;
+                break;
+              }
+            opacity *= factor;
+            FillOpacitySaved = opacity;
             if (graphic_context[n]->fill.opacity != TransparentOpacity)
               {
-                double opacity;
-                if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
-                    (opacity < 0.0))
-                  {
-                    status=MagickFail;
-                    break;
-                  }
-                graphic_context[n]->fill.opacity=(Quantum)
-                  ((double) MaxRGB*(1.0-factor*opacity));
+                /* combine new fill-opacity with group opacity per SVG spec */
+                double opacityGroup = MaxRGB - graphic_context[n]->opacity; /* MaxRGB==opaque */
+                graphic_context[n]->fill.opacity = MaxRGB - (Quantum)(opacity * opacityGroup + 0.5);
+                FillOpacityPending = MagickFalse;
               }
+            else
+              FillOpacityPending = MagickTrue;
             break;
           }
         if (LocaleCompare("font",keyword) == 0)
@@ -2285,10 +2338,40 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
-            graphic_context[n]->opacity=(Quantum) ((double) MaxRGB*(1.0-((1.0-
-              graphic_context[n]->opacity/MaxRGB)*factor*opacity))+0.5);
-            graphic_context[n]->fill.opacity=graphic_context[n]->opacity;
-            graphic_context[n]->stroke.opacity=graphic_context[n]->opacity;
+            double opacityGroupOld = MaxRGB - graphic_context[n]->opacity; /* MaxRGB==opaque */
+            double opacityGroupNew = opacityGroupOld * opacity; /* MaxRGB==opaque */
+            graphic_context[n]->opacity = MaxRGB - (Quantum)(opacityGroupNew + /*round*/0.5);
+            if (graphic_context[n]->fill.opacity != TransparentOpacity)
+            {/*fill color != 'none'*/
+
+              if  ( opacityGroupOld == 0.0 )  /* can't back out old group opacity */
+                graphic_context[n]->fill.opacity = graphic_context[n]->opacity; /* reasonable alternative */
+              else
+              {
+                /* back out old group opacity value, include new group opacity value */
+                double opacityFill = MaxRGB - graphic_context[n]->fill.opacity; /* MaxRGB==opaque */
+                opacityFill = opacityFill * (opacityGroupNew / opacityGroupOld);
+                graphic_context[n]->fill.opacity =
+                  (opacityFill < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityFill + /*round*/0.5) : MaxRGB;
+              }
+
+            }/*fill color != 'none'*/
+
+            if (graphic_context[n]->stroke.opacity != TransparentOpacity)
+            {/*stroke color != 'none'*/
+
+              if  ( opacityGroupOld == 0.0 ) /* can't back out old group opacity */
+                graphic_context[n]->stroke.opacity = graphic_context[n]->opacity; /* reasonable alternative */
+              else
+              {
+                /* back out old group opacity value, include new group opacity value */
+                double opacityStroke = MaxRGB - graphic_context[n]->stroke.opacity; /* MaxRGB==opaque */
+                opacityStroke = opacityStroke * (opacityGroupNew / opacityGroupOld);
+                graphic_context[n]->stroke.opacity =
+                  (opacityStroke < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityStroke + /*round*/0.5) : MaxRGB;
+              }
+
+            }/*stroke color != 'none'*/
             break;
           }
         status=MagickFail;
@@ -2340,6 +2423,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     (void) SetImageClipMask(image,(Image *) NULL);
                 DestroyDrawInfo(graphic_context[n]);
                 n--;
+                FillOpacityPending = StrokeOpacityPending = MagickFalse;
                 break;
               }
             if (LocaleCompare("pattern",token) == 0)
@@ -2610,6 +2694,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   }
                 graphic_context[n]=
                   CloneDrawInfo((ImageInfo *) NULL,graphic_context[n-1]);
+                FillOpacityPending = StrokeOpacityPending = MagickFalse;
                 break;
               }
             if (LocaleCompare("defs",token) == 0)
@@ -2706,14 +2791,31 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             FormatString(pattern,"[%.1024s]",token);
-            if (GetImageAttribute(image,pattern) == (ImageAttribute *) NULL)
-              (void) QueryColorDatabase(token,&graphic_context[n]->stroke,
-                &image->exception);
-            else
+            if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
                 &graphic_context[n]->stroke_pattern);
-            if (graphic_context[n]->stroke.opacity != TransparentOpacity)
-              graphic_context[n]->stroke.opacity=graphic_context[n]->opacity;
+            else
+              {/*stroke color, not pattern*/
+
+                /* when setting new stroke color, try to preserve stroke-opacity */
+                Quantum StrokeOpacityOld = graphic_context[n]->stroke.opacity;
+                (void) QueryColorDatabase(token,&graphic_context[n]->stroke,&image->exception);
+
+                if (graphic_context[n]->stroke.opacity != TransparentOpacity)
+                  {/*stroke color != 'none'*/
+
+                    if  ( StrokeOpacityOld != TransparentOpacity )
+                      graphic_context[n]->stroke.opacity = StrokeOpacityOld;  /* already has group opacity included */
+                    else  /* combine stroke color's opacity with group opacity per SVG spec */
+                    {
+                      Quantum StrokeOpacity = StrokeOpacityPending ? MaxRGB - (Quantum) (MaxRGBDouble * StrokeOpacitySaved + 0.5) : graphic_context[n]->stroke.opacity;
+                      graphic_context[n]->stroke.opacity = MaxRGB - (Quantum)((double)(MaxRGB - StrokeOpacity) * (double)(MaxRGB - graphic_context[n]->opacity) / MaxRGBDouble + 0.5);
+                    }
+                    StrokeOpacityPending = MagickFalse;
+
+                  }/*stroke color != 'none'*/
+
+              }/*stroke color, not pattern*/
             break;
           }
         if (LocaleCompare("stroke-antialias",keyword) == 0)
@@ -2840,18 +2942,24 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
+            double opacity;
+            if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
+                opacity < 0.0)
+              {
+                status=MagickFail;
+                break;
+              }
+            opacity *= factor;
+            StrokeOpacitySaved = opacity;
             if (graphic_context[n]->stroke.opacity != TransparentOpacity)
               {
-                double opacity;
-                if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
-                    opacity < 0.0)
-                  {
-                    status=MagickFail;
-                    break;
-                  }
-                graphic_context[n]->stroke.opacity=(Quantum)
-                  ((double) MaxRGB*(1.0-factor*opacity));
+                /* combine new stroke-opacity with group opacity per SVG spec */
+                double opacityGroup = MaxRGB - graphic_context[n]->opacity;
+                graphic_context[n]->stroke.opacity = MaxRGB - (Quantum)(opacity * opacityGroup + 0.5);
+                StrokeOpacityPending = MagickFalse;
               }
+            else
+              StrokeOpacityPending = MagickTrue;
             break;
           }
         if (LocaleCompare("stroke-width",keyword) == 0)
