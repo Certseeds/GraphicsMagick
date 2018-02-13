@@ -1,3 +1,10 @@
+2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/topol.c (ReadTOPOLImage): Avoid index out of bounds when
+	input filename does not use a file extension. Fixes oss-fuzz issue
+	6237 "graphicsmagick/coder_TOPOL_fuzzer: Index-out-of-bounds in
+	ReadTOPOLImage".
+
 2018-02-12  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fix oss-fuzz issue 6021. (Credit to OSS-Fuzz)

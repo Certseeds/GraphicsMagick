@@ -498,10 +498,13 @@ TOPOL_KO:              ThrowPDBReaderException(CorruptImageError,ImproperImageHe
       }
     }
 
-  (void) strcpy(clone_info->filename+i,".MEZ");
+  if (i <= 0)
+    goto NoPalette;
+
+  (void) strlcpy(clone_info->filename+i,".MEZ",sizeof(clone_info->filename)-i);
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
     {
-      (void) strcpy(clone_info->filename+i,".mez");
+      (void) strlcpy(clone_info->filename+i,".mez",sizeof(clone_info->filename)-i);
       if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
         {
           DestroyImageInfo(clone_info);
