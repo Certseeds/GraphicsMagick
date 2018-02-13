@@ -38,10 +38,29 @@
 <p>2018-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/pdb.c (ReadPDBImage): Quit attempting to read image data
+immediately at EOF. Fixes oss-fuzz issue 6252
+&quot;graphicsmagick/coder_PDB_fuzzer: Timeout in
+graphicsmagick_coder_PDB_fuzzer&quot;.</li>
+</ul>
+</blockquote>
+<p>2018-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
 <li>coders/topol.c (ReadTOPOLImage): Avoid index out of bounds when
 input filename does not use a file extension. Fixes oss-fuzz issue
 6237 &quot;graphicsmagick/coder_TOPOL_fuzzer: Index-out-of-bounds in
 ReadTOPOLImage&quot;.</li>
+</ul>
+</blockquote>
+<p>2018-02-12  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magic/render.c (DrawImage): Object/group opacity,
+when set in DrawImage(), would overwrite the fill
+and stroke opacities. This has been fixed so that
+the object opacity is now combined with the fill
+and stroke opacities per the SVG spec.</li>
 </ul>
 </blockquote>
 <p>2018-02-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
@@ -143,17 +162,19 @@ ImportRGBQuantumType&quot;. (Credit to OSS-Fuzz)</li>
 </blockquote>
 <p>2018-02-07  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
-<ul>
-<li><p class="first">coders/wpg.c Fix oss-fuzz issue 5964
+<ul class="simple">
+<li>coders/wpg.c Fix oss-fuzz issue 5964
 &quot;graphicsmagick/coder_MAT_fuzzer: Heap-use-after-free in
-GetLocaleExceptionMessage&quot;. (Credit to OSS-Fuzz)</p>
-<p>Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
-</li>
-<li><p class="first">magick/render.c (IsPoint): Fixed a bug in which
+GetLocaleExceptionMessage&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-02-07    Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (IsPoint): Fixed a bug in which
 IsPoint() would reject as a valid coordinate value
 strings that did not begin with an integer: e.g.,
-&quot;0.25&quot; would be accepted, but &quot;.25&quot; would not.</p>
-</li>
+&quot;0.25&quot; would be accepted, but &quot;.25&quot; would not.</li>
 </ul>
 </blockquote>
 <p>2018-02-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

@@ -1,4 +1,10 @@
-<<<<<<< /home/bfriesen/src/graphics/GM/ChangeLog
+2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pdb.c (ReadPDBImage): Quit attempting to read image data
+	immediately at EOF. Fixes oss-fuzz issue 6252
+	"graphicsmagick/coder_PDB_fuzzer: Timeout in
+	graphicsmagick_coder_PDB_fuzzer".
+
 2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/topol.c (ReadTOPOLImage): Avoid index out of bounds when
@@ -6,7 +12,6 @@
 	6237 "graphicsmagick/coder_TOPOL_fuzzer: Index-out-of-bounds in
 	ReadTOPOLImage".
 
-=======
 2018-02-12  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magic/render.c (DrawImage): Object/group opacity,
@@ -15,7 +20,6 @@
 	the object opacity is now combined with the fill
 	and stroke opacities per the SVG spec.
 
->>>>>>> /tmp/bfriesen/ChangeLog~other.16fBld
 2018-02-12  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fix oss-fuzz issue 6021. (Credit to OSS-Fuzz)

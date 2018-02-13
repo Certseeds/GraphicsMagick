@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -204,10 +204,11 @@ static void LogPDPImage(const PDBImage *image)
 %
 %
 */
-static unsigned int DecodeImage(Image *image,unsigned char *pixels,
+static MagickPassFail DecodeImage(Image *image,unsigned char *pixels,
   const size_t length)
 {
   int
+    c,
     count,
     pixel;
 
@@ -217,23 +218,44 @@ static unsigned int DecodeImage(Image *image,unsigned char *pixels,
   register unsigned char
     *p;
 
+  MagickPassFail
+    status = MagickPass;
+
   p=pixels;
   while (p < (pixels+length))
   {
-    pixel=ReadBlobByte(image);
+    if ((pixel=ReadBlobByte(image)) == EOF)
+      {
+        status = MagickFail;
+        goto decode_image_quit;
+      }
     if (pixel <= 0x80)
       {
         count=pixel+1;
         for (i=0; i < count; i++)
-          *p++=ReadBlobByte(image);
+          {
+            if ((c = ReadBlobByte(image)) == EOF)
+              {
+                status = MagickFail;
+                goto decode_image_quit;
+              }
+            *p++ = (unsigned char) c;
+          }
         continue;
       }
     count=pixel+1-0x80;
-    pixel=ReadBlobByte(image);
+    if ((pixel=ReadBlobByte(image)) == EOF)
+      {
+        status = MagickFail;
+        goto decode_image_quit;
+      }
+
     for (i=0; i < count; i++)
       *p++=(unsigned char) pixel;
   }
-  return(True);
+ decode_image_quit:;
+
+  return(status);
 }
 
 /*
@@ -476,7 +498,8 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     case 1:
     {
       image->compression=RLECompression;
-      (void) DecodeImage(image,pixels,packets);
+      if (DecodeImage(image,pixels,packets) == MagickFail)
+        ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       break;
     }
     default:
