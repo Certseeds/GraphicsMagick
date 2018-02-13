@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -759,7 +759,14 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   (void) SeekBlob(image,PS_Offset,SEEK_SET);
   while(PS_Size-- > 0)
     {
-      (void) fputc(ReadBlobByte(image),ps_file);
+      int c;
+      if ((c = ReadBlobByte(image)) == EOF)
+        {
+          (void) fclose(ps_file);
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+          goto FINISH_UNL;
+        }
+      (void) fputc(c,ps_file);
     }
   (void) fclose(ps_file);
 
@@ -778,7 +785,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   if(exception->severity>=ErrorException) /* When exception is raised, destroy image2 read. */
   {
     CloseBlob(image2);
-    DestroyImageList(image2);  
+    DestroyImageList(image2);
     goto FINISH_UNL;
   }
 
@@ -794,16 +801,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
       (void) strlcpy(p->filename,image->filename,MaxTextExtent);
       (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
       (void) strlcpy(p->magick,image->magick,MaxTextExtent);
-      //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
-      DestroyBlob(p);      
+      //image2->depth=image->depth;     // !!!! The image2 depth should not be modified here. Image2 is completely different.
+      DestroyBlob(p);
 
       if(p->rows==0 || p->columns==0)
       {
         DeleteImageFromList(&p);
-        if(p==NULL) 
+        if(p==NULL)
         {
           image2 = NULL;
-          goto FINISH_UNL;	/* Nothing to add, skip. */
+          goto FINISH_UNL;      /* Nothing to add, skip. */
         }
       }
       else
@@ -812,16 +819,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
         p = p->next;
       }
     } while(p!=NULL);
-  }  
+  }
 
   if((image->rows==0 || image->columns==0) && (image->previous!=NULL || image->next!=NULL))
   {
     DeleteImageFromList(&image);
   }
 
-  AppendImageToList(&image,image2);	/* This should append list 'image2' to the list 'image', image2 accepts NULL. */
+  AppendImageToList(&image,image2);     /* This should append list 'image2' to the list 'image', image2 accepts NULL. */
   while(image->next != NULL)
-    image = image->next;		/* Rewind the cursor to the end. */
+    image = image->next;                /* Rewind the cursor to the end. */
 
  FINISH_UNL:
   (void) LiberateTemporaryFile(postscript_file);

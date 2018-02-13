@@ -1,16 +1,20 @@
 2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ExtractPostscript): Detect EOF on input while
+	transferring bytes to Postscript file.  Fixes oss-fuzz issue Issue
+	6087 "graphicsmagick/coder_WPG_fuzzer: NULL".  (Credit to OSS-Fuzz)
+
 	* coders/pdb.c (ReadPDBImage): Quit attempting to read image data
 	immediately at EOF. Fixes oss-fuzz issue 6252
 	"graphicsmagick/coder_PDB_fuzzer: Timeout in
-	graphicsmagick_coder_PDB_fuzzer".
+	graphicsmagick_coder_PDB_fuzzer".  (Credit to OSS-Fuzz)
 
 2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/topol.c (ReadTOPOLImage): Avoid index out of bounds when
 	input filename does not use a file extension. Fixes oss-fuzz issue
 	6237 "graphicsmagick/coder_TOPOL_fuzzer: Index-out-of-bounds in
-	ReadTOPOLImage".
+	ReadTOPOLImage".  (Credit to OSS-Fuzz)
 
 2018-02-12  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 

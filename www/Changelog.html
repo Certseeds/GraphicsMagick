@@ -38,10 +38,13 @@
 <p>2018-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/wpg.c (ExtractPostscript): Detect EOF on input while
+transferring bytes to Postscript file.  Fixes oss-fuzz issue Issue
+6087 &quot;graphicsmagick/coder_WPG_fuzzer: NULL&quot;.  (Credit to OSS-Fuzz)</li>
 <li>coders/pdb.c (ReadPDBImage): Quit attempting to read image data
 immediately at EOF. Fixes oss-fuzz issue 6252
 &quot;graphicsmagick/coder_PDB_fuzzer: Timeout in
-graphicsmagick_coder_PDB_fuzzer&quot;.</li>
+graphicsmagick_coder_PDB_fuzzer&quot;.  (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -50,7 +53,7 @@ graphicsmagick_coder_PDB_fuzzer&quot;.</li>
 <li>coders/topol.c (ReadTOPOLImage): Avoid index out of bounds when
 input filename does not use a file extension. Fixes oss-fuzz issue
 6237 &quot;graphicsmagick/coder_TOPOL_fuzzer: Index-out-of-bounds in
-ReadTOPOLImage&quot;.</li>
+ReadTOPOLImage&quot;.  (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-02-12  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
