@@ -1,8 +1,14 @@
+2018-02-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_SetupRescaleMap): Avoid excessive left shift.
+	Fixes oss-fuzz issue 6256 "graphicsmagick/coder_DCM_fuzzer:
+	Undefined-shift in DCM_SetupRescaleMap". (Credit to OSS-Fuzz)
+
 2018-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ExtractPostscript): Detect EOF on input while
-	transferring bytes to Postscript file.  Fixes oss-fuzz issue Issue
-	6087 "graphicsmagick/coder_WPG_fuzzer: NULL".  (Credit to OSS-Fuzz)
+	transferring bytes to Postscript file.  Fixes oss-fuzz issue 6087
+	"graphicsmagick/coder_WPG_fuzzer: NULL".  (Credit to OSS-Fuzz)
 
 	* coders/pdb.c (ReadPDBImage): Quit attempting to read image data
 	immediately at EOF. Fixes oss-fuzz issue 6252

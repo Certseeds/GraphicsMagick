@@ -3823,7 +3823,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
   Xw_max = win_center - 0.5 + ((win_width-1)/2);
   for (i=0; i < (dcm->max_value_in+1); i++)
     {
-      if ((dcm->pixel_representation == 1) && (i >= (1U << (dcm->significant_bits-1))))
+      if ((dcm->pixel_representation == 1) && (i >= MaxValueGivenBits(dcm->significant_bits)))
         Xr = -((dcm->max_value_in+1-i) * dcm->rescale_slope) + dcm->rescale_intercept;
       else
         Xr = (i * dcm->rescale_slope) + dcm->rescale_intercept;

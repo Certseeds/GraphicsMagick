@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003 - 2016 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -33,8 +33,14 @@ extern "C" {
 
 /*
   Maximum unsigned RGB value which fits in the specified bits
+
+  If bits <= 0, then zero is returned.  If bits exceeds bits in unsigned long,
+  then max value of unsigned long is returned.
 */
-#define MaxValueGivenBits(bits) ((unsigned long) (0x01UL << (bits-1)) +((0x01UL << (bits-1))-1))
+#define MaxValueGivenBits(bits) ((unsigned long) \
+                                 (((int) bits <= 0) ? 0 :               \
+                                   ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1)) + \
+                                    ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1))-1))))
 
 #if (QuantumDepth == 8)
 #  define MaxColormapSize  256U
