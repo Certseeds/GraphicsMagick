@@ -319,7 +319,7 @@ static void ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 %
 */
 
-#define ThrowPDBReaderException(code_,reason_,image_) \
+#define ThrowTOPOLReaderException(code_,reason_,image_) \
 { \
   if (clone_info) \
     DestroyImageInfo(clone_info); \
@@ -392,7 +392,7 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
   Header.Zoom = ReadBlobLSBLong(image);
   Header.Version = ReadBlobLSBShort(image);
   if (EOFBlob(image))
-    ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (Header.Version >= 1)
     {
       Header.Komprese = ReadBlobLSBShort(image);
@@ -412,25 +412,25 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
           /* BYTE Dummy[423]; */
         }
       if (EOFBlob(image))
-        ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
 
   for (i = 0; i < (long) sizeof(Header.Name); i++)
     {
       if (Header.Name[i] < ' ')
-TOPOL_KO:              ThrowPDBReaderException(CorruptImageError,ImproperImageHeader, image);
+TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImageHeader, image);
     }
   if (Header.Komprese != 0 || (Header.Version >= 2 && Header.TileCompression != 0))
-    ThrowPDBReaderException(CorruptImageError, UnrecognizedImageCompression, image);
+    ThrowTOPOLReaderException(CorruptImageError, UnrecognizedImageCompression, image);
   if (((Header.Rows == 0 || Header.Cols == 0)) ||
       ((Header.Version >= 2) &&
        (Header.TileWidth == 0 ||
         Header.TileHeight == 0 ||
         Header.TileOffsets == 0 ||
         Header.TileByteCounts == 0)))
-      ThrowPDBReaderException(CorruptImageError,ImproperImageHeader, image);
+      ThrowTOPOLReaderException(CorruptImageError,ImproperImageHeader, image);
   if (Header.Version > 2)
-    ThrowPDBReaderException(CorruptImageError, InvalidFileFormatVersion, image); /* unknown version */
+    ThrowTOPOLReaderException(CorruptImageError, InvalidFileFormatVersion, image); /* unknown version */
 
   switch(Header.FileType)
     {
@@ -618,7 +618,7 @@ NoPalette:
       if (!AllocateImageColormap(image, image->colors))
       {
         NoMemory:
-          ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);
+          ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
       }
 
       for(i = 0; i < (long) image->colors; i++)
@@ -639,7 +639,7 @@ NoPalette:
      ldblk = (long) ((depth * image->columns + 7) / 8);
      BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) ldblk);   /*Ldblk was set in the check phase */
      if (BImgBuff == NULL)
-        ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);
+        ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
      (void) SeekBlob(image, 512 /*sizeof(Header)*/, SEEK_SET);
      for (i = 0; i < (int) Header.Rows; i++)
      {
@@ -657,21 +657,21 @@ NoPalette:
 
       if(Header.TileCompression!=0)
                 {
-                ThrowPDBReaderException(CorruptImageError, UnrecognizedImageCompression, image);
+                ThrowTOPOLReaderException(CorruptImageError, UnrecognizedImageCompression, image);
                 break;
                 }
 
        ldblk = (long)((depth * Header.TileWidth + 7) / 8);
        BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) ldblk); /*Ldblk was set in the check phase */
        if (BImgBuff == NULL)
-         ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);
+         ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        /* dlazdice.create(Header.TileWidth,Header.TileHeight,p.Planes); */
        Offsets = MagickAllocateArray(magick_uint32_t *,
                                      MagickArraySize((size_t)TilesAcross,(size_t)TilesDown),
                                      sizeof(magick_uint32_t));
        if(Offsets==NULL)
-         ThrowPDBReaderException(ResourceLimitError, MemoryAllocationFailed, image);
+         ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        (void)SeekBlob(image, Header.TileOffsets, SEEK_SET);
        ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets);
@@ -689,7 +689,12 @@ NoPalette:
            j = TilX * (ldblk+SkipBlk);
            for(i=0;i<Header.TileHeight;i++)
            {
-             (void)ReadBlob(image, ldblk, (char *)BImgBuff);
+             if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
+               {
+                 MagickFreeMemory(Offsets);
+                 ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
+                 break;
+               }
              if(SkipBlk>0)
                SeekBlob(image, SkipBlk, SEEK_CUR);
              InsertRow(depth, BImgBuff, i+TilY, image, TilX,
@@ -697,7 +702,7 @@ NoPalette:
           }
         }
 
-       if(Offsets) {MagickFreeMemory(Offsets);Offsets=NULL;}
+       MagickFreeMemory(Offsets);
        break;
       }
     }
@@ -711,7 +716,7 @@ DONE_READING:
   if (clone_info != NULL)
     DestroyImageInfo(clone_info);
   /* if (EOFBlob(image))
-     ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image); */
+     ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image); */
   CloseBlob(image);
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");

@@ -1,5 +1,10 @@
 2018-02-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/topol.c (ReadTOPOLImage): Detect EOF immediately rather
+	than spinning.  Fixes oss-fuzz issue 6303
+	"graphicsmagick/coder_TOPOL_fuzzer: Timeout in
+	graphicsmagick_coder_TOPOL_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/dcm.c (DCM_SetupRescaleMap): Avoid excessive left shift.
 	Fixes oss-fuzz issue 6256 "graphicsmagick/coder_DCM_fuzzer:
 	Undefined-shift in DCM_SetupRescaleMap". (Credit to OSS-Fuzz)
