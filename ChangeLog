@@ -1,5 +1,14 @@
 2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* magick/render.c (TracePath): TracePath() was not
+	consuming commas (if present) at the end of a set of
+	points when multiple sets of points were specified for
+	various path commands (e.g., line, Bezier). This
+	resulted in the remaining sets of points being ignored
+	(fixed).
+
+2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/render.c (TraceArcPath): No points are generated
 	by TraceArcPath() if the starting and ending arc points
 	are the same.  For this case, the coordinate count was not

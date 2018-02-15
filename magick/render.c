@@ -5479,6 +5479,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,4);
           q+=q->coordinates;
           point=end;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5494,6 +5499,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           point.x=attribute == 'H' ? x: point.x+x;
           TracePoint(q,point);
           q+=q->coordinates;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5517,6 +5527,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           point.y=attribute == 'L' ? y : point.y+y;
           TracePoint(q,point);
           q+=q->coordinates;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5555,6 +5570,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
               TracePoint(q,point);
               q+=q->coordinates;
             }
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5591,6 +5611,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,3);
           q+=q->coordinates;
           point=end;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5634,6 +5659,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,4);
           q+=q->coordinates;
           point=end;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5675,6 +5705,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,3);
           q+=q->coordinates;
           point=end;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
@@ -5693,6 +5728,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           point.y=attribute == 'V' ? y : point.y+y;
           TracePoint(q,point);
           q+=q->coordinates;
+          /* consume comma if present (as in elliptical arc above) */
+          while (isspace((int) ((unsigned char) *p)) != 0)
+            p++;
+          if (*p == ',')
+            p++;
         } while (IsPoint(p));
         break;
       }
