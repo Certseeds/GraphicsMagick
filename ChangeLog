@@ -1,5 +1,12 @@
 2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* magick/render.c (TraceArcPath): No points are generated
+	by TraceArcPath() if the starting and ending arc points
+	are the same.  For this case, the coordinate count was not
+	being set to zero before returning (fixed).
+
+2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/render.c (DrawImage): Clipping of polygons in
 	DrawImage() would sometime result in a starting pixel
 	location that was greater than the ending pixel location,

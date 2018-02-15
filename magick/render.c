@@ -5022,6 +5022,7 @@ TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
   unsigned long
     arc_segments;
 
+  primitive_info->coordinates = 0;	/* in case we return without doing anything */
   if ((start.x == end.x) && (start.y == end.y))
     return;
   radii.x=fabs(arc.x);
