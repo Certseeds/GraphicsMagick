@@ -1786,6 +1786,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   size_t
     number_points;
 
+  MagickBool
+    FillOpacityPending,
+    StrokeOpacityPending;
+
+  double
+    FillOpacitySaved,
+    StrokeOpacitySaved;
+
   /*
     Ensure the annotation info is valid.
   */
@@ -1870,10 +1878,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     popped, so this fix may only solve a limited set of cases.  However, these cases
     just happen to be the most common ones.
   */
-  MagickBool FillOpacityPending = MagickFalse;
-  MagickBool StrokeOpacityPending = MagickFalse;
-  double FillOpacitySaved = 0.0;
-  double StrokeOpacitySaved = 0.0;
+  FillOpacityPending = MagickFalse;
+  StrokeOpacityPending = MagickFalse;
+  FillOpacitySaved = 0.0;
+  StrokeOpacitySaved = 0.0;
 
   for (q=primitive; *q != '\0'; )
   {
@@ -2149,9 +2157,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("fill-opacity",keyword) == 0)
           {
+            double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
-            double opacity;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 (opacity < 0.0))
               {
@@ -2330,7 +2338,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("opacity",keyword) == 0)
           {
-            double opacity;
+            double opacity,opacityGroupOld,opacityGroupNew;
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if (MagickAtoFChk(token,&opacity) != MagickPass)
@@ -2338,8 +2346,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
-            double opacityGroupOld = MaxRGB - graphic_context[n]->opacity; /* MaxRGB==opaque */
-            double opacityGroupNew = opacityGroupOld * opacity; /* MaxRGB==opaque */
+            opacityGroupOld = MaxRGB - graphic_context[n]->opacity; /* MaxRGB==opaque */
+            opacityGroupNew = opacityGroupOld * opacity; /* MaxRGB==opaque */
             graphic_context[n]->opacity = MaxRGB - (Quantum)(opacityGroupNew + /*round*/0.5);
             if (graphic_context[n]->fill.opacity != TransparentOpacity)
             {/*fill color != 'none'*/
@@ -2940,9 +2948,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         if (LocaleCompare("stroke-opacity",keyword) == 0)
           {
+            double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
-            double opacity;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 opacity < 0.0)
               {
@@ -3975,18 +3983,43 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
         if (p->bounds.y2 > bounds.y2)
           bounds.y2=p->bounds.y2;
       }
+    /*
+      Modified clipping below.  Previous code was (similar for y):
+
+        if (x >= columns) x = columns-1;
+
+      Note that if columns == 50 this results in:
+
+        x==49.999 --> x=49.999
+        x==50.000 --> x=49.000
+
+      Pretty sure this was not the intention of the original
+      author.  Also, this can result in x_start > x_end, which
+      can cause the call to GetImagePixelsEx() to blow up due to
+      a column count <= 0 (see code below).
+
+      Changed the code to first check for starting bounds beyond
+      right/bottom of image, and ending bounds beyond left/top
+      of image.  When this is the case, there is nothing to do,
+      since the object lies completely outside the image.  If
+      not, clip based on columns-1 and rows-1 instead of columns
+      and rows.
+    */
     mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
     bounds.x1-=(mid+1.0);
-    bounds.x1=bounds.x1 < 0.0 ? 0.0 : bounds.x1 >= image->columns ?
-      image->columns-1 : bounds.x1;
     bounds.y1-=(mid+1.0);
-    bounds.y1=bounds.y1 < 0.0 ? 0.0 : bounds.y1 >= image->rows ?
-      image->rows-1 : bounds.y1;
     bounds.x2+=(mid+1.0);
-    bounds.x2=bounds.x2 < 0.0 ? 0.0 : bounds.x2 >= image->columns ?
-      image->columns-1 : bounds.x2;
     bounds.y2+=(mid+1.0);
-    bounds.y2=bounds.y2 < 0.0 ? 0.0 : bounds.y2 >= image->rows ?
+    if  ( (bounds.x1 >= image->columns) || (bounds.y1 >= image->rows)
+      || (bounds.x2 <= 0.0) || (bounds.y2 <= 0.0) )
+      return(MagickPass);   /* object completely outside image */
+    bounds.x1=bounds.x1 <= 0.0 ? 0.0 : bounds.x1 >= image->columns-1 ?
+      image->columns-1 : bounds.x1;
+    bounds.y1=bounds.y1 <= 0.0 ? 0.0 : bounds.y1 >= image->rows-1 ?
+      image->rows-1 : bounds.y1;
+    bounds.x2=bounds.x2 <= 0.0 ? 0.0 : bounds.x2 >= image->columns-1 ?
+      image->columns-1 : bounds.x2;
+    bounds.y2=bounds.y2 <= 0.0 ? 0.0 : bounds.y2 >= image->rows-1 ?
       image->rows-1 : bounds.y2;
   }
 
@@ -4008,8 +4041,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
         stroke_color;
 
       stroke_color=draw_info->stroke;
-      x_start=(long) ceil(bounds.x1-0.5);
-      x_stop=(long) floor(bounds.x2+0.5);
+      x_start=(long) ceil(bounds.x1-0.5);   /* rounds n.5 to n */
+      x_stop=(long) floor(bounds.x2+0.5);   /* rounds n.5 to n+1 */
       y_start=(long) ceil(bounds.y1-0.5);
       y_stop=(long) floor(bounds.y2+0.5);
 #if defined(HAVE_OPENMP)
@@ -4084,8 +4117,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       fill=(primitive_info->method == FillToBorderMethod) ||
         (primitive_info->method == FloodfillMethod);
 
-      x_start=(long) ceil(bounds.x1-0.5);
-      x_stop=(long) floor(bounds.x2+0.5);
+      x_start=(long) ceil(bounds.x1-0.5);   /* rounds n.5 to n */
+      x_stop=(long) floor(bounds.x2+0.5);   /* rounds n.5 to n+1 */
       y_start=(long) ceil(bounds.y1-0.5);
       y_stop=(long) floor(bounds.y2+0.5);
 #if 1

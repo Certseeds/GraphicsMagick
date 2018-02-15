@@ -1,3 +1,15 @@
+2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (DrawImage): Clipping of polygons in
+	DrawImage() would sometime result in a starting pixel
+	location that was greater than the ending pixel location,
+	causing a subsequent call to GetImagePixelsEx() to fail
+	due a column count <= 0.  Modified the clipping code to
+	eliminate this condition, and also to return early if
+	the polygon lies completely outside the image boundaries.
+	Also fixed variable declarations from a previous commit
+	that were causing problems for the C89 compiler.
+
 2018-02-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_SetupRescaleMap): Avoid excessive left shift.
@@ -24,7 +36,7 @@
 
 2018-02-12  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
-	* magic/render.c (DrawImage): Object/group opacity,
+	* magick/render.c (DrawImage): Object/group opacity,
 	when set in DrawImage(), would overwrite the fill
 	and stroke opacities. This has been fixed so that
 	the object opacity is now combined with the fill
