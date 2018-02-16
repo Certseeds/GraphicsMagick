@@ -1,3 +1,14 @@
+2018-02-16  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (TracePath): TracePath() was not
+	correctly processing multiple sets of cubic or quadratic
+	Bezier coordinates when the previous path data command was
+	not a cubic or quadratic Bezier command.  This would result
+	in the first control point being equal to the current path
+	point instead of being computed using the current path
+	point and the second control point of the previous Bezier
+	command.
+
 2018-02-15  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (TracePath): TracePath() was not

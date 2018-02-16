@@ -5628,6 +5628,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         /*
           Compute bezier points.
         */
+        /*
+          Handle multiple pairs of cubic Bezier points when the previous path data
+          command was not a cubic Bezier (i.e., not 'c' or 's').
+        */
+        int previous_path_data_command = last_attribute;  /* the previous path data command upon entry to this 'case' */
         do
         {
           points[0]=points[3];
@@ -5649,7 +5654,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             end.y=attribute == 'S' ? y : point.y+y;
             points[i]=end;
           }
-          if (strchr("CcSs",last_attribute) == (char *) NULL)
+          if (strchr("CcSs",previous_path_data_command) == (char *) NULL) /* check the ACTUAL previous command */
             {
               points[0]=point;
               points[1]=point;
@@ -5659,6 +5664,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,4);
           q+=q->coordinates;
           point=end;
+          previous_path_data_command = attribute;   /* current path data command becomes previous for next loop iteration */
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
             p++;
@@ -5676,6 +5682,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         /*
           Compute bezier points.
         */
+        /*
+          Handle multiple pairs of quadratic Bezier points when the previous path data
+          command was not a quadratic Bezier (i.e., not 'q' or 't').
+        */
+        int previous_path_data_command = last_attribute;  /* the previous path data command upon entry to this 'case' */
         do
         {
           points[0]=points[2];
@@ -5695,7 +5706,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             end.y=attribute == 'T' ? y : point.y+y;
             points[i]=end;
           }
-          if (strchr("QqTt",last_attribute) == (char *) NULL)
+          if (strchr("QqTt",previous_path_data_command) == (char *) NULL) /* check the ACTUAL previous command */
             {
               points[0]=point;
               points[1]=point;
@@ -5705,6 +5716,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           TraceBezier(q,3);
           q+=q->coordinates;
           point=end;
+          previous_path_data_command = attribute;   /* current path data command becomes previous for next loop iteration */
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
             p++;
