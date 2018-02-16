@@ -35,6 +35,40 @@
 <div class="document">
 
 
+<p>2018-02-15  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (TracePath): TracePath() was not
+consuming commas (if present) at the end of a set of
+points when multiple sets of points were specified for
+various path commands (e.g., line, Bezier). This
+resulted in the remaining sets of points being ignored
+(fixed).</li>
+</ul>
+</blockquote>
+<p>2018-02-15  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (TraceArcPath): No points are generated
+by TraceArcPath() if the starting and ending arc points
+are the same.  For this case, the coordinate count was not
+being set to zero before returning (fixed).</li>
+</ul>
+</blockquote>
+<p>2018-02-15  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Clipping of polygons in
+DrawImage() would sometime result in a starting pixel
+location that was greater than the ending pixel location,
+causing a subsequent call to GetImagePixelsEx() to fail
+due a column count &lt;= 0.  Modified the clipping code to
+eliminate this condition, and also to return early if
+the polygon lies completely outside the image boundaries.
+Also fixed variable declarations from a previous commit
+that were causing problems for the C89 compiler.</li>
+</ul>
+</blockquote>
 <p>2018-02-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -71,7 +105,7 @@ ReadTOPOLImage&quot;.  (Credit to OSS-Fuzz)</li>
 <p>2018-02-12  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>magic/render.c (DrawImage): Object/group opacity,
+<li>magick/render.c (DrawImage): Object/group opacity,
 when set in DrawImage(), would overwrite the fill
 and stroke opacities. This has been fixed so that
 the object opacity is now combined with the fill
