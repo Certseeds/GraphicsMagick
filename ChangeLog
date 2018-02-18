@@ -1,5 +1,8 @@
 2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/bmp.c (ReadBMPImage): Detect and report when BMP height
+	value is out of range (too negative). (Credit to OSS-Fuzz)
+
 	* coders/rla.c (ReadRLAImage): Detect when RLE decoding is
 	producing too many samples and report as an error.  Fixes oss-fuzz
 	issue 6312 "graphicsmagick/coder_RLA_fuzzer: Timeout in

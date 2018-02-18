@@ -882,7 +882,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "Discarding all data beyond bmp_info.file_size");
     if (bmp_info.width <= 0)
       ThrowBMPReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
-    if (bmp_info.height == 0)
+    if ((bmp_info.height) == 0 || (bmp_info.height < -2147483647))
       ThrowBMPReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
     if ((bmp_info.height < 0) && (bmp_info.compression !=0))
       ThrowBMPReaderException(CorruptImageError,CompressionNotValid,image);
