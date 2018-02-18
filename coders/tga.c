@@ -296,8 +296,15 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (tga_info.image_type == TGARLEColormap) ||
           (tga_info.image_type == TGARLEMonochrome))
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Setting PseudoClass");
-          image->storage_class=PseudoClass;
+          if ((tga_info.bits_per_pixel == 1) || (tga_info.bits_per_pixel == 8))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Setting PseudoClass");
+              image->storage_class=PseudoClass;
+            }
+          else
+            {
+              ThrowReaderException(CoderError,DataStorageTypeIsNotSupported,image);
+            }
         }
 
       if ((tga_info.image_type == TGARLEColormap) ||
