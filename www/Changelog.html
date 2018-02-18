@@ -38,6 +38,10 @@
 <p>2018-02-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/fits.c (ReadFITSImage): Validate that file size is
+sufficient for claimed image properties.  Fixes oss-fuzz issue
+6429 &quot;graphicsmagick/coder_FITS_fuzzer: Timeout in
+graphicsmagick_coder_FITS_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>magick/image.c (CloneImage): Check image pixel limits in
 CloneImage() when it is used to change the image dimensions.  This
 avoids depending on the using code to detect and report such

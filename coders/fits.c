@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -482,6 +482,33 @@ ReadExtension:
     number_pixels = image->columns*image->rows;
     if ((number_pixels / image->columns) != image->rows)
       ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+
+    /*
+      Validate that file size is sufficient for claimed image properties
+    */
+    if (BlobIsSeekable(image))
+      {
+        magick_off_t
+          file_size;
+
+        if ((file_size=GetBlobSize(image)) != 0)
+          {
+            double
+              ratio;
+
+            ratio = (((double) number_pixels*packet_size)/file_size);
+
+            if (ratio > 1.5)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable file size "
+                                      "(ratio of pixels to file size %g)",
+                                      ratio);
+                ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                     image);
+              }
+          }
+      }
 
     fits_pixels=MagickAllocateArray(unsigned char *, image->columns, packet_size);
     if (fits_pixels == (unsigned char *) NULL)
