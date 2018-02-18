@@ -1,5 +1,10 @@
 2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rla.c (ReadRLAImage): Detect when RLE decoding is
+	producing too many samples and report as an error.  Fixes oss-fuzz
+	issue 6312 "graphicsmagick/coder_RLA_fuzzer: Timeout in
+	graphicsmagick_coder_RLA_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/fits.c (ReadFITSImage): Validate that file size is
 	sufficient for claimed image properties.  Fixes oss-fuzz issue
 	6429 "graphicsmagick/coder_FITS_fuzzer: Timeout in

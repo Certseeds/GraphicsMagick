@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -191,13 +191,13 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     number_channels,
     runlength;
 
-  long
+  unsigned long
     y;
 
   magick_uint32_t
     *scanlines=0;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -489,7 +489,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read offsets to each scanline data.
   */
-  for (i=0; i < (long) image->rows; i++)
+  for (i=0; i < image->rows; i++)
     {
       scanlines[i]=(magick_uint32_t) ReadBlobMSBLong(image);
 #if 0
@@ -504,7 +504,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read image data.
   */
   x=0;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     if (SeekBlob(image,scanlines[image->rows-y-1],SEEK_SET) == -1)
       {
@@ -535,6 +535,8 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             while (runlength < 0)
             {
+              if (x > image->rows*image->columns*number_channels)
+                  ThrowRLAReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
               q=GetImagePixels(image,(long) (x % image->columns),
                                (long) (y % image->columns),1,1);
               if (q == (PixelPacket *) NULL)
@@ -595,6 +597,8 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         runlength++;
         do
         {
+          if (x > image->rows*image->columns*number_channels)
+            ThrowRLAReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
           q=GetImagePixels(image,(long) (x % image->columns),
             (long) (y % image->columns),1,1);
           if (q == (PixelPacket *) NULL)
