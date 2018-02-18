@@ -1,9 +1,14 @@
 2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image.c (CloneImage): Check image pixel limits in
+	CloneImage() when it is used to change the image dimensions.  This
+	avoids depending on the using code to detect and report such
+	issues.
+
 	* coders/xcf.c (ReadXCFImage): Check image pixel limits after each
 	CloneImage() to assure that image is within specified resource
 	limits.  Fixes oss-fuzz issue 6399 "graphicsmagick/enhance_fuzzer:
-	Timeout in graphicsmagick_enhance_fuzzer".
+	Timeout in graphicsmagick_enhance_fuzzer". (Credit to OSS-Fuzz)
 
 2018-02-16  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 

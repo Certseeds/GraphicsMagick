@@ -938,6 +938,7 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
   clone_image=MagickAllocateMemory(Image *,sizeof(Image));
   if (clone_image == (Image *) NULL)
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
@@ -1070,6 +1071,12 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
                                UnableToCloneImage);
         }
       return(clone_image);
+    }
+  if (CheckImagePixelLimits(clone_image, exception) != MagickPass)
+    {
+      DestroyImage(clone_image);
+      ThrowImageException3(ResourceLimitError,ImagePixelLimitExceeded,
+                           UnableToCloneImage);
     }
   clone_image->page.width=columns;
   clone_image->page.height=rows;

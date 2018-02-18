@@ -770,8 +770,8 @@ static MagickPassFail load_level (Image* image,
       tile_image=CloneImage(inLayerInfo->image, tile_image_width,
                             tile_image_height,True,exception);
 
-      if (CheckImagePixelLimits(tile_image, &image->exception) != MagickPass)
-        ThrowBinaryException(ResourceLimitError,ImagePixelLimitExceeded,image->filename);
+      if (tile_image == (Image *) NULL)
+        return MagickFail;
 
       /*
         Compute the tile data size.
@@ -1060,9 +1060,6 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
                              &image->exception);
   if (outLayer->image == (Image *) NULL)
     return MagickFail;
-
-  if (CheckImagePixelLimits(outLayer->image, &image->exception) != MagickPass)
-    ThrowBinaryException(ResourceLimitError,ImagePixelLimitExceeded,image->filename);
 
   /* read the layer properties! */
   foundPropEnd = 0;
