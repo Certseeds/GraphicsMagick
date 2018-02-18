@@ -1,3 +1,10 @@
+2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xcf.c (ReadXCFImage): Check image pixel limits after each
+	CloneImage() to assure that image is within specified resource
+	limits.  Fixes oss-fuzz issue 6399 "graphicsmagick/enhance_fuzzer:
+	Timeout in graphicsmagick_enhance_fuzzer".
+
 2018-02-16  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (TracePath): TracePath() was not

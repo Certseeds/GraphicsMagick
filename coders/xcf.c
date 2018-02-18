@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -102,7 +102,7 @@ typedef struct {
     compression;
 
   /* not really part of the doc, but makes it easy to pass around! */
-  ExceptionInfo 
+  ExceptionInfo
     *exception;
 
   /* File size */
@@ -307,7 +307,7 @@ static char *ReadBlobStringWithLongSize(Image *image,char *string,size_t max)
 }
 
 
-static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* inDocInfo, 
+static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* inDocInfo,
                                  XCFLayerInfo*  inLayerInfo, size_t data_length)
 {
   size_t
@@ -365,9 +365,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
   if (nmemb_read_successfully != data_length)
     {
       MagickFreeMemory(xcfodata);
-      ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
-                     NULL);
-      return MagickFail;
+      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
     }
 
   q=SetImagePixels(tile_image,0,0,tile_image->columns,tile_image->rows);
@@ -398,7 +396,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
               q->green    = ScaleCharToQuantum(xcfdata->green);
               q->blue     = ScaleCharToQuantum(xcfdata->blue);
               q->opacity  = (Quantum) (xcfdata->opacity==0U ? TransparentOpacity :
-                                       ScaleCharToQuantum(255U-inLayerInfo->opacity)); 
+                                       ScaleCharToQuantum(255U-inLayerInfo->opacity));
               xcfdata++;
               q++;
             }
@@ -411,7 +409,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
 
 static MagickPassFail load_tile_rle (Image* image,
                                      Image* tile_image,
-                                     XCFDocInfo* inDocInfo, 
+                                     XCFDocInfo* inDocInfo,
                                      XCFLayerInfo*  inLayerInfo,
                                      size_t data_length)
 {
@@ -458,13 +456,11 @@ static MagickPassFail load_tile_rle (Image* image,
                               (unsigned long) nmemb_read_successfully,
                               (unsigned long) data_length);
       MagickFreeMemory(xcfodata);
-      ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
-                     NULL);
-      return MagickFail;
+      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
     }
 
   xcfdatalimit = &xcfodata[nmemb_read_successfully - 1];
-  
+
   for (i = 0; i < bpp; i++)
     {
       q=SetImagePixels(tile_image,0,0,tile_image->columns,tile_image->rows);
@@ -482,9 +478,9 @@ static MagickPassFail load_tile_rle (Image* image,
             {
               goto bogus_rle;
             }
-    
+
           val = *xcfdata++;
-    
+
           length = val;
 
           if (length >= 128)
@@ -497,24 +493,24 @@ static MagickPassFail load_tile_rle (Image* image,
                     {
                       goto bogus_rle;
                     }
-    
+
                   length = ((*xcfdata << 8) + xcfdata[1]) & 0xFFFF;
                   xcfdata += 2;
                 }
-    
+
               count += length;
               size -= length;
-    
+
               if (size < 0)
                 {
                   goto bogus_rle;
                 }
-    
+
               if (&xcfdata[length-1] > xcfdatalimit)
                 {
                   goto bogus_rle;
                 }
-    
+
               while (length-- > 0)
                 {
                   data = *xcfdata++;
@@ -522,7 +518,7 @@ static MagickPassFail load_tile_rle (Image* image,
                     {
                     case 0:
                       {
-                        q->red          = ScaleCharToQuantum(data);  
+                        q->red          = ScaleCharToQuantum(data);
                         if ( inDocInfo->image_type == GIMP_GRAY )
                           {
                             q->green    = ScaleCharToQuantum(data);
@@ -550,7 +546,7 @@ static MagickPassFail load_tile_rle (Image* image,
                     case 3:
                       {
                         q->opacity = (Quantum) (data==0 ? TransparentOpacity :
-                                                ScaleCharToQuantum(255-inLayerInfo->opacity));  
+                                                ScaleCharToQuantum(255-inLayerInfo->opacity));
                         break;
                       }
                     }
@@ -566,11 +562,11 @@ static MagickPassFail load_tile_rle (Image* image,
                     {
                       goto bogus_rle;
                     }
-    
+
                   length = ((*xcfdata << 8) + xcfdata[1]) & 0xFFFF;
                   xcfdata += 2;
                 }
-    
+
               count += length;
               size -= length;
 
@@ -578,14 +574,14 @@ static MagickPassFail load_tile_rle (Image* image,
                 {
                   goto bogus_rle;
                 }
-    
+
               if (xcfdata > xcfdatalimit)
                 {
                   goto bogus_rle;
                 }
-    
+
               val = *xcfdata++;
-    
+
               for (j = 0; j < length; j++)
                 {
                   data = val;
@@ -593,7 +589,7 @@ static MagickPassFail load_tile_rle (Image* image,
                     {
                     case 0:
                       {
-                        q->red = ScaleCharToQuantum(data);  
+                        q->red = ScaleCharToQuantum(data);
                         if ( inDocInfo->image_type == GIMP_GRAY )
                           {
                             q->green = ScaleCharToQuantum(data);
@@ -621,7 +617,7 @@ static MagickPassFail load_tile_rle (Image* image,
                     case 3:
                       {
                         q->opacity = (Quantum) (data==0 ? TransparentOpacity :
-                                                ScaleCharToQuantum(255-inLayerInfo->opacity));  
+                                                ScaleCharToQuantum(255-inLayerInfo->opacity));
                         break;
                       }
                     }
@@ -682,9 +678,9 @@ static MagickPassFail load_level (Image* image,
   MagickPassFail
     status = MagickPass;
 
-  ExceptionInfo 
+  ExceptionInfo
     *exception = inDocInfo->exception;
-  
+
   /* start reading the data */
   width = ReadBlobMSBLong(image); /* width */
   height = ReadBlobMSBLong(image); /* height */
@@ -757,12 +753,12 @@ static MagickPassFail load_level (Image* image,
                                   (long) offset2, (unsigned long) inDocInfo->file_size);
           ThrowBinaryException(CorruptImageError,CorruptImage,image->filename);
         }
-      
+
       /* seek to the tile offset */
       if (SeekBlob(image, offset, SEEK_SET) != offset)
         ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
 
-      /* allocate the image for the tile 
+      /* allocate the image for the tile
          NOTE: the last tile in a row or column may not be a full tile!
       */
       tile_image_width=(size_t) (destLeft == (int) ntile_cols-1 ?
@@ -773,6 +769,9 @@ static MagickPassFail load_level (Image* image,
       if (tile_image_height == 0) tile_image_height=TILE_HEIGHT;
       tile_image=CloneImage(inLayerInfo->image, tile_image_width,
                             tile_image_height,True,exception);
+
+      if (CheckImagePixelLimits(tile_image, &image->exception) != MagickPass)
+        ThrowBinaryException(ResourceLimitError,ImagePixelLimitExceeded,image->filename);
 
       /*
         Compute the tile data size.
@@ -916,9 +915,9 @@ static MagickPassFail load_level (Image* image,
           destTop++;
         }
 
-      if (MagickPass != status) 
+      if (MagickPass != status)
         return status;
-      
+
       /* restore the saved position so we'll be ready to
        *  read the next offset.
        */
@@ -973,6 +972,11 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
    */
   offset = ReadBlobMSBLong(image);  /* top level */
 
+  if (EOFBlob(image))
+    {
+      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+    }
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "load_hierarchy: dimensions %lux%lu, bpp=%lu, offset=%lu",
@@ -981,14 +985,16 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
 
   /* discard offsets for layers below first, if any.
    */
-  do 
+  do
     {
       junk = ReadBlobMSBLong(image);
     }
   while ((junk != 0) && (!EOFBlob(image)));
 
   if (EOFBlob(image))
-    return MagickFail;
+    {
+      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+    }
 
   /* save the current position as it is where the
    *  next level offset is stored.
@@ -996,15 +1002,15 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
   saved_pos = TellBlob(image);
   if (saved_pos < 0)
     ThrowBinaryException(BlobError,UnableToObtainOffset,image->filename);
-  
+
   /* seek to the level offset */
   if (SeekBlob(image, offset, SEEK_SET) != offset)
     ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
-  
+
   /* read in the level */
   if (load_level (image, inDocInfo, inLayer) == MagickFail)
     return MagickFail;
-      
+
   /* restore the saved position so we'll be ready to
    *  read the next offset.
    */
@@ -1025,12 +1031,12 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
     foundPropEnd = 0;
 
   unsigned long
-    hierarchy_offset, 
+    hierarchy_offset,
     layer_mask_offset;
 
   /* clear the block! */
   (void) memset( outLayer, 0, sizeof( XCFLayerInfo ) );
-  
+
   /* read in the layer width, height, type and name */
   outLayer->width = ReadBlobMSBLong(image);
   outLayer->height = ReadBlobMSBLong(image);
@@ -1161,7 +1167,7 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
   if ( outLayer->visible == False )
     {
       /* BOGUS: should really be separate member var! */
-      outLayer->image->compose = NoCompositeOp;  
+      outLayer->image->compose = NoCompositeOp;
     }
 
   /* read the hierarchy and layer mask offsets */
@@ -1324,7 +1330,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if ((image->columns == 0) || (image->rows == 0))
     ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
-  
+
   /* setup some things about the image...*/
   image->compression=NoCompression;
   image->depth = 8;
@@ -1369,31 +1375,31 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (ReadBlobByte(image) == EOF)
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           /*
-            if (info->file_version == 0) 
+            if (info->file_version == 0)
             {
             gint i;
 
             g_message (_("XCF warning: version 0 of XCF file format\n"
             "did not save indexed colormaps correctly.\n"
             "Substituting grayscale map."));
-            info->cp += 
+            info->cp +=
             xcf_read_int32 (info->fp, (guint32*) &gimage->num_cols, 1);
             gimage->cmap = g_new (guchar, gimage->num_cols*3);
             xcf_seek_pos (info, info->cp + gimage->num_cols);
-            for (i = 0; i<gimage->num_cols; i++) 
+            for (i = 0; i<gimage->num_cols; i++)
             {
             gimage->cmap[i*3+0] = i;
             gimage->cmap[i*3+1] = i;
             gimage->cmap[i*3+2] = i;
             }
             }
-            else 
+            else
             {
-            info->cp += 
+            info->cp +=
             xcf_read_int32 (info->fp, (guint32*) &gimage->num_cols, 1);
             gimage->cmap = g_new (guchar, gimage->num_cols*3);
-            info->cp += 
-            xcf_read_int8 (info->fp, 
+            info->cp +=
+            xcf_read_int8 (info->fp,
             (guint8*) gimage->cmap, gimage->num_cols*3);
             }
           */
@@ -1441,7 +1447,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             */
 
-      
+
             /* BOGUS: we don't write these yet because we aren't
                reading them properly yet :( */
             /* image->x_resolution = xres; */
@@ -1563,15 +1569,22 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickBool
         foundAllLayers = MagickFalse;
 
+      magick_off_t
+        oldPos;
+
+      if (CheckImagePixelLimits(image, exception) != MagickPass)
+        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
       /* BIG HACK
          because XCF doesn't include the layer count, and we
          want to know it in advance in order to allocate memory,
          we have to scan the layer offset list, and then reposition
          the read pointer
       */
-      magick_off_t oldPos = TellBlob(image);
+      oldPos = TellBlob(image);
       if (oldPos < 0)
         ThrowReaderException(BlobError,UnableToObtainOffset,image);
+
       do
         {
           long
