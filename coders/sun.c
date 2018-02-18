@@ -549,10 +549,11 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         const magick_off_t current_offset = TellBlob(image);
         if ((file_size > 0) &&
             (current_offset > 0) &&
-            (file_size > current_offset))
+            (file_size >= current_offset))
         {
           const magick_off_t remaining = file_size-current_offset;
-          if (remaining < (magick_off_t) sun_data_length)
+
+          if ((remaining == 0) || (remaining < (magick_off_t) sun_data_length))
             {
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }

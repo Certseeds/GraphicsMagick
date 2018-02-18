@@ -1,5 +1,10 @@
 2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sun.c (ReadSUNImage): Fix edge case which broke file-size
+	validation logic.  Fixes oss-fuzz issue 5981
+	"graphicsmagick/coder_SUN_fuzzer: Out-of-memory in
+	graphicsmagick_coder_SUN_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/txt.c (ReadTXTImage): Validate that file size is
 	sufficient for claimed image properties.  Fixes oss-fuzz issue
 	5960 "graphicsmagick/coder_TXT_fuzzer: Out-of-memory in
