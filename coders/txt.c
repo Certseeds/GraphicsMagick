@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -593,6 +593,48 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ImportPixelAreaOptionsInit(&import_options);
         import_options.endian = NativeEndian;
 
+        image->columns = x+1;
+        image->rows = y+1;
+        if (logging)
+          (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                               "Image Geometry: %lux%lu", image->columns, image->rows);
+
+        if (CheckImagePixelLimits(image, exception) != MagickPass)
+          ThrowNOTXTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+        /*
+          Validate that file size is sufficient for claimed image properties
+        */
+        if (BlobIsSeekable(image))
+          {
+            magick_off_t
+              file_size;
+
+            if ((file_size=GetBlobSize(image)) != 0)
+              {
+                double
+                  ratio;
+
+                double
+                  packet_size=40.0;  /* Max characters in a row */
+
+                double
+                  number_pixels=image->columns*image->rows;
+
+                ratio = (((double) number_pixels*packet_size)/file_size);
+
+                if (ratio > 2.0)
+                  {
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Unreasonable file size "
+                                          "(ratio of pixels to file size %g)",
+                                          ratio);
+                    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                         image);
+                  }
+              }
+          }
+
         BImgBuff = MagickAllocateArray(unsigned char *,
                                        (size_t)(x+1),
                                        ( ((image->matte) ? 4 : 3)
@@ -602,11 +644,6 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (BImgBuff == NULL)
           ThrowNOTXTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-        image->columns = x+1;
-        image->rows = y+1;
-
-        if (CheckImagePixelLimits(image, exception) != MagickPass)
-          ThrowNOTXTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
         (void) SeekBlob(image,NextImagePos,SEEK_SET);
         NextImagePos = 0;

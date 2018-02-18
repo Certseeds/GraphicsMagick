@@ -38,8 +38,18 @@
 <p>2018-02-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/txt.c (ReadTXTImage): Validate that file size is
+sufficient for claimed image properties.  Fixes oss-fuzz issue
+5960 &quot;graphicsmagick/coder_TXT_fuzzer: Out-of-memory in
+graphicsmagick_coder_TXT_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+<li>coders/tga.c (ReadTGAImage): Only allow 1 and 8 bit
+colormapped/grey images. Fixes oss-fuzz issue 6314
+&quot;graphicsmagick/coder_ICB_fuzzer: Undefined-shift in
+ReadTGAImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/bmp.c (ReadBMPImage): Detect and report when BMP height
-value is out of range (too negative). (Credit to OSS-Fuzz)</li>
+value is out of range (too negative). Fixes oss-fuzz issue 6394
+&quot;graphicsmagick/coder_BMP_fuzzer: Integer-overflow in
+ReadBMPImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/rla.c (ReadRLAImage): Detect when RLE decoding is
 producing too many samples and report as an error.  Fixes oss-fuzz
 issue 6312 &quot;graphicsmagick/coder_RLA_fuzzer: Timeout in
