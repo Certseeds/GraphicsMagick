@@ -1,11 +1,20 @@
 2018-02-19  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* coders/svg.c (SVGStartElement): Per the SVG spec, the
+	SVG coder now initializes the MVG coder (which renders
+	SVG graphical elements) with the the SVG defaults for
+	fill color, fill-opacity, stroke color, stroke-opacity,
+	and stroke-width.  This makes the SVG coder independent
+	of the MVG coder intial state.
+
+2018-02-19  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* coders/svg.c (SVGStartElement): Fixed initialization of
 	x and y attributes per the SVG spec:  for graphical elements
 	"image", "pattern", "text", "rect", and "use", if the x or y
 	attribute is not specified, the effect is as if a value of
 	"0" were specified.
-	
+
 2018-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sun.c (ReadSUNImage): Fix edge case which broke file-size
