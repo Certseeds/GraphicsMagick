@@ -870,6 +870,21 @@ SVGStartElement(void *context,const xmlChar *name,
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
   IsTSpan = LocaleCompare((char *) name,"tspan") == 0;
+  /*
+    According to the SVG spec, for the following SVG elements, if the x or y
+    attribute is not specified, the effect is as if a value of "0" were specified.
+  */
+  if (
+         (LocaleCompare((char *) name,"image") == 0)
+      || (LocaleCompare((char *) name,"pattern") == 0)
+      || (LocaleCompare((char *) name,"rect") == 0)
+      || (LocaleCompare((char *) name,"text") == 0)
+      || (LocaleCompare((char *) name,"use") == 0)
+      )
+    {
+      svg_info->bounds.x = svg_info->bounds.y = 0;
+    }
+
   if (attributes != (const xmlChar **) NULL)
     for (i=0; (svg_info->exception->severity < ErrorException) &&
            (attributes[i] != (const xmlChar *) NULL); i+=2)
