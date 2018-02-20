@@ -1,5 +1,9 @@
 2018-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/viff.c (ReadVIFFImage): Fix excessive memory usage.
+	Fixes oss-fuzz 6006 "graphicsmagick/coder_XV_fuzzer: Out-of-memory
+	in graphicsmagick_coder_XV_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/txt.c (ReadInt): Avoid benign signed integer overflow due
 	to accepting an arbitrary number of digits.  Fixes oss-fuzz 6002
 	"graphicsmagick/coder_TEXT_fuzzer: Integer-overflow in

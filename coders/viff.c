@@ -330,7 +330,6 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
 
   size_t
     alloc_size,
-    blob_size,
     max_packets,
     number_pixels;
 
@@ -419,12 +418,11 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     image->columns=viff_info.rows;
     image->rows=viff_info.columns;
     image->depth=viff_info.x_pixel_size <= 8 ? 8 : QuantumDepth;
+    if (CheckImagePixelLimits(image, exception) != MagickPass)
+      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     /*
       Verify that we can read this VIFF image.
     */
-    /* if (CheckImagePixelLimits(image, exception) != MagickPass) */
-    /*   ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image); */
-
     number_pixels=MagickArraySize(viff_info.columns,viff_info.rows);
     if (number_pixels == 0)
       ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,
@@ -584,8 +582,6 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     if (image_info->ping && (image_info->subrange != 0))
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
-    if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     /*
       Allocate VIFF pixels.
     */
@@ -630,8 +626,8 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
                               (MAGICK_SIZE_T) viff_info.number_data_bands);
       }
     alloc_size=MagickArraySize(bytes_per_pixel,max_packets);
-    blob_size=GetBlobSize(image);
-    if ((blob_size != 0) && (alloc_size > blob_size))
+    if (BlobIsSeekable(image) &&
+        (GetBlobSize(image)-TellBlob(image) < (magick_off_t) alloc_size))
       ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     viff_pixels=MagickAllocateArray(unsigned char *,
                                     MagickArraySize(bytes_per_pixel,
@@ -639,7 +635,12 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
                                     sizeof(Quantum));
     if (viff_pixels == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    (void) ReadBlob(image,bytes_per_pixel*max_packets,(char *) viff_pixels);
+    if (ReadBlob(image,bytes_per_pixel*max_packets,(char *) viff_pixels)
+        != bytes_per_pixel*max_packets)
+      {
+        MagickFreeMemory(viff_pixels);
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+      }
     lsb_first=1;
     if (*(char *) &lsb_first &&
         ((viff_info.machine_dependency != VFF_DEP_DECORDER) &&

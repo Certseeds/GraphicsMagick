@@ -43,6 +43,7 @@
 #define MEMORY_LIMIT_CHECK(func,size)                                   \
   do                                                                    \
     {                                                                   \
+      if (0) fprintf(stderr,"%s: %zu\n", func, size);                   \
       if (size > (size_t)MAGICK_MEMORY_HARD_LIMIT)                      \
         {                                                               \
           fprintf(stderr,"%s: Excessive allocation request %zu\n", func, size); \
