@@ -1,3 +1,14 @@
+2018-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/viff.c (ReadVIFFImage): Verify that there is sufficient
+	data to back up colormap allocation request.  Fixes oss-fuzz 5986
+	"graphicsmagick/coder_VIFF_fuzzer: Out-of-memory in
+	graphicsmagick_coder_VIFF_fuzzer". (Credit to OSS-Fuzz)
+
+	* magick/memory.c: Define MAGICK_MEMORY_HARD_LIMIT=value to abort
+	when memory request exceeds value.  Useful to find location of
+	excessive memory requests.
+
 2018-02-19  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement): Per the SVG spec, the

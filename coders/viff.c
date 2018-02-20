@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -422,6 +422,9 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     /*
       Verify that we can read this VIFF image.
     */
+    /* if (CheckImagePixelLimits(image, exception) != MagickPass) */
+    /*   ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image); */
+
     number_pixels=MagickArraySize(viff_info.columns,viff_info.rows);
     if (number_pixels == 0)
       ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,
@@ -501,6 +504,9 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         viff_colormap_size=MagickArraySize(MagickArraySize(bytes_per_pixel,
                                                            image->colors),
                                            viff_info.map_rows);
+        if (BlobIsSeekable(image) &&
+            (GetBlobSize(image)-TellBlob(image) < (magick_off_t) viff_colormap_size))
+          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         viff_colormap=MagickAllocateMemory(unsigned char *,viff_colormap_size);
         if (viff_colormap == (unsigned char *) NULL)
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,

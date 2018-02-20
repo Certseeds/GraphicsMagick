@@ -35,6 +35,39 @@
 <div class="document">
 
 
+<p>2018-02-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/viff.c (ReadVIFFImage): Verify that there is sufficient
+data to back up colormap allocation request.  Fixes oss-fuzz 5986
+&quot;graphicsmagick/coder_VIFF_fuzzer: Out-of-memory in
+graphicsmagick_coder_VIFF_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+<li>magick/memory.c: Define MAGICK_MEMORY_HARD_LIMIT=value to abort
+when memory request exceeds value.  Useful to find location of
+excessive memory requests.</li>
+</ul>
+</blockquote>
+<p>2018-02-19  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement): Per the SVG spec, the
+SVG coder now initializes the MVG coder (which renders
+SVG graphical elements) with the the SVG defaults for
+fill color, fill-opacity, stroke color, stroke-opacity,
+and stroke-width.  This makes the SVG coder independent
+of the MVG coder intial state.</li>
+</ul>
+</blockquote>
+<p>2018-02-19  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement): Fixed initialization of
+x and y attributes per the SVG spec:  for graphical elements
+&quot;image&quot;, &quot;pattern&quot;, &quot;text&quot;, &quot;rect&quot;, and &quot;use&quot;, if the x or y
+attribute is not specified, the effect is as if a value of
+&quot;0&quot; were specified.</li>
+</ul>
+</blockquote>
 <p>2018-02-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
