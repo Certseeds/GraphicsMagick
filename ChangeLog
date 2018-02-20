@@ -1,5 +1,10 @@
 2018-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/txt.c (ReadInt): Avoid benign signed integer overflow due
+	to accepting an arbitrary number of digits.  Fixes oss-fuzz 6002
+	"graphicsmagick/coder_TEXT_fuzzer: Integer-overflow in
+	ReadInt". (Credit to OSS-Fuzz)
+
 	* coders/viff.c (ReadVIFFImage): Verify that there is sufficient
 	data to back up colormap allocation request.  Fixes oss-fuzz 5986
 	"graphicsmagick/coder_VIFF_fuzzer: Out-of-memory in

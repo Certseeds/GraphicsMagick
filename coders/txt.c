@@ -108,6 +108,9 @@ static long ReadInt(Image *image, int *pch)
   long
     n;
 
+  unsigned int
+    digits;
+
   n=0;
   if (pch)
     ch=*pch;
@@ -121,12 +124,14 @@ static long ReadInt(Image *image, int *pch)
         return (0);
     }
 
-  while (isdigit(ch))
+  digits=0;
+  while ((digits < 10) && isdigit(ch))
     {
       n=10*n+(ch-'0');
       ch = ReadBlobByte(image);
       if (ch == EOF)
         return (n);
+      digits++;
     }
 
   if (pch)
