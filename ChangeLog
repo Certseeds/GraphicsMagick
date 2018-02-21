@@ -1,3 +1,18 @@
+
+2018-02-21  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (DrawImage): Per the SVG spec, opacity,
+	fill-opacity, and stroke-opacity values are now clamped
+	to [0,1].
+
+	Also fixed two bugs introduced by changeset 91de8039f27d
+	(dated 2018-02-12): (1) a group/object opacity value
+	specified using a percentage was not being converted to a
+	value in [0,1]; (2) if fill-opacity or stroke-opacity was
+	1, and the group/object opacity value was set to 1, the
+	resulting fill-opacity or stroke-opacity value would be
+	set to 0 instead of 1.
+	
 2018-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/viff.c (ReadVIFFImage): Fix excessive memory usage.

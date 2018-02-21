@@ -2167,6 +2167,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 break;
               }
             opacity *= factor;
+            if  ( opacity <= 0.0 )   /* per SVG spec */
+              opacity = 0.0;
+            else if  ( opacity > 1.0 )
+              opacity = 1.0;
             FillOpacitySaved = opacity;
             if (graphic_context[n]->fill.opacity != TransparentOpacity)
               {
@@ -2346,6 +2350,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
+            opacity *= factor;
+            if  ( opacity <= 0.0 )  /* per SVG spec */
+              opacity = 0.0;
+            else if ( opacity > 1.0 )
+              opacity = 1.0;
             opacityGroupOld = MaxRGB - graphic_context[n]->opacity; /* MaxRGB==opaque */
             opacityGroupNew = opacityGroupOld * opacity; /* MaxRGB==opaque */
             graphic_context[n]->opacity = MaxRGB - (Quantum)(opacityGroupNew + /*round*/0.5);
@@ -2360,7 +2369,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 double opacityFill = MaxRGB - graphic_context[n]->fill.opacity; /* MaxRGB==opaque */
                 opacityFill = opacityFill * (opacityGroupNew / opacityGroupOld);
                 graphic_context[n]->fill.opacity =
-                  (opacityFill < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityFill + /*round*/0.5) : MaxRGB;
+                  (opacityFill < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityFill + /*round*/0.5) : 0;
               }
 
             }/*fill color != 'none'*/
@@ -2376,7 +2385,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 double opacityStroke = MaxRGB - graphic_context[n]->stroke.opacity; /* MaxRGB==opaque */
                 opacityStroke = opacityStroke * (opacityGroupNew / opacityGroupOld);
                 graphic_context[n]->stroke.opacity =
-                  (opacityStroke < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityStroke + /*round*/0.5) : MaxRGB;
+                  (opacityStroke < MaxRGBDouble) ? MaxRGB - (Quantum)(opacityStroke + /*round*/0.5) : 0;
               }
 
             }/*stroke color != 'none'*/
@@ -2958,6 +2967,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 break;
               }
             opacity *= factor;
+            if  ( opacity <= 0.0 )  /* per SVG spec */
+              opacity = 0.0;
+            else if  ( opacity > 1.0 )
+              opacity = 1.0;
             StrokeOpacitySaved = opacity;
             if (graphic_context[n]->stroke.opacity != TransparentOpacity)
               {
