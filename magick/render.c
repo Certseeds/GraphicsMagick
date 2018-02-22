@@ -4185,7 +4185,9 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
               for ( ; x <= x_stop; x++)
                 {
                   /*
-                    Fill and/or stroke.
+                    Fill and/or stroke.  The fill_opacity returned by GetPixelOpacity()
+                    handles partial pixel coverage at the edge of a polygon, where
+                    0==no coverage and 1==full coverage
                   */
                   fill_opacity=GetPixelOpacity(polygon_info,mid,fill,
                                                draw_info->fill_rule,
@@ -4208,11 +4210,30 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                        (long) (x-fill_pattern->tile_info.x) % fill_pattern->columns,
                        (long) (y-fill_pattern->tile_info.y) % fill_pattern->rows,
                        &image->exception);
+                  /* combine fill_opacity with the fill color's opacity */
                   fill_opacity=MaxRGBDouble-fill_opacity*
                     (MaxRGBDouble-(double) fill_color.opacity);
-                  AlphaCompositePixel(q,&fill_color,fill_opacity,q,
-                                      (q->opacity == TransparentOpacity)
-                                      ? OpaqueOpacity : q->opacity);
+                  /*
+                    Notes on call to AlphaCompositePixel():
+
+                      fill_color: the polygon or pattern fill color, not premultiplied
+                        by its opacity value
+                      fill_opacity: product of the fill color opacity and opacity due
+                        to partial pixel coverage (e.g., at the edge of the polygon)
+                      q: (input) the background pixel, (output) the composited pixel;
+                        neither is premultiplied by its opacity value
+                      q->opacity: the background pixel opacity
+
+                    The previous version of this code substituted "OpaqueOpacity"
+                    for q->opacity if q->opacity was transparent.  I think this was
+                    orignally done to avoid a divide-by-zero in AlphaCompositePixel().
+                    However, this substitution results in an incorrect result if the
+                    background pixel is completely transparent.  Since the current
+                    version of AlphaCompositePixel() has code in it to prevent a
+                    divide-by-zero, the code has been fixed to always use q->opacity
+                    as the background pixel opacity.
+                  */
+                  AlphaCompositePixel(q,&fill_color,fill_opacity,q,q->opacity);
                   if ((stroke_pattern != (Image *) NULL) &&
                       (stroke_pattern->columns != 0) &&
                       (stroke_pattern->rows != 0))
@@ -4223,9 +4244,12 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                        &image->exception);
                   stroke_opacity=MaxRGBDouble-stroke_opacity*
                     (MaxRGBDouble-(double)stroke_color.opacity);
-                  AlphaCompositePixel(q,&stroke_color,stroke_opacity,q,
-                                      (q->opacity == TransparentOpacity)
-                                      ? OpaqueOpacity : q->opacity);
+                  /*
+                    In the call to AlphaCompositePixel() below, q->opacity is now always
+                    used as the background pixel opacity for the same reason as described
+                    in the call to AlphaCompositePixel() above.
+                  */
+                  AlphaCompositePixel(q,&stroke_color,stroke_opacity,q,q->opacity);
                   q++;
                 } /* for ( ; x <= x_stop; x++) */
               if (!SyncImagePixelsEx(image,&image->exception))

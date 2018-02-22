@@ -1,3 +1,14 @@
+2018-02-22  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/alpha_composite.c (BlendQuantumOpacity): The
+	pixel compositing equation used when compositing an
+	image into the output was incorrect and has been fixed.
+
+	* magick/render.c (DrawPolygonPrimitive): When
+	compositing polygon edge pixels over a transparent
+	black background, the code would composite as if the
+	background were opaque black, resulting in the edge
+	pixels being too dark (fixed).
 
 2018-02-21  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
