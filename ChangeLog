@@ -1,3 +1,7 @@
+2018-02-23  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Fix oss-fuzz issue 6301. (Credit to OSS-Fuzz)
+
 2018-02-22  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/alpha_composite.c (BlendQuantumOpacity): The
