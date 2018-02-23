@@ -1795,6 +1795,15 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     StrokeOpacitySaved;
 
   /*
+    Use defsPushCount to track when we enter/leave <defs> ... </defs> so we
+    know not to render any graphical elements defined within (per the SVG spec).
+    This is accomplished by turning off the "render" flag in the graphics
+    context if defsPushCount > 0.
+  */
+  int
+    defsPushCount;
+
+  /*
     Ensure the annotation info is valid.
   */
   assert(image != (Image *) NULL);
@@ -1854,6 +1863,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   (void) QueryColorDatabase("black",&start_color,&image->exception);
   (void) SetImageType(image,TrueColorType);
   status=MagickPass;
+  defsPushCount = 0;  /* not inside of <defs> ... </defs> */
   /*
     The purpose of these next four variables is to attempt to handle cases like:
 
@@ -2423,7 +2433,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleCompare("clip-path",token) == 0)
               break;
             if (LocaleCompare("defs",token) == 0)
-              break;
+              {
+                /* do not render graphic elements if inside <defs> ... </defs> */
+                defsPushCount--;
+                graphic_context[n]->render = (defsPushCount > 0) ? 0 : 1;
+                break;
+              }
             if (LocaleCompare("gradient",token) == 0)
               break;
             if (LocaleCompare("graphic-context",token) == 0)
@@ -2715,7 +2730,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 break;
               }
             if (LocaleCompare("defs",token) == 0)
-              break;
+              {
+                /* do not render graphic elements if inside <defs> ... </defs> */
+                defsPushCount++;
+                graphic_context[n]->render = (defsPushCount > 0) ? 0 : 1;
+                break;
+              }
             status=MagickFail;
             break;
           }

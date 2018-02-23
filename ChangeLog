@@ -1,5 +1,11 @@
 2018-02-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* magick/render.c (DrawImage): Fixed a bug in which graphical
+	elements defined within <defs> ... </defs> were being rendered,
+	contrary to the SVG spec.
+
+2018-02-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/render.c (DrawPolygonPrimitive): When filling or
 	stroking a polygon using a pattern, the fill (or stroke)
 	and group/object opacity values were not being applied to
