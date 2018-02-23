@@ -259,7 +259,12 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
           if (count == EOF)
             return MagickFail;
           if (count == 0x01)
-            return(MagickPass);
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "RLE Escape code encountered");
+              goto rle_decode_done;
+            }
           switch (count)
             {
             case 0x00:
@@ -342,6 +347,11 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
     }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
+ rle_decode_done:
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Decoded %" MAGICK_SIZE_T_F "u bytes",
+                          (MAGICK_SIZE_T) (q-pixels));
   return(MagickPass);
 }
 
@@ -872,7 +882,12 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             "File size: Claimed=%u, Actual=%"
                             MAGICK_OFF_F "d",
                             bmp_info.file_size, file_size);
-    if ((magick_off_t) bmp_info.file_size > file_size)
+    /*
+      It seems that some BMPs claim a file size two bytes larger than
+      they actually are so allow some slop before warning about file
+      size.
+    */
+    if ((magick_off_t) bmp_info.file_size > file_size+2)
       {
         ThrowException(exception,CorruptImageWarning,
                        LengthAndFilesizeDoNotMatch,image->filename);
@@ -961,10 +976,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           packet_size=3;
         else
           packet_size=4;
-        if (SeekBlob(image,start_position+14+bmp_info.size,SEEK_SET) == -1)
+        if (SeekBlob(image,start_position+14+bmp_info.size,SEEK_SET) !=
+            (magick_off_t) start_position+14+bmp_info.size)
           ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
         if (ReadBlob(image,packet_size*image->colors,(char *) bmp_colormap)
-            != packet_size*image->colors)
+            != (size_t) packet_size*image->colors)
           ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         p=bmp_colormap;
         for (i=0; i < (long) image->colors; i++)
@@ -990,7 +1006,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Read image data.
     */
-    if (SeekBlob(image,start_position+bmp_info.offset_bits,SEEK_SET) == -1)
+    if (SeekBlob(image,start_position+bmp_info.offset_bits,SEEK_SET) !=
+        (magick_off_t) start_position+bmp_info.offset_bits)
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image)
     if (bmp_info.compression == BI_RLE4)
       bmp_info.bits_per_pixel<<=1;
@@ -1018,7 +1035,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Not compressed.
         */
-        if (length >= (size_t) file_size)
+        if (file_size-TellBlob(image) < (magick_off_t) length)
           ThrowBMPReaderException(CorruptImageError,InsufficientImageDataInFile,
                                   image);
       }
@@ -1026,7 +1043,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
              (bmp_info.compression == BI_RLE8))
       {
         /* RLE Compressed.  Assume a maximum compression ratio. */
-        if ((file_size == 0) || (((double) length/file_size) > 254.0))
+        if ((double) length/(file_size-TellBlob(image)) > 254.0)
           ThrowBMPReaderException(CorruptImageError,InsufficientImageDataInFile,
                                   image);
       }
@@ -1043,7 +1060,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
             "  Reading pixels (%" MAGICK_SIZE_T_F "u bytes)",
                                 (MAGICK_SIZE_T) length);
-        (void) ReadBlob(image,length,(char *) pixels);
+        if (ReadBlob(image,length,(char *) pixels) != (size_t) length)
+          ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
     else
       {
@@ -1402,10 +1420,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     *magick='\0';
-    if (bmp_info.ba_offset != 0)
-      if (SeekBlob(image,bmp_info.ba_offset,SEEK_SET) == -1)
-        ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image)
-    (void) ReadBlob(image,2,(char *) magick);
+    if (((magick_off_t) bmp_info.ba_offset > 0) &&
+        ((magick_off_t) bmp_info.ba_offset >= TellBlob(image)))
+      if (SeekBlob(image,bmp_info.ba_offset,SEEK_SET) !=
+          (magick_off_t) bmp_info.ba_offset)
+        ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+    if (ReadBlob(image,2,(char *) magick) != (size_t) 2)
+      break;
     if (IsBMP(magick,2))
       {
         /*

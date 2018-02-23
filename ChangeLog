@@ -1,3 +1,9 @@
+2018-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Fix SeekBlob() return value checks.
+	Add more EOF checks.  Require that a provided ba_offset be a
+	forward seek in order to avoid the possibility of endless looping.
+
 2018-02-23  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fix oss-fuzz issue 6301. (Credit to OSS-Fuzz)
@@ -161,7 +167,9 @@
 
 	* coders/wpg.c (ExtractPostscript): Detect EOF on input while
 	transferring bytes to Postscript file.  Fixes oss-fuzz issue 6087
-	"graphicsmagick/coder_WPG_fuzzer: NULL".  (Credit to OSS-Fuzz)
+	"graphicsmagick/coder_WPG_fuzzer: NULL".  Later identified to be
+	CVE-2017-1768 as previously discovered in ImageMagick.  (Credit to
+	OSS-Fuzz)
 
 	* coders/pdb.c (ReadPDBImage): Quit attempting to read image data
 	immediately at EOF. Fixes oss-fuzz issue 6252
