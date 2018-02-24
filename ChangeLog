@@ -1,3 +1,10 @@
+2018-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Report an error if RLE decode does
+	not produce the expected number of bytes.  Fixes oss-fuzz issue
+	6015 "graphicsmagick/coder_BMP_fuzzer: Out-of-memory in
+	graphicsmagick_coder_BMP_fuzzer". (Credit to OSS-Fuzz)
+
 2018-02-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (DrawImage): Fixed a bug in which graphical

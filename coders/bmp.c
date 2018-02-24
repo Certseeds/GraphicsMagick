@@ -92,6 +92,9 @@
 */
 typedef struct _BMPInfo
 {
+  size_t
+    image_size; /* bytes_per_line*image->rows or uint32_t from file */
+
   magick_uint32_t
     file_size,
     ba_offset,
@@ -108,7 +111,6 @@ typedef struct _BMPInfo
 
   magick_uint32_t
     compression,
-    image_size,
     x_pixels,
     y_pixels,
     number_colors,
@@ -195,7 +197,12 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
 
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Decoding RLE pixels");
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  Decoding RLE compressed pixels to"
+                          " %" MAGICK_SIZE_T_F "u bytes",
+                          image->rows*image->columns);
+
   (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
@@ -215,7 +222,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
         {
           if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Decode buffer full (y=%lu, "
+                                  "  Decode buffer full (y=%lu, "
                                   "pixels_size=%" MAGICK_SIZE_T_F "u, "
                                   "pixels=%p, q=%p, end=%p)",
                                   y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
@@ -262,7 +269,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
             {
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "RLE Escape code encountered");
+                                      "  RLE Escape code encountered");
               goto rle_decode_done;
             }
           switch (count)
@@ -350,8 +357,15 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
  rle_decode_done:
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Decoded %" MAGICK_SIZE_T_F "u bytes",
+                          "  Decoded %" MAGICK_SIZE_T_F "u bytes",
                           (MAGICK_SIZE_T) (q-pixels));
+  if ((MAGICK_SIZE_T) (q-pixels) < pixels_size)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  RLE decoded output is truncated");
+      return MagickFail;
+    }
   return(MagickPass);
 }
 
@@ -567,6 +581,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   size_t
+    bytes_per_line,
     count,
     length,
     pixels_size;
@@ -578,9 +593,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned int
     status;
-
-  unsigned long
-    bytes_per_line;
 
   magick_off_t
     file_size;
@@ -879,7 +891,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "File size: Claimed=%u, Actual=%"
+                            "  File size: Claimed=%u, Actual=%"
                             MAGICK_OFF_F "d",
                             bmp_info.file_size, file_size);
     /*
@@ -894,7 +906,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
     if (logging && (magick_off_t) bmp_info.file_size < file_size)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Discarding all data beyond bmp_info.file_size");
+                              "  Discarding all data beyond bmp_info.file_size");
     if (bmp_info.width <= 0)
       ThrowBMPReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
     if ((bmp_info.height) == 0 || (bmp_info.height < -2147483647))
@@ -1014,13 +1026,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Bytes per line: %" MAGICK_SIZE_T_F "u",
+                            "  Bytes per line: %" MAGICK_SIZE_T_F "u",
                             (MAGICK_SIZE_T) bytes_per_line);
 
-    length=bytes_per_line*image->rows;
+    length=MagickArraySize(bytes_per_line,image->rows);
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Expected total raster length: %" MAGICK_SIZE_T_F "u",
+                            "  Expected total raster length: %" MAGICK_SIZE_T_F "u",
                             (MAGICK_SIZE_T) length);
     if (length/image->rows != bytes_per_line)
       ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1738,7 +1750,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       }
 
     bmp_info.planes=1;
-    bmp_info.image_size=bytes_per_line*image->rows;
+    bmp_info.image_size=MagickArraySize(bytes_per_line,image->rows);
     bmp_info.file_size+=bmp_info.image_size;
     bmp_info.x_pixels=75*39;
     bmp_info.y_pixels=75*39;
@@ -2127,7 +2139,8 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       }
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        "  Pixels:  %u bytes",bmp_info.image_size);
+                            "  Pixels:  %" MAGICK_SIZE_T_F "u bytes",
+                            (MAGICK_SIZE_T) bmp_info.image_size);
     (void) WriteBlob(image,bmp_info.image_size,(char *) pixels);
     MagickFreeMemory(pixels);
     if (image->next == (Image *) NULL)

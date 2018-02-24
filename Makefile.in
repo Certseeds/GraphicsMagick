@@ -10183,6 +10183,7 @@ snapshot: distcheck
 	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+# New URL is https://brb.synopsys.com/?project=GraphicsMagick
 coverity:
 	$(MAKE) clean
 	cov-build --dir cov-int $(MAKE)

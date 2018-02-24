@@ -378,6 +378,7 @@ COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz
 COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
+# New URL is https://brb.synopsys.com/?project=GraphicsMagick
 coverity:
 	$(MAKE) clean
 	cov-build --dir cov-int $(MAKE)
