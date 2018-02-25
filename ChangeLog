@@ -1,5 +1,8 @@
 2018-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/bmp.c (ReadBMPImage): Fix UBSAN runtime error: left shift
+	of 205 by 24 places cannot be represented in type 'int'.
+
 	* coders/ept.c (ReadEPTImage): Fix dereference of NULL pointer
 	which was detected by UBSAN in the test suite.
 
