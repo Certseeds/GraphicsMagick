@@ -3447,7 +3447,7 @@ MagickExport double ReadBlobLSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
-  if (!MAGICK_ISNORMAL(dbl_buffer.d))
+  if (MAGICK_ISNAN(dbl_buffer.d))
     dbl_buffer.d = 0.0;
 
   return (dbl_buffer.d);
@@ -3502,7 +3502,7 @@ MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data
 #endif
 
   for (i=0; i < octets_read/sizeof(double); i++)
-    if (!MAGICK_ISNORMAL(data[i]))
+    if (MAGICK_ISNAN(data[i]))
       data[i] = 0.0;
 
   return octets_read;
@@ -3806,7 +3806,7 @@ MagickExport float ReadBlobLSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
-  if (!MAGICK_ISNORMAL(flt_buffer.f))
+  if (MAGICK_ISNAN(flt_buffer.f))
     flt_buffer.f = 0.0;
 
   return (flt_buffer.f);
@@ -3861,7 +3861,7 @@ MagickExport size_t ReadBlobLSBFloats(Image *image, size_t octets, float *data)
 #endif
 
   for (i=0; i < octets_read/sizeof(float); i++)
-    if (!MAGICK_ISNORMAL(data[i]))
+    if (MAGICK_ISNAN(data[i]))
       data[i] = 0.0;
 
   return octets_read;
@@ -3915,7 +3915,7 @@ MagickExport float ReadBlobMSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
-  if (!MAGICK_ISNORMAL(flt_buffer.f))
+  if (MAGICK_ISNAN(flt_buffer.f))
     flt_buffer.f = 0.0;
 
   return (flt_buffer.f);
@@ -3970,7 +3970,7 @@ MagickExport size_t ReadBlobMSBFloats(Image *image, size_t octets, float *data)
 #endif
 
   for (i=0; i < octets_read/sizeof(float); i++)
-    if (!MAGICK_ISNORMAL(data[i]))
+    if (MAGICK_ISNAN(data[i]))
       data[i] = 0.0;
 
   return octets_read;
@@ -4024,7 +4024,7 @@ MagickExport double ReadBlobMSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
-  if (!MAGICK_ISNORMAL(dbl_buffer.d))
+  if (MAGICK_ISNAN(dbl_buffer.d))
     dbl_buffer.d = 0.0;
 
   return (dbl_buffer.d);
@@ -4079,7 +4079,7 @@ MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data
 #endif
 
   for (i=0; i < octets_read/sizeof(double); i++)
-    if (!MAGICK_ISNORMAL(data[i]))
+    if (MAGICK_ISNAN(data[i]))
       data[i] = 0.0;
 
   return octets_read;
