@@ -1348,7 +1348,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         bytes_per_line=4*(image->columns);
         for (y=(long) image->rows-1; y >= 0; y--)
         {
-          unsigned long
+          magick_uint32_t
             pixel;
 
           p=pixels+(image->rows-y-1)*bytes_per_line;
@@ -1357,10 +1357,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           for (x=0; x < (long) image->columns; x++)
           {
-            pixel =((unsigned long) *p++);
-            pixel|=((unsigned long) *p++ << 8);
-            pixel|=((unsigned long) *p++ << 16);
-            pixel|=((unsigned long) *p++ << 24);
+            pixel =((magick_uint32_t) *p++);
+            pixel|=((magick_uint32_t) *p++ << 8);
+            pixel|=((magick_uint32_t) *p++ << 16);
+            pixel|=((magick_uint32_t) *p++ << 24);
             red=((pixel & bmp_info.red_mask) << shift.red) >> 16;
             if (quantum_bits.red == 8)
               red|=(red >> 8);
