@@ -1,5 +1,8 @@
 2018-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/ept.c (ReadEPTImage): Fix dereference of NULL pointer
+	which was detected by UBSAN in the test suite.
+
 	* magick/image.h (RoundDoubleToQuantum): Check double value for
 	NaN and infinity in order to avoid undefined behavior.
 	(RoundFloatToQuantum): Check float value for NaN and infinity in
