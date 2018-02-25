@@ -559,7 +559,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   long
     y;
 
-  unsigned long
+  magick_uint32_t
     blue,
     green,
     opacity,
@@ -1115,7 +1115,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
     if ((bmp_info.bits_per_pixel == 16) || (bmp_info.bits_per_pixel == 32))
       {
-        register unsigned long
+        register magick_uint32_t
           sample;
 
         /*
@@ -1246,7 +1246,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
       case 16:
       {
-        unsigned long
+        magick_uint32_t
           pixel;
 
         /*
