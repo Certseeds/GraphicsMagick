@@ -1,5 +1,27 @@
 2018-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/blob.c (ReadBlobLSBDouble): Make sure imported double is
+	a normal value.
+	(ReadBlobLSBDoubles): Make sure imported doubles are normal
+	values.
+	(ReadBlobLSBFloat): Make sure imported float is a normal value.
+	(ReadBlobLSBFloats): Make sure imported floats are normal values.
+	(ReadBlobMSBFloat): Make sure imported float is a normal value.
+	(ReadBlobMSBFloats): Make sure imported floats are normal values.
+	(ReadBlobMSBDouble): Make sure imported double is a normal value.
+	(ReadBlobMSBDoubles): Make sure imported doubles are normal
+	values.
+
+	* magick/import.c (ImportFloat32Quantum): Make sure imported float
+	is a normal value.
+	(ImportFloat64Quantum): Make sure imported double is a normal
+	value.
+
+	* magick/image.h (RoundDoubleToQuantum): Restore previous behavior
+	(from earlier today).
+	(RoundFloatToQuantum): Restore previous behavior (from earlier
+	today).
+
 	* coders/bmp.c (ReadBMPImage): Fix UBSAN runtime error: left shift
 	of 205 by 24 places cannot be represented in type 'int'.
 

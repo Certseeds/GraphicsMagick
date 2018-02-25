@@ -187,6 +187,8 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         fu_.c[0]=*p++;                          \
         value=fu_.f;                            \
       }                                         \
+    if (!MAGICK_ISNORMAL(value))                \
+      value = 0.0;                              \
   }
 #define ImportFloat64Quantum(endian,value,p)    \
   {                                             \
@@ -213,6 +215,8 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         du_.c[0]=*p++;                          \
         value=du_.d;                            \
       }                                         \
+    if (!MAGICK_ISNORMAL(value))                \
+      value = 0.0;                              \
   }
 
 /*

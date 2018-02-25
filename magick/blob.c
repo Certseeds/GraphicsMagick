@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3447,6 +3447,9 @@ MagickExport double ReadBlobLSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
+  if (!MAGICK_ISNORMAL(dbl_buffer.d))
+    dbl_buffer.d = 0.0;
+
   return (dbl_buffer.d);
 }
 
@@ -3485,6 +3488,7 @@ MagickExport double ReadBlobLSBDouble(Image * image)
 MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3496,6 +3500,10 @@ MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data
   if (octets_read >= sizeof(double))
     MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
+
+  for (i=0; i < octets_read/sizeof(double); i++)
+    if (!MAGICK_ISNORMAL(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -3798,6 +3806,9 @@ MagickExport float ReadBlobLSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
+  if (!MAGICK_ISNORMAL(flt_buffer.f))
+    flt_buffer.f = 0.0;
+
   return (flt_buffer.f);
 }
 
@@ -3836,6 +3847,7 @@ MagickExport float ReadBlobLSBFloat(Image * image)
 MagickExport size_t ReadBlobLSBFloats(Image *image, size_t octets, float *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3847,6 +3859,10 @@ MagickExport size_t ReadBlobLSBFloats(Image *image, size_t octets, float *data)
   if (octets_read >= sizeof(float))
     MagickSwabArrayOfFloat(data,(octets_read+sizeof(float)-1)/sizeof(float));
 #endif
+
+  for (i=0; i < octets_read/sizeof(float); i++)
+    if (!MAGICK_ISNORMAL(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -3899,6 +3915,9 @@ MagickExport float ReadBlobMSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
+  if (!MAGICK_ISNORMAL(flt_buffer.f))
+    flt_buffer.f = 0.0;
+
   return (flt_buffer.f);
 }
 
@@ -3937,6 +3956,7 @@ MagickExport float ReadBlobMSBFloat(Image * image)
 MagickExport size_t ReadBlobMSBFloats(Image *image, size_t octets, float *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3948,6 +3968,10 @@ MagickExport size_t ReadBlobMSBFloats(Image *image, size_t octets, float *data)
   if (octets_read >= sizeof(float))
     MagickSwabArrayOfFloat(data,(octets_read+sizeof(float)-1)/sizeof(float));
 #endif
+
+  for (i=0; i < octets_read/sizeof(float); i++)
+    if (!MAGICK_ISNORMAL(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -4000,6 +4024,9 @@ MagickExport double ReadBlobMSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
+  if (!MAGICK_ISNORMAL(dbl_buffer.d))
+    dbl_buffer.d = 0.0;
+
   return (dbl_buffer.d);
 }
 
@@ -4038,6 +4065,7 @@ MagickExport double ReadBlobMSBDouble(Image * image)
 MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -4049,6 +4077,10 @@ MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data
   if (octets_read > 0)
     MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
+
+  for (i=0; i < octets_read/sizeof(double); i++)
+    if (!MAGICK_ISNORMAL(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }

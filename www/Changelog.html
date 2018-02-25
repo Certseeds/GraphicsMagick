@@ -38,6 +38,25 @@
 <p>2018-02-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/blob.c (ReadBlobLSBDouble): Make sure imported double is
+a normal value.
+(ReadBlobLSBDoubles): Make sure imported doubles are normal
+values.
+(ReadBlobLSBFloat): Make sure imported float is a normal value.
+(ReadBlobLSBFloats): Make sure imported floats are normal values.
+(ReadBlobMSBFloat): Make sure imported float is a normal value.
+(ReadBlobMSBFloats): Make sure imported floats are normal values.
+(ReadBlobMSBDouble): Make sure imported double is a normal value.
+(ReadBlobMSBDoubles): Make sure imported doubles are normal
+values.</li>
+<li>magick/import.c (ImportFloat32Quantum): Make sure imported float
+is a normal value.
+(ImportFloat64Quantum): Make sure imported double is a normal
+value.</li>
+<li>magick/image.h (RoundDoubleToQuantum): Restore previous behavior
+(from earlier today).
+(RoundFloatToQuantum): Restore previous behavior (from earlier
+today).</li>
 <li>coders/bmp.c (ReadBMPImage): Fix UBSAN runtime error: left shift
 of 205 by 24 places cannot be represented in type 'int'.</li>
 <li>coders/ept.c (ReadEPTImage): Fix dereference of NULL pointer

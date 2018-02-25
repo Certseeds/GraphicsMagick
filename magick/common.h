@@ -281,6 +281,11 @@ extern "C" {
 #else
 #define MAGICK_ISINF(d) (0)
 #endif
+#if defined(isnormal)
+#define MAGICK_ISNORMAL(d) isnormal(d)
+#else
+#define MAGICK_ISNORMAL(d) (1)
+#endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
