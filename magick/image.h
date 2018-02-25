@@ -135,11 +135,15 @@ typedef unsigned int Quantum;
 
 #define OpaqueOpacity  0UL
 #define TransparentOpacity  MaxRGB
-#define RoundDoubleToQuantum(value) ((Quantum) (value < 0.0 ? 0U : \
-  (value > MaxRGBDouble) ? MaxRGB : value + 0.5))
-#define RoundFloatToQuantum(value) ((Quantum) (value < 0.0f ? 0U : \
-  (value > MaxRGBFloat) ? MaxRGB : value + 0.5f))
-#define ConstrainToRange(min,max,value) (value < min ? min : \
+#define RoundDoubleToQuantum(value)                                     \
+  ((Quantum) ((MAGICK_ISNAN(value) || (value < 0.0)) ? 0U :             \
+              (MAGICK_ISINF(value) || (value > MaxRGBDouble)) ? MaxRGB : \
+              value + 0.5))
+#define RoundFloatToQuantum(value)                                      \
+  ((Quantum) ((MAGICK_ISNAN(value) || (value < 0.0)) ? 0U :             \
+              (MAGICK_ISINF(value) || (value > MaxRGBFloat)) ? MaxRGB : \
+              value + 0.5))
+#define ConstrainToRange(min,max,value) (value < min ? min :    \
   (value > max) ? max : value)
 #define ConstrainToQuantum(value) ConstrainToRange(0,MaxRGB,value)
 #define ScaleAnyToQuantum(x,max_value) \

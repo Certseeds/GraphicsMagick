@@ -1,7 +1,17 @@
+2018-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.h (RoundDoubleToQuantum): Check double value for
+	NaN and infinity in order to avoid undefined behavior.
+	(RoundFloatToQuantum): Check float value for NaN and infinity in
+	order to avoid undefined behavior.
+
+	* magick/common.h (MAGICK_ISNAN): Add a isnan() wrapper macro.
+	(MAGICK_ISINF): Add a isinf() wrapper macro.
+
 2018-02-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/mat.c Fix oss-fuzz issue 6273 - Heap-use-after-free 
-        in GetLocaleExceptionMessage. (Credit to OSS-Fuzz)
+	* coders/mat.c Fix oss-fuzz issue 6273 - Heap-use-after-free in
+	GetLocaleExceptionMessage. (Credit to OSS-Fuzz)
 
 2018-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
