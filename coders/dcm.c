@@ -3365,9 +3365,9 @@ static MagickPassFail funcDCM_Palette(Image *image,DicomStream *dcm,ExceptionInf
   for (i=0; i < (long) image->colors; i++)
     {
       if (dcm->msb_state == DCM_MSB_BIG)
-        index=(*p << 8) | *(p+1);
+        index=((unsigned short) *p << 8) | (unsigned short) *(p+1);
       else
-        index=*p | (*(p+1) << 8);
+        index=(unsigned short) *p | ((unsigned short) *(p+1) << 8);
       if (dcm->element == 0x1201)
         image->colormap[i].red=ScaleShortToQuantum(index);
       else if (dcm->element == 0x1202)
@@ -3428,7 +3428,8 @@ static magick_uint8_t DCM_RLE_ReadByte(Image *image, DicomStream *dcm)
 
 static magick_uint16_t DCM_RLE_ReadShort(Image *image, DicomStream *dcm)
 {
-  return (DCM_RLE_ReadByte(image,dcm) << 4) | DCM_RLE_ReadByte(image,dcm);
+  return (((magick_uint16_t) DCM_RLE_ReadByte(image,dcm) << 4) |
+          (magick_uint16_t) DCM_RLE_ReadByte(image,dcm));
 }
 
 static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionInfo *exception)
@@ -3794,6 +3795,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
+      (void) memset(dcm->rescale_map,0,(size_t) dcm->max_value_in+1*sizeof(Quantum));
     }
 
   if (dcm->window_width == 0)
@@ -3902,6 +3904,16 @@ void DCM_SetRescaling(DicomStream *dcm,int avoid_scaling)
   dcm->rescaling=DCM_RS_PRE;
 }
 
+#if 0
+/*
+  FIXME: This code is totally broken since DCM_SetupRescaleMap
+  populates dcm->rescale_map and dcm->rescale_map has
+  dcm->max_value_in+1 entries, which has nothing to do with the number
+  of colormap entries or the range of MaxRGB.
+
+  Disabling this whole function and code invoking it until someone
+  figures it out.
+*/
 static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigned long ScanLimits,ExceptionInfo *exception)
 {
   unsigned long
@@ -3972,7 +3984,8 @@ static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigne
         }
     }
 
-  DCM_SetupRescaleMap(image,dcm,exception);
+  if (DCM_SetupRescaleMap(image,dcm,exception) == MagickFail)
+    return MagickFail;
   for (y=0; y < image->rows; y++)
     {
       q=GetImagePixels(image,0,y,image->columns,1);
@@ -4010,6 +4023,7 @@ static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigne
     }
   return MagickPass;
 }
+#endif
 
 static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
@@ -4497,7 +4511,8 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
           /*
             Read fragment tag
           */
-          tag=(dcm->funcReadShort(*image) << 16) | dcm->funcReadShort(*image);
+          tag=(((magick_uint32_t) dcm->funcReadShort(*image) << 16) |
+               (magick_uint32_t) dcm->funcReadShort(*image));
           length=dcm->funcReadLong(*image);
           if (EOFBlob(*image))
             {
@@ -4582,9 +4597,9 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
                 dcm->bytes_per_pixel=1;
                 if (dcm->significant_bits > 8)
                   dcm->bytes_per_pixel=2;
-                dcm->max_value_in=(1 << dcm->significant_bits)-1;
+                dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
                 dcm->max_value_out=dcm->max_value_in;
-                status=DCM_PostRescaleImage(next_image,dcm,True,exception);
+                /*status=DCM_PostRescaleImage(next_image,dcm,True,exception);*/
               }
           if (status == MagickPass)
             {
@@ -4594,6 +4609,11 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
                 image_list=next_image;
               else
                 AppendImageToList(&image_list,next_image);
+            }
+          else if (next_image != (Image *) NULL)
+            {
+              DestroyImage(next_image);
+              next_image=(Image *) NULL;
             }
         }
       (void) LiberateTemporaryFile(filename);
@@ -4845,7 +4865,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       else
         if (dcm.rescaling == DCM_RS_POST)
           {
-            status = DCM_PostRescaleImage(image,&dcm,False,exception);
+            /*status = DCM_PostRescaleImage(image,&dcm,False,exception);*/
             if (status != MagickPass)
               break;
           }

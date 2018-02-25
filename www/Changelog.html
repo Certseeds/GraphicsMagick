@@ -38,6 +38,12 @@
 <p>2018-02-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (DCM_PostRescaleImage): Remove use of
+DCM_PostRescaleImage() since its implementation is wrong and
+accesses non-allocated heap memory.  Problem was reported by Petr
+Gajdos via email on February 8, 2018.</li>
+<li>coders/jp2.c (ReadJP2Image): Use a ThrowJP2ReaderException macro
+to automatically clean up when throwing an exception.</li>
 <li>coders/bmp.c (ReadBMPImage): Report an error if RLE decode does
 not produce the expected number of bytes.  Fixes oss-fuzz issue
 6015 &quot;graphicsmagick/coder_BMP_fuzzer: Out-of-memory in
