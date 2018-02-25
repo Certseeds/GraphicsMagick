@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                                2001 - 2016                                  %
+%                                2001 - 2018                                  %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -506,7 +506,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
               ReadBlobXXXFloats = ReadBlobMSBFloats;
               import_options->endian = MSBEndian;
               break;
-      default: return 0;                /* Unsupported endian */
+      default: RET_CHECK(image);      /* Unsupported endian */
     }
 
     HDR.nRows = ReadBlobXXXLong(image);

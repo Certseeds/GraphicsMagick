@@ -1,3 +1,8 @@
+2018-02-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Fix oss-fuzz issue 6273 - Heap-use-after-free 
+        in GetLocaleExceptionMessage. (Credit to OSS-Fuzz)
+
 2018-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_PostRescaleImage): Remove use of
