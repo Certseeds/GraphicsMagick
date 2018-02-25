@@ -222,28 +222,29 @@ static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
     if (*p > 0)
     {
       f = (*p / MaxVal) * (MaxRGB - q->red);
-      if (f + q->red > MaxRGB)
-        q->red = MaxRGB;
-      else
+      if (f + q->red < MaxRGB)
         q->red += (int)f;
-      f /= 2.0;
-      if(f >= q->green)
-        q->green = q->blue = 0;
       else
+        q->red = MaxRGB;        
+      f /= 2.0;
+      if(f < q->green)
         q->green = q->blue -= (int)(f);
+      else
+        q->green = q->blue = 0;        
     }
     if (*p < 0)
     {
       f = (*p / MaxVal) * (MaxRGB - q->blue);
-      if (f + q->blue > MaxRGB)
-        q->blue = MaxRGB;
-      else
+      if (f + q->blue < MaxRGB)
         q->blue += (int) f;
+      else	/* 'else' branch is executed when NaN occurs. */
+        q->blue = MaxRGB;        
+
       f /= 2.0;
-      if(f >= q->green)
-        q->green = q->red = 0;
-      else
+      if(f < q->green)
         q->green = q->red -= (int)(f);
+      else	/* 'else' branch is executed when NaN occurs. */
+        q->green = q->red = 0;        
     }
     p++;
     q++;
