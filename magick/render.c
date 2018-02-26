@@ -4169,10 +4169,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
             fill_color,
             stroke_color;
 
-          Quantum
-            fill_color_opacity_saved,
-            stroke_color_opacity_saved;
-
           double
             fill_opacity,
             stroke_opacity;
@@ -4199,13 +4195,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
           polygon_info=(PolygonInfo *) AccessThreadViewData(polygon_set);
           fill_color=draw_info->fill;
           stroke_color=draw_info->stroke;
-          /*
-            If we are filling or stroking from a pattern, {fill|stroke}_color.opacity
-            will have integrated into it the group/object opacity value, which must be
-            applied to pixels obtained from the pattern.
-          */
-          fill_color_opacity_saved=fill_color.opacity;
-          stroke_color_opacity_saved=stroke_color.opacity;
           x=x_start;
           q=GetImagePixelsEx(image,x,y,x_stop-x+1,1,&image->exception);
           if (q == (PixelPacket *) NULL)
@@ -4242,8 +4231,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                         (long) (x-fill_pattern->tile_info.x) % fill_pattern->columns,
                         (long) (y-fill_pattern->tile_info.y) % fill_pattern->rows,
                         &image->exception);
-                      /* apply the combined fill opacity + object/group opacity value to the pattern pixel */
-                      fill_color.opacity = MaxRGB-((MaxRGB-fill_color.opacity)*(MaxRGB-fill_color_opacity_saved)+(MaxRGB>>1))/MaxRGB;
+                      /* apply the group opacity value to the pattern pixel */
+                      fill_color.opacity = MaxRGB-((MaxRGB-fill_color.opacity)*(MaxRGB-draw_info->opacity)+(MaxRGB>>1))/MaxRGB;
                     }
                   /* combine fill_opacity with the fill color's opacity */
                   fill_opacity=MaxRGBDouble-fill_opacity*
@@ -4278,8 +4267,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                         (long) (x-stroke_pattern->tile_info.x) % stroke_pattern->columns,
                         (long) (y-stroke_pattern->tile_info.y) % stroke_pattern->rows,
                         &image->exception);
-                      /* apply the combined stroke opacity + object/group opacity value to the pattern pixel */
-                      stroke_color.opacity = MaxRGB-((MaxRGB-stroke_color.opacity)*(MaxRGB-stroke_color_opacity_saved)+(MaxRGB>>1))/MaxRGB;
+                      /* apply the group opacity value to the pattern pixel */
+                      stroke_color.opacity = MaxRGB-((MaxRGB-stroke_color.opacity)*(MaxRGB-draw_info->opacity)+(MaxRGB>>1))/MaxRGB;
                     }
                   stroke_opacity=MaxRGBDouble-stroke_opacity*
                     (MaxRGBDouble-(double)stroke_color.opacity);

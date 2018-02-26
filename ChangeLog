@@ -1,3 +1,15 @@
+2018-02-26  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (DrawPolygonPrimitive): Fixed a bug
+	introduced by changeset 39102dd1d456.  For SVG, this
+	changeset applied both the group AND the fill opacity
+	values to fill patterns (similarly for stroke).  For WMF,
+	however, this caused the fill pattern to be rendered as
+	100% transparent.  A closer reading of the SVG spec does
+	NOT show that the fill opacity should be applied to the
+	fill pattern, so as of this latest changeset only the group
+	opacity value is applied to fill and stroke patterns.
+
 2018-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Validate that PICT rectangles do
