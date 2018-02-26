@@ -1,3 +1,9 @@
+2018-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Detect and handle failure to
+	allocate global PLTE.  Problem was reported via email from Petr
+	Gajdos on February 26, 2018.
+
 2018-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (ReadBlobLSBDouble): Make sure imported double is

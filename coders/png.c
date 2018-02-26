@@ -4474,6 +4474,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   if (mng_info->global_plte == (png_colorp) NULL)
                     mng_info->global_plte=
                       MagickAllocateMemory(png_colorp,256*sizeof(png_color));
+                  if (mng_info->global_plte == (png_colorp) NULL)
+                    {
+                      mng_info->global_plte_length=0;
+                      MagickFreeMemory(chunk);
+                      MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                           image);
+                    }
                   for (i=0; i < (long) (length/3); i++)
                     {
                       mng_info->global_plte[i].red=p[3*i];
