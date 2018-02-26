@@ -1,5 +1,14 @@
 2018-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Validate that PICT rectangles do
+	not have zero dimensions.  Specify expected file type when reading
+	from a temporary file.  Trace PICT rectangle dimensions.  More
+	detection of blob EOF and more error handling.  Fixes oss-fuzz
+	issue 6193 "graphicsmagick/coder_PCT_fuzzer: Unknown signal in
+	AllocateImageColormap" and likely many oss-fuzz ASAN/UBSAN issues
+	reported against "PCT" and "PICT" since this one problem appears
+	to be causing a spew of reports.
+
 	* coders/png.c (ReadMNGImage): Detect and handle failure to
 	allocate global PLTE.  Problem was reported via email from Petr
 	Gajdos on February 26, 2018.

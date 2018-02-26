@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -74,6 +74,9 @@
      pixmap.component_count <= 0 || pixmap.component_count > 4 ||      \
      pixmap.component_size <= 0))
 
+/*
+  Read a PICT rectangle
+*/
 #define ReadRectangle(rectangle)                                       \
   {                                                                    \
   rectangle.top=ReadBlobMSBShort(image);                               \
@@ -82,9 +85,31 @@
   rectangle.right=ReadBlobMSBShort(image);                             \
   }
 
+/*
+  Return true if PICT rectangle is valid.
+*/
 #define ValidateRectangle(rectangle) \
-  (!(EOFBlob(image) || \
-     (rectangle.top > rectangle.bottom || rectangle.left > rectangle.right)))
+  ((!EOFBlob(image) && \
+    (rectangle.bottom - rectangle.top > 0) && \
+    (rectangle.right - rectangle.left > 0)))
+
+/*
+  Issue a trace message with rectangle dimensions.
+*/
+#define TraceRectangle(image,rectangle)                         \
+  do                                                            \
+    {                                                           \
+      if (image->logging)                                       \
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),     \
+                              "%sRectangle: top %+d, bottom %+d, "        \
+                              "left %+d, right %+d",            \
+                              EOFBlob(image) ? "EOF! " : "",    \
+                              (int) frame.top,                  \
+                              (int) frame.bottom,               \
+                              (int) frame.left,                 \
+                              (int) frame.right);               \
+    } while(0)
+
 
 typedef struct _PICTCode
 {
@@ -408,8 +433,8 @@ static unsigned char *ExpandBuffer(unsigned char *pixels,
 }
 
 static unsigned char *DecodeImage(const ImageInfo *image_info,
-  Image *blob,Image *image,unsigned long bytes_per_line,
-  const unsigned int bits_per_pixel)
+                                  Image *blob,Image *image,unsigned long bytes_per_line,
+                                  const unsigned int bits_per_pixel)
 {
   long
     j,
@@ -488,18 +513,18 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
         Pixels are already uncompressed.
       */
       for (y=0; y < (long) image->rows; y++)
-      {
-        q=pixels+y*width;
-        number_pixels=bytes_per_line;
-        if (ReadBlob(blob,number_pixels,(char *) scanline) != number_pixels)
-          {
-            ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
-                           image->filename);
-            goto decode_error_exit;
-          }
-        p=ExpandBuffer(scanline,&number_pixels,bits_per_pixel);
-        (void) memcpy(q,p,number_pixels);
-      }
+        {
+          q=pixels+y*width;
+          number_pixels=bytes_per_line;
+          if (ReadBlob(blob,number_pixels,(char *) scanline) != number_pixels)
+            {
+              ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
+                             image->filename);
+              goto decode_error_exit;
+            }
+          p=ExpandBuffer(scanline,&number_pixels,bits_per_pixel);
+          (void) memcpy(q,p,number_pixels);
+        }
       MagickFreeMemory(scanline);
       return(pixels);
     }
@@ -507,66 +532,67 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     Uncompress RLE pixels into uncompressed pixel buffer.
   */
   for (y=0; y < (long) image->rows; y++)
-  {
-    q=pixels+y*width;
-    if (bytes_per_line > 200)
-      scanline_length=ReadBlobMSBShort(blob);
-    else
-      scanline_length=ReadBlobByte(blob);
-    if (scanline_length >= row_bytes)
-      {
-        ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
-                       "scanline length exceeds row bytes");
-        goto decode_error_exit;
-      }
-    if (ReadBlob(blob,scanline_length,(char *) scanline) != scanline_length)
-      {
-        ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
-                       image->filename);
-        goto decode_error_exit;
-      }
-    for (j=0; j < (long) scanline_length; )
-      if ((scanline[j] & 0x80) == 0)
-        {
-          length=(scanline[j] & 0xff)+1;
-          number_pixels=length*bytes_per_pixel;
-          p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
-          if (j+number_pixels >= scanline_length)
-            {
-              ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
-                             "Decoded RLE pixels exceeds allocation!");
-              goto decode_error_exit;
-            }
-          if ((q+number_pixels > pixels+allocated_pixels))
-            {
-              ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
-                             "Decoded RLE pixels exceeds allocation!");
-              goto decode_error_exit;
-            }
-
-          (void) memcpy(q,p,number_pixels); /* ASAN report */
-          q+=number_pixels;
-          j+=length*bytes_per_pixel+1;
-        }
+    {
+      q=pixels+y*width;
+      if (bytes_per_line > 200)
+        scanline_length=ReadBlobMSBShort(blob);
       else
+        scanline_length=ReadBlobByte(blob);
+      if (scanline_length >= row_bytes)
         {
-          length=((scanline[j]^0xff) & 0xff)+2;
-          number_pixels=bytes_per_pixel;
-          p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
-          for (i=0; i < (long) length; i++)
-          {
-          if ((q+number_pixels > pixels+allocated_pixels))
-            {
-              ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
-                             "Decoded RLE pixels exceeds allocation!");
-              goto decode_error_exit;
-            }
-            (void) memcpy(q,p,number_pixels);
-            q+=number_pixels;
-          }
-          j+=bytes_per_pixel+1;
+          ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
+                         "scanline length exceeds row bytes");
+          goto decode_error_exit;
         }
-  }
+      if (ReadBlob(blob,scanline_length,(char *) scanline) != scanline_length)
+        {
+          ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
+                         image->filename);
+          goto decode_error_exit;
+        }
+      for (j=0; j < (long) scanline_length; )
+        if ((scanline[j] & 0x80) == 0)
+          {
+            length=(scanline[j] & 0xff)+1;
+            number_pixels=length*bytes_per_pixel;
+            p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
+            if (j+number_pixels >= scanline_length)
+              {
+                errno=0;
+                ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
+                               "Decoded RLE pixels exceeds allocation!");
+                goto decode_error_exit;
+              }
+            if ((q+number_pixels > pixels+allocated_pixels))
+              {
+                ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
+                               "Decoded RLE pixels exceeds allocation!");
+                goto decode_error_exit;
+              }
+
+            (void) memcpy(q,p,number_pixels); /* ASAN report */
+            q+=number_pixels;
+            j+=length*bytes_per_pixel+1;
+          }
+        else
+          {
+            length=((scanline[j]^0xff) & 0xff)+2;
+            number_pixels=bytes_per_pixel;
+            p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
+            for (i=0; i < (long) length; i++)
+              {
+                if ((q+number_pixels > pixels+allocated_pixels))
+                  {
+                    ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
+                                   "Decoded RLE pixels exceeds allocation!");
+                    goto decode_error_exit;
+                  }
+                (void) memcpy(q,p,number_pixels);
+                q+=number_pixels;
+              }
+            j+=bytes_per_pixel+1;
+          }
+    }
   MagickFreeMemory(scanline);
   return(pixels);
 
@@ -784,7 +810,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
     geometry[MaxTextExtent];
 
   Image
-    *image;
+    *image = (Image *) NULL;
 
   ImageInfo
     *clone_info = (ImageInfo *) NULL;
@@ -851,6 +877,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
     (void) ReadBlobByte(image);  /* skip header */
   (void) ReadBlobMSBShort(image);  /* skip picture size */
   ReadRectangle(frame);
+  TraceRectangle(image,frame);
   if (!ValidateRectangle(frame))
     ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
   while ((c=ReadBlobByte(image)) == 0);
@@ -927,10 +954,12 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (length != 0x000a)
               {
                 for (i=0; i < (long) (length-2); i++)
-                  (void) ReadBlobByte(image);
+                  if (ReadBlobByte(image) == EOF)
+                    break;
                 break;
               }
             ReadRectangle(frame);
+            TraceRectangle(image,frame);
             if (!ValidateRectangle(frame))
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
             if ((frame.left & 0x8000) || (frame.top & 0x8000))
@@ -970,6 +999,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 image);
             length=ReadBlobMSBShort(image);
             ReadRectangle(frame);
+            TraceRectangle(image,frame);
             if (!ValidateRectangle(frame))
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
             ReadPixmap(pixmap);
@@ -994,16 +1024,29 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (length < 8)
               {
                 for (i=0; i < (long) (length*height); i++)
-                  (void) ReadBlobByte(image);
+                  if (ReadBlobByte(image) == EOF)
+                    break;
               }
             else
-              for (j=0; j < (int) height; j++)
-                if (length > 200)
-                  for (j=0; j < ReadBlobMSBShort(image); j++)
-                    (void) ReadBlobByte(image);
-                else
-                  for (j=0; j < ReadBlobByte(image); j++)
-                    (void) ReadBlobByte(image);
+              {
+                for (j=0; j < (int) height; j++)
+                  {
+                    if (EOFBlob(image))
+                      break;
+                    if (length > 200)
+                      {
+                        for (j=0; j < ReadBlobMSBShort(image); j++)
+                          if (ReadBlobByte(image) == EOF)
+                            break;
+                      }
+                    else
+                      {
+                        for (j=0; j < ReadBlobByte(image); j++)
+                          if (ReadBlobByte(image) == EOF)
+                            break;
+                      }
+                  }
+              }
             break;
           }
           case 0x1b:
@@ -1033,7 +1076,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             */
             length=ReadBlobMSBShort(image);
             for (i=0; i < (long) (length-2); i++)
-              (void) ReadBlobByte(image);
+              if (ReadBlobByte(image) == EOF)
+                break;
             break;
           }
           case 0x90:
@@ -1075,6 +1119,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 (void) ReadBlobMSBShort(image);
               }
             ReadRectangle(frame);
+            TraceRectangle(image,frame);
             if (!ValidateRectangle(frame))
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
             /*
@@ -1083,7 +1128,10 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             tile_image=CloneImage(image,frame.right-frame.left,
               frame.bottom-frame.top,True,exception);
             if (tile_image == (Image *) NULL)
-              return((Image *) NULL);
+              {
+                DestroyImage(image);
+                return((Image *) NULL);
+              }
             DestroyBlob(tile_image);
             tile_image->blob=CloneBlobInfo((BlobInfo *) NULL);
             if ((code == 0x9a) || (code == 0x9b) || (bytes_per_line & 0x8000))
@@ -1144,12 +1192,14 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                   }
               }
             ReadRectangle(source);
+            TraceRectangle(image,source);
             if (!ValidateRectangle(source))
             {
               DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
             }
             ReadRectangle(destination);
+            TraceRectangle(image,destination);
             if (!ValidateRectangle(destination))
             {
               DestroyImage(tile_image);
@@ -1163,7 +1213,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 */
                 length=ReadBlobMSBShort(image);
                 for (i=0; i <= (long) (length-2); i++)
-                  (void) ReadBlobByte(image);
+                  if (ReadBlobByte(image) == EOF)
+                    break;
               }
             if ((code != 0x9a) && (code != 0x9b) &&
                 (bytes_per_line & 0x8000) == 0)
@@ -1314,7 +1365,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               (void) ReadBlobMSBShort(image);
             else
               for (i=0; i < (long) codes[code].length; i++)
-                (void) ReadBlobByte(image);
+                if (ReadBlobByte(image) == EOF)
+                  break;
           }
         }
       }
@@ -1324,7 +1376,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
           Skip header.
         */
         for (i=0; i < 24; i++)
-          (void) ReadBlobByte(image);
+          if (ReadBlobByte(image) == EOF)
+            break;
         continue;
       }
     if (((code >= 0xb0) && (code <= 0xcf)) ||
@@ -1338,6 +1391,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         Image
           *tile_image;
 
+        char tmpfile[MaxTextExtent];
+
         /*
           Embedded JPEG.
         */
@@ -1345,18 +1400,21 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         clone_info=CloneImageInfo(image_info);
         clone_info->blob=(void *) NULL;
         clone_info->length=0;
-        file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
+        file=AcquireTemporaryFileStream(tmpfile,BinaryFileIOMode);
         if (file == (FILE *) NULL)
           {
             DestroyImageInfo(clone_info);
             ThrowReaderTemporaryFileException(clone_info->filename);
           }
+        (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
+        (void) strlcat(clone_info->filename,tmpfile,sizeof(clone_info->filename));
         length=ReadBlobMSBLong(image);
         if (length > 154)
           {
             for (i=0; i < 6; i++)
               (void) ReadBlobMSBLong(image);
             ReadRectangle(frame);
+            TraceRectangle(image,frame);
             if (!ValidateRectangle(frame))
               {
                 (void) fclose(file);
