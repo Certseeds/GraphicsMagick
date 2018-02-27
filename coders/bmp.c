@@ -595,6 +595,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   magick_off_t
+    file_remaining,
     file_size;
 
   /*
@@ -1047,7 +1048,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Not compressed.
         */
-        if (file_size-TellBlob(image) < (magick_off_t) length)
+        file_remaining=file_size-TellBlob(image);
+        if (file_remaining < (magick_off_t) length)
           ThrowBMPReaderException(CorruptImageError,InsufficientImageDataInFile,
                                   image);
       }
@@ -1055,7 +1057,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
              (bmp_info.compression == BI_RLE8))
       {
         /* RLE Compressed.  Assume a maximum compression ratio. */
-        if ((double) length/(file_size-TellBlob(image)) > 254.0)
+        file_remaining=file_size-TellBlob(image);
+        if ((file_remaining <= 0) || (((double) length/file_remaining) > 254.0))
           ThrowBMPReaderException(CorruptImageError,InsufficientImageDataInFile,
                                   image);
       }
