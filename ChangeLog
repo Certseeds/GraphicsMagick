@@ -1,5 +1,17 @@
 2018-02-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* coders/svg.c (SVGStartElement, SVGEndElement): From the
+	SVG spec:  "The 'foreignObject' element allows for inclusion
+	of a foreign namespace which has its graphical content drawn
+	by a different user agent."  Code has been added to consume
+	and discard the 'foreignObject' element and any settings (e.g.,
+	fill color) internal to it.  Previously, settings internal
+	to the 'foreignObject' element would persist and "leak" into
+	the graphic elements that followed it, resulting in undesired
+	side effects (e.g., fill color other than the expected default).
+
+2018-02-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/render.c (DrawPolygonPrimitive): Fixed a bug
 	introduced by changeset 39102dd1d456.  For SVG, this
 	changeset applied both the group AND the fill opacity
@@ -9,8 +21,8 @@
 	NOT show that the fill opacity should be applied to the
 	fill pattern, so as of this latest changeset only the group
 	opacity value is applied to fill and stroke patterns.
-	
-	2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix divide by zero regression added
 	by latest fixes.  Fixes oss-fuzz 6583

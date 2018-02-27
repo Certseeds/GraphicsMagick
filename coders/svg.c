@@ -1073,6 +1073,22 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         break;
       }
+    case 'F':
+    case 'f':
+      {
+        /*
+          For now we are ignoring "foreignObject".  However, we do a push/pop
+          graphic-context so that any settings (e.g., fill) are consumed and
+          discarded.  Otherwise they might persist and "leak" into the graphic
+          elements that follow.
+        */
+        if (LocaleCompare((char *) name,"foreignObject") == 0)
+          {
+            MVGPrintf(svg_info->file,"push graphic-context\n");
+            break;
+          }
+        break;
+      }
     case 'G':
     case 'g':
       {
@@ -2461,6 +2477,22 @@ SVGEndElement(void *context,const xmlChar *name)
                       svg_info->element.cx,svg_info->element.cy,
                       angle == 0.0 ? svg_info->element.major : svg_info->element.minor,
                       angle == 0.0 ? svg_info->element.minor : svg_info->element.major);
+            MVGPrintf(svg_info->file,"pop graphic-context\n");
+            break;
+          }
+        break;
+      }
+    case 'F':
+    case 'f':
+      {
+        /*
+          For now we are ignoring "foreignObject".  However, we do a push/pop
+          graphic-context so that any settings (e.g., fill) are consumed and
+          discarded.  Otherwise they might persist and "leak" into the graphic
+          elements that follow.
+        */
+        if (LocaleCompare((char *) name,"foreignObject") == 0)
+          {
             MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
