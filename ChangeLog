@@ -1,4 +1,4 @@
-2018-2018-02-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+2018-02-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (DrawPolygonPrimitive): Fixed a bug
 	introduced by changeset 39102dd1d456.  For SVG, this
@@ -8,7 +8,9 @@
 	100% transparent.  A closer reading of the SVG spec does
 	NOT show that the fill opacity should be applied to the
 	fill pattern, so as of this latest changeset only the group
-	opacity value is applied to fill and stroke patterns.02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+	opacity value is applied to fill and stroke patterns.
+	
+	2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix divide by zero regression added
 	by latest fixes.  Fixes oss-fuzz 6583
