@@ -1,3 +1,10 @@
+2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Fix divide by zero regression added
+	by latest fixes.  Fixes oss-fuzz 6583
+	"graphicsmagick/coder_BMP_fuzzer: Divide-by-zero in ReadBMPImage".
+	(Credit to OSS-Fuzz)
+
 2018-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Validate that PICT rectangles do
