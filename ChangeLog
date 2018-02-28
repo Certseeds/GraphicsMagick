@@ -1,3 +1,10 @@
+2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/fits.c (ReadFITSImage): Fix signed integer overflow when
+	computing pixels size.  Fixes oss-fuzz 6586
+	"graphicsmagick/coder_FITS_fuzzer: Integer-overflow in
+	ReadFITSImage". (Credit to OSS-Fuzz)
+
 2018-02-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement, SVGEndElement): From the

@@ -198,7 +198,7 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
     status,
     value_expected;
 
-  unsigned long
+  size_t
     number_pixels;
 
   ImportPixelAreaOptions import_options;
@@ -432,7 +432,6 @@ ReadExtension:
   }
   else
   {
-   number_pixels = fits_info.columns*fits_info.rows;
    for (scene=0; scene < (long) fits_info.number_scenes; scene++)
    {
       if(image->rows!=0 && image->columns!=0)
@@ -474,14 +473,13 @@ ReadExtension:
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
 
+    if (CheckImagePixelLimits(image, exception) != MagickPass)
+      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
     /*
       Initialize image structure.
     */
     packet_size=AbsoluteValue(fits_info.bits_per_pixel)/8;
-
-    number_pixels = image->columns*image->rows;
-    if ((number_pixels / image->columns) != image->rows)
-      ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
 
     /*
       Validate that file size is sufficient for claimed image properties
@@ -496,7 +494,7 @@ ReadExtension:
             double
               ratio;
 
-            ratio = (((double) number_pixels*packet_size)/file_size);
+            ratio = (((double) image->columns*image->rows*packet_size)/file_size);
 
             if (ratio > 1.5)
               {

@@ -38,6 +38,43 @@
 <p>2018-02-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/fits.c (ReadFITSImage): Fix signed integer overflow when
+computing pixels size.  Fixes oss-fuzz 6586
+&quot;graphicsmagick/coder_FITS_fuzzer: Integer-overflow in
+ReadFITSImage&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-02-27  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement, SVGEndElement): From the
+SVG spec:  &quot;The 'foreignObject' element allows for inclusion
+of a foreign namespace which has its graphical content drawn
+by a different user agent.&quot;  Code has been added to consume
+and discard the 'foreignObject' element and any settings (e.g.,
+fill color) internal to it.  Previously, settings internal
+to the 'foreignObject' element would persist and &quot;leak&quot; into
+the graphic elements that followed it, resulting in undesired
+side effects (e.g., fill color other than the expected default).</li>
+</ul>
+</blockquote>
+<p>2018-02-27  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawPolygonPrimitive): Fixed a bug
+introduced by changeset 39102dd1d456.  For SVG, this
+changeset applied both the group AND the fill opacity
+values to fill patterns (similarly for stroke).  For WMF,
+however, this caused the fill pattern to be rendered as
+100% transparent.  A closer reading of the SVG spec does
+NOT show that the fill opacity should be applied to the
+fill pattern, so as of this latest changeset only the group
+opacity value is applied to fill and stroke patterns.</li>
+</ul>
+</blockquote>
+<p>2018-02-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
 <li>coders/bmp.c (ReadBMPImage): Fix divide by zero regression added
 by latest fixes.  Fixes oss-fuzz 6583
 &quot;graphicsmagick/coder_BMP_fuzzer: Divide-by-zero in ReadBMPImage&quot;.
