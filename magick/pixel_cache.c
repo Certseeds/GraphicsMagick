@@ -826,6 +826,18 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                      image->filename);
       return((const PixelPacket *) NULL);
     }
+  if ((image->columns != cache_info->columns) ||
+      (image->rows > cache_info->rows))
+    {
+      (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                            "Image dimensions: %lux%lu, "
+                            "Cache dimensions: %lux%lu",
+                            image->columns, image->rows,
+                            cache_info->columns, cache_info->rows);
+      ThrowException(exception,CacheError,PixelCacheDimensionsMisMatch,
+                     image->filename);
+      return((const PixelPacket *) NULL);
+    }
   region.x=x;
   region.y=y;
   region.width=columns;

@@ -1,5 +1,10 @@
 2018-02-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (AcquireCacheNexus): Add a check that the
+	pixel cache is compatible with the image dimensions.  Fixes
+	oss-fuzz issues 5978 5988 5989 5990 5993 6016, and 6056, which are
+	all related to the PICT writer.
+
 	* magick/draw.c (DrawGetStrokeDashArray): Check for failure to
 	allocate memory.  Patch submited by Petr Gajdos via email on
 	February 28, 2018.
