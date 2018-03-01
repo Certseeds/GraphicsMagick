@@ -1,3 +1,9 @@
+2018-02-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/draw.c (DrawGetStrokeDashArray): Check for failure to
+	allocate memory.  Patch submited by Petr Gajdos via email on
+	February 28, 2018.
+
 2018-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/fits.c (ReadFITSImage): Fix signed integer overflow when

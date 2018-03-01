@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4810,12 +4810,15 @@ MagickExport double *DrawGetStrokeDashArray(DrawContext context,
   if (n != 0)
     {
       dasharray = MagickAllocateArray(double *, n+1, sizeof(double));
-      p = CurrentContext->dash_pattern;
-      q = dasharray;
-      i = n;
-      while( i-- )
-        *q++ = *p++;
-      *q=0.0;
+      if (dasharray != (double*)NULL)
+        {
+          p = CurrentContext->dash_pattern;
+          q = dasharray;
+          i = n;
+          while( i-- )
+            *q++ = *p++;
+          *q=0.0;
+        }
     }
   return dasharray;
 }
