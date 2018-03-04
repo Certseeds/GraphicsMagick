@@ -234,7 +234,7 @@ static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
     }
     if (*p < 0)
     {
-      f = (*p / MaxVal) * (MaxRGB - q->blue);
+      f = (*p / MinVal) * (MaxRGB - q->blue); /* f is positive only <0; inf> */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;
       else	/* 'else' branch is executed when NaN occurs. */
