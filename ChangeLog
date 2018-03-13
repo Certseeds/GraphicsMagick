@@ -1,3 +1,13 @@
+2018-03-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (MagickSignal): Use an alternate signal stack,
+	if available.  This is required for Go lang C language extensions
+	since Go lang requests an alternate signal sack, and uses small
+	stacks for its threads.  If the library user has not allocated an
+	alternate signal stack, then behavior should be just as before.
+	Issue was originally reported by yzh杨振宏 on March 1, 2018 via
+	the graphicsmagick-help SourceForge mailing list.
+
 2018-02-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (AcquireCacheNexus): Add a check that the

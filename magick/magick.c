@@ -619,6 +619,9 @@ MagickSignal(int signo, Sigfunc *func)
 #  if defined(SA_INTERRUPT)  /* SunOS */
   act.sa_flags |= SA_INTERRUPT;
 #  endif
+#  if defined(SA_ONSTACK)  /* Use alternate signal stack if available */
+  act.sa_flags |= SA_ONSTACK;
+#  endif
   if (sigaction(signo, &act, &oact) < 0)
     return (SIG_ERR);
   return (oact.sa_handler);
