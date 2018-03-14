@@ -918,7 +918,9 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Read Graphics Control extension.
             */
-            while (ReadBlobBlock(image,header) != 0);
+            while ((count = ReadBlobBlock(image,header)) != 0);
+            if (count < 4)
+              break;
             dispose=header[0] >> 2;
             delay=((unsigned int) header[2] << 8) | header[1];
             if ((header[0] & 0x01) == 1)
@@ -955,8 +957,9 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read Netscape Loop extension.
             */
             loop=False;
-            if (ReadBlobBlock(image,header) != 0)
-              loop=!LocaleNCompare((char *) header,"NETSCAPE2.0",11);
+            while ((count = ReadBlobBlock(image,header)) != 0);
+            if (count < 11)
+              break;
             while (ReadBlobBlock(image,header) != 0)
             if (loop)
               {
