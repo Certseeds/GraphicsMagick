@@ -1,3 +1,9 @@
+2018-03-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/gif.c (ReadGIFImage): Fix botched fixes for use of
+	uninitialized data when reading GIF extension blocks.  Hopefully
+	ok now.
+
 2018-03-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/gif.c (ReadGIFImage): Fix use of uninitialized data when
