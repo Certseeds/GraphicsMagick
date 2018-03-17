@@ -918,7 +918,14 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Read Graphics Control extension.
             */
-            while (ReadBlobBlock(image,header) != 0);
+            size_t
+              ncount;
+
+            count=0;
+            while ((ncount = ReadBlobBlock(image,header)) != 0)
+              count = ncount;
+            if (count < 4)
+              break;
             dispose=header[0] >> 2;
             delay=((unsigned int) header[2] << 8) | header[1];
             if ((header[0] & 0x01) == 1)
@@ -948,6 +955,9 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
           case 0xff:
           {
+            size_t
+              ncount;
+
             int
               loop;
 
@@ -955,17 +965,21 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read Netscape Loop extension.
             */
             loop=False;
-            if (ReadBlobBlock(image,header) != 0)
+            count=ReadBlobBlock(image,header);
+            if (count >= 11)
               loop=!LocaleNCompare((char *) header,"NETSCAPE2.0",11);
-            while (ReadBlobBlock(image,header) != 0)
-            if (loop)
+            while ((ncount=ReadBlobBlock(image,header)) != 0)
               {
-                iterations=((unsigned int) header[2] << 8) | header[1];
-                if (image->logging)
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "Loop extension with iterations %lu",
-                                        iterations);
+                count=ncount;
+                if (loop && (count >= 3))
+                  {
+                    iterations=((unsigned int) header[2] << 8) | header[1];
+                    if (image->logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Loop extension with iterations %lu",
+                                            iterations);
 
+                  }
               }
             break;
           }

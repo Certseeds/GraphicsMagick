@@ -35,13 +35,38 @@
 <div class="document">
 
 
+<p>2018-03-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/gif.c (ReadGIFImage): Fix botched fixes for use of
+uninitialized data when reading GIF extension blocks.  Hopefully
+ok now.</li>
+</ul>
+</blockquote>
+<p>2018-03-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/gif.c (ReadGIFImage): Fix use of uninitialized data when
+reading GIF extension blocks.  Fixes oss-fuzz 6609
+&quot;graphicsmagick/coder_GIF_fuzzer: Use-of-uninitialized-value in
+MagickArraySize&quot;. This seems to be a totally benign issue. (Credit
+to OSS-Fuzz)</li>
+<li>magick/magick.c (MagickSignal): Use an alternate signal stack,
+if available.  This is required for Go lang C language extensions
+since Go lang requests an alternate signal sack, and uses small
+stacks for its threads.  If the library user has not allocated an
+alternate signal stack, then behavior should be just as before.
+Issue was originally reported by yzh杨振宏 on March 1, 2018 via
+the graphicsmagick-help SourceForge mailing list.</li>
+</ul>
+</blockquote>
 <p>2018-02-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
 <li>magick/pixel_cache.c (AcquireCacheNexus): Add a check that the
 pixel cache is compatible with the image dimensions.  Fixes
 oss-fuzz issues 5978 5988 5989 5990 5993 6016, and 6056, which are
-all related to the PICT writer.</li>
+all related to the PICT writer. (Credit to OSS-Fuzz)</li>
 <li>magick/draw.c (DrawGetStrokeDashArray): Check for failure to
 allocate memory.  Patch submited by Petr Gajdos via email on
 February 28, 2018.</li>
