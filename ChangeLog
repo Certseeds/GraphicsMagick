@@ -1,5 +1,10 @@
 2018-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rle.c (ReadRLEImage): Validate number of colormap bits to
+	avoid undefined shift behavior.  Fixes oss-fuzz 6630
+	"graphicsmagick/enhance_fuzzer: Undefined-shift in
+	ReadRLEImage". (Credit to OSS-Fuzz)
+
 	* coders/dcm.c (DCM_ReadRGBImage): Don't use rescale map if it was
 	not allocated.  This issue was induced in this development cycle
 	due to disabling generating the rescale map.  Fixes oss-fuzz 6995

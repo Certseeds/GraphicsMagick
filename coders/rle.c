@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -299,6 +299,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /* X/Y size may not be zero and may not exceed 32768 */
   if ((rle_header.XSize == 0) || (rle_header.XSize >= 32768) ||
       (rle_header.YSize == 0) || (rle_header.YSize >= 32768))
+    ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
+
+  if (rle_header.Cmaplen > 8)
     ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
 
   image->columns=rle_header.XSize;
