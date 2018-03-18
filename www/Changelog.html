@@ -38,6 +38,15 @@
 <p>2018-03-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (DCM_ReadRGBImage): Don't use rescale map if it was
+not allocated.  This issue was induced in this development cycle
+due to disabling generating the rescale map.  Fixes oss-fuzz 6995
+&quot;graphicsmagick/coder_DCM_fuzzer: Null-dereference READ in
+DCM_ReadRGBImage&quot;. (Credit to OSS-Fuzz)</li>
+<li>coders/dib.c (DecodeImage): Report failure to decode to expected
+amount of pixel data as an error.  Fixes oss-fuzz 7007
+&quot;graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+EnhanceImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/bmp.c (ReadBMPImage): Add file size and offset/seek
 validations.  Fixes oss-fuzz 6623
 &quot;graphicsmagick/coder_BMP_fuzzer: Timeout in

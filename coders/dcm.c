@@ -4373,7 +4373,8 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
           red&=dcm->max_value_in;
           green&=dcm->max_value_in;
           blue&=dcm->max_value_in;
-          if (dcm->rescaling == DCM_RS_PRE)
+          if ((dcm->rescaling == DCM_RS_PRE) &&
+              (dcm->rescale_map != (Quantum *) NULL))
             {
               red=dcm->rescale_map[red];
               green=dcm->rescale_map[green];
