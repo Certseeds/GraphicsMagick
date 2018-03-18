@@ -1,3 +1,10 @@
+2018-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Add file size and offset/seek
+	validations.  Fixes oss-fuzz 6623
+	"graphicsmagick/coder_BMP_fuzzer: Timeout in
+	graphicsmagick_coder_BMP_fuzzer". (Credit to OSS-Fuzz)
+
 2018-03-17  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* dcraw/dcraw.c Updated to version 9.27

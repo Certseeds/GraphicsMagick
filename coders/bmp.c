@@ -96,14 +96,14 @@ typedef struct _BMPInfo
     image_size; /* bytes_per_line*image->rows or uint32_t from file */
 
   magick_uint32_t
-    file_size,
+    file_size,  /* 0 or size of file in bytes */
     ba_offset,
-    offset_bits,
-    size;
+    offset_bits,/* Starting position of image data in bytes */
+    size;       /* Header size 12 = v2, 12-64 OS/2 v2, 40 = v3, 108 = v4, 124 = v5 */
 
   magick_int32_t
-    width,
-    height;
+    width,      /* BMP width */
+    height;     /* BMP height (negative means bottom-up) */
 
   magick_uint16_t
     planes,
@@ -596,7 +596,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   magick_off_t
     file_remaining,
-    file_size;
+    file_size,
+    offset;
 
   /*
     Open image file.
@@ -651,13 +652,32 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (LocaleNCompare((char *) magick,"CI",2) != 0)))
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     bmp_info.file_size=ReadBlobLSBLong(image);
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "  File size: Claimed=%u, Actual=%"
+                            MAGICK_OFF_F "d",
+                            bmp_info.file_size, file_size);
     (void) ReadBlobLSBLong(image);
     bmp_info.offset_bits=ReadBlobLSBLong(image);
     bmp_info.size=ReadBlobLSBLong(image);
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        "  BMP size: %u, File size: %" MAGICK_OFF_F "u",
-        bmp_info.size, GetBlobSize(image));
+                            "  Header size: %u\n"
+                            "    Offset bits: %u\n"
+                            "    Image data offset: %u",
+                            bmp_info.size,
+                            bmp_info.offset_bits,
+                            bmp_info.ba_offset);
+
+    if ((bmp_info.file_size != 0) && (bmp_info.file_size > file_size))
+      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+    if ((bmp_info.size != 12) && (bmp_info.size != 40) && (bmp_info.size != 108)
+        && (bmp_info.size != 124) &&
+        (!(bmp_info.size >= 12 && bmp_info.size <= 64)))
+      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+    if (bmp_info.offset_bits < bmp_info.size)
+      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+
     if (bmp_info.size == 12)
       {
         /*
@@ -989,8 +1009,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           packet_size=3;
         else
           packet_size=4;
-        if (SeekBlob(image,start_position+14+bmp_info.size,SEEK_SET) !=
-            (magick_off_t) start_position+14+bmp_info.size)
+        offset=start_position+14+bmp_info.size;
+        if ((offset < start_position) ||
+            (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
           ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
         if (ReadBlob(image,packet_size*image->colors,(char *) bmp_colormap)
             != (size_t) packet_size*image->colors)
@@ -1019,9 +1040,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Read image data.
     */
-    if (SeekBlob(image,start_position+bmp_info.offset_bits,SEEK_SET) !=
-        (magick_off_t) start_position+bmp_info.offset_bits)
-      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image)
+    offset=start_position+bmp_info.offset_bits;
+    if ((offset < start_position) ||
+        (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
+      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     if (bmp_info.compression == BI_RLE4)
       bmp_info.bits_per_pixel<<=1;
     bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
@@ -1435,11 +1457,14 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     *magick='\0';
-    if (((magick_off_t) bmp_info.ba_offset > 0) &&
-        ((magick_off_t) bmp_info.ba_offset >= TellBlob(image)))
-      if (SeekBlob(image,bmp_info.ba_offset,SEEK_SET) !=
-          (magick_off_t) bmp_info.ba_offset)
-        ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+    file_remaining=file_size-TellBlob(image);
+    if (file_remaining == 0)
+      break;
+    offset=bmp_info.ba_offset;
+    if (offset > 0)
+      if ((offset < TellBlob(image)) ||
+          (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
+      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     if (ReadBlob(image,2,(char *) magick) != (size_t) 2)
       break;
     if (IsBMP(magick,2))
