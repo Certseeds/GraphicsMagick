@@ -47,6 +47,11 @@
 #include "magick/utility.h"
 
 /*
+  Macro definitions (from Windows wingdi.h).
+*/
+#define BI_RLE8  1
+
+/*
   Typedef declarations.
 */
 typedef struct _DIBInfo
@@ -160,8 +165,8 @@ static void LogDIBInfo(const DIBInfo *dib_info)
 %
 %
 */
-static unsigned int DecodeImage(Image *image,const unsigned long compression,
-                                unsigned char *pixels, const size_t pixels_size)
+static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
+                                  unsigned char *pixels, const size_t pixels_size)
 {
   unsigned long
     x,
@@ -182,6 +187,12 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
 
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  Decoding RLE compressed pixels to"
+                          " %" MAGICK_SIZE_T_F "u bytes",
+                          image->rows*image->columns);
+
   (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
@@ -201,7 +212,7 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
         {
           if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Decode buffer full (y=%lu, "
+                                  "  Decode buffer full (y=%lu, "
                                   "pixels_size=%" MAGICK_SIZE_T_F "u, "
                                   "pixels=%p, q=%p, end=%p)",
                                   y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
@@ -219,15 +230,22 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
           byte=ReadBlobByte(image);
           if (byte == EOF)
             return MagickFail;
-          for (i=0; i < (unsigned int) count; i++)
+          if (compression == BI_RLE8)
             {
-              if (compression == 1)
-                *q++=(unsigned char) byte;
-              else
-                *q++=(unsigned char)
-                  ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-              x++;
+              for ( i=count; i != 0; --i )
+                {
+                  *q++=(unsigned char) byte;
+                }
             }
+          else
+            {
+              for ( i=0; i < (unsigned int) count; i++ )
+                {
+                  *q++=(unsigned char)
+                    ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                }
+            }
+          x+=count;
         }
       else
         {
@@ -238,7 +256,12 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
           if (count == EOF)
             return MagickFail;
           if (count == 0x01)
-            return(MagickPass);
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "  RLE Escape code encountered");
+              goto rle_decode_done;
+            }
           switch (count)
             {
             case 0x00:
@@ -275,30 +298,31 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
                 count=Min(count, end - q);
                 if (count < 0)
                   return MagickFail;
-                for (i=0; i < (unsigned int) count; i++)
-                  {
-                    if (compression == 1)
-                      {
-                        byte=ReadBlobByte(image);
-                        if (byte == EOF)
-                          return MagickFail;
-                        *q++=byte;
-                      }
-                    else
-                      {
-                        if ((i & 0x01) == 0)
+                if (compression == BI_RLE8)
+                  for (i=count; i != 0; --i)
+                    {
+                      byte=ReadBlobByte(image);
+                      if (byte == EOF)
+                        return MagickFail;
+                      *q++=byte;
+                    }
+                else
+                  for (i=0; i < (unsigned int) count; i++)
+                    {
+                      if ((i & 0x01) == 0)
+                        {
                           byte=ReadBlobByte(image);
-                        if (byte == EOF)
-                          return MagickFail;
-                        *q++=(unsigned char)
-                          ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-                      }
-                    x++;
-                  }
+                          if (byte == EOF)
+                            return MagickFail;
+                        }
+                      *q++=(unsigned char)
+                        ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                    }
+                x+=count;
                 /*
                   Read pad byte.
                 */
-                if (compression == 1)
+                if (compression == BI_RLE8)
                   {
                     if (count & 0x01)
                       if (ReadBlobByte(image) == EOF)
@@ -320,6 +344,18 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
     }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
+ rle_decode_done:
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  Decoded %" MAGICK_SIZE_T_F "u bytes",
+                          (MAGICK_SIZE_T) (q-pixels));
+  if ((MAGICK_SIZE_T) (q-pixels) < pixels_size)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  RLE decoded output is truncated");
+      return MagickFail;
+    }
   return(MagickPass);
 }
 

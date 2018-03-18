@@ -1,5 +1,10 @@
 2018-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (DecodeImage): Report failure to decode to expected
+	amount of pixel data as an error.  Fixes oss-fuzz 7007
+	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+	EnhanceImage". (Credit to OSS-Fuzz)
+
 	* coders/bmp.c (ReadBMPImage): Add file size and offset/seek
 	validations.  Fixes oss-fuzz 6623
 	"graphicsmagick/coder_BMP_fuzzer: Timeout in
