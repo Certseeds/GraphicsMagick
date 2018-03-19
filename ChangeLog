@@ -1,3 +1,11 @@
+2018-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadGrayscaleImage): Don't use rescale map if
+	it was not allocated.  This issue was induced in this development
+	cycle due to disabling generating the rescale map.  Fixes oss-fuzz
+	7021 "graphicsmagick/coder_DCM_fuzzer: Null-dereference READ in
+	DCM_ReadGrayscaleImage". (Credit to OSS-Fuzz)
+
 2018-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/color_lookup.c (QueryColorDatabase): Defend against

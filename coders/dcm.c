@@ -4221,7 +4221,8 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
           else
             indexes[x]=index;
 #else
-          if (dcm->rescaling == DCM_RS_PRE)
+          if ((dcm->rescaling == DCM_RS_PRE) &&
+              (dcm->rescale_map != (Quantum *) NULL))
             index=dcm->rescale_map[index];
           q->red=index;
           q->green=index;
@@ -4864,12 +4865,14 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           NormalizeImage(image);
         }
       else
-        if (dcm.rescaling == DCM_RS_POST)
-          {
-            /*status = DCM_PostRescaleImage(image,&dcm,False,exception);*/
-            if (status != MagickPass)
-              break;
-          }
+        {
+          if (dcm.rescaling == DCM_RS_POST)
+            {
+              /*status = DCM_PostRescaleImage(image,&dcm,False,exception);
+                if (status != MagickPass)
+                break;*/
+            }
+        }
 
       /*
         Proceed to next image.
