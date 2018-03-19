@@ -38,6 +38,11 @@
 <p>2018-03-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/color_lookup.c (QueryColorDatabase): Defend against
+partial scanf() expression matching, resulting in use of
+uninitialized data.  Likely fixes oss-fuzz 6596
+&quot;graphicsmagick/coder_XPM_fuzzer: Use-of-uninitialized-value in
+IsMonochromeImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/rle.c (ReadRLEImage): Validate number of colormap bits to
 avoid undefined shift behavior.  Fixes oss-fuzz 6630
 &quot;graphicsmagick/enhance_fuzzer: Undefined-shift in

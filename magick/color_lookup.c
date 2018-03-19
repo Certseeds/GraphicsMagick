@@ -1259,13 +1259,20 @@ QueryColorDatabase(const char *name,PixelPacket *color,
       DoublePixelPacket
         pixel;
 
+      int
+        count;
+
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
-      (void) sscanf(name,"%*[^(](%lf%*[%,]%lf%*[%,]%lf",
+      pixel.red=pixel.green=pixel.blue=0.0;
+      count=sscanf(name,"%*[^(](%lf%*[%,]%lf%*[%,]%lf",
         &pixel.red,&pixel.green,&pixel.blue);
-      color->red=ScaleCharToQuantum(scale*pixel.red);
-      color->green=ScaleCharToQuantum(scale*pixel.green);
-      color->blue=ScaleCharToQuantum(scale*pixel.blue);
+      if (count > 0)
+        color->red=ScaleCharToQuantum(scale*pixel.red);
+      if (count > 1)
+        color->green=ScaleCharToQuantum(scale*pixel.green);
+      if (count > 2)
+        color->blue=ScaleCharToQuantum(scale*pixel.blue);
       color->opacity=OpaqueOpacity;
       return(True);
     }
@@ -1274,14 +1281,23 @@ QueryColorDatabase(const char *name,PixelPacket *color,
       DoublePixelPacket
         pixel;
 
+      int
+        count;
+
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
-      (void) sscanf(name,"%*[^(](%lf%*[%,]%lf%*[%,]%lf%*[%,]%lf",
+      pixel.red=pixel.green=pixel.blue=0.0;
+      color->opacity=OpaqueOpacity;
+      count = sscanf(name,"%*[^(](%lf%*[%,]%lf%*[%,]%lf%*[%,]%lf",
         &pixel.red,&pixel.green,&pixel.blue,&pixel.opacity);
-      color->red=ScaleCharToQuantum(scale*pixel.red);
-      color->green=ScaleCharToQuantum(scale*pixel.green);
-      color->blue=ScaleCharToQuantum(scale*pixel.blue);
-      color->opacity=ScaleCharToQuantum(scale*pixel.opacity);
+      if (count > 0)
+        color->red=ScaleCharToQuantum(scale*pixel.red);
+      if (count > 1)
+        color->green=ScaleCharToQuantum(scale*pixel.green);
+      if (count > 2)
+        color->blue=ScaleCharToQuantum(scale*pixel.blue);
+      if (count > 3)
+        color->opacity=ScaleCharToQuantum(scale*pixel.opacity);
       return(True);
     }
   p=GetColorInfo(name,exception);

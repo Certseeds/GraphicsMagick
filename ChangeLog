@@ -1,5 +1,11 @@
 2018-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/color_lookup.c (QueryColorDatabase): Defend against
+	partial scanf() expression matching, resulting in use of
+	uninitialized data.  Likely fixes oss-fuzz 6596
+	"graphicsmagick/coder_XPM_fuzzer: Use-of-uninitialized-value in
+	IsMonochromeImage". (Credit to OSS-Fuzz)
+
 	* coders/rle.c (ReadRLEImage): Validate number of colormap bits to
 	avoid undefined shift behavior.  Fixes oss-fuzz 6630
 	"graphicsmagick/enhance_fuzzer: Undefined-shift in
