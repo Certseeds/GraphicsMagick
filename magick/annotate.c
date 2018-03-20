@@ -779,6 +779,52 @@ MagickExport MagickPassFail GetTypeMetrics(Image *image,const DrawInfo *draw_inf
   return(status);
 }
 
+
+/*
+  Find a single font family name in a comma-separated list; returns a pointer
+  to where next search should start (i.e., to the terminating character), or null
+  if not found.  Trims leading and trailing white space, and surrounding single
+  quotes.
+*/
+static
+char const *	FindCommaDelimitedName  (
+  char const *  pSearchStart,   /*start search here*/
+  char const ** ppStart,        /*return pointer to first character in found string*/
+  char const ** ppEnd           /*return pointer to just past last character in found string*/
+  )
+{/*FindCommaDelimitedName*/
+
+  int c;
+  char const * pStart;
+  char const * pEnd;
+  char const * pNextSearchStart;
+
+  if  ( pSearchStart == 0 )
+    return(0);
+
+  for  ( pStart = pSearchStart; (c = *pStart) && (isspace(c) || (c == ',')); pStart++ );  /*skip leading spaces and commas*/
+  if  ( c == '\0' )
+    return(0);  /*didn't find anything!*/
+
+  for  ( pEnd = pStart + 1; (c = *pEnd) && (c != ','); pEnd++ );  /*find terminating comma*/
+  pNextSearchStart = pEnd;
+
+  for  ( ; isspace(pEnd[-1]); pEnd-- );   /*trim trailing space; we know there is a non-space character there*/
+
+  /* trim off surrounding single quotes */
+  if  ( (*pStart == '\'') &&  (*pEnd == '\'') && ((pEnd-pStart) >= 3) )
+  {
+    pStart++;
+    pEnd--;
+  }
+
+  *ppStart = pStart;
+  *ppEnd = pEnd;
+  return(pNextSearchStart);
+
+}/*FindCommaDelimitedName*/
+
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -825,6 +871,12 @@ static MagickPassFail RenderType(Image *image,const DrawInfo *draw_info,
   MagickPassFail
     status;
 
+  char
+    OneFontFamilyName[2048];	/*special handling only if font name this long or less*/
+
+  char const *
+    pTheFoundFontFamilyName;
+
   type_info=(const TypeInfo *) NULL;
   if (draw_info->font != (char *) NULL)
     {
@@ -837,9 +889,78 @@ static MagickPassFail RenderType(Image *image,const DrawInfo *draw_info,
         if (IsAccessible(draw_info->font))
           return(RenderFreetype(image,draw_info,(char *) NULL,offset,metrics));
     }
+
+  /* draw_info->family may be a comma-separated list of names ... */
+  pTheFoundFontFamilyName = draw_info->family;
   if (type_info == (const TypeInfo *) NULL)
-    type_info=GetTypeInfoByFamily(draw_info->family,draw_info->style,
-      draw_info->stretch,draw_info->weight,&image->exception);
+     {/*type_info not yet found*/
+
+      /* stay consistent with previous behavior unless font family contains comma(s) */
+      if  ( draw_info->family == 0 || (strchr(draw_info->family,',') == 0) )
+        {/*null ptr, or no commas in string; preserve previous behavior*/
+
+          type_info=GetTypeInfoByFamily(draw_info->family,draw_info->style,
+            draw_info->stretch,draw_info->weight,&image->exception);
+
+        }/*null ptr, or no commas in string; preserve previous behavior*/
+      else
+        {/*process as font family list*/
+
+          char const * pNext = draw_info->family, * pStart = 0, * pEnd = 0;
+          while  ( (pNext = FindCommaDelimitedName(pNext,&pStart,&pEnd)) != 0 )
+            {/*found a name*/
+
+              unsigned int NameLength = pEnd - pStart;
+              if  ( NameLength >= sizeof(OneFontFamilyName) )
+                continue;
+              memcpy(OneFontFamilyName,pStart,NameLength);
+              OneFontFamilyName[NameLength] = '\0';
+              type_info = GetTypeInfoByFamily(OneFontFamilyName,draw_info->style,
+                draw_info->stretch,draw_info->weight,&image->exception);
+              if  ( type_info && (LocaleCompare(OneFontFamilyName,type_info->family) == 0) )	/*do not allow font substitution*/
+                {
+                  pTheFoundFontFamilyName = OneFontFamilyName;
+                  break;
+                }
+
+            }/*found a name*/
+
+        }/*process as font family list*/
+
+    }/*type_info not yet found*/
+
+  /*
+    We may have performed font substitution.  If so (i.e., font family name
+    does not match), try again assuming draw_info->family is actually a font
+    name.  If we get a font name match, that will override the font substitution.
+  */
+  if  ( (type_info == (const TypeInfo *) NULL)
+      || /*found font family, but ...*/ (pTheFoundFontFamilyName && (LocaleCompare(pTheFoundFontFamilyName,type_info->family) != 0)) )
+    {/*either not found, or different font family (probably font substitution)*/
+
+      /* try to match a font name */
+      const TypeInfo *type_info2 = 0;
+      if  ( ((type_info2 = GetTypeInfo(pTheFoundFontFamilyName,&image->exception)) == (const TypeInfo *) NULL)
+          && (pTheFoundFontFamilyName != 0)
+          && strlen(pTheFoundFontFamilyName) < sizeof(OneFontFamilyName) )
+        {/*change ' ' to '-' and try again*/
+
+          /* change blanks to hyphens (i.e. make it look like a font name vs. font family) */
+          char FontNameWithHyphens[sizeof(OneFontFamilyName)];	/*will only do this for font names this long or less*/
+          char *pWithHyphens = FontNameWithHyphens;
+          char c;
+          for  ( char const * pFound = pTheFoundFontFamilyName;
+            (*pWithHyphens = (((c = *pFound) != ' ') ? c : '-'));
+            pFound++, pWithHyphens++ );
+          type_info2 = GetTypeInfo(FontNameWithHyphens,&image->exception);
+
+        }/*change ' ' to '-' and try again*/
+
+	    if  ( type_info2 != (const TypeInfo *) NULL )
+		    type_info = type_info2;
+
+    }/*either not found, or different font family (probably font substitution)*/
+
   if (type_info == (const TypeInfo *) NULL)
     return(RenderPostscript(image,draw_info,offset,metrics));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);

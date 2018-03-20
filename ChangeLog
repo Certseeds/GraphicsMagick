@@ -1,3 +1,20 @@
+2018-03-20  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/annotate.c (RenderType): According to the SVG
+	spec, the 'font-family' element can be a comma-separated
+	list of one or more font family names.  Function RenderType
+	in file annotate.c has been modified to support multiple
+	font family names as follows.  The comma-separated list is
+	processed until the first available font family is found.
+	If no font family is found, or if font substitution occurred,
+	then the entire font family string is tested to see if it
+	exactly matches a font name, or if the font family string
+	with blanks changed to hypens exactly matches a font name.
+	If a font name match is found, the matched font overrides
+	the font substution.  The font name matching functionality
+	is beyond what's in the SVG spec and is provided as a
+	convenience to the user.
+
 2018-03-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fix forged amount of frames 6755. (Credit to OSS-Fuzz)
