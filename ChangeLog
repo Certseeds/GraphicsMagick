@@ -2,7 +2,6 @@
 
 	* coders/mat.c Fix forged amount of frames 6755. (Credit to OSS-Fuzz)
 
-
 2018-03-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/topol.c Redesign ReadBlobDwordLSB() to be more effective.
