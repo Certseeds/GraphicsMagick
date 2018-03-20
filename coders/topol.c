@@ -278,19 +278,17 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
 /* This function reads one block of unsigned longS */
 static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 {
-  while (len >= 8)
-    {
-      *data++ = ReadBlobLSBLong(image);
-      len -= 4;
-    }
-  if (len >= 4)
-    {
-      if(EOFBlob(image)) return -1;		/* Check last read only. */
-      *data++ = ReadBlobLSBLong(image);
-      len -= 4;
-    }
-  if (len > 0)
-    (void) SeekBlob(image, len, SEEK_CUR);
+  if(ReadBlob(image, len, data) != len) return -1;
+
+#if defined(WORDS_BIGENDIAN)
+  while(len>=4)
+  {
+    MagickSwabUInt32(data);
+    len -= 4;
+    data++;
+  }
+#endif
+
   return 0;
 }
 
