@@ -315,6 +315,20 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
       }
   }
+  /*
+    Scan for non-white space binary control codes and reject file if
+    they are present.  This is done because StringToList() converts
+    such text content to hex and because it is not good XPM data.
+  */
+  for (p=xpm_buffer; *p != '\0'; p++)
+    if (((unsigned char) *p < 32) && !isspace((int)(unsigned char) (*p)))
+      break;
+  if (*p != '\0')
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Binary control codes error");
+        ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
+    }
   textlist=StringToList(xpm_buffer);
   MagickFreeMemory(xpm_buffer);
   if (textlist == (char **) NULL)
@@ -329,7 +343,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    %lu: %s", i, textlist[i]);
     }
 #endif
-  
+
   /*
     Initialize image structure.
   */

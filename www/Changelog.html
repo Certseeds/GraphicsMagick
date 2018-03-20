@@ -38,6 +38,21 @@
 <p>2018-03-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/xpm.c (ReadXPMImage): Reject XPM if its condensed version
+contains non-whitespace control characters.  Fixes oss-fuzz 7027
+&quot;graphicsmagick/coder_XPM_fuzzer: Timeout in
+graphicsmagick_coder_XPM_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-03-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/topol.c Fix tile index overflow fuzz 6634. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-03-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
 <li>coders/dcm.c (DCM_ReadGrayscaleImage): Don't use rescale map if
 it was not allocated.  This issue was induced in this development
 cycle due to disabling generating the rescale map.  Fixes oss-fuzz

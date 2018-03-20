@@ -1,7 +1,13 @@
-2018-03-17  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2018-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* coders/topol.c Fix tile index overflow fuz 6634. (Credit to OSS-Fuzz)
+	* coders/xpm.c (ReadXPMImage): Reject XPM if its condensed version
+	contains non-whitespace control characters.  Fixes oss-fuzz 7027
+	"graphicsmagick/coder_XPM_fuzzer: Timeout in
+	graphicsmagick_coder_XPM_fuzzer". (Credit to OSS-Fuzz)
 
+2018-03-19  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/topol.c Fix tile index overflow fuzz 6634. (Credit to OSS-Fuzz)
 
 2018-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
