@@ -1211,7 +1211,8 @@ skip_reading_current:
     {
       z = z2;
       if(image2==NULL) image2 = image;
-      goto NEXT_FRAME;
+      if(!EOFBlob(image))
+          goto NEXT_FRAME;
     }
 
     if(image2!=NULL)

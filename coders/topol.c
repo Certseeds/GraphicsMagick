@@ -20,7 +20,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                                 June 2003                                   %
+%                                2003 - 2018                                  %
 %                                                                             %
 %                                                                             %
 %                                                                             %
