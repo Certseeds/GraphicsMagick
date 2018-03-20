@@ -1,3 +1,8 @@
+2018-03-17  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/topol.c Fix tile index overflow fuz 6634. (Credit to OSS-Fuzz)
+
+
 2018-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_ReadGrayscaleImage): Don't use rescale map if

@@ -276,15 +276,22 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
 
 
 /* This function reads one block of unsigned longS */
-static void ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
+static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 {
-  while (len >= 4)
+  while (len >= 8)
     {
+      *data++ = ReadBlobLSBLong(image);
+      len -= 4;
+    }
+  if (len >= 4)
+    {
+      if(EOFBlob(image)) return -1;		/* Check last read only. */
       *data++ = ReadBlobLSBLong(image);
       len -= 4;
     }
   if (len > 0)
     (void) SeekBlob(image, len, SEEK_CUR);
+  return 0;
 }
 
 /*
@@ -674,18 +681,26 @@ NoPalette:
          ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        (void)SeekBlob(image, Header.TileOffsets, SEEK_SET);
-       ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets);
+       if(ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets) < 0)
+         ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
 
        for(TilY=0;TilY<Header.Rows;TilY+=Header.TileHeight)
          for(TilX=0;TilX<TilesAcross;TilX++)
            {
+           ldblk = Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX];
+           if(SeekBlob(image, ldblk, SEEK_SET) != ldblk)
+             {							/* When seek does not reach required place, bail out. */
+               MagickFreeMemory(Offsets);
+               ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
+               break;
+             }
+
            ldblk = image->columns - TilX*Header.TileWidth;
 
            if(ldblk>Header.TileWidth) ldblk = Header.TileWidth;
            SkipBlk = ((long)depth * (Header.TileWidth-ldblk)+7) / 8;
            ldblk = ((long)depth * ldblk+7) / 8;
 
-           (void)SeekBlob(image, Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX], SEEK_SET);
            j = TilX * (ldblk+SkipBlk);
            for(i=0;i<Header.TileHeight;i++)
            {
