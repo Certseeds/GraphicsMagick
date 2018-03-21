@@ -35,6 +35,33 @@
 <div class="document">
 
 
+<p>2018-03-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/dpx.c (ReadDPXImage): Validate header length and offset
+properties.  Fixes oss-fuzz &quot;graphicsmagick/coder_DPX_fuzzer:
+Use-of-uninitialized-value in WriteDPXImage&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-03-20  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/annotate.c (RenderType): According to the SVG
+spec, the 'font-family' element can be a comma-separated
+list of one or more font family names.  Function RenderType
+in file annotate.c has been modified to support multiple
+font family names as follows.  The comma-separated list is
+processed until the first available font family is found.
+If no font family is found, or if font substitution occurred,
+then the entire font family string is tested to see if it
+exactly matches a font name, or if the font family string
+with blanks changed to hypens exactly matches a font name.
+If a font name match is found, the matched font overrides
+the font substution.  The font name matching functionality
+is beyond what's in the SVG spec and is provided as a
+convenience to the user.</li>
+</ul>
+</blockquote>
 <p>2018-03-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
 <ul class="simple">

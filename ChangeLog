@@ -1,3 +1,9 @@
+2018-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Validate header length and offset
+	properties.  Fixes oss-fuzz "graphicsmagick/coder_DPX_fuzzer:
+	Use-of-uninitialized-value in WriteDPXImage". (Credit to OSS-Fuzz)
+
 2018-03-20  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/annotate.c (RenderType): According to the SVG

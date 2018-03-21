@@ -2079,6 +2079,22 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }
+          if (file_size < dpx_file_info.image_data_offset)
+            {
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (file_size < dpx_file_info.generic_section_length)
+            {
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (file_size < dpx_file_info.industry_section_length)
+            {
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (file_size < dpx_file_info.user_defined_length)
+            {
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
         }
 
       /*
