@@ -949,7 +949,8 @@ static MagickPassFail RenderType(Image *image,const DrawInfo *draw_info,
           char FontNameWithHyphens[sizeof(OneFontFamilyName)];	/*will only do this for font names this long or less*/
           char *pWithHyphens = FontNameWithHyphens;
           char c;
-          for  ( char const * pFound = pTheFoundFontFamilyName;
+          const char * pFound;
+          for  (pFound = pTheFoundFontFamilyName;
             (*pWithHyphens = (((c = *pFound) != ' ') ? c : '-'));
             pFound++, pWithHyphens++ );
           type_info2 = GetTypeInfo(FontNameWithHyphens,&image->exception);

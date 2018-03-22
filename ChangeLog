@@ -3,6 +3,8 @@
 	* coders/topol.c Use rather MagickSwabArrayOfUInt32() to
         flip all array elements at once.
 
+        * magick/annotate.c Compilation issue - using C++ syntax in C code.
+
 2018-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (ReadDPXImage): Validate header length and offset
