@@ -281,12 +281,7 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
   if(ReadBlob(image, len, data) != len) return -1;
 
 #if defined(WORDS_BIGENDIAN)
-  while(len>=4)
-  {
-    MagickSwabUInt32(data);
-    len -= 4;
-    data++;
-  }
+  MagickSwabArrayOfUInt32(data, len/4);
 #endif
 
   return 0;
