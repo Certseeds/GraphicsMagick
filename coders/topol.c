@@ -680,7 +680,10 @@ NoPalette:
 
        (void)SeekBlob(image, Header.TileOffsets, SEEK_SET);
        if(ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets) < 0)
+       {
+         MagickFreeMemory(Offsets);
          ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
+       }
 
        for(TilY=0;TilY<Header.Rows;TilY+=Header.TileHeight)
          for(TilX=0;TilX<TilesAcross;TilX++)
