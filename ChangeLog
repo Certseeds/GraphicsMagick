@@ -1,3 +1,19 @@
+2018-03-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c, render.h (DrawInfo, CloneDrawInfo,
+	DrawClipPath, DrawImage, GetDrawInfo): According to the SVG
+	spec, a clipping path is defined only by the geometry of its
+	constituent elements, and is not dependent on fill color/opacity,
+	stroke color/opacity, or stroke width.  To ensure conformity
+	with the spec, when a clipping path is created, these SVG
+	elements are set to appropriate values, and any attempt to
+	modify them is ignored.
+
+	Also, whenever a clipping path is drawn, the associated image
+	attributes are now updated from the parent image structure.
+	This ensures that any added or modified attributes are up to
+	date.
+
 2018-03-22  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/topol.c Use rather MagickSwabArrayOfUInt32() to
