@@ -1,3 +1,7 @@
+2018-03-23  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Fix forged amount of frames 7076. (Credit to OSS-Fuzz)
+
 2018-03-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c, render.h (DrawInfo, CloneDrawInfo,

@@ -832,7 +832,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
-    (void) SeekBlob(image,filepos,SEEK_SET);
+    if(SeekBlob(image,filepos,SEEK_SET) != filepos) break;
     /* printf("pos=%X\n",TellBlob(image)); */
 
     MATLAB_HDR.DataType = ReadBlobXXXLong(image);
@@ -1208,10 +1208,10 @@ skip_reading_current:
     BImgBuff = NULL;
 
     if(--Frames>0)
-    {
+    {      
       z = z2;
       if(image2==NULL) image2 = image;
-      if(!EOFBlob(image))
+      if(!EOFBlob(image) && TellBlob(image)<filepos)
           goto NEXT_FRAME;
     }
 
