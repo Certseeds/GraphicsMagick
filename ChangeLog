@@ -2,6 +2,9 @@
 
 	* coders/mat.c Fix forged amount of frames 7076. (Credit to OSS-Fuzz)
 
+        * coders/topol.c Check for forged image that overflows file size 
+        (fuzz 6836).
+
 2018-03-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c, render.h (DrawInfo, CloneDrawInfo,

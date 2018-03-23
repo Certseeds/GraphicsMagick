@@ -468,6 +468,11 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   image->columns = Header.Cols;
   image->rows = Header.Rows;
 
+  i = GetBlobSize(image);
+  if(i>0)
+    if(((magick_uint64_t)8*Header.Cols*(magick_uint64_t)Header.Rows) / image->depth > GetBlobSize(image))
+      goto TOPOL_KO;	/* Check for forged image that overflows file size. */
+
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
