@@ -4047,6 +4047,10 @@ static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,Excepti
 
   byte=0;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Palette image...");
+
   for (y=0; y < (long) image->rows; y++)
     {
       q=SetImagePixels(image,0,y,image->columns,1);
@@ -4150,6 +4154,10 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
 
   unsigned char
     byte;
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Grayscale image...");
 
   dcm->lower_lim = dcm->max_value_in;
   dcm->upper_lim = -(dcm->lower_lim);
@@ -4257,13 +4265,22 @@ static MagickPassFail DCM_ReadPlanarRGBImage(Image *image,DicomStream *dcm,Excep
   register PixelPacket
     *q;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Planar RGB %s compressed image with %u planes...",
+                          (dcm->transfer_syntax == DCM_TS_RLE ? "RLE" : "not"),
+                          dcm->samples_per_pixel);
+
   for (plane=0; plane < dcm->samples_per_pixel; plane++)
     {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  Plane %lu...",plane);
       for (y=0; y < image->rows; y++)
         {
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
-            return MagickFail;
+              return MagickFail;
 
           for (x=0; x < image->columns; x++)
             {
@@ -4331,6 +4348,10 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
   red=0;
   green=0;
   blue=0;
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading RGB image...");
 
   for (y=0; y < image->rows; y++)
     {
@@ -4744,6 +4765,11 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
         status=MagickFail;
       }
+    else if ((dcm.samples_per_pixel == 0) || (dcm.samples_per_pixel > 4))
+      {
+        ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+        status=MagickFail;
+      }
     else if ((dcm.transfer_syntax != DCM_TS_IMPL_LITTLE) &&
              (dcm.transfer_syntax != DCM_TS_EXPL_LITTLE) &&
              (dcm.transfer_syntax != DCM_TS_EXPL_BIG) &&
@@ -4761,7 +4787,11 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status=DCM_ReadOffsetTable(image,&dcm,exception);
 
   /* Loop to process all scenes in image */
-  if (status == MagickFail) dcm.number_scenes = 0;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "DICOM has %d scenes", dcm.number_scenes);
+  if (status == MagickFail)
+    dcm.number_scenes = 0;
   for (scene=0; scene < (long) dcm.number_scenes; scene++)
     {
       if (dcm.transfer_syntax == DCM_TS_RLE)
@@ -4822,6 +4852,9 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->columns=dcm.columns;
       image->rows=dcm.rows;
       image->interlace=(dcm.interlace==1)?PlaneInterlace:NoInterlace;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Scene[%d]: %lux%lu", scene, image->columns, image->rows);
 #if defined(GRAYSCALE_USES_PALETTE)
       if ((image->colormap == (PixelPacket *) NULL) && (dcm.samples_per_pixel == 1))
 #else
@@ -4862,12 +4895,18 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ((dcm.phot_interp == DCM_PI_MONOCHROME1) ||
            (dcm.phot_interp == DCM_PI_MONOCHROME2)))
         {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Normalizing image channels...");
           NormalizeImage(image);
         }
       else
         {
           if (dcm.rescaling == DCM_RS_POST)
             {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Rescaling image channels...");
               /*status = DCM_PostRescaleImage(image,&dcm,False,exception);
                 if (status != MagickPass)
                 break;*/

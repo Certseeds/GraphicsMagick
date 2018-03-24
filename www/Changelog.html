@@ -38,6 +38,10 @@
 <p>2018-03-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (ReadDCMImage): Validate that samples per pixel is
+in valid range.  Fixes oss-fuzz 6260
+&quot;graphicsmagick/coder_DCM_fuzzer: Out-of-memory in
+graphicsmagick_coder_DCM_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/meta.c (format8BIM): Allocate space for null termination
 and null terminate string.  Fixes oss-fuzz 5985
 &quot;graphicsmagick/coder_8BIMTEXT_fuzzer: Heap-buffer-overflow in
