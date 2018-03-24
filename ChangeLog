@@ -1,3 +1,10 @@
+2018-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/fits.c (ReadFITSImage): Include number of FITS scenes in
+	file size validations.  Fixes oss-fuzz 6781
+	"graphicsmagick/coder_FITS_fuzzer: Timeout in
+	graphicsmagick_coder_FITS_fuzzer". (Credit to OSS-Fuzz)
+
 2018-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/meta.c (format8BIM): Validate size request prior to
