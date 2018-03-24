@@ -35,6 +35,56 @@
 <div class="document">
 
 
+<p>2018-03-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/meta.c (format8BIM): Validate size request prior to
+allocation. Fixes oss-fuzz issue 5974
+&quot;graphicsmagick/coder_8BIMTEXT_fuzzer: Out-of-memory in
+graphicsmagick_coder_8BIMTEXT_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-03-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p class="first">coders/mat.c Fix forged amount of frames 7076. (Credit to OSS-Fuzz)</p>
+<blockquote>
+<p>* coders/topol.c Check for forged image that overflows file size
+(fuzz 6836).</p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>2018-03-23  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p class="first">magick/render.c, render.h (DrawInfo, CloneDrawInfo,
+DrawClipPath, DrawImage, GetDrawInfo): According to the SVG
+spec, a clipping path is defined only by the geometry of its
+constituent elements, and is not dependent on fill color/opacity,
+stroke color/opacity, or stroke width.  To ensure conformity
+with the spec, when a clipping path is created, these SVG
+elements are set to appropriate values, and any attempt to
+modify them is ignored.</p>
+<p>Also, whenever a clipping path is drawn, the associated image
+attributes are now updated from the parent image structure.
+This ensures that any added or modified attributes are up to
+date.</p>
+</li>
+</ul>
+</blockquote>
+<p>2018-03-22  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul>
+<li><dl class="first docutils">
+<dt>coders/topol.c Use rather MagickSwabArrayOfUInt32() to</dt>
+<dd><p class="first">flip all array elements at once.</p>
+<p class="last">* magick/annotate.c Compilation issue - using C++ syntax in C code.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</blockquote>
 <p>2018-03-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

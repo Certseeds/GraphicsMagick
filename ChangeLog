@@ -1,8 +1,15 @@
+2018-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (format8BIM): Validate size request prior to
+	allocation. Fixes oss-fuzz issue 5974
+	"graphicsmagick/coder_8BIMTEXT_fuzzer: Out-of-memory in
+	graphicsmagick_coder_8BIMTEXT_fuzzer". (Credit to OSS-Fuzz)
+
 2018-03-23  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Fix forged amount of frames 7076. (Credit to OSS-Fuzz)
 
-        * coders/topol.c Check for forged image that overflows file size 
+        * coders/topol.c Check for forged image that overflows file size
         (fuzz 6836).
 
 2018-03-23  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
