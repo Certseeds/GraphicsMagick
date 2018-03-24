@@ -2235,14 +2235,14 @@ static int format8BIM(Image *ifile, Image *ofile)
           goto format8BIMError;
         }
       /* make a buffer to hold the data and snag it from the input stream */
-      str=MagickAllocateMemory(unsigned char *,(size_t) Size);
+      str=MagickAllocateMemory(unsigned char *,(size_t) Size+1);
       if (str == (unsigned char *) NULL)
         {
           ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,
                            ofile->filename);
           goto format8BIMError;
         }
-      for (i=0; i< Size; i++)
+      for (i=0; i < Size; i++)
         {
           c=ReadBlobByte(ifile);
           if (c == EOF)
@@ -2253,6 +2253,7 @@ static int format8BIM(Image *ifile, Image *ofile)
             }
           str[i] = (unsigned char) c;
         }
+      str[i] = '\0';
 
       /* we currently skip thumbnails, since it does not make
        * any sense preserving them in a real world application
