@@ -1,5 +1,8 @@
 2018-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mtv.c (ReadMTVImage): Add some elementary tracing to MTV
+	reader.
+
 	* coders/png.c (ReadMNGImage): Fix SourceForge issue 554
 	"Divide-by-zero in ReadMNGImage (coders/png.c)".  (Credit to Trace
 	Probe)
