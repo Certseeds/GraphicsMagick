@@ -1427,10 +1427,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         FILE
           *file;
 
-        Image
-          *tile_image;
-
-        char tmpfile[MaxTextExtent];
+        char
+          tmpfile[MaxTextExtent];
 
         /*
           Embedded JPEG.
