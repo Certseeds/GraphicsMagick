@@ -670,6 +670,12 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     readln(image,&ch);
                     continue;
                   }
+                if (ch == 0 || ch > 128 ||	/* Duplicate image check for data with fixed geometry previous check is skipped. */
+                      (ch >= 'a' && ch <= 'z') ||
+                      (ch >= 'A' && ch <= 'Z'))
+                {                                 /* not a text data */
+                  ThrowNOTXTReaderException(CoderError,ImageTypeNotSupported,image);
+                }
               }
 
             x = ReadInt(image,&ch);             /* x */
