@@ -644,7 +644,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
                                         &MinVal_c, &MaxVal_c);
         for(i=0; i<(long)HDR.nCols; i++)
         {
-          if(ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff) != ldblk)
+          if(ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff) != (size_t) ldblk)
           {
             //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
             break;
@@ -660,7 +660,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
                                       &MinVal_c, &MaxVal_c);
         for(i=0; i<(long)HDR.nCols; i++)
         {
-          if(ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff) != ldblk)
+          if(ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff) != (size_t) ldblk)
           {
             //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
             break;

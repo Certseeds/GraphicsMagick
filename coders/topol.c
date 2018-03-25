@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -470,7 +470,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
 
   i = GetBlobSize(image);
   if(i>0)
-    if(((magick_uint64_t)8*Header.Cols*(magick_uint64_t)Header.Rows) / image->depth > GetBlobSize(image))
+    if(((magick_uint64_t)8*Header.Cols*(magick_uint64_t)Header.Rows) / image->depth > (magick_uint64_t)GetBlobSize(image))
       goto TOPOL_KO;	/* Check for forged image that overflows file size. */
 
   /* If ping is true, then only set image size and colors without reading any image data. */
