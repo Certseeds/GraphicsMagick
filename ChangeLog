@@ -1,5 +1,9 @@
 2018-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Fix SourceForge issue 554
+	"Divide-by-zero in ReadMNGImage (coders/png.c)".  (Credit to Trace
+	Probe)
+
 	* coders/bmp.c (ReadBMPImage): Assure that start position always
 	advances to avoid looping BMPs.  Fixes oss-fuzz 7045
 	"graphicsmagick/coder_BMP_fuzzer: Timeout in

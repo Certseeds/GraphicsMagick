@@ -4633,10 +4633,13 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       change_timeout=(*p++);
                       change_clipping=(*p++);
                       p++; /* change_sync */
-                      if (change_delay && (p-chunk) < (ssize_t) (length-4))
+                      if (change_delay && ((p-chunk) < (ssize_t) (length-4)))
                         {
-                          frame_delay=(100*(mng_get_long(p))/
-                                       mng_info->ticks_per_second);
+                          if (mng_info->ticks_per_second == 0)
+                            frame_delay=0;
+                          else
+                            frame_delay=(100*(mng_get_long(p))/
+                                         mng_info->ticks_per_second);
                           if (change_delay == 2)
                             default_frame_delay=frame_delay;
                           p+=4;
@@ -4647,8 +4650,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         }
                       if (change_timeout && (p-chunk) < (ssize_t) (length-4))
                         {
-                          frame_timeout=
-                            (100*(mng_get_long(p))/mng_info->ticks_per_second);
+                          if (mng_info->ticks_per_second == 0)
+                            frame_timeout=0;
+                          else
+                            frame_timeout=
+                              (100*(mng_get_long(p))/mng_info->ticks_per_second);
                           if (change_timeout == 2)
                             default_frame_timeout=frame_timeout;
                           p+=4;
