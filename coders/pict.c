@@ -851,6 +851,8 @@ static size_t EncodeImage(Image *image,const unsigned char *scanline,
 { \
   if (clone_info) \
     DestroyImageInfo(clone_info); \
+  if (tile_image) \
+    DestroyImage(tile_image); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -861,7 +863,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
     geometry[MaxTextExtent];
 
   Image
-    *image = (Image *) NULL;
+    *image = (Image *) NULL,
+    *tile_image = (Image *) NULL;
 
   ImageInfo
     *clone_info = (ImageInfo *) NULL;
@@ -1154,9 +1157,6 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             unsigned char
               *pixels;
 
-            Image
-              *tile_image;
-
             /*
               Pixmap clipped by a rectangle.
             */
@@ -1189,10 +1189,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               {
                 ReadPixmap(pixmap);
                 if (!ValidatePixmap(pixmap))
-                {
-                  DestroyImage(tile_image);
                   ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
-                }
                 tile_image->matte=pixmap.component_count == 4;
               }
             if ((code != 0x9a) && (code != 0x9b))
@@ -1208,10 +1205,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                     tile_image->colors=ReadBlobMSBShort(image)+1;
                   }
                 if (!AllocateImageColormap(tile_image,tile_image->colors))
-                  {
-                    DestroyImage(tile_image);
-                    ThrowPICTReaderException(ResourceLimitError,MemoryAllocationFailed,image)
-                  }
+                  ThrowPICTReaderException(ResourceLimitError,MemoryAllocationFailed,image)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "Allocated tile image colormap with %u colors",tile_image->colors);
                 if (bytes_per_line & 0x8000)
@@ -1245,17 +1239,11 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             ReadRectangle(source);
             TraceRectangle(image,source);
             if (!ValidateRectangle(source))
-            {
-              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
             ReadRectangle(destination);
             TraceRectangle(image,destination);
             if (!ValidateRectangle(destination))
-            {
-              DestroyImage(tile_image);
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
             (void) ReadBlobMSBShort(image);
             if ((code == 0x91) || (code == 0x99) || (code == 0x9b))
               {
@@ -1276,7 +1264,6 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (pixels == (unsigned char *) NULL)
               {
                 CopyException(exception, &tile_image->exception);
-                DestroyImage(tile_image);
                 ThrowPICTReaderException(ResourceLimitError,MemoryAllocationFailed,image)
               }
             /*
@@ -1351,6 +1338,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 (void) CompositeImage(image,CopyCompositeOp,tile_image,
                                       destination.left,destination.top);
             DestroyImage(tile_image);
+            tile_image=(Image *) NULL;
             if (destination.bottom != (long) image->rows)
               if (!MagickMonitorFormatted(destination.bottom,image->rows,&image->exception,
                                           LoadImageText,image->filename,
@@ -1495,6 +1483,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
           frame.right);
         image->compression=tile_image->compression;
         DestroyImage(tile_image);
+        tile_image=(Image *) NULL;
         continue;
       }
     if ((code == 0xff) || (code == 0xffff))

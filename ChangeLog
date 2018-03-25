@@ -4,14 +4,16 @@
 	exists before allocating memory to read it.  Fixes oss-fuzz 6629
 	"graphicsmagick/coder_PCT_fuzzer: Out-of-memory in
 	graphicsmagick_coder_PCT_fuzzer".
+	(ReadPICTImage): Destroy tile_image in ThrowPICTReaderException()
+	macro to simplify logic.
 
 2018-03-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Check whether datablock is really read.
 	Fixes oss-fuzz 7056 (Credit to OSS-Fuzz)
 
-        * coders/txt.c Duplicate image check for data with fixed geometry 
-        previous check is skipped. Fixes oss-fuzz 7090.
+	* coders/txt.c Duplicate image check for data with fixed geometry
+	previous check is skipped. Fixes oss-fuzz 7090.
 
 2018-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
