@@ -1,3 +1,9 @@
+2018-03-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Check whether datablock is really read.
+        Fixes oss-fuzz 7056 (Credit to OSS-Fuzz)
+
+
 2018-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (ReadDCMImage): Validate that samples per pixel is

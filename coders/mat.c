@@ -147,7 +147,7 @@ typedef enum
 static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, RedQuantum};
 
 
-static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal,
+static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal, 
                                   double MaxVal)
 {
   double f;
@@ -202,8 +202,7 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
 }
 
 
-static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
-                                  double MaxVal)
+static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal, double MaxVal)
 {
   double f;
   int x;
@@ -645,7 +644,11 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
                                         &MinVal_c, &MaxVal_c);
         for(i=0; i<(long)HDR.nCols; i++)
         {
-          ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff);
+          if(ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff) != ldblk)
+          {
+            //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
+            break;
+          }
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
       }
@@ -657,7 +660,11 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
                                       &MinVal_c, &MaxVal_c);
         for(i=0; i<(long)HDR.nCols; i++)
         {
-          ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff);
+          if(ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff) != ldblk)
+          {
+            //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
+            break;
+          }
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
       }
