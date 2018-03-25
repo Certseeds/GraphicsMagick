@@ -452,8 +452,8 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     row_bytes;
 
   unsigned char
-    *pixels,
-    *scanline;
+    *pixels = NULL,
+    *scanline = NULL;
 
   unsigned long
     bytes_per_pixel,
@@ -461,6 +461,9 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     number_pixels,
     scanline_length,
     width;
+
+  magick_off_t
+    file_size;
 
   ARG_NOT_USED(image_info);
 
@@ -497,16 +500,64 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                           bytes_per_line,
                           (MAGICK_SIZE_T) row_bytes);
   /*
+    Validate allocation requests based on remaining file data
+  */
+  if ((file_size = GetBlobSize(blob)) > 0)
+    {
+      magick_off_t
+        remaining;
+
+      remaining=file_size-TellBlob(blob);
+
+      if (remaining <= 0)
+        {
+          ThrowException(&image->exception,CorruptImageError,InsufficientImageDataInFile,
+                         image->filename);
+          goto decode_error_exit;
+        }
+      else
+        {
+          double
+            ratio;
+
+          ratio = (((double) image->rows*bytes_per_line)/remaining);
+
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Remaining: %" MAGICK_OFF_F "d, Ratio: %g",
+                                remaining, ratio);
+
+          if (ratio > 255)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unreasonable file size "
+                                    "(ratio of pixels to remaining file size %g)",
+                                    ratio);
+              ThrowException(&image->exception,CorruptImageError,InsufficientImageDataInFile,
+                             image->filename);
+              goto decode_error_exit;
+            }
+        }
+    }
+
+  /*
     Allocate pixel and scanline buffer.
   */
   pixels=MagickAllocateArray(unsigned char *,image->rows,row_bytes);
   if (pixels == (unsigned char *) NULL)
-    return((unsigned char *) NULL);
+    {
+      ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                     image->filename);
+      goto decode_error_exit;
+    }
   allocated_pixels=image->rows*row_bytes;
   (void) memset(pixels,0,allocated_pixels);
   scanline=MagickAllocateMemory(unsigned char *,row_bytes);
   if (scanline == (unsigned char *) NULL)
-    return((unsigned char *) NULL);
+    {
+      ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                     image->filename);
+      goto decode_error_exit;
+    }
   if (bytes_per_line < 8)
     {
       /*

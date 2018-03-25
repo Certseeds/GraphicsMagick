@@ -1,8 +1,14 @@
+2018-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (DecodeImage): Verify that sufficient backing data
+	exists before allocating memory to read it.  Fixes oss-fuzz 6629
+	"graphicsmagick/coder_PCT_fuzzer: Out-of-memory in
+	graphicsmagick_coder_PCT_fuzzer".
+
 2018-03-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c Check whether datablock is really read.
-        Fixes oss-fuzz 7056 (Credit to OSS-Fuzz)
-
+	Fixes oss-fuzz 7056 (Credit to OSS-Fuzz)
 
 2018-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
