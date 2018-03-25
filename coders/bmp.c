@@ -634,8 +634,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Verify BMP identifier.
     */
-    if (bmp_info.ba_offset == 0)
-      start_position=TellBlob(image)-2;
+    /* if (bmp_info.ba_offset == 0) */ /* FIXME: Investigate. Start position needs to always advance! */
+    start_position=TellBlob(image)-2;
     bmp_info.ba_offset=0;
     while (LocaleNCompare((char *) magick,"BA",2) == 0)
     {
@@ -1010,6 +1010,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         else
           packet_size=4;
         offset=start_position+14+bmp_info.size;
+        if (logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Seek offset %" MAGICK_OFF_F "d",
+                                (magick_off_t) offset);
         if ((offset < start_position) ||
             (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
           ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1040,7 +1044,19 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Read image data.
     */
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "start_position %" MAGICK_OFF_F "d,"
+                            " bmp_info.offset_bits %" MAGICK_OFF_F "d,"
+                            " bmp_info.ba_offset %" MAGICK_OFF_F "d" ,
+                            (magick_off_t) start_position,
+                            (magick_off_t) bmp_info.offset_bits,
+                            (magick_off_t) bmp_info.ba_offset);
     offset=start_position+bmp_info.offset_bits;
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Seek offset %" MAGICK_OFF_F "d",
+                            (magick_off_t) offset);
     if ((offset < start_position) ||
         (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1461,6 +1477,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (file_remaining == 0)
       break;
     offset=bmp_info.ba_offset;
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Seek offset %" MAGICK_OFF_F "d",
+                            (magick_off_t) offset);
     if (offset > 0)
       if ((offset < TellBlob(image)) ||
           (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))

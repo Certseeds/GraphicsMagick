@@ -1,5 +1,10 @@
 2018-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/bmp.c (ReadBMPImage): Assure that start position always
+	advances to avoid looping BMPs.  Fixes oss-fuzz 7045
+	"graphicsmagick/coder_BMP_fuzzer: Timeout in
+	graphicsmagick_coder_BMP_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/pict.c (DecodeImage): Verify that sufficient backing data
 	exists before allocating memory to read it.  Fixes oss-fuzz 6629
 	"graphicsmagick/coder_PCT_fuzzer: Out-of-memory in
