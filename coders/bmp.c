@@ -637,6 +637,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /* if (bmp_info.ba_offset == 0) */ /* FIXME: Investigate. Start position needs to always advance! */
     start_position=TellBlob(image)-2;
     bmp_info.ba_offset=0;
+     /* "BA" is OS/2 bitmap array file */
     while (LocaleNCompare((char *) magick,"BA",2) == 0)
     {
       bmp_info.file_size=ReadBlobLSBLong(image);
@@ -648,18 +649,19 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Magick: %c%c",
         magick[0],magick[1]);
-    if ((count != 2) || ((LocaleNCompare((char *) magick,"BM",2) != 0) &&
-        (LocaleNCompare((char *) magick,"CI",2) != 0)))
+    if ((count != 2) || /* Found "BA" header from above above */
+        ((LocaleNCompare((char *) magick,"BM",2) != 0) && /* "BM" is Windows or OS/2 file. */
+         (LocaleNCompare((char *) magick,"CI",2) != 0)))  /* "CI" is OS/2 Color Icon */
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
-    bmp_info.file_size=ReadBlobLSBLong(image);
+    bmp_info.file_size=ReadBlobLSBLong(image); /* File size in bytes */
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "  File size: Claimed=%u, Actual=%"
                             MAGICK_OFF_F "d",
                             bmp_info.file_size, file_size);
-    (void) ReadBlobLSBLong(image);
-    bmp_info.offset_bits=ReadBlobLSBLong(image);
-    bmp_info.size=ReadBlobLSBLong(image);
+    (void) ReadBlobLSBLong(image); /* Reserved */
+    bmp_info.offset_bits=ReadBlobLSBLong(image); /* Bit map offset from start of file */
+    bmp_info.size=ReadBlobLSBLong(image);  /* BMP Header size */
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "  Header size: %u\n"
@@ -683,10 +685,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Windows 2.X or OS/2 BMP image file.
         */
-        bmp_info.width=(magick_int16_t) ReadBlobLSBShort(image);
-        bmp_info.height=(magick_int16_t) ReadBlobLSBShort(image);
-        bmp_info.planes=ReadBlobLSBShort(image);
-        bmp_info.bits_per_pixel=ReadBlobLSBShort(image);
+        bmp_info.width=(magick_int16_t) ReadBlobLSBShort(image); /* Width */
+        bmp_info.height=(magick_int16_t) ReadBlobLSBShort(image); /* Height */
+        bmp_info.planes=ReadBlobLSBShort(image); /* # of color planes */
+        bmp_info.bits_per_pixel=ReadBlobLSBShort(image); /* Bits per pixel */
         bmp_info.x_pixels=0;
         bmp_info.y_pixels=0;
         bmp_info.number_colors=0;
@@ -722,16 +724,16 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           origin in the upper-left corner.  The meaning of negative values
           is not defined for width.
         */
-        bmp_info.width=(magick_int32_t) ReadBlobLSBLong(image);
-        bmp_info.height=(magick_int32_t) ReadBlobLSBLong(image);
-        bmp_info.planes=ReadBlobLSBShort(image);
-        bmp_info.bits_per_pixel=ReadBlobLSBShort(image);
-        bmp_info.compression=ReadBlobLSBLong(image);
-        bmp_info.image_size=ReadBlobLSBLong(image);
-        bmp_info.x_pixels=ReadBlobLSBLong(image);
-        bmp_info.y_pixels=ReadBlobLSBLong(image);
-        bmp_info.number_colors=ReadBlobLSBLong(image);
-        bmp_info.colors_important=ReadBlobLSBLong(image);
+        bmp_info.width=(magick_int32_t) ReadBlobLSBLong(image); /* Width */
+        bmp_info.height=(magick_int32_t) ReadBlobLSBLong(image); /* Height */
+        bmp_info.planes=ReadBlobLSBShort(image); /* # of color planes */
+        bmp_info.bits_per_pixel=ReadBlobLSBShort(image); /* Bits per pixel (1/4/8/16/24/32) */
+        bmp_info.compression=ReadBlobLSBLong(image); /* Compression method */
+        bmp_info.image_size=ReadBlobLSBLong(image); /* Bitmap size (bytes) */
+        bmp_info.x_pixels=ReadBlobLSBLong(image); /* Horizontal resolution (pixels/meter) */
+        bmp_info.y_pixels=ReadBlobLSBLong(image); /* Vertical resolution (pixels/meter) */
+        bmp_info.number_colors=ReadBlobLSBLong(image); /* Number of colors */
+        bmp_info.colors_important=ReadBlobLSBLong(image); /* Minimum important colors */
         profile_data=0;
         profile_size=0;
         if (logging)
