@@ -1,3 +1,10 @@
+2018-03-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/svg.c (SVGStartElement): Enable setting the
+	background color from the SVG file when the client
+	specifies style="background:color" inside the <svg>
+	... </svg> element.
+
 2018-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mtv.c (ReadMTVImage): Add some elementary tracing to MTV

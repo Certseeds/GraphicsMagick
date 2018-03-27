@@ -847,6 +847,9 @@ SVGStartElement(void *context,const xmlChar *name,
     i,
     j;
 
+  char
+    svg_element_background_color[MaxTextExtent];  /* to support style="background:color" */
+
   MagickBool IsTSpan = MagickFalse;
 
   /*
@@ -869,6 +872,7 @@ SVGStartElement(void *context,const xmlChar *name,
   color=AllocateString("none");
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
+  svg_element_background_color[0]='\0';
   IsTSpan = LocaleCompare((char *) name,"tspan") == 0;
   /*
     According to the SVG spec, for the following SVG elements, if the x or y
@@ -1759,6 +1763,18 @@ SVGStartElement(void *context,const xmlChar *name,
                                                 "    %.1024s: %.1024s",keyword,value);
                           switch (*keyword)
                             {
+                            case 'B':
+                            case 'b':
+                              {
+                                if (LocaleCompare(keyword,"background") == 0)
+                                {
+                                  /* only do this if background was specified inside <svg ... */
+                                  if  ( LocaleCompare((const char *)name,"svg") == 0 )
+                                    strlcpy(svg_element_background_color,value,MaxTextExtent);
+                                  break;
+                                }
+                                break;
+                              }
                             case 'C':
                             case 'c':
                               {
@@ -2384,6 +2400,14 @@ SVGStartElement(void *context,const xmlChar *name,
                     -sx*svg_info->view_box.x,-sy*svg_info->view_box.y);
           svg_info->width=page.width;
           svg_info->height=page.height;
+          /* check if background color was specified using <svg ... style="background:color" */
+          if  ( svg_element_background_color[0] != '\0' )
+            {
+              MVGPrintf(svg_info->file,"push graphic-context\n");
+              MVGPrintf(svg_info->file,"fill %s\n",svg_element_background_color);
+              MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",svg_info->view_box.width,svg_info->view_box.height);
+              MVGPrintf(svg_info->file,"pop graphic-context\n");
+            }
         }
     }
 #endif
