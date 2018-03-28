@@ -1,3 +1,10 @@
+2018-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tim.c (ReadTIMImage): Reader was not observing subimage
+	and subrange to quit after the specified frame range.  Inspired by
+	oss-fuzz 7132 "graphicsmagick/coder_TIM_fuzzer: Timeout in
+	graphicsmagick_coder_TIM_fuzzer" (Credit to OSS-Fuzz)
+
 2018-03-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/svg.c (SVGStartElement): Enable setting the

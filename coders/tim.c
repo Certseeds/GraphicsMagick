@@ -231,8 +231,17 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->columns=width;
     image->rows=height;
 
-    if (image_info->ping && (image_info->subrange != 0))
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
+    if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIM[%lu] %lux%lu %d bits/pixel",
+                                    image->scene,
+                                    image->columns, image->rows,
+                                    bits_per_pixel);
+
+    if (image_info->ping)
+      if ((image_info->subrange == 0) ||
+          ((image_info->subrange != 0) &&
+           (image->scene >= (image_info->subimage+image_info->subrange-1))))
         break;
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
@@ -415,6 +424,10 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Proceed to next image.
     */
+    if (image_info->subrange != 0)
+      if (image->scene >= (image_info->subimage+image_info->subrange-1))
+        break;
+
     tim_info.id=ReadBlobLSBLong(image);
     if (tim_info.id == 0x00000010)
       {
