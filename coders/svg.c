@@ -155,6 +155,14 @@ typedef struct _SVGInfo
     *vertices,
     *url;
 
+  /*
+    Even though it's unlikely to happen, keep track of nested <defs> and
+    elements tagged with an id.
+  */
+  int
+    defsPushCount,      /* for tracking nested <defs> */
+    idLevelInsideDefs;  /* when an "id" is seen, remember svg->n (SVG element level) */
+
 #if defined(HasXML)
   xmlParserCtxtPtr
     parser;
@@ -948,6 +956,13 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"id") == 0)
                 {
                   (void) strlcpy(id,value,MaxTextExtent);
+                  /* track elements inside <defs> that have an "id" */
+                  if  ( (svg_info->defsPushCount > 0)
+                    && (svg_info->idLevelInsideDefs == 0)   /* do not allow nested "id" elements for now */
+                    && (LocaleCompare((const char *)name,"clipPath") != 0)  /* handled separately */
+                    && (LocaleCompare((const char *)name,"mask") != 0)      /* handled separately */
+                    )
+                      svg_info->idLevelInsideDefs = svg_info->n;
                   break;
                 }
               break;
@@ -1047,6 +1062,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"circle") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1062,6 +1079,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"defs") == 0)
           {
+            svg_info->defsPushCount++;
             MVGPrintf(svg_info->file,"push defs\n");
             break;
           }
@@ -1072,6 +1090,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"ellipse") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1098,6 +1118,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"g") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1118,6 +1140,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"line") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1135,6 +1159,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"path") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1147,11 +1173,15 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"polygon") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
         if (LocaleCompare((char *) name,"polyline") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1177,6 +1207,8 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"rect") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1211,6 +1243,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"text") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1246,6 +1280,17 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         break;
       }
+    case 'U':
+    case 'u':
+      {
+        if (LocaleCompare((char *) name,"use") == 0)
+          {
+            /* "use" behaves like "g" */
+            MVGPrintf(svg_info->file,"push graphic-context\n");
+            break;
+          }
+        break;
+       }
     default:
       break;
     }
@@ -1577,7 +1622,19 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"href") == 0)
                 {
-                  (void) CloneString(&svg_info->url,value);
+                  /* process "#identifier" as if it were "url(#identifier)" */
+                  if  ( value[0] == '#' )
+                    {
+                      /* reallocate the needed memory once */
+                      size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
+                      MagickReallocMemory(char *,svg_info->url,NewSize);
+                      memcpy(svg_info->url,"url(",4);
+                      strcpy(svg_info->url+4,value);
+                      svg_info->url[NewSize-2] = ')';
+                      svg_info->url[NewSize-1] = '\0';
+                    }
+                  else
+                    (void) CloneString(&svg_info->url,value);
                   break;
                 }
               break;
@@ -2242,7 +2299,19 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"xlink:href") == 0)
                 {
-                  (void) CloneString(&svg_info->url,value);
+                  /* process "#identifier" as if it were "url(#identifier)" */
+                  if  ( value[0] == '#' )
+                    {
+                      /* reallocate the needed memory once */
+                      size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
+                      MagickReallocMemory(char *,svg_info->url,NewSize);
+                      memcpy(svg_info->url,"url(",4);
+                      strcpy(svg_info->url+4,value);
+                      svg_info->url[NewSize-2] = ')';
+                      svg_info->url[NewSize-1] = '\0';
+                    }
+                  else
+                    (void) CloneString(&svg_info->url,value);
                   break;
                 }
               if (LocaleCompare(keyword,"x1") == 0)
@@ -2450,6 +2519,11 @@ SVGEndElement(void *context,const xmlChar *name)
                       svg_info->element.cy,svg_info->element.cx,svg_info->element.cy+
                       svg_info->element.minor);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"clipPath") == 0)
@@ -2464,6 +2538,7 @@ SVGEndElement(void *context,const xmlChar *name)
       {
         if (LocaleCompare((char *) name,"defs") == 0)
           {
+            svg_info->defsPushCount--;
             MVGPrintf(svg_info->file,"pop defs\n");
             break;
           }
@@ -2502,6 +2577,11 @@ SVGEndElement(void *context,const xmlChar *name)
                       angle == 0.0 ? svg_info->element.major : svg_info->element.minor,
                       angle == 0.0 ? svg_info->element.minor : svg_info->element.major);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2528,6 +2608,11 @@ SVGEndElement(void *context,const xmlChar *name)
         if (LocaleCompare((char *) name,"g") == 0)
           {
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2553,6 +2638,11 @@ SVGEndElement(void *context,const xmlChar *name)
             MVGPrintf(svg_info->file,"line %g,%g %g,%g\n",svg_info->segment.x1,
                       svg_info->segment.y1,svg_info->segment.x2,svg_info->segment.y2);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"linearGradient") == 0)
@@ -2574,18 +2664,33 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"path '%s'\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"polygon") == 0)
           {
             MVGPrintf(svg_info->file,"polygon %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"polyline") == 0)
           {
             MVGPrintf(svg_info->file,"polyline %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2607,6 +2712,11 @@ SVGEndElement(void *context,const xmlChar *name)
                           svg_info->bounds.x+svg_info->bounds.width,
                           svg_info->bounds.y+svg_info->bounds.height);
                 MVGPrintf(svg_info->file,"pop graphic-context\n");
+              if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+                {
+                  svg_info->idLevelInsideDefs = 0;
+                  MVGPrintf(svg_info->file,"pop id\n");
+                }
                 break;
               }
             if (svg_info->radius.x == 0.0)
@@ -2620,6 +2730,11 @@ SVGEndElement(void *context,const xmlChar *name)
             svg_info->radius.x=0.0;
             svg_info->radius.y=0.0;
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2658,6 +2773,11 @@ SVGEndElement(void *context,const xmlChar *name)
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"tspan") == 0)
@@ -2697,6 +2817,34 @@ SVGEndElement(void *context,const xmlChar *name)
               break;
             (void) CloneString(&svg_info->title,svg_info->text);
             *svg_info->text='\0';
+            break;
+          }
+        break;
+      }
+    case 'U':
+    case 'u':
+      {
+        if (LocaleCompare((char *) name,"use") == 0)
+          {
+            /*
+              If the "use" had a "transform" attribute it has already been output to the MVG file.
+
+              According to the SVG spec for "use":
+
+              In the generated content, the 'use' will be replaced by 'g', where all attributes
+              from the 'use' element except for 'x', 'y', 'width', 'height' and 'xlink:href' are
+              transferred to the generated 'g' element. An additional transformation translate(x,y)
+              is appended to the end (i.e., right-side) of the 'transform' attribute on the generated
+              'g', where x and y represent the values of the 'x' and 'y' attributes on the 'use'
+              element. The referenced object and its contents are deep-cloned into the generated tree.
+            */
+            if  ( (svg_info->bounds.x != 0.0) || (svg_info->bounds.y != 0.0) )
+              MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,svg_info->bounds.y);
+
+            /* NOTE: not implementing "width" and "height" for now */
+
+            MVGPrintf(svg_info->file,"use '%s'\n",svg_info->url);
+            MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
         break;
@@ -3059,6 +3207,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.scale[0]=ExpandAffine(&svg_info.affine);
   svg_info.bounds.width=image->columns;
   svg_info.bounds.height=image->rows;
+  svg_info.defsPushCount = 0;
+  svg_info.idLevelInsideDefs = 0;
   if (image_info->size != (char *) NULL)
     (void) CloneString(&svg_info.size,image_info->size);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"begin SAX");

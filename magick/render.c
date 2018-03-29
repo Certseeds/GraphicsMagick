@@ -1759,6 +1759,132 @@ static void DrawImageRecurseOut(Image *image)
   DrawImageSetCurrentRecurseLevel(image,recurse_level);
 }
 
+
+/*
+  Code from DrawImage() that extracted tokens between push/pop clip-path
+  and added them as an attribute has been refactored into new function
+  ExtractTokensBetweenPushPop().  Added to support new elements "use" and
+  "class".
+*/
+static
+char *	ExtractTokensBetweenPushPop (
+  char * q,                 /* address of pointer into primitive string */
+  char * token,             /* big enough buffer for extracted string */
+  size_t token_max_length,
+  char const * pop_string,  /* stop when we see pop pop_string */
+  Image *image
+  )
+{/*ExtractTokensBetweenPushPop*/
+
+  char const * p;
+  char
+    name[MaxTextExtent];
+
+  MagickGetToken(q,&q,token,token_max_length);
+  FormatString(name,"[%.1024s]",token);
+  for (p=q; *q != '\0'; )
+  {
+    MagickGetToken(q,&q,token,token_max_length);
+    if (LocaleCompare(token,"pop") != 0)
+      continue;
+    MagickGetToken(q,(char **) NULL,token,token_max_length);
+    if (LocaleCompare(token,pop_string) != 0)
+      continue;
+    break;
+  }
+  if (p+5U > q)
+      return(0);  /*MagickFail*/
+
+  /* found pop pop_string */
+  (void) strncpy(token,p,q-p-4);
+  token[q-p-4]='\0';
+  (void) SetImageAttribute(image,name,token);
+  MagickGetToken(q,&q,token,token_max_length);  /* extract ID string after "pop" */
+	return(q);
+
+}/*ExtractTokensBetweenPushPop*/
+
+
+/*
+  Extract attribute name from input stream, get attribute, and insert it's
+  value into the input stream.  Return updated pointer into input stream.
+  Added to support new elements "use" and "class".
+*/
+static
+char * InsertAttributeIntoInputStream (
+  char * q,                   /* address of pointer into primitive string*/
+  char ** pprimitive,         /* ptr to ptr to primitive string buffer */
+  size_t * pprimitive_extent,
+  char ** ptoken,             /* ptr to ptr to big enough buffer for extracted string */
+  size_t * ptoken_max_length,
+  Image *image,
+  MagickPassFail * pStatus
+  )
+{/*InsertAttributeIntoInputStream*/
+
+  char AttributeName[MaxTextExtent];
+  const ImageAttribute *attribute;
+  size_t AttributeLength;
+  size_t RemainingLength;
+  size_t NeededLength;
+
+  /* get attribute name, then get attribute value */
+  if (MagickGetToken(q,&q,*ptoken,*ptoken_max_length) < 1)
+    {
+      *pStatus = MagickFail;
+      return(q);
+    }
+  FormatString(AttributeName,"[%.1024s]",*ptoken);
+  attribute=GetImageAttribute(image,AttributeName);
+  if (attribute == (ImageAttribute *) NULL)
+    {
+    *pStatus = MagickFail;
+    return(q);
+    }
+
+  /*
+    Insert attribute->value into input stream by concatenating it with the remainder
+    of the primitive, and updating the required state variables.
+  */
+  AttributeLength = attribute->length;
+  RemainingLength = *pprimitive_extent - (size_t)(q - *pprimitive);
+  NeededLength = AttributeLength + RemainingLength;
+
+  if  ( NeededLength <= *pprimitive_extent )
+    {/*combined strings fit in existing primitive buffer*/
+
+      q -= AttributeLength;
+      memcpy(q,attribute->value,AttributeLength);
+
+    }/*combined strings fit in existing primitive buffer*/
+  else
+    {/*combined strings need bigger buffer*/
+
+      char * primitiveNew;
+      *pprimitive_extent = NeededLength;
+      primitiveNew = MagickAllocateMemory(char *,NeededLength+1);
+      if (primitiveNew == (char *) NULL)
+        {
+          *pStatus = MagickFail;
+          return(q);
+        }
+      (void) memcpy(primitiveNew,attribute->value,AttributeLength);
+      (void) memcpy(primitiveNew+AttributeLength,q,RemainingLength);
+      primitiveNew[NeededLength] = '\0';
+
+      MagickFreeMemory(*pprimitive);
+      q = *pprimitive = primitiveNew;
+      MagickFreeMemory(*ptoken);
+      *ptoken = MagickAllocateMemory(char *,NeededLength+1);
+      *ptoken_max_length = NeededLength;
+
+    }/*combined strings need bigger buffer*/
+
+  return(q);
+
+}/*InsertAttributeIntoInputStream*/
+
+
 MagickExport MagickPassFail
 DrawImage(Image *image,const DrawInfo *draw_info)
 {
@@ -1781,8 +1907,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   double
     angle,
     factor,
-    points_length,
-    primitive_extent;
+    points_length;  /* primitive_extent is now a size_t */
 
   DrawInfo
     **graphic_context;
@@ -1816,7 +1941,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 
   size_t
     length,
-    token_max_length;
+    token_max_length,
+    primitive_extent;
 
   MagickPassFail
     status;
@@ -2502,6 +2628,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 FillOpacityPending = StrokeOpacityPending = MagickFalse;
                 break;
               }
+            if (LocaleCompare("id",token) == 0)   /* added "pop id" (to support "defs") */
+              break;
             if (LocaleCompare("pattern",token) == 0)
               break;
             status=MagickFail;
@@ -2512,30 +2640,13 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             MagickGetToken(q,&q,token,token_max_length);
             if (LocaleCompare("clip-path",token) == 0)
               {
-                char
-                  name[MaxTextExtent];
-
-                MagickGetToken(q,&q,token,token_max_length);
-                FormatString(name,"[%.1024s]",token);
-                for (p=q; *q != '\0'; )
-                {
-                  MagickGetToken(q,&q,token,token_max_length);
-                  if (LocaleCompare(token,"pop") != 0)
-                    continue;
-                  MagickGetToken(q,(char **) NULL,token,token_max_length);
-                  if (LocaleCompare(token,"clip-path") != 0)
-                    continue;
-                  break;
-                }
-                if (p+5U > q)
-                  {
-                    status=MagickFail;
-                    break;
-                  }
-                (void) strncpy(token,p,q-p-4);
-                token[q-p-4]='\0';
-                (void) SetImageAttribute(image,name,token);
-                MagickGetToken(q,&q,token,token_max_length);
+                /*
+                  Code that extracted tokens between push/pop clip-path has been refactored
+                  into new function ExtractTokensBetweenPushPop().
+                */
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image);
+                if  ( q == 0 )
+                  status=MagickFail;
                 break;
               }
             if (LocaleCompare("gradient",token) == 0)
@@ -2684,6 +2795,22 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   bounds.x1,bounds.y1);
                 (void) SetImageAttribute(image,key,geometry);
                 MagickGetToken(q,&q,token,token_max_length);
+                break;
+              }
+            if (LocaleCompare("id",token) == 0)   /* added "push id" (to support "defs") */
+              {
+                if  ( defsPushCount > 0 )
+                  {
+                    p = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image);
+                    if  ( p == 0 )
+                      {
+                        status=MagickFail;
+                        break;
+                      }
+                    q = p;
+                  }
+                else	/* extract <identifier> from "push id <identifier>" */
+                  MagickGetToken(q,&q,token,token_max_length);
                 break;
               }
             if (LocaleCompare("pattern",token) == 0)
@@ -3116,6 +3243,17 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (*token == ',')
               MagickGetToken(q,&q,token,token_max_length);
             (void) MagickAtoFChk(token,&affine.ty);
+            break;
+          }
+        status=MagickFail;
+        break;
+      }
+      case 'u':
+      case 'U':
+      {
+        if (LocaleCompare("use",keyword) == 0)
+          {
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
             break;
           }
         status=MagickFail;

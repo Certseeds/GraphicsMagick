@@ -1,3 +1,22 @@
+2018-03-29  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement, SVGEndElement),
+	magick/render.c (DrawImage): This changeset implements the SVG
+	"use" element.  Graphical elements (e.g., "rect", "text", etc.)
+	can be tagged with an identifier using 'id="identifier"' when
+	defined within the "defs" section.  They can then be referenced
+	elsewhere in the SVG file using:
+
+	<use xlink:href="#identifier" ... />
+
+	When referencing a graphical element by its identifier, the
+	following syntaxes are now treated as being the same:
+
+	href="#identifier"
+	href="url(#identifier)"
+	xlink:href="#identifier"
+	xlink:href="url(#identifier)"
+
 2018-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tim.c (ReadTIMImage): Reader was not observing subimage
