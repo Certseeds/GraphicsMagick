@@ -1,3 +1,9 @@
+2018-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcd.c (ReadPCDImage): Add checks for EOF. Fixes oss-fuzz
+	issue 7180 "graphicsmagick/coder_PCDS_fuzzer: Timeout in
+	graphicsmagick_coder_PCDS_fuzzer".  (Credit to OSS-Fuzz)
+
 2018-03-29  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement, SVGEndElement),

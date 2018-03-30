@@ -35,6 +35,33 @@
 <div class="document">
 
 
+<p>2018-03-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/pcd.c (ReadPCDImage): Add checks for EOF. Fixes oss-fuzz
+issue 7180 &quot;graphicsmagick/coder_PCDS_fuzzer: Timeout in
+graphicsmagick_coder_PCDS_fuzzer&quot;.  (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-03-29  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p class="first">coders/svg.c (SVGStartElement, SVGEndElement),
+magick/render.c (DrawImage): This changeset implements the SVG
+&quot;use&quot; element.  Graphical elements (e.g., &quot;rect&quot;, &quot;text&quot;, etc.)
+can be tagged with an identifier using 'id=&quot;identifier&quot;' when
+defined within the &quot;defs&quot; section.  They can then be referenced
+elsewhere in the SVG file using:</p>
+<p>&lt;use xlink:href=&quot;#identifier&quot; ... /&gt;</p>
+<p>When referencing a graphical element by its identifier, the
+following syntaxes are now treated as being the same:</p>
+<p>href=&quot;#identifier&quot;
+href=&quot;url(#identifier)&quot;
+xlink:href=&quot;#identifier&quot;
+xlink:href=&quot;url(#identifier)&quot;</p>
+</li>
+</ul>
+</blockquote>
 <p>2018-03-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

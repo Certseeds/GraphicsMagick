@@ -495,6 +495,15 @@ static Image *OverviewImage(const ImageInfo *image_info,Image *image,
   return(montage_image);
 }
 
+#define ThrowPCDReaderException(code_,reason_,image_) \
+  {                                                   \
+    MagickFreeMemory(chroma1);                        \
+    MagickFreeMemory(chroma2);                        \
+    MagickFreeMemory(header);                         \
+    MagickFreeMemory(luma);                           \
+    ThrowReaderException(code_,reason_,image_);       \
+  }
+
 static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image
@@ -524,10 +533,10 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     count;
 
   unsigned char
-    *chroma1,
-    *chroma2,
-    *header,
-    *luma;
+    *chroma1 = NULL,
+    *chroma2 = NULL,
+    *header = NULL,
+    *luma = NULL;
 
   unsigned int
     overview,
@@ -558,14 +567,11 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   header=MagickAllocateMemory(unsigned char *,3*0x800);
   if (header == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  count=ReadBlob(image,3*0x800,(char *) header);
+  if ((count=ReadBlob(image,3*0x800,(char *) header)) != 3*0x800)
+    ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   overview=LocaleNCompare((char *) header,"PCD_OPA",7) == 0;
-  if ((count == 0) ||
-      ((LocaleNCompare((char *) header+0x800,"PCD",3) != 0) && !overview))
-    {
-      MagickFreeMemory(header);
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    }
+  if ((LocaleNCompare((char *) header+0x800,"PCD",3) != 0) && !overview)
+    ThrowPCDReaderException(CorruptImageError,ImproperImageHeader,image);
   rotate=header[0x0e02] & 0x03;
   number_images=((header[10] << 8) | header[11]) & 0xFFFF;
   MagickFreeMemory(header);
@@ -623,12 +629,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if ((chroma1 == (unsigned char *) NULL) ||
       (chroma2 == (unsigned char *) NULL) ||
       (luma == (unsigned char *) NULL))
-    {
-      MagickFreeMemory(chroma1);
-      MagickFreeMemory(chroma2);
-      MagickFreeMemory(luma);
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    }
+    ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Advance to image data.
   */
@@ -642,12 +643,10 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (subimage <= 1)
         offset=1;
   for (i=0; i < (long) (offset*0x800); i++)
-    (void) ReadBlobByte(image);
+    if (ReadBlobByte(image) == EOF)
+      ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (overview)
     {
-      Image
-        *overview_image;
-
       MonitorHandler
         handler;
 
@@ -679,6 +678,8 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           c1+=image->columns;
           (void) ReadBlob(image,width >> 1,(char *) c2);
           c2+=image->columns;
+          if (EOFBlob(image))
+            ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
         Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma1);
         Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma2);
@@ -715,10 +716,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             AllocateNextImage(image_info,image);
             if (image->next == (Image *) NULL)
-              {
-                DestroyImageList(image);
-                return((Image *) NULL);
-              }
+              ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
             image=SyncNextImageInList(image);
           }
         (void) SetMonitorHandler(handler);
@@ -732,8 +730,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickFreeMemory(luma);
       while (image->previous != (Image *) NULL)
         image=image->previous;
-      overview_image=OverviewImage(image_info,image,exception);
-      return(overview_image);
+      return OverviewImage(image_info,image,exception);
     }
   /*
     Read interleaved image.
@@ -751,6 +748,8 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     c1+=image->columns;
     (void) ReadBlob(image,width >> 1,(char *) c2);
     c2+=image->columns;
+    if (EOFBlob(image))
+      ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   }
   if (subimage >= 4)
     {
