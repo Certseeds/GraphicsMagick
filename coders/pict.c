@@ -433,7 +433,8 @@ static unsigned char *ExpandBuffer(unsigned char *pixels,
 }
 
 static unsigned char *DecodeImage(const ImageInfo *image_info,
-                                  Image *blob,Image *image,unsigned long bytes_per_line,
+                                  Image *blob,Image *image,
+                                  unsigned long bytes_per_line,
                                   const unsigned int bits_per_pixel)
 {
   long
@@ -469,9 +470,10 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "DecodeImage: bytes_per_line=%lu,"
+                          "DecodeImage: %lux%lu, bytes_per_line=%lu,"
                           " bits_per_pixel=%u",
-                          bytes_per_line, bits_per_pixel);
+                          image->columns, image->rows, bytes_per_line,
+                          bits_per_pixel);
 
   /*
     Determine pixel buffer size.
@@ -526,7 +528,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                                 "Remaining: %" MAGICK_OFF_F "d, Ratio: %g",
                                 remaining, ratio);
 
-          if (ratio > 255)
+          if (ratio > (bytes_per_line < 8 ? 1.0 : 255.0))
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Unreasonable file size "
@@ -1221,6 +1223,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                         ScaleShortToQuantum(ReadBlobMSBShort(image));
                       tile_image->colormap[j].blue=(Quantum)
                         ScaleShortToQuantum(ReadBlobMSBShort(image));
+                      if (EOFBlob(image))
+                        break;
                     }
                   }
                 else
@@ -1236,6 +1240,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                     }
                   }
               }
+            if (EOFBlob(image))
+              break;
             ReadRectangle(source);
             TraceRectangle(image,source);
             if (!ValidateRectangle(source))
@@ -1255,6 +1261,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                   if (ReadBlobByte(image) == EOF)
                     break;
               }
+            if (CheckImagePixelLimits(tile_image, exception) != MagickPass)
+              ThrowPICTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
             if ((code != 0x9a) && (code != 0x9b) &&
                 (bytes_per_line & 0x8000) == 0)
               pixels=DecodeImage(image_info,image,tile_image,bytes_per_line,1);

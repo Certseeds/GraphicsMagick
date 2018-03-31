@@ -1,3 +1,10 @@
+2018-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (ReadPICTImage): Check image pixel limits before
+	allocating memory for tile.  Fixes oss-fuzz 7217
+	"graphicsmagick/coder_PICT_fuzzer: Out-of-memory in
+	graphicsmagick_coder_PICT_fuzzer".
+
 2018-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcd.c (ReadPCDImage): Add checks for EOF. Fixes oss-fuzz
