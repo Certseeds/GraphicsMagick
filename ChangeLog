@@ -1,5 +1,10 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (ReadPCXImage): Assure that scanline is
+	initialized.  Fixes oss-fuzz 6612
+	"graphicsmagick/coder_PCX_fuzzer: Use-of-uninitialized-value in
+	WriteRLEPixels". (Credit to OSS-Fuzz)
+
 	* coders/wpg.c (ReadWPGImage): Detect unexpected EOF and avoid use
 	of uninitialized data.  Fixes oss-fuzz 6601
 	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in

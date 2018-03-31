@@ -249,6 +249,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   size_t
+    scanline_size,
     pcx_packets;
 
   magick_off_t
@@ -499,10 +500,13 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pcx_pixels=MagickAllocateMemory(unsigned char *,pcx_packets);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    scanline=MagickAllocateArray(unsigned char *,Max(image->columns,
-      (size_t) pcx_info.bytes_per_line),Max(pcx_info.planes,8));
+    scanline_size=MagickArraySize(Max(image->columns,
+                                      (size_t) pcx_info.bytes_per_line),
+                                  Max(pcx_info.planes,8));
+    scanline=MagickAllocateMemory(unsigned char *,scanline_size);
     if (scanline == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    (void) memset(scanline,0,scanline_size);
     if (pcx_info.encoding == 0)
       {
         /*
