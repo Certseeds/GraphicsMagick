@@ -1,5 +1,10 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/viff.c (ReadVIFFImage): Fix blob I/O size validation to
+	avoid use of uninitialized data. Fixes oss-fuzz 6597
+	"graphicsmagick/coder_VIFF_fuzzer: Use-of-uninitialized-value in
+	ThresholdImage". (Credit to OSS-Fuzz)
+
 	* coders/wbmp.c (ReadWBMPImage): Fix blob I/O size validation to
 	avoid use of uninitialized data. Fixes oss-fuzz 7047
 	"graphicsmagick/coder_WBMP_fuzzer: Use-of-uninitialized-value in
