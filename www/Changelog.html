@@ -41,7 +41,10 @@
 <li>coders/viff.c (ReadVIFFImage): Fix blob I/O size validation to
 avoid use of uninitialized data. Fixes oss-fuzz 6597
 &quot;graphicsmagick/coder_VIFF_fuzzer: Use-of-uninitialized-value in
-ThresholdImage&quot;. (Credit to OSS-Fuzz)</li>
+ThresholdImage&quot;. (Credit to OSS-Fuzz)
+(ReadVIFFImage): Don't execute SetImageType(image,BilevelType) on
+an image which has no pixels yet in order to avoid use of
+uninitialized data. Fixes oss-fuzz 6597.  (Credit to OSS-Fuzz)</li>
 <li>coders/wbmp.c (ReadWBMPImage): Fix blob I/O size validation to
 avoid use of uninitialized data. Fixes oss-fuzz 7047
 &quot;graphicsmagick/coder_WBMP_fuzzer: Use-of-uninitialized-value in

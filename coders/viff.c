@@ -582,6 +582,16 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     if (image_info->ping && (image_info->subrange != 0))
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
+
+    if (viff_info.data_storage_type == VFF_TYP_BIT)
+      {
+        /*
+          Allocate bi-level colormap
+        */
+        if (AllocateImageColormap(image,2) == MagickFail)
+          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+        image->colorspace=GRAYColorspace;
+      }
     /*
       Allocate VIFF pixels.
     */
@@ -746,7 +756,6 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         /*
           Convert bitmap scanline.
         */
-        (void) SetImageType(image,BilevelType);
         polarity=PixelIntensityToQuantum(&image->colormap[0]) < (MaxRGB/2);
         if (image->colors >= 2)
           polarity=PixelIntensityToQuantum(&image->colormap[0]) >
