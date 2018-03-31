@@ -1,5 +1,10 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Detect unexpected EOF and avoid use
+	of uninitialized data.  Fixes oss-fuzz 6601
+	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+	ImportIndexQuantumType". (Credit to OSS-Fuzz)
+
 	* coders/sgi.c (ReadSGIImage): Assure that RLE decode buffer is
 	initialized.  Fixes oss-fuzz 6599
 	"graphicsmagick/coder_SGI_fuzzer: Use-of-uninitialized-value in

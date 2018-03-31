@@ -1377,7 +1377,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
                     for(i=0; i< (long) image->rows; i++)
                       {
-                        (void) ReadBlob(image,ldblk,(char *) BImgBuff);
+                        if (ReadBlob(image,ldblk,(char *) BImgBuff) != (size_t) ldblk)
+                          {
+                            MagickFreeMemory(BImgBuff);
+                            ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+                            goto DecompressionFailed;
+                          }
                         if(InsertRow(BImgBuff,i,image,bpp) == MagickFail)
                         {
                           if(BImgBuff) MagickFreeMemory(BImgBuff);
