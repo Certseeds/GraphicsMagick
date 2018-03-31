@@ -1,5 +1,12 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xcf.c (ReadOneLayer): Reject layer size of 0x0.  Fixes
+	oss-fuzz 6636 "graphicsmagick/coder_XCF_fuzzer: Direct-leak in
+	MagickMallocAligned". (Credit to OSS-Fuzz)
+
+	* magick/pixel_cache.c (ModifyCache): Destroy CacheInfo if
+	OpenCache() fails so it is not leaked.
+
 	* coders/wpg.c (ExtractPostscript): Enforce that embedded file is
 	a Postscript file.  Fixes oss-fuzz 7235
 	"graphicsmagick/coder_WPG_fuzzer: Indirect-leak in MagickRealloc".

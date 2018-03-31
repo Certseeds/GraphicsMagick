@@ -1055,6 +1055,9 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
   if (EOFBlob(image))
     ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
 
+  if ((outLayer->width == 0) || (outLayer->height == 0))
+    ThrowBinaryException(CorruptImageError,ImproperImageHeader,image->filename);
+
   /* allocate the image for this layer */
   outLayer->image=CloneImage(image,outLayer->width, outLayer->height,True,
                              &image->exception);
