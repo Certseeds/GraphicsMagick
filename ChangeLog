@@ -1,5 +1,9 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ExtractPostscript): Allow non-Postscript content
+	but force reading using the magick we already detected.  Also log
+	the format that we detected.
+
 	* coders/xcf.c (ReadOneLayer): Reject layer size of 0x0.  Fixes
 	oss-fuzz 6636 "graphicsmagick/coder_XCF_fuzzer: Direct-leak in
 	MagickMallocAligned". (Credit to OSS-Fuzz)

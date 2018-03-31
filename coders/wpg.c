@@ -780,18 +780,11 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
       goto FINISH_UNL;
     }
 
-  /* Is this really a Postscript file ? */
-  if (strcmp(clone_info->magick,"PS") != 0)
-    {
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Embedded file is in \"%s\" format, not Postscript!",
-                            clone_info->magick);
-      ThrowException(exception,CorruptImageError,ImageTypeNotSupported,image->filename);
-      goto FINISH_UNL;
-    }
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Reading embedded \"%s\" content...", clone_info->magick);
 
   /* Read nested image, forcing read as Postscript format */
-  FormatString(clone_info->filename,"%s:%.1024s","PS",postscript_file);
+  FormatString(clone_info->filename,"%s:%.1024s",clone_info->magick,postscript_file);
   image2 = ReadImage(clone_info,exception);
 
   if (!image2)
