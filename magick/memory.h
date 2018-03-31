@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2013 GraphicsMagick Group
+  Copyright (C) 2003-2018 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -14,9 +14,9 @@
 extern "C" {
 #endif
 
-typedef void *(*MagickMallocFunc)(size_t size) MAGICK_FUNC_ALLOC_SIZE_1ARG(1);
+typedef void *(*MagickMallocFunc)(size_t size);
 typedef void (*MagickFreeFunc)(void *ptr);
-typedef void *(*MagickReallocFunc)(void *ptr, size_t size) MAGICK_FUNC_ALLOC_SIZE_1ARG(2);
+typedef void *(*MagickReallocFunc)(void *ptr, size_t size);
 
 extern MagickExport void
    MagickAllocFunctions(MagickFreeFunc free_func,MagickMallocFunc malloc_func,
