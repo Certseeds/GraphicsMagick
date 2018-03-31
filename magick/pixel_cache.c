@@ -2931,6 +2931,8 @@ ModifyCache(Image *image, ExceptionInfo *exception)
                 Clone the pixel cache.
               */
               status=ClonePixelCache(image,&clone_image,exception);
+              if (status == MagickFail)
+                DestroyCacheInfo(clone_image.cache);
             }
           DestroySemaphoreInfo(&clone_image.semaphore);
 
