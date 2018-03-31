@@ -1,5 +1,12 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sgi.c (ReadSGIImage): Assure that RLE decode buffer is
+	initialized.  Fixes oss-fuzz 6599
+	"graphicsmagick/coder_SGI_fuzzer: Use-of-uninitialized-value in
+	SyncImageCallBack" and oss-fuzz 6600
+	"graphicsmagick/coder_SGI_fuzzer: Use-of-uninitialized-value in
+	SGIEncode". (Credit to OSS-Fuzz)
+
 	* coders/viff.c (ReadVIFFImage): Fix blob I/O size validation to
 	avoid use of uninitialized data. Fixes oss-fuzz 6597
 	"graphicsmagick/coder_VIFF_fuzzer: Use-of-uninitialized-value in
