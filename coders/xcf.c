@@ -690,6 +690,10 @@ static MagickPassFail load_level (Image* image,
    *  and we can simply return.
    */
   offset = ReadBlobMSBLong(image);
+
+  if (EOFBlob(image))
+    ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+
   if (offset == 0)
     return MagickPass;
 
@@ -745,6 +749,8 @@ static MagickPassFail load_level (Image* image,
         amount of data needed for this tile
       */
       offset2 = ReadBlobMSBLong(image);
+      if (EOFBlob(image))
+        ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
       if (offset2 >= inDocInfo->file_size)
         {
           if (image->logging)
@@ -935,6 +941,8 @@ static MagickPassFail load_level (Image* image,
 
       /* read in the offset of the next tile */
       offset = ReadBlobMSBLong(image);
+      if (EOFBlob(image))
+        ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
       if (offset != 0)
         if (!MagickMonitorFormatted(offset,inDocInfo->file_size,
                                     &image->exception,LoadImageText,
@@ -983,9 +991,7 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
   offset = ReadBlobMSBLong(image);  /* top level */
 
   if (EOFBlob(image))
-    {
-      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
-    }
+    ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1013,9 +1019,7 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
   while ((junk != 0) && (!EOFBlob(image)));
 
   if (EOFBlob(image))
-    {
-      ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
-    }
+    ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
 
   /* save the current position as it is where the
    *  next level offset is stored.
@@ -1075,6 +1079,9 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
   (void) ReadBlobStringWithLongSize(image, outLayer->name,
                                     sizeof(outLayer->name));
 
+  if (EOFBlob(image))
+    ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Loading layer \"%s\", dimensions %lux%lu, type %lu",
@@ -1082,9 +1089,6 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
                           (unsigned long) outLayer->width,
                           (unsigned long) outLayer->height,
                           (unsigned long) outLayer->type);
-
-  if (EOFBlob(image))
-    ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
 
   if ((outLayer->width == 0) || (outLayer->height == 0))
     ThrowBinaryException(CorruptImageError,ImproperImageHeader,image->filename);
@@ -1185,6 +1189,8 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
           break;
         }
     }
+  if (EOFBlob(image))
+    ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
 
   if (!foundPropEnd)
     return MagickFail;
