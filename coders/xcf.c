@@ -754,6 +754,16 @@ static MagickPassFail load_level (Image* image,
           ThrowBinaryException(CorruptImageError,CorruptImage,image->filename);
         }
 
+      /* verify that seek position is in file */
+      if ((magick_off_t) offset >= GetBlobSize(image))
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Tile offset %" MAGICK_OFF_F "d is outside file bounds",
+                                  (magick_off_t) offset);
+          ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+        }
+
       /* seek to the tile offset */
       if (SeekBlob(image, offset, SEEK_SET) != offset)
         ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
@@ -979,9 +989,20 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "load_hierarchy: dimensions %lux%lu, bpp=%lu, offset=%lu",
+                          "load_hierarchy: dimensions %lux%lu, bpp=%lu,"
+                          " offset=%" MAGICK_OFF_F "d",
                           width,height,(unsigned long) inDocInfo->bpp,
-                          (unsigned long) offset);
+                          (magick_off_t) offset);
+
+  /* verify that seek position is in file */
+  if ((magick_off_t) offset >= GetBlobSize(image))
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Heirarchy offset %" MAGICK_OFF_F "d is outside file bounds",
+                              (magick_off_t) offset);
+      ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+    }
 
   /* discard offsets for layers below first, if any.
    */
@@ -1002,6 +1023,16 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
   saved_pos = TellBlob(image);
   if (saved_pos < 0)
     ThrowBinaryException(BlobError,UnableToObtainOffset,image->filename);
+
+  /* verify that seek position is in file */
+  if ((magick_off_t) offset >= GetBlobSize(image))
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Level offset %" MAGICK_OFF_F "d is outside file bounds",
+                              (magick_off_t) offset);
+      ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+    }
 
   /* seek to the level offset */
   if (SeekBlob(image, offset, SEEK_SET) != offset)
@@ -1174,6 +1205,16 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
   hierarchy_offset = ReadBlobMSBLong(image);
   layer_mask_offset = ReadBlobMSBLong(image);
 
+  /* verify that seek position is in file */
+  if ((magick_off_t) hierarchy_offset >= GetBlobSize(image))
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Hierarchy offset %" MAGICK_OFF_F "d is outside file bounds",
+                              (magick_off_t) hierarchy_offset);
+      ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+    }
+
   /* read in the hierarchy */
   if (SeekBlob(image, hierarchy_offset, SEEK_SET) != (magick_off_t) hierarchy_offset)
     ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
@@ -1183,6 +1224,15 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
   /* read in the layer mask */
   if (layer_mask_offset != 0)
     {
+      /* verify that seek position is in file */
+      if ((magick_off_t) layer_mask_offset >= GetBlobSize(image))
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Layer mask offset %" MAGICK_OFF_F "d is outside file bounds",
+                                  (magick_off_t) layer_mask_offset);
+          ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+        }
       if (SeekBlob(image, layer_mask_offset, SEEK_SET) != (magick_off_t) layer_mask_offset)
         ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
 
@@ -1660,6 +1710,16 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           if ( first_layer <= current_layer && current_layer <= last_layer )
             {
+              /* verify that seek position is in file */
+              if ((magick_off_t) offset >= GetBlobSize(image))
+                {
+                  if (image->logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Layer offset %" MAGICK_OFF_F "d is outside file bounds",
+                                          (magick_off_t) offset);
+                  ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+                }
+
               /* seek to the layer offset */
               if (SeekBlob(image, offset, SEEK_SET) != offset)
                 {

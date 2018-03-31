@@ -40,7 +40,11 @@
 <ul class="simple">
 <li>coders/xcf.c (ReadOneLayer): Reject layer size of 0x0.  Fixes
 oss-fuzz 6636 &quot;graphicsmagick/coder_XCF_fuzzer: Direct-leak in
-MagickMallocAligned&quot;. (Credit to OSS-Fuzz)</li>
+MagickMallocAligned&quot;. (Credit to OSS-Fuzz)
+(ReadXCFImage): Verify that seek offsets are within the bounds of
+the file data. Fixes oss-fuzz 6682
+&quot;graphicsmagick/coder_XCF_fuzzer: Out-of-memory in
+graphicsmagick_coder_XCF_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>magick/pixel_cache.c (ModifyCache): Destroy CacheInfo if
 OpenCache() fails so it is not leaked.</li>
 <li>coders/wpg.c (ExtractPostscript): Enforce that embedded file is
