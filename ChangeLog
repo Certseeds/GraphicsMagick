@@ -1,3 +1,10 @@
+2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ExtractPostscript): Enforce that embedded file is
+	a Postscript file.  Fixes oss-fuzz 7235
+	"graphicsmagick/coder_WPG_fuzzer: Indirect-leak in MagickRealloc".
+	This is indicated to be a regression. (Credit to OSS-Fuzz)
+
 2018-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Check image pixel limits before

@@ -773,11 +773,25 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   /* Detect file format - Check magic.mgk configuration file. */
   if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
           MaxTextExtent,exception) == MagickFail)
-    goto FINISH_UNL;
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Failed to identify embedded file type!");
+      ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+      goto FINISH_UNL;
+    }
 
-  /* Read nested image */
-  /*FormatString(clone_info->filename,"%s:%.1024s",magic_info->name,postscript_file);*/
-  FormatString(clone_info->filename,"%.1024s",postscript_file);
+  /* Is this really a Postscript file ? */
+  if (strcmp(clone_info->magick,"PS") != 0)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Embedded file is in \"%s\" format, not Postscript!",
+                            clone_info->magick);
+      ThrowException(exception,CorruptImageError,ImageTypeNotSupported,image->filename);
+      goto FINISH_UNL;
+    }
+
+  /* Read nested image, forcing read as Postscript format */
+  FormatString(clone_info->filename,"%s:%.1024s","PS",postscript_file);
   image2 = ReadImage(clone_info,exception);
 
   if (!image2)
