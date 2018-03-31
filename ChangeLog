@@ -1,5 +1,10 @@
 2018-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wbmp.c (ReadWBMPImage): Fix blob I/O size validation to
+	avoid use of uninitialized data. Fixes oss-fuzz 7047
+	"graphicsmagick/coder_WBMP_fuzzer: Use-of-uninitialized-value in
+	ReadWBMPImage". (Credit to OSS-Fuzz)
+
 	* coders/wpg.c (ExtractPostscript): Allow non-Postscript content
 	but force reading using the magick we already detected.  Also log
 	the format that we detected.
