@@ -1,5 +1,10 @@
 2018-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xcf.c (ReadXCFImage): Destroy layer info before returning
+	due to exception.  This is a new regression due to adding more
+	checks. Fixes oss-fuzz 7277 "graphicsmagick/coder_XCF_fuzzer:
+	Direct-leak in ReadXCFImage". (Credit to OSS-Fuzz)
+
 	* coders/pdb.c (ReadPDBImage): Assure that all bytes of scanline
 	are initialized while decoding.  Fixes oss-fuzz 7051
 	"graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in

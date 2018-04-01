@@ -1723,6 +1723,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "Layer offset %" MAGICK_OFF_F "d is outside file bounds",
                                           (magick_off_t) offset);
+                  DestroyLayerInfo(number_layers,layer_info);
                   ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
                 }
 
