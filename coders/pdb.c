@@ -346,8 +346,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     index;
 
   long
-    offset,
-    y;
+    offset;
 
   PDBImage
     pdb_image;
@@ -358,7 +357,10 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register IndexPacket
     *indexes;
 
-  register long
+  unsigned long
+    y;
+
+  register unsigned long
     x;
 
   register PixelPacket
@@ -492,7 +494,11 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     case 0:
     {
       image->compression=NoCompression;
-      (void) ReadBlob(image,packets,(char *) pixels);
+      if (ReadBlob(image,packets,(char *) pixels) != packets)
+        {
+          MagickFreeMemory(pixels);
+          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
       break;
     }
     case 1:
@@ -518,21 +524,24 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 1-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < ((long) image->columns-7); x+=8)
+        bit=0;
+        for (x=0; x < image->columns; x++)
         {
-          for (bit=0; bit < 8; bit++)
-          {
-            index=(*p & (0x80U >> bit) ? 0x00U : 0x01U);
-            indexes[x+bit]=index;
-            *q++=image->colormap[index];
-          }
-          p++;
+          index=(*p & (0x80U >> bit) ? 0x00U : 0x01U);
+          indexes[x]=index;
+          *q++=image->colormap[index];
+          bit++;
+          if (bit == 8)
+            {
+              p++;
+              bit=0;
+            }
         }
         if (!SyncImagePixels(image))
           break;
@@ -549,32 +558,28 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 2-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      unsigned int
+        shift;
+
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < (long) image->columns-3; x+=4)
-        {
-          index=(IndexPacket) (3-((*p >> 6) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p >> 4) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+1]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p >> 2) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+2]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+3]=index;
-          *q++=image->colormap[index];
-          p++;
-        }
+        shift = 8;
+        for (x=0; x < image->columns; x++)
+          {
+            shift -= 2;
+            index=(IndexPacket) (3-((*p >> shift) & 0x03));
+            VerifyColormapIndex(image,index);
+            indexes[x]=index;
+            if (shift == 0)
+              {
+                shift = 8;
+                p++;
+              }
+          }
         if (!SyncImagePixels(image))
           break;
         if (QuantumTick(y,image->rows))
@@ -590,23 +595,28 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 4-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      unsigned int
+        shift;
+
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < (long) image->columns-1; x+=2)
+        shift = 8;
+        for (x=0; x < image->columns; x++)
         {
-          index=(IndexPacket) (15-((*p >> 4) & 0x0f));
+          shift -= 4;
+          index=(IndexPacket) (15-((*p >> shift) & 0x0f));
           VerifyColormapIndex(image,index);
           indexes[x]=index;
           *q++=image->colormap[index];
-          index=(IndexPacket) (15-((*p) & 0x0f));
-          VerifyColormapIndex(image,index);
-          indexes[x+1]=index;
-          *q++=image->colormap[index];
-          p++;
+          if (shift == 0)
+            {
+              shift = 8;
+              p++;
+            }
         }
         if (!SyncImagePixels(image))
           break;
@@ -793,7 +803,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   int
     bits;
 
-  long
+  unsigned long
     y;
 
   PDBImage
@@ -926,7 +936,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   repeat=0;
   q=p;
   buffer[0]=0x00;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;
