@@ -144,33 +144,41 @@ static void LogPDPInfo(const PDBInfo *info)
 
 static void LogPDPImage(const PDBImage *image)
 {
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "PDP Image:\n"
-                          "    name:       %.32s\n"
-                          "    version:    %d\n"
-                          "    type:       %d\n"
-                          "    reserved_1: %lu\n"
-                          "    note:       %lu\n"
-                          "    x_last:     %u\n"
-                          "    y_last:     %u\n"
-                          "    reserved_2: %lu\n"
-                          "    x_anchor:   %u\n"
-                          "    y_anchor:   %u\n"
-                          "    width:      %u\n"
-                          "    height:     %u",
-                          image->name,
-                          image->version,
-                          image->type,
-                          image->reserved_1,
-                          image->note,
-                          image->x_last,
-                          image->y_last,
-                          image->reserved_2,
-                          image->x_anchor,
-                          image->y_anchor,
-                          image->width,
-                          image->height
-                          );
+  static const char *type_string;
+  switch(image->type)
+    {
+    case 0: type_string = "2 bit gray"; break;
+    case 2: type_string = "4 bit gray"; break;
+    default: type_string = "monochrome"; break;
+    }
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "PDP Image:\n"
+                        "    name:       %.32s\n"
+                        "    version:    %d\n"
+                        "    type:       %d (%s)\n"
+                        "    reserved_1: %lu\n"
+                        "    note:       %lu\n"
+                        "    x_last:     %u\n"
+                        "    y_last:     %u\n"
+                        "    reserved_2: %lu\n"
+                        "    x_anchor:   %u\n"
+                        "    y_anchor:   %u\n"
+                        "    width:      %u\n"
+                        "    height:     %u",
+                        image->name,
+                        image->version,
+                        image->type, type_string,
+                        image->reserved_1,
+                        image->note,
+                        image->x_last,
+                        image->y_last,
+                        image->reserved_2,
+                        image->x_anchor,
+                        image->y_anchor,
+                        image->width,
+                        image->height
+                        );
 }
 
 /*
