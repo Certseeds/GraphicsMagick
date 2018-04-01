@@ -4758,30 +4758,33 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Now process the image data
   */
   if (status == MagickFail)
-    ;
-  else
-    if ((dcm.columns == 0) || (dcm.rows == 0))
-      {
-        ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
-        status=MagickFail;
-      }
-    else if ((dcm.samples_per_pixel == 0) || (dcm.samples_per_pixel > 4))
-      {
-        ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
-        status=MagickFail;
-      }
-    else if ((dcm.transfer_syntax != DCM_TS_IMPL_LITTLE) &&
-             (dcm.transfer_syntax != DCM_TS_EXPL_LITTLE) &&
-             (dcm.transfer_syntax != DCM_TS_EXPL_BIG) &&
-             (dcm.transfer_syntax != DCM_TS_RLE))
-      {
-        status=DCM_ReadNonNativeImages(&image,image_info,&dcm,exception);
-        dcm.number_scenes=0;
-      }
-    else if (dcm.rescaling != DCM_RS_POST)
-      {
-        status=DCM_SetupRescaleMap(image,&dcm,exception);
-      }
+    goto dcm_read_failure;
+
+  if ((dcm.columns == 0) || (dcm.rows == 0))
+    {
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      status=MagickFail;
+    }
+  else if ((dcm.samples_per_pixel == 0) || (dcm.samples_per_pixel > 4))
+    {
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      status=MagickFail;
+    }
+  else if ((dcm.transfer_syntax != DCM_TS_IMPL_LITTLE) &&
+           (dcm.transfer_syntax != DCM_TS_EXPL_LITTLE) &&
+           (dcm.transfer_syntax != DCM_TS_EXPL_BIG) &&
+           (dcm.transfer_syntax != DCM_TS_RLE))
+    {
+      status=DCM_ReadNonNativeImages(&image,image_info,&dcm,exception);
+      dcm.number_scenes=0;
+    }
+  else if (dcm.rescaling != DCM_RS_POST)
+    {
+      status=DCM_SetupRescaleMap(image,&dcm,exception);
+    }
+
+  if (status == MagickFail)
+    goto dcm_read_failure;
 
   if (dcm.transfer_syntax == DCM_TS_RLE)
     status=DCM_ReadOffsetTable(image,&dcm,exception);
@@ -4791,7 +4794,8 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "DICOM has %d scenes", dcm.number_scenes);
   if (status == MagickFail)
-    dcm.number_scenes = 0;
+    goto dcm_read_failure;
+
   for (scene=0; scene < (long) dcm.number_scenes; scene++)
     {
       if (dcm.transfer_syntax == DCM_TS_RLE)
@@ -4807,7 +4811,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             SeekBlob(image,dcm.frag_bytes,SEEK_CUR);
 
           /*
-           Read fragment tag
+            Read fragment tag
           */
           tag=(((magick_uint32_t) dcm.funcReadShort(image)) << 16) |
             (magick_uint32_t) dcm.funcReadShort(image);
@@ -4942,6 +4946,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Free allocated resources
   */
+ dcm_read_failure:
   DCM_DestroyDCM(&dcm);
   if (status == MagickPass)
     {

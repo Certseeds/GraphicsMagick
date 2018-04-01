@@ -38,6 +38,12 @@
 <p>2018-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (ReadDCMImage): DICOM reader was no longer
+immediately quitting with excessive samples per pixel.  This
+caused spinning for a very long time when reading planar images
+with large samples per pixel.  This is a regression due to recent
+changes.  Fixes oss-fuzz 7269 &quot;graphicsmagick/coder_DCM_fuzzer:
+Timeout in graphicsmagick_coder_DCM_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/xcf.c (ReadXCFImage): Destroy layer info before returning
 due to exception.  This is a new regression due to adding more
 checks. Fixes oss-fuzz 7277 &quot;graphicsmagick/coder_XCF_fuzzer:
