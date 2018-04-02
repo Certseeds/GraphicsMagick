@@ -3078,7 +3078,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   cache_info=(CacheInfo *) image->cache;
   assert(cache_info->signature == MagickSignature);
   FormatString(cache_info->filename,"%.1024s[%ld]",image->filename,
-               GetImageIndexInList(image));
+               image->scene /*GetImageIndexInList(image)*/);
   cache_info->rows=image->rows;
   cache_info->columns=image->columns;
   number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;

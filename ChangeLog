@@ -1,5 +1,9 @@
 2018-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (OpenCache): Use image->scene rather than
+	GetImageIndexInList(image) for scene-id part of cache info file
+	name.
+
 	* coders/txt.c (WriteTXTImage): Optimize the progress indicator
 	since it is very inefficient with a large number of scenes and
 	oss-fuzz 7090 "graphicsmagick/coder_TEXT_fuzzer: Timeout in

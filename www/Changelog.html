@@ -38,6 +38,9 @@
 <p>2018-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/pixel_cache.c (OpenCache): Use image-&gt;scene rather than
+GetImageIndexInList(image) for scene-id part of cache info file
+name.</li>
 <li>coders/txt.c (WriteTXTImage): Optimize the progress indicator
 since it is very inefficient with a large number of scenes and
 oss-fuzz 7090 &quot;graphicsmagick/coder_TEXT_fuzzer: Timeout in
