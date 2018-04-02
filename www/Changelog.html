@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2018-04-02  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/svg.c (SVGStartElement, SVGEndElement),
+magick/render.c (DrawImage): This changeset adds support for
+&quot;class&quot; styling attributes within a &lt;style&gt; section within
+the &lt;defs&gt; section, and the ability to reference them from
+other SVG elements by class=&quot;classname&quot;.  SVG files exported
+from Adobe Illustrator make extensive use of &quot;class&quot; definitions.</li>
+</ul>
+</blockquote>
 <p>2018-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -160,7 +171,7 @@ graphicsmagick_coder_TIM_fuzzer&quot; (Credit to OSS-Fuzz)</li>
 <p>2018-03-27  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>magick/svg.c (SVGStartElement): Enable setting the
+<li>coders/svg.c (SVGStartElement): Enable setting the
 background color from the SVG file when the client
 specifies style=&quot;background:color&quot; inside the &lt;svg&gt;
 ... &lt;/svg&gt; element.</li>
