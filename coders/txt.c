@@ -1219,6 +1219,9 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   register long
     x;
 
+  size_t
+    image_list_length;
+
   unsigned int
     status;
 
@@ -1236,6 +1239,7 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   scene=0;
+  image_list_length=GetImageListLength(image);
   do
     {
       unsigned int
@@ -1287,11 +1291,13 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);
-      status=MagickMonitorFormatted(scene++,GetImageListLength(image),
-                                    &image->exception,SaveImagesText,
-                                    image->filename);
+      if (QuantumTick(scene,image_list_length))
+        status=MagickMonitorFormatted(scene,image_list_length,
+                                      &image->exception,SaveImagesText,
+                                      image->filename);
       if (status == False)
         break;
+      scene++;
     } while (image_info->adjoin);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)

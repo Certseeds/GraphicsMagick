@@ -38,6 +38,11 @@
 <p>2018-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/txt.c (WriteTXTImage): Optimize the progress indicator
+since it is very inefficient with a large number of scenes and
+oss-fuzz 7090 &quot;graphicsmagick/coder_TEXT_fuzzer: Timeout in
+graphicsmagick_coder_TEXT_fuzzer&quot; consistently shows
+GetImageListLength() in its stack traces.</li>
 <li>coders/dcm.c (ReadDCMImage): DICOM reader was no longer
 immediately quitting with excessive samples per pixel.  This
 caused spinning for a very long time when reading planar images
