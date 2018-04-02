@@ -1,5 +1,10 @@
 2018-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Fix leak of tile image on EOF.
+	This is a recent regression.  Fixes oss-fuzz 7287
+	"graphicsmagick/coder_PCT_fuzzer: Indirect-leak in
+	CloneImage". (Credit to OSS-Fuzz)
+
 	* magick/pixel_cache.c (OpenCache): Use image->scene rather than
 	GetImageIndexInList(image) for scene-id part of cache info file
 	name.

@@ -1241,7 +1241,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                   }
               }
             if (EOFBlob(image))
-              break;
+              ThrowPICTReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             ReadRectangle(source);
             TraceRectangle(image,source);
             if (!ValidateRectangle(source))
