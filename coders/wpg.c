@@ -390,7 +390,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   x=0;
   y=0;
 
-  ldblk=(long) ((bpp*image->columns+7)/8);
+  ldblk = (long)((bpp*image->columns+7)/8);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Raster allocation size: %ld byte%s",
                         ldblk, (ldblk > 1 ? "s" : ""));
@@ -431,12 +431,18 @@ static int UnpackWPGRaster(Image *image,int bpp)
               }
           }
         else {  /* repeat previous line runcount* */
-          RunCount=ReadBlobByte(image);
+          i = ReadBlobByte(image);
+          if(i==EOF)
+          {
+            return -7;
+            MagickFreeMemory(BImgBuff);
+          }
+          RunCount = i;
           if(x) {    /* attempt to duplicate row from x position: */
             /* I do not know what to do here */
             MagickFreeMemory(BImgBuff);
             return(-3);
-          }
+          }          
           for(i=0;i < (int) RunCount;i++)
             {
               x=0;
@@ -1100,12 +1106,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               for (i=WPG_Palette.StartIndex;
                    i < (int)WPG_Palette.NumOfEntries; i++)
                 {
-                  image->colormap[i].red=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=
-                    ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].opacity = OpaqueOpacity;
                 }
               break;
 
@@ -1166,6 +1170,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       image->colormap[i].red=ScaleCharToQuantum(WPG1_Palette[i].Red);
                       image->colormap[i].green=ScaleCharToQuantum(WPG1_Palette[i].Green);
                       image->colormap[i].blue=ScaleCharToQuantum(WPG1_Palette[i].Blue);
+                      image->colormap[i].opacity = OpaqueOpacity;
                     }
                 }
               else
@@ -1188,6 +1193,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       image->colormap[1].red =
                         image->colormap[1].green =
                         image->colormap[1].blue = MaxRGB;
+                      image->colormap[1].opacity = OpaqueOpacity;
                     }
                 }
 
@@ -1319,6 +1325,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].opacity = OpaqueOpacity;
                   (void) ReadBlobByte(image);   /*Opacity??*/
                 }
               break;
