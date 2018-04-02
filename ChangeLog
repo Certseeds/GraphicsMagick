@@ -1,3 +1,12 @@
+2018-04-02  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement, SVGEndElement),
+	magick/render.c (DrawImage): This changeset adds support for
+	"class" styling attributes within a <style> section within
+	the <defs> section, and the ability to reference them from
+	other SVG elements by class="classname".  SVG files exported
+	from Adobe Illustrator make extensive use of "class" definitions.
+
 2018-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Fix leak of tile image on EOF.
@@ -125,7 +134,7 @@
 
 2018-03-27  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
-	* magick/svg.c (SVGStartElement): Enable setting the
+	* coders/svg.c (SVGStartElement): Enable setting the
 	background color from the SVG file when the client
 	specifies style="background:color" inside the <svg>
 	... </svg> element.

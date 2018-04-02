@@ -1772,34 +1772,47 @@ char *	ExtractTokensBetweenPushPop (
   char * token,             /* big enough buffer for extracted string */
   size_t token_max_length,
   char const * pop_string,  /* stop when we see pop pop_string */
-  Image *image
+  Image *image,
+  size_t * pExtractedLength /* if not null, length of extracted string returned */
   )
 {/*ExtractTokensBetweenPushPop*/
 
   char const * p;
+  char * pAfterPopString;
   char
     name[MaxTextExtent];
+  size_t ExtractedLength = 0;
 
+  /* next token is name associated with push/pop data */
   MagickGetToken(q,&q,token,token_max_length);
   FormatString(name,"[%.1024s]",token);
+
+  /* search for "pop <pop_string>" */
   for (p=q; *q != '\0'; )
   {
+    char * qStart = q;
     MagickGetToken(q,&q,token,token_max_length);
-    if (LocaleCompare(token,"pop") != 0)
-      continue;
-    MagickGetToken(q,(char **) NULL,token,token_max_length);
-    if (LocaleCompare(token,pop_string) != 0)
-      continue;
-    break;
+    if  ( q == qStart )
+      break;  /* infinite loop detection */
+    if (LocaleCompare(token,"pop") == 0)
+      {
+        MagickGetToken(q,&pAfterPopString,token,token_max_length);
+        if (LocaleCompare(token,pop_string) == 0)
+          break;  /* found "pop <pop_string>" */
+      }
   }
-  if (p+5U > q)
-      return(0);  /*MagickFail*/
 
-  /* found pop pop_string */
-  (void) strncpy(token,p,q-p-4);
-  token[q-p-4]='\0';
+  /* sanity check on extracted string length */
+  if  ( q > (p+4U) )
+    {
+      ExtractedLength = q - (p+4U);
+      (void) strncpy(token,p,ExtractedLength);
+    }
+  token[ExtractedLength] = '\0';
   (void) SetImageAttribute(image,name,token);
-  MagickGetToken(q,&q,token,token_max_length);  /* extract ID string after "pop" */
+  q = pAfterPopString;  /* skip ID string after "pop" */
+  if  ( pExtractedLength )
+    *pExtractedLength = ExtractedLength;
 	return(q);
 
 }/*ExtractTokensBetweenPushPop*/
@@ -2160,6 +2173,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       case 'c':
       case 'C':
       {
+        if (LocaleCompare("class",keyword) == 0)
+          {/*class*/
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
+            break;
+          }/*class*/
         if (LocaleCompare("clip-path",keyword) == 0)
           {
             /*
@@ -2600,6 +2618,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("pop",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
+            if (LocaleCompare("class",token) == 0)  /* added "pop class" to support "defs" */
+              break;
             if (LocaleCompare("clip-path",token) == 0)
               break;
             if (LocaleCompare("defs",token) == 0)
@@ -2638,14 +2658,20 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("push",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
+            if (LocaleCompare("class",token) == 0)  /* added "push class" to support "defs" */
+              {
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"class",image,0);
+                break;
+              }
             if (LocaleCompare("clip-path",token) == 0)
               {
                 /*
                   Code that extracted tokens between push/pop clip-path has been refactored
                   into new function ExtractTokensBetweenPushPop().
                 */
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image);
-                if  ( q == 0 )
+                size_t ExtractedLength;
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength);
+                if  ( ExtractedLength == 0 )
                   status=MagickFail;
                 break;
               }
@@ -2800,15 +2826,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleCompare("id",token) == 0)   /* added "push id" (to support "defs") */
               {
                 if  ( defsPushCount > 0 )
-                  {
-                    p = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image);
-                    if  ( p == 0 )
-                      {
-                        status=MagickFail;
-                        break;
-                      }
-                    q = p;
-                  }
+                  q = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
                 else	/* extract <identifier> from "push id <identifier>" */
                   MagickGetToken(q,&q,token,token_max_length);
                 break;

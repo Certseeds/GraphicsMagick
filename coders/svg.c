@@ -896,6 +896,11 @@ SVGStartElement(void *context,const xmlChar *name,
     {
       svg_info->bounds.x = svg_info->bounds.y = 0;
     }
+  /*
+    NOTE: SVG spec makes similar statements for cx,cy of circle and ellipse, and
+    x1,y1,x2,y2 of line, but these are zeroed out initially, AND at the end of
+    SVGEndElement() after they have been used.
+  */
 
   if (attributes != (const xmlChar **) NULL)
     for (i=0; (svg_info->exception->severity < ErrorException) &&
@@ -1217,6 +1222,15 @@ SVGStartElement(void *context,const xmlChar *name,
     case 'S':
     case 's':
       {
+        /* element "style" inside <defs> */
+        if (LocaleCompare((char *) name,"style") == 0)
+          {
+            /*
+              This is here more or less as a documentation aid.  The real work is done when
+              we encounter </style>.
+            */
+            break;
+          }
         if (LocaleCompare((char *) name,"svg") == 0)
           {
             MVGPrintf(svg_info->file,"push graphic-context\n");
@@ -1318,6 +1332,20 @@ SVGStartElement(void *context,const xmlChar *name,
           case 'C':
           case 'c':
             {
+              if (LocaleCompare(keyword,"class") == 0)
+                {/*"class=classname"*/
+                  char * pClassNames = (char * ) value;
+                  do
+                    {
+                      (void) MagickGetToken(pClassNames,&pClassNames,token,MaxTextExtent);
+                      if  ( *token == ',' )
+                        (void) MagickGetToken(pClassNames,&pClassNames,token,MaxTextExtent);
+                      if  ( *token != '\0' )
+                        MVGPrintf(svg_info->file,"class '%s'\n",token);
+                  }
+                  while  ( *token != '\0' );
+                  break;
+                }/*"class=classname"*/
               if (LocaleCompare(keyword,"clip-path") == 0)
                 {
                   MVGPrintf(svg_info->file,"clip-path '%s'\n",value);
@@ -2488,6 +2516,406 @@ SVGStartElement(void *context,const xmlChar *name,
   MagickFreeMemory(color);
 }
 
+/* Process the "class" definitions inside <style> ... </style> */
+static
+void	ProcessStyleClassDefs (
+  SVGInfo * svg_info
+  )
+{//ProcessStyleClassDefs
+
+  /*
+    Style defs look like:
+
+      .class1,.class2,.class3{kwd:val;kwd:val;}
+
+    Class name (e.g., ".class1"} can show up multiple times
+  */
+
+  /* keyword/value pair for an element */
+  typedef struct ElementValue
+    {/*ElementValue*/
+        struct ElementValue	* pNext;  /* next in list */
+        char *                pKeyword;
+        char *                pValue;
+    }/*ElementValue*/
+  ElementValue;
+
+  /* the keyword/value pair list associated with a class */
+  typedef struct ClassDef
+    {/*ClassDef*/
+      struct ClassDef * pNext;            /* next in list */
+      struct ClassDef * pActiveNext;      /* next in active list */
+      char *            pName;            /* class name */
+      ElementValue      ElementValueHead; /* list head for style element/value pairs */
+      ElementValue *    pElementValueLast;
+    }/*ClassDef*/
+  ClassDef;
+
+  ClassDef ClassDefHead;  /* list head for classes */
+  ClassDef * pClassDefLast = &ClassDefHead; /* tail ptr for class def list */
+  ClassDef ClassDefActiveHead;  /* list head for "active" class defs */
+  ClassDef * pClassDefActiveLast = &ClassDefActiveHead; /* tail ptr for "active" class def list */
+  ClassDef * pClassDef;
+  char * pCopyOfText;
+  char * pString;
+  char * cp,*cp2;
+  int c;
+
+  memset(&ClassDefHead,0,sizeof(ClassDefHead));
+  memset(&ClassDefActiveHead,0,sizeof(ClassDefActiveHead));
+
+  /* a macro to allocate an zero out a new struct instance,
+      and add it to the end of a linked list */
+  #define	ADD_NEW_STRUCT(pNew,pLast,TheTypeDef) \
+  pNew = MagickAllocateMemory(TheTypeDef *,sizeof(TheTypeDef)); \
+  memset(pNew,0,sizeof(TheTypeDef)); \
+  pLast = pLast->pNext = pNew
+
+  /* we will get a modifiable value of the string, and delimit
+      substrings by storing null characters */
+  pCopyOfText = AcquireString(svg_info->text);
+  for  ( pString = pCopyOfText; *pString; )
+    {/*pString loop*/
+      char * pClassNameList;
+      char * pStyleElementList;
+
+      while  ( (c = *pString) && isspace(c) )  pString++;   /* skip white space */
+      if  ( !*pString )  break;   /* found end of string; done */
+      pClassNameList = pString;
+
+      /* find the end of the comma-separated list of class names */
+      while  ( (c = *pString) && (c != '{') )  pString++;
+      if  ( !*pString )  return;  /* found end of string; done */
+      *pString++ = '\0';
+      pStyleElementList = pString;
+
+      /* extract the class names */
+      ClassDefActiveHead.pActiveNext = 0;
+      pClassDefActiveLast = &ClassDefActiveHead;  /* initially, no active class defs */
+      for  ( cp = pClassNameList; *cp; )
+        {//extract class name loop
+
+          while  ( (c = *cp) && (isspace(c) || (c ==',')) )  cp++;  /* skip white space/commas */
+          if  ( *cp == '.' )  cp++;	/* .classname, skip leading period */
+          if  ( *cp )
+          {//found class name
+
+              char * pClassName = cp;
+              while  ( (c = *cp) && !(isspace(c) || (c == ',')) )  cp++;  /* find white space/comma/null */
+              if  ( *cp )
+                *cp++ = '\0';   /* terminate identifier string and increment */
+              /* add uniquely to list */
+              for  (  pClassDef = ClassDefHead.pNext;
+                      pClassDef && (strcmp(pClassName,pClassDef->pName) != 0);
+                      pClassDef = pClassDef->pNext );
+              if  ( pClassDef == 0 )
+                {/*new class name*/
+                  ADD_NEW_STRUCT(pClassDef,pClassDefLast,ClassDef);
+                  pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
+                  pClassDef->pName = pClassName;
+                }/*new class name*/
+              pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
+
+              }//found class name
+
+        }//extract class name loop
+
+      /* find the end of the style elements */
+      while  ( (c = *pString) && (c != '}') )  pString++;
+      if  ( !*pString )  return;
+      *pString++ = '\0';  /* advance past '}' for next loop pass */
+
+      /* get the style elements */
+      for  ( cp = pStyleElementList; *cp; )
+        {/*extract style elements loop*/
+
+          /* looking for <space><classname><space>: */
+          while  ( (c = *cp) && isspace(c) )  cp++;   /* skip white space */
+          if  ( *cp )
+            {/*found style element*/
+
+              char * pStyleElement = cp;
+              while  ( (c = *cp) && (c != ':') )  cp++;   /* find colon/null */
+              for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+              if  ( *cp )
+              *cp++ = '\0';   /* terminate style element string and increment */
+
+              /* looking for <space><style-value>; */
+              while  ( (c = *cp) && isspace(c) )  cp++;   /* skip white space */
+              if  ( *cp )
+                {//found style element value*/
+
+                  char * pStyleValue = cp;
+                  while  ( (c = *cp) && (c != ';') )  cp++;   /* find semi-colon/null */
+                  for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+                  if  ( *cp )
+                  *cp++ = '\0';   /* terminate style value string and increment */
+
+                  /* add style element/value pair to each active class def */
+                  for  ( pClassDef = ClassDefActiveHead.pActiveNext; pClassDef; pClassDef = pClassDef->pActiveNext )
+                    {
+                      ElementValue * pEV;
+                      ADD_NEW_STRUCT(pEV,pClassDef->pElementValueLast,ElementValue);
+                      pEV->pKeyword = pStyleElement;
+                      pEV->pValue = pStyleValue;
+                    }
+
+                }//found style element value
+
+            }/*found style element*/
+
+        }/*extract style elements loop*/
+
+    }/*pString loop*/
+
+  /* emit class definitions */
+  for  ( pClassDef = ClassDefHead.pNext; pClassDef; pClassDef = pClassDef->pNext )
+    {//pClassDef loop
+
+      ElementValue * pEV;
+      if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )	/* just in case, should never happen */
+        continue;
+      MVGPrintf(svg_info->file,"push class '%s'\n",pClassDef->pName);
+      for  ( ; pEV; pEV = pEV->pNext )
+        {//pEV loop
+
+          char * keyword = pEV->pKeyword;
+          char * value = pEV->pValue;
+          /* switch below was copied/pasted from elsewhere and modified */
+          switch (*keyword)
+            {/*keyword*/
+
+            case 'C':
+            case 'c':
+              {/*Cc*/
+                if (LocaleCompare(keyword,"clip-path") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-path '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"clip-rule") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-rule '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"clipPathUnits") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-units '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Cc*/
+
+            case 'F':
+            case 'f':
+               {/*Ff*/
+                if  ( (LocaleCompare(keyword,"fill") == 0) || (LocaleCompare(keyword,"fillcolor") == 0) )
+                  {
+                    MVGPrintf(svg_info->file,"fill '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"fill-rule") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"fill-rule '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"fill-opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"fill-opacity '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-family") == 0)
+                  {
+                    /*
+                      Deal with Adobe Illustrator 10.0 which double-quotes
+                      font-family.  Maybe we need a generalized solution for
+                      this.
+                    */
+                    int n;
+                    if  ( (value[0] == '\'') && (value[(n = (strlen(value)-1))] == '\'') )
+                      {
+                        FILE * fp = svg_info->file;
+                        MVGPrintf(fp,"font-family '");
+                        for  ( int i = 1; i < n; i++ )
+                        fputc(value[i],fp);
+                        MVGPrintf(fp,"'\n");
+                      }
+                    else
+                      MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-stretch") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-stretch '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-style") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-style '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-size") == 0)
+                  {
+                    if (LocaleCompare(value,"medium") == 0)
+                      svg_info->pointsize = 12;
+                    else
+                      svg_info->pointsize = GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
+                    MVGPrintf(svg_info->file,"font-size %g\n",svg_info->pointsize);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-weight") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-weight '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Ff*/
+
+            case 'O':
+            case 'o':
+              {/*Oo*/
+                if (LocaleCompare(keyword,"offset") == 0)
+                  {
+                   MVGPrintf(svg_info->file,"offset %g\n",GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse));
+                   break;
+                  }
+                if (LocaleCompare(keyword,"opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"opacity '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Oo*/
+
+            case 'S':
+            case 's':
+              {/*Ss*/
+                if (LocaleCompare(keyword,"stop-color") == 0)
+                  {
+                    (void) CloneString(&svg_info->stop_color,value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-antialiasing") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-antialias %d\n",LocaleCompare(value,"true") == 0);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-dasharray") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-dasharray %s\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-dashoffset") == 0)
+                  {
+                    double dashoffset=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    MVGPrintf(svg_info->file,"stroke-dashoffset %g\n",dashoffset);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-linecap") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-linecap '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-linejoin") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-linejoin '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
+                  {
+                    double stroke_miterlimit;
+                    if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || stroke_miterlimit < 1.0)
+                      {
+                        errno=0;
+                        ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,value);
+                        break;
+                      }
+                    MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",(long) stroke_miterlimit);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-opacity '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-width") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-width %g\n",GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue));
+                    break;
+                  }
+                break;
+              }/*Ss*/
+
+            case 'T':
+            case 't':
+              {/*Tt*/
+                if (LocaleCompare(keyword,"text-align") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-align '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-anchor") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-anchor '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-decoration") == 0)
+                  {
+                    if (LocaleCompare(value,"underline") == 0)
+                      MVGPrintf(svg_info->file,"decorate underline\n");
+                    if (LocaleCompare(value,"line-through") == 0)
+                      MVGPrintf(svg_info->file,"decorate line-through\n");
+                    if (LocaleCompare(value,"overline") == 0)
+                      MVGPrintf(svg_info->file,"decorate overline\n");
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-antialiasing") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-antialias %d\n",LocaleCompare(value,"true") == 0);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"transform") == 0)
+                  {/*style="transform: ...*/
+                    /*TBD*//*SVGProcessTransformString((void *)svg_info,value);*/
+                    break;
+                  }/*style="transform: ...*/
+                break;
+              }/*Tt*/
+
+            default:
+            break;
+
+            }/*keyword*/
+
+        }//pEV loop
+
+      MVGPrintf(svg_info->file,"pop class\n");
+
+    }//pClassDef loop
+
+  /* clean up */
+  for  ( ClassDef * pClassDef = ClassDefHead.pNext; pClassDef; )
+    {
+      ClassDef * pClassDefTemp = pClassDef;
+      for  ( ElementValue * pEV = pClassDef->ElementValueHead.pNext; pEV; )
+        {
+          ElementValue * pEVTemp = pEV;
+          pEV = pEV->pNext;
+          MagickFreeMemory(pEVTemp);
+        }
+      pClassDef = pClassDef->pNext;
+      MagickFreeMemory(pClassDefTemp);
+    }
+  MagickFreeMemory(pCopyOfText);
+
+#undef	ADD_NEW_STRUCT
+}/*ProcessStyleClassDefs*/
+
 static void
 SVGEndElement(void *context,const xmlChar *name)
 {
@@ -2746,6 +3174,13 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"stop-color '%s' %s\n",svg_info->stop_color,
                       svg_info->offset);
+            break;
+          }
+        /* element "style" inside <defs> */
+        if (LocaleCompare((char *) name,"style") == 0)
+          {
+            /* the style definitions are in svg_info->text */
+            ProcessStyleClassDefs(svg_info);
             break;
           }
         if (LocaleCompare((char *) name,"svg") == 0)
