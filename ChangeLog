@@ -1,3 +1,10 @@
+2018-04-03  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement): This changeset adds
+	support for SVG geometric transforms specified using the
+	style="transform: ..." syntax.  This syntax is sometimes
+	used when exporting SVG files from Adobe Illustrator.
+
 2018-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (ReadDPXImage): Validate DPX packing method.  Fixes

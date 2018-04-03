@@ -830,6 +830,198 @@ SVGEndDocument(void *context)
     }
 }
 
+
+/*
+  Code from SVGStartElement() that processed transform="..." has been refactored
+  into new function SVGProcessTransformString().
+*/
+static void
+SVGProcessTransformString  (
+	void *context,
+	char const *TransformString
+	)
+{/*SVGProcessTransformString*/
+
+  char
+    **tokens;
+
+  AffineMatrix
+    affine,
+    current,
+    transform;
+
+  char
+    *p = NULL,
+    token[MaxTextExtent];
+
+  SVGInfo
+    *svg_info=(SVGInfo *) context;
+
+  size_t
+    j,
+    number_tokens = 0;
+
+  IdentityAffine(&transform);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
+  tokens=GetTransformTokens(context,TransformString,&number_tokens);
+  if ((tokens != (char **) NULL) && (number_tokens > 0))
+    {/*if ((tokens != (char **) NULL) && (number_tokens > 0))*/
+
+  		const char
+        *keyword = NULL,
+        *value = NULL;
+
+      for (j=0; j < (number_tokens-1); j+=2)
+        {/*j token loop*/
+
+          keyword=(char *) tokens[j];   /* matrix, rotate, etc. */
+          value=(char *) tokens[j+1];   /* associated numerical values */
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    %.1024s: %.1024s",keyword,value);
+          current=transform;
+          IdentityAffine(&affine);
+          switch (*keyword)
+            {/*keyword switch*/
+
+            case 'M':
+            case 'm':
+              {/*Mm*/
+                if (LocaleCompare(keyword,"matrix") == 0)
+                  {
+                    p=(char *) value;
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.sx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.rx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.ry=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.sy=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.tx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.ty=MagickAtoF(token);
+                    break;
+                  }
+                break;
+              }/*Mm*/
+
+            case 'R':
+            case 'r':
+              {/*Rr*/
+                if (LocaleCompare(keyword,"rotate") == 0)
+                  {
+                    double
+                      angle;
+
+                    angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
+                    affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
+                    affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
+                    affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
+                    affine.sy=cos(DegreesToRadians(fmod(angle,360.0)));
+                    break;
+                  }
+                break;
+              }/*Rr*/
+
+            case 'S':
+            case 's':
+              {/*Ss*/
+                if (LocaleCompare(keyword,"scale") == 0)
+                  {
+                    for (p=(char *) value; *p != '\0'; p++)
+                      if (isspace((int) (*p)) || (*p == ','))
+                        break;
+                    affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    affine.sy=affine.sx;
+                    if (*p != '\0')
+                      affine.sy=
+                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
+                    svg_info->scale[svg_info->n]=ExpandAffine(&affine);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"skewX") == 0)
+                  {
+                    affine.sx=svg_info->affine.sx;
+                    affine.ry=tan(DegreesToRadians(fmod(
+                      GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
+                      360.0)));
+                    affine.sy=svg_info->affine.sy;
+                    break;
+                  }
+                if (LocaleCompare(keyword,"skewY") == 0)
+                  {
+                    affine.sx=svg_info->affine.sx;
+                    affine.rx=tan(DegreesToRadians(fmod(
+                      GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
+                      360.0)));
+                    affine.sy=svg_info->affine.sy;
+                    break;
+                  }
+                break;
+              }/*Ss*/
+
+            case 'T':
+            case 't':
+              {/*Tt*/
+                if (LocaleCompare(keyword,"translate") == 0)
+                  {
+                    for (p=(char *) value; *p != '\0'; p++)
+                      if (isspace((int) (*p)) || (*p == ','))
+                        break;
+                    affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    affine.ty=affine.tx;
+                    if (*p != '\0')
+                      affine.ty=
+                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
+                    break;
+                  }
+                break;
+              }/*Tt*/
+
+            default:
+              break;
+
+            }/*keyword switch*/
+
+          transform.sx=current.sx*affine.sx+current.ry*affine.rx;
+          transform.rx=current.rx*affine.sx+current.sy*affine.rx;
+          transform.ry=current.sx*affine.ry+current.ry*affine.sy;
+          transform.sy=current.rx*affine.ry+current.sy*affine.sy;
+          transform.tx=current.sx*affine.tx+current.ry*affine.ty+
+            current.tx;
+          transform.ty=current.rx*affine.tx+current.sy*affine.ty+
+            current.ty;
+
+        }/*j token loop*/
+
+      MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
+                transform.sx,transform.rx,transform.ry,transform.sy,
+                transform.tx,transform.ty);
+
+    }/*if ((tokens != (char **) NULL) && (number_tokens > 0))*/
+
+  /* clean up memory used for tokens */
+  if (tokens != (char **) NULL)
+    {
+      for (j=0; tokens[j] != (char *) NULL; j++)
+        MagickFreeMemory(tokens[j]);
+      MagickFreeMemory(tokens);
+    }
+
+}/*SVGProcessTransformString*/
+
+
 static void
 SVGStartElement(void *context,const xmlChar *name,
                 const xmlChar **attributes)
@@ -2066,6 +2258,12 @@ SVGStartElement(void *context,const xmlChar *name,
                                               LocaleCompare(value,"true") == 0);
                                     break;
                                   }
+                                if (LocaleCompare(keyword,"transform") == 0)
+                                  {
+                                    /* implement style="transform: translate(..." */
+                                    SVGProcessTransformString(context,value);
+                                    break;
+                                  }
                                 break;
                               }
                             default:
@@ -2114,153 +2312,11 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"transform") == 0)
                 {
-                  char
-                    **tokens;
-
-                  AffineMatrix
-                    affine,
-                    current,
-                    transform;
-
-                  IdentityAffine(&transform);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
-                  tokens=GetTransformTokens(context,value,&number_tokens);
-                  if ((tokens != (char **) NULL) && (number_tokens > 0))
-                    {
-                      for (j=0; j < (number_tokens-1); j+=2)
-                        {
-                          keyword=(char *) tokens[j];
-                          value=(char *) tokens[j+1];
-                          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                                "    %.1024s: %.1024s",keyword,value);
-                          current=transform;
-                          IdentityAffine(&affine);
-                          switch (*keyword)
-                            {
-                            case 'M':
-                            case 'm':
-                              {
-                                if (LocaleCompare(keyword,"matrix") == 0)
-                                  {
-                                    p=(char *) value;
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.sx=MagickAtoF(value);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.rx=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.ry=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.sy=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.tx=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.ty=MagickAtoF(token);
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'R':
-                            case 'r':
-                              {
-                                if (LocaleCompare(keyword,"rotate") == 0)
-                                  {
-                                    double
-                                      angle;
-
-                                    angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
-                                    affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
-                                    affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
-                                    affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
-                                    affine.sy=cos(DegreesToRadians(fmod(angle,360.0)));
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'S':
-                            case 's':
-                              {
-                                if (LocaleCompare(keyword,"scale") == 0)
-                                  {
-                                    for (p=(char *) value; *p != '\0'; p++)
-                                      if (isspace((int) (*p)) || (*p == ','))
-                                        break;
-                                    affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
-                                    affine.sy=affine.sx;
-                                    if (*p != '\0')
-                                      affine.sy=
-                                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
-                                    svg_info->scale[svg_info->n]=ExpandAffine(&affine);
-                                    break;
-                                  }
-                                if (LocaleCompare(keyword,"skewX") == 0)
-                                  {
-                                    affine.sx=svg_info->affine.sx;
-                                    affine.ry=tan(DegreesToRadians(fmod(
-                                                                        GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
-                                                                        360.0)));
-                                    affine.sy=svg_info->affine.sy;
-                                    break;
-                                  }
-                                if (LocaleCompare(keyword,"skewY") == 0)
-                                  {
-                                    affine.sx=svg_info->affine.sx;
-                                    affine.rx=tan(DegreesToRadians(fmod(
-                                                                        GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
-                                                                        360.0)));
-                                    affine.sy=svg_info->affine.sy;
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'T':
-                            case 't':
-                              {
-                                if (LocaleCompare(keyword,"translate") == 0)
-                                  {
-                                    for (p=(char *) value; *p != '\0'; p++)
-                                      if (isspace((int) (*p)) || (*p == ','))
-                                        break;
-                                    affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
-                                    affine.ty=affine.tx;
-                                    if (*p != '\0')
-                                      affine.ty=
-                                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
-                                    break;
-                                  }
-                                break;
-                              }
-                            default:
-                              break;
-                            }
-                          transform.sx=current.sx*affine.sx+current.ry*affine.rx;
-                          transform.rx=current.rx*affine.sx+current.sy*affine.rx;
-                          transform.ry=current.sx*affine.ry+current.ry*affine.sy;
-                          transform.sy=current.rx*affine.ry+current.sy*affine.sy;
-                          transform.tx=current.sx*affine.tx+current.ry*affine.ty+
-                            current.tx;
-                          transform.ty=current.rx*affine.tx+current.sy*affine.ty+
-                            current.ty;
-                        }
-                      MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
-                                transform.sx,transform.rx,transform.ry,transform.sy,
-                                transform.tx,transform.ty);
-                    } /* if ((tokens != (char **) NULL) && (number_tokens > 0)) */
-                  if (tokens != (char **) NULL)
-                    {
-                      for (j=0; tokens[j] != (char *) NULL; j++)
-                        MagickFreeMemory(tokens[j]);
-                      MagickFreeMemory(tokens);
-                    }
+                  /*
+                    The code that was here has been refactored into
+                    function SVGProcessTransformString()
+                  */
+                  SVGProcessTransformString(context,value);
                   break;
                 }
               break;
@@ -2521,7 +2577,7 @@ static
 void	ProcessStyleClassDefs (
   SVGInfo * svg_info
   )
-{//ProcessStyleClassDefs
+{/*ProcessStyleClassDefs*/
 
   /*
     Style defs look like:
@@ -2593,12 +2649,12 @@ void	ProcessStyleClassDefs (
       ClassDefActiveHead.pActiveNext = 0;
       pClassDefActiveLast = &ClassDefActiveHead;  /* initially, no active class defs */
       for  ( cp = pClassNameList; *cp; )
-        {//extract class name loop
+        {/*extract class name loop*/
 
           while  ( (c = *cp) && (isspace(c) || (c ==',')) )  cp++;  /* skip white space/commas */
           if  ( *cp == '.' )  cp++;	/* .classname, skip leading period */
           if  ( *cp )
-          {//found class name
+          {/*found class name*/
 
               char * pClassName = cp;
               while  ( (c = *cp) && !(isspace(c) || (c == ',')) )  cp++;  /* find white space/comma/null */
@@ -2616,9 +2672,9 @@ void	ProcessStyleClassDefs (
                 }/*new class name*/
               pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
 
-              }//found class name
+              }/*found class name*/
 
-        }//extract class name loop
+        }/*extract class name loop*/
 
       /* find the end of the style elements */
       while  ( (c = *pString) && (c != '}') )  pString++;
@@ -2638,18 +2694,18 @@ void	ProcessStyleClassDefs (
               while  ( (c = *cp) && (c != ':') )  cp++;   /* find colon/null */
               for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
               if  ( *cp )
-              *cp++ = '\0';   /* terminate style element string and increment */
+                *cp++ = '\0';   /* terminate style element string and increment */
 
               /* looking for <space><style-value>; */
               while  ( (c = *cp) && isspace(c) )  cp++;   /* skip white space */
               if  ( *cp )
-                {//found style element value*/
+                {/*found style element value*/
 
                   char * pStyleValue = cp;
                   while  ( (c = *cp) && (c != ';') )  cp++;   /* find semi-colon/null */
                   for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
                   if  ( *cp )
-                  *cp++ = '\0';   /* terminate style value string and increment */
+                    *cp++ = '\0';   /* terminate style value string and increment */
 
                   /* add style element/value pair to each active class def */
                   for  ( pClassDef = ClassDefActiveHead.pActiveNext; pClassDef; pClassDef = pClassDef->pActiveNext )
@@ -2660,7 +2716,7 @@ void	ProcessStyleClassDefs (
                       pEV->pValue = pStyleValue;
                     }
 
-                }//found style element value
+                }/*found style element value*/
 
             }/*found style element*/
 
@@ -2670,14 +2726,14 @@ void	ProcessStyleClassDefs (
 
   /* emit class definitions */
   for  ( pClassDef = ClassDefHead.pNext; pClassDef; pClassDef = pClassDef->pNext )
-    {//pClassDef loop
+    {/*pClassDef loop*/
 
       ElementValue * pEV;
       if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )	/* just in case, should never happen */
         continue;
       MVGPrintf(svg_info->file,"push class '%s'\n",pClassDef->pName);
       for  ( ; pEV; pEV = pEV->pNext )
-        {//pEV loop
+        {/*pEV loop*/
 
           char * keyword = pEV->pKeyword;
           char * value = pEV->pValue;
@@ -2881,7 +2937,7 @@ void	ProcessStyleClassDefs (
                   }
                 if (LocaleCompare(keyword,"transform") == 0)
                   {/*style="transform: ...*/
-                    /*TBD*//*SVGProcessTransformString((void *)svg_info,value);*/
+                    SVGProcessTransformString((void *)svg_info,value);
                     break;
                   }/*style="transform: ...*/
                 break;
@@ -2892,11 +2948,11 @@ void	ProcessStyleClassDefs (
 
             }/*keyword*/
 
-        }//pEV loop
+        }/*pEV loop*/
 
       MVGPrintf(svg_info->file,"pop class\n");
 
-    }//pClassDef loop
+    }/*pClassDef loop*/
 
   /* clean up */
   for  ( ClassDef * pClassDef = ClassDefHead.pNext; pClassDef; )
