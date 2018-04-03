@@ -990,9 +990,9 @@ STATIC void DescribeDPXImageElement(const DPXImageElement *element_info,
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Element %u: packing=%s encoding=%s data_offset=%u eol_pad=%u eoi_pad=%u",
                         element,
-                        (element_info->packing == 0 ? "Packed(0)" :
-                         element_info->packing == 1 ? "PadLSB(1)" :
-                         element_info->packing == 2 ? "PadMSB(2)" :
+                        (element_info->packing == PackingMethodPacked ? "Packed(0)" :
+                         element_info->packing == PackingMethodWordsFillLSB ? "PadLSB(1)" :
+                         element_info->packing == PackingMethodWordsFillMSB ? "PadMSB(2)" :
                          "Unknown"),
                         (element_info->encoding == 0 ? "None(0)" :
                          element_info->encoding == 1 ? "RLE(1)" :
@@ -1952,7 +1952,11 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (bits_per_sample != 10) &&
             (bits_per_sample != 12) &&
             (bits_per_sample != 16))
-          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unsupported bits per sample %u", bits_per_sample);
+            ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+          }
         max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
         max_samples_per_pixel=Max(max_samples_per_pixel,
                                   DPXSamplesPerPixel(element_descriptor));
@@ -1996,6 +2000,19 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unhandled element descriptor: %s",
                                     DescribeImageElementDescriptor(txt_buffer,element_descriptor));
             }
+          }
+
+        /*
+          Validate packing method
+        */
+        packing_method=(ImageComponentPackingMethod) dpx_image_info.element_info[element].packing;
+        if ((packing_method != PackingMethodPacked) &&
+            (packing_method != PackingMethodWordsFillLSB) &&
+            (packing_method != PackingMethodWordsFillMSB))
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Unsupported packing method %u", packing_method);
+            ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
           }
 
         /*
@@ -2109,6 +2126,17 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           transfer_characteristic=
             (DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
           packing_method=(ImageComponentPackingMethod) dpx_image_info.element_info[element].packing;
+          /*
+            Validate packing method
+          */
+          if ((packing_method != PackingMethodPacked) &&
+              (packing_method != PackingMethodWordsFillLSB) &&
+              (packing_method != PackingMethodWordsFillMSB))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unsupported packing method %u", packing_method);
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
           samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
           samples_per_row=samples_per_pixel*image->columns;
           element_size=DPXRowOctets(image->rows,samples_per_row,

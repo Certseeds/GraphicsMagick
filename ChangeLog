@@ -1,3 +1,9 @@
+2018-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Validate DPX packing method.  Fixes
+	oss-fuzz 7296 "graphicsmagick/coder_DPX_fuzzer:
+	Use-of-uninitialized-value in WriteDPXImage". (Credit to OSS-Fuzz)
+
 2018-04-02  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement, SVGEndElement),
