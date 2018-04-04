@@ -1069,6 +1069,10 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
     hierarchy_offset,
     layer_mask_offset;
 
+  magick_off_t start_offset;
+
+  start_offset = TellBlob(image);
+
   /* clear the block! */
   (void) memset( outLayer, 0, sizeof( XCFLayerInfo ) );
 
@@ -1220,10 +1224,26 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
                               (magick_off_t) hierarchy_offset);
       ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
     }
+  /*
+    Verify that seek position is not too small.
+    Seek position provides ample opportunity for abuse.
+  */
+  if ((magick_off_t) hierarchy_offset <= start_offset)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Hierarchy offset %" MAGICK_OFF_F "d is unreasonable",
+                              (magick_off_t) hierarchy_offset);
+      ThrowBinaryException(CorruptImageError,ImproperImageHeader,image->filename);
+    }
 
   /* read in the hierarchy */
   if (SeekBlob(image, hierarchy_offset, SEEK_SET) != (magick_off_t) hierarchy_offset)
     ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Hierarchy offset %" MAGICK_OFF_F "d",
+                          (magick_off_t) hierarchy_offset);
   if (load_hierarchy (image, inDocInfo, outLayer) == MagickFail)
     return MagickFail;
 
@@ -1238,6 +1258,18 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
                                   "Layer mask offset %" MAGICK_OFF_F "d is outside file bounds",
                                   (magick_off_t) layer_mask_offset);
           ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
+        }
+      /*
+        Verify that seek position is not too small.
+        Seek position provides ample opportunity for abuse.
+      */
+      if ((magick_off_t) layer_mask_offset <= start_offset)
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Layer mask offset %" MAGICK_OFF_F "d is unreasonable",
+                                  (magick_off_t) hierarchy_offset);
+          ThrowBinaryException(CorruptImageError,ImproperImageHeader,image->filename);
         }
       if (SeekBlob(image, layer_mask_offset, SEEK_SET) != (magick_off_t) layer_mask_offset)
         ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
@@ -1628,6 +1660,9 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       magick_off_t
         oldPos;
 
+      magick_uint32_t
+        previous_offset;
+
       if (CheckImagePixelLimits(image, exception) != MagickPass)
         ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
@@ -1641,15 +1676,44 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (oldPos < 0)
         ThrowReaderException(BlobError,UnableToObtainOffset,image);
 
+      previous_offset = 0;
       do
         {
-          long
-            offset = (long) ReadBlobMSBLong(image);
+          magick_uint32_t
+            offset = ReadBlobMSBLong(image);
+
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Layer Offset[%lu] = %" MAGICK_UINT32_F "u",
+                                  number_layers, offset);
+
+          if (offset >= doc_info.file_size)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Layer Offset %" MAGICK_UINT32_F "u"
+                                      " is outside of file bounds",
+                                      offset);
+              ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          /*
+            Are layer offsets assured to be ascending?
+          */
+          if ((offset != 0) && (offset <= previous_offset))
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Layer Offset %" MAGICK_UINT32_F "u"
+                                      " is not ascending",
+                                      offset);
+              ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
 
           if ( offset == 0 )
             foundAllLayers = MagickTrue;
           else
             number_layers++;
+          previous_offset=offset;
         } while ( !foundAllLayers );
 
       if (SeekBlob(image, oldPos, SEEK_SET) != oldPos) /* restore the position! */

@@ -38,6 +38,10 @@
 <p>2018-04-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/xcf.c (ReadXCFImage): Require that XCF file offsets be in
+ascending order to avoid DOS.  Fixes oss-fuzz 7333
+&quot;graphicsmagick/coder_XCF_fuzzer: Out-of-memory in
+graphicsmagick_coder_XCF_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/wpg.c (UnpackWPGRaster): Fix memory leak in error return
 path. Fixes oss-fuzz 7338 &quot;graphicsmagick/enhance_fuzzer:
 Direct-leak in UnpackWPGRaster&quot;. (Credit to OSS-Fuzz)</li>
