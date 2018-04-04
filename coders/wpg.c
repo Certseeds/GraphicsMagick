@@ -434,15 +434,15 @@ static int UnpackWPGRaster(Image *image,int bpp)
           i = ReadBlobByte(image);
           if(i==EOF)
           {
-            return -7;
             MagickFreeMemory(BImgBuff);
+            return -7;
           }
           RunCount = i;
           if(x) {    /* attempt to duplicate row from x position: */
             /* I do not know what to do here */
             MagickFreeMemory(BImgBuff);
             return(-3);
-          }          
+          }
           for(i=0;i < (int) RunCount;i++)
             {
               x=0;
