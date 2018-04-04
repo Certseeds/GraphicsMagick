@@ -656,7 +656,7 @@
 	* coders/wpg.c (ExtractPostscript): Detect EOF on input while
 	transferring bytes to Postscript file.  Fixes oss-fuzz issue 6087
 	"graphicsmagick/coder_WPG_fuzzer: NULL".  Later identified to be
-	CVE-2017-1768 as previously discovered in ImageMagick.  (Credit to
+	CVE-2017-17682 as previously discovered in ImageMagick.  (Credit to
 	OSS-Fuzz)
 
 	* coders/pdb.c (ReadPDBImage): Quit attempting to read image data
