@@ -4640,9 +4640,26 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
             }
         }
       (void) LiberateTemporaryFile(filename);
+
+      if (status == MagickFail)
+        break;
     }
-  DestroyImage(*image);
-  *image=image_list;
+  if (EOFBlob(*image))
+    {
+      status = MagickFail;
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
+    }
+
+  if (status == MagickFail)
+    {
+      DestroyImageList(image_list);
+      image_list = (Image *) NULL;
+    }
+  else
+    {
+      DestroyImage(*image);
+      *image=image_list;
+    }
   return status;
 }
 

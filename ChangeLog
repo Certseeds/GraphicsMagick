@@ -1,3 +1,10 @@
+2018-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadNonNativeImages): Break out of reading
+	loop on EOF and properly report exception.  Fixes oss-fuzz 7349
+	"graphicsmagick/coder_DCM_fuzzer: Timeout in
+	graphicsmagick_coder_DCM_fuzzer". (Credit to OSS-Fuzz)
+
 2018-04-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xcf.c (ReadXCFImage): Require that XCF file offsets be in
