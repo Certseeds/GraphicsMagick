@@ -281,10 +281,14 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
 
   size_t
     alloc_tokens,
-    i;
+    i,
+    iListFront;
 
   SVGInfo
     *svg_info;
+
+  MagickBool
+    IsFontSize = MagickFalse;
 
   svg_info=(SVGInfo *) context;
   *number_tokens=0;
@@ -314,8 +318,13 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
   */
   i=0;
   p=text;
+  iListFront = 0;
   for (q=p; *q != '\0'; q++)
     {
+      /*
+        ':' terminates the style element (e.g., fill:)
+        ';' terminates the style element value (e.g., red)
+      */
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
       tokens[i]=AllocateString(p);
@@ -327,6 +336,30 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
         }
       (void) strlcpy(tokens[i],p,q-p+1);
       Strip(tokens[i]);
+      /*
+        Check for "font-size", which we will move to the first position in
+        the list.  This will ensure that any following numerical conversions
+        that depend on the font size will use the new value.
+      */
+      if  ( (i & 1) == 0 )  /*element name*/
+        IsFontSize = (LocaleCompare("font-size",tokens[i]) == 0) ? MagickTrue : MagickFalse;
+      else if  ( IsFontSize )
+        {/*found font-size/value pair*/
+          if  ( (i-1) == iListFront )
+            iListFront += 2;  /* already at front of list */
+          else
+            {
+              /* move "font-size" and value to top of list */
+              char * pToken = tokens[iListFront];
+              tokens[iListFront] = tokens[i-1];
+              tokens[i-1] = pToken;
+              iListFront++;
+              pToken = tokens[iListFront];
+              tokens[iListFront] = tokens[i];
+              tokens[i] = pToken;
+              iListFront++;
+            }
+        }/*found font-size/value pair*/
       i++;
       if (i >= alloc_tokens)
         break;
@@ -1050,7 +1083,9 @@ SVGStartElement(void *context,const xmlChar *name,
   char
     svg_element_background_color[MaxTextExtent];  /* to support style="background:color" */
 
-  MagickBool IsTSpan = MagickFalse;
+  MagickBool
+    IsTSpan = MagickFalse,
+    IsTextOrTSpan = MagickFalse;
 
   /*
     Called when an opening tag has been processed.
@@ -1073,7 +1108,7 @@ SVGStartElement(void *context,const xmlChar *name,
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
   svg_element_background_color[0]='\0';
-  IsTSpan = LocaleCompare((char *) name,"tspan") == 0;
+  IsTextOrTSpan = IsTSpan = LocaleCompare((char *) name,"tspan") == 0;  /* need to know this early */
   /*
     According to the SVG spec, for the following SVG elements, if the x or y
     attribute is not specified, the effect is as if a value of "0" were specified.
@@ -1093,6 +1128,53 @@ SVGStartElement(void *context,const xmlChar *name,
     x1,y1,x2,y2 of line, but these are zeroed out initially, AND at the end of
     SVGEndElement() after they have been used.
   */
+
+  /*
+    When "font-size" is (or is contained in) one of the attributes for this SVG
+    element, we want it to be processed first so that any numerical conversions
+    that depend on the font size will use the new value.  So we will first scan
+    the attribute list and move any "font-size", "class" (which may contain a
+    "font-size"), or "style" (which may contain a "font-size") attributes to the
+    front of the attribute list.
+
+    For now we will ignore the possibility that "font-size" may be specified
+    more than once among "font-size", "class", and "style".  However, the
+    relative order amongsd these three will be preserved.
+  */
+  if (attributes != (const xmlChar **) NULL)
+  {/*have some attributes*/
+
+    size_t iListFront = 0;
+    for  ( i = 0; (attributes[i] != (const xmlChar *) NULL); i += 2 )
+      {/*attribute[i]*/
+
+        keyword = (const char *) attributes[i];
+        if  (  (LocaleCompare(keyword,"font-size") == 0)
+            || (LocaleCompare(keyword,"class") == 0)
+            || (LocaleCompare(keyword,"style") == 0)
+         )
+         {/*(possible) font-size*/
+
+            if  ( i == iListFront )
+              iListFront += 2;  /* already at front of list */
+            else
+              {
+                /* move to front of list */
+                const xmlChar * pAttr = attributes[iListFront];
+                attributes[iListFront] = attributes[i];
+                attributes[i] = pAttr;
+                iListFront++;
+                pAttr = attributes[iListFront];
+                attributes[iListFront] = attributes[i+1];
+                attributes[i+1] = pAttr;
+                iListFront++;
+              }
+
+         }/*(possible) font-size*/
+
+      }/*attribute[i]*/
+
+  }/*have some attributes*/
 
   if (attributes != (const xmlChar **) NULL)
     for (i=0; (svg_info->exception->severity < ErrorException) &&
@@ -1449,36 +1531,33 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"text") == 0)
           {
+            IsTextOrTSpan = MagickTrue;
             if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
+            /* gjw: update text current position */
+            MVGPrintf(svg_info->file,"textx %g\n",svg_info->bounds.x);
+            MVGPrintf(svg_info->file,"texty %g\n",svg_info->bounds.y);
             break;
           }
         if (LocaleCompare((char *) name,"tspan") == 0)
           {
+            IsTextOrTSpan = MagickTrue;
             Strip(svg_info->text);
             if (*svg_info->text != '\0')
               {
-                DrawInfo
-                  *draw_info;
-
-                TypeMetric
-                  metrics;
-
                 char
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);
                 MagickFreeMemory(text);
-                draw_info=CloneDrawInfo(svg_info->image_info,(DrawInfo *) NULL);
-                draw_info->pointsize=svg_info->pointsize;
-                draw_info->text=AllocateString(svg_info->text);
-                (void) ConcatenateString(&draw_info->text," ");
-                (void) GetTypeMetrics(svg_info->image,draw_info,&metrics);
-                svg_info->bounds.x+=metrics.width;
-                DestroyDrawInfo(draw_info);
+                /*
+                  The code that used to be here to compute the next text position has been eliminated.
+                  The reason is that at this point in the code we may not know the font or font size
+                  (they may be hidden in a "class" definition), so we can't really do that computation.
+                  This functionality is now handled by DrawImage() in render.c.
+                */
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"push graphic-context\n");
@@ -1583,14 +1662,34 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"dx") == 0)
                 {
-                  svg_info->bounds.x+=
-                    GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  double dx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  svg_info->bounds.x+=dx;   /* preserve previous behavior */
+                  /* update text current position for text or tspan */
+                  if  ( IsTextOrTSpan )
+                    {
+                      char * pUnit;
+                      (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
+                      if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
+                        MVGPrintf(svg_info->file,"textdx %s\n",value);	/* postpone interpretation of "em" or "ex" until we know point size */
+                      else
+                        MVGPrintf(svg_info->file,"textdx %g\n",dx);
+                    }
                   break;
                 }
               if (LocaleCompare(keyword,"dy") == 0)
                 {
-                  svg_info->bounds.y+=
-                    GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  double dy=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  svg_info->bounds.y+=dy;   /* preserve previous behavior */
+                  /* update text current position for text or tspan */
+                  if  ( IsTextOrTSpan )
+                    {
+                      char * pUnit;
+                      (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
+                      if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
+                        MVGPrintf(svg_info->file,"textdy %s\n",value);	/* postpone interpretation of "em" or "ex" until we know point size */
+                      else
+                        MVGPrintf(svg_info->file,"textdy %g\n",dy);
+                    }
                   break;
                 }
               break;
@@ -1923,11 +2022,27 @@ SVGStartElement(void *context,const xmlChar *name,
                     angle;
 
                   angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
-                  MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,
-                            svg_info->bounds.y);
-                  svg_info->bounds.x=0;
-                  svg_info->bounds.y=0;
-                  MVGPrintf(svg_info->file,"rotate %g\n",angle);
+                  /*
+                    When the current text position was managed in this code, and a "rotate" was encountered
+                    (indicating that the text character was to be rotated), the code would emit to the MVG file:
+
+                      translate x y (where x, y indicate the current text position)
+                      rotate angle (where angle indicates the rotation angle)
+
+                    Now that the current text position is being managed by DrawImage() in render.c, this code
+                    cannot issue the "translate" because it can't know the current text position.  To handle
+                    this, "textr" (text rotation) has been implemented in DrawImage() to perform the appropriate
+                    translation/rotation sequence.
+                  */
+                  if ( IsTextOrTSpan )
+                    MVGPrintf(svg_info->file,"textr %g\n",angle);  /* pre-translation will be handled in DrawImage() */
+                  else
+                  {
+                    MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,svg_info->bounds.y);
+                    svg_info->bounds.x=0;
+                    svg_info->bounds.y=0;
+                    MVGPrintf(svg_info->file,"rotate %g\n",angle);
+                  }
                   break;
                 }
               if (LocaleCompare(keyword,"rx") == 0)
@@ -2379,6 +2494,9 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"x") == 0)
                 {
                   svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  /* update text current position for tspan (already did this if text) */
+                  if  ( IsTSpan )
+                    MVGPrintf(svg_info->file,"textx %g\n",svg_info->bounds.x);
                   break;
                 }
               if (LocaleCompare(keyword,"xlink:href") == 0)
@@ -2418,6 +2536,9 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"y") == 0)
                 {
                   svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  /* update text current position for tspan (already did this if text) */
+                  if  ( IsTSpan )
+                    MVGPrintf(svg_info->file,"texty %g\n",svg_info->bounds.y);
                   break;
                 }
               if (LocaleCompare(keyword,"y1") == 0)
@@ -2641,7 +2762,12 @@ void	ProcessStyleClassDefs (
 
       /* find the end of the comma-separated list of class names */
       while  ( (c = *pString) && (c != '{') )  pString++;
-      if  ( !*pString )  return;  /* found end of string; done */
+      if  ( !*pString )
+        {
+          /* malformed input: class name list not followed by '{' */
+          MagickFreeMemory(pCopyOfText);
+          return;
+        }
       *pString++ = '\0';
       pStyleElementList = pString;
 
@@ -2678,7 +2804,12 @@ void	ProcessStyleClassDefs (
 
       /* find the end of the style elements */
       while  ( (c = *pString) && (c != '}') )  pString++;
-      if  ( !*pString )  return;
+      if  ( !*pString )
+        {
+          /* malformed input: style elements not terminated by '{' */
+          MagickFreeMemory(pCopyOfText);
+          return;
+        }
       *pString++ = '\0';  /* advance past '}' for next loop pass */
 
       /* get the style elements */
@@ -3258,8 +3389,7 @@ SVGEndElement(void *context,const xmlChar *name)
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);  /* write text at current position */
                 MagickFreeMemory(text);
                 *svg_info->text='\0';
               }
@@ -3276,26 +3406,18 @@ SVGEndElement(void *context,const xmlChar *name)
             Strip(svg_info->text);
             if (*svg_info->text != '\0')
               {
-                DrawInfo
-                  *draw_info;
-
-                TypeMetric
-                  metrics;
-
                 char
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);  /* write text at current position */
                 MagickFreeMemory(text);
-                draw_info=CloneDrawInfo(svg_info->image_info,(DrawInfo *) NULL);
-                draw_info->pointsize=svg_info->pointsize;
-                draw_info->text=AllocateString(svg_info->text);
-                (void) ConcatenateString(&draw_info->text," ");
-                (void) GetTypeMetrics(svg_info->image,draw_info,&metrics);
-                svg_info->bounds.x+=metrics.width;
-                DestroyDrawInfo(draw_info);
+                /*
+                  The code that used to be here to compute the next text position has been eliminated.
+                  The reason is that at this point in the code we may not know the font or font size
+                  (they may be hidden in a "class" definition), so we can't really do that computation.
+                  This functionality is now handled by DrawImage() in render.c.
+                */
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");

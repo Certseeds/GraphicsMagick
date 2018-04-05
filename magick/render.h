@@ -267,7 +267,7 @@ typedef struct _DrawInfo
   unsigned int
     render,
     /*
-      Bits 0 and 1 of unused1 will be used to indicate if this DrawInfo is:
+      Bits 0 and 1 of flags will be used to indicate if this DrawInfo is:
 
       0:  normal (for lack of a better term)
       1:  clipping path
@@ -277,7 +277,7 @@ typedef struct _DrawInfo
       SetDrawInfoCompositeMask(), IsDrawInfoNormal(), IsDrawInfoClippingPath(), and
       IsDrawInfoCompositeMask().
     */
-    unused1;  /* Spare. Was long-deprecated 'debug' */
+    flags;  /* previously "unused1" */
 
   ElementReference
     element_reference;

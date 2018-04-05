@@ -1,3 +1,34 @@
+2018-04-03  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* coders/svg.c (SVGStartElement, SVGEndElement),
+	magick/render.c (DrawImage): The current text position
+	is now maintained by DrawImage() instead of by
+	SVGStartElement() and SVGEndElement().  This change was
+	made to support the recentely implmemented "use" and
+	"class" elements, which may make changes to the font
+	size that are not visible to the code in svg.c.
+
+	* coders/svg.c (GetStyleTokens, SVGStartElement): The
+	list of SVG attributes is now reordered so that
+	"font-size", "class", and "style" are processed first.
+	This ensures that a change to the font size will be
+	processed before any dimensional attribute whose value
+	may depend on the font size (e.g., a width value
+	specified in "em" units).
+
+	* coders/svg.c (ProcessStyleClassDefs): Fixed two memory
+	leaks associated with making an early return when
+	malformed input is detected.
+
+	* magick/render.c (ExtractTokensBetweenPushPop): Fixed
+	an uninitialized variable condition which can occur when
+	malformed input is detected.
+
+	* magick/render.h (DrawInfo), magick/render.c: DrawInfo
+	member "unused1" has been renamed "flags".  It is now
+	used to tag a DrawInfo as being a clipping path or a
+	compositing mask.
+
 2018-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdb.c (ReadPDBImage): Update DirectClass pixels to avoid

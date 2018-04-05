@@ -268,7 +268,7 @@ CloneDrawInfo(const ImageInfo *image_info,const DrawInfo *draw_info)
   clone_info->render=draw_info->render;
   clone_info->opacity=draw_info->opacity;
   clone_info->element_reference=draw_info->element_reference;
-  clone_info->unused1=draw_info->unused1;   /* now used for clipping path/composite mask tag */
+  clone_info->flags=draw_info->flags;   /* now used for clipping path/composite mask tag */
   return(clone_info);
 }
 
@@ -1778,7 +1778,7 @@ char *	ExtractTokensBetweenPushPop (
 {/*ExtractTokensBetweenPushPop*/
 
   char const * p;
-  char * pAfterPopString;
+  char * pAfterPopString = 0;
   char
     name[MaxTextExtent];
   size_t ExtractedLength = 0;
@@ -1793,7 +1793,11 @@ char *	ExtractTokensBetweenPushPop (
     char * qStart = q;
     MagickGetToken(q,&q,token,token_max_length);
     if  ( q == qStart )
-      break;  /* infinite loop detection */
+      {
+        /* infinite loop detection */
+        pAfterPopString = q;  /* need this to be valid */
+        break;
+      }
     if (LocaleCompare(token,"pop") == 0)
       {
         MagickGetToken(q,&pAfterPopString,token,token_max_length);
@@ -1971,6 +1975,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     FillOpacitySaved,
     StrokeOpacitySaved;
 
+  MagickBool
+    TextRotationPerformed;  /* see comments below where TextRotationPerformed=MagickFalse */
+
   /*
     Use defsPushCount to track when we enter/leave <defs> ... </defs> so we
     know not to render any graphical elements defined within (per the SVG spec).
@@ -1979,6 +1986,13 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   */
   int
     defsPushCount;
+
+  /* These variables are used to track the current text position */
+  double
+    xTextCurrent,
+    yTextCurrent;
+  MagickBool
+    UseCurrentTextPosition;	/* true=>use (possibly modified) current text position */
 
   /*
     Ensure the annotation info is valid.
@@ -2035,12 +2049,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         UnableToDrawOnImage)
     }
   graphic_context[n]=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  token=AllocateString(primitive);
-  token_max_length=strlen(token);
+  /* next two lines: don't need copy of primitive, just a buffer of the same size */
+  token=MagickAllocateMemory(char *,primitive_extent+1);
+  token_max_length=primitive_extent;
   (void) QueryColorDatabase("black",&start_color,&image->exception);
   (void) SetImageType(image,TrueColorType);
   status=MagickPass;
   defsPushCount = 0;  /* not inside of <defs> ... </defs> */
+  xTextCurrent = yTextCurrent = 0.0;  /* initialize current text position */
   /*
     The purpose of these next four variables is to attempt to handle cases like:
 
@@ -2070,8 +2086,25 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   FillOpacitySaved = 0.0;
   StrokeOpacitySaved = 0.0;
 
+  /*
+    When DrawImage() was modified to provide management of the current text position to
+    the client, text rotation also had to be modified.  Previously, the client would
+    perform text rotation (i.e., next character is to be rotated) by supplying the following
+    sequence:
+
+      translate x y (where x, y indicate the current text position)
+      rotate angle (where angle is the rotation angle)
+
+    Later, when the actual 'text x y string' is supplied by the client, x and y must both
+    be zero since the positioning has already been taken care of by the translate/rotate
+    sequence.  The next variable indicates that rotation is being applied so that we can
+    use (0,0) instead of the actual current text position.
+  */
+  TextRotationPerformed = MagickFalse;
+
   for (q=primitive; *q != '\0'; )
   {
+    UseCurrentTextPosition = False;
     /*
       Interpret graphic primitive.
     */
@@ -3216,6 +3249,99 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("text",keyword) == 0)
           {
             primitive_type=TextPrimitive;
+            UseCurrentTextPosition = MagickFalse;   /* use client-supplied text locations */
+            break;
+          }
+        if (LocaleCompare("textc",keyword) == 0)  /* draw text at current text position */
+          {
+            primitive_type=TextPrimitive;
+            UseCurrentTextPosition = MagickTrue;	/* use internally tracked text location*/
+            break;
+          }
+        if (LocaleCompare("textdx",keyword) == 0)  /* update current x position for text */
+          {/*textdx*/
+            double value;
+            MagickGetToken(q,&q,token,token_max_length);
+            (void) MagickAtoFChk(token,&value);
+            /* value may be specified using "em" or "ex" units */
+            if (LocaleNCompare(q,"em",2) == 0)
+              {
+                value *= graphic_context[n]->pointsize;
+                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+              }
+            else if (LocaleNCompare(q,"ex",2) == 0)
+              {
+                value *= 0.5 * graphic_context[n]->pointsize;
+                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+              }
+            xTextCurrent += value;
+            break;
+          }/*textdx*/
+        if (LocaleCompare("textdy",keyword) == 0)  /* update current y position for text */
+          {/*textdy*/
+            double value;
+            MagickGetToken(q,&q,token,token_max_length);
+            (void) MagickAtoFChk(token,&value);
+            /* value may be specified using "em" or "ex" units */
+            if (LocaleNCompare(q,"em",2) == 0)
+              {
+                value *= graphic_context[n]->pointsize;
+                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+              }
+            else if (LocaleNCompare(q,"ex",2) == 0)
+              {
+                value *= 0.5 * graphic_context[n]->pointsize;
+                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+              }
+            yTextCurrent += value;
+            break;
+          }/*textdy*/
+        /*
+          When the current text position was managed in SVGStartElement() in svg.c, and a "rotate"
+          was encountered (indicating that the text character was to be rotated), the code would
+          emit to the MVG file:
+
+            translate x y (where x, y indicate the current text position)
+            rotate angle (where angle indicates the rotation angle)
+
+          Now that the current text position is being managed by DrawImage() in render.c, the code
+          in SVGStartElement() cannot issue the "translate" because it can't know the current text
+          position.  To handle this, "textr" (text rotation) has been implemented here to perform
+          the appropriate translation/rotation sequence.
+        */
+        if (LocaleCompare("textr",keyword) == 0)  /* text rotation */
+          {/*textr*/
+            TextRotationPerformed = MagickTrue;
+            /* translate x y */
+            affine.tx = xTextCurrent;
+            affine.ty = yTextCurrent;
+            /* rotation angle */
+            MagickGetToken(q,&q,token,token_max_length);
+            if (MagickAtoFChk(token,&angle) != MagickPass)
+              {
+                status=MagickFail;
+                break;
+              }
+            affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
+            affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
+            affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
+            affine.sy=cos(DegreesToRadians(fmod(angle,360.0)));
+            break;
+          }/*textr*/
+        if (LocaleCompare("textx",keyword) == 0)  /* set current x position for text */
+          {
+            double value;
+            MagickGetToken(q,&q,token,token_max_length);
+            (void) MagickAtoFChk(token,&value);
+            xTextCurrent = value;
+            break;
+          }
+        if (LocaleCompare("texty",keyword) == 0)  /* set current y position for text */
+          {
+            double value;
+            MagickGetToken(q,&q,token,token_max_length);
+            (void) MagickAtoFChk(token,&value);
+            yTextCurrent = value;
             break;
           }
         if (LocaleCompare("text-align",keyword) == 0)
@@ -3366,6 +3492,30 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           break;
         }
     }
+    /*
+      Special handling when using textc with character rotation; see comments
+      above near "textr".
+    */
+    if  ( (primitive_type == TextPrimitive) && UseCurrentTextPosition && (i == 0) )
+      {
+        primitive_info[0].primitive=primitive_type;
+        if  ( TextRotationPerformed )
+          {
+            /* text positioning has already been performed by translate/rotate sequence */
+            primitive_info[0].point.x=0;
+            primitive_info[0].point.y=0;
+            TextRotationPerformed = MagickFalse;
+          }
+        else
+          {
+            primitive_info[0].point.x=xTextCurrent;
+            primitive_info[0].point.y=yTextCurrent;
+          }
+        primitive_info[0].coordinates=0;
+        primitive_info[0].method=FloodfillMethod;
+        i++;
+        x++;
+      }
     assert(j < (long) number_points);
     primitive_info[j].primitive=primitive_type;
     primitive_info[j].coordinates=x;
@@ -3728,6 +3878,24 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (*token != ',')
           MagickGetToken(q,&q,token,token_max_length);
         primitive_info[j].text=AllocateString(token);
+        {/*update current text position for next time*/
+          /*
+            Clone the DrawInfo, add a blank to the end of
+            the text, get the metrics for the concatenated
+            string, and use the width to update the text
+            current x position.
+          */
+          DrawInfo * clone_info;
+          TypeMetric  metrics;
+          clone_info=CloneDrawInfo((ImageInfo *) NULL,graphic_context[n]);
+          MagickFreeMemory(clone_info->density);	/* density values already converted, don't do again! */
+          clone_info->render = 0;
+          clone_info->text=AllocateString(token);
+          (void) ConcatenateString(&clone_info->text," ");
+          (void) GetTypeMetrics(image,clone_info,&metrics);
+          xTextCurrent += metrics.width;
+          DestroyDrawInfo(clone_info);
+        }/*update current text position for next time*/
         break;
       }
       case ImagePrimitive:
@@ -6643,40 +6811,40 @@ TraceStrokePolygon(const DrawInfo *draw_info,
 static MagickBool
 IsDrawInfoClippingPath(const DrawInfo * draw_info)
 {
-  return((draw_info->unused1&0x3U)==1);
+  return((draw_info->flags&0x3U)==1);
 }
 
 /* is the DrawInfo a composite mask */
 static MagickBool
 IsDrawInfoCompositeMask(const DrawInfo * draw_info)
 {
-  return((draw_info->unused1&0x3U)==2);
+  return((draw_info->flags&0x3U)==2);
 }
 
 /* is the DrawInfo "normal" */
 static MagickBool
 IsDrawInfoNormal(const DrawInfo * draw_info)
 {
-  return((draw_info->unused1&0x3U)==0);
+  return((draw_info->flags&0x3U)==0);
 }
 
 /* tag the DrawInfo as a clipping path */
 static void
 SetDrawInfoClippingPath(DrawInfo * draw_info)
 {
-  draw_info->unused1 = (draw_info->unused1 & (~0x3U)) | 1;
+  draw_info->flags = (draw_info->flags & (~0x3U)) | 1;
 }
 
 /* tag the DrawInfo as a composite mask */
 static void
 SetDrawInfoCompositeMask(DrawInfo * draw_info)
 {
-  draw_info->unused1 = (draw_info->unused1 & (~0x3U)) | 2;
+  draw_info->flags = (draw_info->flags & (~0x3U)) | 2;
 }
 
 /* tag the DrawInfo as "normal" */
 static void
 SetDrawInfoNormal(DrawInfo * draw_info)
 {
-  draw_info->unused1 = (draw_info->unused1 & (~0x3U));
+  draw_info->flags = (draw_info->flags & (~0x3U));
 }
