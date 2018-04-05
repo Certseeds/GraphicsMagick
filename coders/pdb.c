@@ -582,6 +582,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             index=(IndexPacket) (3-((*p >> shift) & 0x03));
             VerifyColormapIndex(image,index);
             indexes[x]=index;
+            *q++=image->colormap[index];
             if (shift == 0)
               {
                 shift = 8;

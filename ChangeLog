@@ -1,5 +1,15 @@
 2018-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (ReadPDBImage): Update DirectClass pixels to avoid
+	use of uninitialized memory for 2 bits/pixel.  Fixes oss-fuzz 7350
+	"graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in
+	WritePDBImage".  (Credit to OSS-Fuzz)
+
+	* coders/palm.c (ReadPALMImage): Fix use of uninitialized memory.
+	Fixes oss-fuzz 7325 "graphicsmagick/coder_PALM_fuzzer:
+	Use-of-uninitialized-value in TransparentImageCallBack". (Credit
+	to OSS-Fuzz)
+
 	* coders/dcm.c (DCM_ReadNonNativeImages): Break out of reading
 	loop on EOF and properly report exception.  Fixes oss-fuzz 7349
 	"graphicsmagick/coder_DCM_fuzzer: Timeout in
