@@ -1291,10 +1291,9 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);
-      if (QuantumTick(scene,image_list_length))
-        status=MagickMonitorFormatted(scene,image_list_length,
-                                      &image->exception,SaveImagesText,
-                                      image->filename);
+      status=MagickMonitorFormatted(scene,image_list_length,
+                                    &image->exception,SaveImagesText,
+                                    image->filename);
       if (status == False)
         break;
       scene++;

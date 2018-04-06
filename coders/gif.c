@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1279,6 +1279,9 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
   unsigned long
     scene;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -1286,6 +1289,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1566,7 +1570,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+    status=MagickMonitorFormatted(scene++,image_list_length,
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == MagickFail)

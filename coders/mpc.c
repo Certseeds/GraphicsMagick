@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1022,6 +1022,9 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
   size_t
     profile_length;
 
+  size_t
+    image_list_length;
+
   /*
     Open persistent cache.
   */
@@ -1029,6 +1032,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1352,7 +1356,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+    status=MagickMonitorFormatted(scene++,image_list_length,
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == False)

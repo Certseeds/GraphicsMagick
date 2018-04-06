@@ -1673,6 +1673,9 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
   size_t
     color_profile_length=0;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -1680,6 +1683,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
@@ -2196,7 +2200,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+    status=MagickMonitorFormatted(scene++,image_list_length,
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == False)

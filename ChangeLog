@@ -1,3 +1,11 @@
+2018-04-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/avs.c, etc... (WriteAVSImage): Cache image list length
+	before writing image sequence so that progress monitor is
+	scalable.  Helps with oss-fuzz 7404
+	"graphicsmagick/coder_AVS_fuzzer: Timeout in
+	graphicsmagick_coder_AVS_fuzzer". (Credit to OSS-Fuzz)
+
 2018-04-03  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement, SVGEndElement),

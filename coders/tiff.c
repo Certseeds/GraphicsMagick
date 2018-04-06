@@ -3986,6 +3986,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
     depth,
     scene;
 
+  size_t
+    image_list_length;
+
   /*
     Open TIFF file.
   */
@@ -3993,6 +3996,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   logging=IsEventLogging();
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
@@ -5217,7 +5221,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             pages;
 
           page=(uint16) scene;
-          pages=GetImageListLength(image);
+          pages=(uint16) image_list_length;
 
           if (image_info->adjoin && pages > 1)
             {
@@ -5754,7 +5758,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         break;
       image=SyncNextImageInList(image);
       if ((status &= MagickMonitorFormatted(scene++,
-                                            GetImageListLength(image),
+                                            image_list_length,
                                             &image->exception,
                                             SaveImagesText,
                                             image->filename)) == MagickFail)

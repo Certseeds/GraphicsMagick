@@ -1330,10 +1330,15 @@ MagickExport Image *MosaicImages(const Image *image,ExceptionInfo *exception)
   MagickPassFail
     status;
 
+  size_t
+    image_list_length;
+
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
+  image_list_length=GetImageListLength(image);
 
   /*
     Determine mosaic bounding box.
@@ -1374,7 +1379,7 @@ MagickExport Image *MosaicImages(const Image *image,ExceptionInfo *exception)
   {
     (void) CompositeImage(mosaic_image,next->compose,next,next->page.x,
       next->page.y);
-    status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+    status=MagickMonitorFormatted(scene++,image_list_length,
                                   exception,MosaicImageText,image->filename);
     if (status == MagickFail)
       break;
