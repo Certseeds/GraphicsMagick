@@ -1954,7 +1954,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (bits_per_sample != 16))
           {
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Unsupported bits per sample %u", bits_per_sample);
+                                  "Unsupported bits per sample %u", bits_per_sample);
             ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
           }
         max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
@@ -1999,6 +1999,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unhandled element descriptor: %s",
                                     DescribeImageElementDescriptor(txt_buffer,element_descriptor));
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
             }
           }
 
