@@ -280,7 +280,15 @@ int main ( int argc, char **argv )
     }
   if ( blob == NULL )
     {
-      (void) printf ( "Failed to write BLOB in format %s\n",
+      (void) printf ( "Failed to write BLOB in format %s (blob is NULL!)\n",
+                      imageInfo->magick );
+      (void) fflush(stdout);
+      exit_status = 1;
+      goto program_exit;
+    }
+  if ( blob_length == 0)
+    {
+      (void) printf ( "Failed to write BLOB in format %s (blob length is 0!)\n",
                       imageInfo->magick );
       (void) fflush(stdout);
       exit_status = 1;
