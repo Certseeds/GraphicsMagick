@@ -316,10 +316,22 @@ static void *ExtendBlobWriteStream(Image *image,const size_t length)
       /* In-memory Blob */
       blob->quantum<<=1;
       blob->extent+=length+blob->quantum;
+#if 0
+      if (image->logging)
+        (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                              "MagickReallocMemory blob->data=%p,"
+                              " blob->extent=%" MAGICK_SIZE_T_F "u",
+                              blob->data, (MAGICK_SIZE_T) blob->extent);
+#endif
       MagickReallocMemory(unsigned char *,blob->data,blob->extent+1);
       (void) SyncBlob(image);
       if (blob->data == (unsigned char *) NULL)
         {
+#if 0
+          if (image->logging)
+            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                  "MagickReallocMemory failed! Detatching Blob...");
+#endif
           DetachBlob(blob);
           return 0;
         }
@@ -699,7 +711,10 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
   assert(exception != (ExceptionInfo *) NULL);
 
   image=(Image *) NULL;
-  (void) LogMagickEvent(BlobEvent,GetMagickModule(), "Entering BlobToImage");
+  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                        "Entering BlobToImage: blob=%p,"
+                        " length=%" MAGICK_SIZE_T_F "u",
+                        blob, (MAGICK_SIZE_T) length);
   if ((blob == (const void *) NULL) || (length == 0))
     {
       ThrowException(exception,OptionError,NullBlobArgument,
@@ -2218,7 +2233,8 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
           return((void *) NULL);
         }
       /* Request to truncate memory allocation down to memory actually used. */
-      MagickReallocMemory(unsigned char *,image->blob->data,image->blob->length+1);
+      if (image->blob->length)
+        MagickReallocMemory(unsigned char *,image->blob->data,image->blob->length+1);
       /* Pass blob data and length to user parameters */
       blob=image->blob->data;
       *length=image->blob->length;
