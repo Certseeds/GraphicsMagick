@@ -99,13 +99,17 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register PixelPacket
     *q;
 
-  unsigned int
+  int
+    length;
+
+  MagickPassFail
     status;
 
+  unsigned int
+    bits_per_pixel;
+
   unsigned long
-    bits_per_pixel,
     height,
-    length,
     width;
 
   /*
@@ -117,7 +121,7 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   /*
     Read PIX image.
@@ -164,9 +168,12 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       indexes=AccessMutableIndexes(image);
       for (x=0; x < (long) image->columns; x++)
       {
-        if (length == 0)
+        if (length <= 0)
           {
-            length=ReadBlobByte(image);
+            if ((length=ReadBlobByte(image)) == EOF)
+              break;
+            if (length == 0)
+              ThrowReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             if (bits_per_pixel == 8)
               index=ScaleCharToQuantum(ReadBlobByte(image));
             else
@@ -177,13 +184,18 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
           }
         if (image->storage_class == PseudoClass)
-          indexes[x]=index;
+          {
+            VerifyColormapIndex(image,index);
+            indexes[x]=index;
+          }
         q->blue=blue;
         q->green=green;
         q->red=red;
         length--;
         q++;
       }
+      if (EOFBlob(image))
+        break;
       if (!SyncImagePixels(image))
         break;
       if (image->previous == (Image *) NULL)
@@ -192,14 +204,10 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     image->columns,image->rows))
           break;
     }
+    if (EOFBlob(image))
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     if (image->storage_class == PseudoClass)
       (void) SyncImage(image);
-    if (EOFBlob(image))
-      {
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-          image->filename);
-        break;
-      }
     /*
       Proceed to next image.
     */
@@ -213,7 +221,7 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bits_per_pixel=ReadBlobMSBShort(image);
     status=(!EOFBlob(image)) && (width != 0U) && (height != 0U) &&
       ((bits_per_pixel == 8) || (bits_per_pixel == 24));
-    if (status == True)
+    if (status == MagickPass)
       {
         /*
           Allocate next image structure.
@@ -229,7 +237,7 @@ static Image *ReadPIXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     LoadImagesText,image->filename))
           break;
       }
-  } while (status == True);
+  } while (status == MagickPass);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
