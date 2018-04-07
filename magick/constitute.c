@@ -2229,7 +2229,8 @@ WriteImage(const ImageInfo *image_info,Image *image)
                               ColorspaceTypeToString(image->colorspace));
       status=(magick_info->encoder)(clone_info,image);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Returned from \"%.1024s\" encoder",magick_info->name);
+                            "Returned from \"%.1024s\" encoder, %s",magick_info->name,
+                            (status == MagickFail ? "Failed" :"Succeeded"));
       if (!magick_info->thread_support)
         UnlockSemaphoreInfo(constitute_semaphore);
 
