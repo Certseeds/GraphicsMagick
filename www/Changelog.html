@@ -38,6 +38,10 @@
 <p>2018-04-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dcm.c (funcDCM_BitsStored): Limit DICOM significant bits
+to 16.  Otherwise rescale map code blows up.  Fixes oss-fuzz 7435
+&quot;graphicsmagick/coder_DCM_fuzzer: Out-of-memory in
+graphicsmagick_coder_DCM_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/pix.c (ReadPIXImage): Detect EOF.  Reject RLE lenth of
 zero.  Fixes oss-fuzz 7440 &quot;graphicsmagick/coder_PIX_fuzzer:
 Out-of-memory in graphicsmagick_coder_PIX_fuzzer&quot;. (Credit to

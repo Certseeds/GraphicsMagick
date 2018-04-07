@@ -3121,7 +3121,7 @@ static MagickPassFail funcDCM_BitsStored(Image *image,DicomStream *dcm,Exception
 
   dcm->significant_bits=dcm->datum;
   dcm->bytes_per_pixel=1;
-  if ((dcm->significant_bits == 0U) || (dcm->significant_bits > 32U))
+  if ((dcm->significant_bits == 0U) || (dcm->significant_bits > 16U))
     {
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
