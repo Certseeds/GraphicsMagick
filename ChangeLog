@@ -1,3 +1,10 @@
+2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcd.c: Fix many issues, including oss-fuzz 6016
+	"graphicsmagick/coder_PCD_fuzzer: Heap-double-free in
+	MagickRealloc" and oss-fuzz 6108 "graphicsmagick/coder_PCD_fuzzer:
+	Unknown signal in AllocateThreadViewDataSet". (Credit to OSS-Fuzz)
+
 2018-04-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (funcDCM_BitsStored): Limit DICOM significant bits
