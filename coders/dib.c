@@ -193,7 +193,6 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                           " %" MAGICK_SIZE_T_F "u bytes",
                           image->rows*image->columns);
 
-  (void) memset(pixels,0,pixels_size);
   byte=0;
   x=0;
   q=pixels;
@@ -564,6 +563,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   size_t
     bytes_per_line,
+    packet_size,
     pixels_size;
 
   magick_off_t
@@ -718,14 +718,15 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read image data.
   */
+  packet_size=dib_info.bits_per_pixel;
   if (dib_info.compression == 2)
-    dib_info.bits_per_pixel<<=1;
+    packet_size<<=1;
 
   /*
      Below emulates:
-     bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+     bytes_per_line=4*((image->columns*dib_info.packet_size+31)/32);
   */
-  bytes_per_line=MagickArraySize(image->columns,dib_info.bits_per_pixel);
+  bytes_per_line=MagickArraySize(image->columns,packet_size);
   if (bytes_per_line)
     bytes_per_line += 31;
   bytes_per_line /= 32;
@@ -782,6 +783,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         DecodeImage() normally decompresses to rows*columns bytes of data.
       */
+      (void) memset(pixels,0,pixels_size);
       status=DecodeImage(image,dib_info.compression,pixels,
                          image->rows*image->columns);
       if (status == False)
