@@ -463,7 +463,8 @@ typedef struct {
 
 
 /* Load Matlab V4 file. */
-static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, ExceptionInfo *exception)
+static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, 
+                             ExceptionInfo *exception, const int logging)
 {
 MAT4_HDR HDR;
 Image *rotated_image;
@@ -607,15 +608,15 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       q = SetImagePixels(image, 0, HDR.nCols-i-1, image->columns, 1);
       if(q == (PixelPacket *)NULL)
       {
-        /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
-        /*        "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
+        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                    "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)i);
         goto skip_reading_current;              /* Skip image rotation, when cannot set image pixels */
       }
 
       if(ReadBlob(image,ldblk,(char *)BImgBuff) != (size_t)ldblk)
       {
-        /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
-        /*         "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
+        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                   "  MAT cannot read scanrow %u from a file.", (unsigned)(i));
         DestroyImagePixels(image);		/* The unread data contains crap in memory, erase current image data. */
         image->columns = image->rows = 0;
         goto ExitLoop;
@@ -629,8 +630,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
       if(!SyncImagePixels(image))
       {
-        /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
-        /*     "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
+        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+             "  MAT failed to sync image pixels for a row %u", (unsigned)i);
         goto ExitLoop;
       }
     }
@@ -648,7 +649,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
         {
           if(ReadBlobXXXDoubles(image, ldblk, (double *)BImgBuff) != (size_t) ldblk)
           {
-            //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
+            if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
             break;
           }
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
@@ -664,7 +665,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
         {
           if(ReadBlobXXXFloats(image, ldblk, (float *)BImgBuff) != (size_t) ldblk)
           {
-            //if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
+            if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), "Cannot read data.");
             break;
           }
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
@@ -796,7 +797,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
-    image2 = ReadMATImageV4(image_info,image,&import_options,exception);
+    image2 = ReadMATImageV4(image_info,image,&import_options,exception,logging);
     if(image2==NULL) goto MATLAB_KO;    
     image = image2;
     goto END_OF_READING;
@@ -1344,7 +1345,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  logging=LogMagickEvent(CoderEvent,GetMagickModule(),"enter MAT");
+  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter MAT");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
