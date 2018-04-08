@@ -39,6 +39,7 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/log.h"
 #include "magick/magic.h"
 #include "magick/magick.h"
 #include "magick/pixel_cache.h"
@@ -262,6 +263,9 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
   IndexPacket index;
   IndexPacket *indexes;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Insert row %ld of %lu...", y, image->rows);
 
   q = SetImagePixels(image,0,y,image->columns,1);
   if(q == (PixelPacket *) NULL) return MagickFail;
@@ -282,7 +286,12 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
         indexes=AccessMutableIndexes(image);
         if ((image->storage_class != PseudoClass) ||
             (indexes == (IndexPacket *) NULL))
+          {
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Image has no colormap, skipping...");
           return MagickFail;
+          }
         x = 0;
         while(x < (long)image->columns-3)
           {
@@ -335,6 +344,10 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
       break;
 
     default:
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Unsupported bits per pixel %u",bpp);
+
       return MagickFail;  /* emit some error here */
     }
 
