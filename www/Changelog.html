@@ -35,6 +35,27 @@
 <div class="document">
 
 
+<p>2018-04-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/tim.c (ReadTIMImage): Only 4 and 8 bit TIM requires a
+colormap. For other depths, force reading as DirectClass even if
+the TIM file provides a colormap.  Fixes oss-fuzz 7407
+&quot;graphicsmagick/coder_TIM_fuzzer: Use-of-uninitialized-value in
+SyncImageCallBack&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-04-08  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mat.c The unread data contains crap in memory,
+erase current image data. This should mute oss-fuzz 6604.</li>
+<li>coders/wpg.c - condition &quot;if(y&lt;1) continue;&quot; is redundant
+and could be removed completely.
+Allow logging in MatlabV4 module.</li>
+<li>coders/svg.c - Do not use C++ syntax in C code - removed.</li>
+</ul>
+</blockquote>
 <p>2018-04-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

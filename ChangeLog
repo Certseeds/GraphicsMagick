@@ -1,13 +1,21 @@
+2018-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tim.c (ReadTIMImage): Only 4 and 8 bit TIM requires a
+	colormap. For other depths, force reading as DirectClass even if
+	the TIM file provides a colormap.  Fixes oss-fuzz 7407
+	"graphicsmagick/coder_TIM_fuzzer: Use-of-uninitialized-value in
+	SyncImageCallBack". (Credit to OSS-Fuzz)
+
 2018-04-08  Fojtik Jaroslav  <JaFojtik@seznam.cz>
-        * coders/mat.c The unread data contains crap in memory, 
-        erase current image data. This should mute oss-fuzz 6604.
 
-        Allow logging in MatlabV4 module.
+	* coders/mat.c The unread data contains crap in memory,
+	erase current image data. This should mute oss-fuzz 6604.
 
-        * coders/wpg.c - condition "if(y<1) continue;" is abundant 
-        and could be removed completely.
+	* coders/wpg.c - condition "if(y<1) continue;" is redundant
+	and could be removed completely.
+	Allow logging in MatlabV4 module.
 
-        * coders/svg.c - Do not use C++ syntax in C code - removed.
+	* coders/svg.c - Do not use C++ syntax in C code - removed.
 
 2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

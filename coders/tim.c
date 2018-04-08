@@ -38,6 +38,7 @@
 #include "magick/studio.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/enum_strings.h"
 #include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
@@ -149,305 +150,332 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   tim_info.id=ReadBlobLSBLong(image);
   do
-  {
-    /*
-      Verify TIM identifier.
-    */
-    if (tim_info.id != 0x00000010)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    tim_info.flag=ReadBlobLSBLong(image);
-    has_clut=!!(tim_info.flag & (1 << 3));
-    pixel_mode=tim_info.flag & 0x07;
-    switch ((int) pixel_mode)
     {
-      case 0: bits_per_pixel=4; break;
-      case 1: bits_per_pixel=8; break;
-      case 2: bits_per_pixel=16; break;
-      case 3: bits_per_pixel=24; break;
-      default: bits_per_pixel=4; break;
-    }
-    image->depth=8;
-    if (has_clut)
-      {
-        unsigned char
-          *tim_colormap;
-
-        /*
-          Read TIM raster colormap.
-        */
-        (void)ReadBlobLSBLong(image);
-        (void)ReadBlobLSBShort(image);
-        (void)ReadBlobLSBShort(image);
-        /* width= */ (void)ReadBlobLSBShort(image);
-        /* height= */ (void)ReadBlobLSBShort(image);
-        if (!AllocateImageColormap(image,pixel_mode == 1 ? 256 : 16))
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        tim_colormap=MagickAllocateMemory(unsigned char *,image->colors*2);
-        if (tim_colormap == (unsigned char *) NULL)
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        (void) ReadBlob(image,2*image->colors,(char *) tim_colormap);
-        p=tim_colormap;
-        for (i=0; i < (long) image->colors; i++)
+      /*
+        Verify TIM identifier.
+      */
+      if (tim_info.id != 0x00000010)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      tim_info.flag=ReadBlobLSBLong(image);
+      has_clut=!!(tim_info.flag & (1 << 3));
+      pixel_mode=tim_info.flag & 0x07;
+      switch ((int) pixel_mode)
         {
-          word=(*p++);
-          word|=(unsigned short) (*p++ << 8U);
-          image->colormap[i].blue=ScaleCharToQuantum(ScaleColor5to8((word >> 10U) & 0x1fU));
-          image->colormap[i].green=ScaleCharToQuantum(ScaleColor5to8((word >> 5U) & 0x1fU));
-          image->colormap[i].red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1fU));
+        case 0: bits_per_pixel=4; break;
+        case 1: bits_per_pixel=8; break;
+        case 2: bits_per_pixel=16; break;
+        case 3: bits_per_pixel=24; break;
+        default: bits_per_pixel=4; break;
         }
-        MagickFreeMemory(tim_colormap);
-      }
-    if ((bits_per_pixel == 4) || (bits_per_pixel == 8))
-      {
-        if (image->storage_class != PseudoClass)
-          {
-            if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "PSX-TIM %u bits/sample requires a CLUT!",
-                                    bits_per_pixel);
-            errno=0;
-            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-          }
-      }
+      image->depth=8;
+      if (has_clut)
+        {
+          unsigned char
+            *tim_colormap;
 
-    /*
-      Read image data.
-    */
-    (void) ReadBlobLSBLong(image);
-    (void) ReadBlobLSBShort(image);
-    (void) ReadBlobLSBShort(image);
-    if (EOFBlob(image))
-      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-    width=ReadBlobLSBShort(image);
-    height=ReadBlobLSBShort(image);
-    image_size=MagickArraySize(2,MagickArraySize(width,height));
-    bytes_per_line=MagickArraySize(width,2);
-    width=(unsigned long)(MagickArraySize(width,16))/bits_per_pixel;
-    /*
-      Initialize image structure.
-    */
-    image->columns=width;
-    image->rows=height;
+          /*
+            Read TIM raster colormap.
+          */
+          (void)ReadBlobLSBLong(image);
+          (void)ReadBlobLSBShort(image);
+          (void)ReadBlobLSBShort(image);
+          /* width= */ (void)ReadBlobLSBShort(image);
+          /* height= */ (void)ReadBlobLSBShort(image);
+          if (!AllocateImageColormap(image,pixel_mode == 1 ? 256 : 16))
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
+          tim_colormap=MagickAllocateMemory(unsigned char *,image->colors*2);
+          if (tim_colormap == (unsigned char *) NULL)
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                 image);
+          if (ReadBlob(image,2*image->colors,(char *) tim_colormap) != 2*image->colors)
+            {
+              MagickFreeMemory(tim_colormap);
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            }
+          p=tim_colormap;
+          for (i=0; i < (long) image->colors; i++)
+            {
+              word=(*p++);
+              word|=(unsigned short) (*p++ << 8U);
+              image->colormap[i].blue=ScaleCharToQuantum(ScaleColor5to8((word >> 10U) & 0x1fU));
+              image->colormap[i].green=ScaleCharToQuantum(ScaleColor5to8((word >> 5U) & 0x1fU));
+              image->colormap[i].red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1fU));
+              image->colormap[i].opacity=OpaqueOpacity;
+            }
+          MagickFreeMemory(tim_colormap);
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "PSX-TIM read CLUT with %u entries",
+                                  image->colors);
+        }
+      if ((bits_per_pixel == 4) || (bits_per_pixel == 8))
+        {
+          if (image->storage_class != PseudoClass)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "PSX-TIM %u bits/sample requires a CLUT!",
+                                      bits_per_pixel);
+              errno=0;
+              ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+        }
+      else
+        {
+          if (image->storage_class == PseudoClass)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "PSX-TIM %u bits/sample does not use"
+                                      " a CLUT, ignoring it",
+                                      bits_per_pixel);
+              image->storage_class=DirectClass;
+            }
+        }
 
-    if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "TIM[%lu] %lux%lu %d bits/pixel",
-                                    image->scene,
-                                    image->columns, image->rows,
-                                    bits_per_pixel);
-
-    if (image_info->ping)
-      if ((image_info->subrange == 0) ||
-          ((image_info->subrange != 0) &&
-           (image->scene >= (image_info->subimage+image_info->subrange-1))))
-        break;
-
-    if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-
-    tim_pixels=MagickAllocateMemory(unsigned char *,image_size);
-    if (tim_pixels == (unsigned char *) NULL)
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    if (ReadBlob(image,image_size,(char *) tim_pixels) != image_size)
-      {
-        MagickFreeMemory(tim_pixels);
+      /*
+        Read image data.
+      */
+      (void) ReadBlobLSBLong(image);
+      (void) ReadBlobLSBShort(image);
+      (void) ReadBlobLSBShort(image);
+      width=ReadBlobLSBShort(image);
+      height=ReadBlobLSBShort(image);
+      if (EOFBlob(image))
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-      }
+      image_size=MagickArraySize(2,MagickArraySize(width,height));
+      bytes_per_line=MagickArraySize(width,2);
+      width=(unsigned long)(MagickArraySize(width,16))/bits_per_pixel;
+      /*
+        Initialize image structure.
+      */
+      image->columns=width;
+      image->rows=height;
 
-    /*
-      Convert TIM raster image to pixel packets.
-    */
-    switch (bits_per_pixel)
-    {
-      case 4:
-      {
-        /*
-          Convert PseudoColor scanline.
-        */
-        for (y=(long) image->rows-1; y >= 0; y--)
-        {
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            break;
-          indexes=AccessMutableIndexes(image);
-          if (indexes == (IndexPacket *) NULL)
-            break;
-          p=tim_pixels+y*bytes_per_line;
-          for (x=0; x < ((long) image->columns-1); x+=2)
-          {
-            index=(*p) & 0xf;
-            VerifyColormapIndex(image,index);
-            indexes[x]=index;
-            index=(*p >> 4) & 0xf;
-            VerifyColormapIndex(image,index);
-            indexes[x+1]=index;
-            p++;
-          }
-          if ((image->columns % 2) != 0)
-            {
-              index=(*p >> 4) & 0xf;
-              VerifyColormapIndex(image,index);
-              indexes[x]=(*p >> 4) & 0xf;
-              p++;
-            }
-          if (!SyncImagePixelsEx(image,exception))
-            break;
-          if (QuantumTick(y,image->rows))
-            {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
-                                            exception,LoadImageText,
-                                            image->filename,
-                                            image->columns,image->rows);
-              if (status == False)
-                break;
-            }
-        }
-        break;
-      }
-      case 8:
-      {
-        /*
-          Convert PseudoColor scanline.
-        */
-        for (y=(long) image->rows-1; y >= 0; y--)
-        {
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            break;
-          indexes=AccessMutableIndexes(image);
-          if (indexes == (IndexPacket *) NULL)
-            break;
-          p=tim_pixels+y*bytes_per_line;
-          for (x=0; x < (long) image->columns; x++)
-            {
-              index=(*p++);
-              VerifyColormapIndex(image,index);
-              indexes[x]=index;
-            }
-          if (!SyncImagePixelsEx(image,exception))
-            break;
-          if (QuantumTick(y,image->rows))
-            {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
-                                            exception,LoadImageText,
-                                            image->filename,
-                                            image->columns,image->rows);
-              if (status == False)
-                break;
-            }
-        }
-        break;
-      }
-      case 16:
-      {
-        /*
-          Convert DirectColor scanline.
-        */
-        for (y=(long) image->rows-1; y >= 0; y--)
-        {
-          p=tim_pixels+y*bytes_per_line;
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            break;
-          for (x=0; x < (long) image->columns; x++)
-          {
-            word=(*p++);
-            word|=(*p++ << 8);
-            q->blue=ScaleCharToQuantum(ScaleColor5to8((word >> 10) & 0x1f));
-            q->green=ScaleCharToQuantum(ScaleColor5to8((word >> 5) & 0x1f));
-            q->red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1f));
-            q++;
-          }
-          if (!SyncImagePixelsEx(image,exception))
-            break;
-          if (QuantumTick(y,image->rows))
-            {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
-                                            exception,LoadImageText,
-                                            image->filename,
-                                            image->columns,image->rows);
-              if (status == False)
-                break;
-            }
-        }
-        break;
-      }
-      case 24:
-      {
-        /*
-          Convert DirectColor scanline.
-        */
-        for (y=(long) image->rows-1; y >= 0; y--)
-        {
-          p=tim_pixels+y*bytes_per_line;
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            break;
-          for (x=0; x < (long) image->columns; x++)
-          {
-            q->red=ScaleCharToQuantum(*p++);
-            q->green=ScaleCharToQuantum(*p++);
-            q->blue=ScaleCharToQuantum(*p++);
-            q++;
-          }
-          if (!SyncImagePixelsEx(image,exception))
-            break;
-          if (QuantumTick(y,image->rows))
-            {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
-                                            exception,LoadImageText,
-                                            image->filename,
-                                            image->columns,image->rows);
-              if (status == False)
-                break;
-            }
-        }
-        break;
-      }
-      default:
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "TIM[%lu] %lux%lu %d bits/pixel %s",
+                              image->scene,
+                              image->columns, image->rows,
+                              bits_per_pixel,
+                              ClassTypeToString(image->storage_class));
+
+      if (image_info->ping)
+        if ((image_info->subrange == 0) ||
+            ((image_info->subrange != 0) &&
+             (image->scene >= (image_info->subimage+image_info->subrange-1))))
+          break;
+
+      if (CheckImagePixelLimits(image, exception) != MagickPass)
+        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+      tim_pixels=MagickAllocateMemory(unsigned char *,image_size);
+      if (tim_pixels == (unsigned char *) NULL)
+        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      if (ReadBlob(image,image_size,(char *) tim_pixels) != image_size)
         {
           MagickFreeMemory(tim_pixels);
-          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
-    }
-    if (image->storage_class == PseudoClass)
-      (void) SyncImage(image);
-    MagickFreeMemory(tim_pixels);
-    if (EOFBlob(image))
-      {
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-          image->filename);
-        break;
-      }
-    /*
-      Proceed to next image.
-    */
-    if (image_info->subrange != 0)
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
-        break;
 
-    tim_info.id=ReadBlobLSBLong(image);
-    if (tim_info.id == 0x00000010)
-      {
-        /*
-          Allocate next image structure.
-        */
-        AllocateNextImage(image_info,image);
-        if (image->next == (Image *) NULL)
+      /*
+        Convert TIM raster image to pixel packets.
+      */
+      switch (bits_per_pixel)
+        {
+        case 4:
           {
-            DestroyImageList(image);
-            return((Image *) NULL);
+            /*
+              Convert PseudoColor scanline.
+            */
+            for (y=(long) image->rows-1; y >= 0; y--)
+              {
+                q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+                if (q == (PixelPacket *) NULL)
+                  break;
+                indexes=AccessMutableIndexes(image);
+                if (indexes == (IndexPacket *) NULL)
+                  break;
+                p=tim_pixels+y*bytes_per_line;
+                for (x=0; x < ((long) image->columns-1); x+=2)
+                  {
+                    index=(*p) & 0xf;
+                    VerifyColormapIndex(image,index);
+                    indexes[x]=index;
+                    index=(*p >> 4) & 0xf;
+                    VerifyColormapIndex(image,index);
+                    indexes[x+1]=index;
+                    p++;
+                  }
+                if ((image->columns % 2) != 0)
+                  {
+                    index=(*p >> 4) & 0xf;
+                    VerifyColormapIndex(image,index);
+                    indexes[x]=(*p >> 4) & 0xf;
+                    p++;
+                  }
+                if (!SyncImagePixelsEx(image,exception))
+                  break;
+                if (QuantumTick(y,image->rows))
+                  {
+                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                  exception,LoadImageText,
+                                                  image->filename,
+                                                  image->columns,image->rows);
+                    if (status == False)
+                      break;
+                  }
+              }
+            break;
           }
-        image=SyncNextImageInList(image);
-        status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
-                                      exception,LoadImagesText,
-                                      image->filename);
-        if (status == False)
+        case 8:
+          {
+            /*
+              Convert PseudoColor scanline.
+            */
+            for (y=(long) image->rows-1; y >= 0; y--)
+              {
+                q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+                if (q == (PixelPacket *) NULL)
+                  break;
+                indexes=AccessMutableIndexes(image);
+                if (indexes == (IndexPacket *) NULL)
+                  break;
+                p=tim_pixels+y*bytes_per_line;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    index=(*p++);
+                    VerifyColormapIndex(image,index);
+                    indexes[x]=index;
+                  }
+                if (!SyncImagePixelsEx(image,exception))
+                  break;
+                if (QuantumTick(y,image->rows))
+                  {
+                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                  exception,LoadImageText,
+                                                  image->filename,
+                                                  image->columns,image->rows);
+                    if (status == False)
+                      break;
+                  }
+              }
+            break;
+          }
+        case 16:
+          {
+            /*
+              Convert DirectColor scanline.
+            */
+            for (y=(long) image->rows-1; y >= 0; y--)
+              {
+                PixelPacket *t;
+                p=tim_pixels+y*bytes_per_line;
+                q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+                if (q == (PixelPacket *) NULL)
+                  break;
+                t=q;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    word=(*p++);
+                    word|=(*p++ << 8);
+                    q->blue=ScaleCharToQuantum(ScaleColor5to8((word >> 10) & 0x1f));
+                    q->green=ScaleCharToQuantum(ScaleColor5to8((word >> 5) & 0x1f));
+                    q->red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1f));
+                    q->opacity=OpaqueOpacity;
+                    q++;
+                  }
+                memset(t,0,image->columns*sizeof(PixelPacket));
+                if (!SyncImagePixelsEx(image,exception))
+                  break;
+                if (QuantumTick(y,image->rows))
+                  {
+                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                  exception,LoadImageText,
+                                                  image->filename,
+                                                  image->columns,image->rows);
+                    if (status == False)
+                      break;
+                  }
+              }
+            break;
+          }
+        case 24:
+          {
+            /*
+              Convert DirectColor scanline.
+            */
+            for (y=(long) image->rows-1; y >= 0; y--)
+              {
+                p=tim_pixels+y*bytes_per_line;
+                q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+                if (q == (PixelPacket *) NULL)
+                  break;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    q->red=ScaleCharToQuantum(*p++);
+                    q->green=ScaleCharToQuantum(*p++);
+                    q->blue=ScaleCharToQuantum(*p++);
+                    q->opacity=OpaqueOpacity;
+                    q++;
+                  }
+                if (!SyncImagePixelsEx(image,exception))
+                  break;
+                if (QuantumTick(y,image->rows))
+                  {
+                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                  exception,LoadImageText,
+                                                  image->filename,
+                                                  image->columns,image->rows);
+                    if (status == False)
+                      break;
+                  }
+              }
+            break;
+          }
+        default:
+          {
+            MagickFreeMemory(tim_pixels);
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+          }
+        }
+      if (image->storage_class == PseudoClass)
+        (void) SyncImage(image);
+      MagickFreeMemory(tim_pixels);
+      if (EOFBlob(image))
+        {
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                         image->filename);
           break;
-      }
-  } while (tim_info.id == 0x00000010);
+        }
+      /*
+        Proceed to next image.
+      */
+      if (image_info->subrange != 0)
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
+          break;
+
+      tim_info.id=ReadBlobLSBLong(image);
+      if (tim_info.id == 0x00000010)
+        {
+          /*
+            Allocate next image structure.
+          */
+          AllocateNextImage(image_info,image);
+          if (image->next == (Image *) NULL)
+            {
+              DestroyImageList(image);
+              return((Image *) NULL);
+            }
+          image=SyncNextImageInList(image);
+          status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
+                                        exception,LoadImagesText,
+                                        image->filename);
+          if (status == False)
+            break;
+        }
+    } while (tim_info.id == 0x00000010);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
