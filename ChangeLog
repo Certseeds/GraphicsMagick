@@ -2,6 +2,8 @@
         * coders/mat.c The unread data contains crap in memory, 
         erase current image data. This should mute oss-fuzz 6604.
 
+        * coders/wpg.c - condition "if(y<1) continue;" is abundant 
+        and could be removed completely.
 
 2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

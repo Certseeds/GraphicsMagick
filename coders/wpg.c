@@ -313,7 +313,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
             indexes[x++]=index;
             *q++ = image->colormap[index];
             p++;
-                  }
+          }
         if(x < (long) image->columns)
           {
             index = (IndexPacket) ((*p >> 6) & 0x3);
@@ -452,27 +452,28 @@ static int UnpackWPGRaster(Image *image,int bpp)
             return -7;
           }
           RunCount = i;
-          if(x) {    /* attempt to duplicate row from x position: */
-            /* I do not know what to do here */
+          if(x!=0) {    /* attempt to duplicate row from x position: */
+                        /* I do not know what to do here */
+            InsertRow(BImgBuff,y,image,bpp);   /* May be line flush can fix a situation. */
+            x=0;
+            y++;
             MagickFreeMemory(BImgBuff);
             return(-3);
           }
-          for(i=0;i < (int) RunCount;i++)
-            {
-              x=0;
-              y++;    /* Here I need to duplicate previous row RUNCOUNT* */
-              if(y<1) continue;
-              if(y>(long) image->rows)
+          for(i=0; i<(int)RunCount; i++)
+            {		/* Here I need to duplicate previous row RUNCOUNT* */
+			/* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
+              if(y>=(long)image->rows)
                 {
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
-              if(InsertRow(BImgBuff,y-1,image,bpp)==MagickFail)
+              if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 {
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
-
+              y++;
             }
         }
       }
