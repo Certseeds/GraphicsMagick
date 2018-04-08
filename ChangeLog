@@ -1,3 +1,8 @@
+2018-04-08  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+        * coders/mat.c The unread data contains crap in memory, 
+        erase current image data. This should mute oss-fuzz 6604.
+
+
 2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (UnpackWPGRaster): Fix uninitialized row 0 when

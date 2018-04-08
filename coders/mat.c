@@ -616,6 +616,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       {
         /* if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(), */
         /*         "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1)); */
+        DestroyImagePixels(image);		/* The unread data contains crap in memory, erase current image data. */
+        image->columns = image->rows = 0;
         goto ExitLoop;
       }
 
