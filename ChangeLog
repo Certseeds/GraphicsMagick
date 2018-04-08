@@ -1,5 +1,10 @@
 2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (UnpackWPGRaster): Fix uninitialized row 0 when
+	row-based RLE is used.  Fixes oss-fuzz 6603
+	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+	BlendCompositePixel". (Credit to OSS-Fuzz)
+
 	* coders/pcd.c: Fix many issues, including oss-fuzz 6016
 	"graphicsmagick/coder_PCD_fuzzer: Heap-double-free in
 	MagickRealloc" and oss-fuzz 6108 "graphicsmagick/coder_PCD_fuzzer:

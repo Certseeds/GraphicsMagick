@@ -38,6 +38,10 @@
 <p>2018-04-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/wpg.c (UnpackWPGRaster): Fix uninitialized row 0 when
+row-based RLE is used.  Fixes oss-fuzz 6603
+&quot;graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+BlendCompositePixel&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/pcd.c: Fix many issues, including oss-fuzz 6016
 &quot;graphicsmagick/coder_PCD_fuzzer: Heap-double-free in
 MagickRealloc&quot; and oss-fuzz 6108 &quot;graphicsmagick/coder_PCD_fuzzer:

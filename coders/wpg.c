@@ -268,7 +268,8 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
                           "Insert row %ld of %lu...", y, image->rows);
 
   q = SetImagePixels(image,0,y,image->columns,1);
-  if(q == (PixelPacket *) NULL) return MagickFail;
+  if(q == (PixelPacket *) NULL)
+    return MagickFail;
 
   switch (bpp)
     {
@@ -460,7 +461,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
             {
               x=0;
               y++;    /* Here I need to duplicate previous row RUNCOUNT* */
-              if(y<2) continue;
+              if(y<1) continue;
               if(y>(long) image->rows)
                 {
                   MagickFreeMemory(BImgBuff);
