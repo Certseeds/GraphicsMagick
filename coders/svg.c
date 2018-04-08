@@ -2921,10 +2921,11 @@ void	ProcessStyleClassDefs (
                     int n;
                     if  ( (value[0] == '\'') && (value[(n = (strlen(value)-1))] == '\'') )
                       {
+                        int i; 
                         FILE * fp = svg_info->file;
                         MVGPrintf(fp,"font-family '");
-                        for  ( int i = 1; i < n; i++ )
-                        fputc(value[i],fp);
+                        for(i = 1; i < n; i++)
+                          fputc(value[i],fp);
                         MVGPrintf(fp,"'\n");
                       }
                     else
@@ -3086,18 +3087,22 @@ void	ProcessStyleClassDefs (
     }/*pClassDef loop*/
 
   /* clean up */
-  for  ( ClassDef * pClassDef = ClassDefHead.pNext; pClassDef; )
-    {
-      ClassDef * pClassDefTemp = pClassDef;
-      for  ( ElementValue * pEV = pClassDef->ElementValueHead.pNext; pEV; )
-        {
-          ElementValue * pEVTemp = pEV;
-          pEV = pEV->pNext;
-          MagickFreeMemory(pEVTemp);
-        }
-      pClassDef = pClassDef->pNext;
-      MagickFreeMemory(pClassDefTemp);
-    }
+  {
+    ClassDef * pClassDef;
+    for(pClassDef = ClassDefHead.pNext; pClassDef; )
+      {
+        ElementValue *pEV;
+        ClassDef * pClassDefTemp = pClassDef;
+        for(pEV = pClassDef->ElementValueHead.pNext; pEV; )
+          {
+            ElementValue * pEVTemp = pEV;
+            pEV = pEV->pNext;
+            MagickFreeMemory(pEVTemp);
+          }
+        pClassDef = pClassDef->pNext;
+        MagickFreeMemory(pClassDefTemp);
+      }
+  }
   MagickFreeMemory(pCopyOfText);
 
 #undef	ADD_NEW_STRUCT

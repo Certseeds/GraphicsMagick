@@ -5,6 +5,8 @@
         * coders/wpg.c - condition "if(y<1) continue;" is abundant 
         and could be removed completely.
 
+        * coders/svg.c - Do not use C++ syntax in C code - removed.
+
 2018-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (UnpackWPGRaster): Fix uninitialized row 0 when
