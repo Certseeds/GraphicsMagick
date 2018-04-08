@@ -2517,24 +2517,32 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               switch (element_descriptor)
                 {
                 case ImageElementRed:
+                  if (element == 0)
+                    (void) memset(q,0,image->columns*sizeof(PixelPacket));
                   for (x=image->columns; x != 0; x--)
                     {
                       SetRedSample(q++,map_Y[*samples_itr++]);
                     }
                   break;
                 case ImageElementGreen:
+                  if (element == 0)
+                    (void) memset(q,0,image->columns*sizeof(PixelPacket));
                   for (x=image->columns; x != 0; x--)
                     {
                       SetGreenSample(q++,map_Y[*samples_itr++]);
                     }
                   break;
                 case ImageElementBlue:
+                  if (element == 0)
+                    (void) memset(q,0,image->columns*sizeof(PixelPacket));
                   for (x=image->columns; x != 0; x--)
                     {
                       SetBlueSample(q++,map_Y[*samples_itr++]);
                     }
                   break;
                 case ImageElementAlpha:
+                  if (element == 0)
+                    (void) memset(q,0,image->columns*sizeof(PixelPacket));
                   for (x=image->columns; x != 0; x--)
                     {
                       SetOpacitySample(q++,map_Y[*samples_itr++]);
@@ -2545,6 +2553,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   if (IsYCbCrColorspace(image->colorspace))
                     {
                       /* Video Luma (planar) */
+                      if (element == 0)
+                        (void) memset(q,0,image->columns*sizeof(PixelPacket));
                       for (x=image->columns; x != 0; x--)
                         {
                           SetRedSample(q,map_Y[*samples_itr++]);

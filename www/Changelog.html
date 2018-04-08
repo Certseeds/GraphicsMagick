@@ -38,6 +38,10 @@
 <p>2018-04-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dpx.c (ReadDPXImage): When handling the first element of
+a planar DPX, assure that the other channels are
+initialized. Fixes oss-fuzz 7841 &quot;graphicsmagick/coder_DPX_fuzzer:
+Use-of-uninitialized-value in WriteDPXImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/tim.c (ReadTIMImage): Only 4 and 8 bit TIM requires a
 colormap. For other depths, force reading as DirectClass even if
 the TIM file provides a colormap.  Fixes oss-fuzz 7407
