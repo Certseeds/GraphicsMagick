@@ -1280,7 +1280,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             p=pixels;
             for (y=0; y < (long) tile_image->rows; y++)
             {
-              q=SetImagePixels(tile_image,0,y,tile_image->columns,1);
+              q=SetImagePixelsEx(tile_image,0,y,tile_image->columns,1,&image->exception);
               if (q == (PixelPacket *) NULL)
                 break;
               indexes=AccessMutableIndexes(tile_image);
@@ -1327,7 +1327,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 p++;
                 q++;
               }
-              if (!SyncImagePixels(tile_image))
+              if (!SyncImagePixelsEx(tile_image,&image->exception))
                 break;
               if ((tile_image->storage_class == DirectClass) &&
                   (pixmap.bits_per_pixel != 16))
@@ -1340,11 +1340,19 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                     break;
             }
             MagickFreeMemory(pixels);
-            if (jpeg == False)
+            if (tile_image->exception.severity > image->exception.severity)
+              CopyException(&image->exception,&tile_image->exception);
+            if ((tile_image->exception.severity < ErrorException) && (jpeg == False))
               if ((code == 0x9a) || (code == 0x9b) ||
                   (bytes_per_line & 0x8000))
-                (void) CompositeImage(image,CopyCompositeOp,tile_image,
-                                      destination.left,destination.top);
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Composite tile: %lux%lu%+d%+d",
+                                        tile_image->columns, tile_image->rows,
+                                        destination.left, destination.top);
+                  (void) CompositeImage(image,CopyCompositeOp,tile_image,
+                                        destination.left,destination.top);
+                }
             DestroyImage(tile_image);
             tile_image=(Image *) NULL;
             if (destination.bottom != (long) image->rows)

@@ -1,10 +1,15 @@
 2018-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Copy tile exception info to main
+	image and don't composite tile if it has a problem.  Fixes
+	oss-fuzz 7169 "graphicsmagick/enhance_fuzzer:
+	Use-of-uninitialized-value in EnhanceImage". (Credit to OSS-Fuzz)
+
 	* coders/dib.c (ReadDIBImage): Do not increase decode bits/pixel
 	if compression=2, but use it to increase pixel packet size when
 	estimating bytes per line for decode buffer.  Fixes oss-fuzz issue
 	7324 "graphicsmagick/coder_WPG_fuzzer: Use-of-uninitialized-value
-	in ReadDIBImage".
+	in ReadDIBImage". (Credit to OSS-Fuzz)
 
 	* coders/dpx.c (ReadDPXImage): When handling the first element of
 	a planar DPX, assure that the other channels are
