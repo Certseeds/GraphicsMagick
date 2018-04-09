@@ -829,7 +829,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
       (void) strlcpy(p->filename,image->filename,MaxTextExtent);
       (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
       (void) strlcpy(p->magick,image->magick,MaxTextExtent);
-      //image2->depth=image->depth;     // !!!! The image2 depth should not be modified here. Image2 is completely different.
+      /*image2->depth=image->depth;*/   /* !!!! The image2 depth should not be modified here. Image2 is completely different. */
       DestroyBlob(p);
 
       if(p->rows==0 || p->columns==0)

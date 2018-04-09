@@ -1511,17 +1511,21 @@ SVGStartElement(void *context,const xmlChar *name,
             /*
               Per the SVG spec, initialize the MVG coder with the following
               SVG defaults:
-                - fill color:"black"
+                - svg-compliant: "1" (note: internal to GM, not an SVG element)
+                - fill color: "black"
                 - fill-opacity value: "1"
                 - stroke color: "none"
                 - stroke-width value: "1"
                 - stroke-opacity value: "1"
+                - fill-rule value: "nonzero"
             */
+            MVGPrintf(svg_info->file,"svg-compliant 1\n");
             MVGPrintf(svg_info->file,"fill 'black'\n");
             MVGPrintf(svg_info->file,"fill-opacity 1\n");
             MVGPrintf(svg_info->file,"stroke 'none'\n");
             MVGPrintf(svg_info->file,"stroke-width 1\n");
             MVGPrintf(svg_info->file,"stroke-opacity 1\n");
+            MVGPrintf(svg_info->file,"fill-rule nonzero\n");
             break;
           }
         break;

@@ -128,14 +128,13 @@ static MagickPassFail
   DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickBool
-  IsDrawInfoClippingPath(const DrawInfo *),   /* is the DrawInfo a clipping path */
-  IsDrawInfoCompositeMask(const DrawInfo *),  /* is the DrawInfo a composite mask */
-  IsDrawInfoNormal(const DrawInfo *);         /* is the DrawInfo "normal" */
+  IsDrawInfoClippingPath(const DrawInfo *),               /* is DrawInfo a clipping path */
+  IsDrawInfoSVGCompliant(const DrawInfo *),               /* is DrawInfo drawn as SVG compliant */
+  IsDrawInfoSVGCompliantClippingPath(const DrawInfo *);   /* is DrawInfo drawn as SVG compliant clipping path */
 
 static void
-  SetDrawInfoClippingPath(DrawInfo *),        /* mark DrawInfo as a clipping path */
-  SetDrawInfoCompositeMask(DrawInfo *),       /* mark DrawInfo as a composite mask */
-  SetDrawInfoNormal(DrawInfo *);              /* mark DrawInfo as "normal" */
+  SetDrawInfoClippingPath(DrawInfo *, MagickBool ClippingPath),   /* tag DrawInfo as clipping path or not */
+  SetDrawInfoSVGCompliant(DrawInfo *, MagickBool SVGCompliant);   /* tag DrawInfo as SVG compliant or not */
 
 static unsigned long
   TracePath(Image *image, PrimitiveInfo *,const char *);
@@ -268,7 +267,7 @@ CloneDrawInfo(const ImageInfo *image_info,const DrawInfo *draw_info)
   clone_info->render=draw_info->render;
   clone_info->opacity=draw_info->opacity;
   clone_info->element_reference=draw_info->element_reference;
-  clone_info->flags=draw_info->flags;   /* now used for clipping path/composite mask tag */
+  clone_info->flags=draw_info->flags;   /* contains SVG compliance bit, etc. */
   return(clone_info);
 }
 
@@ -1468,10 +1467,14 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
     To conform with the spec, we make sure that fill color (set above), stroke color,
     stroke width, and group/global opacity are set to appropriate values.
   */
-  (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);  /* SVG default */
-  clone_info->stroke_width = 0.0;   /* SVG default */
-  clone_info->opacity = OpaqueOpacity;  /* SVG default */
-  SetDrawInfoClippingPath(clone_info);  /* so changes to fill, etc. will be ignored */
+  SetDrawInfoClippingPath(clone_info,MagickTrue);
+  if  ( IsDrawInfoSVGCompliant(clone_info) )
+    {
+      /* changes to fill, etc. will be ignored */
+      (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);  /* SVG default */
+      clone_info->stroke_width = 0.0;   /* SVG default */
+      clone_info->opacity = OpaqueOpacity;  /* SVG default */
+    }
 
   MagickFreeMemory(clone_info->clip_path);
   status&=DrawImage(image->clip_mask,clone_info);
@@ -1480,7 +1483,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
   return(status);
 }
-
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -2335,7 +2338,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("fill",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to fill color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
@@ -2386,7 +2389,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to fill opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
@@ -2573,7 +2576,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             double opacity,opacityGroupOld,opacityGroupNew;
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to group/global opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if (MagickAtoFChk(token,&opacity) != MagickPass)
@@ -3049,7 +3052,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to stroke color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
@@ -3203,7 +3206,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to stroke opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
@@ -3232,12 +3235,25 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("stroke-width",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            if  ( IsDrawInfoClippingPath(graphic_context[n]) )
+            if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;	/* if drawing clip path, ignore changes to stroke width */
             if ((MagickAtoFChk(token,&graphic_context[n]->stroke_width)
                  == MagickFail) ||
                 (graphic_context[n]->stroke_width < 0.0))
               status=MagickFail;
+            break;
+          }
+        if (LocaleCompare("svg-compliant",keyword) == 0)
+          {
+            /* mark the DrawInfo as being drawn SVG compliant or not */
+            unsigned int SVGCompliant;
+            MagickGetToken(q,&q,token,token_max_length);
+            if (MagickAtoUIChk(token,&SVGCompliant) != MagickPass)
+              {
+                status=MagickFail;
+              }
+            else
+              SetDrawInfoSVGCompliant(graphic_context[n],SVGCompliant?MagickTrue:MagickFalse);
             break;
           }
         status=MagickFail;
@@ -5353,7 +5369,8 @@ GetDrawInfo(const ImageInfo *image_info,DrawInfo *draw_info)
     draw_info->server_name=AllocateString(clone_info->server_name);
   draw_info->render=True;
   draw_info->signature=MagickSignature;
-  SetDrawInfoNormal(draw_info);
+  SetDrawInfoSVGCompliant(draw_info,MagickFalse);
+  SetDrawInfoClippingPath(draw_info,MagickFalse);
   DestroyImageInfo(clone_info);
 }
 
@@ -6807,44 +6824,37 @@ TraceStrokePolygon(const DrawInfo *draw_info,
   return(stroke_polygon);
 }
 
-/* is the DrawInfo a clipping path */
+/* is the DrawInfo drawn as SVG compliant */
 static MagickBool
 IsDrawInfoClippingPath(const DrawInfo * draw_info)
 {
-  return((draw_info->flags&0x3U)==1);
+  return(((draw_info->flags&0x2U)==2U)?MagickTrue:MagickFalse);
 }
 
-/* is the DrawInfo a composite mask */
+/* is the DrawInfo drawn as SVG compliant */
 static MagickBool
-IsDrawInfoCompositeMask(const DrawInfo * draw_info)
+IsDrawInfoSVGCompliant(const DrawInfo * draw_info)
 {
-  return((draw_info->flags&0x3U)==2);
+  return(((draw_info->flags&0x1U)==1U)?MagickTrue:MagickFalse);
 }
 
-/* is the DrawInfo "normal" */
+/* is the DrawInfo drawn as an SVG compliant clipping path */
 static MagickBool
-IsDrawInfoNormal(const DrawInfo * draw_info)
+IsDrawInfoSVGCompliantClippingPath(const DrawInfo * draw_info)
 {
-  return((draw_info->flags&0x3U)==0);
+  return(((draw_info->flags&0x3U)==3U)?MagickTrue:MagickFalse);
 }
 
-/* tag the DrawInfo as a clipping path */
+/* tag the DrawInfo as being a clipping path or not */
 static void
-SetDrawInfoClippingPath(DrawInfo * draw_info)
+SetDrawInfoClippingPath(DrawInfo * draw_info, MagickBool ClippingPath)
 {
-  draw_info->flags = (draw_info->flags & (~0x3U)) | 1;
+  draw_info->flags = (draw_info->flags & (~0x2U)) | (ClippingPath?2U:0U);
 }
 
-/* tag the DrawInfo as a composite mask */
+/* tag the DrawInfo as being drawn as SVG compliant or not */
 static void
-SetDrawInfoCompositeMask(DrawInfo * draw_info)
+SetDrawInfoSVGCompliant(DrawInfo * draw_info, MagickBool SVGCompliant)
 {
-  draw_info->flags = (draw_info->flags & (~0x3U)) | 2;
-}
-
-/* tag the DrawInfo as "normal" */
-static void
-SetDrawInfoNormal(DrawInfo * draw_info)
-{
-  draw_info->flags = (draw_info->flags & (~0x3U));
+  draw_info->flags = (draw_info->flags & (~0x1U)) | (SVGCompliant?1U:0U);
 }

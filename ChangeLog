@@ -1,3 +1,35 @@
+2018-04-09  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* OVERVIEW: Change set 9aaeeca0224c modified the drawing
+	of clipping paths to conform to the SVG spec.  This change
+	set restores the previous behavior for non-SVG clients of
+	render.c, while still satisfying the SVG spec for SVG clients.
+
+	* magick/render.h (DrawInfo): Added a bit field in member
+	"flags" to indicate that drawing should be SVG compliant.
+
+	* magick/render.c (DrawImage): Now recognizes keyword
+	"svg-compliant", and tags DrawInfo accordingly.  This
+	allows for existing features in render.c to be changed
+	to comply with the SVG spec without impacting the previous
+	behavior expected by non-SVG clients.
+
+	* magick/render.c (DrawImage): Now uses DrawInfo "flags"
+	bit for SVG compliance in conjunction with "flags" bit
+	for "clipping path" to determine when to ignore changes
+	to fill color, stroke color, etc.  This restores the
+	previous behavior for clipping paths for non-SVG clients.
+
+	* coders/svg.c (SVGStartElement): The initial set of
+	MVG commands for rendering an SVG file now includes
+	new keyword "svg-compliant" (to indicate that certain
+	graphical elements should be drawn according to the
+	SVG spec), and includes an intialization of the SVG
+	"fill-rule" to "nonzero" (the SVG default) instead of
+	the internally initialized value of "evenodd".
+
+	* coders/wpg.c: Fixed C99 "//" comments.
+
 2018-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Copy tile exception info to main

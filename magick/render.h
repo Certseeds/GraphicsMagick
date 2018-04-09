@@ -267,15 +267,23 @@ typedef struct _DrawInfo
   unsigned int
     render,
     /*
-      Bits 0 and 1 of flags will be used to indicate if this DrawInfo is:
+      Bit fields in flags:
 
-      0:  normal (for lack of a better term)
-      1:  clipping path
-      2:  composite mask
+        Bit 0: should this DrawInfo should be drawn as:
+          0:  normal (original behavior)
+          1:  SVG compliant
+        Bit 1: is the DrawInfo a clipping path:
+          0:  is not a clipping path
+          1:  is a clipping path
 
-      Access to these bits should be through functions SetDrawInfoNormal(), SetDrawInfoClippinpgPath(),
-      SetDrawInfoCompositeMask(), IsDrawInfoNormal(), IsDrawInfoClippingPath(), and
-      IsDrawInfoCompositeMask().
+      Access to these bits should be through functions (defined in render.c):
+        IsDrawInfoClippingPath()
+        IsDrawInfoSVGCompliant()
+        IsDrawInfoSVGCompliantClippingPath()
+        SetDrawInfoClippingPath()
+        SetDrawInfoSVGCompliant()
+
+      At the present time the SVG compliance bit only affects how clipping paths are drawn.
     */
     flags;  /* previously "unused1" */
 
