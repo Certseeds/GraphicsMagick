@@ -1178,7 +1178,7 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
       indexes=AccessMutableIndexes(image);
       if (palm_header.bits_per_pixel == 16)
         {
-          if (image->columns > 2*palm_header.bytes_per_row)
+          if (image->columns > 2U*palm_header.bytes_per_row)
             ThrowPALMReaderException(CorruptImageError,CorruptImage,image);
           for (x=0; x < (long) image->columns; x++)
             {
