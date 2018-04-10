@@ -379,6 +379,7 @@ return RetVal;
     if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
     x=0; \
     y++; \
+    if(y>=image->rows) break; \
     } \
 }
 

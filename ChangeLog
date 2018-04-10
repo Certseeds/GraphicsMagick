@@ -1,3 +1,9 @@
+2018-04-08  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Stop reading when last row is reached.
+	This should stop oss-fuzz 7528 thanks to oss-fuzz.
+
+
 2018-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xcf.c (ReadXCFImage): Fix use of uninitialized data in
