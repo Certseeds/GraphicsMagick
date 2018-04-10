@@ -1,3 +1,10 @@
+2018-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xcf.c (ReadXCFImage): Fix use of uninitialized data in
+	magick header string for runt file.  Fixes oss-fuzz 7521
+	"graphicsmagick/coder_XCF_fuzzer: Use-of-uninitialized-value in
+	LocaleNCompare". (Credit to OSS-Fuzz).
+
 2018-04-09  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* OVERVIEW: Change set 9aaeeca0224c modified the drawing

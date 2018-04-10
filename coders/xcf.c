@@ -1390,7 +1390,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   count=ReadBlob(image,14,(char *) magick);
-  if ((count == 0) ||
+  if ((count != 14) ||
       (LocaleNCompare((char *) magick,"gimp xcf",8) != 0))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   /* clear the docinfo stuff */
@@ -1840,6 +1840,15 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if ( number_layers == 1 )
         {
           /* composite the layer data onto the main image & then dispose the layer */
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Composite Layer[0]: %lux%lu%+d%+d",
+                                    layer_info[0].image->columns,
+                                    layer_info[0].image->rows,
+                                    layer_info[0].offset_x,
+                                    layer_info[0].offset_y);
+          /* FIXME: oss-fuzz-7430 base image has uninitialized pixels if there were no tiles!
+             SetImage(image,OpaqueOpacity); */
           (void) CompositeImage(image, OverCompositeOp, layer_info[0].image,
                                 layer_info[0].offset_x, layer_info[0].offset_y );
           DestroyImage( layer_info[0].image );
@@ -1853,15 +1862,25 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             long
               j;
 
-            for (j=number_layers-1; j>=0; j--) {
-              /* BOGUS: need to consider layer blending modes!! */
-              if ( layer_info[j].visible ) { /* only visible ones, please! */
-                CompositeImage(image, OverCompositeOp, layer_info[j].image,
-                               layer_info[j].offset_x, layer_info[j].offset_y );
-                DestroyImage( layer_info[j].image );
-                layer_info[j].image = (Image *) NULL;
+            for (j=number_layers-1; j>=0; j--)
+              {
+                /* BOGUS: need to consider layer blending modes!! */
+                if ( layer_info[j].visible )  /* only visible ones, please! */
+                  {
+                    if (image->logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Composite Layer[%lu]: %lux%lu%+d%+d",
+                                            j,
+                                            layer_info[j].image->columns,
+                                            layer_info[j].image->rows,
+                                            layer_info[j].offset_x,
+                                            layer_info[j].offset_y);
+                    CompositeImage(image, OverCompositeOp, layer_info[j].image,
+                                   layer_info[j].offset_x, layer_info[j].offset_y );
+                    DestroyImage( layer_info[j].image );
+                    layer_info[j].image = (Image *) NULL;
+                  }
               }
-            }
           }
 #else
           {
@@ -1870,6 +1889,14 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               j;
 
             /* first we copy the last layer on top of the main image */
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Composite Layer[%lu]: %lux%lu%+d%+d",
+                                    number_layers-1,
+                                    layer_info[number_layers-1].image->columns,
+                                    layer_info[number_layers-1].image->rows,
+                                    layer_info[number_layers-1].offset_x,
+                                    layer_info[number_layers-1].offset_y);
             (void) CompositeImage(image, CopyCompositeOp, layer_info[number_layers-1].image,
                                   layer_info[number_layers-1].offset_x,
                                   layer_info[number_layers-1].offset_y );

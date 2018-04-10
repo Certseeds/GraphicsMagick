@@ -35,6 +35,44 @@
 <div class="document">
 
 
+<p>2018-04-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/xcf.c (ReadXCFImage): Fix use of uninitialized data in
+magick header string for runt file.  Fixes oss-fuzz 7521
+&quot;graphicsmagick/coder_XCF_fuzzer: Use-of-uninitialized-value in
+LocaleNCompare&quot;. (Credit to OSS-Fuzz).</li>
+</ul>
+</blockquote>
+<p>2018-04-09  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>OVERVIEW: Change set 9aaeeca0224c modified the drawing
+of clipping paths to conform to the SVG spec.  This change
+set restores the previous behavior for non-SVG clients of
+render.c, while still satisfying the SVG spec for SVG clients.</li>
+<li>magick/render.h (DrawInfo): Added a bit field in member
+&quot;flags&quot; to indicate that drawing should be SVG compliant.</li>
+<li>magick/render.c (DrawImage): Now recognizes keyword
+&quot;svg-compliant&quot;, and tags DrawInfo accordingly.  This
+allows for existing features in render.c to be changed
+to comply with the SVG spec without impacting the previous
+behavior expected by non-SVG clients.</li>
+<li>magick/render.c (DrawImage): Now uses DrawInfo &quot;flags&quot;
+bit for SVG compliance in conjunction with &quot;flags&quot; bit
+for &quot;clipping path&quot; to determine when to ignore changes
+to fill color, stroke color, etc.  This restores the
+previous behavior for clipping paths for non-SVG clients.</li>
+<li>coders/svg.c (SVGStartElement): The initial set of
+MVG commands for rendering an SVG file now includes
+new keyword &quot;svg-compliant&quot; (to indicate that certain
+graphical elements should be drawn according to the
+SVG spec), and includes an intialization of the SVG
+&quot;fill-rule&quot; to &quot;nonzero&quot; (the SVG default) instead of
+the internally initialized value of &quot;evenodd&quot;.</li>
+<li>coders/wpg.c: Fixed C99 &quot;//&quot; comments.</li>
+</ul>
+</blockquote>
 <p>2018-04-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
