@@ -1,5 +1,10 @@
 2018-04-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (ReadPDBImage): Add more EOF checks to avoid benign
+	use of uninitialized data.  Fixes oss-fuzz 7545
+	"graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in
+	ReadPDBImage".
+
 	* coders/wpg.c (InsertRow, UnpackWPGRaster): x & y should be
 	'unsigned long' to match type used by pixel cache APIs and image
 	rows/columns.

@@ -343,8 +343,10 @@ static unsigned int IsPDB(const unsigned char *magick,const size_t length)
 
 static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
+  int
+    record_type;
+
   char
-    record_type,
     tag[3];
 
   Image
@@ -416,8 +418,9 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   pdb_info.modify_number=ReadBlobMSBLong(image);
   pdb_info.application_info=ReadBlobMSBLong(image);
   pdb_info.sort_info=ReadBlobMSBLong(image);
-  (void) ReadBlob(image,4,pdb_info.type);
-  (void) ReadBlob(image,4,pdb_info.id);
+  if ((ReadBlob(image,4,pdb_info.type) != 4) ||
+      (ReadBlob(image,4,pdb_info.id) != 4))
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   pdb_info.seed=ReadBlobMSBLong(image);
   pdb_info.next_record=ReadBlobMSBLong(image);
   pdb_info.number_records=ReadBlobMSBShort(image);
@@ -432,7 +435,8 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read record header.
   */
   offset=(long) ReadBlobMSBLong(image);
-  (void) ReadBlob(image,3,tag);
+  if (ReadBlob(image,3,tag) != 3)
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   record_type=ReadBlobByte(image);
   if (((record_type != 0x00) && (record_type != 0x01)) ||
       (memcmp(tag,"\x40\x6f\x80",3) != 0))

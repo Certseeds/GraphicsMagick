@@ -38,6 +38,10 @@
 <p>2018-04-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/pdb.c (ReadPDBImage): Add more EOF checks to avoid benign
+use of uninitialized data.  Fixes oss-fuzz 7545
+&quot;graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in
+ReadPDBImage&quot;.</li>
 <li>coders/wpg.c (InsertRow, UnpackWPGRaster): x &amp; y should be
 'unsigned long' to match type used by pixel cache APIs and image
 rows/columns.</li>
