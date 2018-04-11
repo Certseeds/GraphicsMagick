@@ -1,3 +1,9 @@
+2018-04-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (InsertRow, UnpackWPGRaster): x & y should be
+	'unsigned long' to match type used by pixel cache APIs and image
+	rows/columns.
+
 2018-04-08  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Stop reading when last row is reached.

@@ -253,9 +253,9 @@ static void Rd_WP_DWORD(Image *image,unsigned long *d)
 }
 
 
-static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
+static MagickPassFail InsertRow(unsigned char *p,unsigned long y, Image *image, int bpp)
 {
-  long
+  unsigned long
     x;
   register PixelPacket
     *q;
@@ -294,7 +294,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
           return MagickFail;
           }
         x = 0;
-        while(x < (long)image->columns-3)
+        while(x < image->columns-3)
           {
             index = (IndexPacket)((*p >> 6) & 0x3);
             VerifyColormapIndex(image,index);
@@ -314,19 +314,19 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
             *q++ = image->colormap[index];
             p++;
           }
-        if(x < (long) image->columns)
+        if(x < image->columns)
           {
             index = (IndexPacket) ((*p >> 6) & 0x3);
             VerifyColormapIndex(image,index);
             indexes[x++] = index;
             *q++=image->colormap[index];
-            if(x < (long) image->columns)
+            if(x < image->columns)
               {
                 index = (IndexPacket) ((*p >> 4) & 0x3);
                 VerifyColormapIndex(image,index);
                 indexes[x++] = index;
                 *q++=image->colormap[index];
-                if(x < (long) image->columns)
+                if(x < image->columns)
                   {
                     index = (IndexPacket)((*p >> 2) & 0x3);
                     VerifyColormapIndex(image,index);
@@ -355,7 +355,7 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
 
   if(RetVal==MagickFail)
   {
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp);
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %lu, bpp: %d", y, bpp);
     return MagickFail;
   }
 
@@ -376,7 +376,7 @@ return RetVal;
   x++; \
   if((long) x>=ldblk) \
   { \
-    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) RetVal=-6; \
     x=0; \
     y++; \
     if(y>=image->rows) break; \
@@ -388,9 +388,11 @@ return RetVal;
                 -5 - blob read error; -6 - row insert problem  */
 static int UnpackWPGRaster(Image *image,int bpp)
 {
-  int
+  unsigned long
     x,
-    y,
+    y;
+
+  int
     i;
   int RetVal = 0;
 
@@ -413,7 +415,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   if(BImgBuff==NULL) return(-2);
   (void) memset(BImgBuff,0,(size_t) ldblk);
 
-  while(y<(long) image->rows)
+  while(y<image->rows)
     {
       i = ReadBlobByte(image);
       if(i==EOF)
@@ -464,7 +466,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
           for(i=0; i<(int)RunCount; i++)
             {		/* Here I need to duplicate previous row RUNCOUNT* */
 			/* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
-              if(y>=(long)image->rows)
+              if(y>=image->rows)
                 {
                   MagickFreeMemory(BImgBuff);
                   return(-4);
