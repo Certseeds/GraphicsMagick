@@ -1,5 +1,10 @@
 2018-04-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadDPXImage): Add more header validations.
+	Always assure that scanline is initialized for Luma channel. Fixes
+	oss-fuzz 7544 "graphicsmagick/coder_DPX_fuzzer:
+	Use-of-uninitialized-value in WriteDPXImage". (Credit to OSS-Fuzz)
+
 	* coders/pdb.c (ReadPDBImage): Add more EOF checks to avoid benign
 	use of uninitialized data.  Fixes oss-fuzz 7545
 	"graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in

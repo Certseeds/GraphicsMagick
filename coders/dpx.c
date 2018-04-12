@@ -1927,6 +1927,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       colorimetric=ColorimetricUserDefined;
 
     transfer_characteristic=TransferCharacteristicUserDefined;
+    if (image->logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Number of elements: %u",
                             dpx_image_info.elements);
@@ -1953,8 +1954,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (bits_per_sample != 12) &&
             (bits_per_sample != 16))
           {
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Unsupported bits per sample %u", bits_per_sample);
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unsupported bits per sample %u", bits_per_sample);
             ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
           }
         max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
@@ -2032,9 +2034,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           }
       }
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Maximum number of bits per sample in any element: %u",
-                          max_bits_per_sample);
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Maximum number of bits per sample in any element: %u",
+                            max_bits_per_sample);
     if (has_cbcr)
       {
         image->colorspace=Rec709YCbCrColorspace;
@@ -2091,28 +2094,26 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Verify that file size claimed by header is matched by file size
       */
-      if ((file_size = GetBlobSize(image)) != 0)
+      file_size = GetBlobSize(image);
+      if (file_size < dpx_file_info.file_size)
         {
-          if (file_size < dpx_file_info.file_size)
-            {
-              ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-          if (file_size < dpx_file_info.image_data_offset)
-            {
-              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
-          if (file_size < dpx_file_info.generic_section_length)
-            {
-              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
-          if (file_size < dpx_file_info.industry_section_length)
-            {
-              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
-          if (file_size < dpx_file_info.user_defined_length)
-            {
-              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
+          ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
+      if (file_size < dpx_file_info.image_data_offset)
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (file_size < dpx_file_info.generic_section_length)
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (file_size < dpx_file_info.industry_section_length)
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (file_size < dpx_file_info.user_defined_length)
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
         }
 
       /*
@@ -2134,8 +2135,27 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (packing_method != PackingMethodWordsFillLSB) &&
               (packing_method != PackingMethodWordsFillMSB))
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Unsupported packing method %u", packing_method);
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unsupported packing method %u", packing_method);
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((dpx_image_info.element_info[element].data_offset & 0xFFFFFFFF) >=
+              dpx_file_info.file_size)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Element offset is outside the bounds of"
+                                      " file size indicated by header");
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((dpx_image_info.element_info[element].data_offset & 0xFFFFFFFF) >=
+              file_size)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Element offset is outside the bounds of"
+                                      " actual file size");
               ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
             }
           samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
@@ -2144,10 +2164,11 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     bits_per_sample,packing_method);
           file_size_estimate += element_size;
         }
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "File size estimate %" MAGICK_OFF_F
-                            "u bytes (have %" MAGICK_OFF_F "u bytes)",
-                            file_size_estimate, file_size);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "File size estimate %" MAGICK_OFF_F
+                              "u bytes (have %" MAGICK_OFF_F "u bytes)",
+                              file_size_estimate, file_size);
       if ((file_size_estimate <= 0) || (file_size < file_size_estimate))
         ThrowDPXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     }
@@ -2213,7 +2234,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickBool
         swap_word_datums = MagickFalse;
 
-      DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
+      if (image->logging)
+        DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
       /*
         Data sign, (0 = unsigned; 1 = signed)
       */
@@ -2247,6 +2269,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /* Verify that we reached our offset objective */
           if ( pixels_offset != offset)
             ThrowDPXReaderException(BlobError,UnableToSeekToOffset,image);
+          if (EOFBlob(image))
+            ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
       bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
       element_descriptor=(DPXImageElementDescriptor)
@@ -2550,11 +2574,11 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 case ImageElementUnspecified:
                 case ImageElementLuma:
+                  if (element == 0)
+                    (void) memset(q,0,image->columns*sizeof(PixelPacket));
                   if (IsYCbCrColorspace(image->colorspace))
                     {
                       /* Video Luma (planar) */
-                      if (element == 0)
-                        (void) memset(q,0,image->columns*sizeof(PixelPacket));
                       for (x=image->columns; x != 0; x--)
                         {
                           SetRedSample(q,map_Y[*samples_itr++]);
@@ -4201,7 +4225,8 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
                            reported_file_offset);
           }
       }
-      DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
+      if (image->logging)
+        DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
 
       bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
       transfer_characteristic=(DPXTransferCharacteristic)
