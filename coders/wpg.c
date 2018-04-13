@@ -294,7 +294,7 @@ static MagickPassFail InsertRow(unsigned char *p,unsigned long y, Image *image, 
           return MagickFail;
           }
         x = 0;
-        while(x < image->columns-3)
+        while(x+3 < image->columns)
           {
             index = (IndexPacket)((*p >> 6) & 0x3);
             VerifyColormapIndex(image,index);
