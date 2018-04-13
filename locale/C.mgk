@@ -808,6 +808,12 @@
       <Message name="UnableToSetClipMask">
         Unable to set clip mask
       </Message>
+      <Message name="UnableToGetCompositeMask">
+        Unable to get composite mask
+      </Message>
+      <Message name="UnableToSetCompositeMask">
+        Unable to set composite mask
+      </Message>
       <Message name="UnableToShearImage">
         unable to shear image
       </Message>

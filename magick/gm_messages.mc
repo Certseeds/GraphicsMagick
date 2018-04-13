@@ -1463,6 +1463,12 @@ Unable to get clip mask
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnableToGetCompositeMask
+Language        = English
+Unable to get composite mask
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorUnableToHandleImageChannel
 Language        = English
 unable to handle image channel
@@ -1490,6 +1496,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorUnableToSetClipMask
 Language        = English
 Unable to set clip mask
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnableToSetCompositeMask
+Language        = English
+Unable to set composite mask
 .
 
 MessageId       = +1

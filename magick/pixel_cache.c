@@ -1442,6 +1442,9 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
     *image_nexus,
     *mask_nexus;
 
+  Image
+    *clip_mask;
+
   /*
     Apply clip mask.
   */
@@ -1459,7 +1462,8 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
                   nexus_info->region.width,nexus_info->region.height,
                   image_nexus,&image->exception);
   q=nexus_info->pixels;
-  r=AcquireCacheNexus(image->clip_mask,nexus_info->region.x,nexus_info->region.y,
+  clip_mask = *ImageGetClipMask(image);
+  r=AcquireCacheNexus(clip_mask,nexus_info->region.x,nexus_info->region.y,
                       nexus_info->region.width,nexus_info->region.height,mask_nexus,
                       &image->exception);
   if ((p != (PixelPacket *) NULL) && (r != (const PixelPacket *) NULL))
@@ -1475,6 +1479,162 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
               q->blue=p->blue;
             if (r->opacity == TransparentOpacity)
               q->opacity=p->opacity;
+            p++;
+            q++;
+            r++;
+          }
+      }
+  DestroyCacheNexus(image_nexus);
+  DestroyCacheNexus(mask_nexus);
+  return((p != (PixelPacket *) NULL) && (q != (PixelPacket *) NULL));
+}
+
+/* code for CompositeCacheNexus() below was cloned/copied from ClipCacheNexus() */
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   C o m p o s i t e C a c h e N e x u s                                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  CompositeCacheNexus() composites the image pixels of the in-memory or disk cache as
+%  defined by the image composite mask.  The method returns MagickPass if the
+%  pixel region is composited, otherwise MagickFail.
+%
+%  The format of the CompositeCacheNexus() method is:
+%
+%      MagickPassFail CompositeCacheNexus(Image *image,const NexusInfo *nexus_info)
+%
+%  A description of each parameter follows:
+%
+%    o status: CompositeCacheNexus() returns MagickPass if the image pixels are
+%      composited, otherwise MagickFail.
+%
+%    o image: The image.
+%
+%    o nexus_info: specifies which cache nexus to composite.
+%
+%
+*/
+static MagickPassFail
+CompositeCacheNexus(Image *image,const NexusInfo *nexus_info)
+{
+  long
+    y;
+
+  register const PixelPacket
+    *r; /* the mask */
+
+  register long
+    x;
+
+  register PixelPacket
+    *p,	/* the background pixels */
+    *q; /* the foreground pixels, also output */
+
+  NexusInfo
+    *image_nexus,
+    *mask_nexus;
+
+  Image
+    *composite_mask;
+
+  /*
+    Apply composite mask.
+  */
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  image_nexus=AllocateCacheNexus();
+  mask_nexus=AllocateCacheNexus();
+  if ((image_nexus == (NexusInfo *) NULL) || (mask_nexus == (NexusInfo *) NULL))
+    {
+      DestroyCacheNexus(image_nexus);
+      DestroyCacheNexus(mask_nexus);
+      ThrowBinaryException(CacheError,UnableToGetCacheNexus,image->filename);
+    }
+  /* get background pixels */
+  p=GetCacheNexus(image,nexus_info->region.x,nexus_info->region.y,
+                  nexus_info->region.width,nexus_info->region.height,
+                  image_nexus,&image->exception);
+  /* get foreground pixels */
+  q=nexus_info->pixels;
+  /* get composite mask */
+  composite_mask = *ImageGetCompositeMask(image);
+  r=AcquireCacheNexus(composite_mask,nexus_info->region.x,nexus_info->region.y,
+                      nexus_info->region.width,nexus_info->region.height,mask_nexus,
+                      &image->exception);
+  if ((p != (PixelPacket *) NULL) && (r != (const PixelPacket *) NULL))
+    for (y=0; y < (long) nexus_info->region.height; y++)
+      {
+        for (x=0; x < (long) nexus_info->region.width; x++)
+          {
+            /*
+              The mask has already been converted to a luminance value, so using just the
+              red component should do.  Also, the "fill-opacity" was integrated into the
+              RGB components when the mask was rendered, so we do not do it again here.
+            */
+            unsigned int alpha = r->red;
+            /*
+              If the alpha value == MaxRGB (opaque), we do nothing, since the foreground
+              value is already in the output "q".  Otherwise, ...
+            */
+            if  ( alpha == 0 )
+              {/*mask fully transparent, store background*/
+                q->red = p->red;
+                q->green = p->green;
+                q->blue = p->blue;
+                q->opacity = p->opacity;
+              }/*mask fully transparent, store background*/
+            else if  ( alpha < MaxRGB )
+              {/*alpha not completely opaque, composite*/
+                /*
+                  Notes:
+                    - q is the fg, p is the bg
+                    - The fg and bg pixel values are NOT premultiplied by their
+                      alpha values.  However, in this case it doesn't matter because
+                      the mask alpha value is used to simply mix the two pixel values
+                      together according to:
+
+                        output = alpha * fg + (1 - alpha) * bg
+                               = alpha * (fg - bg) + bg
+
+                    - The fg and bg alpha values are stored as 0 == opaque, MaxRGB ==
+                      transparent (opposite the conventional usage), but if you work
+                      through the algebra it turns out the same equation works here too.
+                */
+                double AlphaNorm = alpha / MaxRGBDouble;
+                double aOut = MaxRGBDouble - (AlphaNorm * (q->opacity - p->opacity) + p->opacity);
+                double rOut,gOut,bOut;
+                if  ( aOut <= 0.0 )
+                  rOut = gOut = bOut = aOut = 0.0;
+                else if  ( aOut >= MaxRGBDouble )
+                  {
+                    rOut = AlphaNorm * (q->red - p->red) + p->red;
+                    gOut = AlphaNorm * (q->green - p->green) + p->green;
+                    bOut = AlphaNorm * (q->blue - p->blue) + p->blue;
+                    aOut = MaxRGBDouble;
+                  }
+                else
+                  {
+                    /* ReScale makes RGB be not alpha pre-multipled */
+                    double ReScale = MaxRGBDouble / aOut;
+                    rOut = ReScale * (AlphaNorm * (q->red - p->red) + p->red);
+                    gOut = ReScale * (AlphaNorm * (q->green - p->green) + p->green);
+                    bOut = ReScale * (AlphaNorm * (q->blue - p->blue) + p->blue);
+                    if  ( rOut > MaxRGBDouble )  rOut = MaxRGBDouble;
+                    if  ( gOut > MaxRGBDouble )  gOut = MaxRGBDouble;
+                    if  ( bOut > MaxRGBDouble )  bOut = MaxRGBDouble;
+                  }
+                q->red = RoundDoubleToQuantum(rOut);
+                q->green = RoundDoubleToQuantum(gOut);
+                q->blue = RoundDoubleToQuantum(bOut);
+                q->opacity = MaxRGB - (Quantum) RoundDoubleToQuantum(aOut);
+              }/*alpha not completely opaque, composite*/
             p++;
             q++;
             r++;
@@ -1543,7 +1703,10 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
   if (cache_info->length != clone_info->length)
     {
       Image
-        *clip_mask;
+        *clip_mask,
+        *composite_mask,
+        **ppclone_clip_mask,
+        **ppclone_composite_mask;
 
       ViewInfo
         *clone_view,
@@ -1568,8 +1731,12 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
         Unoptimized pixel cache clone.
       */
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),"unoptimized clone");
-      clip_mask=clone_image->clip_mask;
-      clone_image->clip_mask=(Image *) NULL;
+      ppclone_clip_mask = ImageGetClipMask(clone_image);
+      clip_mask=*ppclone_clip_mask;
+      *ppclone_clip_mask=(Image *) NULL;
+      ppclone_composite_mask = ImageGetCompositeMask(clone_image);
+      composite_mask=*ppclone_composite_mask;
+      *ppclone_composite_mask=(Image *) NULL;
       length=Min(image->columns,clone_image->columns);
       y=0;
       image_view=OpenCacheView(image);
@@ -1596,7 +1763,8 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
                 break;
             }
         }
-      clone_image->clip_mask=clip_mask;
+      *ImageGetClipMask(clone_image)=clip_mask;
+      *ImageGetCompositeMask(clone_image)=composite_mask;
       CloseCacheView(image_view);
       CloseCacheView(clone_view);
       return(y == (long) image->rows);
@@ -4230,7 +4398,8 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
 #endif
   if ((cache_info->type != PingCache) &&
       (cache_info->type != DiskCache) &&
-      (image->clip_mask == (const Image *) NULL) &&
+      (*ImageGetClipMask(image) == (const Image *) NULL) &&
+      (*ImageGetCompositeMask(image) == (const Image *) NULL) &&
       (region->x >=0) &&
       (region->y >= 0))
     {
@@ -4383,9 +4552,18 @@ SyncCacheNexus(Image *image,const NexusInfo *nexus_info,
     }
   else
     {
-      if (image->clip_mask != (Image *) NULL)
+      if (*ImageGetClipMask(image) != (Image *) NULL)
         if (!ClipCacheNexus(image,nexus_info))
           status=MagickFail;
+    /* added mask */
+    if  ( status != MagickFail )
+      {
+        if (*ImageGetCompositeMask(image) != (Image *) NULL)
+          {
+            if (!CompositeCacheNexus(image,nexus_info))
+              status=MagickFail;
+          }
+      }
 
       if (status != MagickFail)
         if ((status=WriteCachePixels(cache_info,nexus_info)) == MagickFail)

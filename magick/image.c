@@ -97,6 +97,33 @@ MagickParseSubImageSpecification(const char *subimage_spec,
                                  unsigned long *subrange_ptr,
                                  MagickBool allow_geometry);
 
+/*
+  ImageExtra allows for expansion of Image without increasing its
+  size.  The internals are defined only in this source file.  Clients
+  outside of this source file can access the internals via the provided
+  access functions (see below).
+*/
+typedef struct _ImageExtra
+{
+  Image
+    *clip_mask,       /* Private, clipping mask to apply when updating pixels */
+    *composite_mask;  /* Private, compositing mask to apply when updating pixels */
+} ImageExtra;
+
+/* provide public access to the clip_mask member of Image */
+MagickExport Image **
+ImageGetClipMask(const Image * image)
+{
+  return(&image->extra->clip_mask);
+}
+
+/* provide public access to the composite_mask member of Image */
+MagickExport Image **
+ImageGetCompositeMask(const Image * image)
+{
+  return(&image->extra->composite_mask);
+}
+
 /* Round floating value to an integer */
 #define RndToInt(value) ((int)((value)+0.5))
 
@@ -330,6 +357,9 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   Image
     *allocate_image;
 
+  ImageExtra
+    *ImgExtra;
+
   /*
     Allocate image structure.
   */
@@ -338,6 +368,14 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateImage);
   (void) memset(allocate_image,0,sizeof(Image));
+
+  /* allocate and initialize struct for extra Image members */
+  ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
+  if  ( ImgExtra == (ImageExtra *) NULL )
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,UnableToAllocateImage);
+  memset(ImgExtra,0,sizeof(*ImgExtra));
+  allocate_image->extra = ImgExtra;
+
   /*
     Initialize Image structure.
   */
@@ -880,7 +918,147 @@ MagickExport MagickPassFail ClipPathImage(Image *image,const char *pathname,
   DestroyImage(clip_mask);
   return status;
 }
+
+/* code below for CompositePathImage() cloned/modified from ClipPathImage() */
 
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   C o m p o s i t e P a t h I m a g e                                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  CompositePathImage() sets the image composite mask based any compositing path information
+%  if it exists.
+%
+%  The format of the CompositePathImage method is:
+%
+%      unsigned int CompositePathImage(Image *image,const char *pathname,
+%        const unsigned int inside)
+%
+%  A description of each parameter follows:
+%
+%    o image: The image.
+%
+%    o pathname: name of compositing path resource. If name is preceded by #, use
+%      compositing path numbered by name.
+%
+%    o inside: if non-zero, later operations take effect inside compositing path.
+%      Otherwise later operations take effect outside compositing path.
+%
+%
+*/
+MagickExport MagickPassFail CompositeMaskImage(Image *image)
+{
+  return(CompositePathImage(image,"#1",True));
+}
+
+#define CompositePathImageText "[%s] Creating composite mask..."
+static MagickPassFail
+CompositePathImageCallBack(void *mutable_data,    /* User provided mutable data */
+                      const void *immutable_data, /* User provided immutable data */
+                      Image *image,               /* Modify image */
+                      PixelPacket *pixels,        /* Pixel row */
+                      IndexPacket *indexes,       /* Pixel row indexes */
+                      const long npixels,         /* Number of pixels in row */
+                      ExceptionInfo *exception)   /* Exception report */
+{
+  /*
+    Force all pixel components to be the same (r == g == b)
+  */
+  const MagickBool
+    inside = *((MagickBool *) immutable_data);
+
+  register Quantum
+    intensity;
+
+  register long
+    i;
+
+  ARG_NOT_USED(mutable_data);
+  ARG_NOT_USED(image);
+  ARG_NOT_USED(indexes);
+  ARG_NOT_USED(exception);
+
+  for (i=0; i < npixels; i++)
+    {
+      intensity=PixelIntensityToQuantum(&pixels[i]);
+      if (!inside)
+        intensity=MaxRGB - intensity;	/* invert */
+      pixels[i].red=intensity;
+      pixels[i].green=intensity;
+      pixels[i].blue=intensity;
+      /* leave the opacity unchanged */
+    }
+
+  return MagickPass;
+}
+MagickExport MagickPassFail CompositePathImage(Image *image,const char *pathname,
+  const MagickBool inside)
+{
+
+  char
+    key[MaxTextExtent];
+
+  const ImageAttribute
+    *attribute;
+
+  Image
+    *composite_mask;
+
+  ImageInfo
+    *image_info;
+
+  MagickPassFail
+    status=MagickPass;
+
+  assert(image != (const Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(pathname != NULL);
+  FormatString(key,"8BIM:1999,2998:%s",pathname);
+  attribute=GetImageAttribute(image,key);
+  if (attribute == (const ImageAttribute *) NULL)
+    return(MagickFail);
+  image_info=CloneImageInfo((ImageInfo *) NULL);
+  (void) QueryColorDatabase("#ffffffff",&image_info->background_color,
+    &image->exception);
+  composite_mask=BlobToImage(image_info,attribute->value,strlen(attribute->value),
+    &image->exception);
+  DestroyImageInfo(image_info);
+  if (composite_mask == (Image *) NULL)
+    return (MagickFail);
+  if (composite_mask->storage_class == PseudoClass)
+    {
+      if (SyncImage(composite_mask) == MagickFail)
+        return (MagickFail);
+      composite_mask->storage_class=DirectClass;
+    }
+  composite_mask->matte=True;
+  /*
+    Force all pixel components to be the same (r == g == b).
+  */
+  status=PixelIterateMonoModify(CompositePathImageCallBack,NULL,
+                                CompositePathImageText,
+                                NULL,&inside,0,0,composite_mask->columns,composite_mask->rows,
+                                composite_mask,&image->exception);
+  /*
+    Overload magick_filename to keep name of path that created image.
+    This is needed so we can get the path as postscript for PS coders
+    to create a postscript vector based compositing path.
+  */
+  FormatString(composite_mask->magick_filename,"8BIM:1999,2998:%s\nPS",pathname);
+
+  composite_mask->is_grayscale=True;
+  composite_mask->is_monochrome=True;
+  (void) SetImageCompositeMask(image,composite_mask);
+  DestroyImage(composite_mask);
+  return status;
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -928,6 +1106,9 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   Image
     *clone_image;
 
+  ImageExtra
+    *ImgExtra;
+
   size_t
     length;
 
@@ -944,6 +1125,14 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToCloneImage);
   (void) memset(clone_image,0,sizeof(Image));
+
+  /* allocate and initialize struct for extra Image members */
+  ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
+  if  ( ImgExtra == (ImageExtra *) NULL )
+    ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,UnableToCloneImage);
+  memset(ImgExtra,0,sizeof(*ImgExtra));
+  clone_image->extra = ImgExtra;
+
   clone_image->storage_class=image->storage_class;
   clone_image->colorspace=image->colorspace;
   clone_image->compression=image->compression;
@@ -1028,7 +1217,8 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   clone_image->previous=(Image *) NULL;
   clone_image->list=(Image *) NULL;
   clone_image->next=(Image *) NULL;
-  clone_image->clip_mask=(Image *) NULL;
+  clone_image->extra->clip_mask=(Image *) NULL;
+  clone_image->extra->composite_mask=(Image *) NULL;
   if (orphan)
     clone_image->blob=CloneBlobInfo((BlobInfo *) NULL);
   else
@@ -1052,8 +1242,10 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
         (void) CloneString(&clone_image->montage,image->montage);
       if (image->directory != (char *) NULL)
         (void) CloneString(&clone_image->directory,image->directory);
-      if (image->clip_mask != (Image *) NULL)
-        clone_image->clip_mask=CloneImage(image->clip_mask,0,0,True,exception);
+      if (image->extra->clip_mask != (Image *) NULL)
+        clone_image->extra->clip_mask=CloneImage(image->extra->clip_mask,0,0,True,exception);
+      if (image->extra->composite_mask != (Image *) NULL)
+        clone_image->extra->composite_mask=CloneImage(image->extra->composite_mask,0,0,True,exception);
       clone_image->ping=image->ping;
       clone_image->cache=ReferenceCache(image->cache);
       clone_image->default_views=AllocateThreadViewSet(clone_image,exception);
@@ -1061,8 +1253,10 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
            (clone_image->montage == ((char *) NULL))) ||
           ((image->directory != (char *) NULL) &&
            (clone_image->directory == (char *) NULL)) ||
-          ((image->clip_mask != (Image *) NULL) &&
-           (clone_image->clip_mask == (Image *) NULL)) ||
+          ((image->extra->clip_mask != (Image *) NULL) &&
+           (clone_image->extra->clip_mask == (Image *) NULL)) ||
+          ((image->extra->composite_mask != (Image *) NULL) &&
+           (clone_image->extra->composite_mask == (Image *) NULL)) ||
           (clone_image->cache == (_CacheInfoPtr_) NULL) ||
           (clone_image->default_views == (_ThreadViewSetPtr_) NULL))
         {
@@ -1266,9 +1460,13 @@ MagickExport void DestroyImage(Image *image)
     Destroy image pixel cache.
   */
   DestroyImagePixels(image);
-  if (image->clip_mask != (Image *) NULL)
-    DestroyImage(image->clip_mask);
-  image->clip_mask=(Image *) NULL;
+  if (image->extra->clip_mask != (Image *) NULL)
+    DestroyImage(image->extra->clip_mask);
+  image->extra->clip_mask=(Image *) NULL;
+  if (image->extra->composite_mask != (Image *) NULL)
+    DestroyImage(image->extra->composite_mask);
+  image->extra->composite_mask=(Image *) NULL;
+  MagickFreeMemory(image->extra);
   MagickFreeMemory(image->montage);
   MagickFreeMemory(image->directory);
   MagickFreeMemory(image->colormap);
@@ -1476,13 +1674,63 @@ MagickExport unsigned int DisplayImages(const ImageInfo *image_info,
 */
 MagickExport Image *GetImageClipMask(const Image *image, ExceptionInfo *exception)
 {
-  if (image->clip_mask)
-    return CloneImage(image->clip_mask,0,0,True,exception);
+  if (image->extra->clip_mask)
+    return CloneImage(image->extra->clip_mask,0,0,True,exception);
 
   ThrowException3(exception,ImageError,UnableToGetClipMask,NoImagesWereFound);
   return ((Image *) NULL);
 }
 
+/* code below for GetImageCompositeMask() cloned/modified from GetImageClipMask() */
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   G e t I m a g e C o m p o s i t e M a s k                                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  GetImageCompositeMask returns a reference-counted copy of the current image
+%  composite mask. This copy must be deallocated using DestroyImage() once it is
+%  no longer needed.  If the image does not have an associated composite mask,
+%  then NULL is returned.  Use SetImageCompositeMask() to add a composite mask to an
+%  image, or remove a composite mask.
+%
+%  If a component of the composite mask is set to TransparentOpacity (maximum
+%  value) then the corresponding image pixel component will not be updated
+%  when SyncImagePixels() is applied. The composite mask may be used to constrain
+%  the results of an image processing operation to a region of the image.
+%  Regions outside those allowed by the composite mask may be processed, but only
+%  pixel quantums allowed by the composite mask will actually be updated.
+%
+%  The composite mask protects the DirectClass pixels and PseudoClass pixel indexes
+%  from modification. The composite mask does *not* protect the image colormap since
+%  the image colormap is globally shared by all pixels in a PseudoClass image.
+%
+%  The format of the GetImageCompositeMask method is
+%
+%      Image *GetImageCompositeMask(const Image *image, ExceptionInfo *exception)
+%
+%  A descripton of each parameter follows:
+%
+%    o image: The image.
+%
+%    o exception: Reason for failure.
+%
+*/
+MagickExport Image *GetImageCompositeMask(const Image *image, ExceptionInfo *exception)
+{
+  if (image->extra->composite_mask)
+    return CloneImage(image->extra->composite_mask,0,0,True,exception);
+
+  ThrowException3(exception,ImageError,UnableToGetCompositeMask,NoImagesWereFound);
+  return ((Image *) NULL);
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -2328,17 +2576,75 @@ MagickExport MagickPassFail SetImageClipMask(Image *image,const Image *clip_mask
     if ((clip_mask->columns != image->columns) ||
         (clip_mask->rows != image->rows))
       ThrowBinaryException3(ImageError,UnableToSetClipMask,ImageSizeDiffers);
-  if (image->clip_mask != (Image *) NULL)
-    DestroyImage(image->clip_mask);
-  image->clip_mask=(Image *) NULL;
+  if (image->extra->clip_mask != (Image *) NULL)
+    DestroyImage(image->extra->clip_mask);
+  image->extra->clip_mask=(Image *) NULL;
   if (clip_mask == (Image *) NULL)
     return(MagickPass);
-  image->clip_mask=CloneImage(clip_mask,0,0,True,&image->exception);
-  if (image->clip_mask)
+  image->extra->clip_mask=CloneImage(clip_mask,0,0,True,&image->exception);
+  if (image->extra->clip_mask)
     return (MagickPass);
   return (MagickFail);
 }
+
+/* code below for SetImageCompositeMask() cloned/modified from SetImageClipMask() */
 
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t I m a g e C o m p o s i t e M a s k                                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetImageCompositeMask() associates a composite mask with the image.  The mask
+%  must be the same dimensions as the image.
+%
+%  If a component of the composite mask is set to TransparentOpacity (maximum
+%  value) then the corresponding image pixel component will not be updated
+%  when SyncImagePixels() is applied. The composite mask may be used to composite
+%  the results of an image processing operation to a region of the image.
+%  Regions outside those allowed by the composite mask may be processed, but only
+%  pixel quantums covered by the composite mask will actually be updated.
+%
+%  The composite mask protects the DirectClass pixels and PseudoClass pixel indexes
+%  from modification. The composite mask does *not* protect the image colormap since
+%  the image colormap is globally shared by all pixels in a PseudoClass image.
+%
+%  The format of the SetImageCompositeMask method is:
+%
+%      unsigned int SetImageCompositeMask(Image *image,const Image *composite_mask)
+%
+%  A description of each parameter follows:
+%
+%    o image: The image.
+%
+%    o composite_mask: The image composite mask.
+%
+%
+*/
+MagickExport MagickPassFail SetImageCompositeMask(Image *image,const Image *composite_mask)
+{
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  if (composite_mask != (const Image *) NULL)
+    if ((composite_mask->columns != image->columns) ||
+        (composite_mask->rows != image->rows))
+      ThrowBinaryException3(ImageError,UnableToSetCompositeMask,ImageSizeDiffers);
+  if (image->extra->composite_mask != (Image *) NULL)
+    DestroyImage(image->extra->composite_mask);
+  image->extra->composite_mask=(Image *) NULL;
+  if (composite_mask == (Image *) NULL)
+    return(MagickPass);
+  image->extra->composite_mask=CloneImage(composite_mask,0,0,True,&image->exception);
+  if (image->extra->composite_mask)
+    return (MagickPass);
+  return (MagickFail);
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %

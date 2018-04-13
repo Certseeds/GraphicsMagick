@@ -1258,7 +1258,7 @@ MagickExport MagickPassFail NegateImage(Image *image,const unsigned int grayscal
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   is_grayscale=image->is_grayscale;
-  if (image->clip_mask)
+  if (*ImageGetClipMask(image))
     image->storage_class=DirectClass;
 
   if (image->storage_class == PseudoClass)

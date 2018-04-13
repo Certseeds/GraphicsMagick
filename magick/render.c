@@ -116,7 +116,42 @@ typedef struct _PathInfo
   PathInfoCode
     code;
 } PathInfo;
+
+/*
+  DrawInfoExtra allows for expansion of DrawInfo without increasing its
+  size.  The internals are defined only in this source file.  Clients
+  outside of this source file can access the internals via the provided
+  access functions (see below).
+*/
+typedef struct _DrawInfoExtra
+{
+  char
+    /*
+      clip_path is (typically) the name of the attribute whose value contains
+      the clipping path's graphical elements.
+    */
+    *clip_path,
+    /*
+      composite_path is (typically) the name of the attribute whose value contains
+      the composite path's graphical elements.
+    */
+    *composite_path;
+} DrawInfoExtra;
 
+/* provide public access to the clip_path member of DrawInfo */
+MagickExport char **
+DrawInfoGetClipPath(const DrawInfo * draw_info)
+{
+  return(&draw_info->extra->clip_path);
+}
+
+/* provide public access to the composite_path member of DrawInfo */
+MagickExport char **
+DrawInfoGetCompositePath(const DrawInfo * draw_info)
+{
+  return(&draw_info->extra->composite_path);
+}
+
 /*
   Forward declarations.
 */
@@ -260,8 +295,10 @@ CloneDrawInfo(const ImageInfo *image_info,const DrawInfo *draw_info)
       (void) memcpy(clone_info->dash_pattern,draw_info->dash_pattern,
         (x+1)*sizeof(double));
     }
-  if (draw_info->clip_path != (char *) NULL)
-    clone_info->clip_path=AllocateString(draw_info->clip_path);
+  if (draw_info->extra->clip_path != (char *) NULL)
+    clone_info->extra->clip_path=AllocateString(draw_info->extra->clip_path);
+  if (draw_info->extra->composite_path != (char *) NULL)
+    clone_info->extra->composite_path=AllocateString(draw_info->extra->composite_path);
   clone_info->bounds=draw_info->bounds;
   clone_info->clip_units=draw_info->clip_units;
   clone_info->render=draw_info->render;
@@ -795,7 +832,9 @@ DestroyDrawInfo(DrawInfo *draw_info)
   MagickFreeMemory(draw_info->density);
   MagickFreeMemory(draw_info->server_name);
   MagickFreeMemory(draw_info->dash_pattern);
-  MagickFreeMemory(draw_info->clip_path);
+  MagickFreeMemory(draw_info->extra->clip_path);
+  MagickFreeMemory(draw_info->extra->composite_path);
+  MagickFreeMemory(draw_info->extra);
   (void) memset((void *)draw_info,0xbf,sizeof(DrawInfo));
   MagickFreeMemory(draw_info);
 }
@@ -1418,6 +1457,9 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   MagickPassFail
     status=MagickPass;
 
+  Image
+    *image_clip_mask;
+
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
@@ -1425,7 +1467,8 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   attribute=GetImageAttribute(image,clip_path);
   if (attribute == (ImageAttribute *) NULL)
     return(MagickFail);
-  if (image->clip_mask == (Image *) NULL)
+  image_clip_mask = *ImageGetClipMask(image);
+  if (image_clip_mask == (Image *) NULL)
     {
       Image
         *clip_mask;
@@ -1436,6 +1479,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
         return(MagickFail);
       (void) SetImageClipMask(image,clip_mask);
       DestroyImage(clip_mask);
+      image_clip_mask = *ImageGetClipMask(image);
     }
   else
     {
@@ -1443,14 +1487,14 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
         Re-clone the image attributes, since more may have been added since
         the clip_mask image was created.
       */
-      DestroyImageAttributes(image->clip_mask);
-      CloneImageAttributes(image->clip_mask,image);
+      DestroyImageAttributes(image_clip_mask);
+      CloneImageAttributes(image_clip_mask,image);
     }
-  (void) QueryColorDatabase("none",&image->clip_mask->background_color,
+  (void) QueryColorDatabase("none",&image_clip_mask->background_color,
     &image->exception);
-  (void) SetImage(image->clip_mask,TransparentOpacity);
+  (void) SetImage(image_clip_mask,TransparentOpacity);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
-    "\nbegin clip-path %.1024s",draw_info->clip_path);
+    "\nbegin clip-path %.1024s",draw_info->extra->clip_path);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   (void) CloneString(&clone_info->primitive,attribute->value);
   (void) QueryColorDatabase("white",&clone_info->fill,&image->exception);
@@ -1476,11 +1520,107 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       clone_info->opacity = OpaqueOpacity;  /* SVG default */
     }
 
-  MagickFreeMemory(clone_info->clip_path);
-  status&=DrawImage(image->clip_mask,clone_info);
-  status&=NegateImage(image->clip_mask,False);
+  MagickFreeMemory(clone_info->extra->clip_path);
+  status&=DrawImage(image_clip_mask,clone_info);
+  status&=NegateImage(image_clip_mask,False);
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
+  return(status);
+}
+
+/* code below for DrawCompositeMask() cloned/modifed from DrawClipMask() */
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   D r a w C o m p o s i t e M a s k                                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  DrawCompositeMask() draws the composite mask on the image mask.
+%
+%  The format of the DrawCompositeMask method is:
+%
+%      MagickPassFail DrawCompositeMask(Image *image,const DrawInfo *draw_info,
+%        const char *name)
+%
+%  A description of each parameter follows:
+%
+%    o image: The image.
+%
+%    o draw_info: The draw info.
+%
+%    o name: The name of the composite mask.
+%
+%
+*/
+MagickExport MagickPassFail
+DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
+{
+  char
+    composite_path[MaxTextExtent];
+
+  const ImageAttribute
+    *attribute;
+
+  DrawInfo
+    *clone_info;
+
+  MagickPassFail
+    status=MagickPass;
+
+  Image
+    *image_composite_mask;
+
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(draw_info != (const DrawInfo *) NULL);
+  FormatString(composite_path,"[%.1024s]",name);
+  attribute=GetImageAttribute(image,composite_path);
+  if (attribute == (ImageAttribute *) NULL)
+    return(MagickFail);
+  image_composite_mask = *ImageGetCompositeMask(image);
+  if (image_composite_mask == (Image *) NULL)
+    {
+      Image
+        *composite_mask;
+
+      composite_mask=CloneImage(image,image->columns,image->rows,MagickTrue,
+        &image->exception);
+      if (composite_mask == (Image *) NULL)
+        return(MagickFail);
+      (void) SetImageCompositeMask(image,composite_mask);
+      DestroyImage(composite_mask);
+      image_composite_mask = *ImageGetCompositeMask(image);
+    }
+  else
+    {
+      /*
+        Re-clone the image attributes, since more may have been added since
+        the composite_mask image was created.
+      */
+      DestroyImageAttributes(image_composite_mask);
+      CloneImageAttributes(image_composite_mask,image);
+    }
+  (void) QueryColorDatabase("none",&image_composite_mask->background_color,
+    &image->exception);
+  (void) SetImage(image_composite_mask,TransparentOpacity);
+  (void) LogMagickEvent(RenderEvent,GetMagickModule(),
+    "\nbegin mask %.1024s",draw_info->extra->composite_path);
+  clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+  (void) CloneString(&clone_info->primitive,attribute->value);
+  /* these settings are per the SVG spec */
+  (void) QueryColorDatabase("black",&clone_info->fill,&image->exception);
+  (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);
+  clone_info->stroke_width = 1.0;
+  clone_info->opacity = OpaqueOpacity;
+  status&=DrawImage(image_composite_mask,clone_info);
+  DestroyDrawInfo(clone_info);
+  (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end composite-path");
   return(status);
 }
 
@@ -2224,9 +2364,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
-            (void) CloneString(&graphic_context[n]->clip_path,token);
+            (void) CloneString(&graphic_context[n]->extra->clip_path,token);
             (void) DrawClipPath(image,graphic_context[n],
-              graphic_context[n]->clip_path);
+              graphic_context[n]->extra->clip_path);
             break;
           }
         if (LocaleCompare("clip-rule",keyword) == 0)
@@ -2556,6 +2696,20 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       case 'm':
       case 'M':
       {
+          if (LocaleCompare("mask",keyword) == 0)   /* added mask */
+            {
+              /*
+                Create mask.
+              */
+              if (MagickGetToken(q,&q,token,token_max_length) < 1)
+                {
+                  status=MagickFail;
+                  break;
+                }
+              (void) CloneString(&graphic_context[n]->extra->composite_path,token);
+              (void) DrawCompositeMask(image,graphic_context[n],graphic_context[n]->extra->composite_path);
+              break;
+            }
         if (LocaleCompare("matte",keyword) == 0)
           {
             primitive_type=MattePrimitive;
@@ -2675,16 +2829,25 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                if (graphic_context[n]->clip_path != (char *) NULL)
-                  if (LocaleCompare(graphic_context[n]->clip_path,
-                      graphic_context[n-1]->clip_path) != 0)
+                if (graphic_context[n]->extra->clip_path != (char *) NULL)
+                  if (LocaleCompare(graphic_context[n]->extra->clip_path,
+                      graphic_context[n-1]->extra->clip_path) != 0)
                     (void) SetImageClipMask(image,(Image *) NULL);
+                if (graphic_context[n]->extra->composite_path != (char *) NULL)
+                  {
+                    /* clean up composite mask if different from parent */
+                    if (LocaleCompare(graphic_context[n]->extra->composite_path,
+                        graphic_context[n-1]->extra->composite_path) != 0)
+                      (void) SetImageCompositeMask(image,(Image *) NULL);
+                  }
                 DestroyDrawInfo(graphic_context[n]);
                 n--;
                 FillOpacityPending = StrokeOpacityPending = MagickFalse;
                 break;
               }
             if (LocaleCompare("id",token) == 0)   /* added "pop id" (to support "defs") */
+              break;
+            if (LocaleCompare("mask",token) == 0)   /* added mask */
               break;
             if (LocaleCompare("pattern",token) == 0)
               break;
@@ -2865,6 +3028,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   q = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
                 else	/* extract <identifier> from "push id <identifier>" */
                   MagickGetToken(q,&q,token,token_max_length);
+                break;
+              }
+            if (LocaleCompare("mask",token) == 0)   /* added mask */
+              {
+                size_t ExtractedLength;
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"mask",image,&ExtractedLength);
+                if  ( ExtractedLength == 0 )
+                  status=MagickFail;
                 break;
               }
             if (LocaleCompare("pattern",token) == 0)
@@ -3961,12 +4132,20 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     }
     if (graphic_context[n]->render)
       {
-        if ((n != 0) && (graphic_context[n]->clip_path != (char *) NULL) &&
-            (LocaleCompare(graphic_context[n]->clip_path,
-             graphic_context[n-1]->clip_path) != 0))
+        if ((n != 0) && (graphic_context[n]->extra->clip_path != (char *) NULL) &&
+            (LocaleCompare(graphic_context[n]->extra->clip_path,
+             graphic_context[n-1]->extra->clip_path) != 0))
           if (DrawClipPath(image,graphic_context[n],
-                           graphic_context[n]->clip_path) == MagickFail)
+                           graphic_context[n]->extra->clip_path) == MagickFail)
             status=MagickFail;
+        if ((n != 0) && (graphic_context[n]->extra->composite_path != (char *) NULL) &&
+            (LocaleCompare(graphic_context[n]->extra->composite_path,
+            graphic_context[n-1]->extra->composite_path) != 0))
+          {
+            if (DrawCompositeMask(image,graphic_context[n],
+                graphic_context[n]->extra->composite_path) == MagickFail)
+              status=MagickFail;
+          }
         if (DrawPrimitive(image,graphic_context[n],primitive_info)
             == MagickFail)
           status=MagickFail;
@@ -5338,11 +5517,22 @@ GetDrawInfo(const ImageInfo *image_info,DrawInfo *draw_info)
   ImageInfo
     *clone_info;
 
+  DrawInfoExtra
+    *DIExtra;
+
   /*
     Initialize draw attributes.
   */
   assert(draw_info != (DrawInfo *) NULL);
   (void) memset(draw_info,0,sizeof(DrawInfo));
+
+  /* allocate and initialize struct for extra DrawInfo members */
+  DIExtra = MagickAllocateMemory(DrawInfoExtra *,sizeof(DrawInfoExtra));
+  if  ( DIExtra == (DrawInfoExtra *) NULL )
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,UnableToAllocateDrawInfo);
+  memset(DIExtra,0,sizeof(*DIExtra));
+  draw_info->extra = DIExtra;
+
   clone_info=CloneImageInfo(image_info);
   IdentityAffine(&draw_info->affine);
   draw_info->gravity=NorthWestGravity;

@@ -1247,6 +1247,9 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
   size_t
     image_list_length;
 
+  Image
+    *clip_mask;
+
   /*
     Open output image file.
   */
@@ -1284,6 +1287,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
   }
   page=0;
   scene=0;
+  clip_mask = *ImageGetClipMask(image);
   do
   {
     page++;
@@ -1530,13 +1534,13 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,"%%PageResources: font Helvetica\n");
 
     /* PS clipping path from Photoshop clipping path */
-    if ((image->clip_mask != (Image *) NULL) &&
-      (LocaleNCompare("8BIM:",image->clip_mask->magick_filename,5) == 0))
+    if ((clip_mask != (Image *) NULL) &&
+      (LocaleNCompare("8BIM:",clip_mask->magick_filename,5) == 0))
       {
         const ImageAttribute
           *attribute;
 
-        attribute=GetImageAttribute(image,image->clip_mask->magick_filename);
+        attribute=GetImageAttribute(image,clip_mask->magick_filename);
         if (attribute == (const ImageAttribute *) NULL)
           return(False);
         (void) WriteBlobString(image,attribute->value);
@@ -1602,8 +1606,8 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
       }
 
     /* Photoshop clipping path active? */
-    if ((image->clip_mask != (Image *) NULL) &&
-        (LocaleNCompare("8BIM:",image->clip_mask->magick_filename,5) == 0))
+    if ((clip_mask != (Image *) NULL) &&
+        (LocaleNCompare("8BIM:",clip_mask->magick_filename,5) == 0))
       (void) WriteBlobString(image,"true\n");
     else
       (void) WriteBlobString(image,"false\n");

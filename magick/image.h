@@ -676,6 +676,8 @@ typedef struct _SegmentInfo
     y2;
 } SegmentInfo;
 
+struct _ImageExtra;  /* forward decl.; see member "extra" below */
+
 typedef struct _Image
 {
   ClassType
@@ -848,8 +850,16 @@ typedef struct _Image
     is_grayscale,       /* Private, True if image is known to be grayscale */
     taint;              /* Private, True if image has not been modifed */
 
-  struct _Image
-    *clip_mask;         /* Private, Clipping mask to apply when updating pixels */
+  /*
+    Allow for expansion of Image without increasing its size.  The
+    internals are defined only in image.c.  Clients outside of image.c
+    can access the internals via the provided access functions (see below).
+
+    This location in Image used to be occupied by Image *clip_mask. The
+    clip_mask member now lives in _ImageExtra.
+  */
+  struct _ImageExtra
+    *extra;
 
   MagickBool
     ping;               /* Private, if true, pixels are undefined */
@@ -1020,6 +1030,7 @@ extern MagickExport Image
   *CloneImage(const Image *,const unsigned long,const unsigned long,
    const unsigned int,ExceptionInfo *),
   *GetImageClipMask(const Image *,ExceptionInfo *),
+  *GetImageCompositeMask(const Image *,ExceptionInfo *),  /*to support SVG masks*/
   *ReferenceImage(Image *);
 
 extern MagickExport ImageInfo
@@ -1047,6 +1058,8 @@ extern MagickExport MagickPassFail
   AnimateImages(const ImageInfo *image_info,Image *image),
   ClipImage(Image *image),
   ClipPathImage(Image *image,const char *pathname,const MagickBool inside),
+  CompositeMaskImage(Image *image),   /*to support SVG masks*/
+  CompositePathImage(Image *image,const char *pathname,const MagickBool inside),  /*to support SVG masks*/
   DisplayImages(const ImageInfo *image_info,Image *image),
   RemoveDefinitions(const ImageInfo *image_info,const char *options),
   ResetImagePage(Image *image,const char *page),
@@ -1056,6 +1069,7 @@ extern MagickExport MagickPassFail
   SetImageColorRegion(Image *image,long x,long y,unsigned long width,
                       unsigned long height,const PixelPacket *pixel),
   SetImageClipMask(Image *image,const Image *clip_mask),
+  SetImageCompositeMask(Image *image,const Image *composite_mask),  /*to support SVG masks*/
   SetImageDepth(Image *image,const unsigned long),
   SetImageInfo(ImageInfo *image_info,const unsigned int flags,ExceptionInfo *exception),
   SetImageType(Image *image,const ImageType),
@@ -1070,6 +1084,14 @@ extern MagickExport void
   GetImageInfo(ImageInfo *),
   ModifyImage(Image **,ExceptionInfo *),
   SetImageOpacity(Image *,const unsigned int);
+
+/* provide public access to the clip_mask member of Image */
+extern MagickExport Image
+  **ImageGetClipMask(const Image *);
+
+/* provide public access to the composite_mask member of Image */
+extern MagickExport Image
+  **ImageGetCompositeMask(const Image *);
 
 #if defined(MAGICK_IMPLEMENTATION)
   /*

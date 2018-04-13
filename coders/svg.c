@@ -1139,7 +1139,7 @@ SVGStartElement(void *context,const xmlChar *name,
 
     For now we will ignore the possibility that "font-size" may be specified
     more than once among "font-size", "class", and "style".  However, the
-    relative order amongsd these three will be preserved.
+    relative order among these three will be preserved.
   */
   if (attributes != (const xmlChar **) NULL)
   {/*have some attributes*/
@@ -1433,6 +1433,16 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         break;
       }
+    case 'M':
+    case 'm':
+      {
+        if (LocaleCompare((char *) name,"mask") == 0)   /* added mask */
+        {
+          MVGPrintf(svg_info->file,"push mask '%s'\n",id);
+          break;
+        }
+      break;
+      }
     case 'P':
     case 'p':
       {
@@ -1525,7 +1535,7 @@ SVGStartElement(void *context,const xmlChar *name,
             MVGPrintf(svg_info->file,"stroke 'none'\n");
             MVGPrintf(svg_info->file,"stroke-width 1\n");
             MVGPrintf(svg_info->file,"stroke-opacity 1\n");
-            MVGPrintf(svg_info->file,"fill-rule nonzero\n");
+            MVGPrintf(svg_info->file,"fill-rule 'nonzero'\n");
             break;
           }
         break;
@@ -1539,7 +1549,7 @@ SVGStartElement(void *context,const xmlChar *name,
             if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
-            /* gjw: update text current position */
+            /* update text current position */
             MVGPrintf(svg_info->file,"textx %g\n",svg_info->bounds.x);
             MVGPrintf(svg_info->file,"texty %g\n",svg_info->bounds.y);
             break;
@@ -1969,6 +1979,11 @@ SVGStartElement(void *context,const xmlChar *name,
                 {
                   svg_info->element.major=
                     GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  break;
+                }
+              if (LocaleCompare(keyword,"mask") == 0)   /* added mask */
+                {
+                  MVGPrintf(svg_info->file,"mask '%s'\n",value);
                   break;
                 }
               if (LocaleCompare(keyword,"minor") == 0)
@@ -3272,6 +3287,16 @@ SVGEndElement(void *context,const xmlChar *name)
         if (LocaleCompare((char *) name,"linearGradient") == 0)
           {
             MVGPrintf(svg_info->file,"pop gradient\n");
+            break;
+          }
+        break;
+      }
+    case 'M':
+    case 'm':
+      {
+        if (LocaleCompare((char *) name,"mask") == 0)   /* added mask */
+          {
+            MVGPrintf(svg_info->file,"pop mask\n");
             break;
           }
         break;
