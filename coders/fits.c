@@ -41,6 +41,7 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/enum_strings.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -225,6 +226,21 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
   file_size=GetBlobSize(image);
+
+  /*
+    Verify file header
+  */
+  if (ReadBlob(image,sizeof(keyword),keyword) != sizeof(keyword))
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+
+  if ((LocaleNCompare(keyword,"IT0",3) != 0) &&
+      (LocaleNCompare(keyword,"SIMPLE",6) != 0))
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+  /*
+    Seek back to beginning of file
+  */
+  SeekBlob(image,0,SEEK_SET);
 
   /*
     Initialize common part of image header.
@@ -514,6 +530,13 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
           image->storage_class = DirectClass;
           image->scene=scene;
           image->is_grayscale = 1;
+
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Frame[%lu] geometry %lux%lu, %u bits/pixel, %s",
+                                  scene, image->columns, image->rows,
+                                  fits_info.bits_per_pixel,
+                                  ClassTypeToString(image->storage_class));
 
           if (image->depth<=8 && fits_info.bits_per_pixel==8)
             if (!AllocateImageColormap(image,1 << image->depth))
