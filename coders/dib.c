@@ -49,6 +49,7 @@
 /*
   Macro definitions (from Windows wingdi.h).
 */
+#undef BI_RLE8
 #define BI_RLE8  1
 
 /*
