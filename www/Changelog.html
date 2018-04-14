@@ -35,6 +35,65 @@
 <div class="document">
 
 
+<p>2018-04-13  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/image.c, magick/image.h:  In order to be able to
+support SVG masks, and to be able to further extend the
+Image data structure without changing its size, new data
+structure ImageExtra (struct _ImageExtra) has been added.
+Header file image.h contains only a forward declaration;
+the members of ImageExtra are defined in file image.c.
+Image member variable Image * clip_mask has been replaced
+by ImageExtra * extra, and function prototypes that enable
+access to ImageExtra have been added to image.h.  The
+clip_mask member variable now resides in ImageExtra.  All
+references to Image::clip_mask in the GraphicsMagick
+source code have either been replaced with direct references
+to ImageExtra::clip_mask (image.c), or have been replaced
+with calls to access function ImageGetClipMask().</li>
+<li>magick/render.c, magick/render.h:  In order to be able to
+support SVG masks, and to be able to further extend the
+DrawInfo data structure without changing its size, new data
+structure DrawInfoExtra (struct _DrawInfoExtra) has been added.
+Header file render.h contains only a forward declaration;
+the members of DrawInfoExtra are defined in file render.c.
+DrawInfo member variable char * clip_path has been replaced by
+DrawInfoExtra * extra, and function prototypes that enable
+access to DrawInfoExtra have been added to render.h.  The
+clip_path member variable now resides in ImageExtra.  All
+references to DrawInfo::clip_path in the GraphicsMagick
+source code have either been replaced with direct references
+to DrawInfoExtra::clip_path (render.c), or have been
+replaced with calls to access function DrawInfoGetClipPath().</li>
+<li>magick/image.c (new functions CompositePathImage,
+CompositeMaskImage, GetImageCompositeMask,
+SetImageCompositeMask):  Defined new data structure ImageExtra,
+added create/destroy logic, and implemented associated access
+functions.  Implemented SVG masks.</li>
+<li>magick/render.c (DrawImage, new function DrawCompositeMask):
+Defined new data structure DrawInfoExtra, added create/destroy
+logic, and implemented associated access functions.  Impemented
+SVG masks.</li>
+<li>magick/pixel_cache.c (SyncCacheNexus, new function
+CompositeCacheNexus):  Fixed references to Image::clip_mask.
+Implemented SVG masks.</li>
+<li>coders/svg.c (SVGStartElement, SVGEndElement): Implemented
+SVG masks.</li>
+<li>locale/c.mgk, magick/gm_messages.mc, magick/local_c.h:
+Added new error codes to support SVG masks.</li>
+<li>coders/ps3.c, magick/enhance.c: Fixed references to
+Image::clip_mask.</li>
+<li>magick/draw.c, wand/drawing_wand.c: Fixed references to
+DrawInfo::clip_path.</li>
+</ul>
+</blockquote>
+<p>2018-04-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/wpg.c Crash on row overflow fixed oss-fuzz 7639 thanks to oss-fuzz.</li>
+</ul>
+</blockquote>
 <p>2018-04-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

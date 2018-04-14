@@ -1,3 +1,8 @@
+2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/Magick.xs (Get): Fix PerlMagick compilation problem
+	due to rename/repurposing of image->clip_mask.
+
 2018-04-13  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/image.c, magick/image.h:  In order to be able to
