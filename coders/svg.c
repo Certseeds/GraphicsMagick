@@ -870,9 +870,9 @@ SVGEndDocument(void *context)
 */
 static void
 SVGProcessTransformString  (
-	void *context,
-	char const *TransformString
-	)
+        void *context,
+        char const *TransformString
+        )
 {/*SVGProcessTransformString*/
 
   char
@@ -900,7 +900,7 @@ SVGProcessTransformString  (
   if ((tokens != (char **) NULL) && (number_tokens > 0))
     {/*if ((tokens != (char **) NULL) && (number_tokens > 0))*/
 
-  		const char
+                const char
         *keyword = NULL,
         *value = NULL;
 
@@ -1341,7 +1341,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"circle") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1369,7 +1369,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"ellipse") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1397,7 +1397,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"g") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1419,7 +1419,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"line") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1448,7 +1448,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"path") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1462,14 +1462,14 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"polygon") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
         if (LocaleCompare((char *) name,"polyline") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1496,7 +1496,7 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"rect") == 0)
           {
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1546,7 +1546,7 @@ SVGStartElement(void *context,const xmlChar *name,
         if (LocaleCompare((char *) name,"text") == 0)
           {
             IsTextOrTSpan = MagickTrue;
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "push id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
               MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             /* update text current position */
@@ -1684,7 +1684,7 @@ SVGStartElement(void *context,const xmlChar *name,
                       char * pUnit;
                       (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
                       if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
-                        MVGPrintf(svg_info->file,"textdx %s\n",value);	/* postpone interpretation of "em" or "ex" until we know point size */
+                        MVGPrintf(svg_info->file,"textdx %s\n",value);  /* postpone interpretation of "em" or "ex" until we know point size */
                       else
                         MVGPrintf(svg_info->file,"textdx %g\n",dx);
                     }
@@ -1700,7 +1700,7 @@ SVGStartElement(void *context,const xmlChar *name,
                       char * pUnit;
                       (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
                       if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
-                        MVGPrintf(svg_info->file,"textdy %s\n",value);	/* postpone interpretation of "em" or "ex" until we know point size */
+                        MVGPrintf(svg_info->file,"textdy %s\n",value);  /* postpone interpretation of "em" or "ex" until we know point size */
                       else
                         MVGPrintf(svg_info->file,"textdy %g\n",dy);
                     }
@@ -2714,7 +2714,7 @@ SVGStartElement(void *context,const xmlChar *name,
 
 /* Process the "class" definitions inside <style> ... </style> */
 static
-void	ProcessStyleClassDefs (
+void    ProcessStyleClassDefs (
   SVGInfo * svg_info
   )
 {/*ProcessStyleClassDefs*/
@@ -2730,7 +2730,7 @@ void	ProcessStyleClassDefs (
   /* keyword/value pair for an element */
   typedef struct ElementValue
     {/*ElementValue*/
-        struct ElementValue	* pNext;  /* next in list */
+        struct ElementValue     * pNext;  /* next in list */
         char *                pKeyword;
         char *                pValue;
     }/*ElementValue*/
@@ -2762,7 +2762,7 @@ void	ProcessStyleClassDefs (
 
   /* a macro to allocate an zero out a new struct instance,
       and add it to the end of a linked list */
-  #define	ADD_NEW_STRUCT(pNew,pLast,TheTypeDef) \
+  #define       ADD_NEW_STRUCT(pNew,pLast,TheTypeDef) \
   pNew = MagickAllocateMemory(TheTypeDef *,sizeof(TheTypeDef)); \
   memset(pNew,0,sizeof(TheTypeDef)); \
   pLast = pLast->pNext = pNew
@@ -2797,7 +2797,7 @@ void	ProcessStyleClassDefs (
         {/*extract class name loop*/
 
           while  ( (c = *cp) && (isspace(c) || (c ==',')) )  cp++;  /* skip white space/commas */
-          if  ( *cp == '.' )  cp++;	/* .classname, skip leading period */
+          if  ( *cp == '.' )  cp++;     /* .classname, skip leading period */
           if  ( *cp )
           {/*found class name*/
 
@@ -2879,7 +2879,7 @@ void	ProcessStyleClassDefs (
     {/*pClassDef loop*/
 
       ElementValue * pEV;
-      if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )	/* just in case, should never happen */
+      if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )    /* just in case, should never happen */
         continue;
       MVGPrintf(svg_info->file,"push class '%s'\n",pClassDef->pName);
       for  ( ; pEV; pEV = pEV->pNext )
@@ -2937,10 +2937,10 @@ void	ProcessStyleClassDefs (
                       font-family.  Maybe we need a generalized solution for
                       this.
                     */
-                    int n;
+                    size_t n;
                     if  ( (value[0] == '\'') && (value[(n = (strlen(value)-1))] == '\'') )
                       {
-                        int i; 
+                        size_t i;
                         FILE * fp = svg_info->file;
                         MVGPrintf(fp,"font-family '");
                         for(i = 1; i < n; i++)
@@ -3124,7 +3124,7 @@ void	ProcessStyleClassDefs (
   }
   MagickFreeMemory(pCopyOfText);
 
-#undef	ADD_NEW_STRUCT
+#undef  ADD_NEW_STRUCT
 }/*ProcessStyleClassDefs*/
 
 static void
@@ -3158,7 +3158,7 @@ SVGEndElement(void *context,const xmlChar *name)
                       svg_info->element.cy,svg_info->element.cx,svg_info->element.cy+
                       svg_info->element.minor);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3216,7 +3216,7 @@ SVGEndElement(void *context,const xmlChar *name)
                       angle == 0.0 ? svg_info->element.major : svg_info->element.minor,
                       angle == 0.0 ? svg_info->element.minor : svg_info->element.major);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3247,7 +3247,7 @@ SVGEndElement(void *context,const xmlChar *name)
         if (LocaleCompare((char *) name,"g") == 0)
           {
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3277,7 +3277,7 @@ SVGEndElement(void *context,const xmlChar *name)
             MVGPrintf(svg_info->file,"line %g,%g %g,%g\n",svg_info->segment.x1,
                       svg_info->segment.y1,svg_info->segment.x2,svg_info->segment.y2);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3313,7 +3313,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"path '%s'\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3324,7 +3324,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"polygon %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3335,7 +3335,7 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"polyline %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3361,7 +3361,7 @@ SVGEndElement(void *context,const xmlChar *name)
                           svg_info->bounds.x+svg_info->bounds.width,
                           svg_info->bounds.y+svg_info->bounds.height);
                 MVGPrintf(svg_info->file,"pop graphic-context\n");
-              if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+              if  ( svg_info->idLevelInsideDefs == svg_info->n )        /* emit a "pop id" if warranted */
                 {
                   svg_info->idLevelInsideDefs = 0;
                   MVGPrintf(svg_info->file,"pop id\n");
@@ -3379,7 +3379,7 @@ SVGEndElement(void *context,const xmlChar *name)
             svg_info->radius.x=0.0;
             svg_info->radius.y=0.0;
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
@@ -3428,7 +3428,7 @@ SVGEndElement(void *context,const xmlChar *name)
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
-            if  ( svg_info->idLevelInsideDefs == svg_info->n )	/* emit a "pop id" if warranted */
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
               {
                 svg_info->idLevelInsideDefs = 0;
                 MVGPrintf(svg_info->file,"pop id\n");
