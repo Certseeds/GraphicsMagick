@@ -237,8 +237,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
-  if (BlobIsSeekable(image))
-    file_size=GetBlobSize(image);
+  file_size=GetBlobSize(image);
   is_rla3=MagickFalse;
   memset(&rla_info,0,sizeof(rla_info));
   memset(&rla3_extra_info,0,sizeof(rla3_extra_info));
