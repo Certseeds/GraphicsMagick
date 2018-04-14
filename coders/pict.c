@@ -964,6 +964,11 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
   flags=0;
   image->columns=frame.right-frame.left;
   image->rows=frame.bottom-frame.top;
+  SetRedSample(&image->background_color,0);
+  SetGreenSample(&image->background_color,0);
+  SetBlueSample(&image->background_color,0);
+  SetOpacitySample(&image->background_color,OpaqueOpacity);
+  SetImage(image,OpaqueOpacity);
 
   if (IsEventLogging())
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),

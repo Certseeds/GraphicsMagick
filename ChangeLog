@@ -1,5 +1,10 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (ReadPICTImage): Properly initialize "black
+	canvas" that tiles may be composed on.  Fixes oss-fuzz 7574
+	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+	EnhanceImage". (Credit to OSS-Fuzz).
+
 	* coders/rle.c (ReadRLEImage): Check for EOF when reading comment.
 	Fixes oss-fuzz 7667 "graphicsmagick/coder_RLE_fuzzer:
 	Use-of-uninitialized-value in ReadRLEImage". (Credit to OSS-Fuzz).
