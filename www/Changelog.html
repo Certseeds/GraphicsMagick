@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2018-04-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>Magick++/lib/Image.cpp (read): Set subrange = 1 since this
+interface is intended to read just one frame from the input file.
+Use the STL-based interfaces to read multiple frames.</li>
+<li>coders/fits.c (ReadFITSImage): Verify FITS header before reading
+further.  Rejects file from oss-fuzz 7650
+&quot;graphicsmagick/coder_FITS_fuzzer: Out-of-memory in
+graphicsmagick_coder_FITS_fuzzer&quot;.  (Credit to OSS-Fuzz).</li>
+<li>PerlMagick/Magick.xs (Get): Fix PerlMagick compilation problem
+due to rename/repurposing of image-&gt;clip_mask.</li>
+</ul>
+</blockquote>
 <p>2018-04-13  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">

@@ -3632,7 +3632,13 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    Copying jng_image pixels to main image.");
+                              "    Copying jng_image pixels %lux%lu to main image %lux%lu.",
+                              jng_image->columns, jng_image->rows,
+                              image->columns, image->rows);
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "jng_height=%lu, jng_width=%lu",
+                              jng_height, jng_width);
       image->rows=jng_height;
       image->columns=jng_width;
       length=MagickArraySize(image->columns,sizeof(PixelPacket));

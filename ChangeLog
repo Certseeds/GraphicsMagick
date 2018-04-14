@@ -1,5 +1,14 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Image.cpp (read): Set subrange = 1 since this
+	interface is intended to read just one frame from the input file.
+	Use the STL-based interfaces to read multiple frames.
+
+	* coders/fits.c (ReadFITSImage): Verify FITS header before reading
+	further.  Rejects file from oss-fuzz 7650
+	"graphicsmagick/coder_FITS_fuzzer: Out-of-memory in
+	graphicsmagick_coder_FITS_fuzzer".  (Credit to OSS-Fuzz).
+
 	* PerlMagick/Magick.xs (Get): Fix PerlMagick compilation problem
 	due to rename/repurposing of image->clip_mask.
 

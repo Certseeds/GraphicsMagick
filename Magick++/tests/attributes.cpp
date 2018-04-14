@@ -1374,11 +1374,11 @@ int main( int /*argc*/, char ** argv)
     //
     // subRange
     //
-    if ( image.subRange() != 0 )
+    if ( image.subRange() != 1 )
       {
 	++failures;
 	cout << "Line: " << __LINE__
-             << ", subRange default is not zero as expected" << endl;
+             << ", subRange default is not one as expected" << endl;
       }
 
     image.subRange(5);
