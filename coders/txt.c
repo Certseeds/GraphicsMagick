@@ -398,6 +398,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if(NextImagePos!=0)
           {
+            if (image_info->subrange != 0)
+              if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                break;
+
             /* Allocate next image structure. */
             AllocateNextImage(image_info,image);
             if(image->next == (Image *)NULL) break;
@@ -592,7 +596,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if (logging)
           (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-                               "Image detected [%u * %u]: %d", x, y, NumOfPlanes);
+                               "Image detected[%lu] [%u * %u]: %d", image->scene, x, y, NumOfPlanes);
 
         image->depth = Min(QuantumDepth,NumOfPlanes);
         ImportPixelAreaOptionsInit(&import_options);

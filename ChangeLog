@@ -1,5 +1,12 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/txt.c (ReadTXTImage): Implement missing subrange logic to
+	read only the specified range of frames.  Limits frames read from
+	oss-fuzz test case
+	clusterfuzz-testcase-minimized-coder_TEXT_fuzzer-6061076048248832
+	"graphicsmagick/coder_TEXT_fuzzer: Timeout in
+	graphicsmagick_coder_TEXT_fuzzer". (Credit to OSS-Fuzz).
+
 	* Magick++/lib/Image.cpp (read): Set subrange = 1 since this
 	interface is intended to read just one frame from the input file.
 	Use the STL-based interfaces to read multiple frames.
