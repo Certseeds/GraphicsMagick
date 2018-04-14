@@ -1,5 +1,10 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rla.c (ReadRLAImage): Add many more validations,
+	including scanline offsets and number of channels.  Fixes oss-fuzz
+	7653 "graphicsmagick/coder_RLA_fuzzer: Timeout in
+	graphicsmagick_coder_RLA_fuzzer". (Credit to OSS-Fuzz).
+
 	* coders/txt.c (ReadTXTImage): Implement missing subrange logic to
 	read only the specified range of frames.  Limits frames read from
 	oss-fuzz test case
