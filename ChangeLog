@@ -1,5 +1,14 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/rle.c (ReadRLEImage): Check for EOF when reading comment.
+	Fixes oss-fuzz 7667 "graphicsmagick/coder_RLE_fuzzer:
+	Use-of-uninitialized-value in ReadRLEImage". (Credit to OSS-Fuzz).
+
+	* coders/pdb.c (WritePDBImage): Avoid use of uninitialized
+	bytes. Fixes oss-fuzz 7638 "graphicsmagick/coder_PDB_fuzzer:
+	Use-of-uninitialized-value in WritePDBImage". (Credit to
+	OSS-Fuzz).
+
 	* coders/rla.c (ReadRLAImage): Add many more validations,
 	including scanline offsets and number of channels.  Fixes oss-fuzz
 	7653 "graphicsmagick/coder_RLA_fuzzer: Timeout in

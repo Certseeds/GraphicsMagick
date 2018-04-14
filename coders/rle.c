@@ -409,7 +409,11 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
                                   image);
         }
-      (void) ReadBlob(image,length,comment);
+      if (ReadBlob(image,length,comment) != length)
+        {
+          MagickFreeMemory(comment);
+          ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
       comment[length]='\0';
       /*
         Delimit multiple comments with '\n' so they fit in one string.
