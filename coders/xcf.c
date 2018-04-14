@@ -1438,11 +1438,23 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       ThrowReaderException(CorruptImageError,ImageTypeNotSupported,image);
     }
+
+  if (CheckImagePixelLimits(image, exception) != MagickPass)
+    ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
   /*
-    SetImage can be very expensive and it is not clear that this one is
-    actually needed so comment it out for now.
+    SetImage can be very expensive but we do it here because it is
+    expected that the canvas is initialized to opaque-black and
+    operations may be done using uninitialized pixels if we don't
+    initialize here.
   */
-  /* (void) SetImage(image,OpaqueOpacity); */  /* until we know otherwise...*/
+  SetRedSample(&image->background_color,0);
+  SetGreenSample(&image->background_color,0);
+  SetBlueSample(&image->background_color,0);
+  SetOpacitySample(&image->background_color,OpaqueOpacity);
+  if (SetImage(image,OpaqueOpacity) != MagickPass)
+    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image); /* ??? */
+
   image->matte=True;  /* XCF always has a matte! */
 
   /* read properties */
@@ -1847,8 +1859,6 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     layer_info[0].image->rows,
                                     layer_info[0].offset_x,
                                     layer_info[0].offset_y);
-          /* FIXME: oss-fuzz-7430 base image has uninitialized pixels if there were no tiles!
-             SetImage(image,OpaqueOpacity); */
           (void) CompositeImage(image, OverCompositeOp, layer_info[0].image,
                                 layer_info[0].offset_x, layer_info[0].offset_y );
           DestroyImage( layer_info[0].image );
