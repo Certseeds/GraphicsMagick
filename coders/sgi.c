@@ -606,6 +606,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             offset;
 
           size_t
+            iris_pixels_size,
             max_packets_alloc_size,
             rle_alloc_size,
             rle_dimensions;
@@ -664,11 +665,13 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
 
-          iris_pixels=MagickAllocateArray(unsigned char *,
-                                          MagickArraySize(4U,bytes_per_pixel),
-                                          MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels_size=MagickArraySize(MagickArraySize(4U,bytes_per_pixel),
+                                           MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels=MagickAllocateMemory(unsigned char *,iris_pixels_size);
           if (iris_pixels == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+          (void) memset(iris_pixels,0,iris_pixels_size);
 
           /*
             Check data order.

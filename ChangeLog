@@ -1,5 +1,10 @@
 2018-04-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sgi.c (ReadSGIImage): Assure that iris pixels are fully
+	initialized.  Fixes oss-fuzz 7543
+	"graphicsmagick/coder_SGI_fuzzer: Use-of-uninitialized-value in
+	SGIEncode". (Credit to OSS-Fuzz).
+
 	* coders/xcf.c (ReadXCFImage): Restore SetImage() which was
 	previously commented out.  This is needed to assure initialized
 	pixels.  Fixes oss-fuzz 7430 "graphicsmagick/coder_XCF_fuzzer:
