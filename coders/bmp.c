@@ -93,10 +93,10 @@
 typedef struct _BMPInfo
 {
   size_t
+    file_size,  /* 0 or size of file in bytes */
     image_size; /* bytes_per_line*image->rows or uint32_t from file */
 
   magick_uint32_t
-    file_size,  /* 0 or size of file in bytes */
     ba_offset,
     offset_bits,/* Starting position of image data in bytes */
     size;       /* Header size 12 = v2, 12-64 OS/2 v2, 40 = v3, 108 = v4, 124 = v5 */
@@ -656,9 +656,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bmp_info.file_size=ReadBlobLSBLong(image); /* File size in bytes */
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "  File size: Claimed=%u, Actual=%"
+                            "  File size: Claimed=%" MAGICK_SIZE_T_F "u, Actual=%"
                             MAGICK_OFF_F "d",
-                            bmp_info.file_size, file_size);
+                            (MAGICK_SIZE_T) bmp_info.file_size, file_size);
     (void) ReadBlobLSBLong(image); /* Reserved */
     bmp_info.offset_bits=ReadBlobLSBLong(image); /* Bit map offset from start of file */
     bmp_info.size=ReadBlobLSBLong(image);  /* BMP Header size */
@@ -671,7 +671,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             bmp_info.offset_bits,
                             bmp_info.ba_offset);
 
-    if ((bmp_info.file_size != 0) && (bmp_info.file_size > file_size))
+    if ((bmp_info.file_size != 0) && ((magick_off_t) bmp_info.file_size > file_size))
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     if ((bmp_info.size != 12) && (bmp_info.size != 40) && (bmp_info.size != 108)
         && (bmp_info.size != 124) &&
@@ -914,9 +914,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "  File size: Claimed=%u, Actual=%"
+                            "  File size: Claimed=%" MAGICK_SIZE_T_F "u, Actual=%"
                             MAGICK_OFF_F "d",
-                            bmp_info.file_size, file_size);
+                            (MAGICK_SIZE_T) bmp_info.file_size, file_size);
     /*
       It seems that some BMPs claim a file size two bytes larger than
       they actually are so allow some slop before warning about file
@@ -2005,8 +2005,9 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "   BMP bits_per_pixel=%d",bmp_info.bits_per_pixel);
        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "   BMP file_size=%u bytes",bmp_info.file_size);
-        switch ((int) bmp_info.compression)
+                             "   BMP file_size=%" MAGICK_SIZE_T_F "u bytes",
+                             (MAGICK_SIZE_T) bmp_info.file_size);
+        switch (bmp_info.compression)
         {
            case BI_RGB:
            {
