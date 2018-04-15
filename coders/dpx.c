@@ -2598,6 +2598,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 case ImageElementColorDifferenceCbCr:
                   {
                     /* CbCr 4:2:2 sampling */
+                    if (element == 0)
+                      (void) memset(q,0,image->columns*sizeof(PixelPacket));
                     for (x=image->columns; x > 0; x -= 2)
                       {
                         Quantum

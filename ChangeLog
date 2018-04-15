@@ -1,5 +1,10 @@
 2018-04-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadDPXImage): Assure that CbCr layer initializes
+	all channels if it is the first element of a planar DPX.  Fixes
+	oss-fuzz 7703 "graphicsmagick/coder_DPX_fuzzer:
+	Use-of-uninitialized-value in WriteDPXImage". (Credit to OSS-Fuzz)
+
 	* coders/pict.c (ReadPICTImage): Don't refer to filename member of
 	ImageInfo which was just destroyed. Much thanks to Alex Gay for
 	finding this.  Should fix oss-fuzz 6867
