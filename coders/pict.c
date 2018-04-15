@@ -1462,7 +1462,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         if (file == (FILE *) NULL)
           {
             DestroyImageInfo(clone_info);
-            ThrowReaderTemporaryFileException(clone_info->filename);
+            ThrowReaderTemporaryFileException(image_info->filename);
           }
         (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
         (void) strlcat(clone_info->filename,tmpfile,sizeof(clone_info->filename));
