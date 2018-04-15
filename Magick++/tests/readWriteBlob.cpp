@@ -67,7 +67,7 @@ int main( int /*argc*/, char ** argv)
         srcdir = getenv("SRCDIR");
 
       string testimage;
-    
+
       //
       // Test reading BLOBs
       //
@@ -190,7 +190,7 @@ int main( int /*argc*/, char ** argv)
               image.display();
             }
         }
-      
+
       }
       // Test writing BLOBs via STL writeImages
       {
@@ -234,7 +234,7 @@ int main( int /*argc*/, char ** argv)
           }
       }
     }
-  
+
   catch( Exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
@@ -251,8 +251,6 @@ int main( int /*argc*/, char ** argv)
       cout << failures << " failures" << endl;
       return 1;
     }
-  
+
   return 0;
 }
-
-

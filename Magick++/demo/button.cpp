@@ -2,7 +2,7 @@
 // Magick++ demo to generate a simple text button
 //
 // Copyright Bob Friesenhahn, 1999, 2000, 2001, 2003
-// 
+//
 
 #include <Magick++.h>
 #include <string>

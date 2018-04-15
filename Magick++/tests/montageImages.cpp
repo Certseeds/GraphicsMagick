@@ -21,7 +21,7 @@ int main( int /*argc*/, char ** /*argv*/)
   // Initialize ImageMagick install location for Windows
   // InitializeMagick(*argv);
   InitializeMagick("");
-  
+
   int failures=0;
 
   try {
@@ -48,7 +48,7 @@ int main( int /*argc*/, char ** /*argv*/)
       if ( montage[0].montageGeometry() != targetGeometry )
         {
           ++failures;
-          cout << "Line: " << __LINE__ 
+          cout << "Line: " << __LINE__
                << "  Montage geometry ("
                << string(montage[0].montageGeometry())
                << ") is incorrect (expected "
@@ -60,12 +60,12 @@ int main( int /*argc*/, char ** /*argv*/)
 
     if ( montage[0].columns() != 768 || montage[0].rows() != 126 )
       {
-	++failures;
-	cout << "Line: " << __LINE__ 
-	     << "  Montage columns/rows ("
-	     << montage[0].columns() << "x"
-	     << montage[0].rows()
-	     << ") incorrect. (expected 768x124)" << endl;
+        ++failures;
+        cout << "Line: " << __LINE__
+             << "  Montage columns/rows ("
+             << montage[0].columns() << "x"
+             << montage[0].rows()
+             << ") incorrect. (expected 768x124)" << endl;
       }
 
     // Montage with options set
@@ -85,11 +85,11 @@ int main( int /*argc*/, char ** /*argv*/)
 
     if ( montage.size() != 3 )
       {
-	++failures;
-	cout << "Line: " << __LINE__ 
-	     << "  Montage images failed, number of montage frames is "
-	     << montage.size()
-	     << " rather than 3 as expected." << endl;
+        ++failures;
+        cout << "Line: " << __LINE__
+             << "  Montage images failed, number of montage frames is "
+             << montage.size()
+             << " rather than 3 as expected." << endl;
       }
 
     {
@@ -97,7 +97,7 @@ int main( int /*argc*/, char ** /*argv*/)
       if ( montage[0].montageGeometry() != targetGeometry )
         {
           ++failures;
-          cout << "Line: " << __LINE__ 
+          cout << "Line: " << __LINE__
                << "  Montage geometry ("
                << string(montage[0].montageGeometry())
                << ") is incorrect (expected "
@@ -109,12 +109,12 @@ int main( int /*argc*/, char ** /*argv*/)
 
     if ( montage[0].columns() != 132 || montage[0].rows() != 70 )
       {
-	++failures;
-	cout << "Line: " << __LINE__ 
-	     << "  Montage columns/rows ("
-	     << montage[0].columns() << "x"
-	     << montage[0].rows()
-	     << ") incorrect. (expected 132x68)" << endl;
+        ++failures;
+        cout << "Line: " << __LINE__
+             << "  Montage columns/rows ("
+             << montage[0].columns() << "x"
+             << montage[0].rows()
+             << ") incorrect. (expected 132x68)" << endl;
       }
   }
 
@@ -134,7 +134,6 @@ int main( int /*argc*/, char ** /*argv*/)
       cout << failures << " failures" << endl;
       return 1;
     }
-  
+
   return 0;
 }
-

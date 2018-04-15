@@ -30,56 +30,56 @@ int main( int /*argc*/, char **argv)
     {
       struct colorStr
       {
-	const char* color;
-	double red;
-	double green;
-	double blue;
+        const char* color;
+        double red;
+        double green;
+        double blue;
       };
 
       // Convert ratios from rgb.txt via value/255
       struct colorStr colorMap [] =
-      { 
-	{ "red", 1,0,0 },
-	{ "green", 0,0.5019607843137256,0 },
-	{ "blue", 0,0,1 },
-	{ "black", 0,0,0 },
-	{ "white", 1,1,1 },
-	{ "cyan", 0,1,1 },
-	{ "magenta", 1,0,1 },
-	{ "yellow", 1,1,0 },
-	{ NULL, 0,0,0 }
+      {
+        { "red", 1,0,0 },
+        { "green", 0,0.5019607843137256,0 },
+        { "blue", 0,0,1 },
+        { "black", 0,0,0 },
+        { "white", 1,1,1 },
+        { "cyan", 0,1,1 },
+        { "magenta", 1,0,1 },
+        { "yellow", 1,1,0 },
+        { NULL, 0,0,0 }
       };
 
       for ( int i = 0; colorMap[i].color != NULL; i++ )
-	{
-	  {
-	    Color color( colorMap[i].color );
-	    ColorRGB colorMatch( colorMap[i].red,
-				 colorMap[i].green,
-				 colorMap[i].blue );
-	    if ( color != colorMatch )
-	      {
-		++failures;
-		cout << "Line: " << __LINE__ << " Color(\""
-		     << colorMap[i].color << "\") is "
-		     << string(color)
-		     << " rather than "
-		     << string(colorMatch)
-		     << endl;
+        {
+          {
+            Color color( colorMap[i].color );
+            ColorRGB colorMatch( colorMap[i].red,
+                                 colorMap[i].green,
+                                 colorMap[i].blue );
+            if ( color != colorMatch )
+              {
+                ++failures;
+                cout << "Line: " << __LINE__ << " Color(\""
+                     << colorMap[i].color << "\") is "
+                     << string(color)
+                     << " rather than "
+                     << string(colorMatch)
+                     << endl;
                 // printf ("Green: %10.16f\n", color.green());
-	      }
-	  }
-	}      
+              }
+          }
+        }
     }
 
     // Test conversion to/from X11-style color specifications
     {
       const char * colorStrings[] =
       {
-	"#ABC",
-	"#AABBCC",
-	"#AAAABBBBCCCC",
-	NULL
+        "#ABC",
+        "#AABBCC",
+        "#AAAABBBBCCCC",
+        NULL
       };
 
 #if QuantumDepth == 8
@@ -93,18 +93,18 @@ int main( int /*argc*/, char **argv)
 #endif
 
       for ( int i = 0; colorStrings[i] != NULL; ++i )
-	{
-	  if ( string(Color(colorStrings[i])) != expectedString )
-	    {
-	      ++failures;
-	      cout << "Line: " << __LINE__
-		   << " Conversion from " << colorStrings[i]
-		   << " is "
-		   << string(Color(colorStrings[i])) << " rather than "
-		   << expectedString
-		   << endl;
-	    }
-	}
+        {
+          if ( string(Color(colorStrings[i])) != expectedString )
+            {
+              ++failures;
+              cout << "Line: " << __LINE__
+                   << " Conversion from " << colorStrings[i]
+                   << " is "
+                   << string(Color(colorStrings[i])) << " rather than "
+                   << expectedString
+                   << endl;
+            }
+        }
     }
 
     // Test ColorGray
@@ -144,7 +144,7 @@ int main( int /*argc*/, char **argv)
       cout << "Caught exception: " << error_.what() << endl;
       return 1;
     }
-  
+
   if ( failures )
     {
       cout << failures << " failures" << endl;

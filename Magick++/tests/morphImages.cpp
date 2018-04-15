@@ -41,11 +41,11 @@ int main( int /*argc*/, char **argv)
 
     if ( morphed.size() != 21 )
       {
-	++failures;
-	cout << "Line: " << __LINE__ 
-	     << "  Morph images failed, number of frames is "
-	     << morphed.size()
-	     << " rather than 21 as expected." << endl;
+        ++failures;
+        cout << "Line: " << __LINE__
+             << "  Morph images failed, number of frames is "
+             << morphed.size()
+             << " rather than 21 as expected." << endl;
       }
   }
 
@@ -65,7 +65,6 @@ int main( int /*argc*/, char **argv)
       cout << failures << " failures" << endl;
       return 1;
     }
-  
+
   return 0;
 }
-

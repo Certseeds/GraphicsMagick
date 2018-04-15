@@ -11,7 +11,7 @@
 #include <Magick++.h>
 #include <iostream>
 #include <string>
-using namespace std; 
+using namespace std;
 using namespace Magick;
 
 static void Usage ( char **argv )
@@ -31,7 +31,7 @@ static void ParseError (int position, char **argv)
   Usage(argv);
 }
 
-int main(int argc,char **argv) 
+int main(int argc,char **argv)
 {
   // Initialize ImageMagick install location for Windows
   InitializeMagick(*argv);

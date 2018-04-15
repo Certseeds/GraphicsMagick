@@ -24,13 +24,13 @@ int main( int /*argc*/, char ** argv)
 
   // Initialize Magick
   InitializeMagick(*argv);
-  
+
   try {
-    
+
     string srcdir("");
     if(getenv("SRCDIR") != 0)
       srcdir = getenv("SRCDIR");
-    
+
     // Common font to use.
     string font = "Helvetica";
 
@@ -46,24 +46,24 @@ int main( int /*argc*/, char ** argv)
       model.label( "Magick++" );
       model.borderColor( "black" );
       model.backgroundColor( "black" );
-    
+
       Image smile( srcdir + "smile.miff" );
       smile.label( "Smile" );
       smile.borderColor( "black" );
-    
+
       //
       // Create image stack.
       //
       cout << "Creating thumbnails..." << endl;
-    
+
       // Construct initial list containing seven copies of a null image
       Image null;
       null.size( Geometry(70,70) );
       null.read( "NULL:black" );
       list<Image> images( 7, null );
-    
+
       Image example = model;
-    
+
       // Each of the following follow the pattern
       //  1. obtain reference to (own copy of) image
       //  2. apply label to image
@@ -182,7 +182,7 @@ int main( int /*argc*/, char ** argv)
       example.label( "Equalize" );
       example.equalize( );
       images.push_back( example );
-    
+
       cout << "  explode ..." << endl;
       example = model;
       example.label( "Explode" );
@@ -225,21 +225,21 @@ int main( int /*argc*/, char ** argv)
       example.label( "Gaussian Blur\n(Green Channel)" );
       example.gaussianBlurChannel( GreenChannel, 0.0, 1.5 );
       images.push_back( example );
-    
+
       cout << "  gradient ..." << endl;
       Image gradient;
       gradient.size( "130x194" );
       gradient.read( "gradient:#20a0ff-#ffff00" );
       gradient.label( "Gradient" );
       images.push_back( gradient );
-    
+
       cout << "  grayscale ..." << endl;
       example = model;
       example.label( "Grayscale" );
       example.quantizeColorSpace( GRAYColorspace );
       example.quantize( );
       images.push_back( example );
-    
+
       cout << "  implode ..." << endl;
       example = model;
       example.label( "Implode" );
@@ -284,19 +284,19 @@ int main( int /*argc*/, char ** argv)
       example.label( "Motion Blur" );
       example.motionBlur( 0.0, 7.0,45 );
       images.push_back( example );
-    
+
       cout << "  negate ..." << endl;
       example = model;
       example.label( "Negate" );
       example.negate( );
       images.push_back( example );
-    
+
       cout << "  normalize ..." << endl;
       example = model;
       example.label( "Normalize" );
       example.normalize( );
       images.push_back( example );
-    
+
       cout << "  oil paint ..." << endl;
       example = model;
       example.label( "Oil Paint" );
@@ -332,7 +332,7 @@ int main( int /*argc*/, char ** argv)
       example.label( "Ordered Dither\n(4x4)" );
       example.randomThreshold( Geometry(4,4) );
       images.push_back( example );
-    
+
       cout << "  ordered dither red 4x4..." << endl;
       example = model;
       example.label( "Ordered Dither\n(Red 4x4)" );
@@ -345,7 +345,7 @@ int main( int /*argc*/, char ** argv)
       plasma.read( "plasma:fractal" );
       plasma.label( "Plasma" );
       images.push_back( plasma );
-    
+
       cout << "  quantize ..." << endl;
       example = model;
       example.label( "Quantize" );
@@ -369,31 +369,31 @@ int main( int /*argc*/, char ** argv)
       example.label( "Quantum Operator\nTheshold Region" );
       example.quantumOperator( 30,40,68,112,GrayChannel,ThresholdQuantumOp,0.35*MaxRGB );
       images.push_back( example );
-    
+
       cout << "  raise ..." << endl;
       example = model;
       example.label( "Raise" );
       example.raise( );
       images.push_back( example );
-    
+
       cout << "  reduce noise ..." << endl;
       example = model;
       example.label( "Reduce Noise" );
       example.reduceNoise( 1.0 );
       images.push_back( example );
-    
+
       cout << "  resize ..." << endl;
       example = model;
       example.label( "Resize" );
       example.zoom( "50%" );
       images.push_back( example );
-    
+
       cout << "  roll ..." << endl;
       example = model;
       example.label( "Roll" );
       example.roll( "+20+10" );
       images.push_back( example );
-    
+
       cout << "  rotate ..." << endl;
       example = model;
       example.label( "Rotate" );
@@ -406,50 +406,50 @@ int main( int /*argc*/, char ** argv)
       example.label( "Scale" );
       example.scale( "60%" );
       images.push_back( example );
-    
+
       cout << "  segment ..." << endl;
       example = model;
       example.label( "Segment" );
       example.segment( 0.5, 0.25 );
       images.push_back( example );
-    
+
       cout << "  shade ..." << endl;
       example = model;
       example.label( "Shade" );
       example.shade( 30, 30, false );
       images.push_back( example );
-    
+
       cout << "  sharpen ..." << endl;
       example = model;
       example.label("Sharpen");
       example.sharpen( 0.0, 1.0 );
       images.push_back( example );
-    
+
       cout << "  shave ..." << endl;
       example = model;
       example.label("Shave");
       example.shave( Geometry( 10, 10) );
       images.push_back( example );
-    
+
       cout << "  shear ..." << endl;
       example = model;
       example.label( "Shear" );
       example.shear( 45, 45 );
       example.transparent( "black" );
       images.push_back( example );
-    
+
       cout << "  spread ..." << endl;
       example = model;
       example.label( "Spread" );
       example.spread( 3 );
       images.push_back( example );
-    
+
       cout << "  solarize ..." << endl;
       example = model;
       example.label( "Solarize" );
       example.solarize( );
       images.push_back( example );
-    
+
       cout << "  swirl ..." << endl;
       example = model;
       example.backgroundColor( "#000000FF" );
@@ -468,14 +468,14 @@ int main( int /*argc*/, char ** argv)
       example.label( "Random\nThreshold" );
       example.randomThreshold( Geometry(0.3*MaxRGB,0.85*MaxRGB) );
       images.push_back( example );
-    
+
       cout << "  unsharp mask ..." << endl;
       example = model;
       example.label( "Unsharp Mask" );
       //           radius_, sigma_, amount_, threshold_
       example.unsharpmask( 0.0, 1.0, 1.0, 0.05);
       images.push_back( example );
-    
+
       cout << "  wave ..." << endl;
       example = model;
       example.label( "Wave" );
@@ -483,7 +483,7 @@ int main( int /*argc*/, char ** argv)
       example.backgroundColor( "#000000FF" );
       example.wave( 25, 150 );
       images.push_back( example );
-    
+
       //
       // Create image montage.
       //

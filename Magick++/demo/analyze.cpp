@@ -11,9 +11,9 @@
 #include <iostream>
 #include <iomanip>
 #include <list>
-using namespace std; 
+using namespace std;
 using namespace Magick;
-int main(int argc,char **argv) 
+int main(int argc,char **argv)
 {
   if ( argc < 2 )
     {
@@ -55,13 +55,13 @@ int main(int argc,char **argv)
               pos++;
             }
         }
-        catch( Exception &error_ ) 
-          { 
-            cout << error_.what() << endl; 
+        catch( Exception &error_ )
+          {
+            cout << error_.what() << endl;
           }
         ++arg;
       }
   }
 
-  return 0; 
+  return 0;
 }
