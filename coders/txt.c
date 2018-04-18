@@ -381,7 +381,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         B,
         A;
 
-      const PixelPacket
+      PixelPacket
         *q;
 
       ExtendedSignedIntegralType NextImagePos = 0;
@@ -643,6 +643,9 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
               }
           }
+
+        /* Assure that all image pixels are initialized to black */
+        SetImage(image,OpaqueOpacity);
 
         BImgBuff = MagickAllocateArray(unsigned char *,
                                        (size_t)(x+1),
