@@ -1,3 +1,19 @@
+2018-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/demo/zoom.cpp (main): Add a -read-blob option to read
+	input file into a Blob so that it is read by the Blob reader
+	rather than the file reader.  Default the output Geometry to the
+	input image geometry in case the user does not specify a resize
+	resolution or geometry.
+
+	* Magick++/tests/readWriteBlob.cpp (main): Improve the quality of
+	code which reads a file into memory for Blob testing.
+
+	* magick/blob.c (BlobToImage): Add exception reports for the cases
+	where 'magick' was not set and the file format could not be
+	deduced from its header.  Previously a null Image pointer was
+	being returned without any exception being thrown.
+
 2018-04-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (ReadDPXImage): Assure that CbCr layer initializes

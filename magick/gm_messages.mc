@@ -11,6 +11,12 @@ Unable to create blob
 .
 
 MessageId       = +1
+SymbolicName    = BlobErrorUnableToDeduceImageFormat
+Language        = English
+Unable to deduce image format
+.
+
+MessageId       = +1
 SymbolicName    = BlobErrorUnableToObtainOffset
 Language        = English
 Unable to obtain current offset

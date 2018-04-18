@@ -26,6 +26,9 @@
       <Message name="UnrecognizedImageFormat">
         Unrecognized image format
       </Message>
+      <Message name="UnableToDeduceImageFormat">
+        Unable to deduce image format
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

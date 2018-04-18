@@ -35,6 +35,22 @@
 <div class="document">
 
 
+<p>2018-04-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>Magick++/demo/zoom.cpp (main): Add a -read-blob option to read
+input file into a Blob so that it is read by the Blob reader
+rather than the file reader.  Default the output Geometry to the
+input image geometry in case the user does not specify a resize
+resolution or geometry.</li>
+<li>Magick++/tests/readWriteBlob.cpp (main): Improve the quality of
+code which reads a file into memory for Blob testing.</li>
+<li>magick/blob.c (BlobToImage): Add exception reports for the cases
+where 'magick' was not set and the file format could not be
+deduced from its header.  Previously a null Image pointer was
+being returned without any exception being thrown.</li>
+</ul>
+</blockquote>
 <p>2018-04-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
