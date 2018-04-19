@@ -165,6 +165,10 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
   /*
     Initialize GIF data stream decoder.
   */
+  (void) memset(packet,0,256);
+  (void) memset(prefix,0,MaxStackSize*sizeof(short));
+  (void) memset(suffix,0,MaxStackSize);
+  (void) memset(pixel_stack,0,MaxStackSize+1);
   clear=1U << data_size;
   end_of_information=clear+1;
   available=clear+2;
