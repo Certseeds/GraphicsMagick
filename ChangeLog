@@ -1,3 +1,10 @@
+2018-04-20  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (ConvertPrimitiveToPath):  Fixed a bug
+	in which SVG paths containing multiple open subpaths were
+	not being processed correctly, resulting in incorrect
+	output.  This fixes ticket #94.
+
 2018-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/gif.c (DecodeImage): Fix use of uninitialized memory
@@ -282,13 +289,13 @@
 	"graphicsmagick/coder_AVS_fuzzer: Timeout in
 	graphicsmagick_coder_AVS_fuzzer". (Credit to OSS-Fuzz)
 
-2018-04-03  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+2018-04-05  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* coders/svg.c (SVGStartElement, SVGEndElement),
 	magick/render.c (DrawImage): The current text position
 	is now maintained by DrawImage() instead of by
 	SVGStartElement() and SVGEndElement().  This change was
-	made to support the recentely implmemented "use" and
+	made to support the recently implmemented "use" and
 	"class" elements, which may make changes to the font
 	size that are not visible to the code in svg.c.
 

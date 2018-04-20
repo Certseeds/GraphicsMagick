@@ -704,16 +704,16 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     code;
 
   PointInfo
-    p,
-    q;
+    p,  /* first point in subpath (i.e., just did a "moveto" to this point) */
+    q;  /* previous point in subpath */
 
   register long
     i,
     n;
 
   long
-    coordinates,
-    start;
+    coordinates,  /* number of points in subpath */
+    start;        /* index to start of subpath in path_info */
 
   ARG_NOT_USED(draw_info);
 
@@ -747,30 +747,45 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     code=LineToCode;
     if (coordinates <= 0)
       {
+        /* start of a new subpath */
         coordinates=(long) primitive_info[i].coordinates;
-        p=primitive_info[i].point;
-        start=n;
+        p=primitive_info[i].point;  /* first point in subpath */
+        start=n;  /* index to start of subpath in path_info */
         code=MoveToCode;
       }
     coordinates--;
     /*
-      Eliminate duplicate points.
+      Do not put the current point into path_info if it is a duplicate of
+      (i.e. "too close" to) the previous point.  However, the current point
+      is always put into path_info when it is the first point in a subpath.
+      This condition is true whenever code==MoveToCode (checking i==0 only
+      detects the first subpath).  Note that for this case the "previous
+      point" (q) is not valid (usually a leftover from the previous subpath),
+      so the start-of-subpath test must be done first.
     */
-    if ((i == 0) || (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
+    if ((code == MoveToCode) || (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
         (fabs(q.y-primitive_info[i].point.y) > MagickEpsilon))
       {
+        /* put current point into path_info*/
         path_info[n].code=code;
         path_info[n].point=primitive_info[i].point;
-        q=primitive_info[i].point;
+        q=primitive_info[i].point;  /* will be "previous point" for next iteration */
         n++;
       }
     if (coordinates > 0)
-      continue;
+      continue;   /* go process next point in current subpath */
+    /*
+      The current point is the last point in the subpath.  If it closes
+      the subpath (i.e., it's "close enough" to "p", the start of the
+      subpath), go on to the next subpath.
+    */
     if ((fabs(p.x-primitive_info[i].point.x) <= MagickEpsilon) &&
         (fabs(p.y-primitive_info[i].point.y) <= MagickEpsilon))
-      continue;
+      continue;   
     /*
-      Mark the p point as open if it does not match the q.
+      The just completed subpath is not closed.  Mark it as "open" and add two
+      more points (repeat of current point + subpath start point) to close
+      it (this is a "ghost line").
     */
     path_info[start].code=OpenCode;
     path_info[n].code=GhostlineCode;
