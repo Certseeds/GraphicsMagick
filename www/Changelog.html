@@ -35,6 +35,15 @@
 <div class="document">
 
 
+<p>2018-04-20  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (ConvertPrimitiveToPath):  Fixed a bug
+in which SVG paths containing multiple open subpaths were
+not being processed correctly, resulting in incorrect
+output.  This fixes ticket #94.</li>
+</ul>
+</blockquote>
 <p>2018-04-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -309,14 +318,14 @@ scalable.  Helps with oss-fuzz 7404
 graphicsmagick_coder_AVS_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
-<p>2018-04-03  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<p>2018-04-05  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
 <li>coders/svg.c (SVGStartElement, SVGEndElement),
 magick/render.c (DrawImage): The current text position
 is now maintained by DrawImage() instead of by
 SVGStartElement() and SVGEndElement().  This change was
-made to support the recentely implmemented &quot;use&quot; and
+made to support the recently implmemented &quot;use&quot; and
 &quot;class&quot; elements, which may make changes to the font
 size that are not visible to the code in svg.c.</li>
 <li>coders/svg.c (GetStyleTokens, SVGStartElement): The
