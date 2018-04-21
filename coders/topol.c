@@ -699,7 +699,9 @@ NoPalette:
 
            j = TilX * (ldblk+SkipBlk);
            for(i=0;i<Header.TileHeight;i++)
-           {
+           {			                /* It appears that tile padding is legal in Topol format. */
+             if(i+TilY>=image->rows) break;	/* Do not read padding tile data, abort the current tile. */
+
              if(ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
              {
                MagickFreeMemory(Offsets);
