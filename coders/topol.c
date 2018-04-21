@@ -83,7 +83,7 @@ typedef struct                  The palette record inside TopoL
    BYTE Blue;
 } paletteRAS;*/
 
-static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsigned Xoffset, unsigned columns, ImportPixelAreaOptions *import_options)
+static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigned Xoffset, unsigned columns, ImportPixelAreaOptions *import_options)
 {
   int
     bit;
@@ -105,8 +105,7 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
     case 1:                     /* Convert bitmap scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if (q == (PixelPacket *) NULL)
-          break;
+        if(q == (PixelPacket *) NULL) return -1;          
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 7); x += 8)
           {
@@ -138,8 +137,7 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
     case 2:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if (q == (PixelPacket *) NULL)
-          break;
+        if(q == (PixelPacket *) NULL) return -1;          
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 1); x += 2)
           {
@@ -194,8 +192,7 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
     case 4:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if (q == (PixelPacket *) NULL)
-          break;
+        if(q == (PixelPacket *) NULL) return -1;          
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 1); x += 2)
           {
@@ -227,8 +224,7 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
     case 8:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if (q == (PixelPacket *) NULL)
-          break;
+        if(q == (PixelPacket *) NULL) return -1;          
         indexes = AccessMutableIndexes(image);
 
         for (x = 0; x < (long)columns; x++)
@@ -249,29 +245,28 @@ static void InsertRow(int depth, unsigned char *p, long y, Image * image, unsign
 
     case 16:            /* Convert 16 bit Gray scanline. */
       q = SetImagePixels(image, Xoffset, y, columns, 1);
-      if (q == (PixelPacket *) NULL)
-          break;
+      if(q == (PixelPacket *) NULL) return -1;
       (void)ImportImagePixelArea(image,GrayQuantum,16,p,import_options,0);
       if(!SyncImagePixels(image)) break;
       break;
 
     case 24:            /* Convert RGB scanline. */
       q = SetImagePixels(image, Xoffset, y, columns, 1);
-      if (q == (PixelPacket *) NULL)
-          break;
+      if(q == (PixelPacket *) NULL) return -1;          
       (void)ImportImagePixelArea(image,RGBQuantum,8,p,import_options,0);
       if(!SyncImagePixels(image)) break;
       break;
 
     case 32:            /* Convert 32 bit Gray scanline. */
       q = SetImagePixels(image, Xoffset, y, columns, 1);
-      if (q == (PixelPacket *) NULL)
-          break;
+      if(q == (PixelPacket *) NULL) return -1;          
       (void)ImportImagePixelArea(image,GrayQuantum,32,p,import_options,0);
       if(!SyncImagePixels(image)) break;
       break;
 
     }
+
+  return 0;
 }
 
 
@@ -705,16 +700,21 @@ NoPalette:
            j = TilX * (ldblk+SkipBlk);
            for(i=0;i<Header.TileHeight;i++)
            {
-             if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
-               {
-                 MagickFreeMemory(Offsets);
-                 ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
-                 break;
-               }
+             if(ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
+             {
+               MagickFreeMemory(Offsets);
+               ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
+               break;
+             }
              if(SkipBlk>0)
                SeekBlob(image, SkipBlk, SEEK_CUR);
-             InsertRow(depth, BImgBuff, i+TilY, image, TilX,
-                    (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options);
+             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX,
+                    (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options))
+             {
+               MagickFreeMemory(Offsets);
+               ThrowTOPOLReaderException(CorruptImageError,TooMuchImageDataInFile, image);
+               break;
+             }             
           }
         }
 
