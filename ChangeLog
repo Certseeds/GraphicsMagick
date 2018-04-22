@@ -1,5 +1,10 @@
 2018-04-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mvg.c (ReadMVGImage): Assure that MVG viewbox parameters
+	were supplied.  Fixes oss-fuzz 7936
+	"graphicsmagick/coder_MVG_fuzzer: Use-of-uninitialized-value in
+	ReadMVGImage". (Credit to OSS-Fuzz)
+
 	* coders/dpx.c (ReadDPXImage): Element descriptors CbYCrY422 and
 	CbYACrYA4224 require that the image width be evenly divisible by 2
 	so enforce that.  Fixes oss-fuzz 7935
