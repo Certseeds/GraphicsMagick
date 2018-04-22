@@ -501,6 +501,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   pixels=MagickAllocateMemory(unsigned char *,packets + (packets != 0 ? 256 : 0));
   if (pixels == (unsigned char *) NULL)
     ThrowPDBReaderException(ResourceLimitWarning,MemoryAllocationFailed,image);
+  (void) memset(pixels,0,packets + (packets != 0 ? 256 : 0));
   switch (pdb_image.version)
   {
     case 0:
