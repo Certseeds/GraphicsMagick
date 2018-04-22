@@ -1773,6 +1773,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
   image->columns=dpx_image_info.pixels_per_line & 0xFFFFFFFF;
   image->rows=dpx_image_info.lines_per_image_element & 0xFFFFFFFF;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Geometry: %lux%lu", image->columns, image->rows);
   U16ToAttribute(image,"DPX:image.orientation",dpx_image_info.orientation);
   image->orientation=DPXOrientationToOrientationType(dpx_image_info.orientation);
 
@@ -2012,7 +2015,33 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             dpx_image_info.elements=element;
             break;
           }
-
+        /*
+          Special image width rules for some element descriptors
+        */
+        switch (element_descriptor)
+          {
+          case ImageElementCbYCrY422:
+          case ImageElementCbYACrYA4224:
+            if (image->columns % 2)
+              {
+                if (image->logging)
+                  {
+                    char txt_buffer[MaxTextExtent];
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Image width must be evenly divisible"
+                                          " by 2 for \"%s\" element",
+                                          DescribeImageElementDescriptor(txt_buffer,
+                                                                         element_descriptor));
+                  }
+                dpx_image_info.elements=element;
+              }
+            break;
+          default:
+            {
+            }
+          }
+        if (dpx_image_info.elements == element)
+          break;
         /*
           Validate and set image colorspace
         */
