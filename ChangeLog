@@ -1,5 +1,15 @@
 2018-04-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadDPXImage): Reject DPX files which claim to use
+	signed data.  Fixes oss-fuzz 7758
+	"graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+	WriteDPXImage". (Credit to OSS-Fuzz)
+	(ReadDPXImage): Validate that the image elements do update all of
+	the channels, including the alpha channel.  Now report an error if
+	a color channel is missing.  Fixes oss-fuzz 7758
+	"graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+	WriteDPXImage".
+
 	* coders/gif.c (DecodeImage): Finally fix oss-fuzz 7732
 	"graphicsmagick/coder_GIF_fuzzer: Heap-buffer-overflow in
 	DecodeImage" which was not actually fixed with previous

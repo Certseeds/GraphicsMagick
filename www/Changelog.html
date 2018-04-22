@@ -38,6 +38,15 @@
 <p>2018-04-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dpx.c (ReadDPXImage): Reject DPX files which claim to use
+signed data.  Fixes oss-fuzz 7758
+&quot;graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+WriteDPXImage&quot;. (Credit to OSS-Fuzz)
+(ReadDPXImage): Validate that the image elements do update all of
+the channels, including the alpha channel.  Now report an error if
+a color channel is missing.  Fixes oss-fuzz 7758
+&quot;graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+WriteDPXImage&quot;.</li>
 <li>coders/gif.c (DecodeImage): Finally fix oss-fuzz 7732
 &quot;graphicsmagick/coder_GIF_fuzzer: Heap-buffer-overflow in
 DecodeImage&quot; which was not actually fixed with previous
