@@ -1,3 +1,10 @@
+2018-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): ColorDifferenceCbCr element
+	requires two samples/pixel, not one. Fixes oss-fuzz 7951
+	"graphicsmagick/coder_DPX_fuzzer: Heap-buffer-overflow in
+	ReadDPXImage". (Credit to OSS-Fuzz)
+
 2018-04-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdb.c (ReadPDBImage): Assure that pixels buffer is

@@ -1024,8 +1024,10 @@ STATIC unsigned int  DPXSamplesPerPixel(const DPXImageElementDescriptor element_
     case ImageElementBlue:
     case ImageElementAlpha:
     case ImageElementLuma:
-    case ImageElementColorDifferenceCbCr:
       samples_per_pixel=1;
+      break;
+    case ImageElementColorDifferenceCbCr: /* Cb | Cr , even number of columns required. */
+      samples_per_pixel=2;
       break;
     case ImageElementRGB:
       samples_per_pixel=3;
@@ -2020,6 +2022,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         switch (element_descriptor)
           {
+          case ImageElementColorDifferenceCbCr:
           case ImageElementCbYCrY422:
           case ImageElementCbYACrYA4224:
             if (image->columns % 2)
