@@ -191,7 +191,7 @@ typedef enum
   ImageElementBlue=3,
   ImageElementAlpha=4,
   ImageElementLuma=6,
-  ImageElementColorDifferenceCbCr=7,
+  ImageElementColorDifferenceCbCr=7, /* 4:2:2 */
   ImageElementDepth=8,
   ImageElementCompositeVideo=9,
   ImageElementRGB=50,              /* BGR order */
@@ -1026,7 +1026,7 @@ STATIC unsigned int  DPXSamplesPerPixel(const DPXImageElementDescriptor element_
     case ImageElementLuma:
       samples_per_pixel=1;
       break;
-    case ImageElementColorDifferenceCbCr: /* Cb | Cr */
+    case ImageElementColorDifferenceCbCr: /* Cb | Cr 4:2:2 sampling ..., even number of columns required.*/
       samples_per_pixel=2;
       break;
     case ImageElementRGB:
@@ -2022,6 +2022,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         switch (element_descriptor)
           {
+          case ImageElementColorDifferenceCbCr: /* 4:2:2 */
           case ImageElementCbYCrY422:
           case ImageElementCbYACrYA4224:
             if (image->columns % 2)
@@ -2529,16 +2530,6 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     "Samples per row %u, octets per row %lu, element size %lu",
                                     samples_per_row, (unsigned long) row_octets,
                                     (unsigned long) element_size);
-            }
-          if (((element_descriptor == ImageElementCbYCrY422) ||
-               (element_descriptor == ImageElementCbYACrYA4224) ||
-               (element_descriptor == ImageElementColorDifferenceCbCr)))
-            {
-              /*
-                When subsampling, image width must be evenly divisible by two.
-              */
-              if (image->columns %2)
-                ThrowDPXReaderException(CorruptImageError,SubsamplingRequiresEvenWidth,image);
             }
           /*
             Validate that the elements provide all of the channels
