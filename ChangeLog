@@ -1,5 +1,10 @@
 2018-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/bmp.c (ReadBMPImage): Fix benign use of uninitialized
+	data when testing header magick.  Fixes oss-fuzz 7980
+	"graphicsmagick/coder_BMP_fuzzer: Use-of-uninitialized-value in
+	LocaleNCompare". (Credit to OSS-Fuzz)
+
 	* coders/dpx.c (ReadDPXImage): ColorDifferenceCbCr does require
 	even image width. Fixes oss-fuzz 7966
 	"graphicsmagick/coder_DPX_fuzzer: Unknown signal in

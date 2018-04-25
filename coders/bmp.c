@@ -620,6 +620,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) memset(&bmp_info,0,sizeof(BMPInfo));
   bmp_info.ba_offset=0;
   start_position=0;
+  magick[0]=magick[1]=0;
   count=ReadBlob(image,2,(char *) magick);
   do
   {
@@ -646,7 +647,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if ((count=ReadBlob(image,2,(char *) magick)) != 2)
         break;
     }
-    if (logging)
+    if (logging && count == 2)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Magick: %c%c",
         magick[0],magick[1]);
     if ((count != 2) || /* Found "BA" header from above above */

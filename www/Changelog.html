@@ -38,6 +38,10 @@
 <p>2018-04-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/bmp.c (ReadBMPImage): Fix benign use of uninitialized
+data when testing header magick.  Fixes oss-fuzz 7980
+&quot;graphicsmagick/coder_BMP_fuzzer: Use-of-uninitialized-value in
+LocaleNCompare&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/dpx.c (ReadDPXImage): ColorDifferenceCbCr does require
 even image width. Fixes oss-fuzz 7966
 &quot;graphicsmagick/coder_DPX_fuzzer: Unknown signal in
