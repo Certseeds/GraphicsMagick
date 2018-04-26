@@ -1,3 +1,10 @@
+2018-04-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (StringToList): Only allocate the memory
+	required when converting string to an ASCII list.  May or may not
+	fix oss-fuzz 8013 "graphicsmagick/coder_XPM_fuzzer: Out-of-memory
+	in graphicsmagick_coder_XPM_fuzzer". (Credit to OSS-Fuzz)
+
 2018-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix benign use of uninitialized
