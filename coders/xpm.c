@@ -127,6 +127,56 @@ static unsigned int IsXPM(const unsigned char *magick,const size_t length)
 %
 */
 
+static char **StringToListMod(char *text)
+{
+  char
+    **textlist;
+
+  register char
+    *p;
+
+  register size_t
+    i;
+
+  size_t
+    lines;
+
+  if (text == (char *) NULL)
+    return((char **) NULL);
+
+  /*
+    Convert string to an ASCII list, modifying the input string.
+  */
+  lines=1;
+  for (p=text; *p != '\0'; p++)
+    if (*p == '\n')
+      lines++;
+  textlist=MagickAllocateMemory(char **,(lines+1)*sizeof(char *));
+  if (textlist == (char **) NULL)
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                      UnableToConvertText);
+  i=0;
+  textlist[i]=text;
+  for (p=text; *p != '\0'; p++)
+    {
+      if (*p == '\r')
+        {
+          *p='\0';
+          p++;
+        }
+      if (*p == '\n')
+        {
+          *p='\0';
+          p++;
+          i++;
+          textlist[i]=p;
+        }
+    }
+  i++;
+  textlist[i]=(char *) NULL;
+  return(textlist);
+}
+
 static char *ParseColor(char *data)
 {
 #define NumberTargets  6
@@ -172,9 +222,6 @@ do { \
     for (i=0; i < (long) image->colors; i++) \
       MagickFreeMemory(keys[i]); \
   MagickFreeMemory(keys); \
-  if (textlist) \
-    for (i=0; textlist[i] != (char *) NULL; i++) \
-      MagickFreeMemory(textlist[i]); \
   MagickFreeMemory(textlist); \
   MagickFreeMemory(xpm_buffer); \
   ThrowReaderException(code_,reason_,image_); \
@@ -317,8 +364,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   }
   /*
     Scan for non-white space binary control codes and reject file if
-    they are present.  This is done because StringToList() converts
-    such text content to hex and because it is not good XPM data.
+    they are present.
   */
   for (p=xpm_buffer; *p != '\0'; p++)
     if (((unsigned char) *p < 32) && !isspace((int)(unsigned char) (*p)))
@@ -329,13 +375,16 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "Binary control codes error");
         ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
     }
-  textlist=StringToList(xpm_buffer);
-  MagickFreeMemory(xpm_buffer);
+  textlist=StringToListMod(xpm_buffer);
   if (textlist == (char **) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 #if 0
   if (image->logging)
     {
+      for (i=0; textlist[i] != (char *) NULL; i++)
+        { };
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "TextList has %lu entries", i);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "TextList");
       for (i=0; textlist[i] != (char *) NULL; i++)
@@ -469,9 +518,8 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   for (i=0; i < (long) image->colors; i++)
     MagickFreeMemory(keys[i]);
   MagickFreeMemory(keys);
-  for (i=0; textlist[i] != (char *) NULL; i++)
-    MagickFreeMemory(textlist[i]);
   MagickFreeMemory(textlist);
+  MagickFreeMemory(xpm_buffer);
   CloseBlob(image);
   return(image);
 }

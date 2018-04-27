@@ -5126,7 +5126,8 @@ MagickExport char **StringToList(const char *text)
         if (textlist[i] == (char *) NULL)
           MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
             UnableToConvertText);
-        FormatString(textlist[i],"0x%08lx: ",chars_per_line*i);
+        FormatString(textlist[i],"0x%08" MAGICK_SIZE_T_F "x: ",
+                     (MAGICK_SIZE_T) chars_per_line*i);
         q=textlist[i]+strlen(textlist[i]);
         for (j=1; j <= Min(strlen(p),chars_per_line); j++)
         {
