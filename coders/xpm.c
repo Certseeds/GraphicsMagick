@@ -162,14 +162,16 @@ static char **StringToListMod(char *text)
       if (*p == '\r')
         {
           *p='\0';
-          p++;
+          continue;
         }
       if (*p == '\n')
         {
           *p='\0';
-          p++;
-          i++;
-          textlist[i]=p;
+          if (*(p+1) != '\0')
+            {
+              i++;
+              textlist[i]=p+1;
+            }
         }
     }
   i++;
@@ -389,7 +391,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             "TextList");
       for (i=0; textlist[i] != (char *) NULL; i++)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "    %lu: %s", i, textlist[i]);
+                              "    %lu: \"%s\"", i, textlist[i]);
     }
 #endif
 
