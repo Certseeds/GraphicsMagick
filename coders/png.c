@@ -4896,10 +4896,29 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Record starting point.
                   */
                   loop_iters=mng_get_long(&chunk[1]);
-                  if (loop_iters == 0)
+                  if (loop_iters <= 0)
                     skipping_loop=loop_level;
                   else
                     {
+                      long
+                        loop_iters_max = 512;
+
+                      const char
+                        *definition_value;
+
+                      if ((definition_value=AccessDefinition(image_info,"mng","maximum-loops")))
+                        loop_iters_max=atol(definition_value);
+                      if (loop_iters > loop_iters_max)
+                        loop_iters=loop_iters_max;
+
+                      /*
+                        The LOOP chunk allows an iteration count in the range 0..2^31-1
+                      */
+                      if (loop_iters >= 2147483647L)
+                        loop_iters=2147483647L;
+                      else if (loop_iters < 0)
+                        loop_iters=1;
+
                       mng_info->loop_jump[loop_level]=TellBlob(image);
                       mng_info->loop_count[loop_level]=loop_iters;
                     }
