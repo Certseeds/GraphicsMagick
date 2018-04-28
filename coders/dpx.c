@@ -2116,7 +2116,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
         max_samples_per_pixel=Max(max_samples_per_pixel,
                                   DPXSamplesPerPixel(element_descriptor));
-      }
+
+
+      } /* for (element=0; element < dpx_image_info.elements; element++) */
 
     /*
       Check if there were any supported elements
@@ -2177,6 +2179,106 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowDPXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+  /*
+    Validate that the elements provide all of the channels
+  */
+  {
+    /* Flags to use when updating channel_bits */
+#define RED_CHANNEL     (1U)
+#define GREEN_CHANNEL   (1U << 1U)
+#define BLUE_CHANNEL    (1U << 2U)
+#define OPACITY_CHANNEL (1U << 3U)
+
+    unsigned int
+      channel_bits; /* record of channels which were updated by elements */
+
+    channel_bits=0;
+    for (element=0; element < dpx_image_info.elements; element++)
+      {
+        element_descriptor=(DPXImageElementDescriptor)
+          dpx_image_info.element_info[element].descriptor;
+
+        /*
+          Tally channels which would be updated by this element.
+        */
+        switch (element_descriptor)
+          {
+          case ImageElementRed:
+            channel_bits |= RED_CHANNEL;
+            break;
+          case ImageElementGreen:
+            channel_bits |= GREEN_CHANNEL;
+            break;
+          case ImageElementBlue:
+            channel_bits |= BLUE_CHANNEL;
+            break;
+          case ImageElementAlpha:
+            channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementUnspecified:
+          case ImageElementLuma:
+            if (IsYCbCrColorspace(image->colorspace))
+              {
+                channel_bits |= RED_CHANNEL;
+              }
+            else
+              {
+                channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+                if (!image->matte)
+                  channel_bits |= OPACITY_CHANNEL;
+              }
+            break;
+          case ImageElementColorDifferenceCbCr:
+            channel_bits |= GREEN_CHANNEL | BLUE_CHANNEL;
+            break;
+          case ImageElementRGB:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementRGBA:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementABGR:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCrY422:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYACrYA4224:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCr444:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCrA4444:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          default:
+            break;
+          }
+      }
+
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Channels updated: %s%s%s%s",
+                            channel_bits & RED_CHANNEL ? "R" : "",
+                            channel_bits & GREEN_CHANNEL ? "G" : "",
+                            channel_bits & BLUE_CHANNEL ? "B" : "",
+                            channel_bits & OPACITY_CHANNEL ? "O" : "");
+
+    if (!(channel_bits & OPACITY_CHANNEL))
+      matte_init = MagickTrue;
+
+    if ((channel_bits & (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
+        != (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
+      ThrowDPXReaderException(CorruptImageError,MissingImageChannel,image);
+  }
 
   /*
     Validate file size if using a seekable blob
@@ -2531,105 +2633,6 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     samples_per_row, (unsigned long) row_octets,
                                     (unsigned long) element_size);
             }
-          /*
-            Validate that the elements provide all of the channels
-          */
-          {
-            /* Flags to use when updating channel_bits */
-#define RED_CHANNEL     (1U)
-#define GREEN_CHANNEL   (1U << 1U)
-#define BLUE_CHANNEL    (1U << 2U)
-#define OPACITY_CHANNEL (1U << 3U)
-
-            unsigned int
-              channel_bits; /* record of channels which were updated by elements */
-
-            channel_bits=0;
-            for (element=0; element < dpx_image_info.elements; element++)
-              {
-                element_descriptor=(DPXImageElementDescriptor)
-                  dpx_image_info.element_info[element].descriptor;
-
-                /*
-                  Tally channels which would be updated by this element.
-                */
-                switch (element_descriptor)
-                  {
-                  case ImageElementRed:
-                    channel_bits |= RED_CHANNEL;
-                    break;
-                  case ImageElementGreen:
-                    channel_bits |= GREEN_CHANNEL;
-                    break;
-                  case ImageElementBlue:
-                    channel_bits |= BLUE_CHANNEL;
-                    break;
-                  case ImageElementAlpha:
-                    channel_bits |= OPACITY_CHANNEL;
-                    break;
-                  case ImageElementUnspecified:
-                  case ImageElementLuma:
-                    if (IsYCbCrColorspace(image->colorspace))
-                      {
-                        channel_bits |= RED_CHANNEL;
-                      }
-                    else
-                      {
-                        channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
-                        if (!image->matte)
-                          channel_bits |= OPACITY_CHANNEL;
-                      }
-                    break;
-                  case ImageElementColorDifferenceCbCr:
-                    channel_bits |= GREEN_CHANNEL | BLUE_CHANNEL;
-                    break;
-                  case ImageElementRGB:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
-                    if (!image->matte)
-                      channel_bits |= OPACITY_CHANNEL;
-                    break;
-                  case ImageElementRGBA:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
-                    break;
-                  case ImageElementABGR:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
-                    break;
-                  case ImageElementCbYCrY422:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
-                    if (!image->matte)
-                      channel_bits |= OPACITY_CHANNEL;
-                    break;
-                  case ImageElementCbYACrYA4224:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
-                    break;
-                  case ImageElementCbYCr444:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
-                    if (!image->matte)
-                      channel_bits |= OPACITY_CHANNEL;
-                    break;
-                  case ImageElementCbYCrA4444:
-                    channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
-                    break;
-                  default:
-                    break;
-                  }
-              }
-
-            if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Channels updated: %s%s%s%s",
-                                    channel_bits & RED_CHANNEL ? "R" : "",
-                                    channel_bits & GREEN_CHANNEL ? "G" : "",
-                                    channel_bits & BLUE_CHANNEL ? "B" : "",
-                                    channel_bits & OPACITY_CHANNEL ? "O" : "");
-
-            if (!(channel_bits & OPACITY_CHANNEL))
-              matte_init = MagickTrue;
-
-            if ((channel_bits & (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
-                != (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
-              ThrowDPXReaderException(CorruptImageError,MissingImageChannel,image);
-          }
 
           /*
             Read element data.
