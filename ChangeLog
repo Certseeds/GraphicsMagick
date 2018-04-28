@@ -1,5 +1,12 @@
 2018-04-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): The embedded JPEG image is
+	required to have the same dimensions as the JNG image as provided
+	by JHDR.  Fixes SourceForge bug 555 "heap-buffer-overflow in
+	AcquireCacheNexus when processing jng file".  It is likely that
+	this issue is precipitated by using 'montage' which seems to set a
+	default non-zero image size.
+
 	* coders/dpx.c (ReadDPXImage): Move misplaced channel validation
 	code.  Fixes oss-fuzz 8041 "graphicsmagick/coder_DPX_fuzzer:
 	Use-of-uninitialized-value in WriteDPXImage" and oss-fuzz 8055

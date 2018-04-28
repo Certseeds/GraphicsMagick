@@ -3632,11 +3632,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "    Copying jng_image pixels %lux%lu to main image %lux%lu.",
-                              jng_image->columns, jng_image->rows,
-                              image->columns, image->rows);
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "jng_height=%lu, jng_width=%lu",
                               jng_height, jng_width);
       image->rows=jng_height;
@@ -3646,7 +3641,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           if (logging)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "    jng_width=%lu jng_height=%lu",
+              "  jng_width=%lu jng_height=%lu",
               (unsigned long)jng_width,(unsigned long)jng_height);
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
@@ -3655,6 +3650,25 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                          ImproperImageHeader,image->filename);
           return ((Image *)NULL);
         }
+      if ((image->columns != jng_image->columns) ||
+          (image->rows != jng_image->rows))
+        {
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "image dimensions %lux%lu do not"
+                                  " match JPEG dimensions %lux%lu",
+                                  image->columns,image->rows,
+                                  jng_image->columns,jng_image->rows);
+          DestroyJNG(NULL,&color_image,&color_image_info,
+                     &alpha_image,&alpha_image_info);
+          DestroyImage(jng_image);
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
+          return ((Image *)NULL);
+        }
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "copying jng_image pixels to main image");
       for (y=0; y < (long) image->rows; y++)
         {
           s=AcquireImagePixels(jng_image,0,y,image->columns,1,

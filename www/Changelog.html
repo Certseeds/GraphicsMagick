@@ -38,6 +38,12 @@
 <p>2018-04-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (ReadOneJNGImage): The embedded JPEG image is
+required to have the same dimensions as the JNG image as provided
+by JHDR.  Fixes SourceForge bug 555 &quot;heap-buffer-overflow in
+AcquireCacheNexus when processing jng file&quot;.  It is likely that
+this issue is precipitated by using 'montage' which seems to set a
+default non-zero image size.</li>
 <li>coders/dpx.c (ReadDPXImage): Move misplaced channel validation
 code.  Fixes oss-fuzz 8041 &quot;graphicsmagick/coder_DPX_fuzzer:
 Use-of-uninitialized-value in WriteDPXImage&quot; and oss-fuzz 8055
