@@ -1047,21 +1047,29 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->matte=True;
       for (y=(long) image->rows-1; y >= 0; y--)
         {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "y=%ld", y);
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           for (x=0; x < ((long) image->columns-7); x+=8)
             {
               byte=0;
-              (void) ReadBlob(image,sizeof(byte),&byte);
+              if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                break;
               for (bit=0; bit < 8; bit++)
                 q[x+bit].opacity=(Quantum)
                   (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
             }
+          /* Detect early loop termination above due to EOF */
+          if (x < ((long) image->columns-7))
+            break;
           if ((image->columns % 8) != 0)
             {
               byte=0;
-              (void) ReadBlob(image,sizeof(byte),&byte);
+              if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                break;
               for (bit=0; bit < (long) (image->columns % 8); bit++)
                 q[x+bit].opacity=(Quantum)
                   (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
@@ -1070,7 +1078,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             for (x=0; x < (long) ((32-(image->columns % 32))/8); x++)
               {
                 byte=0;
-                (void) ReadBlob(image,sizeof(byte),&byte);
+                if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                  break;
               }
           if (!SyncImagePixels(image))
             break;
@@ -1081,9 +1090,17 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
+#if 0
+      /*
+        FIXME: SourceForge bug 557 provides an icon for which magick
+        is set to "ICODIB" by the 'icon' coder but there is no data
+        for the ICO mask.  Intentionally ignore EOF at this point
+        until this issue gets figured out.
+       */
       if (EOFBlob(image))
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
                        image->filename);
+#endif
     }
   if (dib_info.height < 0)
     {

@@ -38,6 +38,10 @@
 <p>2018-04-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dib.c (ReadDIBImage): Disable EOF tests for &quot;ICODIB&quot;
+subformat due to icon file provided by SourceForge issue #557
+&quot;ErrorCorruptImage: Magick: Unexpected end-of-file ()&quot; where an
+EOF error was reported due to no mask data being supplied.</li>
 <li>coders/png.c (ReadOneJNGImage): The embedded JPEG image is
 required to have the same dimensions as the JNG image as provided
 by JHDR.  Fixes SourceForge bug 555 &quot;heap-buffer-overflow in
