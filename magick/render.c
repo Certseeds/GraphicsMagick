@@ -163,7 +163,7 @@ static MagickPassFail
   DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickBool
-  IsDrawInfoClippingPath(const DrawInfo *),               /* is DrawInfo a clipping path */
+  /*IsDrawInfoClippingPath(const DrawInfo *),*/           /* is DrawInfo a clipping path */
   IsDrawInfoSVGCompliant(const DrawInfo *),               /* is DrawInfo drawn as SVG compliant */
   IsDrawInfoSVGCompliantClippingPath(const DrawInfo *);   /* is DrawInfo drawn as SVG compliant clipping path */
 
@@ -7029,12 +7029,14 @@ TraceStrokePolygon(const DrawInfo *draw_info,
   return(stroke_polygon);
 }
 
+#if 0
 /* is the DrawInfo drawn as SVG compliant */
 static MagickBool
 IsDrawInfoClippingPath(const DrawInfo * draw_info)
 {
   return(((draw_info->flags&0x2U)==2U)?MagickTrue:MagickFalse);
 }
+#endif
 
 /* is the DrawInfo drawn as SVG compliant */
 static MagickBool

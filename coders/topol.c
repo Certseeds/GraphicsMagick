@@ -105,7 +105,7 @@ static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigne
     case 1:                     /* Convert bitmap scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if(q == (PixelPacket *) NULL) return -1;          
+        if(q == (PixelPacket *) NULL) return -1;
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 7); x += 8)
           {
@@ -137,7 +137,7 @@ static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigne
     case 2:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if(q == (PixelPacket *) NULL) return -1;          
+        if(q == (PixelPacket *) NULL) return -1;
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 1); x += 2)
           {
@@ -192,7 +192,7 @@ static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigne
     case 4:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if(q == (PixelPacket *) NULL) return -1;          
+        if(q == (PixelPacket *) NULL) return -1;
         indexes = AccessMutableIndexes(image);
         for (x = 0; x < ((long)columns - 1); x += 2)
           {
@@ -224,7 +224,7 @@ static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigne
     case 8:                     /* Convert PseudoColor scanline. */
       {
         q = SetImagePixels(image, Xoffset, y, columns, 1);
-        if(q == (PixelPacket *) NULL) return -1;          
+        if(q == (PixelPacket *) NULL) return -1;
         indexes = AccessMutableIndexes(image);
 
         for (x = 0; x < (long)columns; x++)
@@ -252,14 +252,14 @@ static int InsertRow(int depth, unsigned char *p, long y, Image * image, unsigne
 
     case 24:            /* Convert RGB scanline. */
       q = SetImagePixels(image, Xoffset, y, columns, 1);
-      if(q == (PixelPacket *) NULL) return -1;          
+      if(q == (PixelPacket *) NULL) return -1;
       (void)ImportImagePixelArea(image,RGBQuantum,8,p,import_options,0);
       if(!SyncImagePixels(image)) break;
       break;
 
     case 32:            /* Convert 32 bit Gray scanline. */
       q = SetImagePixels(image, Xoffset, y, columns, 1);
-      if(q == (PixelPacket *) NULL) return -1;          
+      if(q == (PixelPacket *) NULL) return -1;
       (void)ImportImagePixelArea(image,GrayQuantum,32,p,import_options,0);
       if(!SyncImagePixels(image)) break;
       break;
@@ -466,7 +466,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   i = GetBlobSize(image);
   if(i>0)
     if(((magick_uint64_t)8*Header.Cols*(magick_uint64_t)Header.Rows) / image->depth > (magick_uint64_t)GetBlobSize(image))
-      goto TOPOL_KO;	/* Check for forged image that overflows file size. */
+      goto TOPOL_KO;    /* Check for forged image that overflows file size. */
 
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
@@ -685,7 +685,7 @@ NoPalette:
            {
            ldblk = Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX];
            if(SeekBlob(image, ldblk, SEEK_SET) != ldblk)
-             {							/* When seek does not reach required place, bail out. */
+             {                                                  /* When seek does not reach required place, bail out. */
                MagickFreeMemory(Offsets);
                ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
                break;
@@ -699,8 +699,8 @@ NoPalette:
 
            j = TilX * (ldblk+SkipBlk);
            for(i=0;i<Header.TileHeight;i++)
-           {			                /* It appears that tile padding is legal in Topol format. */
-             if(i+TilY>=image->rows) break;	/* Do not read padding tile data, abort the current tile. */
+           {                                    /* It appears that tile padding is legal in Topol format. */
+             if((unsigned long) i+TilY>=image->rows) break;     /* Do not read padding tile data, abort the current tile. */
 
              if(ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
              {
@@ -716,7 +716,7 @@ NoPalette:
                MagickFreeMemory(Offsets);
                ThrowTOPOLReaderException(CorruptImageError,TooMuchImageDataInFile, image);
                break;
-             }             
+             }
           }
         }
 
