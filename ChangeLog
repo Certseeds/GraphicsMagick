@@ -1,5 +1,7 @@
 2018-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* version.sh: Updates to prepare for the 1.3.29 release.
+
 	* coders/pict.c (DecodeImage): Assure that scanline is initialized
 	to avoid use of uninitialized data.  Fixes oss-fuzz 8063
 	"graphicsmagick/coder_WPG_fuzzer: Use-of-uninitialized-value in

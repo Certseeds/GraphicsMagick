@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.29 (April ??, 2017)
+1.3.29 (April 29, 2017)
 =========================
 
 Special Issues:
