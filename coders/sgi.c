@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -532,6 +532,9 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
           double
               uncompressed_size;
 
+          size_t
+            iris_pixels_size;
+
           /*
             Check that filesize is reasonable given header
           */
@@ -554,11 +557,12 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
 
-          iris_pixels=MagickAllocateArray(unsigned char *,
-                                          MagickArraySize(4U,bytes_per_pixel),
-                                          MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels_size = MagickArraySize(MagickArraySize(4U,bytes_per_pixel),
+                                             MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels=MagickAllocateMemory(unsigned char *,iris_pixels_size);
           if (iris_pixels == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          (void) memset(iris_pixels,0,iris_pixels_size);
 
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "   Reading SGI scanlines");
@@ -602,6 +606,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             offset;
 
           size_t
+            iris_pixels_size,
             max_packets_alloc_size,
             rle_alloc_size,
             rle_dimensions;
@@ -660,11 +665,13 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
 
-          iris_pixels=MagickAllocateArray(unsigned char *,
-                                          MagickArraySize(4U,bytes_per_pixel),
-                                          MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels_size=MagickArraySize(MagickArraySize(4U,bytes_per_pixel),
+                                           MagickArraySize(iris_info.xsize,iris_info.ysize));
+          iris_pixels=MagickAllocateMemory(unsigned char *,iris_pixels_size);
           if (iris_pixels == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+          (void) memset(iris_pixels,0,iris_pixels_size);
 
           /*
             Check data order.
@@ -865,27 +872,40 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
             }
           else
-            for (y=0; y < image->rows; y++)
-              {
-                p=iris_pixels+(image->rows-y-1)*4U*image->columns;
-                q=SetImagePixels(image,0,y,image->columns,1);
-                if (q == (PixelPacket *) NULL)
-                  break;
-                indexes=AccessMutableIndexes(image);
-                for (x=0; x < image->columns; x++)
-                  {
-                    indexes[x]=(*p);
-                    p+=4;
-                    q++;
-                  }
-                if (!SyncImagePixels(image))
-                  break;
-                if (QuantumTick(y,image->rows))
-                  if (!MagickMonitorFormatted(y,image->rows,exception,
-                                              LoadImageText,image->filename,
-                                              image->columns,image->rows))
+            {
+              for (y=0; y < image->rows; y++)
+                {
+                  p=iris_pixels+(image->rows-y-1)*4U*image->columns;
+                  q=SetImagePixels(image,0,y,image->columns,1);
+                  if (q == (PixelPacket *) NULL)
                     break;
-              }
+                  indexes=AccessMutableIndexes(image);
+                  for (x=0; x < image->columns; x++)
+                    {
+                      indexes[x]=(*p);
+                      p+=4;
+                      q++;
+                    }
+                  if (!SyncImagePixels(image))
+                    break;
+                  if (QuantumTick(y,image->rows))
+                    if (!MagickMonitorFormatted(y,image->rows,exception,
+                                                LoadImageText,image->filename,
+                                                image->columns,image->rows))
+                      break;
+                }
+            }
+          if (y < image->rows)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Only transferred %lu rows out of %lu",
+                                    y, image->rows);
+              MagickFreeMemory(iris_pixels);
+              /*
+                Not sure what a proper error report is here
+               */
+              ThrowSGIReaderException(CorruptImageError,UnableToReadImageData,image);
+            }
           (void) SyncImage(image);
         }
       MagickFreeMemory(iris_pixels);

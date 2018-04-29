@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -249,6 +249,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status;
 
   size_t
+    scanline_size,
     pcx_packets;
 
   magick_off_t
@@ -499,10 +500,13 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pcx_pixels=MagickAllocateMemory(unsigned char *,pcx_packets);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    scanline=MagickAllocateArray(unsigned char *,Max(image->columns,
-      (size_t) pcx_info.bytes_per_line),Max(pcx_info.planes,8));
+    scanline_size=MagickArraySize(Max(image->columns,
+                                      (size_t) pcx_info.bytes_per_line),
+                                  Max(pcx_info.planes,8));
+    scanline=MagickAllocateMemory(unsigned char *,scanline_size);
     if (scanline == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    (void) memset(scanline,0,scanline_size);
     if (pcx_info.encoding == 0)
       {
         /*
@@ -1001,6 +1005,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   ImageCharacteristics
     characteristics;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -1009,6 +1016,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
 
+  image_list_length=GetImageListLength(image);
   logging=image->logging;
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
@@ -1287,7 +1295,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+    status=MagickMonitorFormatted(scene++,image_list_length,
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == False)

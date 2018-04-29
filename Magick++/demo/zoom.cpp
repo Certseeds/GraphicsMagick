@@ -10,15 +10,26 @@
 
 #include <Magick++.h>
 #include <iostream>
+#include <fstream>
 #include <string>
-using namespace std; 
+
+using namespace std;
 using namespace Magick;
+
+//
+// Some compilers (e.g. older Tru64 UNIX) lack ios::binary
+//
+#if defined(MISSING_STD_IOS_BINARY)
+#  define IOS_IN_BINARY ios::in
+#else
+#  define IOS_IN_BINARY ios::in | ios::binary
+#endif
 
 static void Usage ( char **argv )
 {
   cout << "Usage: " << argv[0]
        << " [-density resolution] [-filter algorithm] [-geometry geometry]"
-       << " [-resample resolution] input_file output_file" << endl
+       << " [-resample resolution] [-read-blob] input_file output_file" << endl
        << "   algorithm - bessel blackman box catrom cubic gaussian hamming hanning" << endl
        << "     hermite lanczos mitchell point quadratic sample scale sinc triangle" << endl;
   exit(1);
@@ -31,7 +42,7 @@ static void ParseError (int position, char **argv)
   Usage(argv);
 }
 
-int main(int argc,char **argv) 
+int main(int argc,char **argv)
 {
   // Initialize ImageMagick install location for Windows
   InitializeMagick(*argv);
@@ -52,12 +63,19 @@ int main(int argc,char **argv)
     Geometry resample;
     Magick::FilterTypes filter(LanczosFilter);
     ResizeAlgorithm resize_algorithm=Zoom;
+    bool read_blob = false;
 
     int argv_index=1;
     while ((argv_index < argc - 2) && (*argv[argv_index] == '-'))
       {
         std::string command(argv[argv_index]);
-        if (command.compare("-density") == 0)
+        if (command.compare("-read-blob") == 0)
+          {
+            read_blob = true;
+            argv_index++;
+            continue;
+          }
+        else if (command.compare("-density") == 0)
           {
             argv_index++;
             try {
@@ -151,11 +169,63 @@ int main(int argc,char **argv)
     std::string output_file(argv[argv_index]);
 
     try {
-      Image image(input_file);
+      Image image;
+      if (read_blob)
+        {
+          // Read image data into a blob and use image blob reader.
+          Blob blob;
+          string magick;
+          string real_input_file = input_file;
+          string::size_type idx;
+          if ((idx=input_file.find(":")) != string::npos)
+            {
+              magick=input_file.substr(0,idx);
+              real_input_file=input_file.substr(idx+1);
+            }
+
+          cout << "Magick=\"" << magick << "\", real_input_file=\"" << real_input_file << "\"" << endl;
+
+          ifstream in( real_input_file.c_str(), IOS_IN_BINARY );
+          if( !in )
+          {
+            cout << "Failed to open file " << input_file << " for input!" << endl;
+            exit(1);
+          }
+          in.seekg(0,ios::end);
+          streampos file_size = in.tellg();
+          in.seekg(0,ios::beg);
+          unsigned char* blobData = new unsigned char[file_size];
+          char* c=reinterpret_cast<char *>(blobData);
+          in.read(c,file_size);
+          if (!in.good())
+            {
+              cout << "Failed to read file " << input_file << " for input!" << endl;
+              exit(1);
+            }
+          in.close();
+          cout << "Read " << file_size << " bytes from file \""
+               << input_file.c_str() << "\"..." << endl;
+          blob.updateNoCopy(blobData, file_size, Blob::NewAllocator );
+          //blob.update(blobData, file_size);
+          cout << "Reading file from blob with length " << blob.length() << endl;
+          // Set image file name to whatever was provided (could have
+          // magic prefix)
+          image.fileName(input_file);
+          //image.magick("TXT");
+          image.read(blob);
+          cout << "Reading file from blob" << endl;
+        }
+      else
+        {
+          // Read image directly from file
+          image.read(input_file);
+        }
       if (density.isValid())
         image.density(density);
       density=image.density();
 
+      // If resample was supplied, then rescale geometry and set
+      // resolution to new value.
       if (resample.isValid())
         {
           geometry =
@@ -164,6 +234,11 @@ int main(int argc,char **argv)
                      static_cast<unsigned int>
                      (image.rows()*((double)resample.height()/density.height())+0.5));
           image.density(resample);
+        }
+      // Default to original geometry if it was not specified/changed
+      if (!geometry.isValid())
+        {
+          geometry = Geometry(image.columns(),image.rows());
         }
       switch (resize_algorithm)
         {

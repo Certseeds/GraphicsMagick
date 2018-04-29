@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2010 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -828,6 +828,9 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
     compression,
     last_row_compression;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -835,6 +838,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1205,7 +1209,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
         break;
       image=SyncNextImageInList(image);
       if ((status &= MagickMonitorFormatted(scene++,
-                                            GetImageListLength(image),
+                                            image_list_length,
                                             &image->exception,
                                             SaveImagesText,
                                             image->filename)) == MagickFail)

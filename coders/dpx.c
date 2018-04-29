@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2017 GraphicsMagick Group
+% Copyright (C) 2005-2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -191,7 +191,7 @@ typedef enum
   ImageElementBlue=3,
   ImageElementAlpha=4,
   ImageElementLuma=6,
-  ImageElementColorDifferenceCbCr=7,
+  ImageElementColorDifferenceCbCr=7, /* 4:2:2 */
   ImageElementDepth=8,
   ImageElementCompositeVideo=9,
   ImageElementRGB=50,              /* BGR order */
@@ -482,8 +482,8 @@ STATIC unsigned int IsDPX(const unsigned char *magick,const size_t length)
 \
   if (!IS_UNDEFINED_ASCII(member)) \
     { \
-      (void) strncpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
-      buffer_[Min(sizeof(member)+1,MaxTextExtent-1)]='\0';             \
+      (void) memcpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
+      buffer_[Min(sizeof(member),MaxTextExtent-1)]='\0';             \
       (void) SetImageAttribute(image,name,buffer_); \
       LogSetImageAttribute(name,buffer_); \
     } \
@@ -990,9 +990,9 @@ STATIC void DescribeDPXImageElement(const DPXImageElement *element_info,
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Element %u: packing=%s encoding=%s data_offset=%u eol_pad=%u eoi_pad=%u",
                         element,
-                        (element_info->packing == 0 ? "Packed(0)" :
-                         element_info->packing == 1 ? "PadLSB(1)" :
-                         element_info->packing == 2 ? "PadMSB(2)" :
+                        (element_info->packing == PackingMethodPacked ? "Packed(0)" :
+                         element_info->packing == PackingMethodWordsFillLSB ? "PadLSB(1)" :
+                         element_info->packing == PackingMethodWordsFillMSB ? "PadMSB(2)" :
                          "Unknown"),
                         (element_info->encoding == 0 ? "None(0)" :
                          element_info->encoding == 1 ? "RLE(1)" :
@@ -1024,8 +1024,10 @@ STATIC unsigned int  DPXSamplesPerPixel(const DPXImageElementDescriptor element_
     case ImageElementBlue:
     case ImageElementAlpha:
     case ImageElementLuma:
-    case ImageElementColorDifferenceCbCr:
       samples_per_pixel=1;
+      break;
+    case ImageElementColorDifferenceCbCr: /* Cb | Cr 4:2:2 sampling ..., even number of columns required.*/
+      samples_per_pixel=2;
       break;
     case ImageElementRGB:
       samples_per_pixel=3;
@@ -1224,10 +1226,10 @@ STATIC unsigned long ReadWordU32BE (void *state)
 {
   magick_uint32_t value;
   ReadWordU32State *read_state=(ReadWordU32State *) state;
-  value =  *read_state->words++ << 24;
-  value |= *read_state->words++ << 16;
-  value |= *read_state->words++ << 8;
-  value |= *read_state->words++;
+  value =  ((magick_uint32_t) *read_state->words++) << 24;
+  value |= ((magick_uint32_t) *read_state->words++) << 16;
+  value |= ((magick_uint32_t) *read_state->words++) << 8;
+  value |= ((magick_uint32_t) *read_state->words++);
   return value;
 }
 
@@ -1235,10 +1237,10 @@ STATIC unsigned long ReadWordU32LE (void *state)
 {
   magick_uint32_t value;
   ReadWordU32State *read_state=(ReadWordU32State *) state;
-  value = *read_state->words++;
-  value |= *read_state->words++ << 8;
-  value |= *read_state->words++ << 16;
-  value |=  *read_state->words++ << 24;
+  value = ((magick_uint32_t) *read_state->words++);
+  value |= ((magick_uint32_t) *read_state->words++) << 8;
+  value |= ((magick_uint32_t) *read_state->words++) << 16;
+  value |= ((magick_uint32_t) *read_state->words++) << 24;
   return value;
 }
 
@@ -1385,8 +1387,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++ << 8);
-                      sample |= (*scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
+                      sample |= ((sample_t) *scanline++);
                       sample >>= 4;
                       *sp++=sample;
                     }
@@ -1396,8 +1398,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++);
-                      sample |= (*scanline++ << 8);
+                      sample |= ((sample_t) *scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
                       sample >>= 4;
                       *sp++=sample;
                     }
@@ -1414,8 +1416,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++ << 8);
-                      sample |= (*scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
+                      sample |= ((sample_t) *scanline++);
                       sample &= 0xFFF;
                       *sp++=sample;
                     }
@@ -1425,8 +1427,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
                   for (i=samples_per_row; i != 0; i--)
                     {
                       sample=0;
-                      sample |= (*scanline++);
-                      sample |= (*scanline++ << 8);
+                      sample |= ((sample_t) *scanline++);
+                      sample |= (((sample_t) *scanline++) << 8);
                       sample &= 0xFFF;
                       *sp++=sample;
                     }
@@ -1456,8 +1458,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
           for (i=samples_per_row; i != 0; i--)
             {
               sample=0;
-              sample |= (*scanline++ << 8);
-              sample |= (*scanline++);
+              sample |= (((sample_t) *scanline++) << 8);
+              sample |= ((sample_t) *scanline++);
               *sp++=sample;
             }
         }
@@ -1466,8 +1468,8 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
           for (i=samples_per_row; i != 0; i--)
             {
               sample=0;
-              sample |= (*scanline++);
-              sample |= (*scanline++ << 8);
+              sample |= ((sample_t) *scanline++);
+              sample |= (((sample_t) *scanline++) << 8);
               *sp++=sample;
             }
         }
@@ -1632,6 +1634,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickBool
     is_grayscale=MagickFalse,   /* image is grayscale ? */
     is_monochrome=MagickFalse,  /* image is monochrome ? */
+    matte_init=MagickFalse,     /* Set to True if opacity channel needs init */
     swap_endian=MagickFalse;    /* swap endian order */
 
   DPXImageElementDescriptor
@@ -1768,8 +1771,13 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (dpx_image_info.elements >
       sizeof(dpx_image_info.element_info)/sizeof(dpx_image_info.element_info[0]))
     ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+  if (dpx_image_info.elements == 0)
+    ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
   image->columns=dpx_image_info.pixels_per_line & 0xFFFFFFFF;
   image->rows=dpx_image_info.lines_per_image_element & 0xFFFFFFFF;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Geometry: %lux%lu", image->columns, image->rows);
   U16ToAttribute(image,"DPX:image.orientation",dpx_image_info.orientation);
   image->orientation=DPXOrientationToOrientationType(dpx_image_info.orientation);
 
@@ -1891,7 +1899,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (user_data == (unsigned char *) NULL)
                 ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
               if (ReadBlob(image,read_size,user_data+user_data_length) != read_size)
-                ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                {
+                  MagickFreeMemory(user_data);
+                  ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                }
               user_data_length += read_size;
               offset += read_size;
             }
@@ -1908,6 +1919,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   /*
     Determine the maximum number of bits per sample, samples per element, and colorspace
+
+    If we encounter an element which is not supported (perhaps a
+    vendor extension), then update dpx_image_info.elements to stop
+    reading before that element.
   */
   max_bits_per_sample=0;
   max_samples_per_pixel=0;
@@ -1922,8 +1937,15 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       colorimetric=ColorimetricUserDefined;
 
     transfer_characteristic=TransferCharacteristicUserDefined;
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Number of elements: %u",
+                            dpx_image_info.elements);
+
     for (element=0; element < dpx_image_info.elements; element++)
       {
+        if (image->logging)
+          DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
         if (element == 0)
           {
             colorimetric=
@@ -1943,12 +1965,88 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (bits_per_sample != 10) &&
             (bits_per_sample != 12) &&
             (bits_per_sample != 16))
-          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
-        max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
-        max_samples_per_pixel=Max(max_samples_per_pixel,
-                                  DPXSamplesPerPixel(element_descriptor));
+          {
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unsupported bits per sample %u"
+                                    " (truncating elements)", bits_per_sample);
+            dpx_image_info.elements=element;
+            break;
+          }
         /*
-          Set image colorspace
+          Ignore Northlight Scanner "scratch and dust" channel which claims
+          to be an Alpha channel, but is not.  Things would not be so bad if
+          it was coded according to the DPX standard.  Luckly, it always comes
+          after the color channels.
+         */
+        if ((element_descriptor == ImageElementAlpha) &&
+            (bits_per_sample == 1) &&
+            (LocaleNCompare(dpx_image_info.element_info[element].description,
+                            "NL CLEAN MATTE",sizeof("NL CLEAN MATTE")-1) == 0))
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Skipping Northlight \"%s\" channel...",
+                                  dpx_image_info.element_info[element].description);
+            dpx_image_info.elements=element;
+            break;
+          }
+        /*
+          Validate packing method
+        */
+        packing_method=(ImageComponentPackingMethod) dpx_image_info.element_info[element].packing;
+        if ((packing_method != PackingMethodPacked) &&
+            (packing_method != PackingMethodWordsFillLSB) &&
+            (packing_method != PackingMethodWordsFillMSB))
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Unsupported packing method %u"
+                                  " (truncating elements)", packing_method);
+            dpx_image_info.elements=element;
+            break;
+          }
+        /*
+          Data sign, (0 = unsigned; 1 = signed)
+        */
+        if (dpx_image_info.element_info[element].data_sign != 0)
+          {
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Signed pixel data (in element %u) is not supported"
+                                    " (truncating elements)",
+                                    element);
+            dpx_image_info.elements=element;
+            break;
+          }
+        /*
+          Special image width rules for some element descriptors
+        */
+        switch (element_descriptor)
+          {
+          case ImageElementColorDifferenceCbCr: /* 4:2:2 */
+          case ImageElementCbYCrY422:
+          case ImageElementCbYACrYA4224:
+            if (image->columns % 2)
+              {
+                if (image->logging)
+                  {
+                    char txt_buffer[MaxTextExtent];
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Image width must be evenly divisible"
+                                          " by 2 for \"%s\" element",
+                                          DescribeImageElementDescriptor(txt_buffer,
+                                                                         element_descriptor));
+                  }
+                dpx_image_info.elements=element;
+              }
+            break;
+          default:
+            {
+            }
+          }
+        if (dpx_image_info.elements == element)
+          break;
+        /*
+          Validate and set image colorspace
         */
         switch (element_descriptor)
           {
@@ -1960,7 +2058,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               has_cbcr=MagickTrue;
               colorimetric=(DPXColorimetric) dpx_image_info.element_info[element].colorimetric;
-              transfer_characteristic=(DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
+              transfer_characteristic=(DPXTransferCharacteristic)
+                dpx_image_info.element_info[element].transfer_characteristic;
               break;
             }
           case ImageElementRed:
@@ -1972,23 +2071,33 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               has_rgb=MagickTrue;
               colorimetric=(DPXColorimetric) dpx_image_info.element_info[element].colorimetric;
-              transfer_characteristic=(DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
+              transfer_characteristic=(DPXTransferCharacteristic)
+                dpx_image_info.element_info[element].transfer_characteristic;
               break;
             }
           case ImageElementLuma:
             {
               has_luma=MagickTrue;
               colorimetric=(DPXColorimetric) dpx_image_info.element_info[element].colorimetric;
-              transfer_characteristic=(DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
+              transfer_characteristic=(DPXTransferCharacteristic)
+                dpx_image_info.element_info[element].transfer_characteristic;
+              break;
+            }
+          case ImageElementAlpha:
+            {
               break;
             }
           default:
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Unhandled element descriptor: %s",
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unhandled element descriptor (%u): %s"
+                                    " (truncating elements)",
+                                    element_descriptor,
                                     DescribeImageElementDescriptor(txt_buffer,element_descriptor));
+              dpx_image_info.elements=element;
+              break;
             }
           }
-
         /*
           Check for a matte channel.
         */
@@ -2004,7 +2113,28 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           default:
             break;
           }
+        max_bits_per_sample=Max(max_bits_per_sample,bits_per_sample);
+        max_samples_per_pixel=Max(max_samples_per_pixel,
+                                  DPXSamplesPerPixel(element_descriptor));
+
+
+      } /* for (element=0; element < dpx_image_info.elements; element++) */
+
+    /*
+      Check if there were any supported elements
+    */
+    if (dpx_image_info.elements == 0)
+      {
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "No supported image elements were found!");
+        ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
       }
+
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Maximum number of bits per sample in any element: %u",
+                            max_bits_per_sample);
     if (has_cbcr)
       {
         image->colorspace=Rec709YCbCrColorspace;
@@ -2051,6 +2181,106 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowDPXReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   /*
+    Validate that the elements provide all of the channels
+  */
+  {
+    /* Flags to use when updating channel_bits */
+#define RED_CHANNEL     (1U)
+#define GREEN_CHANNEL   (1U << 1U)
+#define BLUE_CHANNEL    (1U << 2U)
+#define OPACITY_CHANNEL (1U << 3U)
+
+    unsigned int
+      channel_bits; /* record of channels which were updated by elements */
+
+    channel_bits=0;
+    for (element=0; element < dpx_image_info.elements; element++)
+      {
+        element_descriptor=(DPXImageElementDescriptor)
+          dpx_image_info.element_info[element].descriptor;
+
+        /*
+          Tally channels which would be updated by this element.
+        */
+        switch (element_descriptor)
+          {
+          case ImageElementRed:
+            channel_bits |= RED_CHANNEL;
+            break;
+          case ImageElementGreen:
+            channel_bits |= GREEN_CHANNEL;
+            break;
+          case ImageElementBlue:
+            channel_bits |= BLUE_CHANNEL;
+            break;
+          case ImageElementAlpha:
+            channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementUnspecified:
+          case ImageElementLuma:
+            if (IsYCbCrColorspace(image->colorspace))
+              {
+                channel_bits |= RED_CHANNEL;
+              }
+            else
+              {
+                channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+                if (!image->matte)
+                  channel_bits |= OPACITY_CHANNEL;
+              }
+            break;
+          case ImageElementColorDifferenceCbCr:
+            channel_bits |= GREEN_CHANNEL | BLUE_CHANNEL;
+            break;
+          case ImageElementRGB:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementRGBA:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementABGR:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCrY422:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYACrYA4224:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCr444:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL;
+            if (!image->matte)
+              channel_bits |= OPACITY_CHANNEL;
+            break;
+          case ImageElementCbYCrA4444:
+            channel_bits |= RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL | OPACITY_CHANNEL;
+            break;
+          default:
+            break;
+          }
+      }
+
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Channels updated: %s%s%s%s",
+                            channel_bits & RED_CHANNEL ? "R" : "",
+                            channel_bits & GREEN_CHANNEL ? "G" : "",
+                            channel_bits & BLUE_CHANNEL ? "B" : "",
+                            channel_bits & OPACITY_CHANNEL ? "O" : "");
+
+    if (!(channel_bits & OPACITY_CHANNEL))
+      matte_init = MagickTrue;
+
+    if ((channel_bits & (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
+        != (RED_CHANNEL | GREEN_CHANNEL | BLUE_CHANNEL))
+      ThrowDPXReaderException(CorruptImageError,MissingImageChannel,image);
+  }
+
+  /*
     Validate file size if using a seekable blob
   */
   if (BlobIsSeekable(image))
@@ -2061,11 +2291,33 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Verify that file size claimed by header is matched by file size
       */
-      if ((file_size = GetBlobSize(image)) != 0)
+      file_size = GetBlobSize(image);
+      if (!IS_UNDEFINED_U32(dpx_file_info.file_size) &&
+          (file_size < dpx_file_info.file_size))
         {
-          if (file_size < dpx_file_info.file_size)
+          ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
+      if (!IS_UNDEFINED_U32(dpx_file_info.image_data_offset) &&
+          (file_size < dpx_file_info.image_data_offset))
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (!IS_UNDEFINED_U32(dpx_file_info.generic_section_length) &&
+          (file_size < dpx_file_info.generic_section_length))
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (!IS_UNDEFINED_U32(dpx_file_info.industry_section_length) &&
+          (file_size < dpx_file_info.industry_section_length))
+        {
+          ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (pixels_offset >= 2080UL)
+        {
+          if (!IS_UNDEFINED_U32(dpx_file_info.user_defined_length) &&
+              (file_size < dpx_file_info.user_defined_length))
             {
-              ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
             }
         }
 
@@ -2081,16 +2333,43 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           transfer_characteristic=
             (DPXTransferCharacteristic) dpx_image_info.element_info[element].transfer_characteristic;
           packing_method=(ImageComponentPackingMethod) dpx_image_info.element_info[element].packing;
+          if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].data_offset) &&
+              !IS_UNDEFINED_U32(dpx_file_info.file_size) &&
+              (dpx_file_info.file_size != 0) &&
+              ((dpx_image_info.element_info[element].data_offset & 0xFFFFFFFF) >=
+               dpx_file_info.file_size))
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Element offset (%u) is outside the bounds of"
+                                      " file size (%u) indicated by header",
+                                      dpx_image_info.element_info[element].data_offset,
+                                      dpx_file_info.file_size);
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].data_offset) &&
+              ((dpx_image_info.element_info[element].data_offset & 0xFFFFFFFF) >=
+               file_size))
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Element offset (%u) is outside the bounds of"
+                                      " actual file size (%" MAGICK_OFF_F "d)",
+                                      dpx_image_info.element_info[element].data_offset,
+                                      file_size);
+              ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
           samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
           samples_per_row=samples_per_pixel*image->columns;
           element_size=DPXRowOctets(image->rows,samples_per_row,
                                     bits_per_sample,packing_method);
           file_size_estimate += element_size;
         }
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "File size estimate %" MAGICK_OFF_F
-                            "u bytes (have %" MAGICK_OFF_F "u bytes)",
-                            file_size_estimate, file_size);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "File size estimate %" MAGICK_OFF_F
+                              "u bytes (have %" MAGICK_OFF_F "u bytes)",
+                              file_size_estimate, file_size);
       if ((file_size_estimate <= 0) || (file_size < file_size_estimate))
         ThrowDPXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     }
@@ -2105,6 +2384,9 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Allocate sample translation map storage.
   */
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Maximum number of bits per sample in any element: %u",
+                        max_bits_per_sample);
   map_Y=MagickAllocateArray(Quantum *,
                             MaxValueGivenBits(max_bits_per_sample)+1,
                             sizeof(Quantum));
@@ -2153,17 +2435,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickBool
         swap_word_datums = MagickFalse;
 
-      DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
-      /*
-        Data sign, (0 = unsigned; 1 = signed)
-      */
-      if (dpx_image_info.element_info[element].data_sign != 0)
-        continue;
-      /*
-        Bits per sample must be must be 1 to 16.
-      */
-      if (dpx_image_info.element_info[element].bits_per_sample > 16)
-        continue;
+      /* if (image->logging) */
+      /*   DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1); */
       /*
         Move to element data
       */
@@ -2171,6 +2444,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (dpx_image_info.element_info[element].data_offset != 0U))
         {
           pixels_offset=dpx_image_info.element_info[element].data_offset & 0xFFFFFFFF;
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Seek from %" MAGICK_SIZE_T_F "u to %lu...",
+                                  (MAGICK_SIZE_T) offset, pixels_offset);
           if (pixels_offset >= offset)
             {
               /* Data is at, or ahead of current position.  Good! */
@@ -2181,12 +2458,24 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           else
             {
               /* Data is behind current position.  Bad! */
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Seek backward to %lu...", pixels_offset);
               offset=SeekBlob(image,(magick_off_t) pixels_offset,SEEK_SET);
             }
 
           /* Verify that we reached our offset objective */
           if ( pixels_offset != offset)
-            ThrowDPXReaderException(BlobError,UnableToSeekToOffset,image);
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Failed to seek to data offset %lu"
+                                      " (have %" MAGICK_SIZE_T_F "u)",
+                                      pixels_offset, (MAGICK_SIZE_T) offset);
+              ThrowDPXReaderException(BlobError,UnableToSeekToOffset,image);
+            }
+          if (EOFBlob(image))
+            ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
       bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
       element_descriptor=(DPXImageElementDescriptor)
@@ -2274,6 +2563,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (image->colorspace == Rec709LumaColorspace))
             {
               double
+                reference_low_prop,
+                reference_high_prop,
                 ScaleY = 0.0,
                 ScaleCbCr = 0.0;
 
@@ -2285,15 +2576,25 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               reference_low = ((max_value+1.0) * (64.0/1024.0));
               reference_high = ((max_value+1.0) * (940.0/1024.0));
 
+              reference_low_prop = reference_low;
+              reference_high_prop = reference_high;
+
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_low_data_code))
-                reference_low=dpx_image_info.element_info[element].reference_low_data_code;
+                reference_low_prop=dpx_image_info.element_info[element].reference_low_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-low")))
-                reference_low=(double) strtol(definition_value, (char **)NULL, 10);
+                reference_low_prop=(double) strtol(definition_value, (char **)NULL, 10);
 
               if (!IS_UNDEFINED_U32(dpx_image_info.element_info[element].reference_high_data_code))
-                reference_high=dpx_image_info.element_info[element].reference_high_data_code;
+                reference_high_prop=dpx_image_info.element_info[element].reference_high_data_code;
               if ((definition_value=AccessDefinition(image_info,"dpx","reference-high")))
-                reference_high=(double) strtol(definition_value, (char **)NULL, 10);
+                reference_high_prop=(double) strtol(definition_value, (char **)NULL, 10);
+
+              if ((reference_high_prop > reference_low_prop) &&
+                  (reference_high_prop > MagickEpsilon))
+                {
+                  reference_low = reference_low_prop;
+                  reference_high = reference_high_prop;
+                }
 
               ScaleY = ((max_value+1.0)/(reference_high-reference_low));
               ScaleCbCr = ScaleY*((940.0-64.0)/(960.0-64.0));
@@ -2332,16 +2633,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     samples_per_row, (unsigned long) row_octets,
                                     (unsigned long) element_size);
             }
-          if (((element_descriptor == ImageElementCbYCrY422) ||
-               (element_descriptor == ImageElementCbYACrYA4224) ||
-               (element_descriptor == ImageElementColorDifferenceCbCr)))
-            {
-              /*
-                When subsampling, image width must be evenly divisible by two.
-              */
-              if (image->columns %2)
-                ThrowDPXReaderException(CorruptImageError,SubsamplingRequiresEvenWidth,image);
-            }
+
           /*
             Read element data.
           */
@@ -2428,6 +2720,26 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (pixels == (PixelPacket *) NULL)
                 thread_status=MagickFail;
 
+              /*
+                The matte channel needs explicit
+                initialization if planar image does not
+                provide an alpha channel.
+              */
+              if (thread_status != MagickFail)
+                {
+                  if (element == 0)
+                    {
+                      if (matte_init)
+                        {
+                          q = pixels;
+                          for (x=image->columns; x != 0; x--)
+                            {
+                              SetOpacitySample(q++,OpaqueOpacity);
+                            }
+                        }
+                    }
+                }
+
               if (thread_status == MagickFail)
                 {
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
@@ -2485,6 +2797,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       for (x=image->columns; x != 0; x--)
                         {
                           SetGraySample(q,map_Y[*samples_itr++]);
+                          if (!image->matte)
+                            SetOpacitySample(q,OpaqueOpacity);
                           q++;
                         }
                     }
@@ -2519,7 +2833,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       SetRedSample(q,map_Y[*samples_itr++]);
                       SetGreenSample(q,map_Y[*samples_itr++]);
                       SetBlueSample(q,map_Y[*samples_itr++]);
-                      SetOpacitySample(q,OpaqueOpacity);
+                      if (!image->matte)
+                        SetOpacitySample(q,OpaqueOpacity);
                       q++;
                     }
                   break;
@@ -2564,13 +2879,15 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         SetYSample(q,Y0);   /* Y0 */
                         SetCbSample(q,Cb);  /* Cb */
                         SetCrSample(q,Cr);  /* Cr */
-                        SetOpacitySample(q,OpaqueOpacity);
+                        if (!image->matte)
+                          SetOpacitySample(q,OpaqueOpacity);
                         q++;
 
                         SetYSample(q,Y1);   /* Y1 */
                         SetCbSample(q,Cb) ; /* Cb (false) */
                         SetCrSample(q,Cr);  /* Cr (false) */
-                        q->opacity=OpaqueOpacity;
+                        if (!image->matte)
+                          q->opacity=OpaqueOpacity;
                         q++;
                       }
                     TentUpsampleChroma(pixels,image->columns);
@@ -2620,7 +2937,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         SetCbSample(q,map_CbCr[*samples_itr++]); /* Cb */
                         SetYSample(q,map_Y[*samples_itr++]);     /* Y */
                         SetCrSample(q,map_CbCr[*samples_itr++]); /* Cr */
-                        SetOpacitySample(q,OpaqueOpacity);      /* A */
+                        if (!image->matte)
+                          SetOpacitySample(q,OpaqueOpacity);      /* A */
                         q++;
                       }
                     break;
@@ -3029,9 +3347,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 {
                   datum=0;
                   packed_u32=0;
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
                   MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
               if ((samples_per_row % 3))
@@ -3039,7 +3357,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
                   datum=0;
                   packed_u32=0;
                   for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (*samples++ << shifts[datum++]);
+                    packed_u32 |= ((magick_uint32_t) *samples++ << shifts[datum++]);
                   MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
             }
@@ -3050,9 +3368,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 {
                   datum=0;
                   packed_u32=0;
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum++]);
-                  packed_u32 |= (*samples++ << shifts[datum]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
                   LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
               if ((samples_per_row % 3))
@@ -3060,7 +3378,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
                   datum=0;
                   packed_u32=0;
                   for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (*samples++ << shifts[datum++]);
+                    packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
                   LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
             }
@@ -4119,7 +4437,8 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
                            reported_file_offset);
           }
       }
-      DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
+      if (image->logging)
+        DescribeDPXImageElement(&dpx_image_info.element_info[element],element+1);
 
       bits_per_sample=dpx_image_info.element_info[element].bits_per_sample;
       transfer_characteristic=(DPXTransferCharacteristic)

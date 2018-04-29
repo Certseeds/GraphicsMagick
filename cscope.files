@@ -24,7 +24,6 @@ coders/fpx.c
 coders/gif.c
 coders/gradient.c
 coders/gray.c
-coders/hdf.c
 coders/histogram.c
 coders/hrz.c
 coders/html.c

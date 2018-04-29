@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2016                               %
+%                              June 2000 - 2018                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -39,6 +39,7 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/log.h"
 #include "magick/magic.h"
 #include "magick/magick.h"
 #include "magick/pixel_cache.h"
@@ -252,9 +253,9 @@ static void Rd_WP_DWORD(Image *image,unsigned long *d)
 }
 
 
-static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
+static MagickPassFail InsertRow(unsigned char *p,unsigned long y, Image *image, int bpp)
 {
-  long
+  unsigned long
     x;
   register PixelPacket
     *q;
@@ -262,9 +263,13 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
   IndexPacket index;
   IndexPacket *indexes;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Insert row %ld of %lu...", y, image->rows);
 
   q = SetImagePixels(image,0,y,image->columns,1);
-  if(q == (PixelPacket *) NULL) return MagickFail;
+  if(q == (PixelPacket *) NULL)
+    return MagickFail;
 
   switch (bpp)
     {
@@ -282,9 +287,14 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
         indexes=AccessMutableIndexes(image);
         if ((image->storage_class != PseudoClass) ||
             (indexes == (IndexPacket *) NULL))
+          {
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Image has no colormap, skipping...");
           return MagickFail;
+          }
         x = 0;
-        while(x < (long)image->columns-3)
+        while(x+3 < image->columns)
           {
             index = (IndexPacket)((*p >> 6) & 0x3);
             VerifyColormapIndex(image,index);
@@ -303,20 +313,20 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
             indexes[x++]=index;
             *q++ = image->colormap[index];
             p++;
-                  }
-        if(x < (long) image->columns)
+          }
+        if(x < image->columns)
           {
             index = (IndexPacket) ((*p >> 6) & 0x3);
             VerifyColormapIndex(image,index);
             indexes[x++] = index;
             *q++=image->colormap[index];
-            if(x < (long) image->columns)
+            if(x < image->columns)
               {
                 index = (IndexPacket) ((*p >> 4) & 0x3);
                 VerifyColormapIndex(image,index);
                 indexes[x++] = index;
                 *q++=image->colormap[index];
-                if(x < (long) image->columns)
+                if(x < image->columns)
                   {
                     index = (IndexPacket)((*p >> 2) & 0x3);
                     VerifyColormapIndex(image,index);
@@ -335,13 +345,17 @@ static MagickPassFail InsertRow(unsigned char *p,long y, Image *image, int bpp)
       break;
 
     default:
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Unsupported bits per pixel %u",bpp);
+
       return MagickFail;  /* emit some error here */
     }
 
 
   if(RetVal==MagickFail)
   {
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %ld, bpp: %d", y, bpp);
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ImportImagePixelArea failed for row: %lu, bpp: %d", y, bpp);
     return MagickFail;
   }
 
@@ -362,9 +376,10 @@ return RetVal;
   x++; \
   if((long) x>=ldblk) \
   { \
-    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) RetVal=-6; \
     x=0; \
     y++; \
+    if(y>=image->rows) break; \
     } \
 }
 
@@ -373,9 +388,11 @@ return RetVal;
                 -5 - blob read error; -6 - row insert problem  */
 static int UnpackWPGRaster(Image *image,int bpp)
 {
-  int
+  unsigned long
     x,
-    y,
+    y;
+
+  int
     i;
   int RetVal = 0;
 
@@ -390,7 +407,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   x=0;
   y=0;
 
-  ldblk=(long) ((bpp*image->columns+7)/8);
+  ldblk = (long)((bpp*image->columns+7)/8);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Raster allocation size: %ld byte%s",
                         ldblk, (ldblk > 1 ? "s" : ""));
@@ -398,7 +415,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   if(BImgBuff==NULL) return(-2);
   (void) memset(BImgBuff,0,(size_t) ldblk);
 
-  while(y<(long) image->rows)
+  while(y<image->rows)
     {
       i = ReadBlobByte(image);
       if(i==EOF)
@@ -431,28 +448,35 @@ static int UnpackWPGRaster(Image *image,int bpp)
               }
           }
         else {  /* repeat previous line runcount* */
-          RunCount=ReadBlobByte(image);
-          if(x) {    /* attempt to duplicate row from x position: */
-            /* I do not know what to do here */
+          i = ReadBlobByte(image);
+          if(i==EOF)
+          {
+            MagickFreeMemory(BImgBuff);
+            return -7;
+          }
+          RunCount = i;
+          if(x!=0) {    /* attempt to duplicate row from x position: */
+                        /* I do not know what to do here */
+            InsertRow(BImgBuff,y,image,bpp);   /* May be line flush can fix a situation. */
+            x=0;
+            y++;
             MagickFreeMemory(BImgBuff);
             return(-3);
           }
-          for(i=0;i < (int) RunCount;i++)
-            {
-              x=0;
-              y++;    /* Here I need to duplicate previous row RUNCOUNT* */
-              if(y<2) continue;
-              if(y>(long) image->rows)
+          for(i=0; i<(int)RunCount; i++)
+            {		/* Here I need to duplicate previous row RUNCOUNT* */
+			/* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
+              if(y>=image->rows)
                 {
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
-              if(InsertRow(BImgBuff,y-1,image,bpp)==MagickFail)
+              if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 {
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
-
+              y++;
             }
         }
       }
@@ -759,18 +783,32 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   (void) SeekBlob(image,PS_Offset,SEEK_SET);
   while(PS_Size-- > 0)
     {
-      (void) fputc(ReadBlobByte(image),ps_file);
+      int c;
+      if ((c = ReadBlobByte(image)) == EOF)
+        {
+          (void) fclose(ps_file);
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+          goto FINISH_UNL;
+        }
+      (void) fputc(c,ps_file);
     }
   (void) fclose(ps_file);
 
   /* Detect file format - Check magic.mgk configuration file. */
   if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
           MaxTextExtent,exception) == MagickFail)
-    goto FINISH_UNL;
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Failed to identify embedded file type!");
+      ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+      goto FINISH_UNL;
+    }
 
-  /* Read nested image */
-  /*FormatString(clone_info->filename,"%s:%.1024s",magic_info->name,postscript_file);*/
-  FormatString(clone_info->filename,"%.1024s",postscript_file);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Reading embedded \"%s\" content...", clone_info->magick);
+
+  /* Read nested image, forcing read as Postscript format */
+  FormatString(clone_info->filename,"%s:%.1024s",clone_info->magick,postscript_file);
   image2 = ReadImage(clone_info,exception);
 
   if (!image2)
@@ -778,7 +816,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   if(exception->severity>=ErrorException) /* When exception is raised, destroy image2 read. */
   {
     CloseBlob(image2);
-    DestroyImageList(image2);  
+    DestroyImageList(image2);
     goto FINISH_UNL;
   }
 
@@ -794,16 +832,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
       (void) strlcpy(p->filename,image->filename,MaxTextExtent);
       (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
       (void) strlcpy(p->magick,image->magick,MaxTextExtent);
-      //image2->depth=image->depth;	// !!!! The image2 depth should not be modified here. Image2 is completely different.
-      DestroyBlob(p);      
+      /*image2->depth=image->depth;*/   /* !!!! The image2 depth should not be modified here. Image2 is completely different. */
+      DestroyBlob(p);
 
       if(p->rows==0 || p->columns==0)
       {
         DeleteImageFromList(&p);
-        if(p==NULL) 
+        if(p==NULL)
         {
           image2 = NULL;
-          goto FINISH_UNL;	/* Nothing to add, skip. */
+          goto FINISH_UNL;      /* Nothing to add, skip. */
         }
       }
       else
@@ -812,16 +850,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
         p = p->next;
       }
     } while(p!=NULL);
-  }  
+  }
 
   if((image->rows==0 || image->columns==0) && (image->previous!=NULL || image->next!=NULL))
   {
     DeleteImageFromList(&image);
   }
 
-  AppendImageToList(&image,image2);	/* This should append list 'image2' to the list 'image', image2 accepts NULL. */
+  AppendImageToList(&image,image2);     /* This should append list 'image2' to the list 'image', image2 accepts NULL. */
   while(image->next != NULL)
-    image = image->next;		/* Rewind the cursor to the end. */
+    image = image->next;                /* Rewind the cursor to the end. */
 
  FINISH_UNL:
   (void) LiberateTemporaryFile(postscript_file);
@@ -1086,12 +1124,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               for (i=WPG_Palette.StartIndex;
                    i < (int)WPG_Palette.NumOfEntries; i++)
                 {
-                  image->colormap[i].red=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=
-                    ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=
-                    ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].opacity = OpaqueOpacity;
                 }
               break;
 
@@ -1152,6 +1188,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       image->colormap[i].red=ScaleCharToQuantum(WPG1_Palette[i].Red);
                       image->colormap[i].green=ScaleCharToQuantum(WPG1_Palette[i].Green);
                       image->colormap[i].blue=ScaleCharToQuantum(WPG1_Palette[i].Blue);
+                      image->colormap[i].opacity = OpaqueOpacity;
                     }
                 }
               else
@@ -1174,6 +1211,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                       image->colormap[1].red =
                         image->colormap[1].green =
                         image->colormap[1].blue = MaxRGB;
+                      image->colormap[1].opacity = OpaqueOpacity;
                     }
                 }
 
@@ -1305,6 +1343,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
+                  image->colormap[i].opacity = OpaqueOpacity;
                   (void) ReadBlobByte(image);   /*Opacity??*/
                 }
               break;
@@ -1363,7 +1402,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
                     for(i=0; i< (long) image->rows; i++)
                       {
-                        (void) ReadBlob(image,ldblk,(char *) BImgBuff);
+                        if (ReadBlob(image,ldblk,(char *) BImgBuff) != (size_t) ldblk)
+                          {
+                            MagickFreeMemory(BImgBuff);
+                            ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+                            goto DecompressionFailed;
+                          }
                         if(InsertRow(BImgBuff,i,image,bpp) == MagickFail)
                         {
                           if(BImgBuff) MagickFreeMemory(BImgBuff);

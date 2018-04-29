@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2017 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -39,68 +39,68 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
 #  define MyEndianType LSBEndian
 #endif
 
-#define ImportModulo8Quantum(quantum,quantum_size,p)    \
-  {                                                     \
-    register unsigned int                               \
-      shift;                                            \
-                                                        \
-    quantum=0;                                          \
-    if (LSBEndian != endian)                            \
-      {                                                 \
-        shift=quantum_size;                             \
-        do                                              \
-          {                                             \
-            shift -= 8U;                                \
-            quantum |= (*p++ << shift);                 \
-          } while( shift > 0U);                         \
-      }                                                 \
-    else                                                \
-      {                                                 \
-        shift=0U;                                       \
-        while ( shift < quantum_size )                  \
-          {                                             \
-            quantum |= (*p++ << shift);                 \
-            shift += 8U;                                \
-          }                                             \
-      }                                                 \
+#define ImportModulo8Quantum(quantum,quantum_size,p)            \
+  {                                                             \
+    register unsigned int                                       \
+      shift;                                                    \
+                                                                \
+    quantum=0;                                                  \
+    if (LSBEndian != endian)                                    \
+      {                                                         \
+        shift=quantum_size;                                     \
+        do                                                      \
+          {                                                     \
+            shift -= 8U;                                        \
+            quantum |= (((magick_uint32_t) *p++) << shift);     \
+          } while( shift > 0U);                                 \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        shift=0U;                                               \
+        while ( shift < quantum_size )                          \
+          {                                                     \
+            quantum |= (((magick_uint32_t) *p++) << shift);     \
+            shift += 8U;                                        \
+          }                                                     \
+      }                                                         \
   }
-#define ImportUInt8Quantum(quantum,p)           \
-  {                                             \
-    quantum=*p++;                               \
+#define ImportUInt8Quantum(quantum,p)                           \
+  {                                                             \
+    quantum=(magick_uint32_t) *p++;                             \
   }
-#define ImportUInt16Quantum(endian,quantum,p)   \
-  {                                             \
-    if (LSBEndian != endian)                    \
-      {                                         \
-        quantum=(*p++ << 8);                    \
-        quantum|=(*p++);                        \
-      }                                         \
-    else                                        \
-      {                                         \
-        quantum=(*p++);                         \
-        quantum|=(*p++ << 8);                   \
-      }                                         \
+#define ImportUInt16Quantum(endian,quantum,p)                   \
+  {                                                             \
+    if (LSBEndian != endian)                                    \
+      {                                                         \
+        quantum=(((magick_uint32_t) *p++) << 8);                \
+        quantum|=((magick_uint32_t) *p++);                      \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        quantum=((magick_uint32_t) *p++);                       \
+        quantum|=(((magick_uint32_t) *p++) << 8);               \
+      }                                                         \
   }
 /*
   This algorithm has been compared with several others and did best
   overall on SPARC, PowerPC, and Intel Xeon.
 */
-#define ImportUInt32Quantum(endian,quantum,p)   \
-  {                                             \
-    if (LSBEndian != endian)                    \
-      {                                         \
-        quantum=(*p++ << 24);                   \
-        quantum|=(*p++ << 16);                  \
-        quantum|=(*p++ << 8);                   \
-        quantum|=(*p++);                        \
-      }                                         \
-    else                                        \
-      {                                         \
-        quantum=(*p++);                         \
-        quantum|=(*p++ << 8);                   \
-        quantum|=(*p++ << 16);                  \
-        quantum|=(*p++ << 24);                  \
-      }                                         \
+#define ImportUInt32Quantum(endian,quantum,p)                   \
+  {                                                             \
+    if (LSBEndian != endian)                                    \
+      {                                                         \
+        quantum=(((magick_uint32_t) *p++) << 24);               \
+        quantum|=(((magick_uint32_t) *p++) << 16);              \
+        quantum|=(((magick_uint32_t) *p++) << 8);               \
+        quantum|=((magick_uint32_t) *p++);                      \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        quantum=((magick_uint32_t) *p++);                       \
+        quantum|=(((magick_uint32_t) *p++) << 8);               \
+        quantum|=(((magick_uint32_t) *p++) << 16);              \
+        quantum|=(((magick_uint32_t) *p++) << 24);              \
+      }                                                         \
   }
 /*
   Import a 64-bit unsigned value into a 32-bit quantum type.  This
@@ -108,24 +108,24 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
   CPUs may perform poorly when using a true 64-bit type.  In this case
   the least significant 32 bits are entirely ignored.
 */
-#define ImportUInt64Quantum(endian,quantum,p)   \
-  {                                             \
-    if (LSBEndian != endian)                    \
-      {                                         \
-        quantum=(*p++ << 24);                   \
-        quantum|=(*p++ << 16);                  \
-        quantum|=(*p++ << 8);                   \
-        quantum|=(*p++);                        \
-        p+=4;                                   \
-      }                                         \
-    else                                        \
-      {                                         \
-        p+=4;                                   \
-        quantum=(*p++);                         \
-        quantum|=(*p++ << 8);                   \
-        quantum|=(*p++ << 16);                  \
-        quantum|=(*p++ << 24);                  \
-      }                                         \
+#define ImportUInt64Quantum(endian,quantum,p)                   \
+  {                                                             \
+    if (LSBEndian != endian)                                    \
+      {                                                         \
+        quantum=(((magick_uint32_t) *p++) << 24);               \
+        quantum|=(((magick_uint32_t) *p++) << 16);              \
+        quantum|=(((magick_uint32_t) *p++) << 8);               \
+        quantum|=((magick_uint32_t) *p++);                      \
+        p+=4;                                                   \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        p+=4;                                                   \
+        quantum=((magick_uint32_t) *p++);                       \
+        quantum|=(((magick_uint32_t) *p++) << 8);               \
+        quantum|=(((magick_uint32_t) *p++) << 16);              \
+        quantum|=(((magick_uint32_t) *p++) << 24);              \
+      }                                                         \
   }
 #define ImportFloat16Quantum(endian,value,p)                    \
   {                                                             \
@@ -187,6 +187,8 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         fu_.c[0]=*p++;                          \
         value=fu_.f;                            \
       }                                         \
+    if (MAGICK_ISNAN(value))                    \
+      value = 0.0;                              \
   }
 #define ImportFloat64Quantum(endian,value,p)    \
   {                                             \
@@ -213,6 +215,8 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         du_.c[0]=*p++;                          \
         value=du_.d;                            \
       }                                         \
+    if (MAGICK_ISNAN(value))                \
+      value = 0.0;                              \
   }
 
 /*
@@ -353,7 +357,7 @@ ImportIndexQuantumType(const unsigned char *source,
   register unsigned long
     x;
 
-  register unsigned int
+  register magick_uint32_t
     index;
 
   assert(image->colors <= MaxColormapSize);
@@ -517,7 +521,7 @@ ImportIndexAlphaQuantumType(const unsigned char *source,
   register unsigned long
     x;
 
-  register unsigned int
+  register magick_uint32_t
     index,
     unsigned_value;
 
@@ -661,7 +665,7 @@ ImportGrayQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     index,
     unsigned_value;
 
@@ -1053,7 +1057,7 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     index,
     unsigned_value;
 
@@ -1411,7 +1415,7 @@ ImportRedQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -1580,7 +1584,7 @@ ImportGreenQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -1749,7 +1753,7 @@ ImportBlueQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -1921,7 +1925,7 @@ ImportAlphaQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -2208,7 +2212,7 @@ ImportBlackQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -2377,7 +2381,7 @@ ImportRGBQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -2609,7 +2613,7 @@ ImportRGBAQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -2853,7 +2857,7 @@ ImportCMYKQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -3099,7 +3103,7 @@ ImportCMYKAQuantumType(const unsigned char *source,
   double
     double_value;
 
-  register unsigned int
+  register magick_uint32_t
     unsigned_value;
 
   unsigned int
@@ -3581,11 +3585,24 @@ ImportViewPixelArea(ViewInfo *view,
 
   /* printf("quantum_type=%d  quantum_size=%u\n",(int) quantum_type, quantum_size); */
 
-  /* Maximum value which may be represented by a sample */
-  unsigned_maxvalue=MaxValueGivenBits(sample_bits);
-  double_scale=(double) MaxRGB/(double_maxvalue-double_minvalue);
+  {
+    const double scale_denominator = double_maxvalue-double_minvalue;
+    if (scale_denominator < MagickEpsilon)
+      {
+        char error_message[MaxTextExtent];
+        FormatString(error_message,"import double max/min value: max=%g, min=%g",
+                     double_maxvalue,double_minvalue);
+        ThrowException(&GetCacheViewImage(view)->exception,CoderError,
+                       DivisionByZero,error_message);
+        return MagickFail;
+      }
+    double_scale=MaxRGBDouble/(scale_denominator);
+  }
   if ((sample_type != FloatQuantumSampleType) && (sample_bits <= 32U))
     {
+      /* Maximum value which may be represented by a sample */
+      unsigned_maxvalue=MaxValueGivenBits(sample_bits);
+
       if (QuantumDepth == sample_bits)
         {
         }

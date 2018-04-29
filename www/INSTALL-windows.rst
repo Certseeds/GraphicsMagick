@@ -115,7 +115,7 @@ Select Start Menu Folder
 Select Additional Tasks
 -----------------------
 
-  A screen is displayed which presents most (or all) of the following
+  A screen is displayed which presents some (or all) of the following
   options:
 
   * Create a desktop icon
@@ -188,7 +188,7 @@ Testing The Installation
     ::
 
       gm convert logo: logo.miff
-      gmdisplay logo.miff
+      gm convert logo.miff win:
 
   and the GraphicsMagick logo should be displayed in a window.
 

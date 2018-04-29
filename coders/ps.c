@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -946,6 +946,8 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
     scene,
     text_size;
 
+  size_t
+    image_list_length;
 
   /*
     Open output image file.
@@ -954,6 +956,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1086,7 +1089,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
             (void) WriteBlobString(image,"%%Orientation: Portrait\n");
             (void) WriteBlobString(image,"%%PageOrder: Ascend\n");
             FormatString(buffer,"%%%%Pages: %lu\n", image_info->adjoin ?
-              (unsigned long) GetImageListLength(image) : 1L);
+              (unsigned long) image_list_length : 1L);
             (void) WriteBlobString(image,buffer);
           }
         (void) WriteBlobString(image,"%%EndComments\n");
@@ -1633,7 +1636,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    if (!MagickMonitorFormatted(scene++,GetImageListLength(image),&image->exception,
+    if (!MagickMonitorFormatted(scene++,image_list_length,&image->exception,
                                 SaveImagesText,image->filename))
       break;
   } while (image_info->adjoin);

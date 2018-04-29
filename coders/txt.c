@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -108,6 +108,9 @@ static long ReadInt(Image *image, int *pch)
   long
     n;
 
+  unsigned int
+    digits;
+
   n=0;
   if (pch)
     ch=*pch;
@@ -121,12 +124,14 @@ static long ReadInt(Image *image, int *pch)
         return (0);
     }
 
-  while (isdigit(ch))
+  digits=0;
+  while ((digits < 10) && isdigit(ch))
     {
       n=10*n+(ch-'0');
       ch = ReadBlobByte(image);
       if (ch == EOF)
         return (n);
+      digits++;
     }
 
   if (pch)
@@ -376,7 +381,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         B,
         A;
 
-      const PixelPacket
+      PixelPacket
         *q;
 
       ExtendedSignedIntegralType NextImagePos = 0;
@@ -393,6 +398,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if(NextImagePos!=0)
           {
+            if (image_info->subrange != 0)
+              if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                break;
+
             /* Allocate next image structure. */
             AllocateNextImage(image_info,image);
             if(image->next == (Image *)NULL) break;
@@ -587,11 +596,56 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if (logging)
           (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-                               "Image detected [%u * %u]: %d", x, y, NumOfPlanes);
+                               "Image detected[%lu] [%u * %u]: %d", image->scene, x, y, NumOfPlanes);
 
         image->depth = Min(QuantumDepth,NumOfPlanes);
         ImportPixelAreaOptionsInit(&import_options);
         import_options.endian = NativeEndian;
+
+        image->columns = x+1;
+        image->rows = y+1;
+        if (logging)
+          (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                               "Image Geometry: %lux%lu", image->columns, image->rows);
+
+        if (CheckImagePixelLimits(image, exception) != MagickPass)
+          ThrowNOTXTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+
+        /*
+          Validate that file size is sufficient for claimed image properties
+        */
+        if (BlobIsSeekable(image))
+          {
+            magick_off_t
+              file_size;
+
+            if ((file_size=GetBlobSize(image)) != 0)
+              {
+                double
+                  ratio;
+
+                double
+                  packet_size=40.0;  /* Max characters in a row */
+
+                double
+                  number_pixels=image->columns*image->rows;
+
+                ratio = (((double) number_pixels*packet_size)/file_size);
+
+                if (ratio > 2.0)
+                  {
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Unreasonable file size "
+                                          "(ratio of pixels to file size %g)",
+                                          ratio);
+                    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                         image);
+                  }
+              }
+          }
+
+        /* Assure that all image pixels are initialized to black */
+        SetImage(image,OpaqueOpacity);
 
         BImgBuff = MagickAllocateArray(unsigned char *,
                                        (size_t)(x+1),
@@ -602,11 +656,6 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (BImgBuff == NULL)
           ThrowNOTXTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-        image->columns = x+1;
-        image->rows = y+1;
-
-        if (CheckImagePixelLimits(image, exception) != MagickPass)
-          ThrowNOTXTReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
         (void) SeekBlob(image,NextImagePos,SEEK_SET);
         NextImagePos = 0;
@@ -628,6 +677,12 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     readln(image,&ch);
                     continue;
                   }
+                if (ch == 0 || ch > 128 ||	/* Duplicate image check for data with fixed geometry previous check is skipped. */
+                      (ch >= 'a' && ch <= 'z') ||
+                      (ch >= 'A' && ch <= 'Z'))
+                {                                 /* not a text data */
+                  ThrowNOTXTReaderException(CoderError,ImageTypeNotSupported,image);
+                }
               }
 
             x = ReadInt(image,&ch);             /* x */
@@ -1171,6 +1226,9 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   register long
     x;
 
+  size_t
+    image_list_length;
+
   unsigned int
     status;
 
@@ -1188,6 +1246,7 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   scene=0;
+  image_list_length=GetImageListLength(image);
   do
     {
       unsigned int
@@ -1239,11 +1298,12 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);
-      status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+      status=MagickMonitorFormatted(scene,image_list_length,
                                     &image->exception,SaveImagesText,
                                     image->filename);
       if (status == False)
         break;
+      scene++;
     } while (image_info->adjoin);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)

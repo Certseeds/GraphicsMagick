@@ -11,6 +11,12 @@ Unable to create blob
 .
 
 MessageId       = +1
+SymbolicName    = BlobErrorUnableToDeduceImageFormat
+Language        = English
+Unable to deduce image format
+.
+
+MessageId       = +1
 SymbolicName    = BlobErrorUnableToObtainOffset
 Language        = English
 Unable to obtain current offset
@@ -68,6 +74,12 @@ MessageId       = +1
 SymbolicName    = CacheErrorInconsistentPersistentCacheDepth
 Language        = English
 Inconsistent persistent cache depth
+.
+
+MessageId       = +1
+SymbolicName    = CacheErrorPixelCacheDimensionsMisMatch
+Language        = English
+Pixel cache dimensions incompatible with image dimensions
 .
 
 MessageId       = +1
@@ -149,6 +161,12 @@ default warning
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorArithmeticOverflow
+Language        = English
+Arithmetic overflow
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorColormapTooLarge
 Language        = English
 Colormap size exceeds limit
@@ -194,6 +212,12 @@ MessageId       = +1
 SymbolicName    = CoderErrorDeltaPNGNotSupported
 Language        = English
 Delta-PNG is not supported
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorDivisionByZero
+Language        = English
+Division by zero
 .
 
 MessageId       = +1
@@ -1445,6 +1469,12 @@ Unable to get clip mask
 .
 
 MessageId       = +1
+SymbolicName    = ImageErrorUnableToGetCompositeMask
+Language        = English
+Unable to get composite mask
+.
+
+MessageId       = +1
 SymbolicName    = ImageErrorUnableToHandleImageChannel
 Language        = English
 unable to handle image channel
@@ -1472,6 +1502,12 @@ MessageId       = +1
 SymbolicName    = ImageErrorUnableToSetClipMask
 Language        = English
 Unable to set clip mask
+.
+
+MessageId       = +1
+SymbolicName    = ImageErrorUnableToSetCompositeMask
+Language        = English
+Unable to set composite mask
 .
 
 MessageId       = +1

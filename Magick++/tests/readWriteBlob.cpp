@@ -67,7 +67,7 @@ int main( int /*argc*/, char ** argv)
         srcdir = getenv("SRCDIR");
 
       string testimage;
-    
+
       //
       // Test reading BLOBs
       //
@@ -86,15 +86,13 @@ int main( int /*argc*/, char ** argv)
             cout << "Failed to open file " << testimage << " for input!" << endl;
             exit(1);
           }
-        unsigned char* blobData = new unsigned char[100000];
+        in.seekg(0,ios::end);
+        streampos file_size = in.tellg();
+        in.seekg(0,ios::beg);
+        unsigned char* blobData = new unsigned char[file_size];
         char* c=reinterpret_cast<char *>(blobData);
-        size_t blobLen=0;
-        while( (blobLen< 100000) && in.get(*c) )
-          {
-            c++;
-            blobLen++;
-          }
-        if ((!in.eof()) || (blobLen == 0))
+        in.read(c,file_size);
+        if (!in.good())
           {
             cout << "Failed to read file " << testimage << " for input!" << endl;
             exit(1);
@@ -102,7 +100,7 @@ int main( int /*argc*/, char ** argv)
         in.close();
 
         // Construct Magick++ Blob
-        Blob blob(static_cast<const void*>(blobData), blobLen);
+        Blob blob(static_cast<const void*>(blobData), file_size);
         delete [] blobData;
 
         // If construction of image fails, an exception should be thrown
@@ -190,7 +188,7 @@ int main( int /*argc*/, char ** argv)
               image.display();
             }
         }
-      
+
       }
       // Test writing BLOBs via STL writeImages
       {
@@ -234,7 +232,7 @@ int main( int /*argc*/, char ** argv)
           }
       }
     }
-  
+
   catch( Exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
@@ -251,8 +249,6 @@ int main( int /*argc*/, char ** argv)
       cout << failures << " failures" << endl;
       return 1;
     }
-  
+
   return 0;
 }
-
-

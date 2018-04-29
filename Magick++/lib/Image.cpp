@@ -1548,6 +1548,8 @@ void Magick::Image::randomThresholdChannel( const Geometry &thresholds_,
 void Magick::Image::read ( const std::string &imageSpec_ )
 {
   options()->fileName( imageSpec_ );
+  // This interface only supports reading one image frame
+  options()->subRange(1);
 
   ExceptionInfo exceptionInfo;
   GetExceptionInfo( &exceptionInfo );
@@ -1583,6 +1585,8 @@ void Magick::Image::read ( const Blob &blob_ )
 {
   ExceptionInfo exceptionInfo;
   GetExceptionInfo( &exceptionInfo );
+  // This interface only supports reading one image frame
+  options()->subRange(1);
   MagickLib::Image* image =
     BlobToImage( imageInfo(),
                  static_cast<const void *>(blob_.data()),

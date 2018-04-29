@@ -851,10 +851,12 @@ WandExport MagickBool DrawClearException(DrawingWand *drawing_wand)
 */
 WandExport char *DrawGetClipPath(const DrawingWand *drawing_wand)
 {
+  char * pClipPath ;
   assert(drawing_wand != (const DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
-  if (CurrentContext->clip_path != (char *) NULL)
-    return((char *) AcquireString(CurrentContext->clip_path));
+  pClipPath = *DrawInfoGetClipPath(CurrentContext);
+  if (pClipPath != (char *) NULL)
+    return((char *) AcquireString(pClipPath));
   return((char *) NULL);
 }
 
@@ -887,14 +889,16 @@ WandExport char *DrawGetClipPath(const DrawingWand *drawing_wand)
 WandExport void DrawSetClipPath(DrawingWand *drawing_wand,
   const char *clip_path)
 {
+  char **ppClipPath,*pClipPath;
   assert(drawing_wand != (DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
   assert(clip_path != (const char *) NULL);
-  if ((CurrentContext->clip_path == NULL) || drawing_wand->filter_off ||
-      LocaleCompare(CurrentContext->clip_path,clip_path) != 0)
+  pClipPath = *(ppClipPath = DrawInfoGetClipPath(CurrentContext));
+  if ((pClipPath == NULL) || drawing_wand->filter_off ||
+      LocaleCompare(pClipPath,clip_path) != 0)
     {
-      (void) CloneString(&CurrentContext->clip_path,clip_path);
-      if (CurrentContext->clip_path == (char*)NULL)
+      (void) CloneString(ppClipPath,clip_path);
+      if (*ppClipPath == (char*)NULL)
         ThrowException3(&drawing_wand->exception,ResourceLimitError,
           MemoryAllocationFailed,UnableToDrawOnImage);
       (void) MvgPrintf(drawing_wand,"clip-path url(#%s)\n",clip_path);

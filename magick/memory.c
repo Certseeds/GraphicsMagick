@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -38,6 +38,21 @@
 */
 #include "magick/studio.h"
 #include "magick/utility.h"
+
+#if defined(MAGICK_MEMORY_HARD_LIMIT)
+#define MEMORY_LIMIT_CHECK(func,size)                                   \
+  do                                                                    \
+    {                                                                   \
+      if (0) fprintf(stderr,"%s: %zu\n", func, size);                   \
+      if (size > (size_t)MAGICK_MEMORY_HARD_LIMIT)                      \
+        {                                                               \
+          fprintf(stderr,"%s: Excessive allocation request %zu\n", func, size); \
+          abort();                                                      \
+        }                                                               \
+  } while(0)
+#else
+#define MEMORY_LIMIT_CHECK(func,size)
+#endif /* MAGICK_MEMORY_HARD_LIMIT */
 
 /*
   Static variables.
@@ -153,6 +168,8 @@ MagickExport void * MagickMalloc(const size_t size)
   if (size == 0)
     return ((void *) NULL);
 
+  MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
+
   return (MallocFunc)(size);
 }
 
@@ -207,6 +224,8 @@ MagickExport void * MagickMallocAligned(const size_t alignment,const size_t size
 
   void
     *alligned_p = 0;
+
+  MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
 
   alligned_size=RoundUpToAlignment(size,alignment);
 
@@ -466,6 +485,8 @@ MagickExport void *MagickRealloc(void *memory,const size_t size)
 {
   void
     *new_memory = (void *) NULL;
+
+  MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
 
   if ((void *) NULL == memory)
     new_memory = (MallocFunc)(size);

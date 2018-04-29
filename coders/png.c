@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3632,7 +3632,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-            "    Copying jng_image pixels to main image.");
+                              "jng_height=%lu, jng_width=%lu",
+                              jng_height, jng_width);
       image->rows=jng_height;
       image->columns=jng_width;
       length=MagickArraySize(image->columns,sizeof(PixelPacket));
@@ -3640,7 +3641,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           if (logging)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "    jng_width=%lu jng_height=%lu",
+              "  jng_width=%lu jng_height=%lu",
               (unsigned long)jng_width,(unsigned long)jng_height);
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
@@ -3649,6 +3650,25 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                          ImproperImageHeader,image->filename);
           return ((Image *)NULL);
         }
+      if ((image->columns != jng_image->columns) ||
+          (image->rows != jng_image->rows))
+        {
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "image dimensions %lux%lu do not"
+                                  " match JPEG dimensions %lux%lu",
+                                  image->columns,image->rows,
+                                  jng_image->columns,jng_image->rows);
+          DestroyJNG(NULL,&color_image,&color_image_info,
+                     &alpha_image,&alpha_image_info);
+          DestroyImage(jng_image);
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
+          return ((Image *)NULL);
+        }
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "copying jng_image pixels to main image");
       for (y=0; y < (long) image->rows; y++)
         {
           s=AcquireImagePixels(jng_image,0,y,image->columns,1,
@@ -4118,7 +4138,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             *p = 0;
 
           unsigned char
-            *chunk;
+            *chunk = (unsigned char *) NULL;
 
           /*
             Read a new chunk.
@@ -4157,7 +4177,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                      image);
               if (ReadBlob(image,length,chunk) < length)
                 {
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
@@ -4203,7 +4223,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (length < 16)
                 {
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,CorruptImage,image);
                 }
@@ -4233,7 +4253,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "   MNG width or height too large: %lu, %lu",
                       mng_info->mng_width,mng_info->mng_height);
-                  MagickFree(chunk);
+                  MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,
                       image);
@@ -4474,6 +4494,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   if (mng_info->global_plte == (png_colorp) NULL)
                     mng_info->global_plte=
                       MagickAllocateMemory(png_colorp,256*sizeof(png_color));
+                  if (mng_info->global_plte == (png_colorp) NULL)
+                    {
+                      mng_info->global_plte_length=0;
+                      MagickFreeMemory(chunk);
+                      MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                           image);
+                    }
                   for (i=0; i < (long) (length/3); i++)
                     {
                       mng_info->global_plte[i].red=p[3*i];
@@ -4625,10 +4653,13 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       change_timeout=(*p++);
                       change_clipping=(*p++);
                       p++; /* change_sync */
-                      if (change_delay && (p-chunk) < (ssize_t) (length-4))
+                      if (change_delay && ((p-chunk) < (ssize_t) (length-4)))
                         {
-                          frame_delay=(100*(mng_get_long(p))/
-                                       mng_info->ticks_per_second);
+                          if (mng_info->ticks_per_second == 0)
+                            frame_delay=0;
+                          else
+                            frame_delay=(100*(mng_get_long(p))/
+                                         mng_info->ticks_per_second);
                           if (change_delay == 2)
                             default_frame_delay=frame_delay;
                           p+=4;
@@ -4639,8 +4670,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         }
                       if (change_timeout && (p-chunk) < (ssize_t) (length-4))
                         {
-                          frame_timeout=
-                            (100*(mng_get_long(p))/mng_info->ticks_per_second);
+                          if (mng_info->ticks_per_second == 0)
+                            frame_timeout=0;
+                          else
+                            frame_timeout=
+                              (100*(mng_get_long(p))/mng_info->ticks_per_second);
                           if (change_timeout == 2)
                             default_frame_timeout=frame_timeout;
                           p+=4;
@@ -4862,10 +4896,29 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Record starting point.
                   */
                   loop_iters=mng_get_long(&chunk[1]);
-                  if (loop_iters == 0)
+                  if (loop_iters <= 0)
                     skipping_loop=loop_level;
                   else
                     {
+                      long
+                        loop_iters_max = 512;
+
+                      const char
+                        *definition_value;
+
+                      if ((definition_value=AccessDefinition(image_info,"mng","maximum-loops")))
+                        loop_iters_max=atol(definition_value);
+                      if (loop_iters > loop_iters_max)
+                        loop_iters=loop_iters_max;
+
+                      /*
+                        The LOOP chunk allows an iteration count in the range 0..2^31-1
+                      */
+                      if (loop_iters >= 2147483647L)
+                        loop_iters=2147483647L;
+                      else if (loop_iters < 0)
+                        loop_iters=1;
+
                       mng_info->loop_jump[loop_level]=TellBlob(image);
                       mng_info->loop_count[loop_level]=loop_iters;
                     }

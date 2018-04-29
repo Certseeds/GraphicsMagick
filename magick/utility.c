@@ -5058,7 +5058,7 @@ MagickExport char **StringToList(const char *text)
   register const char
     *p;
 
-  register long
+  register size_t
     i;
 
   size_t
@@ -5078,26 +5078,21 @@ MagickExport char **StringToList(const char *text)
       for (p=text; *p != '\0'; p++)
         if (*p == '\n')
           lines++;
-      textlist=MagickAllocateMemory(char **,(lines+MaxTextExtent)*sizeof(char *));
+      textlist=MagickAllocateMemory(char **,(lines+1)*sizeof(char *));
       if (textlist == (char **) NULL)
         MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
           UnableToConvertText);
       p=text;
-      for (i=0; i < (long) lines; i++)
+      for (i=0; i < lines; i++)
       {
         for (q=(char *) p; *q != '\0'; q++)
           if ((*q == '\r') || (*q == '\n'))
             break;
-        textlist[i]=MagickAllocateMemory(char *,(size_t) (q-p+MaxTextExtent));
+        textlist[i]=MagickAllocateMemory(char *,(size_t) (q-p+1));
         if (textlist[i] == (char *) NULL)
           MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
             UnableToConvertText);
-        /*
-          Don't use strlcpy here because it spends too much time
-          looking for the trailing null in order to report the
-          characters not copied.
-        */
-        (void) strncpy(textlist[i],p,q-p);
+        (void) memcpy(textlist[i],p,q-p);
         textlist[i][q-p]='\0';
         if (*q == '\r')
           q++;
@@ -5106,30 +5101,35 @@ MagickExport char **StringToList(const char *text)
     }
   else
     {
+      const size_t
+        chars_per_line = 0x14;
+
       char
         hex_string[MaxTextExtent];
 
-      register long
+      register size_t
         j;
 
       /*
         Convert string to a HEX list.
       */
-      lines=(strlen(text)/0x14)+1;
-      textlist=MagickAllocateMemory(char **,(lines+MaxTextExtent)*sizeof(char *));
+      lines=(strlen(text)/chars_per_line)+1;
+      textlist=MagickAllocateMemory(char **,(lines+1)*sizeof(char *));
       if (textlist == (char **) NULL)
         MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
           UnableToConvertText);
       p=text;
-      for (i=0; i < (long) lines; i++)
+      for (i=0; i < lines; i++)
       {
+        /* FIXME: Allocation here is excessively large */
         textlist[i]=MagickAllocateMemory(char *,2*MaxTextExtent);
         if (textlist[i] == (char *) NULL)
           MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
             UnableToConvertText);
-        FormatString(textlist[i],"0x%08lx: ",0x14*i);
+        FormatString(textlist[i],"0x%08" MAGICK_SIZE_T_F "x: ",
+                     (MAGICK_SIZE_T) chars_per_line*i);
         q=textlist[i]+strlen(textlist[i]);
-        for (j=1; j <= (long) Min(strlen(p),0x14); j++)
+        for (j=1; j <= Min(strlen(p),chars_per_line); j++)
         {
           FormatString(hex_string,"%02x",*(p+j));
           (void) strlcpy(q,hex_string,MaxTextExtent);
@@ -5137,7 +5137,7 @@ MagickExport char **StringToList(const char *text)
           if ((j % 0x04) == 0)
             *q++=' ';
         }
-        for (; j <= 0x14; j++)
+        for (; j <= chars_per_line; j++)
         {
           *q++=' ';
           *q++=' ';
@@ -5145,7 +5145,7 @@ MagickExport char **StringToList(const char *text)
             *q++=' ';
         }
         *q++=' ';
-        for (j=1; j <= (long) Min(strlen(p),0x14); j++)
+        for (j=1; j <= Min(strlen(p),chars_per_line); j++)
         {
           if (isprint((int)(unsigned char)(*p)))
             *q++=(*p);

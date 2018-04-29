@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -256,7 +256,7 @@ static unsigned int IsCINEON(const unsigned char *magick,const size_t length)
 \
   if (!IS_UNDEFINED_ASCII(member)) \
     { \
-      (void) strncpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
+      (void) memcpy(buffer_,member,Min(sizeof(member),MaxTextExtent)); \
       buffer_[Min(sizeof(member),MaxTextExtent-1)]='\0';             \
       (void) SetImageAttribute(image,name,buffer_); \
       LogSetImageAttribute(name,buffer_); \

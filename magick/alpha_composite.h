@@ -8,6 +8,16 @@
 
   GraphicsMagick Alpha Composite Methods.
 */
+
+/*
+  References on compositing:
+
+    Porter, Thomas; Tom Duff (1984). "Compositing Digital Images". Computer Graphics.
+      18 (3): 253.259. ISBN 0-89791-138-5. doi:10.1145/800031.808606
+
+    SVG specification REC-SVG11-20110816.pdf, "Simple alpha compositing"
+*/
+
 #ifndef _MAGICK_ALPHA_COMPOSITE_H
 #define _MAGICK_ALPHA_COMPOSITE_H
 
@@ -25,11 +35,20 @@ static inline magick_uint32_t BlendQuantumOpacity(magick_uint32_t q,
 
   if (opacity != 0U)
     {
+      /*
+        The 0==transparent/MaxRGB==opaque value for "opacity" is o = (MaxRGB-opacity),
+        and the value for "q" is a = (MaxRGB-q), so the output value is o * a / MaxRGB.
+        This value must be inverted to conform to the  0==opaque/MaxRGB==transparent
+        convention used in this code.  When you work through the algebra you get
+        result = opacity + q - opacity * q / MaxRGB.
+      */
 #if QuantumDepth > 16
-      result = ((magick_uint64_t) opacity*q)/MaxRGB;
+#define _TCAST_  magick_uint64_t
 #else
-      result = ((magick_uint32_t) opacity*q)/MaxRGB;
+#define _TCAST_  magick_uint32_t
 #endif
+      result = opacity + q - ((_TCAST_)opacity * (_TCAST_)q + /*round*/(MaxRGB>>1))/MaxRGB;
+#undef _TCAST_
     }
   return result;
 }
@@ -72,12 +91,40 @@ static inline void BlendCompositePixel(PixelPacket *composite,
 }
 
 /*
-  Alpha compose pixel 'change' over pixel 'source'.
+  Alpha compose pixel 'change' over pixel 'base'.
 
   The result will be the union of the two image shapes, with
   opaque areas of change-image obscuring base-image in the
   region of overlap.
 */
+
+/*
+  Documentation for macro MagickAlphaCompositeQuantum:
+
+    (1) GM uses the alpha value convention of 0 for opaque and MaxRGB for transparent, which is
+    the opposite of the "standard" usage (see Porter/Duff and SVG references above).
+    (2) Using the standard terminology of fg (foreground) and bg (background), and the standard
+    representation of 0 for transparent and 1 for opaque, let:
+
+      fg_alpha = (1.0 - change_alpha / MaxRGBDouble)
+      bg_alpha = (1.0 - base_alpha / MaxRGBDouble)
+
+    then MagickAlphaCompositeQuantum computes the following result:
+
+      result = fg_alpha * fg + (1 - fg_alpha) * (bg_alpha * bg)
+
+    This is the "standard" compositing equation when the fg and bg colors have not been premultiplied
+    by their alpha values.  For reference, note that when the fg and bg colors HAVE been premultiplied,
+    the compositing equation becomes the simple and elegant:
+
+      result = fg + (1 - fg_alpha) * bg
+
+    and this equation works for both the color components AND the alpha channel.  For the
+    non-premultiplied case, the alpha equation is:
+
+      result_alpha = fg_alpha + (1 - fg_alpha) * bg_alpha
+*/
+
 #define  MagickAlphaCompositeQuantum(change,change_alpha,base,base_alpha) \
    (1.0-(change_alpha/MaxRGBDouble))*(double) change+(1.0-(base_alpha/MaxRGBDouble))*(double) base*(change_alpha/MaxRGBDouble)
 
@@ -96,11 +143,21 @@ static inline void AlphaCompositePixel(PixelPacket *composite, const PixelPacket
         delta,
         value;
 
+      /*
+        "delta" is the 0==transparent/1==opaque opacity value for the composited
+        pixel (I checked the algebra).
+      */
       delta=1.0-(change_alpha/MaxRGBDouble)*(base_alpha/MaxRGBDouble);
 
-      value=MaxRGBDouble*(1.0-delta);
+      value=MaxRGBDouble*(1.0-delta);   /* invert so 0==opaque, MaxRGB==transparent */
       composite->opacity=RoundDoubleToQuantum(value);
 
+      /*
+        The multiplicative inverse of "delta" is used to rescale the red, green, and
+        blue composited pixel values so that they are not premultiplied by the alpha
+        value.  Note the protection against divide-by-zero in case the composited pixel
+        is completely transparent.
+      */
       delta=1.0/(delta <= MagickEpsilon ? 1.0 : delta);
 
       value=delta*MagickAlphaCompositeQuantum(change->red,change_alpha,base->red,base_alpha);

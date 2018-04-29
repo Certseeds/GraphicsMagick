@@ -882,6 +882,9 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
     *one_row,
     *ptr;
 
+  size_t
+    alloc_size;
+
   unsigned int
     status;
 
@@ -1093,16 +1096,18 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowPALMReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-  one_row = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,
-                                                     MagickArraySize(2,image->columns)));
+  alloc_size = Max(palm_header.bytes_per_row,MagickArraySize(2,image->columns));
+  one_row = MagickAllocateMemory(unsigned char *,alloc_size);
   if (one_row == (unsigned char *) NULL)
     ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  (void) memset(one_row,0,alloc_size);
   if (palm_header.compression_type == PALM_COMPRESSION_SCANLINE)
     {
-      lastrow = MagickAllocateMemory(unsigned char *,Max(palm_header.bytes_per_row,
-                                                         MagickArraySize(2,image->columns)));
+      alloc_size = Max(palm_header.bytes_per_row,MagickArraySize(2,image->columns));
+      lastrow = MagickAllocateMemory(unsigned char *,alloc_size);
       if (lastrow == (unsigned char *) NULL)
         ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      (void) memset(lastrow,0,alloc_size);
     }
 
   mask = (1l << palm_header.bits_per_pixel) - 1;
@@ -1173,7 +1178,7 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
       indexes=AccessMutableIndexes(image);
       if (palm_header.bits_per_pixel == 16)
         {
-          if (image->columns > 2*palm_header.bytes_per_row)
+          if (image->columns > 2U*palm_header.bytes_per_row)
             ThrowPALMReaderException(CorruptImageError,CorruptImage,image);
           for (x=0; x < (long) image->columns; x++)
             {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -191,13 +191,13 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     number_channels,
     runlength;
 
-  long
+  unsigned long
     y;
 
   magick_uint32_t
     *scanlines=0;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -222,6 +222,10 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickPassFail
     status;
 
+  magick_off_t
+    current_offset,
+    file_size;
+
   /*
     Open image file.
   */
@@ -233,6 +237,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  file_size=GetBlobSize(image);
   is_rla3=MagickFalse;
   memset(&rla_info,0,sizeof(rla_info));
   memset(&rla3_extra_info,0,sizeof(rla3_extra_info));
@@ -460,6 +465,23 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (LocaleNCompare(rla_info.chan,"rgb",3) != 0)
     ThrowRLAReaderException(CoderError,ColorTypeNotSupported,image);
 
+  if (rla_info.number_channels > 3)
+    {
+      if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Unsupported number of color channels: %u",
+                                  rla_info.number_channels);
+      ThrowRLAReaderException(CorruptImageError,UnsupportedNumberOfPlanes,image);
+    }
+  if (rla_info.number_matte_channels > 1)
+    {
+      if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Unsupported number of matte channels: %u",
+                                  rla_info.number_matte_channels);
+      ThrowRLAReaderException(CorruptImageError,UnsupportedNumberOfPlanes,image);
+    }
+
   /*
     Initialize image structure.
   */
@@ -489,7 +511,8 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read offsets to each scanline data.
   */
-  for (i=0; i < (long) image->rows; i++)
+  current_offset=TellBlob(image);
+  for (i=0; i < image->rows; i++)
     {
       scanlines[i]=(magick_uint32_t) ReadBlobMSBLong(image);
 #if 0
@@ -497,6 +520,29 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "scanline[%ld] = %lu",i,(unsigned long) scanlines[i]);
 #endif
+      if ((magick_off_t) scanlines[i] > file_size)
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "scanline[%ld] offset %lu is beyond end of file",
+                                  i,(unsigned long) scanlines[i]);
+          ThrowRLAReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
+      if ((magick_off_t) scanlines[i] < current_offset)
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "scanline[%ld] offset %lu is too small!",
+                                  i,(unsigned long) scanlines[i]);
+          ThrowRLAReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if ((i != 0) && (scanlines[i-1] == scanlines[i]))
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "scanline[%ld] offset %lu is a duplicate!",
+                                  i,(unsigned long) scanlines[i]);
+        }
     }
   if (EOFBlob(image))
     ThrowRLAReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -504,7 +550,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read image data.
   */
   x=0;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     if (SeekBlob(image,scanlines[image->rows-y-1],SEEK_SET) == -1)
       {
@@ -535,6 +581,8 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             while (runlength < 0)
             {
+              if (x > image->rows*image->columns*number_channels)
+                  ThrowRLAReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
               q=GetImagePixels(image,(long) (x % image->columns),
                                (long) (y % image->columns),1,1);
               if (q == (PixelPacket *) NULL)
@@ -595,6 +643,8 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         runlength++;
         do
         {
+          if (x > image->rows*image->columns*number_channels)
+            ThrowRLAReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
           q=GetImagePixels(image,(long) (x % image->columns),
             (long) (y % image->columns),1,1);
           if (q == (PixelPacket *) NULL)

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -596,6 +596,18 @@ static char *EscapeParenthesis(const char *text)
   return(buffer);
 }
 
+#define ThrowPDFWriterException(code_,reason_,image_) \
+  {                                                   \
+    MagickFreeMemory(fax_blob);                       \
+    MagickFreeMemory(xref);                           \
+    ThrowWriterException(code_,reason_,image_);       \
+  }
+#define ThrowPDFWriterException2(code_,reason_,image_)  \
+  {                                                     \
+    MagickFreeMemory(fax_blob);                         \
+    MagickFreeMemory(xref);                             \
+    ThrowWriterException2(code_,reason_,image_);        \
+  }
 static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
 {
 #define CFormat  "/Filter [ /%.1024s ]\n"
@@ -673,7 +685,10 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
     text_size;
 
   ExtendedSignedIntegralType
-    *xref;
+    *xref = (ExtendedSignedIntegralType *) NULL;
+
+  size_t
+    image_list_length;
 
   /*
     Open output image file.
@@ -682,9 +697,10 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowPDFWriterException(FileOpenError,UnableToOpenFile,image);
 
   /*
     Allocate X ref memory.
@@ -692,7 +708,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   xref=MagickAllocateMemory(ExtendedSignedIntegralType *,
                             2048*sizeof(ExtendedSignedIntegralType));
   if (xref == (ExtendedSignedIntegralType *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) memset(xref,0,2048*sizeof(ExtendedSignedIntegralType));
   /*
     Write Documentation Information Dictionary
@@ -765,7 +781,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       MagickReallocMemory(ExtendedSignedIntegralType *,xref,
                           (count+2048)*sizeof(ExtendedSignedIntegralType));
       if (xref == (ExtendedSignedIntegralType *) NULL)
-        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   (void) WriteBlobString(image,"]\n");
   FormatString(buffer,"/Count %lu\n",(count-pages_id)/ObjectsPerImage);
@@ -1180,7 +1196,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 */
                 jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
                 if (jpeg_blob == (unsigned char *) NULL)
-                  ThrowWriterException2(CoderError,image->exception.reason,image);
+                  ThrowPDFWriterException2(CoderError,image->exception.reason,image);
                 (void) WriteBlob(image,length,jpeg_blob);
                 MagickFreeMemory(jpeg_blob);
                 break;
@@ -1194,8 +1210,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 length=number_pixels;
                 pixels=MagickAllocateMemory(unsigned char *,length);
                 if (pixels == (unsigned char *) NULL)
-                  ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-                                       image);
+                  ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,
+                                          image);
                 /*
                   Dump Runlength encoded pixels.
                 */
@@ -1236,7 +1252,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 if (!status)
                   {
                     CloseBlob(image);
-                    return(False);
+                    MagickFreeMemory(xref);
+                    return(MagickFail);
                   }
                 break;
               }
@@ -1290,7 +1307,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 */
                 jpeg_blob=ImageToJPEGBlob(image,image_info,&length,&image->exception);
                 if (jpeg_blob == (unsigned char *) NULL)
-                  ThrowWriterException2(CoderError,image->exception.reason,image);
+                  ThrowPDFWriterException2(CoderError,image->exception.reason,image);
                 (void) WriteBlob(image,length,jpeg_blob);
                 MagickFreeMemory(jpeg_blob);
                 break;
@@ -1304,8 +1321,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 length=(image->colorspace == CMYKColorspace ? 4 : 3)*number_pixels;
                 pixels=MagickAllocateMemory(unsigned char *,length);
                 if (pixels == (unsigned char *) NULL)
-                  ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-                                       image);
+                  ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,
+                                          image);
                 /*
                   Dump runoffset encoded pixels.
                 */
@@ -1422,7 +1439,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                   length=number_pixels;
                   pixels=MagickAllocateMemory(unsigned char *,length);
                   if (pixels == (unsigned char *) NULL)
-                    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+                    ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,image);
                   /*
                     Dump Runlength encoded pixels.
                   */
@@ -1593,7 +1610,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);
-      status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+      status=MagickMonitorFormatted(scene++,image_list_length,
                                     &image->exception,SaveImagesText,
                                     image->filename);
       if (status == False)
@@ -1631,7 +1648,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   MagickFreeMemory(xref);
   CloseBlob(image);
   MagickFreeMemory(fax_blob);
-  return(True);
+  return(MagickPass);
 }
 
 #if defined(HasZLIB)

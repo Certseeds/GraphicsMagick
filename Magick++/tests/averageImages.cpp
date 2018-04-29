@@ -32,10 +32,10 @@ int main( int /*argc*/, char ** argv)
     //
     // Test averageImages
     //
-    
+
     list<Image> imageList;
     readImages( &imageList, srcdir + "test_image_anim.miff" );
-    
+
     Image averaged;
     averageImages( &averaged, imageList.begin(), imageList.end() );
     // averaged.display();
@@ -43,11 +43,11 @@ int main( int /*argc*/, char ** argv)
          averaged.signature() != "76e3d52bdb28335843afa0f82adcedd1b0794472bb193f311399322863266ed2" &&
          averaged.signature() != "c2a2a727df34c85e3b6528c06cb12967574d6c85e1d0501055506765c578f7cc")
       {
-	cout << "Line: " << __LINE__
-	     << "  Averaging image failed, signature = "
-	     << averaged.signature() << endl;
-	averaged.display();
-	++failures;
+        cout << "Line: " << __LINE__
+             << "  Averaging image failed, signature = "
+             << averaged.signature() << endl;
+        averaged.display();
+        ++failures;
       }
   }
 
@@ -67,7 +67,6 @@ int main( int /*argc*/, char ** argv)
       cout << failures << " failures" << endl;
       return 1;
     }
-  
+
   return 0;
 }
-

@@ -1561,6 +1561,12 @@ are not.
 <dd>If the pcl:fit-to-page flag is defined, then the printer is
 requested to scale the image to fit the page size (width and/or
 height).</dd>
+<dt>mng:maximum-loops=&lt;value&gt;</dt>
+<dd>mng:maximum-loops specifies the maximum number of loops allowed to
+be specified by a MNG LOOP chunk. Without an imposed limit, a MNG file
+could request up to 2147483647 loops, which could run for a very long
+time.  The current default limit is 512 loops.
+</dd>
 <dt>pdf:use-cropbox={true|false}</dt>
 <dd>If the pdf:use-cropbox flag is set to <strong>true</strong>, then
 Ghostscript is requested to apply the PDF crop box.

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -301,6 +301,9 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (rle_header.YSize == 0) || (rle_header.YSize >= 32768))
     ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
 
+  if (rle_header.Cmaplen > 8)
+    ThrowRLEReaderException(CorruptImageError,ImproperImageHeader,image);
+
   image->columns=rle_header.XSize;
   image->rows=rle_header.YSize;
   image->matte=rle_header.Flags & AlphaFlag;
@@ -406,7 +409,11 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
                                   image);
         }
-      (void) ReadBlob(image,length,comment);
+      if (ReadBlob(image,length,comment) != length)
+        {
+          MagickFreeMemory(comment);
+          ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
       comment[length]='\0';
       /*
         Delimit multiple comments with '\n' so they fit in one string.

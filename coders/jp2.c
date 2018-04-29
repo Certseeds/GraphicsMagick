@@ -348,6 +348,19 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
   return(stream);
 }
 
+#define ThrowJP2ReaderException(code_,reason_,image_) \
+{ \
+  for (component=0; component < (long) number_components; component++) \
+    MagickFreeMemory(channel_lut[component]); \
+  if (pixels) \
+    jas_matrix_destroy(pixels); \
+  if (jp2_stream) \
+    (void) jas_stream_close(jp2_stream); \
+  if (jp2_image) \
+    jas_image_destroy(jp2_image); \
+  ThrowReaderException(code_,reason_,image_); \
+}
+
 static Image *ReadJP2Image(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -358,10 +371,10 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     y;
 
   jas_image_t
-    *jp2_image;
+    *jp2_image = (jas_image_t *) NULL;
 
   jas_matrix_t
-    *pixels;
+    *pixels = (jas_matrix_t *) NULL;
 
   jas_stream_ops_t
     StreamOperators =
@@ -373,7 +386,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     };
 
   jas_stream_t
-    *jp2_stream;
+    *jp2_stream = (jas_stream_t *) NULL;
 
   register long
     x;
@@ -384,7 +397,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   int
     component,
     components[4],
-    number_components;
+    number_components=0;
 
   Quantum
     *channel_lut[4];
@@ -410,6 +423,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  (void) memset(channel_lut,0,sizeof(channel_lut));
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
@@ -423,10 +437,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
   jp2_image=jas_image_decode(jp2_stream,-1,0);
   if (jp2_image == (jas_image_t *) NULL)
-    {
-      (void) jas_stream_close(jp2_stream);
-      ThrowReaderException(DelegateError,UnableToDecodeImageFile,image);
-    }
+    ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
 
   /*
     Validate that we can handle the image and obtain component
@@ -446,9 +457,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
               jas_image_getcmptbytype(jp2_image,
                                       JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B))) < 0))
           {
-            (void) jas_stream_close(jp2_stream);
-            jas_image_destroy(jp2_image);
-            ThrowReaderException(CorruptImageError,MissingImageChannel,image);
+            ThrowJP2ReaderException(CorruptImageError,MissingImageChannel,image);
           }
         number_components=3;
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -472,11 +481,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
         if ((components[0]=
              jas_image_getcmptbytype(jp2_image,
                                      JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_GRAY_Y))) < 0)
-          {
-            (void) jas_stream_close(jp2_stream);
-            jas_image_destroy(jp2_image);
-            ThrowReaderException(CorruptImageError,MissingImageChannel,image);
-          }
+          ThrowJP2ReaderException(CorruptImageError,MissingImageChannel,image);
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Image is in GRAY colorspace family");
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -490,11 +495,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
         components[1]=jas_image_getcmptbytype(jp2_image,JAS_IMAGE_CT_YCBCR_CB);
         components[2]=jas_image_getcmptbytype(jp2_image,JAS_IMAGE_CT_YCBCR_CR);
         if ((components[0] < 0) || (components[1] < 0) || (components[2] < 0))
-          {
-            (void) jas_stream_close(jp2_stream);
-            jas_image_destroy(jp2_image);
-            ThrowReaderException(CorruptImageError,MissingImageChannel,image);
-          }
+          ThrowJP2ReaderException(CorruptImageError,MissingImageChannel,image);
         number_components=3;
         components[3]=jas_image_getcmptbytype(jp2_image,JAS_IMAGE_CT_OPACITY);
         if (components[3] > 0)
@@ -509,9 +510,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       }
     default:
       {
-        (void) jas_stream_close(jp2_stream);
-        jas_image_destroy(jp2_image);
-        ThrowReaderException(CoderError,ColorspaceModelIsNotSupported,image);
+        ThrowJP2ReaderException(CoderError,ColorspaceModelIsNotSupported,image);
       }
     }
   image->columns=jas_image_width(jp2_image);
@@ -528,11 +527,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
          (jas_image_cmpthstep(jp2_image, components[component]) != 1) ||
          (jas_image_cmptvstep(jp2_image, components[component]) != 1) ||
          (jas_image_cmptsgnd(jp2_image, components[component]) != false))
-        {
-          (void) jas_stream_close(jp2_stream);
-          jas_image_destroy(jp2_image);
-          ThrowReaderException(CoderError,IrregularChannelGeometryNotSupported,image);
-        }
+        ThrowJP2ReaderException(CoderError,IrregularChannelGeometryNotSupported,image);
     }
 
   image->matte=number_components > 3;
@@ -559,21 +554,14 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     }
 
   if (CheckImagePixelLimits(image, exception) != MagickPass)
-    {
-      (void) jas_stream_close(jp2_stream);
-      jas_image_destroy(jp2_image);
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-    }
+    ThrowJP2ReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   /*
     Allocate Jasper pixels.
   */
   pixels=jas_matrix_create(1,(unsigned int) image->columns);
   if (pixels == (jas_matrix_t *) NULL)
-    {
-      jas_image_destroy(jp2_image);
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    }
+    ThrowJP2ReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   /*
     Allocate and populate channel LUTs
@@ -595,13 +583,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
                             "Channel %d scale is %g", component, scale_to_quantum);
       channel_lut[component]=MagickAllocateArray(Quantum *,max_value+1,sizeof(Quantum));
       if (channel_lut[component] == (Quantum *) NULL)
-        {
-          for ( --component; component >= 0; --component)
-            MagickFreeMemory(channel_lut[component]);
-          jas_matrix_destroy(pixels);
-          jas_image_destroy(jp2_image);
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-        }
+        ThrowJP2ReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       for(i=0; i <= max_value; i++)
         (channel_lut[component])[i]=scale_to_quantum*i+0.5;
     }

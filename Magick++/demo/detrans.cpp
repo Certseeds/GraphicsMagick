@@ -12,9 +12,9 @@
 
 #include <Magick++.h>
 #include <iostream>
-using namespace std; 
+using namespace std;
 using namespace Magick;
-int main(int argc,char **argv) 
+int main(int argc,char **argv)
 {
   if ( argc < 3 )
     {
@@ -48,13 +48,13 @@ int main(int argc,char **argv)
           base.matte( false );
           base.write( fname );
         }
-        catch( Exception &error_ ) 
-          { 
-            cout << error_.what() << endl; 
+        catch( Exception &error_ )
+          {
+            cout << error_.what() << endl;
           }
         ++arg;
       }
   }
 
-  return 0; 
+  return 0;
 }

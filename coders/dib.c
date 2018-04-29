@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -45,6 +45,12 @@
 #include "magick/render.h"
 #include "magick/transform.h"
 #include "magick/utility.h"
+
+/*
+  Macro definitions (from Windows wingdi.h).
+*/
+#undef BI_RLE8
+#define BI_RLE8  1
 
 /*
   Typedef declarations.
@@ -160,8 +166,8 @@ static void LogDIBInfo(const DIBInfo *dib_info)
 %
 %
 */
-static unsigned int DecodeImage(Image *image,const unsigned long compression,
-                                unsigned char *pixels, const size_t pixels_size)
+static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
+                                  unsigned char *pixels, const size_t pixels_size)
 {
   unsigned long
     x,
@@ -182,7 +188,12 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
 
   assert(image != (Image *) NULL);
   assert(pixels != (unsigned char *) NULL);
-  (void) memset(pixels,0,pixels_size);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  Decoding RLE compressed pixels to"
+                          " %" MAGICK_SIZE_T_F "u bytes",
+                          image->rows*image->columns);
+
   byte=0;
   x=0;
   q=pixels;
@@ -201,7 +212,7 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
         {
           if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Decode buffer full (y=%lu, "
+                                  "  Decode buffer full (y=%lu, "
                                   "pixels_size=%" MAGICK_SIZE_T_F "u, "
                                   "pixels=%p, q=%p, end=%p)",
                                   y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
@@ -219,15 +230,22 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
           byte=ReadBlobByte(image);
           if (byte == EOF)
             return MagickFail;
-          for (i=0; i < (unsigned int) count; i++)
+          if (compression == BI_RLE8)
             {
-              if (compression == 1)
-                *q++=(unsigned char) byte;
-              else
-                *q++=(unsigned char)
-                  ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-              x++;
+              for ( i=count; i != 0; --i )
+                {
+                  *q++=(unsigned char) byte;
+                }
             }
+          else
+            {
+              for ( i=0; i < (unsigned int) count; i++ )
+                {
+                  *q++=(unsigned char)
+                    ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                }
+            }
+          x+=count;
         }
       else
         {
@@ -238,7 +256,12 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
           if (count == EOF)
             return MagickFail;
           if (count == 0x01)
-            return(MagickPass);
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "  RLE Escape code encountered");
+              goto rle_decode_done;
+            }
           switch (count)
             {
             case 0x00:
@@ -275,30 +298,31 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
                 count=Min(count, end - q);
                 if (count < 0)
                   return MagickFail;
-                for (i=0; i < (unsigned int) count; i++)
-                  {
-                    if (compression == 1)
-                      {
-                        byte=ReadBlobByte(image);
-                        if (byte == EOF)
-                          return MagickFail;
-                        *q++=byte;
-                      }
-                    else
-                      {
-                        if ((i & 0x01) == 0)
+                if (compression == BI_RLE8)
+                  for (i=count; i != 0; --i)
+                    {
+                      byte=ReadBlobByte(image);
+                      if (byte == EOF)
+                        return MagickFail;
+                      *q++=byte;
+                    }
+                else
+                  for (i=0; i < (unsigned int) count; i++)
+                    {
+                      if ((i & 0x01) == 0)
+                        {
                           byte=ReadBlobByte(image);
-                        if (byte == EOF)
-                          return MagickFail;
-                        *q++=(unsigned char)
-                          ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
-                      }
-                    x++;
-                  }
+                          if (byte == EOF)
+                            return MagickFail;
+                        }
+                      *q++=(unsigned char)
+                        ((i & 0x01) ? (byte & 0x0f) : ((byte >> 4) & 0x0f));
+                    }
+                x+=count;
                 /*
                   Read pad byte.
                 */
-                if (compression == 1)
+                if (compression == BI_RLE8)
                   {
                     if (count & 0x01)
                       if (ReadBlobByte(image) == EOF)
@@ -320,6 +344,18 @@ static unsigned int DecodeImage(Image *image,const unsigned long compression,
     }
   (void) ReadBlobByte(image);  /* end of line */
   (void) ReadBlobByte(image);
+ rle_decode_done:
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "  Decoded %" MAGICK_SIZE_T_F "u bytes",
+                          (MAGICK_SIZE_T) (q-pixels));
+  if ((MAGICK_SIZE_T) (q-pixels) < pixels_size)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  RLE decoded output is truncated");
+      return MagickFail;
+    }
   return(MagickPass);
 }
 
@@ -528,6 +564,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   size_t
     bytes_per_line,
+    packet_size,
     pixels_size;
 
   magick_off_t
@@ -599,6 +636,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
   if (dib_info.height == 0)
       ThrowReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
+  if (dib_info.height < -2147483647)
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   image->matte=dib_info.bits_per_pixel == 32;
   image->columns=AbsoluteValue(dib_info.width);
   image->rows=AbsoluteValue(dib_info.height);
@@ -680,14 +719,15 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read image data.
   */
+  packet_size=dib_info.bits_per_pixel;
   if (dib_info.compression == 2)
-    dib_info.bits_per_pixel<<=1;
+    packet_size<<=1;
 
   /*
      Below emulates:
-     bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+     bytes_per_line=4*((image->columns*dib_info.packet_size+31)/32);
   */
-  bytes_per_line=MagickArraySize(image->columns,dib_info.bits_per_pixel);
+  bytes_per_line=MagickArraySize(image->columns,packet_size);
   if (bytes_per_line)
     bytes_per_line += 31;
   bytes_per_line /= 32;
@@ -744,6 +784,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         DecodeImage() normally decompresses to rows*columns bytes of data.
       */
+      (void) memset(pixels,0,pixels_size);
       status=DecodeImage(image,dib_info.compression,pixels,
                          image->rows*image->columns);
       if (status == False)
@@ -1006,21 +1047,29 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->matte=True;
       for (y=(long) image->rows-1; y >= 0; y--)
         {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "y=%ld", y);
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           for (x=0; x < ((long) image->columns-7); x+=8)
             {
               byte=0;
-              (void) ReadBlob(image,sizeof(byte),&byte);
+              if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                break;
               for (bit=0; bit < 8; bit++)
                 q[x+bit].opacity=(Quantum)
                   (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
             }
+          /* Detect early loop termination above due to EOF */
+          if (x < ((long) image->columns-7))
+            break;
           if ((image->columns % 8) != 0)
             {
               byte=0;
-              (void) ReadBlob(image,sizeof(byte),&byte);
+              if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                break;
               for (bit=0; bit < (long) (image->columns % 8); bit++)
                 q[x+bit].opacity=(Quantum)
                   (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
@@ -1029,7 +1078,8 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             for (x=0; x < (long) ((32-(image->columns % 32))/8); x++)
               {
                 byte=0;
-                (void) ReadBlob(image,sizeof(byte),&byte);
+                if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
+                  break;
               }
           if (!SyncImagePixels(image))
             break;
@@ -1040,9 +1090,17 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
+#if 0
+      /*
+        FIXME: SourceForge bug 557 provides an icon for which magick
+        is set to "ICODIB" by the 'icon' coder but there is no data
+        for the ICO mask.  Intentionally ignore EOF at this point
+        until this issue gets figured out.
+       */
       if (EOFBlob(image))
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
                        image->filename);
+#endif
     }
   if (dib_info.height < 0)
     {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2140,9 +2140,12 @@ static int format8BIM(Image *ifile, Image *ofile)
     *PString=0,
     *str=0;
 
-  resCount = 0;
+  magick_off_t
+    file_size;
 
-  c =ReadBlobByte(ifile);
+  file_size=GetBlobSize(ifile);
+  resCount = 0;
+  c = ReadBlobByte(ifile);
   while (c != EOF)
     {
       if (c == '8')
@@ -2156,8 +2159,9 @@ static int format8BIM(Image *ifile, Image *ofile)
               c=ReadBlobByte(ifile);
               if (c == EOF)
                 {
-                  Format8BIMLiberate();
-                  return -1;
+                  ThrowException(&ofile->exception,CorruptImageError,UnexpectedEndOfFile,
+                                 ofile->filename);
+                  goto format8BIMError;
                 }
               buffer[i] = (unsigned char) c;
             }
@@ -2175,8 +2179,9 @@ static int format8BIM(Image *ifile, Image *ofile)
       ID = ReadBlobMSBShort(ifile);
       if (ID < 0)
         {
-          Format8BIMLiberate();
-          return -1;
+          ThrowException(&ofile->exception,CorruptImageError,ImproperImageHeader,
+                         ofile->filename);
+          goto format8BIMError;
         }
       {
         unsigned char
@@ -2185,24 +2190,26 @@ static int format8BIM(Image *ifile, Image *ofile)
         c=ReadBlobByte(ifile);
         if (c == EOF)
           {
-            Format8BIMLiberate();
-            return -1;
+            ThrowException(&ofile->exception,CorruptImageError,UnexpectedEndOfFile,
+                           ofile->filename);
+            goto format8BIMError;
           }
         plen = (unsigned char) c;
         PString=MagickAllocateMemory(unsigned char *,(unsigned int) (plen+1));
         if (PString == (unsigned char *) NULL)
           {
-            (void) printf("MemoryAllocationFailed");
-            Format8BIMLiberate();
-            return 0;
+            ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,
+                           ofile->filename);
+            goto format8BIMError;
           }
         for (i=0; i<plen; i++)
           {
             c=ReadBlobByte(ifile);
             if (c == EOF)
               {
-                Format8BIMLiberate();
-                return -1;
+                ThrowException(&ofile->exception,CorruptImageError,UnexpectedEndOfFile,
+                               ofile->filename);
+                goto format8BIMError;
               }
             PString[i] = (unsigned char) c;
           }
@@ -2212,35 +2219,41 @@ static int format8BIM(Image *ifile, Image *ofile)
             c=ReadBlobByte(ifile);
             if (c == EOF)
               {
-                Format8BIMLiberate();
-                return -1;
+                ThrowException(&ofile->exception,CorruptImageError,UnexpectedEndOfFile,
+                               ofile->filename);
+                goto format8BIMError;
               }
           }
       }
       Size = ReadBlobMSBLong(ifile);
-      if (Size < 0)
+      if ((Size <= 0) || (Size > (file_size - TellBlob(ifile))))
         {
-          Format8BIMLiberate();
-          return -1;
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Invalid chunk size: %" MAGICK_OFF_F "d", Size);
+          ThrowException(&ofile->exception,CorruptImageError,ImproperImageHeader,
+                         ofile->filename);
+          goto format8BIMError;
         }
       /* make a buffer to hold the data and snag it from the input stream */
-      str=MagickAllocateMemory(unsigned char *,(size_t) Size);
+      str=MagickAllocateMemory(unsigned char *,(size_t) Size+1);
       if (str == (unsigned char *) NULL)
         {
-          (void) printf("MemoryAllocationFailed");
-          Format8BIMLiberate();
-          return 0;
+          ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,
+                           ofile->filename);
+          goto format8BIMError;
         }
-      for (i=0; i<Size; i++)
+      for (i=0; i < Size; i++)
         {
           c=ReadBlobByte(ifile);
           if (c == EOF)
             {
-              Format8BIMLiberate();
-              return -1;
+              ThrowException(&ofile->exception,CorruptImageError,UnexpectedEndOfFile,
+                             ofile->filename);
+              goto format8BIMError;
             }
           str[i] = (unsigned char) c;
         }
+      str[i] = '\0';
 
       /* we currently skip thumbnails, since it does not make
        * any sense preserving them in a real world application
@@ -2270,9 +2283,15 @@ static int format8BIM(Image *ifile, Image *ofile)
       c=ReadBlobByte(ifile);
     }
   return resCount;
+
+  /* Error return path */
+ format8BIMError:
+
+  Format8BIMLiberate();
+  return -1;
 }
 
-static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
 {
   const unsigned char
     *profile;
@@ -2280,7 +2299,7 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
   size_t
     profile_length;
 
-  unsigned int
+  MagickPassFail
     status;
 
   /*
@@ -2298,11 +2317,11 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,"8BIM",&profile_length)) == 0)
         ThrowWriterException(CoderError,No8BIMDataIsAvailable,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-      if (status == False)
+      if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,profile_length,(void *) profile);
       CloseBlob(image);
-      return(True);
+      return MagickPass;
     }
   if (LocaleCompare(image_info->magick,"IPTC") == 0)
     {
@@ -2324,7 +2343,7 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
         }
       (void) WriteBlob(image,length,info);
       CloseBlob(image);
-      return(True);
+      return MagickPass;
     }
   if (LocaleCompare(image_info->magick,"8BIMTEXT") == 0)
     {
@@ -2334,7 +2353,7 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,"8BIM",&profile_length)) == 0)
         ThrowWriterException(CoderError,No8BIMDataIsAvailable,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-      if (status == False)
+      if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       buff=AllocateImage((ImageInfo *) NULL);
       if (buff == (Image *) NULL)
@@ -2342,15 +2361,17 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
           ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
         }
       AttachBlob(buff->blob,profile,profile_length);
-      (void) format8BIM(buff,image);
+      status = MagickPass;
+      if (format8BIM(buff,image) <= 0)
+        status = MagickFail;
       DetachBlob(buff->blob);
       DestroyImage(buff);
       CloseBlob(image);
-      return(True);
+      return status;
     }
   if (LocaleCompare(image_info->magick,"8BIMWTEXT") == 0)
     {
-      return(False);
+      return(MagickFail);
     }
   if (LocaleCompare(image_info->magick,"IPTCTEXT") == 0)
     {
@@ -2371,7 +2392,7 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       if (length == 0)
         ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-      if (status == False)
+      if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       buff=AllocateImage((ImageInfo *) NULL);
       if (buff == (Image *) NULL)
@@ -2383,11 +2404,11 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       DetachBlob(buff->blob);
       DestroyImage(buff);
       CloseBlob(image);
-      return(True);
+      return MagickPass;
     }
   if (LocaleCompare(image_info->magick,"IPTCWTEXT") == 0)
     {
-      return(False);
+      return(MagickFail);
     }
   if ((LocaleCompare(image_info->magick,"APP1") == 0) ||
       (LocaleCompare(image_info->magick,"EXIF") == 0) ||
@@ -2399,11 +2420,11 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,image_info->magick,&profile_length)) == 0)
         ThrowWriterException(CoderError,NoAPP1DataIsAvailable,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-      if (status == False)
+      if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,(int) profile_length, (char *) profile);
       CloseBlob(image);
-      return(True);
+      return MagickPass;
     }
   if ((LocaleCompare(image_info->magick,"ICC") == 0) ||
       (LocaleCompare(image_info->magick,"ICM") == 0))
@@ -2415,11 +2436,11 @@ static unsigned int WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,"ICM",&profile_length)) == 0)
         ThrowWriterException(CoderError,NoColorProfileAvailable,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-      if (status == False)
+      if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,profile_length,(void *) profile);
       CloseBlob(image);
-      return(True);
+      return MagickPass;
     }
-  return(False);
+  return MagickFail;
 }

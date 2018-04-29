@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -41,6 +41,7 @@
 #include "magick/pixel_cache.h"
 #include "magick/decorate.h"
 #include "magick/gem.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/montage.h"
@@ -185,7 +186,8 @@ static void Upsample(const unsigned long width,const unsigned long height,
   { \
     if (p >= (buffer+0x800)) \
       { \
-        (void) ReadBlob(image,0x800,(char *) buffer); \
+        if (ReadBlob(image,0x800,(char *) buffer) != 0x800) \
+          break;                                            \
         p=buffer; \
       } \
     sum|=((unsigned int) (*p) << (24-bits)); \
@@ -195,7 +197,7 @@ static void Upsample(const unsigned long width,const unsigned long height,
   if (EOFBlob(image)) \
     break; \
 }
-static unsigned int DecodeImage(Image *image,unsigned char *luma,
+static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
   unsigned char *chroma1,unsigned char *chroma2)
 {
   typedef struct PCDTable
@@ -242,13 +244,23 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
     row,
     sum;
 
+  unsigned int
+    status = MagickPass;
+
   /*
     Initialize Huffman tables.
   */
   assert(image != (const Image *) NULL);
+  assert(image->signature == MagickSignature);
   assert(luma != (unsigned char *) NULL);
   assert(chroma1 != (unsigned char *) NULL);
   assert(chroma2 != (unsigned char *) NULL);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Huffman decode image %lux%lu (%u tables)",
+                          image->columns, image->rows,
+                          (image->columns > 1536 ? 3U : 1U));
+  pcd_table[2]=pcd_table[1]=pcd_table[0]=(PCDTable *) NULL;
   buffer=MagickAllocateMemory(unsigned char *,0x800);
   if (buffer == (unsigned char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
@@ -260,12 +272,13 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
   {
     PCDGetBits(8);
     length=(sum & 0xff)+1;
-    pcd_table[i]=MagickAllocateMemory(PCDTable *,length*sizeof(PCDTable));
+    pcd_table[i]=MagickAllocateArray(PCDTable *,length,sizeof(PCDTable));
     if (pcd_table[i] == (PCDTable *) NULL)
       {
-        MagickFreeMemory(buffer);
-        ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-          (char *) NULL)
+        ThrowException(&image->exception,ResourceLimitError,
+                       MemoryAllocationFailed,image->filename);
+        status=MagickFail;
+        goto decode_image_error;
       }
     r=pcd_table[i];
     for (j=0; j < (long) length; j++)
@@ -274,8 +287,14 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
       r->length=(sum & 0xff)+1;
       if (r->length > 16)
         {
-          MagickFreeMemory(buffer);
-          return(False);
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Excessive length %" MAGICK_SIZE_T_F "u!",
+                                  (MAGICK_SIZE_T) length);
+          ThrowException(&image->exception,CorruptImageError,
+                         UnableToUncompressImage,image->filename);
+          status=MagickFail;
+          goto decode_image_error;
         }
       PCDGetBits(16);
       r->sequence=(sum & 0xffff) << 16;
@@ -343,15 +362,23 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
           }
           default:
           {
-            ThrowBinaryException(CorruptImageError,CorruptImage,
-              image->filename)
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Unhandled plane %u!", plane);
+            ThrowException(&image->exception,CorruptImageError,
+                         UnableToUncompressImage,image->filename);
+            status=MagickFail;
+            goto decode_image_error;
           }
         }
         length=pcd_length[plane];
         if (QuantumTick(row,image->rows))
           if (!MagickMonitorFormatted(row,image->rows,&image->exception,
                                       DecodeImageText,image->filename))
-            break;
+            {
+              status=MagickFail;
+              goto decode_image_error;
+            }
         continue;
       }
     /*
@@ -363,7 +390,7 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
     if ((row > image->rows) || (r == (PCDTable *) NULL))
       {
         ThrowException(&image->exception,CorruptImageWarning,SkipToSyncByte,
-          image->filename);
+                       image->filename);
         while ((sum & 0x00fff000) != 0x00fff000)
           PCDGetBits(8);
         while (!IsSync)
@@ -381,13 +408,14 @@ static unsigned int DecodeImage(Image *image,unsigned char *luma,
     PCDGetBits(r->length);
     count--;
   }
+ decode_image_error:
   /*
     Free memory.
   */
   for (i=0; i < (image->columns > 1536 ? 3 : 1); i++)
     MagickFreeMemory(pcd_table[i]);
   MagickFreeMemory(buffer);
-  return(True);
+  return(status);
 }
 
 /*
@@ -461,7 +489,7 @@ static unsigned int IsPCD(const unsigned char *magick,const size_t length)
 %
 */
 
-static Image *OverviewImage(const ImageInfo *image_info,Image *image,
+static Image *OverviewImage(const ImageInfo *image_info,Image *images,
   ExceptionInfo *exception)
 {
   Image
@@ -477,7 +505,7 @@ static Image *OverviewImage(const ImageInfo *image_info,Image *image,
     Image
       *label_image;
 
-    for( label_image=GetFirstImageInList(image); label_image != 0;
+    for( label_image=GetFirstImageInList(images); label_image != 0;
          label_image=GetNextImageInList(label_image) )
       (void) SetImageAttribute(label_image, "label", DefaultTileLabel);
   }
@@ -487,13 +515,19 @@ static Image *OverviewImage(const ImageInfo *image_info,Image *image,
   */
   montage_info=CloneMontageInfo(image_info,(MontageInfo *) NULL);
   (void) strlcpy(montage_info->filename,image_info->filename,MaxTextExtent);
-  montage_image=MontageImages(image,montage_info,exception);
+  montage_image=MontageImages(images,montage_info,exception);
   DestroyMontageInfo(montage_info);
-  if (montage_image == (Image *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  DestroyImage(image);
+  DestroyImageList(images);
   return(montage_image);
 }
+
+#define ThrowPCDReaderException(code_,reason_,image_) \
+  {                                                   \
+    MagickFreeMemory(chroma1);                        \
+    MagickFreeMemory(chroma2);                        \
+    MagickFreeMemory(luma);                           \
+    ThrowReaderException(code_,reason_,image_);       \
+  }
 
 static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
@@ -521,13 +555,14 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *yy;
 
   size_t
+    number_pixels,
     count;
 
   unsigned char
-    *chroma1,
-    *chroma2,
-    *header,
-    *luma;
+    *chroma1 = NULL,
+    *chroma2 = NULL,
+    header[3*0x800],
+    *luma = NULL;
 
   unsigned int
     overview,
@@ -537,7 +572,6 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned long
     height,
     number_images,
-    number_pixels,
     subimage,
     width;
 
@@ -555,26 +589,21 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Determine if this is a PCD file.
   */
-  header=MagickAllocateMemory(unsigned char *,3*0x800);
-  if (header == (unsigned char *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  count=ReadBlob(image,3*0x800,(char *) header);
+  if ((count=ReadBlob(image,3*0x800,(char *) header)) != 3*0x800)
+    ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   overview=LocaleNCompare((char *) header,"PCD_OPA",7) == 0;
-  if ((count == 0) ||
-      ((LocaleNCompare((char *) header+0x800,"PCD",3) != 0) && !overview))
-    {
-      MagickFreeMemory(header);
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    }
+  if ((LocaleNCompare((char *) header+0x800,"PCD",3) != 0) && !overview)
+    ThrowPCDReaderException(CorruptImageError,ImproperImageHeader,image);
   rotate=header[0x0e02] & 0x03;
   number_images=((header[10] << 8) | header[11]) & 0xFFFF;
-  MagickFreeMemory(header);
   /*
     Determine resolution by subimage specification.
   */
   number_pixels=image->columns*image->rows;
   if (number_pixels == 0)
-    subimage=3;
+    {
+      subimage=3;
+    }
   else
     {
       width=192;
@@ -609,6 +638,11 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->columns<<=1;
     image->rows<<=1;
   }
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Decode PCD %simage geometry %lux%lu",
+                          (overview ? "(with overview) " : ""),
+                          image->columns,image->rows);
 
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
@@ -616,19 +650,16 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Allocate luma and chroma memory.
   */
-  number_pixels=image->columns*image->rows;
+  number_pixels=MagickArraySize(image->columns,image->rows);
+  if (number_pixels == 0 || number_pixels+1 < number_pixels)
+    ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   chroma1=MagickAllocateMemory(unsigned char *,number_pixels+1);
   chroma2=MagickAllocateMemory(unsigned char *,number_pixels+1);
   luma=MagickAllocateMemory(unsigned char *,number_pixels+1);
   if ((chroma1 == (unsigned char *) NULL) ||
       (chroma2 == (unsigned char *) NULL) ||
       (luma == (unsigned char *) NULL))
-    {
-      MagickFreeMemory(chroma1);
-      MagickFreeMemory(chroma2);
-      MagickFreeMemory(luma);
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    }
+    ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
     Advance to image data.
   */
@@ -642,12 +673,10 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (subimage <= 1)
         offset=1;
   for (i=0; i < (long) (offset*0x800); i++)
-    (void) ReadBlobByte(image);
+    if (ReadBlobByte(image) == EOF)
+      ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (overview)
     {
-      Image
-        *overview_image;
-
       MonitorHandler
         handler;
 
@@ -671,15 +700,21 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         c2=chroma2;
         for (y=0; y < (long) height; y+=2)
         {
-          (void) ReadBlob(image,width,(char *) yy);
+          if (ReadBlob(image,width,(char *) yy) != width)
+            break;
           yy+=image->columns;
-          (void) ReadBlob(image,width,(char *) yy);
+          if (ReadBlob(image,width,(char *) yy) != width)
+            break;
           yy+=image->columns;
-          (void) ReadBlob(image,width >> 1,(char *) c1);
+          if (ReadBlob(image,width >> 1,(char *) c1) != (width >> 1))
+            break;
           c1+=image->columns;
-          (void) ReadBlob(image,width >> 1,(char *) c2);
+          if (ReadBlob(image,width >> 1,(char *) c2) != (width >> 1))
+            break;
           c2+=image->columns;
         }
+        if (EOFBlob(image))
+          ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma1);
         Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma2);
         /*
@@ -707,7 +742,8 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->colorspace=sRGBColorspace;
         else
           image->colorspace=YCCColorspace;
-        (void) TransformColorspace(image,RGBColorspace);
+        if (TransformColorspace(image,RGBColorspace) != MagickPass)
+          break;
         if (j < (long) number_images)
           {
             /*
@@ -715,10 +751,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             AllocateNextImage(image_info,image);
             if (image->next == (Image *) NULL)
-              {
-                DestroyImageList(image);
-                return((Image *) NULL);
-              }
+              ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
             image=SyncNextImageInList(image);
           }
         (void) SetMonitorHandler(handler);
@@ -732,8 +765,9 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickFreeMemory(luma);
       while (image->previous != (Image *) NULL)
         image=image->previous;
-      overview_image=OverviewImage(image_info,image,exception);
-      return(overview_image);
+      CloseBlob(image);
+      /* OverviewImage destroys image list before returning */
+      return OverviewImage(image_info,image,exception);
     }
   /*
     Read interleaved image.
@@ -743,15 +777,21 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   c2=chroma2;
   for (y=0; y < (long) height; y+=2)
   {
-    (void) ReadBlob(image,width,(char *) yy);
+    if (ReadBlob(image,width,(char *) yy) != width)
+      break;
     yy+=image->columns;
-    (void) ReadBlob(image,width,(char *) yy);
+    if (ReadBlob(image,width,(char *) yy) != width)
+      break;
     yy+=image->columns;
-    (void) ReadBlob(image,width >> 1,(char *) c1);
+    if (ReadBlob(image,width >> 1,(char *) c1) != (width >> 1))
+      break;
     c1+=image->columns;
-    (void) ReadBlob(image,width >> 1,(char *) c2);
+    if (ReadBlob(image,width >> 1,(char *) c2)  != (width >> 1))
+      break;
     c2+=image->columns;
   }
+  if (EOFBlob(image))
+    ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (subimage >= 4)
     {
       /*
@@ -788,6 +828,11 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
         }
     }
+  if (EOFBlob(image))
+    ThrowPCDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+
+  CloseBlob(image);
+
   Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma1);
   Upsample(image->columns >> 1,image->rows >> 1,image->columns,chroma2);
   /*
@@ -825,11 +870,6 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->colorspace=YCCColorspace;
   /* FIXME: YCCColorspace transform is broken! 1.1 is ok! */
   (void) TransformColorspace(image,RGBColorspace);
-  if (EOFBlob(image))
-    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-      image->filename);
-  CloseBlob(image);
-
   if ((rotate == 1) || (rotate == 3))
     {
       double
@@ -845,6 +885,8 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       rotated_image=RotateImage(image,degrees,exception);
       if (rotated_image != (Image *) NULL)
         {
+          DestroyBlob(rotated_image);
+          rotated_image->blob=ReferenceBlob(image->blob);
           DestroyImage(image);
           image=rotated_image;
         }
@@ -1021,18 +1063,32 @@ static unsigned int WritePCDTile(const ImageInfo *image_info,
       */
       border_info.width=(geometry.width-tile_image->columns+1) >> 1;
       border_info.height=(geometry.height-tile_image->rows+1) >> 1;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Adding %lux%lu border to %lux%lu tile ",
+                              border_info.width, border_info.height,
+                              image->columns, image->rows);
       bordered_image=BorderImage(tile_image,&border_info,&image->exception);
-      if (bordered_image == (Image *) NULL)
-        return(False);
       DestroyImage(tile_image);
+      tile_image=(Image *) NULL;
+      if (bordered_image == (Image *) NULL)
+        return(MagickFail);
       tile_image=bordered_image;
     }
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Transforming tile to %s from %lux%lu",
+                          tile_geometry,
+                          image->columns, image->rows);
   (void) TransformImage(&tile_image,(char *) NULL,tile_geometry);
   (void) TransformColorspace(tile_image,YCCColorspace);
   downsample_image=ResizeImage(tile_image,tile_image->columns/2,
     tile_image->rows/2,TriangleFilter,1.0,&image->exception);
   if (downsample_image == (Image *) NULL)
-    return(False);
+    {
+      DestroyImage(tile_image);
+      return(MagickFail);
+    }
   /*
     Write tile to PCD file.
   */
@@ -1075,10 +1131,10 @@ static unsigned int WritePCDTile(const ImageInfo *image_info,
     (void) WriteBlobByte(image,'\0');
   DestroyImage(downsample_image);
   DestroyImage(tile_image);
-  return(True);
+  return(MagickPass);
 }
 
-static unsigned int WritePCDImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WritePCDImage(const ImageInfo *image_info,Image *image)
 {
   Image
     *pcd_image;
@@ -1106,6 +1162,8 @@ static unsigned int WritePCDImage(const ImageInfo *image_info,Image *image)
       if (rotated_image == (Image *) NULL)
         return(False);
       pcd_image=rotated_image;
+      DestroyBlob(rotated_image);
+      pcd_image->blob=ReferenceBlob(image->blob);
     }
   /*
     Open output image file.
@@ -1152,10 +1210,12 @@ static unsigned int WritePCDImage(const ImageInfo *image_info,Image *image)
   */
   status=WritePCDTile(image_info,pcd_image,(char *) "768x512>",
     (char *) "192x128");
-  status|=WritePCDTile(image_info,pcd_image,(char *) "768x512>",
+  status&=WritePCDTile(image_info,pcd_image,(char *) "768x512>",
     (char *) "384x256");
-  status|=WritePCDTile(image_info,pcd_image,(char *) "768x512>",
+  status&=WritePCDTile(image_info,pcd_image,(char *) "768x512>",
     (char *) "768x512");
+  if (GetBlobStatus(pcd_image) != 0)
+    status=MagickFail;
   CloseBlob(pcd_image);
   if (pcd_image != image)
     DestroyImage(pcd_image);

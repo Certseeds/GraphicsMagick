@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -296,8 +296,15 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           (tga_info.image_type == TGARLEColormap) ||
           (tga_info.image_type == TGARLEMonochrome))
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Setting PseudoClass");
-          image->storage_class=PseudoClass;
+          if ((tga_info.bits_per_pixel == 1) || (tga_info.bits_per_pixel == 8))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Setting PseudoClass");
+              image->storage_class=PseudoClass;
+            }
+          else
+            {
+              ThrowReaderException(CoderError,DataStorageTypeIsNotSupported,image);
+            }
         }
 
       if ((tga_info.image_type == TGARLEColormap) ||
@@ -341,7 +348,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             TGA image comment.
           */
-          assert((size_t) (tga_info.id_length+1) == commentsize);
+          if ((size_t) (tga_info.id_length+1) != commentsize)
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if (ReadBlob(image,tga_info.id_length,commentbuffer) != tga_info.id_length)
             ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           commentbuffer[tga_info.id_length]='\0';
@@ -827,6 +835,9 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   unsigned long
     scene;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -834,6 +845,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFalse)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1057,7 +1069,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);
-      if (!MagickMonitorFormatted(scene++,GetImageListLength(image),
+      if (!MagickMonitorFormatted(scene++,image_list_length,
                                   &image->exception,SaveImagesText,
                                   image->filename))
         break;

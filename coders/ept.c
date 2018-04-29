@@ -351,8 +351,8 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
                  antialias,density,options,image_info->filename,
                  postscript_filename);
   }
-  (void) MagickMonitorFormatted(0,8,&image->exception,RenderPostscriptText,
-                                image->filename);
+  (void) MagickMonitorFormatted(0,8,exception,RenderPostscriptText,
+                                image_info->filename);
   status=InvokePostscriptDelegate(image_info->verbose,command,exception);
   if (!IsAccessibleAndNotEmpty(image_info->filename))
     {
@@ -370,8 +370,8 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
       status=InvokePostscriptDelegate(image_info->verbose,command,exception);
     }
   (void) LiberateTemporaryFile(postscript_filename);
-  (void) MagickMonitorFormatted(7,8,&image->exception,RenderPostscriptText,
-                                image->filename);
+  (void) MagickMonitorFormatted(7,8,exception,RenderPostscriptText,
+                                image_info->filename);
   if (IsAccessibleAndNotEmpty(image_info->filename))
     {
       /*

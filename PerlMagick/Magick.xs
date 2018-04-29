@@ -3210,9 +3210,9 @@ Get(ref,...)
                   SV
                     *sv;
 
-                  if (image->clip_mask == (Image *) NULL)
+                  if (GetImageClipMask(image,&image->exception) == (Image *) NULL)
                     ClipImage(image);
-                  sv=newSViv((IV) (magick_uintptr_t)image->clip_mask);
+                  sv=newSViv((IV) (magick_uintptr_t)GetImageClipMask(image,&image->exception));
                   s=sv_bless(newRV(sv),SvSTASH(reference));
                 }
               PUSHs(s ? sv_2mortal(s) : &sv_undef);

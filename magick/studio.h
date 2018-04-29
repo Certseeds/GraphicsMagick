@@ -345,6 +345,7 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
   Define declarations.
 */
 #define AbsoluteValue(x)  ((x) < 0 ? -(x) : (x))
+#define ArraySize(a) (sizeof(a)/sizeof(a[0]))
 #define False  0
 #define DegreesToRadians(x) (MagickPI*(x)/180.0)
 #define MagickIncarnate(x)  InitializeMagick(x)

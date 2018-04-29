@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -144,33 +144,41 @@ static void LogPDPInfo(const PDBInfo *info)
 
 static void LogPDPImage(const PDBImage *image)
 {
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "PDP Image:\n"
-                          "    name:       %.32s\n"
-                          "    version:    %d\n"
-                          "    type:       %d\n"
-                          "    reserved_1: %lu\n"
-                          "    note:       %lu\n"
-                          "    x_last:     %u\n"
-                          "    y_last:     %u\n"
-                          "    reserved_2: %lu\n"
-                          "    x_anchor:   %u\n"
-                          "    y_anchor:   %u\n"
-                          "    width:      %u\n"
-                          "    height:     %u",
-                          image->name,
-                          image->version,
-                          image->type,
-                          image->reserved_1,
-                          image->note,
-                          image->x_last,
-                          image->y_last,
-                          image->reserved_2,
-                          image->x_anchor,
-                          image->y_anchor,
-                          image->width,
-                          image->height
-                          );
+  static const char *type_string;
+  switch(image->type)
+    {
+    case 0: type_string = "2 bit gray"; break;
+    case 2: type_string = "4 bit gray"; break;
+    default: type_string = "monochrome"; break;
+    }
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "PDP Image:\n"
+                        "    name:       %.32s\n"
+                        "    version:    %d\n"
+                        "    type:       %d (%s)\n"
+                        "    reserved_1: %lu\n"
+                        "    note:       %lu\n"
+                        "    x_last:     %u\n"
+                        "    y_last:     %u\n"
+                        "    reserved_2: %lu\n"
+                        "    x_anchor:   %u\n"
+                        "    y_anchor:   %u\n"
+                        "    width:      %u\n"
+                        "    height:     %u",
+                        image->name,
+                        image->version,
+                        image->type, type_string,
+                        image->reserved_1,
+                        image->note,
+                        image->x_last,
+                        image->y_last,
+                        image->reserved_2,
+                        image->x_anchor,
+                        image->y_anchor,
+                        image->width,
+                        image->height
+                        );
 }
 
 /*
@@ -204,10 +212,11 @@ static void LogPDPImage(const PDBImage *image)
 %
 %
 */
-static unsigned int DecodeImage(Image *image,unsigned char *pixels,
+static MagickPassFail DecodeImage(Image *image,unsigned char *pixels,
   const size_t length)
 {
   int
+    c,
     count,
     pixel;
 
@@ -217,23 +226,44 @@ static unsigned int DecodeImage(Image *image,unsigned char *pixels,
   register unsigned char
     *p;
 
+  MagickPassFail
+    status = MagickPass;
+
   p=pixels;
   while (p < (pixels+length))
   {
-    pixel=ReadBlobByte(image);
+    if ((pixel=ReadBlobByte(image)) == EOF)
+      {
+        status = MagickFail;
+        goto decode_image_quit;
+      }
     if (pixel <= 0x80)
       {
         count=pixel+1;
         for (i=0; i < count; i++)
-          *p++=ReadBlobByte(image);
+          {
+            if ((c = ReadBlobByte(image)) == EOF)
+              {
+                status = MagickFail;
+                goto decode_image_quit;
+              }
+            *p++ = (unsigned char) c;
+          }
         continue;
       }
     count=pixel+1-0x80;
-    pixel=ReadBlobByte(image);
+    if ((pixel=ReadBlobByte(image)) == EOF)
+      {
+        status = MagickFail;
+        goto decode_image_quit;
+      }
+
     for (i=0; i < count; i++)
       *p++=(unsigned char) pixel;
   }
-  return(True);
+ decode_image_quit:;
+
+  return(status);
 }
 
 /*
@@ -313,8 +343,10 @@ static unsigned int IsPDB(const unsigned char *magick,const size_t length)
 
 static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
+  int
+    record_type;
+
   char
-    record_type,
     tag[3];
 
   Image
@@ -324,8 +356,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     index;
 
   long
-    offset,
-    y;
+    offset;
 
   PDBImage
     pdb_image;
@@ -336,7 +367,10 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register IndexPacket
     *indexes;
 
-  register long
+  unsigned long
+    y;
+
+  register unsigned long
     x;
 
   register PixelPacket
@@ -384,8 +418,9 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   pdb_info.modify_number=ReadBlobMSBLong(image);
   pdb_info.application_info=ReadBlobMSBLong(image);
   pdb_info.sort_info=ReadBlobMSBLong(image);
-  (void) ReadBlob(image,4,pdb_info.type);
-  (void) ReadBlob(image,4,pdb_info.id);
+  if ((ReadBlob(image,4,pdb_info.type) != 4) ||
+      (ReadBlob(image,4,pdb_info.id) != 4))
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   pdb_info.seed=ReadBlobMSBLong(image);
   pdb_info.next_record=ReadBlobMSBLong(image);
   pdb_info.number_records=ReadBlobMSBShort(image);
@@ -400,7 +435,8 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read record header.
   */
   offset=(long) ReadBlobMSBLong(image);
-  (void) ReadBlob(image,3,tag);
+  if (ReadBlob(image,3,tag) != 3)
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   record_type=ReadBlobByte(image);
   if (((record_type != 0x00) && (record_type != 0x01)) ||
       (memcmp(tag,"\x40\x6f\x80",3) != 0))
@@ -465,18 +501,24 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   pixels=MagickAllocateMemory(unsigned char *,packets + (packets != 0 ? 256 : 0));
   if (pixels == (unsigned char *) NULL)
     ThrowPDBReaderException(ResourceLimitWarning,MemoryAllocationFailed,image);
+  (void) memset(pixels,0,packets+256);
   switch (pdb_image.version)
   {
     case 0:
     {
       image->compression=NoCompression;
-      (void) ReadBlob(image,packets,(char *) pixels);
+      if (ReadBlob(image,packets,(char *) pixels) != packets)
+        {
+          MagickFreeMemory(pixels);
+          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+        }
       break;
     }
     case 1:
     {
       image->compression=RLECompression;
-      (void) DecodeImage(image,pixels,packets);
+      if (DecodeImage(image,pixels,packets) == MagickFail)
+        ThrowPDBReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       break;
     }
     default:
@@ -495,21 +537,24 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 1-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < ((long) image->columns-7); x+=8)
+        bit=0;
+        for (x=0; x < image->columns; x++)
         {
-          for (bit=0; bit < 8; bit++)
-          {
-            index=(*p & (0x80U >> bit) ? 0x00U : 0x01U);
-            indexes[x+bit]=index;
-            *q++=image->colormap[index];
-          }
-          p++;
+          index=(*p & (0x80U >> bit) ? 0x00U : 0x01U);
+          indexes[x]=index;
+          *q++=image->colormap[index];
+          bit++;
+          if (bit == 8)
+            {
+              p++;
+              bit=0;
+            }
         }
         if (!SyncImagePixels(image))
           break;
@@ -526,32 +571,29 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 2-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      unsigned int
+        shift;
+
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < (long) image->columns-3; x+=4)
-        {
-          index=(IndexPacket) (3-((*p >> 6) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p >> 4) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+1]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p >> 2) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+2]=index;
-          *q++=image->colormap[index];
-          index=(IndexPacket) (3-((*p) & 0x03));
-          VerifyColormapIndex(image,index);
-          indexes[x+3]=index;
-          *q++=image->colormap[index];
-          p++;
-        }
+        shift = 8;
+        for (x=0; x < image->columns; x++)
+          {
+            shift -= 2;
+            index=(IndexPacket) (3-((*p >> shift) & 0x03));
+            VerifyColormapIndex(image,index);
+            indexes[x]=index;
+            *q++=image->colormap[index];
+            if (shift == 0)
+              {
+                shift = 8;
+                p++;
+              }
+          }
         if (!SyncImagePixels(image))
           break;
         if (QuantumTick(y,image->rows))
@@ -567,23 +609,28 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Read 4-bit PDB image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      unsigned int
+        shift;
+
+      for (y=0; y < image->rows; y++)
       {
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
         indexes=AccessMutableIndexes(image);
-        for (x=0; x < (long) image->columns-1; x+=2)
+        shift = 8;
+        for (x=0; x < image->columns; x++)
         {
-          index=(IndexPacket) (15-((*p >> 4) & 0x0f));
+          shift -= 4;
+          index=(IndexPacket) (15-((*p >> shift) & 0x0f));
           VerifyColormapIndex(image,index);
           indexes[x]=index;
           *q++=image->colormap[index];
-          index=(IndexPacket) (15-((*p) & 0x0f));
-          VerifyColormapIndex(image,index);
-          indexes[x+1]=index;
-          *q++=image->colormap[index];
-          p++;
+          if (shift == 0)
+            {
+              shift = 8;
+              p++;
+            }
         }
         if (!SyncImagePixels(image))
           break;
@@ -615,7 +662,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       register char
         *p;
 
-      unsigned int
+      size_t
         length;
 
       /*
@@ -625,10 +672,11 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       length=MaxTextExtent;
       comment=MagickAllocateMemory(char *,length+1);
       p=comment;
+      p[0]='\0';
       if (comment != (char *) NULL)
         for ( ; c != EOF; p++)
         {
-          if ((p-comment) >= (int) length)
+          if ((size_t) (p-comment) >= length)
             {
               length<<=1;
               length+=MaxTextExtent;
@@ -769,7 +817,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   int
     bits;
 
-  long
+  unsigned long
     y;
 
   PDBImage
@@ -889,6 +937,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   buffer=MagickAllocateMemory(unsigned char *,512);
   if (buffer == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
+  (void) memset(buffer,0,512);
   packet_size=image->depth > 8 ? 2: 1;
   scanline=MagickAllocateArray(unsigned char *,image->columns,packet_size);
   if (scanline == (unsigned char *) NULL)
@@ -902,7 +951,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   repeat=0;
   q=p;
   buffer[0]=0x00;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;

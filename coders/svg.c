@@ -155,6 +155,14 @@ typedef struct _SVGInfo
     *vertices,
     *url;
 
+  /*
+    Even though it's unlikely to happen, keep track of nested <defs> and
+    elements tagged with an id.
+  */
+  int
+    defsPushCount,      /* for tracking nested <defs> */
+    idLevelInsideDefs;  /* when an "id" is seen, remember svg->n (SVG element level) */
+
 #if defined(HasXML)
   xmlParserCtxtPtr
     parser;
@@ -273,10 +281,14 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
 
   size_t
     alloc_tokens,
-    i;
+    i,
+    iListFront;
 
   SVGInfo
     *svg_info;
+
+  MagickBool
+    IsFontSize = MagickFalse;
 
   svg_info=(SVGInfo *) context;
   *number_tokens=0;
@@ -306,8 +318,13 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
   */
   i=0;
   p=text;
+  iListFront = 0;
   for (q=p; *q != '\0'; q++)
     {
+      /*
+        ':' terminates the style element (e.g., fill:)
+        ';' terminates the style element value (e.g., red)
+      */
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
       tokens[i]=AllocateString(p);
@@ -319,6 +336,30 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
         }
       (void) strlcpy(tokens[i],p,q-p+1);
       Strip(tokens[i]);
+      /*
+        Check for "font-size", which we will move to the first position in
+        the list.  This will ensure that any following numerical conversions
+        that depend on the font size will use the new value.
+      */
+      if  ( (i & 1) == 0 )  /*element name*/
+        IsFontSize = (LocaleCompare("font-size",tokens[i]) == 0) ? MagickTrue : MagickFalse;
+      else if  ( IsFontSize )
+        {/*found font-size/value pair*/
+          if  ( (i-1) == iListFront )
+            iListFront += 2;  /* already at front of list */
+          else
+            {
+              /* move "font-size" and value to top of list */
+              char * pToken = tokens[iListFront];
+              tokens[iListFront] = tokens[i-1];
+              tokens[i-1] = pToken;
+              iListFront++;
+              pToken = tokens[iListFront];
+              tokens[iListFront] = tokens[i];
+              tokens[i] = pToken;
+              iListFront++;
+            }
+        }/*found font-size/value pair*/
       i++;
       if (i >= alloc_tokens)
         break;
@@ -822,6 +863,198 @@ SVGEndDocument(void *context)
     }
 }
 
+
+/*
+  Code from SVGStartElement() that processed transform="..." has been refactored
+  into new function SVGProcessTransformString().
+*/
+static void
+SVGProcessTransformString  (
+        void *context,
+        char const *TransformString
+        )
+{/*SVGProcessTransformString*/
+
+  char
+    **tokens;
+
+  AffineMatrix
+    affine,
+    current,
+    transform;
+
+  char
+    *p = NULL,
+    token[MaxTextExtent];
+
+  SVGInfo
+    *svg_info=(SVGInfo *) context;
+
+  size_t
+    j,
+    number_tokens = 0;
+
+  IdentityAffine(&transform);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
+  tokens=GetTransformTokens(context,TransformString,&number_tokens);
+  if ((tokens != (char **) NULL) && (number_tokens > 0))
+    {/*if ((tokens != (char **) NULL) && (number_tokens > 0))*/
+
+                const char
+        *keyword = NULL,
+        *value = NULL;
+
+      for (j=0; j < (number_tokens-1); j+=2)
+        {/*j token loop*/
+
+          keyword=(char *) tokens[j];   /* matrix, rotate, etc. */
+          value=(char *) tokens[j+1];   /* associated numerical values */
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    %.1024s: %.1024s",keyword,value);
+          current=transform;
+          IdentityAffine(&affine);
+          switch (*keyword)
+            {/*keyword switch*/
+
+            case 'M':
+            case 'm':
+              {/*Mm*/
+                if (LocaleCompare(keyword,"matrix") == 0)
+                  {
+                    p=(char *) value;
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.sx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.rx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.ry=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.sy=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.tx=MagickAtoF(token);
+                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    if (*token == ',')
+                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
+                    affine.ty=MagickAtoF(token);
+                    break;
+                  }
+                break;
+              }/*Mm*/
+
+            case 'R':
+            case 'r':
+              {/*Rr*/
+                if (LocaleCompare(keyword,"rotate") == 0)
+                  {
+                    double
+                      angle;
+
+                    angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
+                    affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
+                    affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
+                    affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
+                    affine.sy=cos(DegreesToRadians(fmod(angle,360.0)));
+                    break;
+                  }
+                break;
+              }/*Rr*/
+
+            case 'S':
+            case 's':
+              {/*Ss*/
+                if (LocaleCompare(keyword,"scale") == 0)
+                  {
+                    for (p=(char *) value; *p != '\0'; p++)
+                      if (isspace((int) (*p)) || (*p == ','))
+                        break;
+                    affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    affine.sy=affine.sx;
+                    if (*p != '\0')
+                      affine.sy=
+                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
+                    svg_info->scale[svg_info->n]=ExpandAffine(&affine);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"skewX") == 0)
+                  {
+                    affine.sx=svg_info->affine.sx;
+                    affine.ry=tan(DegreesToRadians(fmod(
+                      GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
+                      360.0)));
+                    affine.sy=svg_info->affine.sy;
+                    break;
+                  }
+                if (LocaleCompare(keyword,"skewY") == 0)
+                  {
+                    affine.sx=svg_info->affine.sx;
+                    affine.rx=tan(DegreesToRadians(fmod(
+                      GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
+                      360.0)));
+                    affine.sy=svg_info->affine.sy;
+                    break;
+                  }
+                break;
+              }/*Ss*/
+
+            case 'T':
+            case 't':
+              {/*Tt*/
+                if (LocaleCompare(keyword,"translate") == 0)
+                  {
+                    for (p=(char *) value; *p != '\0'; p++)
+                      if (isspace((int) (*p)) || (*p == ','))
+                        break;
+                    affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    affine.ty=affine.tx;
+                    if (*p != '\0')
+                      affine.ty=
+                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
+                    break;
+                  }
+                break;
+              }/*Tt*/
+
+            default:
+              break;
+
+            }/*keyword switch*/
+
+          transform.sx=current.sx*affine.sx+current.ry*affine.rx;
+          transform.rx=current.rx*affine.sx+current.sy*affine.rx;
+          transform.ry=current.sx*affine.ry+current.ry*affine.sy;
+          transform.sy=current.rx*affine.ry+current.sy*affine.sy;
+          transform.tx=current.sx*affine.tx+current.ry*affine.ty+
+            current.tx;
+          transform.ty=current.rx*affine.tx+current.sy*affine.ty+
+            current.ty;
+
+        }/*j token loop*/
+
+      MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
+                transform.sx,transform.rx,transform.ry,transform.sy,
+                transform.tx,transform.ty);
+
+    }/*if ((tokens != (char **) NULL) && (number_tokens > 0))*/
+
+  /* clean up memory used for tokens */
+  if (tokens != (char **) NULL)
+    {
+      for (j=0; tokens[j] != (char *) NULL; j++)
+        MagickFreeMemory(tokens[j]);
+      MagickFreeMemory(tokens);
+    }
+
+}/*SVGProcessTransformString*/
+
+
 static void
 SVGStartElement(void *context,const xmlChar *name,
                 const xmlChar **attributes)
@@ -847,6 +1080,13 @@ SVGStartElement(void *context,const xmlChar *name,
     i,
     j;
 
+  char
+    svg_element_background_color[MaxTextExtent];  /* to support style="background:color" */
+
+  MagickBool
+    IsTSpan = MagickFalse,
+    IsTextOrTSpan = MagickFalse;
+
   /*
     Called when an opening tag has been processed.
   */
@@ -867,6 +1107,75 @@ SVGStartElement(void *context,const xmlChar *name,
   color=AllocateString("none");
   units=AllocateString("userSpaceOnUse");
   value=(const char *) NULL;
+  svg_element_background_color[0]='\0';
+  IsTextOrTSpan = IsTSpan = LocaleCompare((char *) name,"tspan") == 0;  /* need to know this early */
+  /*
+    According to the SVG spec, for the following SVG elements, if the x or y
+    attribute is not specified, the effect is as if a value of "0" were specified.
+  */
+  if (
+         (LocaleCompare((char *) name,"image") == 0)
+      || (LocaleCompare((char *) name,"pattern") == 0)
+      || (LocaleCompare((char *) name,"rect") == 0)
+      || (LocaleCompare((char *) name,"text") == 0)
+      || (LocaleCompare((char *) name,"use") == 0)
+      )
+    {
+      svg_info->bounds.x = svg_info->bounds.y = 0;
+    }
+  /*
+    NOTE: SVG spec makes similar statements for cx,cy of circle and ellipse, and
+    x1,y1,x2,y2 of line, but these are zeroed out initially, AND at the end of
+    SVGEndElement() after they have been used.
+  */
+
+  /*
+    When "font-size" is (or is contained in) one of the attributes for this SVG
+    element, we want it to be processed first so that any numerical conversions
+    that depend on the font size will use the new value.  So we will first scan
+    the attribute list and move any "font-size", "class" (which may contain a
+    "font-size"), or "style" (which may contain a "font-size") attributes to the
+    front of the attribute list.
+
+    For now we will ignore the possibility that "font-size" may be specified
+    more than once among "font-size", "class", and "style".  However, the
+    relative order among these three will be preserved.
+  */
+  if (attributes != (const xmlChar **) NULL)
+  {/*have some attributes*/
+
+    size_t iListFront = 0;
+    for  ( i = 0; (attributes[i] != (const xmlChar *) NULL); i += 2 )
+      {/*attribute[i]*/
+
+        keyword = (const char *) attributes[i];
+        if  (  (LocaleCompare(keyword,"font-size") == 0)
+            || (LocaleCompare(keyword,"class") == 0)
+            || (LocaleCompare(keyword,"style") == 0)
+         )
+         {/*(possible) font-size*/
+
+            if  ( i == iListFront )
+              iListFront += 2;  /* already at front of list */
+            else
+              {
+                /* move to front of list */
+                const xmlChar * pAttr = attributes[iListFront];
+                attributes[iListFront] = attributes[i];
+                attributes[i] = pAttr;
+                iListFront++;
+                pAttr = attributes[iListFront];
+                attributes[iListFront] = attributes[i+1];
+                attributes[i+1] = pAttr;
+                iListFront++;
+              }
+
+         }/*(possible) font-size*/
+
+      }/*attribute[i]*/
+
+  }/*have some attributes*/
+
   if (attributes != (const xmlChar **) NULL)
     for (i=0; (svg_info->exception->severity < ErrorException) &&
            (attributes[i] != (const xmlChar *) NULL); i+=2)
@@ -926,6 +1235,13 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"id") == 0)
                 {
                   (void) strlcpy(id,value,MaxTextExtent);
+                  /* track elements inside <defs> that have an "id" */
+                  if  ( (svg_info->defsPushCount > 0)
+                    && (svg_info->idLevelInsideDefs == 0)   /* do not allow nested "id" elements for now */
+                    && (LocaleCompare((const char *)name,"clipPath") != 0)  /* handled separately */
+                    && (LocaleCompare((const char *)name,"mask") != 0)      /* handled separately */
+                    )
+                      svg_info->idLevelInsideDefs = svg_info->n;
                   break;
                 }
               break;
@@ -957,7 +1273,11 @@ SVGStartElement(void *context,const xmlChar *name,
             {
               if (LocaleCompare(keyword,"x") == 0)
                 {
-                  svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  /* if processing a tspan, preserve the current bounds.x, which belongs to the
+                     previously processed text or tspan; the bounds.x for the current tspan will
+                     be set later */
+                  if (!IsTSpan)
+                    svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
                   break;
                 }
               if (LocaleCompare(keyword,"x1") == 0)
@@ -979,7 +1299,11 @@ SVGStartElement(void *context,const xmlChar *name,
             {
               if (LocaleCompare(keyword,"y") == 0)
                 {
-                  svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  /* if processing a tspan, preserve the current bounds.y, which belongs to the
+                     previously processed text or tspan; the bounds.y for the current tspan will
+                     be set later */
+                  if (!IsTSpan)
+                    svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
                   break;
                 }
               if (LocaleCompare(keyword,"y1") == 0)
@@ -1017,6 +1341,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"circle") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1032,6 +1358,7 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"defs") == 0)
           {
+            svg_info->defsPushCount++;
             MVGPrintf(svg_info->file,"push defs\n");
             break;
           }
@@ -1041,6 +1368,24 @@ SVGStartElement(void *context,const xmlChar *name,
     case 'e':
       {
         if (LocaleCompare((char *) name,"ellipse") == 0)
+          {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
+            MVGPrintf(svg_info->file,"push graphic-context\n");
+            break;
+          }
+        break;
+      }
+    case 'F':
+    case 'f':
+      {
+        /*
+          For now we are ignoring "foreignObject".  However, we do a push/pop
+          graphic-context so that any settings (e.g., fill) are consumed and
+          discarded.  Otherwise they might persist and "leak" into the graphic
+          elements that follow.
+        */
+        if (LocaleCompare((char *) name,"foreignObject") == 0)
           {
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -1052,6 +1397,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"g") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1072,6 +1419,8 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"line") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1084,11 +1433,23 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         break;
       }
+    case 'M':
+    case 'm':
+      {
+        if (LocaleCompare((char *) name,"mask") == 0)   /* added mask */
+        {
+          MVGPrintf(svg_info->file,"push mask '%s'\n",id);
+          break;
+        }
+      break;
+      }
     case 'P':
     case 'p':
       {
         if (LocaleCompare((char *) name,"path") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1101,11 +1462,15 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"polygon") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
         if (LocaleCompare((char *) name,"polyline") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1131,6 +1496,8 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"rect") == 0)
           {
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
           }
@@ -1139,9 +1506,36 @@ SVGStartElement(void *context,const xmlChar *name,
     case 'S':
     case 's':
       {
+        /* element "style" inside <defs> */
+        if (LocaleCompare((char *) name,"style") == 0)
+          {
+            /*
+              This is here more or less as a documentation aid.  The real work is done when
+              we encounter </style>.
+            */
+            break;
+          }
         if (LocaleCompare((char *) name,"svg") == 0)
           {
             MVGPrintf(svg_info->file,"push graphic-context\n");
+            /*
+              Per the SVG spec, initialize the MVG coder with the following
+              SVG defaults:
+                - svg-compliant: "1" (note: internal to GM, not an SVG element)
+                - fill color: "black"
+                - fill-opacity value: "1"
+                - stroke color: "none"
+                - stroke-width value: "1"
+                - stroke-opacity value: "1"
+                - fill-rule value: "nonzero"
+            */
+            MVGPrintf(svg_info->file,"svg-compliant 1\n");
+            MVGPrintf(svg_info->file,"fill 'black'\n");
+            MVGPrintf(svg_info->file,"fill-opacity 1\n");
+            MVGPrintf(svg_info->file,"stroke 'none'\n");
+            MVGPrintf(svg_info->file,"stroke-width 1\n");
+            MVGPrintf(svg_info->file,"stroke-opacity 1\n");
+            MVGPrintf(svg_info->file,"fill-rule 'nonzero'\n");
             break;
           }
         break;
@@ -1151,34 +1545,33 @@ SVGStartElement(void *context,const xmlChar *name,
       {
         if (LocaleCompare((char *) name,"text") == 0)
           {
+            IsTextOrTSpan = MagickTrue;
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "push id" if warranted */
+              MVGPrintf(svg_info->file,"push id '%s'\n",id);
             MVGPrintf(svg_info->file,"push graphic-context\n");
+            /* update text current position */
+            MVGPrintf(svg_info->file,"textx %g\n",svg_info->bounds.x);
+            MVGPrintf(svg_info->file,"texty %g\n",svg_info->bounds.y);
             break;
           }
         if (LocaleCompare((char *) name,"tspan") == 0)
           {
+            IsTextOrTSpan = MagickTrue;
             Strip(svg_info->text);
             if (*svg_info->text != '\0')
               {
-                DrawInfo
-                  *draw_info;
-
-                TypeMetric
-                  metrics;
-
                 char
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);
                 MagickFreeMemory(text);
-                draw_info=CloneDrawInfo(svg_info->image_info,(DrawInfo *) NULL);
-                draw_info->pointsize=svg_info->pointsize;
-                draw_info->text=AllocateString(svg_info->text);
-                (void) ConcatenateString(&draw_info->text," ");
-                (void) GetTypeMetrics(svg_info->image,draw_info,&metrics);
-                svg_info->bounds.x+=metrics.width;
-                DestroyDrawInfo(draw_info);
+                /*
+                  The code that used to be here to compute the next text position has been eliminated.
+                  The reason is that at this point in the code we may not know the font or font size
+                  (they may be hidden in a "class" definition), so we can't really do that computation.
+                  This functionality is now handled by DrawImage() in render.c.
+                */
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"push graphic-context\n");
@@ -1186,6 +1579,17 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         break;
       }
+    case 'U':
+    case 'u':
+      {
+        if (LocaleCompare((char *) name,"use") == 0)
+          {
+            /* "use" behaves like "g" */
+            MVGPrintf(svg_info->file,"push graphic-context\n");
+            break;
+          }
+        break;
+       }
     default:
       break;
     }
@@ -1213,6 +1617,20 @@ SVGStartElement(void *context,const xmlChar *name,
           case 'C':
           case 'c':
             {
+              if (LocaleCompare(keyword,"class") == 0)
+                {/*"class=classname"*/
+                  char * pClassNames = (char * ) value;
+                  do
+                    {
+                      (void) MagickGetToken(pClassNames,&pClassNames,token,MaxTextExtent);
+                      if  ( *token == ',' )
+                        (void) MagickGetToken(pClassNames,&pClassNames,token,MaxTextExtent);
+                      if  ( *token != '\0' )
+                        MVGPrintf(svg_info->file,"class '%s'\n",token);
+                  }
+                  while  ( *token != '\0' );
+                  break;
+                }/*"class=classname"*/
               if (LocaleCompare(keyword,"clip-path") == 0)
                 {
                   MVGPrintf(svg_info->file,"clip-path '%s'\n",value);
@@ -1258,14 +1676,34 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"dx") == 0)
                 {
-                  svg_info->bounds.x+=
-                    GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  double dx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  svg_info->bounds.x+=dx;   /* preserve previous behavior */
+                  /* update text current position for text or tspan */
+                  if  ( IsTextOrTSpan )
+                    {
+                      char * pUnit;
+                      (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
+                      if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
+                        MVGPrintf(svg_info->file,"textdx %s\n",value);  /* postpone interpretation of "em" or "ex" until we know point size */
+                      else
+                        MVGPrintf(svg_info->file,"textdx %g\n",dx);
+                    }
                   break;
                 }
               if (LocaleCompare(keyword,"dy") == 0)
                 {
-                  svg_info->bounds.y+=
-                    GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  double dy=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  svg_info->bounds.y+=dy;   /* preserve previous behavior */
+                  /* update text current position for text or tspan */
+                  if  ( IsTextOrTSpan )
+                    {
+                      char * pUnit;
+                      (void) MagickGetToken(value,&pUnit,token,MaxTextExtent);
+                      if  ( *pUnit && ((LocaleNCompare(pUnit,"em",2) == 0) || (LocaleNCompare(pUnit,"ex",2) == 0)) )
+                        MVGPrintf(svg_info->file,"textdy %s\n",value);  /* postpone interpretation of "em" or "ex" until we know point size */
+                      else
+                        MVGPrintf(svg_info->file,"textdy %g\n",dy);
+                    }
                   break;
                 }
               break;
@@ -1517,7 +1955,19 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"href") == 0)
                 {
-                  (void) CloneString(&svg_info->url,value);
+                  /* process "#identifier" as if it were "url(#identifier)" */
+                  if  ( value[0] == '#' )
+                    {
+                      /* reallocate the needed memory once */
+                      size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
+                      MagickReallocMemory(char *,svg_info->url,NewSize);
+                      memcpy(svg_info->url,"url(",4);
+                      strcpy(svg_info->url+4,value);
+                      svg_info->url[NewSize-2] = ')';
+                      svg_info->url[NewSize-1] = '\0';
+                    }
+                  else
+                    (void) CloneString(&svg_info->url,value);
                   break;
                 }
               break;
@@ -1529,6 +1979,11 @@ SVGStartElement(void *context,const xmlChar *name,
                 {
                   svg_info->element.major=
                     GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  break;
+                }
+              if (LocaleCompare(keyword,"mask") == 0)   /* added mask */
+                {
+                  MVGPrintf(svg_info->file,"mask '%s'\n",value);
                   break;
                 }
               if (LocaleCompare(keyword,"minor") == 0)
@@ -1586,11 +2041,27 @@ SVGStartElement(void *context,const xmlChar *name,
                     angle;
 
                   angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
-                  MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,
-                            svg_info->bounds.y);
-                  svg_info->bounds.x=0;
-                  svg_info->bounds.y=0;
-                  MVGPrintf(svg_info->file,"rotate %g\n",angle);
+                  /*
+                    When the current text position was managed in this code, and a "rotate" was encountered
+                    (indicating that the text character was to be rotated), the code would emit to the MVG file:
+
+                      translate x y (where x, y indicate the current text position)
+                      rotate angle (where angle indicates the rotation angle)
+
+                    Now that the current text position is being managed by DrawImage() in render.c, this code
+                    cannot issue the "translate" because it can't know the current text position.  To handle
+                    this, "textr" (text rotation) has been implemented in DrawImage() to perform the appropriate
+                    translation/rotation sequence.
+                  */
+                  if ( IsTextOrTSpan )
+                    MVGPrintf(svg_info->file,"textr %g\n",angle);  /* pre-translation will be handled in DrawImage() */
+                  else
+                  {
+                    MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,svg_info->bounds.y);
+                    svg_info->bounds.x=0;
+                    svg_info->bounds.y=0;
+                    MVGPrintf(svg_info->file,"rotate %g\n",angle);
+                  }
                   break;
                 }
               if (LocaleCompare(keyword,"rx") == 0)
@@ -1703,6 +2174,18 @@ SVGStartElement(void *context,const xmlChar *name,
                                                 "    %.1024s: %.1024s",keyword,value);
                           switch (*keyword)
                             {
+                            case 'B':
+                            case 'b':
+                              {
+                                if (LocaleCompare(keyword,"background") == 0)
+                                {
+                                  /* only do this if background was specified inside <svg ... */
+                                  if  ( LocaleCompare((const char *)name,"svg") == 0 )
+                                    strlcpy(svg_element_background_color,value,MaxTextExtent);
+                                  break;
+                                }
+                                break;
+                              }
                             case 'C':
                             case 'c':
                               {
@@ -1909,6 +2392,12 @@ SVGStartElement(void *context,const xmlChar *name,
                                               LocaleCompare(value,"true") == 0);
                                     break;
                                   }
+                                if (LocaleCompare(keyword,"transform") == 0)
+                                  {
+                                    /* implement style="transform: translate(..." */
+                                    SVGProcessTransformString(context,value);
+                                    break;
+                                  }
                                 break;
                               }
                             default:
@@ -1957,153 +2446,11 @@ SVGStartElement(void *context,const xmlChar *name,
                 }
               if (LocaleCompare(keyword,"transform") == 0)
                 {
-                  char
-                    **tokens;
-
-                  AffineMatrix
-                    affine,
-                    current,
-                    transform;
-
-                  IdentityAffine(&transform);
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  ");
-                  tokens=GetTransformTokens(context,value,&number_tokens);
-                  if ((tokens != (char **) NULL) && (number_tokens > 0))
-                    {
-                      for (j=0; j < (number_tokens-1); j+=2)
-                        {
-                          keyword=(char *) tokens[j];
-                          value=(char *) tokens[j+1];
-                          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                                "    %.1024s: %.1024s",keyword,value);
-                          current=transform;
-                          IdentityAffine(&affine);
-                          switch (*keyword)
-                            {
-                            case 'M':
-                            case 'm':
-                              {
-                                if (LocaleCompare(keyword,"matrix") == 0)
-                                  {
-                                    p=(char *) value;
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.sx=MagickAtoF(value);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.rx=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.ry=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.sy=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.tx=MagickAtoF(token);
-                                    (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    if (*token == ',')
-                                      (void) MagickGetToken(p,&p,token,MaxTextExtent);
-                                    affine.ty=MagickAtoF(token);
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'R':
-                            case 'r':
-                              {
-                                if (LocaleCompare(keyword,"rotate") == 0)
-                                  {
-                                    double
-                                      angle;
-
-                                    angle=GetUserSpaceCoordinateValue(svg_info,0,value,MagickFalse);
-                                    affine.sx=cos(DegreesToRadians(fmod(angle,360.0)));
-                                    affine.rx=sin(DegreesToRadians(fmod(angle,360.0)));
-                                    affine.ry=(-sin(DegreesToRadians(fmod(angle,360.0))));
-                                    affine.sy=cos(DegreesToRadians(fmod(angle,360.0)));
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'S':
-                            case 's':
-                              {
-                                if (LocaleCompare(keyword,"scale") == 0)
-                                  {
-                                    for (p=(char *) value; *p != '\0'; p++)
-                                      if (isspace((int) (*p)) || (*p == ','))
-                                        break;
-                                    affine.sx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
-                                    affine.sy=affine.sx;
-                                    if (*p != '\0')
-                                      affine.sy=
-                                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
-                                    svg_info->scale[svg_info->n]=ExpandAffine(&affine);
-                                    break;
-                                  }
-                                if (LocaleCompare(keyword,"skewX") == 0)
-                                  {
-                                    affine.sx=svg_info->affine.sx;
-                                    affine.ry=tan(DegreesToRadians(fmod(
-                                                                        GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse),
-                                                                        360.0)));
-                                    affine.sy=svg_info->affine.sy;
-                                    break;
-                                  }
-                                if (LocaleCompare(keyword,"skewY") == 0)
-                                  {
-                                    affine.sx=svg_info->affine.sx;
-                                    affine.rx=tan(DegreesToRadians(fmod(
-                                                                        GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse),
-                                                                        360.0)));
-                                    affine.sy=svg_info->affine.sy;
-                                    break;
-                                  }
-                                break;
-                              }
-                            case 'T':
-                            case 't':
-                              {
-                                if (LocaleCompare(keyword,"translate") == 0)
-                                  {
-                                    for (p=(char *) value; *p != '\0'; p++)
-                                      if (isspace((int) (*p)) || (*p == ','))
-                                        break;
-                                    affine.tx=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
-                                    affine.ty=affine.tx;
-                                    if (*p != '\0')
-                                      affine.ty=
-                                        GetUserSpaceCoordinateValue(svg_info,-1,p+1,MagickFalse);
-                                    break;
-                                  }
-                                break;
-                              }
-                            default:
-                              break;
-                            }
-                          transform.sx=current.sx*affine.sx+current.ry*affine.rx;
-                          transform.rx=current.rx*affine.sx+current.sy*affine.rx;
-                          transform.ry=current.sx*affine.ry+current.ry*affine.sy;
-                          transform.sy=current.rx*affine.ry+current.sy*affine.sy;
-                          transform.tx=current.sx*affine.tx+current.ry*affine.ty+
-                            current.tx;
-                          transform.ty=current.rx*affine.tx+current.sy*affine.ty+
-                            current.ty;
-                        }
-                      MVGPrintf(svg_info->file,"affine %g %g %g %g %g %g\n",
-                                transform.sx,transform.rx,transform.ry,transform.sy,
-                                transform.tx,transform.ty);
-                    } /* if ((tokens != (char **) NULL) && (number_tokens > 0)) */
-                  if (tokens != (char **) NULL)
-                    {
-                      for (j=0; tokens[j] != (char *) NULL; j++)
-                        MagickFreeMemory(tokens[j]);
-                      MagickFreeMemory(tokens);
-                    }
+                  /*
+                    The code that was here has been refactored into
+                    function SVGProcessTransformString()
+                  */
+                  SVGProcessTransformString(context,value);
                   break;
                 }
               break;
@@ -2166,11 +2513,26 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"x") == 0)
                 {
                   svg_info->bounds.x=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                  /* update text current position for tspan (already did this if text) */
+                  if  ( IsTSpan )
+                    MVGPrintf(svg_info->file,"textx %g\n",svg_info->bounds.x);
                   break;
                 }
               if (LocaleCompare(keyword,"xlink:href") == 0)
                 {
-                  (void) CloneString(&svg_info->url,value);
+                  /* process "#identifier" as if it were "url(#identifier)" */
+                  if  ( value[0] == '#' )
+                    {
+                      /* reallocate the needed memory once */
+                      size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
+                      MagickReallocMemory(char *,svg_info->url,NewSize);
+                      memcpy(svg_info->url,"url(",4);
+                      strcpy(svg_info->url+4,value);
+                      svg_info->url[NewSize-2] = ')';
+                      svg_info->url[NewSize-1] = '\0';
+                    }
+                  else
+                    (void) CloneString(&svg_info->url,value);
                   break;
                 }
               if (LocaleCompare(keyword,"x1") == 0)
@@ -2193,6 +2555,9 @@ SVGStartElement(void *context,const xmlChar *name,
               if (LocaleCompare(keyword,"y") == 0)
                 {
                   svg_info->bounds.y=GetUserSpaceCoordinateValue(svg_info,-1,value,MagickFalse);
+                  /* update text current position for tspan (already did this if text) */
+                  if  ( IsTSpan )
+                    MVGPrintf(svg_info->file,"texty %g\n",svg_info->bounds.y);
                   break;
                 }
               if (LocaleCompare(keyword,"y1") == 0)
@@ -2265,8 +2630,7 @@ SVGStartElement(void *context,const xmlChar *name,
       if (attributes != (const xmlChar **) NULL)
         {
           char
-            *geometry,
-            *p;
+            *geometry;
 
           RectangleInfo
             page;
@@ -2307,15 +2671,20 @@ SVGStartElement(void *context,const xmlChar *name,
               geometry=GetPageGeometry(svg_info->size);
           if (geometry != (char *) NULL)
             {
-              p=strchr(geometry,'>');
-              if (p != (char *) NULL)
-                *p='\0';
+              /*
+                A terminating '>' in a geometry string is interpreted to mean that
+                the dimensions of an image should only be changed if its width or
+                height exceeds the geometry specification.  For an unapparent and
+                undocumented reason, a terminating '>', if present, was being nulled
+                out, making this feature unusable for SVG files (now fixed).
+              */
               (void) GetMagickGeometry(geometry,&page.x,&page.y,
                                        &page.width,&page.height);
               MagickFreeMemory(geometry);
             }
-          // NOTE: the scale factor returned by ExpandAffine() has already been applied
-          // to page.width and page.height
+          /* NOTE: the scale factor returned by ExpandAffine() has already been applied
+             to page.width and page.height
+          */
           (void) MVGPrintf(svg_info->file,"viewbox 0 0 %g %g\n",
                            svg_info->view_box.width,svg_info->view_box.height);
           sx=(double) page.width/svg_info->view_box.width;
@@ -2324,6 +2693,14 @@ SVGStartElement(void *context,const xmlChar *name,
                     -sx*svg_info->view_box.x,-sy*svg_info->view_box.y);
           svg_info->width=page.width;
           svg_info->height=page.height;
+          /* check if background color was specified using <svg ... style="background:color" */
+          if  ( svg_element_background_color[0] != '\0' )
+            {
+              MVGPrintf(svg_info->file,"push graphic-context\n");
+              MVGPrintf(svg_info->file,"fill %s\n",svg_element_background_color);
+              MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",svg_info->view_box.width,svg_info->view_box.height);
+              MVGPrintf(svg_info->file,"pop graphic-context\n");
+            }
         }
     }
 #endif
@@ -2334,6 +2711,421 @@ SVGStartElement(void *context,const xmlChar *name,
   MagickFreeMemory(units);
   MagickFreeMemory(color);
 }
+
+/* Process the "class" definitions inside <style> ... </style> */
+static
+void    ProcessStyleClassDefs (
+  SVGInfo * svg_info
+  )
+{/*ProcessStyleClassDefs*/
+
+  /*
+    Style defs look like:
+
+      .class1,.class2,.class3{kwd:val;kwd:val;}
+
+    Class name (e.g., ".class1"} can show up multiple times
+  */
+
+  /* keyword/value pair for an element */
+  typedef struct ElementValue
+    {/*ElementValue*/
+        struct ElementValue     * pNext;  /* next in list */
+        char *                pKeyword;
+        char *                pValue;
+    }/*ElementValue*/
+  ElementValue;
+
+  /* the keyword/value pair list associated with a class */
+  typedef struct ClassDef
+    {/*ClassDef*/
+      struct ClassDef * pNext;            /* next in list */
+      struct ClassDef * pActiveNext;      /* next in active list */
+      char *            pName;            /* class name */
+      ElementValue      ElementValueHead; /* list head for style element/value pairs */
+      ElementValue *    pElementValueLast;
+    }/*ClassDef*/
+  ClassDef;
+
+  ClassDef ClassDefHead;  /* list head for classes */
+  ClassDef * pClassDefLast = &ClassDefHead; /* tail ptr for class def list */
+  ClassDef ClassDefActiveHead;  /* list head for "active" class defs */
+  ClassDef * pClassDefActiveLast = &ClassDefActiveHead; /* tail ptr for "active" class def list */
+  ClassDef * pClassDef;
+  char * pCopyOfText;
+  char * pString;
+  char * cp,*cp2;
+  int c;
+
+  memset(&ClassDefHead,0,sizeof(ClassDefHead));
+  memset(&ClassDefActiveHead,0,sizeof(ClassDefActiveHead));
+
+  /* a macro to allocate an zero out a new struct instance,
+      and add it to the end of a linked list */
+  #define       ADD_NEW_STRUCT(pNew,pLast,TheTypeDef) \
+  pNew = MagickAllocateMemory(TheTypeDef *,sizeof(TheTypeDef)); \
+  memset(pNew,0,sizeof(TheTypeDef)); \
+  pLast = pLast->pNext = pNew
+
+  /* we will get a modifiable value of the string, and delimit
+      substrings by storing null characters */
+  pCopyOfText = AcquireString(svg_info->text);
+  for  ( pString = pCopyOfText; *pString; )
+    {/*pString loop*/
+      char * pClassNameList;
+      char * pStyleElementList;
+
+      while  ( (c = *pString) && isspace(c) )  pString++;   /* skip white space */
+      if  ( !*pString )  break;   /* found end of string; done */
+      pClassNameList = pString;
+
+      /* find the end of the comma-separated list of class names */
+      while  ( (c = *pString) && (c != '{') )  pString++;
+      if  ( !*pString )
+        {
+          /* malformed input: class name list not followed by '{' */
+          MagickFreeMemory(pCopyOfText);
+          return;
+        }
+      *pString++ = '\0';
+      pStyleElementList = pString;
+
+      /* extract the class names */
+      ClassDefActiveHead.pActiveNext = 0;
+      pClassDefActiveLast = &ClassDefActiveHead;  /* initially, no active class defs */
+      for  ( cp = pClassNameList; *cp; )
+        {/*extract class name loop*/
+
+          while  ( (c = *cp) && (isspace(c) || (c ==',')) )  cp++;  /* skip white space/commas */
+          if  ( *cp == '.' )  cp++;     /* .classname, skip leading period */
+          if  ( *cp )
+          {/*found class name*/
+
+              char * pClassName = cp;
+              while  ( (c = *cp) && !(isspace(c) || (c == ',')) )  cp++;  /* find white space/comma/null */
+              if  ( *cp )
+                *cp++ = '\0';   /* terminate identifier string and increment */
+              /* add uniquely to list */
+              for  (  pClassDef = ClassDefHead.pNext;
+                      pClassDef && (strcmp(pClassName,pClassDef->pName) != 0);
+                      pClassDef = pClassDef->pNext );
+              if  ( pClassDef == 0 )
+                {/*new class name*/
+                  ADD_NEW_STRUCT(pClassDef,pClassDefLast,ClassDef);
+                  pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
+                  pClassDef->pName = pClassName;
+                }/*new class name*/
+              pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
+
+              }/*found class name*/
+
+        }/*extract class name loop*/
+
+      /* find the end of the style elements */
+      while  ( (c = *pString) && (c != '}') )  pString++;
+      if  ( !*pString )
+        {
+          /* malformed input: style elements not terminated by '{' */
+          MagickFreeMemory(pCopyOfText);
+          return;
+        }
+      *pString++ = '\0';  /* advance past '}' for next loop pass */
+
+      /* get the style elements */
+      for  ( cp = pStyleElementList; *cp; )
+        {/*extract style elements loop*/
+
+          /* looking for <space><classname><space>: */
+          while  ( (c = *cp) && isspace(c) )  cp++;   /* skip white space */
+          if  ( *cp )
+            {/*found style element*/
+
+              char * pStyleElement = cp;
+              while  ( (c = *cp) && (c != ':') )  cp++;   /* find colon/null */
+              for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+              if  ( *cp )
+                *cp++ = '\0';   /* terminate style element string and increment */
+
+              /* looking for <space><style-value>; */
+              while  ( (c = *cp) && isspace(c) )  cp++;   /* skip white space */
+              if  ( *cp )
+                {/*found style element value*/
+
+                  char * pStyleValue = cp;
+                  while  ( (c = *cp) && (c != ';') )  cp++;   /* find semi-colon/null */
+                  for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+                  if  ( *cp )
+                    *cp++ = '\0';   /* terminate style value string and increment */
+
+                  /* add style element/value pair to each active class def */
+                  for  ( pClassDef = ClassDefActiveHead.pActiveNext; pClassDef; pClassDef = pClassDef->pActiveNext )
+                    {
+                      ElementValue * pEV;
+                      ADD_NEW_STRUCT(pEV,pClassDef->pElementValueLast,ElementValue);
+                      pEV->pKeyword = pStyleElement;
+                      pEV->pValue = pStyleValue;
+                    }
+
+                }/*found style element value*/
+
+            }/*found style element*/
+
+        }/*extract style elements loop*/
+
+    }/*pString loop*/
+
+  /* emit class definitions */
+  for  ( pClassDef = ClassDefHead.pNext; pClassDef; pClassDef = pClassDef->pNext )
+    {/*pClassDef loop*/
+
+      ElementValue * pEV;
+      if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )    /* just in case, should never happen */
+        continue;
+      MVGPrintf(svg_info->file,"push class '%s'\n",pClassDef->pName);
+      for  ( ; pEV; pEV = pEV->pNext )
+        {/*pEV loop*/
+
+          char * keyword = pEV->pKeyword;
+          char * value = pEV->pValue;
+          /* switch below was copied/pasted from elsewhere and modified */
+          switch (*keyword)
+            {/*keyword*/
+
+            case 'C':
+            case 'c':
+              {/*Cc*/
+                if (LocaleCompare(keyword,"clip-path") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-path '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"clip-rule") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-rule '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"clipPathUnits") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"clip-units '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Cc*/
+
+            case 'F':
+            case 'f':
+               {/*Ff*/
+                if  ( (LocaleCompare(keyword,"fill") == 0) || (LocaleCompare(keyword,"fillcolor") == 0) )
+                  {
+                    MVGPrintf(svg_info->file,"fill '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"fill-rule") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"fill-rule '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"fill-opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"fill-opacity '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-family") == 0)
+                  {
+                    /*
+                      Deal with Adobe Illustrator 10.0 which double-quotes
+                      font-family.  Maybe we need a generalized solution for
+                      this.
+                    */
+                    size_t n;
+                    if  ( (value[0] == '\'') && (value[(n = (strlen(value)-1))] == '\'') )
+                      {
+                        size_t i;
+                        FILE * fp = svg_info->file;
+                        MVGPrintf(fp,"font-family '");
+                        for(i = 1; i < n; i++)
+                          fputc(value[i],fp);
+                        MVGPrintf(fp,"'\n");
+                      }
+                    else
+                      MVGPrintf(svg_info->file,"font-family '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-stretch") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-stretch '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-style") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-style '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-size") == 0)
+                  {
+                    if (LocaleCompare(value,"medium") == 0)
+                      svg_info->pointsize = 12;
+                    else
+                      svg_info->pointsize = GetUserSpaceCoordinateValue(svg_info,0,value,MagickTrue);
+                    MVGPrintf(svg_info->file,"font-size %g\n",svg_info->pointsize);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"font-weight") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"font-weight '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Ff*/
+
+            case 'O':
+            case 'o':
+              {/*Oo*/
+                if (LocaleCompare(keyword,"offset") == 0)
+                  {
+                   MVGPrintf(svg_info->file,"offset %g\n",GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse));
+                   break;
+                  }
+                if (LocaleCompare(keyword,"opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"opacity '%s'\n",value);
+                    break;
+                  }
+                break;
+              }/*Oo*/
+
+            case 'S':
+            case 's':
+              {/*Ss*/
+                if (LocaleCompare(keyword,"stop-color") == 0)
+                  {
+                    (void) CloneString(&svg_info->stop_color,value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-antialiasing") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-antialias %d\n",LocaleCompare(value,"true") == 0);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-dasharray") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-dasharray %s\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-dashoffset") == 0)
+                  {
+                    double dashoffset=GetUserSpaceCoordinateValue(svg_info,1,value,MagickFalse);
+                    MVGPrintf(svg_info->file,"stroke-dashoffset %g\n",dashoffset);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-linecap") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-linecap '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-linejoin") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-linejoin '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-miterlimit") == 0)
+                  {
+                    double stroke_miterlimit;
+                    if ((MagickAtoFChk(value,&stroke_miterlimit) != MagickPass) || stroke_miterlimit < 1.0)
+                      {
+                        errno=0;
+                        ThrowException(svg_info->exception,DrawError,InvalidPrimitiveArgument,value);
+                        break;
+                      }
+                    MVGPrintf(svg_info->file,"stroke-miterlimit '%ld'\n",(long) stroke_miterlimit);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-opacity") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-opacity '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"stroke-width") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"stroke-width %g\n",GetUserSpaceCoordinateValue(svg_info,1,value,MagickTrue));
+                    break;
+                  }
+                break;
+              }/*Ss*/
+
+            case 'T':
+            case 't':
+              {/*Tt*/
+                if (LocaleCompare(keyword,"text-align") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-align '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-anchor") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-anchor '%s'\n",value);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-decoration") == 0)
+                  {
+                    if (LocaleCompare(value,"underline") == 0)
+                      MVGPrintf(svg_info->file,"decorate underline\n");
+                    if (LocaleCompare(value,"line-through") == 0)
+                      MVGPrintf(svg_info->file,"decorate line-through\n");
+                    if (LocaleCompare(value,"overline") == 0)
+                      MVGPrintf(svg_info->file,"decorate overline\n");
+                    break;
+                  }
+                if (LocaleCompare(keyword,"text-antialiasing") == 0)
+                  {
+                    MVGPrintf(svg_info->file,"text-antialias %d\n",LocaleCompare(value,"true") == 0);
+                    break;
+                  }
+                if (LocaleCompare(keyword,"transform") == 0)
+                  {/*style="transform: ...*/
+                    SVGProcessTransformString((void *)svg_info,value);
+                    break;
+                  }/*style="transform: ...*/
+                break;
+              }/*Tt*/
+
+            default:
+            break;
+
+            }/*keyword*/
+
+        }/*pEV loop*/
+
+      MVGPrintf(svg_info->file,"pop class\n");
+
+    }/*pClassDef loop*/
+
+  /* clean up */
+  {
+    ClassDef * pClassDef;
+    for(pClassDef = ClassDefHead.pNext; pClassDef; )
+      {
+        ElementValue *pEV;
+        ClassDef * pClassDefTemp = pClassDef;
+        for(pEV = pClassDef->ElementValueHead.pNext; pEV; )
+          {
+            ElementValue * pEVTemp = pEV;
+            pEV = pEV->pNext;
+            MagickFreeMemory(pEVTemp);
+          }
+        pClassDef = pClassDef->pNext;
+        MagickFreeMemory(pClassDefTemp);
+      }
+  }
+  MagickFreeMemory(pCopyOfText);
+
+#undef  ADD_NEW_STRUCT
+}/*ProcessStyleClassDefs*/
 
 static void
 SVGEndElement(void *context,const xmlChar *name)
@@ -2366,6 +3158,11 @@ SVGEndElement(void *context,const xmlChar *name)
                       svg_info->element.cy,svg_info->element.cx,svg_info->element.cy+
                       svg_info->element.minor);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"clipPath") == 0)
@@ -2380,6 +3177,7 @@ SVGEndElement(void *context,const xmlChar *name)
       {
         if (LocaleCompare((char *) name,"defs") == 0)
           {
+            svg_info->defsPushCount--;
             MVGPrintf(svg_info->file,"pop defs\n");
             break;
           }
@@ -2418,6 +3216,27 @@ SVGEndElement(void *context,const xmlChar *name)
                       angle == 0.0 ? svg_info->element.major : svg_info->element.minor,
                       angle == 0.0 ? svg_info->element.minor : svg_info->element.major);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
+            break;
+          }
+        break;
+      }
+    case 'F':
+    case 'f':
+      {
+        /*
+          For now we are ignoring "foreignObject".  However, we do a push/pop
+          graphic-context so that any settings (e.g., fill) are consumed and
+          discarded.  Otherwise they might persist and "leak" into the graphic
+          elements that follow.
+        */
+        if (LocaleCompare((char *) name,"foreignObject") == 0)
+          {
+            MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
         break;
@@ -2428,6 +3247,11 @@ SVGEndElement(void *context,const xmlChar *name)
         if (LocaleCompare((char *) name,"g") == 0)
           {
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2453,11 +3277,26 @@ SVGEndElement(void *context,const xmlChar *name)
             MVGPrintf(svg_info->file,"line %g,%g %g,%g\n",svg_info->segment.x1,
                       svg_info->segment.y1,svg_info->segment.x2,svg_info->segment.y2);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"linearGradient") == 0)
           {
             MVGPrintf(svg_info->file,"pop gradient\n");
+            break;
+          }
+        break;
+      }
+    case 'M':
+    case 'm':
+      {
+        if (LocaleCompare((char *) name,"mask") == 0)   /* added mask */
+          {
+            MVGPrintf(svg_info->file,"pop mask\n");
             break;
           }
         break;
@@ -2474,18 +3313,33 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"path '%s'\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"polygon") == 0)
           {
             MVGPrintf(svg_info->file,"polygon %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"polyline") == 0)
           {
             MVGPrintf(svg_info->file,"polyline %s\n",svg_info->vertices);
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2507,6 +3361,11 @@ SVGEndElement(void *context,const xmlChar *name)
                           svg_info->bounds.x+svg_info->bounds.width,
                           svg_info->bounds.y+svg_info->bounds.height);
                 MVGPrintf(svg_info->file,"pop graphic-context\n");
+              if  ( svg_info->idLevelInsideDefs == svg_info->n )        /* emit a "pop id" if warranted */
+                {
+                  svg_info->idLevelInsideDefs = 0;
+                  MVGPrintf(svg_info->file,"pop id\n");
+                }
                 break;
               }
             if (svg_info->radius.x == 0.0)
@@ -2520,6 +3379,11 @@ SVGEndElement(void *context,const xmlChar *name)
             svg_info->radius.x=0.0;
             svg_info->radius.y=0.0;
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         break;
@@ -2531,6 +3395,13 @@ SVGEndElement(void *context,const xmlChar *name)
           {
             MVGPrintf(svg_info->file,"stop-color '%s' %s\n",svg_info->stop_color,
                       svg_info->offset);
+            break;
+          }
+        /* element "style" inside <defs> */
+        if (LocaleCompare((char *) name,"style") == 0)
+          {
+            /* the style definitions are in svg_info->text */
+            ProcessStyleClassDefs(svg_info);
             break;
           }
         if (LocaleCompare((char *) name,"svg") == 0)
@@ -2552,12 +3423,16 @@ SVGEndElement(void *context,const xmlChar *name)
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);  /* write text at current position */
                 MagickFreeMemory(text);
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
+            if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
+              {
+                svg_info->idLevelInsideDefs = 0;
+                MVGPrintf(svg_info->file,"pop id\n");
+              }
             break;
           }
         if (LocaleCompare((char *) name,"tspan") == 0)
@@ -2565,26 +3440,18 @@ SVGEndElement(void *context,const xmlChar *name)
             Strip(svg_info->text);
             if (*svg_info->text != '\0')
               {
-                DrawInfo
-                  *draw_info;
-
-                TypeMetric
-                  metrics;
-
                 char
                   *text;
 
                 text=EscapeString(svg_info->text,'\'');
-                MVGPrintf(svg_info->file,"text %g,%g '%s'\n",svg_info->bounds.x,
-                          svg_info->bounds.y,text);
+                MVGPrintf(svg_info->file,"textc '%s'\n",text);  /* write text at current position */
                 MagickFreeMemory(text);
-                draw_info=CloneDrawInfo(svg_info->image_info,(DrawInfo *) NULL);
-                draw_info->pointsize=svg_info->pointsize;
-                draw_info->text=AllocateString(svg_info->text);
-                (void) ConcatenateString(&draw_info->text," ");
-                (void) GetTypeMetrics(svg_info->image,draw_info,&metrics);
-                svg_info->bounds.x+=metrics.width;
-                DestroyDrawInfo(draw_info);
+                /*
+                  The code that used to be here to compute the next text position has been eliminated.
+                  The reason is that at this point in the code we may not know the font or font size
+                  (they may be hidden in a "class" definition), so we can't really do that computation.
+                  This functionality is now handled by DrawImage() in render.c.
+                */
                 *svg_info->text='\0';
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
@@ -2597,6 +3464,34 @@ SVGEndElement(void *context,const xmlChar *name)
               break;
             (void) CloneString(&svg_info->title,svg_info->text);
             *svg_info->text='\0';
+            break;
+          }
+        break;
+      }
+    case 'U':
+    case 'u':
+      {
+        if (LocaleCompare((char *) name,"use") == 0)
+          {
+            /*
+              If the "use" had a "transform" attribute it has already been output to the MVG file.
+
+              According to the SVG spec for "use":
+
+              In the generated content, the 'use' will be replaced by 'g', where all attributes
+              from the 'use' element except for 'x', 'y', 'width', 'height' and 'xlink:href' are
+              transferred to the generated 'g' element. An additional transformation translate(x,y)
+              is appended to the end (i.e., right-side) of the 'transform' attribute on the generated
+              'g', where x and y represent the values of the 'x' and 'y' attributes on the 'use'
+              element. The referenced object and its contents are deep-cloned into the generated tree.
+            */
+            if  ( (svg_info->bounds.x != 0.0) || (svg_info->bounds.y != 0.0) )
+              MVGPrintf(svg_info->file,"translate %g,%g\n",svg_info->bounds.x,svg_info->bounds.y);
+
+            /* NOTE: not implementing "width" and "height" for now */
+
+            MVGPrintf(svg_info->file,"use '%s'\n",svg_info->url);
+            MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
         break;
@@ -2906,6 +3801,24 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+  /*
+    If there is a geometry string in image_info->size (e.g., gm convert
+    -size "50x50%" in.svg out.png), AllocateImage() sets image->columns
+    and image->rows to the width and height values from the size string.
+    However, this makes no sense if the size string was something like
+    "50x50%" (we'll get columns = rows = 50).  So we set columns and
+    rows to 0 here, which is the same as if no size string was supplied
+    by the client.  This also results in svg_info.bounds to be set to
+    0,0 below (i.e., unknown), so that svg_info.bounds will be set using
+    the image size information from either the svg "canvas" width/height
+    or from the viewbox.  Later, variable "page" is set from
+    svg_info->bounds. Then the geometry string in image_info->size gets
+    applied to the (now known) "page" width and height when
+    SvgStartElement() calls GetMagickGeometry(), and the intended result
+    is obtained.
+  */
+  image->columns = 0;
+  image->rows = 0;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
@@ -2941,6 +3854,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.scale[0]=ExpandAffine(&svg_info.affine);
   svg_info.bounds.width=image->columns;
   svg_info.bounds.height=image->rows;
+  svg_info.defsPushCount = 0;
+  svg_info.idLevelInsideDefs = 0;
   if (image_info->size != (char *) NULL)
     (void) CloneString(&svg_info.size,image_info->size);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"begin SAX");

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -36,20 +36,33 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#include "magick/log.h"
 #include "magick/module.h"
 #include "magick/static.h"
 #include "magick/utility.h"
 
-#if !defined(BuildMagickModules)
-static const struct
+#if !defined(SupportMagickModules)
+
+#include "magick/module_aliases.h"
+
+typedef struct _StaticModule
 {
-  char* name;
+  const char* name;
   void (*register_fn)(void);
   void (*unregister_fn)(void);
+  MagickBool loaded;
+  const unsigned int name_length;
 
-} StaticModules[] =
+} StaticModule;
+
+/*
+  This list must be ordered by 'name' in an ascending order based on
+  strcmp().
+*/
+static StaticModule
+StaticModules[] =
 {
-#define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn}
+#define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn,MagickFalse,sizeof(name)-1}
   STATICM("ART",RegisterARTImage,UnregisterARTImage),
   STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
@@ -184,7 +197,202 @@ static const struct
 #endif /* defined(HasX11) */
   STATICM("YUV",RegisterYUVImage,UnregisterYUVImage)
 };
-#endif /* !defined(BuildMagickModules) */
+
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   D e s t r o y M a g i c k M o d u l e s                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  DestroyMagickResources() destroys the resource environment.
+%
+%  The format of the DestroyMagickResources() method is:
+%
+%      DestroyMagickResources(void)
+%
+%
+*/
+MagickExport void
+DestroyMagickModules(void)
+{
+  unsigned int index;
+
+  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+    {
+      if (StaticModules[index].loaded == MagickTrue)
+        {
+          (StaticModules[index].unregister_fn)();
+          StaticModules[index].loaded = MagickFalse;
+        }
+    }
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   I n i t i a l i z e M a g i c k M o d u l e s                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  InitializeMagickModules() initializes the module loader.
+%
+%  The format of the InitializeMagickModules() method is:
+%
+%      InitializeMagickModules(void)
+%
+%
+*/
+MagickExport void
+InitializeMagickModules(void)
+{
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   O p e n M o d u l e                                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  OpenModule() loads a module, and invokes its registration method.  It
+%  returns MagickPass on success, and MagickFail if there is an error.
+%
+%  The format of the OpenModule method is:
+%
+%      MagickPassFail OpenModule(const char *module,ExceptionInfo *exception)
+%
+%  A description of each parameter follows:
+%
+%    o status: Method OpenModule returns MagickPass if the specified module is
+%      loaded, otherwise MagickFail.
+%
+%    o module: a character string that indicates the module to load.
+%
+%    o exception: Return any errors or warnings in this structure.
+%
+%
+*/
+MagickExport MagickPassFail
+OpenModule(const char *module,ExceptionInfo *exception)
+{
+  char
+    module_name[MaxTextExtent];
+
+  size_t
+    name_length;
+
+  unsigned int
+    index;
+
+  MagickPassFail
+    status = MagickFail;
+
+  (void) exception;
+  /*
+    Assign module name from alias.
+  */
+  assert(module != (const char *) NULL);
+  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                        "Magick \"%s\"", module);
+  name_length=strlcpy(module_name,module,MaxTextExtent);
+  for (index=0; index < ArraySize(ModuleAliases);index++)
+    {
+      if (ModuleAliases[index].magick[0] > module[0])
+        break;
+      if ((ModuleAliases[index].magick[0] == module[0]) &&
+          (ModuleAliases[index].magick_len == name_length) &&
+          (memcmp(ModuleAliases[index].magick,module,name_length) == 0))
+        {
+          name_length=strlcpy(module_name,ModuleAliases[index].name,MaxTextExtent);
+          break;
+        }
+    }
+
+  /*
+    Find module in list and load if not already loaded
+  */
+  for (index=0; index < ArraySize(StaticModules);index++)
+    {
+      if (StaticModules[index].name[0] > module_name[0])
+        break;
+      if ((StaticModules[index].name[0] == module_name[0]) &&
+          (StaticModules[index].name_length == name_length) &&
+          (memcmp(StaticModules[index].name,module_name,name_length) == 0))
+        {
+          if (StaticModules[index].loaded == MagickFalse)
+            {
+              (StaticModules[index].register_fn)();
+              StaticModules[index].loaded = MagickTrue;
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "Loaded static module \"%s\"", module_name);
+            }
+          status=MagickPass;
+          break;
+        }
+    }
+  if (index == ArraySize(StaticModules))
+    status=MagickFail;
+
+  return status;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   O p e n M o d u l e s                                                     %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method OpenModules loads all available modules.
+%
+%  The format of the OpenModules method is:
+%
+%      MagickPassFail OpenModules(ExceptionInfo *exception)
+%
+%  A description of each parameter follows:
+%
+%    o status: Method OpenModules returns True if the modules are loaded,
+%      otherwise False.
+%
+%    o exception: Return any errors or warnings in this structure.
+%
+*/
+MagickExport MagickPassFail
+OpenModules(ExceptionInfo *exception)
+{
+  unsigned int index;
+  (void) exception;
+
+  for (index=0; index < ArraySize(StaticModules);index++)
+    {
+      if (StaticModules[index].loaded == MagickFalse)
+        {
+          (StaticModules[index].register_fn)();
+          StaticModules[index].loaded = MagickTrue;
+        }
+    }
+
+  return MagickPass;
+}
+#endif /* !defined(SupportMagickModules) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,7 +437,7 @@ MagickExport unsigned int ExecuteModuleProcess(const char *tag,
   unsigned int
     status = False;
 
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int
     (*method)(Image **,const int,char **) = 0;
 
@@ -251,7 +459,7 @@ MagickExport unsigned int ExecuteModuleProcess(const char *tag,
   ARG_NOT_USED(image);
   ARG_NOT_USED(argc);
   ARG_NOT_USED(argv);
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
   return(status);
 }
 
@@ -278,14 +486,18 @@ RegisterStaticModules() statically registers all the available module
 */
 MagickExport void RegisterStaticModules(void)
 {
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int index;
 
-  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+  for (index=0; index < ArraySize(StaticModules); index++)
     {
-      (StaticModules[index].register_fn)();
+      if (StaticModules[index].loaded == MagickFalse)
+        {
+          (StaticModules[index].register_fn)();
+          StaticModules[index].loaded = MagickTrue;
+        }
     }
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
 }
 
 /*
@@ -310,12 +522,16 @@ MagickExport void RegisterStaticModules(void)
 */
 MagickExport void UnregisterStaticModules(void)
 {
-#if !defined(BuildMagickModules)
+#if !defined(SupportMagickModules)
   unsigned int index;
 
-  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+  for (index=0; index < ArraySize(StaticModules);index++)
     {
-      (StaticModules[index].unregister_fn)();
+      if (StaticModules[index].loaded == MagickTrue)
+        {
+          (StaticModules[index].unregister_fn)();
+          StaticModules[index].loaded = MagickFalse;
+        }
     }
-#endif /* !defined(BuildMagickModules) */
+#endif /* !defined(SupportMagickModules) */
 }

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -825,6 +825,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               use_scaling;
 
             unsigned long
+              max_value_given_bits,
               row_count=0;
 
             ThreadViewDataSet
@@ -854,8 +855,20 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             quantum_type=UndefinedQuantum;
             import_options.grayscale_miniswhite=MagickFalse;
-            sample_max=RoundDoubleToQuantum((MaxRGBDouble*max_value)/
-                                            MaxValueGivenBits(bits_per_sample));
+            max_value_given_bits=MaxValueGivenBits(bits_per_sample);
+            if (max_value_given_bits == 0UL)
+              {
+                ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                               image->filename);
+                break;
+              }
+            sample_max=RoundDoubleToQuantum((MaxRGBDouble*max_value)/max_value_given_bits);
+            if (sample_max == 0U)
+              {
+                ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                               image->filename);
+                break;
+              }
             sample_scale=MaxRGBDouble/sample_max;
             use_scaling=(MaxRGB != sample_max);
             bytes_per_row=0;
@@ -1366,6 +1379,9 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
     scene,
     status;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -1373,6 +1389,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -2145,7 +2162,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
         break;
       image=SyncNextImageInList(image);
       if (status != MagickFail)
-        status=MagickMonitorFormatted(scene++,GetImageListLength(image),
+        status=MagickMonitorFormatted(scene++,image_list_length,
                                       &image->exception,SaveImagesText,
                                       image->filename);
       if (status == MagickFail)

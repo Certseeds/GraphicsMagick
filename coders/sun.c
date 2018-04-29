@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -549,10 +549,11 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         const magick_off_t current_offset = TellBlob(image);
         if ((file_size > 0) &&
             (current_offset > 0) &&
-            (file_size > current_offset))
+            (file_size >= current_offset))
         {
           const magick_off_t remaining = file_size-current_offset;
-          if (remaining < (magick_off_t) sun_data_length)
+
+          if ((remaining == 0) || (remaining < (magick_off_t) sun_data_length))
             {
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }
@@ -876,6 +877,9 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
     number_pixels,
     scene;
 
+  size_t
+    image_list_length;
+
   /*
     Open output image file.
   */
@@ -883,6 +887,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1107,7 +1112,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    if (!MagickMonitorFormatted(scene++,GetImageListLength(image),
+    if (!MagickMonitorFormatted(scene++,image_list_length,
                                 &image->exception,SaveImagesText,
                                 image->filename))
       break;

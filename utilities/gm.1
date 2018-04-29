@@ -1,4 +1,4 @@
-.TH gm 1 "2017/12/30" "GraphicsMagick"
+.TH gm 1 "2018/04/28" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1331,6 +1331,17 @@ are not.
 If the pcl:fit-to-page flag is defined, then the printer is
 requested to scale the image to fit the page size (width and/or
 height).
+.in 15
+.in 15
+.B "mng:maximum-loops=<value>"
+.in 20
+ \fR
+.in 20
+mng:maximum-loops specifies the maximum number of loops allowed to
+be specified by a MNG LOOP chunk. Without an imposed limit, a MNG file
+could request up to 2147483647 loops, which could run for a very long
+time.  The current default limit is 512 loops.
+
 .in 15
 .in 15
 .B "pdf:use-cropbox={true|false}"

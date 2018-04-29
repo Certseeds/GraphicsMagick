@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2851,6 +2851,7 @@ static MagickPassFail IsDCM(const unsigned char *magick,const size_t length)
 
 static MagickPassFail DCM_InitDCM(DicomStream *dcm,int verbose)
 {
+  (void) memset(dcm,0,sizeof(*dcm));
   dcm->columns=0;
   dcm->rows=0;
   dcm->samples_per_pixel=1;
@@ -2889,6 +2890,16 @@ static MagickPassFail DCM_InitDCM(DicomStream *dcm,int verbose)
   dcm->verbose=verbose;
 
   return MagickPass;
+}
+
+static void DCM_DestroyDCM(DicomStream *dcm)
+{
+  MagickFreeMemory(dcm->offset_arr);
+  MagickFreeMemory(dcm->data);
+#if defined(USE_GRAYMAP)
+  MagickFreeMemory(dcm->graymap);
+#endif
+  MagickFreeMemory(dcm->rescale_map);
 }
 
 /*
@@ -3110,9 +3121,18 @@ static MagickPassFail funcDCM_BitsStored(Image *image,DicomStream *dcm,Exception
 
   dcm->significant_bits=dcm->datum;
   dcm->bytes_per_pixel=1;
+  if ((dcm->significant_bits == 0U) || (dcm->significant_bits > 16U))
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "DICOM significant_bits = %u",
+                              dcm->significant_bits);
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      return MagickFail;
+    }
   if (dcm->significant_bits > 8)
     dcm->bytes_per_pixel=2;
-  dcm->max_value_in=(1 << dcm->significant_bits)-1;
+  dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
   dcm->max_value_out=dcm->max_value_in;
   image->depth=Min(dcm->significant_bits,QuantumDepth);
   return MagickPass;
@@ -3345,9 +3365,9 @@ static MagickPassFail funcDCM_Palette(Image *image,DicomStream *dcm,ExceptionInf
   for (i=0; i < (long) image->colors; i++)
     {
       if (dcm->msb_state == DCM_MSB_BIG)
-        index=(*p << 8) | *(p+1);
+        index=((unsigned short) *p << 8) | (unsigned short) *(p+1);
       else
-        index=*p | (*(p+1) << 8);
+        index=(unsigned short) *p | ((unsigned short) *(p+1) << 8);
       if (dcm->element == 0x1201)
         image->colormap[i].red=ScaleShortToQuantum(index);
       else if (dcm->element == 0x1202)
@@ -3408,7 +3428,8 @@ static magick_uint8_t DCM_RLE_ReadByte(Image *image, DicomStream *dcm)
 
 static magick_uint16_t DCM_RLE_ReadShort(Image *image, DicomStream *dcm)
 {
-  return (DCM_RLE_ReadByte(image,dcm) << 4) | DCM_RLE_ReadByte(image,dcm);
+  return (((magick_uint16_t) DCM_RLE_ReadByte(image,dcm) << 4) |
+          (magick_uint16_t) DCM_RLE_ReadByte(image,dcm));
 }
 
 static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionInfo *exception)
@@ -3774,6 +3795,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
+      (void) memset(dcm->rescale_map,0,(size_t) dcm->max_value_in+1*sizeof(Quantum));
     }
 
   if (dcm->window_width == 0)
@@ -3803,7 +3825,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
   Xw_max = win_center - 0.5 + ((win_width-1)/2);
   for (i=0; i < (dcm->max_value_in+1); i++)
     {
-      if ((dcm->pixel_representation == 1) && (i >= (1U << (dcm->significant_bits-1))))
+      if ((dcm->pixel_representation == 1) && (i >= MaxValueGivenBits(dcm->significant_bits)))
         Xr = -((dcm->max_value_in+1-i) * dcm->rescale_slope) + dcm->rescale_intercept;
       else
         Xr = (i * dcm->rescale_slope) + dcm->rescale_intercept;
@@ -3882,6 +3904,16 @@ void DCM_SetRescaling(DicomStream *dcm,int avoid_scaling)
   dcm->rescaling=DCM_RS_PRE;
 }
 
+#if 0
+/*
+  FIXME: This code is totally broken since DCM_SetupRescaleMap
+  populates dcm->rescale_map and dcm->rescale_map has
+  dcm->max_value_in+1 entries, which has nothing to do with the number
+  of colormap entries or the range of MaxRGB.
+
+  Disabling this whole function and code invoking it until someone
+  figures it out.
+*/
 static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigned long ScanLimits,ExceptionInfo *exception)
 {
   unsigned long
@@ -3952,7 +3984,8 @@ static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigne
         }
     }
 
-  DCM_SetupRescaleMap(image,dcm,exception);
+  if (DCM_SetupRescaleMap(image,dcm,exception) == MagickFail)
+    return MagickFail;
   for (y=0; y < image->rows; y++)
     {
       q=GetImagePixels(image,0,y,image->columns,1);
@@ -3990,6 +4023,7 @@ static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigne
     }
   return MagickPass;
 }
+#endif
 
 static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
@@ -4012,6 +4046,10 @@ static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,Excepti
     byte;
 
   byte=0;
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Palette image...");
 
   for (y=0; y < (long) image->rows; y++)
     {
@@ -4117,6 +4155,10 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
   unsigned char
     byte;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Grayscale image...");
+
   dcm->lower_lim = dcm->max_value_in;
   dcm->upper_lim = -(dcm->lower_lim);
   byte=0;
@@ -4187,7 +4229,8 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
           else
             indexes[x]=index;
 #else
-          if (dcm->rescaling == DCM_RS_PRE)
+          if ((dcm->rescaling == DCM_RS_PRE) &&
+              (dcm->rescale_map != (Quantum *) NULL))
             index=dcm->rescale_map[index];
           q->red=index;
           q->green=index;
@@ -4222,13 +4265,22 @@ static MagickPassFail DCM_ReadPlanarRGBImage(Image *image,DicomStream *dcm,Excep
   register PixelPacket
     *q;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading Planar RGB %s compressed image with %u planes...",
+                          (dcm->transfer_syntax == DCM_TS_RLE ? "RLE" : "not"),
+                          dcm->samples_per_pixel);
+
   for (plane=0; plane < dcm->samples_per_pixel; plane++)
     {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  Plane %lu...",plane);
       for (y=0; y < image->rows; y++)
         {
           q=GetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
-            return MagickFail;
+              return MagickFail;
 
           for (x=0; x < image->columns; x++)
             {
@@ -4297,6 +4349,10 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
   green=0;
   blue=0;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading RGB image...");
+
   for (y=0; y < image->rows; y++)
     {
       q=GetImagePixels(image,0,y,image->columns,1);
@@ -4339,7 +4395,8 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
           red&=dcm->max_value_in;
           green&=dcm->max_value_in;
           blue&=dcm->max_value_in;
-          if (dcm->rescaling == DCM_RS_PRE)
+          if ((dcm->rescaling == DCM_RS_PRE) &&
+              (dcm->rescale_map != (Quantum *) NULL))
             {
               red=dcm->rescale_map[red];
               green=dcm->rescale_map[green];
@@ -4376,7 +4433,8 @@ static MagickPassFail DCM_ReadOffsetTable(Image *image,DicomStream *dcm,Exceptio
     length,
     i;
 
-  tag=(dcm->funcReadShort(image) << 16) | dcm->funcReadShort(image);
+  tag=((magick_uint32_t) dcm->funcReadShort(image) << 16) |
+    (magick_uint32_t) dcm->funcReadShort(image);
   length=dcm->funcReadLong(image);
   if (tag != 0xFFFEE000)
     return MagickFail;
@@ -4476,7 +4534,8 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
           /*
             Read fragment tag
           */
-          tag=(dcm->funcReadShort(*image) << 16) | dcm->funcReadShort(*image);
+          tag=(((magick_uint32_t) dcm->funcReadShort(*image) << 16) |
+               (magick_uint32_t) dcm->funcReadShort(*image));
           length=dcm->funcReadLong(*image);
           if (EOFBlob(*image))
             {
@@ -4561,9 +4620,9 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
                 dcm->bytes_per_pixel=1;
                 if (dcm->significant_bits > 8)
                   dcm->bytes_per_pixel=2;
-                dcm->max_value_in=(1 << dcm->significant_bits)-1;
+                dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
                 dcm->max_value_out=dcm->max_value_in;
-                status=DCM_PostRescaleImage(next_image,dcm,True,exception);
+                /*status=DCM_PostRescaleImage(next_image,dcm,True,exception);*/
               }
           if (status == MagickPass)
             {
@@ -4574,11 +4633,33 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
               else
                 AppendImageToList(&image_list,next_image);
             }
+          else if (next_image != (Image *) NULL)
+            {
+              DestroyImage(next_image);
+              next_image=(Image *) NULL;
+            }
         }
       (void) LiberateTemporaryFile(filename);
+
+      if (status == MagickFail)
+        break;
     }
-  DestroyImage(*image);
-  *image=image_list;
+  if (EOFBlob(*image))
+    {
+      status = MagickFail;
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
+    }
+
+  if (status == MagickFail)
+    {
+      DestroyImageList(image_list);
+      image_list = (Image *) NULL;
+    }
+  else
+    {
+      DestroyImage(*image);
+      *image=image_list;
+    }
   return status;
 }
 
@@ -4613,6 +4694,11 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
 %
 %
 */
+#define ThrowDCMReaderException(code_,reason_,image_)   \
+  {                                                     \
+    DCM_DestroyDCM(&dcm);                               \
+    ThrowReaderException(code_,reason_,image_);         \
+}
 static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   char
@@ -4640,18 +4726,19 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  (void) DCM_InitDCM(&dcm,image_info->verbose);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    ThrowDCMReaderException(FileOpenError,UnableToOpenFile,image);
 
   /*
     Read DCM preamble
   */
   if ((count=ReadBlob(image,128,(char *) magick)) != 128)
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if ((count=ReadBlob(image,4,(char *) magick)) != 4)
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+    ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "magick: \"%.4s\"",magick);
@@ -4661,7 +4748,6 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Loop to read DCM image header one element at a time
   */
-  (void) DCM_InitDCM(&dcm,image_info->verbose);
   status=DCM_ReadElement(image,&dcm,exception);
   while ((status == MagickPass) && ((dcm.group != 0x7FE0) || (dcm.element != 0x0010)))
     {
@@ -4689,31 +4775,44 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Now process the image data
   */
   if (status == MagickFail)
-    ;
-  else
-    if ((dcm.columns == 0) || (dcm.rows == 0))
-      {
-        ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
-        status=MagickFail;
-      }
-    else if ((dcm.transfer_syntax != DCM_TS_IMPL_LITTLE) &&
-             (dcm.transfer_syntax != DCM_TS_EXPL_LITTLE) &&
-             (dcm.transfer_syntax != DCM_TS_EXPL_BIG) &&
-             (dcm.transfer_syntax != DCM_TS_RLE))
-      {
-        status=DCM_ReadNonNativeImages(&image,image_info,&dcm,exception);
-        dcm.number_scenes=0;
-      }
-    else if (dcm.rescaling != DCM_RS_POST)
-      {
-        status=DCM_SetupRescaleMap(image,&dcm,exception);
-      }
+    goto dcm_read_failure;
+
+  if ((dcm.columns == 0) || (dcm.rows == 0))
+    {
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      status=MagickFail;
+    }
+  else if ((dcm.samples_per_pixel == 0) || (dcm.samples_per_pixel > 4))
+    {
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      status=MagickFail;
+    }
+  else if ((dcm.transfer_syntax != DCM_TS_IMPL_LITTLE) &&
+           (dcm.transfer_syntax != DCM_TS_EXPL_LITTLE) &&
+           (dcm.transfer_syntax != DCM_TS_EXPL_BIG) &&
+           (dcm.transfer_syntax != DCM_TS_RLE))
+    {
+      status=DCM_ReadNonNativeImages(&image,image_info,&dcm,exception);
+      dcm.number_scenes=0;
+    }
+  else if (dcm.rescaling != DCM_RS_POST)
+    {
+      status=DCM_SetupRescaleMap(image,&dcm,exception);
+    }
+
+  if (status == MagickFail)
+    goto dcm_read_failure;
 
   if (dcm.transfer_syntax == DCM_TS_RLE)
     status=DCM_ReadOffsetTable(image,&dcm,exception);
 
   /* Loop to process all scenes in image */
-  if (status == MagickFail) dcm.number_scenes = 0;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "DICOM has %d scenes", dcm.number_scenes);
+  if (status == MagickFail)
+    goto dcm_read_failure;
+
   for (scene=0; scene < (long) dcm.number_scenes; scene++)
     {
       if (dcm.transfer_syntax == DCM_TS_RLE)
@@ -4729,14 +4828,15 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             SeekBlob(image,dcm.frag_bytes,SEEK_CUR);
 
           /*
-           Read fragment tag
+            Read fragment tag
           */
-          tag=(dcm.funcReadShort(image) << 16) | dcm.funcReadShort(image);
+          tag=(((magick_uint32_t) dcm.funcReadShort(image)) << 16) |
+            (magick_uint32_t) dcm.funcReadShort(image);
           length=dcm.funcReadLong(image);
           if ((tag != 0xFFFEE000) || (length <= 64) || EOFBlob(image))
             {
               status=MagickFail;
-              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
               break;
             }
 
@@ -4756,7 +4856,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (EOFBlob(image))
             {
               status=MagickFail;
-              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+              ThrowDCMReaderException(CorruptImageError,UnexpectedEndOfFile,image);
               break;
             }
           if (dcm.rle_seg_ct > 1)
@@ -4773,6 +4873,9 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->columns=dcm.columns;
       image->rows=dcm.rows;
       image->interlace=(dcm.interlace==1)?PlaneInterlace:NoInterlace;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Scene[%d]: %lux%lu", scene, image->columns, image->rows);
 #if defined(GRAYSCALE_USES_PALETTE)
       if ((image->colormap == (PixelPacket *) NULL) && (dcm.samples_per_pixel == 1))
 #else
@@ -4787,7 +4890,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
 
       if (CheckImagePixelLimits(image, exception) != MagickPass)
-        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+        ThrowDCMReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
       /*
         Process image according to type
@@ -4813,15 +4916,23 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ((dcm.phot_interp == DCM_PI_MONOCHROME1) ||
            (dcm.phot_interp == DCM_PI_MONOCHROME2)))
         {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Normalizing image channels...");
           NormalizeImage(image);
         }
       else
-        if (dcm.rescaling == DCM_RS_POST)
-          {
-            status = DCM_PostRescaleImage(image,&dcm,False,exception);
-            if (status != MagickPass)
-              break;
-          }
+        {
+          if (dcm.rescaling == DCM_RS_POST)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Rescaling image channels...");
+              /*status = DCM_PostRescaleImage(image,&dcm,False,exception);
+                if (status != MagickPass)
+                break;*/
+            }
+        }
 
       /*
         Proceed to next image.
@@ -4852,17 +4963,8 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Free allocated resources
   */
-
-  if (dcm.offset_arr != NULL)
-    MagickFreeMemory(dcm.offset_arr);
-  if (dcm.data != NULL)
-    MagickFreeMemory(dcm.data);
-#if defined(USE_GRAYMAP)
-  if (dcm.graymap != (unsigned short *) NULL)
-    MagickFreeMemory(dcm.graymap);
-#endif
-  if (dcm.rescale_map != (Quantum *) NULL)
-    MagickFreeMemory(dcm.rescale_map);
+ dcm_read_failure:
+  DCM_DestroyDCM(&dcm);
   if (status == MagickPass)
     {
       /* It is possible to have success status yet have no image */

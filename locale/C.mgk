@@ -26,6 +26,9 @@
       <Message name="UnrecognizedImageFormat">
         Unrecognized image format
       </Message>
+      <Message name="UnableToDeduceImageFormat">
+        Unable to deduce image format
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
@@ -45,6 +48,9 @@
       </Message>
       <Message name="PixelCacheIsNotOpen">
         Pixel cache is not open
+      </Message>
+      <Message name="PixelCacheDimensionsMisMatch">
+        Pixel cache dimensions incompatible with image dimensions
       </Message>
       <Message name="UnableToAllocateCacheView">
         Unable to allocate cache view
@@ -326,6 +332,12 @@
       </Message>
       <Message name="UnsupportedBitsPerSample">
         Unsupported bits per sample
+      </Message>
+      <Message name="ArithmeticOverflow">
+        Arithmetic overflow
+      </Message>
+      <Message name="DivisionByZero">
+        Division by zero
       </Message>
     </Error>
     <FatalError>
@@ -798,6 +810,12 @@
       </Message>
       <Message name="UnableToSetClipMask">
         Unable to set clip mask
+      </Message>
+      <Message name="UnableToGetCompositeMask">
+        Unable to get composite mask
+      </Message>
+      <Message name="UnableToSetCompositeMask">
+        Unable to set composite mask
       </Message>
       <Message name="UnableToShearImage">
         unable to shear image

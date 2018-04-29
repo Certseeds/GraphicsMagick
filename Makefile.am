@@ -95,6 +95,8 @@ XFAIL_TESTS = \
 # should want to concatenate them.
 CHANGELOGS = \
 	ChangeLog \
+	ChangeLog.2017 \
+	ChangeLog.2016 \
 	ChangeLog.2015 \
 	ChangeLog.2014 \
 	ChangeLog.2013 \
@@ -368,6 +370,8 @@ SNAPSHOT_DIRECTORY=/ftp/pub/GraphicsMagick/snapshots
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
+	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
 	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
@@ -376,6 +380,7 @@ COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz
 COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
+# New URL is https://brb.synopsys.com/?project=GraphicsMagick
 coverity:
 	$(MAKE) clean
 	cov-build --dir cov-int $(MAKE)

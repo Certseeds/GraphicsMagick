@@ -39,16 +39,17 @@
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#clonedrawinfo" id="id11">CloneDrawInfo</a></li>
-<li><a class="reference internal" href="#destroydrawinfo" id="id12">DestroyDrawInfo</a></li>
-<li><a class="reference internal" href="#drawaffineimage" id="id13">DrawAffineImage</a></li>
-<li><a class="reference internal" href="#drawclippath" id="id14">DrawClipPath</a></li>
-<li><a class="reference internal" href="#drawimage" id="id15">DrawImage</a></li>
-<li><a class="reference internal" href="#drawpatternpath" id="id16">DrawPatternPath</a></li>
+<li><a class="reference internal" href="#clonedrawinfo" id="id13">CloneDrawInfo</a></li>
+<li><a class="reference internal" href="#destroydrawinfo" id="id14">DestroyDrawInfo</a></li>
+<li><a class="reference internal" href="#drawaffineimage" id="id15">DrawAffineImage</a></li>
+<li><a class="reference internal" href="#drawclippath" id="id16">DrawClipPath</a></li>
+<li><a class="reference internal" href="#drawcompositemask" id="id17">DrawCompositeMask</a></li>
+<li><a class="reference internal" href="#drawimage" id="id18">DrawImage</a></li>
+<li><a class="reference internal" href="#drawpatternpath" id="id19">DrawPatternPath</a></li>
 </ul>
 </div>
 <div class="section" id="clonedrawinfo">
-<h1><a class="toc-backref" href="#id11">CloneDrawInfo</a></h1>
+<h1><a class="toc-backref" href="#id13">CloneDrawInfo</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">
@@ -73,7 +74,7 @@ default values.</p>
 </div>
 </div>
 <div class="section" id="destroydrawinfo">
-<h1><a class="toc-backref" href="#id12">DestroyDrawInfo</a></h1>
+<h1><a class="toc-backref" href="#id14">DestroyDrawInfo</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">
@@ -96,7 +97,7 @@ void DestroyDrawInfo( <a class="reference external" href="../api/types.html#draw
 </div>
 </div>
 <div class="section" id="drawaffineimage">
-<h1><a class="toc-backref" href="#id13">DrawAffineImage</a></h1>
+<h1><a class="toc-backref" href="#id15">DrawAffineImage</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">
@@ -124,7 +125,7 @@ unsigned int DrawAffineImage( <a class="reference external" href="../api/types.h
 </div>
 </div>
 <div class="section" id="drawclippath">
-<h1><a class="toc-backref" href="#id14">DrawClipPath</a></h1>
+<h1><a class="toc-backref" href="#id16">DrawClipPath</a></h1>
 <div class="section" id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">
@@ -150,15 +151,42 @@ MagickPassFail DrawClipPath( <a class="reference external" href="../api/types.ht
 </dl>
 </div>
 </div>
-<div class="section" id="drawimage">
-<h1><a class="toc-backref" href="#id15">DrawImage</a></h1>
+<div class="section" id="drawcompositemask">
+<h1><a class="toc-backref" href="#id17">DrawCompositeMask</a></h1>
 <div class="section" id="id7">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+MagickPassFail DrawCompositeMask( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
+                                  const char *name );
+</pre>
+</div>
+<div class="section" id="id8">
+<h2>Description</h2>
+<p>DrawCompositeMask() draws the composite mask on the image mask.</p>
+<p>The format of the DrawCompositeMask method is:</p>
+<pre class="literal-block">
+MagickPassFail DrawCompositeMask( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
+                                  const char *name );
+</pre>
+<dl class="docutils">
+<dt>image:</dt>
+<dd>The image.</dd>
+<dt>draw_info:</dt>
+<dd>The draw info.</dd>
+<dt>name:</dt>
+<dd>The name of the composite mask.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="drawimage">
+<h1><a class="toc-backref" href="#id18">DrawImage</a></h1>
+<div class="section" id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">
 MagickPassFail DrawImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
 </pre>
 </div>
-<div class="section" id="id8">
+<div class="section" id="id10">
 <h2>Description</h2>
 <p>Use DrawImage() to draw a graphic primitive on your image.  The primitive
 may be represented as a string or filename.  Precede the filename with an
@@ -182,15 +210,15 @@ MagickPassFail DrawImage( <a class="reference external" href="../api/types.html#
 </div>
 </div>
 <div class="section" id="drawpatternpath">
-<h1><a class="toc-backref" href="#id16">DrawPatternPath</a></h1>
-<div class="section" id="id9">
+<h1><a class="toc-backref" href="#id19">DrawPatternPath</a></h1>
+<div class="section" id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">
 MagickPassFail DrawPatternPath( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
                                 const char *name, <a class="reference external" href="../api/types.html#image">Image</a> ** pattern );
 </pre>
 </div>
-<div class="section" id="id10">
+<div class="section" id="id12">
 <h2>Description</h2>
 <p>DrawPatternPath() draws a pattern.</p>
 <p>The format of the DrawPatternPath method is:</p>

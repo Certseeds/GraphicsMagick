@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -904,11 +904,13 @@ MagickExport void DrawCircle(DrawContext context, const double ox,
 */
 MagickExport char *DrawGetClipPath(DrawContext context)
 {
+  char * pClipPath;
   assert(context != (DrawContext)NULL);
   assert(context->signature == MagickSignature);
 
-  if (CurrentContext->clip_path != (char *) NULL)
-    return (char *)AllocateString(CurrentContext->clip_path);
+  pClipPath = *DrawInfoGetClipPath(CurrentContext);
+  if (pClipPath != (char *) NULL)
+    return (char *)AllocateString(pClipPath);
   else
     return (char *) NULL;
 }
@@ -941,20 +943,22 @@ MagickExport char *DrawGetClipPath(DrawContext context)
 */
 MagickExport void DrawSetClipPath(DrawContext context, const char *clip_path)
 {
+  char ** ppClipPath,*pClipPath;
   assert(context != (DrawContext)NULL);
   assert(context->signature == MagickSignature);
   assert(clip_path != (const char *) NULL);
 
-  if( CurrentContext->clip_path == NULL || context->filter_off ||
-      LocaleCompare(CurrentContext->clip_path,clip_path) != 0)
+  pClipPath = *(ppClipPath = DrawInfoGetClipPath(CurrentContext));
+  if( pClipPath == NULL || context->filter_off ||
+      LocaleCompare(pClipPath,clip_path) != 0)
     {
-      (void) CloneString(&CurrentContext->clip_path,clip_path);
-      if(CurrentContext->clip_path == (char*)NULL)
+      (void) CloneString(ppClipPath,clip_path);
+      if(*ppClipPath == (char*)NULL)
         ThrowDrawException3(ResourceLimitError,MemoryAllocationFailed,
           UnableToDrawOnImage);
 
 #if DRAW_BINARY_IMPLEMENTATION
-      (void) DrawClipPath(context->image,CurrentContext,CurrentContext->clip_path);
+      (void) DrawClipPath(context->image,CurrentContext,pClipPath);
 #endif
 
       (void) MvgPrintf(context, "clip-path url(#%s)\n", clip_path);
@@ -2602,7 +2606,7 @@ MagickExport void DrawPathClose(DrawContext context)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToAbsolute() draws a cubic Bézier curve from the current
+%  DrawPathCurveToAbsolute() draws a cubic Bezier curve from the current
 %  point to (x,y) using (x1,y1) as the control point at the beginning of
 %  the curve and (x2,y2) as the control point at the end of the curve using
 %  absolute coordinates. At the end of the command, the new current point
@@ -2676,7 +2680,7 @@ MagickExport void DrawPathCurveToAbsolute(DrawContext context,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToRelative() draws a cubic Bézier curve from the current
+%  DrawPathCurveToRelative() draws a cubic Bezier curve from the current
 %  point to (x,y) using (x1,y1) as the control point at the beginning of
 %  the curve and (x2,y2) as the control point at the end of the curve using
 %  relative coordinates. At the end of the command, the new current point
@@ -2728,7 +2732,7 @@ MagickExport void DrawPathCurveToRelative(DrawContext context,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToQuadraticBezierAbsolute() draws a quadratic Bézier curve
+%  DrawPathCurveToQuadraticBezierAbsolute() draws a quadratic Bezier curve
 %  from the current point to (x,y) using (x1,y1) as the control point using
 %  absolute coordinates. At the end of the command, the new current point
 %  becomes the final (x,y) coordinate pair used in the polybezier.
@@ -2796,7 +2800,7 @@ MagickExport void DrawPathCurveToQuadraticBezierAbsolute(DrawContext context,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToQuadraticBezierRelative() draws a quadratic Bézier curve
+%  DrawPathCurveToQuadraticBezierRelative() draws a quadratic Bezier curve
 %  from the current point to (x,y) using (x1,y1) as the control point using
 %  relative coordinates. At the end of the command, the new current point
 %  becomes the final (x,y) coordinate pair used in the polybezier.
@@ -2846,7 +2850,7 @@ MagickExport void DrawPathCurveToQuadraticBezierRelative(DrawContext context,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DrawPathCurveToQuadraticBezierSmoothAbsolute() draws a quadratic
-%  Bézier curve (using absolute coordinates) from the current point to
+%  Bezier curve (using absolute coordinates) from the current point to
 %  (x,y). The control point is assumed to be the reflection of the
 %  control point on the previous command relative to the current
 %  point. (If there is no previous command or if the previous command was
@@ -2915,7 +2919,7 @@ MagickExport void DrawPathCurveToQuadraticBezierSmoothAbsolute(DrawContext
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DrawPathCurveToQuadraticBezierSmoothAbsolute() draws a quadratic
-%  Bézier curve (using relative coordinates) from the current point to
+%  Bezier curve (using relative coordinates) from the current point to
 %  (x,y). The control point is assumed to be the reflection of the
 %  control point on the previous command relative to the current
 %  point. (If there is no previous command or if the previous command was
@@ -2963,7 +2967,7 @@ MagickExport void DrawPathCurveToQuadraticBezierSmoothRelative(DrawContext
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToSmoothAbsolute() draws a cubic Bézier curve from the
+%  DrawPathCurveToSmoothAbsolute() draws a cubic Bezier curve from the
 %  current point to (x,y) using absolute coordinates. The first control
 %  point is assumed to be the reflection of the second control point on
 %  the previous command relative to the current point. (If there is no
@@ -3034,7 +3038,7 @@ MagickExport void DrawPathCurveToSmoothAbsolute(DrawContext context,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DrawPathCurveToSmoothRelative() draws a cubic Bézier curve from the
+%  DrawPathCurveToSmoothRelative() draws a cubic Bezier curve from the
 %  current point to (x,y) using relative coordinates. The first control
 %  point is assumed to be the reflection of the second control point on
 %  the previous command relative to the current point. (If there is no
@@ -3902,9 +3906,10 @@ MagickExport void DrawPopGraphicContext(DrawContext context)
     {
       /* Destroy clip path if not same in preceding context */
 #if DRAW_BINARY_IMPLEMENTATION
-      if (CurrentContext->clip_path != (char *) NULL)
-        if (LocaleCompare(CurrentContext->clip_path,
-                          context->graphic_context[context->index-1]->clip_path) != 0)
+      char * pClipPathCurrent = *DrawInfoGetClipPath(CurrentContext);
+      char * pClipPathPrevious = *DrawInfoGetClipPath(context->graphic_context[context->index-1]);
+      if (pClipPathCurrent != (char *) NULL)
+        if (LocaleCompare(pClipPathCurrent,pClipPathPrevious) != 0)
           (void) SetImageClipMask(context->image,(Image *) NULL);
 #endif
 
@@ -4810,12 +4815,15 @@ MagickExport double *DrawGetStrokeDashArray(DrawContext context,
   if (n != 0)
     {
       dasharray = MagickAllocateArray(double *, n+1, sizeof(double));
-      p = CurrentContext->dash_pattern;
-      q = dasharray;
-      i = n;
-      while( i-- )
-        *q++ = *p++;
-      *q=0.0;
+      if (dasharray != (double*)NULL)
+        {
+          p = CurrentContext->dash_pattern;
+          q = dasharray;
+          i = n;
+          while( i-- )
+            *q++ = *p++;
+          *q=0.0;
+        }
     }
   return dasharray;
 }

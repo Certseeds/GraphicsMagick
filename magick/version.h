@@ -35,11 +35,11 @@ extern "C" {
 */
 #define MagickPackageName "GraphicsMagick"
 #define MagickCopyright  "Copyright (C) 2002-2018 GraphicsMagick Group.\nAdditional copyrights and licenses apply to this software.\nSee http://www.GraphicsMagick.org/www/Copyright.html for details."
-#define MagickLibVersion  0x201702
-#define MagickLibVersionText  "1.3.28"
-#define MagickLibVersionNumber 20,17,2
-#define MagickChangeDate   "20180120"
-#define MagickReleaseDate  "2018-01-20"
+#define MagickLibVersion  0x211800
+#define MagickLibVersionText  "1.3.29"
+#define MagickLibVersionNumber 21,18,0
+#define MagickChangeDate   "20180429"
+#define MagickReleaseDate  "2018-04-29"
 	
 /*
   The MagickLibInterfaceNewest and MagickLibInterfaceOldest defines
@@ -54,7 +54,7 @@ extern "C" {
   MagickLibVersionNumber, but these are broken out and simplified so
   that they can be easily used in C pre-processor logic.
 */
-#define MagickLibInterfaceNewest 20
+#define MagickLibInterfaceNewest 21
 #define MagickLibInterfaceOldest 3
 
 #if (QuantumDepth == 8)

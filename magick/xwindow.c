@@ -1578,6 +1578,7 @@ MagickXClientMessage(Display *display,const Window window,
     client_event;
 
   assert(display != (Display *) NULL);
+  (void) memset(&client_event,0,sizeof(client_event));
   client_event.type=ClientMessage;
   client_event.window=window;
   client_event.message_type=protocol;
@@ -5799,13 +5800,25 @@ MagickXMakeImage(Display *display,
   if (!window->shared_memory)
     {
       if (ximage->format == XYBitmap)
-        ximage->data=
-          MagickAllocateArray(char *,
-                              MagickArraySize(ximage->height,ximage->bytes_per_line),
-                              ximage->depth);
+        {
+          ximage->data=
+            MagickAllocateArray(char *,
+                                MagickArraySize(ximage->height,
+                                                ximage->bytes_per_line),
+                                ximage->depth);
+          if (ximage->data != (char *) NULL)
+            (void) memset(ximage->data,0,
+                          (size_t) ximage->height*ximage->bytes_per_line*
+                          ximage->depth);
+        }
       else
-        ximage->data=
-          MagickAllocateArray(char *,ximage->height,ximage->bytes_per_line);
+        {
+          ximage->data=
+            MagickAllocateArray(char *,ximage->height,ximage->bytes_per_line);
+          if (ximage->data != (char *) NULL)
+            (void) memset(ximage->data,0,
+                          (size_t) ximage->height*ximage->bytes_per_line);
+        }
     }
   if (ximage->data == (char *) NULL)
     {

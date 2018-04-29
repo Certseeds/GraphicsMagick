@@ -144,7 +144,7 @@ static Image *ReadWBMPImage(const ImageInfo *image_info,
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
-  if (!ReadBlob(image,2,(char *) &header))
+  if (ReadBlob(image,2,(char *) &header) != 2)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (header != 0U)
     ThrowReaderException(CoderError,OnlyLevelZerofilesSupported,image);

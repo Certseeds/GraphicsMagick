@@ -5090,6 +5090,46 @@ WandExport MagickPassFail MagickHaldClutImage(MagickWand *wand,const MagickWand 
 %                                                                             %
 %                                                                             %
 %                                                                             %
+%   M a g i c k H a s C o l o r M a p                                         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickHasColormap() returns True if the check was successful with the
+%  colormap parameter set to a boolean value indicating whether the current
+%  wand image uses a color map or not. Returns False if there are no wand
+%  images available.
+%
+%  The format of the MagickHasColormap method is:
+%
+%      unsigned int MagickHasColormap(MagickWand *wand,
+%        unsigned int *colormap)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o colormap: Set to True if current image uses a color map, False if not.
+%
+*/
+WandExport unsigned int MagickHasColormap(MagickWand *wand,
+  unsigned int *colormap)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+
+  *colormap = (wand->image->storage_class == PseudoClass ? True : False);
+  return(True);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 %   M a g i c k H a s N e x t I m a g e                                       %
 %                                                                             %
 %                                                                             %
@@ -5195,6 +5235,177 @@ WandExport unsigned int MagickImplodeImage(MagickWand *wand,const double amount)
   ReplaceImageInList(&wand->image,implode_image);
   wand->images=GetFirstImageInList(wand->image);
   return(True);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k I s G r a y I m a g e                                         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickIsGrayImage() returns True if the check was successful with the
+%  grayimage parameter set to a boolean value indicating whether the current
+%  wand image is a gray-scale image or not. Returns False if there was
+%  an error.
+%
+%  The format of the MagickIsGrayImage method is:
+%
+%      unsigned int MagickIsGrayImage(MagickWand *wand,
+%        unsigned int *grayimage)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o grayimage: Set to True if current image is a gray-scale image,
+%        False if not.
+%
+*/
+WandExport unsigned int MagickIsGrayImage(MagickWand *wand,
+  unsigned int *grayimage)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  assert(grayimage != (unsigned int *) NULL);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+  MagickClearException(wand);
+  *grayimage = IsGrayImage(wand->image, &wand->exception);
+  return (wand->exception.severity == UndefinedException);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k I s M o n o c h r o m e I m a g e                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickIsMonochromeImage() returns True if the check was successful with the
+%  monochrome parameter set to a boolean value indicating whether the current
+%  wand image is a monochrome image or not. Returns False if there was
+%  an error.
+%
+%  The format of the MagickIsMonochromeImage method is:
+%
+%      unsigned int MagickIsMonochromeImage(MagickWand *wand,
+%        unsigned int *monochrome)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o monochrome: Set to True if current image is a monochrome image,
+%        False if not.
+%
+*/
+WandExport unsigned int MagickIsMonochromeImage(MagickWand *wand,
+  unsigned int *monochrome)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  assert(monochrome != (unsigned int *) NULL);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+  MagickClearException(wand);
+  *monochrome = IsMonochromeImage(wand->image, &wand->exception);
+  return (wand->exception.severity == UndefinedException);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k I s O p a q u e I m a g e                                     %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickIsOpaqueImage() returns True if the check was successful with the
+%  opaque parameter set to a boolean value indicating whether the current
+%  wand image is entirely opaque or not. Returns False if there was
+%  an error.
+%
+%  The format of the MagickIsOpaqueImage method is:
+%
+%      unsigned int MagickIsOpaqueImage(MagickWand *wand,
+%        unsigned int *opaque)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o opaque: Set to True if current image is entirely opaque,
+%        False if not.
+%
+*/
+WandExport unsigned int MagickIsOpaqueImage(MagickWand *wand,
+  unsigned int *opaque)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  assert(opaque != (unsigned int *) NULL);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+  MagickClearException(wand);
+  *opaque = IsOpaqueImage(wand->image, &wand->exception);
+  return (wand->exception.severity == UndefinedException);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k I s P a l e t t e I m a g e                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickIsPaletteImage() returns True if the check was successful with the
+%  palette parameter set to a boolean value indicating whether the current
+%  wand image is an image with 256 unique colors or less. Returns False if
+%  there was an error. Note that a palette image does not necessarily use a
+%  colormap. See MagickHasColormap() if needing to determine whether a
+%  colormap is in use.
+%
+%
+%  The format of the MagickIsPaletteImage method is:
+%
+%      unsigned int MagickIsPaletteImage(MagickWand *wand,
+%        unsigned int *palette)
+%
+%  A description of each parameter follows:
+%
+%    o wand: The magick wand.
+%
+%    o palette: Set to True if current image is 256 colors or less,
+%        False if not.
+%
+*/
+WandExport unsigned int MagickIsPaletteImage(MagickWand *wand,
+  unsigned int *palette)
+{
+  assert(wand != (MagickWand *) NULL);
+  assert(wand->signature == MagickSignature);
+  assert(palette != (unsigned int *) NULL);
+  if (wand->images == (Image *) NULL)
+    ThrowWandException(WandError,WandContainsNoImages,wand->id);
+  MagickClearException(wand);
+  *palette = IsPaletteImage(wand->image, &wand->exception);
+  return (wand->exception.severity == UndefinedException);
 }
 
 /*

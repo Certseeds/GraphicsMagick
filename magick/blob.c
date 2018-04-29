@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -316,10 +316,22 @@ static void *ExtendBlobWriteStream(Image *image,const size_t length)
       /* In-memory Blob */
       blob->quantum<<=1;
       blob->extent+=length+blob->quantum;
+#if 0
+      if (image->logging)
+        (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                              "MagickReallocMemory blob->data=%p,"
+                              " blob->extent=%" MAGICK_SIZE_T_F "u",
+                              blob->data, (MAGICK_SIZE_T) blob->extent);
+#endif
       MagickReallocMemory(unsigned char *,blob->data,blob->extent+1);
       (void) SyncBlob(image);
       if (blob->data == (unsigned char *) NULL)
         {
+#if 0
+          if (image->logging)
+            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                  "MagickReallocMemory failed! Detatching Blob...");
+#endif
           DetachBlob(blob);
           return 0;
         }
@@ -699,7 +711,10 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
   assert(exception != (ExceptionInfo *) NULL);
 
   image=(Image *) NULL;
-  (void) LogMagickEvent(BlobEvent,GetMagickModule(), "Entering BlobToImage");
+  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                        "Entering BlobToImage: blob=%p,"
+                        " length=%" MAGICK_SIZE_T_F "u",
+                        blob, (MAGICK_SIZE_T) length);
   if ((blob == (const void *) NULL) || (length == 0))
     {
       ThrowException(exception,OptionError,NullBlobArgument,
@@ -717,9 +732,20 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
   */
   if (clone_info->magick[0] == '\0')
     (void) SetImageInfo(clone_info,SETMAGICK_READ,exception);
+  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                        "Blob magick=\"%s\"", clone_info->magick);
+  if (clone_info->magick[0] == '\0')
+    {
+      ThrowException(exception,BlobError,UnableToDeduceImageFormat,clone_info->filename);
+      DestroyImageInfo(clone_info);
+      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                            "Leaving BlobToImage");
+      return((Image *) NULL);
+    }
   magick_info=GetMagickInfo(clone_info->magick,exception);
   if (magick_info == (const MagickInfo *) NULL)
     {
+      ThrowException(exception,BlobError,UnrecognizedImageFormat,clone_info->filename);
       DestroyImageInfo(clone_info);
       (void) LogMagickEvent(BlobEvent,GetMagickModule(),
                             "Leaving BlobToImage");
@@ -2218,7 +2244,8 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
           return((void *) NULL);
         }
       /* Request to truncate memory allocation down to memory actually used. */
-      MagickReallocMemory(unsigned char *,image->blob->data,image->blob->length+1);
+      if (image->blob->length)
+        MagickReallocMemory(unsigned char *,image->blob->data,image->blob->length+1);
       /* Pass blob data and length to user parameters */
       blob=image->blob->data;
       *length=image->blob->length;
@@ -3447,6 +3474,9 @@ MagickExport double ReadBlobLSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
+  if (MAGICK_ISNAN(dbl_buffer.d))
+    dbl_buffer.d = 0.0;
+
   return (dbl_buffer.d);
 }
 
@@ -3485,6 +3515,7 @@ MagickExport double ReadBlobLSBDouble(Image * image)
 MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3496,6 +3527,10 @@ MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data
   if (octets_read >= sizeof(double))
     MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
+
+  for (i=0; i < octets_read/sizeof(double); i++)
+    if (MAGICK_ISNAN(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -3798,6 +3833,9 @@ MagickExport float ReadBlobLSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
+  if (MAGICK_ISNAN(flt_buffer.f))
+    flt_buffer.f = 0.0;
+
   return (flt_buffer.f);
 }
 
@@ -3836,6 +3874,7 @@ MagickExport float ReadBlobLSBFloat(Image * image)
 MagickExport size_t ReadBlobLSBFloats(Image *image, size_t octets, float *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3847,6 +3886,10 @@ MagickExport size_t ReadBlobLSBFloats(Image *image, size_t octets, float *data)
   if (octets_read >= sizeof(float))
     MagickSwabArrayOfFloat(data,(octets_read+sizeof(float)-1)/sizeof(float));
 #endif
+
+  for (i=0; i < octets_read/sizeof(float); i++)
+    if (MAGICK_ISNAN(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -3899,6 +3942,9 @@ MagickExport float ReadBlobMSBFloat(Image * image)
   MagickSwabFloat(&flt_buffer.f);
 #endif
 
+  if (MAGICK_ISNAN(flt_buffer.f))
+    flt_buffer.f = 0.0;
+
   return (flt_buffer.f);
 }
 
@@ -3937,6 +3983,7 @@ MagickExport float ReadBlobMSBFloat(Image * image)
 MagickExport size_t ReadBlobMSBFloats(Image *image, size_t octets, float *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -3948,6 +3995,10 @@ MagickExport size_t ReadBlobMSBFloats(Image *image, size_t octets, float *data)
   if (octets_read >= sizeof(float))
     MagickSwabArrayOfFloat(data,(octets_read+sizeof(float)-1)/sizeof(float));
 #endif
+
+  for (i=0; i < octets_read/sizeof(float); i++)
+    if (MAGICK_ISNAN(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -4000,6 +4051,9 @@ MagickExport double ReadBlobMSBDouble(Image * image)
   MagickSwabDouble(&dbl_buffer.d);
 #endif
 
+  if (MAGICK_ISNAN(dbl_buffer.d))
+    dbl_buffer.d = 0.0;
+
   return (dbl_buffer.d);
 }
 
@@ -4038,6 +4092,7 @@ MagickExport double ReadBlobMSBDouble(Image * image)
 MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data)
 {
   size_t
+    i,
     octets_read;
 
   assert(image != (Image *) NULL);
@@ -4049,6 +4104,10 @@ MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data
   if (octets_read > 0)
     MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
+
+  for (i=0; i < octets_read/sizeof(double); i++)
+    if (MAGICK_ISNAN(data[i]))
+      data[i] = 0.0;
 
   return octets_read;
 }
@@ -4441,84 +4500,72 @@ MagickExport BlobInfo *ReferenceBlob(BlobInfo *blob)
 %
 */
 MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
-  const int whence)
+                                   const int whence)
 {
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(image->blob != (BlobInfo *) NULL);
   assert(image->blob->type != UndefinedStream);
   switch (image->blob->type)
-  {
+    {
     case UndefinedStream:
       break;
     case FileStream:
-    {
-      if (MagickFseek(image->blob->handle.std,offset,whence) < 0)
-        return(-1);
-      image->blob->offset=TellBlob(image);
-      break;
-    }
+      {
+        if (MagickFseek(image->blob->handle.std,offset,whence) < 0)
+          return(-1);
+        image->blob->offset=TellBlob(image);
+        break;
+      }
     case StandardStream:
     case PipeStream:
       return(-1);
     case ZipStream:
-    {
+      {
 #if defined(HasZLIB)
-      if (gzseek(image->blob->handle.gz,(off_t) offset,whence) < 0)
-        return(-1);
+        if (gzseek(image->blob->handle.gz,(off_t) offset,whence) < 0)
+          return(-1);
 #endif
-      image->blob->offset=TellBlob(image);
-      break;
-    }
+        image->blob->offset=TellBlob(image);
+        break;
+      }
     case BZipStream:
       return(-1);
     case BlobStream:
-    {
-      switch (whence)
       {
-        case SEEK_SET:
-        default:
-        {
-          if (offset < 0)
-            return(-1);
-          image->blob->offset=offset;
-          break;
-        }
-        case SEEK_CUR:
-        {
-          if ((image->blob->offset+offset) < 0)
-            return(-1);
-          image->blob->offset+=offset;
-          break;
-        }
-        case SEEK_END:
-        {
-          if ((magick_off_t)
-              (image->blob->offset+image->blob->length+offset) < 0)
-            return(-1);
-          image->blob->offset=image->blob->length+offset;
-          break;
-        }
-      }
-      if (image->blob->offset <= (magick_off_t) image->blob->length)
-        image->blob->eof=MagickFalse;
-      else
-        if (image->blob->mapped)
-          return(-1);
-        else
+        switch (whence)
           {
-            image->blob->extent=image->blob->offset+image->blob->quantum;
-            MagickReallocMemory(unsigned char *,image->blob->data,image->blob->extent+1);
-            (void) SyncBlob(image);
-            if (image->blob->data == (unsigned char *) NULL)
-              {
-                DetachBlob(image->blob);
+          case SEEK_SET:
+          default:
+            {
+              if (offset < 0)
                 return(-1);
-              }
+              image->blob->offset=offset;
+              break;
+            }
+          case SEEK_CUR:
+            {
+              if ((image->blob->offset+offset) < 0)
+                return(-1);
+              image->blob->offset+=offset;
+              break;
+            }
+          case SEEK_END:
+            {
+              if ((magick_off_t)
+                  (image->blob->offset+image->blob->length+offset) < 0)
+                return(-1);
+              image->blob->offset=image->blob->length+offset;
+              break;
+            }
           }
-      break;
+        if (image->blob->offset <= (magick_off_t) image->blob->length)
+          {
+            image->blob->eof=MagickFalse;
+          }
+        break;
+      }
     }
-  }
   return(image->blob->offset);
 }
 
