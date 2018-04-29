@@ -59,6 +59,11 @@ Debian vulnerabilities in `GraphicsMagick`__.
 
 __ Debian_GraphicsMagick_
 
+Oss-fuzz issues pertaining to `GraphicsMagick`__.
+
+.. _oss_fuzz_reports : https://bugs.chromium.org/p/oss-fuzz/issues/list?q=graphicsmagick
+
+__ oss_fuzz_reports_
 
 
 Image Processing Topics

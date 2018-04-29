@@ -115,7 +115,9 @@
 #define CompositeImage GmCompositeImage
 #define CompositeImageCommand GmCompositeImageCommand
 #define CompositeImageRegion GmCompositeImageRegion
+#define CompositeMaskImage GmCompositeMaskImage
 #define CompositeOperatorToString GmCompositeOperatorToString
+#define CompositePathImage GmCompositePathImage
 #define CompressImageColormap GmCompressImageColormap
 #define CompressionTypeToString GmCompressionTypeToString
 #define ConcatenateString GmConcatenateString
@@ -188,6 +190,7 @@
 #define DrawColor GmDrawColor
 #define DrawComment GmDrawComment
 #define DrawComposite GmDrawComposite
+#define DrawCompositeMask GmDrawCompositeMask
 #define DrawDestroyContext GmDrawDestroyContext
 #define DrawEllipse GmDrawEllipse
 #define DrawGetClipPath GmDrawGetClipPath
@@ -217,6 +220,8 @@
 #define DrawGetTextEncoding GmDrawGetTextEncoding
 #define DrawGetTextUnderColor GmDrawGetTextUnderColor
 #define DrawImage GmDrawImage
+#define DrawInfoGetClipPath GmDrawInfoGetClipPath
+#define DrawInfoGetCompositePath GmDrawInfoGetCompositePath
 #define DrawLine GmDrawLine
 #define DrawMatte GmDrawMatte
 #define DrawPathClose GmDrawPathClose
@@ -367,6 +372,7 @@
 #define GetImageCharacteristics GmGetImageCharacteristics
 #define GetImageClipMask GmGetImageClipMask
 #define GetImageClippingPathAttribute GmGetImageClippingPathAttribute
+#define GetImageCompositeMask GmGetImageCompositeMask
 #define GetImageDepth GmGetImageDepth
 #define GetImageDistortion GmGetImageDistortion
 #define GetImageException GmGetImageException
@@ -441,6 +447,8 @@
 #define Hull GmHull
 #define IdentifyImageCommand GmIdentifyImageCommand
 #define IdentityAffine GmIdentityAffine
+#define ImageGetClipMask GmImageGetClipMask
+#define ImageGetCompositeMask GmImageGetCompositeMask
 #define ImageListToArray GmImageListToArray
 #define ImageToBlob GmImageToBlob
 #define ImageToFile GmImageToFile
@@ -922,6 +930,7 @@
 #define SetImageClipMask GmSetImageClipMask
 #define SetImageColor GmSetImageColor
 #define SetImageColorRegion GmSetImageColorRegion
+#define SetImageCompositeMask GmSetImageCompositeMask
 #define SetImageDepth GmSetImageDepth
 #define SetImageEx GmSetImageEx
 #define SetImageInfo GmSetImageInfo

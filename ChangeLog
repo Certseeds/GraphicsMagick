@@ -1,3 +1,8 @@
+2018-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update NEWS file with information about changes since
+	last release.
+
 2018-04-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage): Disable EOF tests for "ICODIB"
@@ -142,7 +147,7 @@
 	Use-of-uninitialized-value in WriteDPXImage". (Credit to OSS-Fuzz)
 
 	* coders/pict.c (ReadPICTImage): Don't refer to filename member of
-	ImageInfo which was just destroyed. Much thanks to Alex Gay for
+	ImageInfo which was just destroyed. Much thanks to Alex Gaynor for
 	finding this.  Should fix oss-fuzz 6867
 	"graphicsmagick/coder_PCT_fuzzer: Heap-use-after-free in
 	GetLocaleExceptionMessage". (Credit to OSS-Fuzz).
