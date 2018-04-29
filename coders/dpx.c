@@ -2712,10 +2712,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (thread_status != MagickFail)
                 {
                   if (element == 0)
-                    {
-                      pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
-
-                    }
+                    pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
                   else
                     pixels=GetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
                 }
@@ -2728,14 +2725,17 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 initialization if planar image does not
                 provide an alpha channel.
               */
-              if (element == 0)
+              if (thread_status != MagickFail)
                 {
-                  if (matte_init)
+                  if (element == 0)
                     {
-                      q = pixels;
-                      for (x=image->columns; x != 0; x--)
+                      if (matte_init)
                         {
-                          SetOpacitySample(q++,OpaqueOpacity);
+                          q = pixels;
+                          for (x=image->columns; x != 0; x--)
+                            {
+                              SetOpacitySample(q++,OpaqueOpacity);
+                            }
                         }
                     }
                 }

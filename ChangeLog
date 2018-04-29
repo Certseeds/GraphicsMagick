@@ -1,5 +1,9 @@
 2018-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadDPXImage): Assure that NULL pixels is not
+	used.  Fixes oss-fuzz 8078 "graphicsmagick/coder_DPX_fuzzer:
+	Null-dereference WRITE in ReadDPXImage". (Credit to OSS-Fuzz)
+
 	* NEWS.txt: Update NEWS file with information about changes since
 	last release.
 
