@@ -603,6 +603,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                          image->filename);
           goto decode_error_exit;
         }
+      (void) memset(scanline+scanline_length,0,row_bytes-scanline_length); /* Zero */
       for (j=0; j < (long) scanline_length; )
         if ((scanline[j] & 0x80) == 0)
           {

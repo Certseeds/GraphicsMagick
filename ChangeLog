@@ -1,5 +1,10 @@
 2018-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (DecodeImage): Assure that scanline is initialized
+	to avoid use of uninitialized data.  Fixes oss-fuzz 8063
+	"graphicsmagick/coder_WPG_fuzzer: Use-of-uninitialized-value in
+	ReadPICTImage". (Credit to OSS-Fuzz)
+
 	* coders/dpx.c (ReadDPXImage): Assure that NULL pixels is not
 	used.  Fixes oss-fuzz 8078 "graphicsmagick/coder_DPX_fuzzer:
 	Null-dereference WRITE in ReadDPXImage". (Credit to OSS-Fuzz)
