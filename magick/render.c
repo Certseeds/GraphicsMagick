@@ -715,6 +715,9 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     coordinates,  /* number of points in subpath */
     start;        /* index to start of subpath in path_info */
 
+  MagickBool
+    IsClosedSubPath;
+
   ARG_NOT_USED(draw_info);
 
   /*
@@ -752,18 +755,22 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
         p=primitive_info[i].point;  /* first point in subpath */
         start=n;  /* index to start of subpath in path_info */
         code=MoveToCode;
+        IsClosedSubPath=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[i]);
       }
     coordinates--;
     /*
       Do not put the current point into path_info if it is a duplicate of
       (i.e. "too close" to) the previous point.  However, the current point
-      is always put into path_info when it is the first point in a subpath.
-      This condition is true whenever code==MoveToCode (checking i==0 only
-      detects the first subpath).  Note that for this case the "previous
+      is always put into path_info when it is the first (code==MoveToCode)
+      or last point in a subpath.  Note that for the first point the "previous
       point" (q) is not valid (usually a leftover from the previous subpath),
-      so the start-of-subpath test must be done first.
+      so the first point test should be done first.  W.r.t. the last point,
+      sometimes eliminating the last point as a "duplicate" will result in a
+      polygon (path) not being completely closed, causing small "nubs" to
+      protrude from the filled shape at that point.
     */
-    if ((code == MoveToCode) || (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
+    if ((code == MoveToCode) || (coordinates <= 0) ||
+        (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
         (fabs(q.y-primitive_info[i].point.y) > MagickEpsilon))
       {
         /* put current point into path_info*/
@@ -776,16 +783,17 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       continue;   /* go process next point in current subpath */
     /*
       The current point is the last point in the subpath.  If it closes
-      the subpath (i.e., it's "close enough" to "p", the start of the
-      subpath), go on to the next subpath.
+      the subpath, go on to the next subpath.
     */
-    if ((fabs(p.x-primitive_info[i].point.x) <= MagickEpsilon) &&
-        (fabs(p.y-primitive_info[i].point.y) <= MagickEpsilon))
-      continue;   
+    if  ( IsClosedSubPath )
+      {
+        IsClosedSubPath = MagickFalse;
+        continue;
+      }
     /*
       The just completed subpath is not closed.  Mark it as "open" and add two
-      more points (repeat of current point + subpath start point) to close
-      it (this is a "ghost line").
+      more points (repeat of current point + subpath start point) to "virtually"
+      close it (this is a "ghost line").
     */
     path_info[start].code=OpenCode;
     path_info[n].code=GhostlineCode;
@@ -1350,6 +1358,7 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
   long
     coordinates;
 
+  memset(primitive_info,0,sizeof(primitive_info));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   (void) QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception);
   resolution.x=72.0;
@@ -3660,6 +3669,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     primitive_info[0].point.y=0.0;
     primitive_info[0].coordinates=0;
     primitive_info[0].method=FloodfillMethod;
+    PRIMINF_CLEAR_FLAGS(&primitive_info[0]);
     for (x=0; *q != '\0'; x++)
     {
       /*
@@ -3681,6 +3691,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       primitive_info[i].point=point;
       primitive_info[i].coordinates=0;
       primitive_info[i].method=FloodfillMethod;
+      PRIMINF_CLEAR_FLAGS(&primitive_info[i]);
       i++;
       if (i < (long) number_points)
         continue;
@@ -3701,6 +3712,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     if  ( (primitive_type == TextPrimitive) && UseCurrentTextPosition && (i == 0) )
       {
         primitive_info[0].primitive=primitive_type;
+        PRIMINF_CLEAR_FLAGS(&primitive_info[0]);
         if  ( TextRotationPerformed )
           {
             /* text positioning has already been performed by translate/rotate sequence */
@@ -3722,6 +3734,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     primitive_info[j].primitive=primitive_type;
     primitive_info[j].coordinates=x;
     primitive_info[j].method=FloodfillMethod;
+    PRIMINF_CLEAR_FLAGS(&primitive_info[j]);
     primitive_info[j].text=(char *) NULL;
     /*
       Circumscribe primitive within a circle.
@@ -4030,6 +4043,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         primitive_info[i]=primitive_info[j];
         primitive_info[i].coordinates=0;
         primitive_info[j].coordinates++;
+        PRIMINF_SET_IS_CLOSED_SUBPATH(&primitive_info[j],1);
         i++;
         break;
       }
@@ -4374,29 +4388,39 @@ GetPixelOpacity(PolygonInfo * restrict polygon_info,const double mid,
         }
       /*
         Compute distance between a point and an edge.
+
+        In the comments below, let seg0, seg1 be the end points of the line
+        segment (edge), and let pt be (x,y).  Conceptually, consider the segment
+        to be a vector from seg0 to seg1, and pt to be a vector from seg0 to pt.
+        Let seglen be the length of the segment vector, and ptlen be the length
+        of the pt vector.
+
+        The "if" tests below now test "beta <= 0" instead of "beta < 0", and
+        "beta >= alpha" instead of "beta > alpha".  This captures the case of
+        a zero-length segment and avoids a divide-by-zero when computing 1/alpha.
       */
-      q=p->points+i-1;
-      dx=(q+1)->x-q->x,
-      dy=(q+1)->y-q->y;
-      beta=dx*(x-q->x)+dy*(y-q->y);
-      if (beta < 0.0)
-        {
+      q=p->points+i-1;    /* q is seg0, q+1 is seg1 */
+      dx=(q+1)->x-q->x,   /* seg1.x - seg0.x */
+      dy=(q+1)->y-q->y;   /* seg1.y - seg0.y */
+      beta=dx*(x-q->x)+dy*(y-q->y);   /* dot(segvec,ptvec) = seglen * ptlen * costheta */
+      if (beta <= 0.0)
+        {/*cosine<=0, pt is closest to seg0*/
           dx=x-q->x;
           dy=y-q->y;
           distance=dx*dx+dy*dy;
         }
       else
         {
-          alpha=dx*dx+dy*dy;
-          if (beta > alpha)
-            {
+          alpha=dx*dx+dy*dy;  /*seglen*seglen*/
+          if (beta >= alpha)
+            {/*pt is closest to seg1*/
               dx=x-(q+1)->x;
               dy=y-(q+1)->y;
               distance=dx*dx+dy*dy;
             }
           else
-            {
-              alpha=1.0/alpha;
+            {/*pt is closest to a point between seg0 and seg1*/
+              alpha=1.0/alpha;  /*don't get here if alpha==0*/
               beta=dx*(y-q->y)-dy*(x-q->x);
               distance=alpha*beta*beta;
             }
@@ -4523,7 +4547,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
   /*
     Nothing to do.
   */
-  if (primitive_info->coordinates == 0)
+  if (primitive_info->coordinates <= 1)   /*single point polygons have zero area; don't draw*/
     return(MagickPass);
 
   {
@@ -5362,10 +5386,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           /*
             Draw strokes while respecting line cap/join attributes.
           */
-          for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
-          closed_path=
-            (primitive_info[i-1].point.x == primitive_info[0].point.x) &&
-            (primitive_info[i-1].point.y == primitive_info[0].point.y);
+          closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[0]);
           i=(long) primitive_info[0].coordinates;
           if ((((draw_info->linecap == RoundCap) || closed_path) &&
                (draw_info->linejoin == RoundJoin)) ||
@@ -5374,11 +5395,13 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
               status&=DrawPolygonPrimitive(image,draw_info,primitive_info);
               break;
             }
+          /* first fill the polygon by cloning and turning off stroking ... */
           clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
           clone_info->stroke_width=0.0;
           clone_info->stroke.opacity=TransparentOpacity;
           status&=DrawPolygonPrimitive(image,clone_info,primitive_info);
           DestroyDrawInfo(clone_info);
+          /* ... and then stroke the polygon */
           status&=DrawStrokePolygon(image,draw_info,primitive_info);
           break;
         }
@@ -5482,13 +5505,41 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
   status=MagickPass;
   for (p=primitive_info; p->primitive != UndefinedPrimitive; p+=p->coordinates)
   {
+    /*
+      Per the SVG spec:  A subpath (see Paths) consisting of a
+      single moveto shall not be stroked.
+    */
+    if  ( p->coordinates == 1 )
+      continue;
+    /*
+      *** BUG ALERT! ***
+
+      The sequence below has a bug in it somewhere.  "Thin" polygons that are
+      stroked with a stroke-width whose magnitude is close to the size of the
+      "thinness" of the polygon are rendered incorrectly.  For example, this
+      SVG path renders correctly:
+
+      <path fill="none" stroke="rgb(0,255,0)" stroke-width="3" stroke-linecap="round"
+        stroke-linejoin="miter" d="M 10 10 110 10 110 10.5 z" />
+
+      But this one does not:
+
+      <path fill="none" stroke="rgb(0,255,0)" stroke-width="3" stroke-linecap="round"
+        stroke-linejoin="miter" d="M 10 10 110 10 110 10.4 z" />
+
+      The only difference is the y coordinate of the last path point (10.5 vs. 10.4).
+
+      The "stroke_polygon" produced by TraceStrokePolygon() for the second path is
+      significantly different from that for the first path, so my suspicion is that
+      that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
+    */
     stroke_polygon=TraceStrokePolygon(draw_info,p);
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
     MagickFreeMemory(stroke_polygon);
     if (status == MagickFail)
       break;
     q=p+p->coordinates-1;
-    closed_path=(q->point.x == p->point.x) && (q->point.y == p->point.y);
+    closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(p);
     if ((draw_info->linecap == RoundCap) && !closed_path)
       {
         DrawRoundLinecap(image,draw_info,p);
@@ -5765,6 +5816,7 @@ TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
     p+=p->coordinates;
   }
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -5855,6 +5907,7 @@ TraceBezier(PrimitiveInfo *primitive_info,
   TracePoint(p,end);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -5932,6 +5985,12 @@ TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(p,point);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  if  (
+    (fabs(primitive_info[0].point.x-primitive_info[primitive_info->coordinates-1].point.x) < MagickEpsilon)
+    && (fabs(primitive_info[0].point.y-primitive_info[primitive_info->coordinates-1].point.y) < MagickEpsilon)
+    )
+    PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -5954,6 +6013,7 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(primitive_info+1,end);
   (primitive_info+1)->primitive=primitive_info->primitive;
   primitive_info->coordinates=2;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
 }
 
 /*
@@ -6100,7 +6160,14 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           MagickTracePathAtoF(token,&y);
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
-          TraceArcPath(q,point,end,arc,angle,large_arc,sweep);
+          /*
+            Per the SVG spec: If the endpoints (x1, y1) and (x2, y2) are identical, then
+            this is equivalent to omitting the elliptical arc segment entirely.
+          */
+          if  ( (fabs(end.x-point.x) >= MagickEpsilon) || (fabs(end.y-point.y) >= MagickEpsilon))
+            TraceArcPath(q,point,end,arc,angle,large_arc,sweep);
+          else /* replace with a lineto (so zero length arc looks like a zero length segment) */
+            TracePoint(q,end);
           q+=q->coordinates;
           point=end;
           while (isspace((int) ((unsigned char) *p)) != 0)
@@ -6223,15 +6290,13 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           point.x=attribute == 'M' ? x : point.x+x;
           point.y=attribute == 'M' ? y : point.y+y;
           if (i == 0)
-            start=point;
+            start=point; /*otherwise it's an implied lineto command for both 'M' and 'm'*/
           i++;
           TracePoint(q,point);
           q+=q->coordinates;
-          if ((i != 0) && (attribute == 'M'))
-            {
-              TracePoint(q,point);
-              q+=q->coordinates;
-            }
+
+          /* there was code here that added the point again, but only if 'M' (?) ... deleted */
+
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
             p++;
@@ -6420,6 +6485,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
         TracePoint(q,point);
         q+=q->coordinates;
         primitive_info->coordinates=q-primitive_info;
+        PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
         number_coordinates+=primitive_info->coordinates;
         primitive_info=q;
         z_count++;
@@ -6451,6 +6517,7 @@ static void
 TracePoint(PrimitiveInfo *primitive_info,const PointInfo point)
 {
   primitive_info->coordinates=1;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   primitive_info->point=point;
 }
 
@@ -6483,6 +6550,8 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(p,start);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -6539,6 +6608,8 @@ TraceRoundRectangle(PrimitiveInfo *primitive_info,
   TracePoint(p,primitive_info->point);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -6651,29 +6722,19 @@ TraceStrokePolygon(const DrawInfo *draw_info,
   */
   number_vertices=primitive_info->coordinates;
   max_strokes=2*number_vertices+6*BezierQuantum+360;
-  path_p=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
-  if (path_p == (PointInfo *) NULL)
-    return((PrimitiveInfo *) NULL);
-  path_q=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
-  if (path_q == (PointInfo *) NULL)
-    {
-      MagickFreeMemory(path_p);
-      return((PrimitiveInfo *) NULL);
-    }
+
+  /* moved path_p and path_q mem alloc to later since we might not need them */
+
   polygon_primitive=
     MagickAllocateArray(PrimitiveInfo *,(number_vertices+2),
                         sizeof(PrimitiveInfo));
   if (polygon_primitive == (PrimitiveInfo *) NULL)
     {
-      MagickFreeMemory(path_p);
-      MagickFreeMemory(path_q);
       return((PrimitiveInfo *) NULL);
     }
   (void) memcpy(polygon_primitive,primitive_info,number_vertices*
     sizeof(PrimitiveInfo));
-  closed_path=
-    (primitive_info[number_vertices-1].point.x == primitive_info[0].point.x) &&
-    (primitive_info[number_vertices-1].point.y == primitive_info[0].point.y);
+  closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[0]);
   if ((draw_info->linejoin == RoundJoin) ||
       ((draw_info->linejoin == MiterJoin) && closed_path))
     {
@@ -6692,10 +6753,46 @@ TraceStrokePolygon(const DrawInfo *draw_info,
       break;
   }
   if (n == number_vertices)
-    n=number_vertices-1;
+    {
+      /*
+        If we get here the subpath consists entirely of "zero length" (within MagickEpsilon)
+        segments.  According to the SVG spec:  "Any zero length subpath shall not be stroked
+        if the 'stroke-linecap' property has a value of butt but shall be stroked if the
+        'stroke-linecap' property has a value of round or square".  Since 'stroke-linecap'
+        is only used for open paths, this is only significant if the path is not closed.
+      */
+      MagickBool DoStroke;
+      DoStroke = (!closed_path && (draw_info->linecap == RoundCap));
+      if  ( !DoStroke )
+        {/*skip stroking*/
+          /* create polygon with one element and 0 coords; DrawPolygonPrimitive() will ignore it */
+          stroke_polygon = MagickAllocateArray(PrimitiveInfo *,1,sizeof(PrimitiveInfo));
+          stroke_polygon[0] = polygon_primitive[0];
+          stroke_polygon[0].coordinates = 0;
+          MagickFreeMemory(polygon_primitive);
+          return(stroke_polygon);
+        }/*skip stroking*/
+      n=number_vertices-1;
+    }
+
+  /* moved path_p and path_q mem allocs to here */
+  path_p=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+  if (path_p == (PointInfo *) NULL)
+    {
+      MagickFreeMemory(polygon_primitive);
+      return((PrimitiveInfo *) NULL);
+    }
+  path_q=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+  if (path_q == (PointInfo *) NULL)
+    {
+      MagickFreeMemory(path_p);
+      MagickFreeMemory(polygon_primitive);
+      return((PrimitiveInfo *) NULL);
+    }
+
   slope.p=0.0;
   inverse_slope.p=0.0;
-  if (fabs(dx.p) <= MagickEpsilon)
+  if (fabs(dx.p) < MagickEpsilon)
     {
       if (dx.p >= 0.0)
         slope.p=dy.p < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
@@ -6703,7 +6800,7 @@ TraceStrokePolygon(const DrawInfo *draw_info,
         slope.p=dy.p < 0.0 ? 1.0/MagickEpsilon : -1.0/MagickEpsilon;
     }
   else
-    if (fabs(dy.p) <= MagickEpsilon)
+    if (fabs(dy.p) < MagickEpsilon)
       {
         if (dy.p >= 0.0)
           inverse_slope.p=dx.p < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
@@ -6770,7 +6867,7 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           slope.q=dy.q < 0.0 ? 1.0/MagickEpsilon : -1.0/MagickEpsilon;
       }
     else
-      if (fabs(dy.q) <= MagickEpsilon)
+      if (fabs(dy.q) < MagickEpsilon)
         {
           if (dy.q >= 0.0)
             inverse_slope.q=dx.q < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
