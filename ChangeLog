@@ -1,5 +1,18 @@
 2018-05-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
+	* This change set fixes ticket #471.
+
+	* magick/render.c (DrawImage): Polylines with fewer
+	than two points were being flagged as an error. The
+	SVG spec has no such restriction (fixed).
+
+	* coders/svg.c (SVGStartElement) Inner <svg> elements
+	could modify the output image dimensions if a geometry
+	string was supplied. Now the output image dimensions
+	are determined by the outermost <svg> only.
+
+2018-05-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
 	* magick/render.c (TraceEllipse, TraceRectangle,
 	TraceRoundRectangle): Per the SVG spec, rectangles and
 	round rectangles having a width or height of zero are

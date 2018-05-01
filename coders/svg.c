@@ -161,7 +161,8 @@ typedef struct _SVGInfo
   */
   int
     defsPushCount,      /* for tracking nested <defs> */
-    idLevelInsideDefs;  /* when an "id" is seen, remember svg->n (SVG element level) */
+    idLevelInsideDefs,  /* when an "id" is seen, remember svg->n (SVG element level) */
+    svgPushCount;       /* for tracking nested <svg> elements */
 
 #if defined(HasXML)
   xmlParserCtxtPtr
@@ -1517,6 +1518,7 @@ SVGStartElement(void *context,const xmlChar *name,
           }
         if (LocaleCompare((char *) name,"svg") == 0)
           {
+            svg_info->svgPushCount++;
             MVGPrintf(svg_info->file,"push graphic-context\n");
             /*
               Per the SVG spec, initialize the MVG coder with the following
@@ -2691,16 +2693,20 @@ SVGStartElement(void *context,const xmlChar *name,
           sy=(double) page.height/svg_info->view_box.height;
           MVGPrintf(svg_info->file,"affine %g 0 0 %g %g %g\n",sx,sy,
                     -sx*svg_info->view_box.x,-sy*svg_info->view_box.y);
-          svg_info->width=page.width;
-          svg_info->height=page.height;
-          /* check if background color was specified using <svg ... style="background:color" */
-          if  ( svg_element_background_color[0] != '\0' )
-            {
-              MVGPrintf(svg_info->file,"push graphic-context\n");
-              MVGPrintf(svg_info->file,"fill %s\n",svg_element_background_color);
-              MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",svg_info->view_box.width,svg_info->view_box.height);
-              MVGPrintf(svg_info->file,"pop graphic-context\n");
-            }
+          /* only set the output width and height if this is the outermost <svg> */
+          if  ( svg_info->svgPushCount == 1 )
+            {/*outermost <svg>*/
+              svg_info->width=page.width;
+              svg_info->height=page.height;
+              /* check if background color was specified using <svg ... style="background:color" */
+              if  ( svg_element_background_color[0] != '\0' )
+                {
+                  MVGPrintf(svg_info->file,"push graphic-context\n");
+                  MVGPrintf(svg_info->file,"fill %s\n",svg_element_background_color);
+                  MVGPrintf(svg_info->file,"rectangle 0,0 %g,%g\n",svg_info->view_box.width,svg_info->view_box.height);
+                  MVGPrintf(svg_info->file,"pop graphic-context\n");
+                }
+            }/*outermost <svg>*/
         }
     }
 #endif
@@ -3406,6 +3412,7 @@ SVGEndElement(void *context,const xmlChar *name)
           }
         if (LocaleCompare((char *) name,"svg") == 0)
           {
+            svg_info->svgPushCount--;
             MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
@@ -3856,6 +3863,7 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.bounds.height=image->rows;
   svg_info.defsPushCount = 0;
   svg_info.idLevelInsideDefs = 0;
+  svg_info.svgPushCount = 0;
   if (image_info->size != (char *) NULL)
     (void) CloneString(&svg_info.size,image_info->size);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"begin SAX");

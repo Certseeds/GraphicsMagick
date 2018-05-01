@@ -4023,7 +4023,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       }
       case PolylinePrimitive:
       {
-        if (primitive_info[j].coordinates < 2)
+        /* the SVG spec does not prohibit polylines containing a single point */
+        if (primitive_info[j].coordinates < 1)
           {
             status=MagickFail;
             break;
