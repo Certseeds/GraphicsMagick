@@ -5962,7 +5962,8 @@ TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
   /*
     Ellipses are just short segmented polys.
   */
-  if (stop.x == 0.0 || stop.y == 0.0)
+  primitive_info->coordinates = 0;  /* in case we return without doing anything */
+  if (stop.x == 0.0 || stop.y == 0.0)  /* actually the x and y radii of the corner ellipse */
     return;
   delta=2.0/Max(stop.x,stop.y);
   step=MagickPI/8.0;
@@ -6534,6 +6535,15 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   register long
     i;
 
+  /*
+    Per the SVG spec, if the width and/or height are zero, rendering
+    the element is disabled.
+  */
+  if  ( (start.x == end.x) || (start.y == end.y) )
+  {
+    primitive_info->coordinates = 0;
+    return;
+  }
   p=primitive_info;
   TracePoint(p,start);
   p+=p->coordinates;
@@ -6574,9 +6584,18 @@ TraceRoundRectangle(PrimitiveInfo *primitive_info,
   register long
     i;
 
+  offset.x=AbsoluteValue(end.x-start.x);  /* rect width */
+  offset.y=AbsoluteValue(end.y-start.y);  /* rect height */
+  /*
+    Per the SVG spec, if the width and/or height are zero, rendering
+    the element is disabled.
+  */
+  if  ( (offset.x == 0.0) || (offset.y == 0.0) )
+  {
+    primitive_info->coordinates = 0;
+    return;
+  }
   p=primitive_info;
-  offset.x=AbsoluteValue(end.x-start.x);
-  offset.y=AbsoluteValue(end.y-start.y);
   if (arc.x > (0.5*offset.x))
     arc.x=0.5*offset.x;
   if (arc.y > (0.5*offset.y))

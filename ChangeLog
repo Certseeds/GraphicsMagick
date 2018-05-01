@@ -1,3 +1,11 @@
+2018-05-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (TraceEllipse, TraceRectangle,
+	TraceRoundRectangle): Per the SVG spec, rectangles and
+	round rectangles having a width or height of zero are
+	not rendered. Also per the spec, ellipses having an x
+	or y radius of zero are not rendered.  Fixes ticket #457.
+
 2018-04-30  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.h, (PrimitiveInfo), magick/render.c: Added
