@@ -35,6 +35,54 @@
 <div class="document">
 
 
+<p>2018-04-30  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.h, (PrimitiveInfo), magick/render.c: Added
+member &quot;flags&quot; to PrimitiveInfo to support indicating closed
+shapes (e.g., rectangle, circle, path closed using 'z' or 'Z').
+Updated code in render.c (functions TraceXXX) to indicate
+closed shapes.  This replaces the previous policy of detecing
+closed shapes by comparing the first and last points to see if
+they are identical (within MagickEpsilon). The old policy
+prevented open subpaths with the same first and last point from
+being rendered properly (per the SVG spec) when round or square
+endcaps were enabled.  Part of the fix for ticket #322.</li>
+<li>magick/render.c (ConvertPrimitiveToPath): Modified duplicate
+point elimination code so that the first and last points of
+a subpath are always preserved.  Consequences: (1) Allows
+for the correct rendering of the sequence &quot;move x1 y1 line
+x1 y1&quot; with round or square endcaps.  Part of the fix for
+ticket #322. (2) Fixes a bug in which eliminating the last
+point as a duplicate caused a closed shape to no longer be
+closed. This would manifest itself, for example, as a small
+&quot;nub&quot; on the boundary of a filled circle.</li>
+<li>magick/render.c (GetPixelOpacity): Fixed a bug in the
+code that computed the distance between a point and a
+segment (polygon edge).  Prior to this fix, for zero length
+segments this code would generate a divide-by-zero and
+incorrect output. Part of the fix for ticket #322.</li>
+<li>magick/render.c (DrawPolygonPrimitive): Polygons/paths with
+zero or one points are no longer rendered per the SVG spec.</li>
+<li>magick/render.c (DrawStrokePolygon): Per the SVG spec, a
+polygon consisting of a single move-to command is not stroked.</li>
+<li>magick/render.c (TracePath): Per the SVG spec, if the
+endpoints (x1, y1) and (x2, y2) of an arc subpath are identical,
+then this is equivalent to omitting the elliptical arc segment
+entirely.  For rendering purposes the zero length arc is
+treated like a zero length &quot;line to&quot; command to the current
+point.</li>
+<li>magick/render.c (TraceStrokePolygon): Added code to detect
+zero length open subpaths and return a stroked polygon containing
+no points when round or square endcaps are not enabled.  This
+satisfies the SVG spec requirement that zero length subpaths are
+only stroked if the 'stroke-linecap' property has a value of
+round or square.</li>
+<li>magick/render.c (TracePath): Fixed a bug in which if a &quot;move to&quot;
+command was followed by additional pairs of points, indicating
+implied &quot;line to&quot; commands, each point was added twice.</li>
+</ul>
+</blockquote>
 <p>2018-04-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
