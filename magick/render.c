@@ -155,8 +155,8 @@ DrawInfoGetCompositePath(const DrawInfo * draw_info)
 /*
   Forward declarations.
 */
-static PrimitiveInfo
-  *TraceStrokePolygon(const DrawInfo *,const PrimitiveInfo *);
+static PrimitiveInfo  /* added Image* param so DrawInfo::stroke_width can be clamped */
+  *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickPassFail
   DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *),
@@ -192,6 +192,17 @@ static void
     PointInfo),
   TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
 
+/*
+  Ticket #515 showed how an excessively big DrawInfo::stroke_width can cause writes
+  beyond the end of an array of points when computing a stroked polygon.  So we want
+  to clamp it to some reasonable value before using it in computations.  The value
+  sqrt(2)*max(width,height) will always be >= the diagonal size of any image.  The
+  computed upper limit will be twice this value.  Note that 1.415 is just slightly
+  bigger than sqrt(2).
+*/
+
+#define STROKE_WIDTH_LIMIT(image) ((2.0*1.415) * Max((image)->columns,(image)->rows))
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1339,7 +1350,8 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
     *clone_info;
 
   double
-    mid;
+    mid,
+    stroke_width_limited;
 
   PointInfo
     end,
@@ -1372,8 +1384,13 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
       if (count != 2)
         resolution.y=resolution.x;
     }
+
+  /* sanity check for excessively big stroke_width (ticket #515) */
+  if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > clone_info->stroke_width )
+      stroke_width_limited = clone_info->stroke_width;
+
   mid=(resolution.x/72.0)*ExpandAffine(&clone_info->affine)*
-    clone_info->stroke_width/2.0;
+    stroke_width_limited/2.0;
   bounds.x1=0.0;
   bounds.y1=0.0;
   bounds.x2=0.0;
@@ -4529,7 +4546,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                      const PrimitiveInfo *primitive_info)
 {
   double
-    mid;
+    mid,
+    stroke_width_limited;
 
   SegmentInfo
     bounds;
@@ -4647,7 +4665,12 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       not, clip based on columns-1 and rows-1 instead of columns
       and rows.
     */
-    mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
+
+    /* sanity check for excessively big stroke_width (ticket #515) */
+    if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+        stroke_width_limited = draw_info->stroke_width;
+
+    mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
     bounds.x1-=(mid+1.0);
     bounds.y1-=(mid+1.0);
     bounds.x2+=(mid+1.0);
@@ -5354,6 +5377,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
     {
       double
         mid,
+        stroke_width_limited,
         scale;
 
       DrawInfo
@@ -5378,7 +5402,12 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           status&=DrawDashPolygon(draw_info,primitive_info,image);
           break;
         }
-      mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
+
+      /* sanity check for excessively big stroke_width (ticket #515) */
+      if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+          stroke_width_limited = draw_info->stroke_width;
+
+      mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
       if ((mid > 1.0) && (draw_info->stroke.opacity != TransparentOpacity))
         {
           unsigned int
@@ -5534,7 +5563,7 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
       significantly different from that for the first path, so my suspicion is that
       that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
     */
-    stroke_polygon=TraceStrokePolygon(draw_info,p);
+    stroke_polygon=TraceStrokePolygon(image,draw_info,p);
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
     MagickFreeMemory(stroke_polygon);
     if (status == MagickFail)
@@ -6685,7 +6714,8 @@ TraceSquareLinecap(PrimitiveInfo *primitive_info,
 }
 
 static PrimitiveInfo *
-TraceStrokePolygon(const DrawInfo *draw_info,
+TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::stroke_width can be clamped */
+                   const DrawInfo *draw_info,
                    const PrimitiveInfo *primitive_info)
 {
   typedef struct _LineSegment
@@ -6709,7 +6739,8 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     delta_theta,
     dot_product,
     mid,
-    miterlimit;
+    miterlimit,
+    stroke_width_limited;
 
   PointInfo
     box_p[5],
@@ -6728,7 +6759,9 @@ TraceStrokePolygon(const DrawInfo *draw_info,
 
   unsigned long
     arc_segments,
-    max_strokes,
+    max_strokes_p,
+    max_strokes_q,
+    max_strokes_extra,
     number_vertices;
 
   unsigned long
@@ -6738,10 +6771,14 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     q;
 
   /*
-    Allocate paths.
+    Compute initial sizes for paths based on the number of primitive coordinates.  We
+    will always allocate max_strokes_extra additional points, so that for each loop
+    iteration there will always be enough space, provided we haven't passed
+    max_strokes_{p|q} yet.
   */
   number_vertices=primitive_info->coordinates;
-  max_strokes=2*number_vertices+6*BezierQuantum+360;
+  max_strokes_p=max_strokes_q=2*number_vertices;
+  max_strokes_extra=6*BezierQuantum+360;  /* will always allocate this much extra */
 
   /* moved path_p and path_q mem alloc to later since we might not need them */
 
@@ -6796,13 +6833,17 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     }
 
   /* moved path_p and path_q mem allocs to here */
-  path_p=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+
+  /*
+    Allocate paths.
+  */
+  path_p=MagickAllocateArray(PointInfo *,max_strokes_p+max_strokes_extra,sizeof(PointInfo));
   if (path_p == (PointInfo *) NULL)
     {
       MagickFreeMemory(polygon_primitive);
       return((PrimitiveInfo *) NULL);
     }
-  path_q=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
+  path_q=MagickAllocateArray(PointInfo *,max_strokes_q+max_strokes_extra,sizeof(PointInfo));
   if (path_q == (PointInfo *) NULL)
     {
       MagickFreeMemory(path_p);
@@ -6832,7 +6873,12 @@ TraceStrokePolygon(const DrawInfo *draw_info,
         slope.p=dy.p/dx.p;
         inverse_slope.p=(-1.0/slope.p);
       }
-  mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;/* FIXME: 'mid' BLOWS UP  */
+
+  /* sanity check for excessively big stroke_width (ticket #515) */
+  if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+      stroke_width_limited = draw_info->stroke_width;
+
+  mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
   miterlimit=draw_info->miterlimit*draw_info->miterlimit*mid*mid;
   if ((draw_info->linecap == SquareCap) && !closed_path)
     TraceSquareLinecap(polygon_primitive,number_vertices,mid);
@@ -6938,19 +6984,30 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           box_q[3].y)/(slope.p-slope.q);
         box_q[4].y=slope.p*(box_q[4].x-box_q[0].x)+box_q[0].y;
       }
-    if (q >= (max_strokes-6*BezierQuantum-360))
+    if (p >= max_strokes_p)
+      {/*p pointing into extra; time to realloc*/
+         max_strokes_p+=max_strokes_extra;
+         MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+         if (path_p == (PointInfo *) NULL)
       {
-         max_strokes+=6*BezierQuantum+360;
-         MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes,sizeof(PointInfo)));
-         MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes,sizeof(PointInfo)));
-         if ((path_p == (PointInfo *) NULL) || (path_q == (PointInfo *) NULL))
+             MagickFreeMemory(path_p);
+             MagickFreeMemory(path_q);
+             MagickFreeMemory(polygon_primitive);
+             return((PrimitiveInfo *) NULL);
+           }
+      }/*p pointing into extra; time to realloc*/
+    if (q >= max_strokes_q)
+      {/*q pointing into extra; time to realloc*/
+         max_strokes_q+=max_strokes_extra;
+         MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+         if (path_q == (PointInfo *) NULL)
            {
              MagickFreeMemory(path_p);
              MagickFreeMemory(path_q);
              MagickFreeMemory(polygon_primitive);
              return((PrimitiveInfo *) NULL);
            }
-      }
+      }/*q pointing into extra; time to realloc*/
     dot_product=dx.q*dy.p-dx.p*dy.q;
     if (dot_product <= 0.0)
       switch (draw_info->linejoin)
@@ -7005,6 +7062,19 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           if (theta.q < theta.p)
             theta.q+=2.0*MagickPI;
           arc_segments=(long) ceil((theta.q-theta.p)/(2.0*sqrt(1.0/mid)));
+          /* in case arc_segments is big */
+          if  ( (q+arc_segments) >= max_strokes_q )
+            {/*q+arc_segments will point into extra; time to realloc*/
+              max_strokes_q+=arc_segments+max_strokes_extra;
+              MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+              if (path_q == (PointInfo *) NULL)
+                {
+                  MagickFreeMemory(path_p);
+                  MagickFreeMemory(path_q);
+                  MagickFreeMemory(polygon_primitive);
+                  return((PrimitiveInfo *) NULL);
+                }
+            }/*q+arc_segments will point into extra; time to realloc*/
           path_q[q].x=box_q[1].x;
           path_q[q].y=box_q[1].y;
           q++;
@@ -7076,6 +7146,19 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           if (theta.p < theta.q)
             theta.p+=2.0*MagickPI;
           arc_segments=(long) ceil((theta.p-theta.q)/(2.0*sqrt(1.0/mid)));
+          /* in case arc_segments is big */
+          if  ( (p+arc_segments) >= max_strokes_p )
+            {/*p+arc_segments will point into extra; time to realloc*/
+              max_strokes_p+=arc_segments+max_strokes_extra;
+              MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+              if (path_p == (PointInfo *) NULL)
+                {
+                  MagickFreeMemory(path_p);
+                  MagickFreeMemory(path_q);
+                  MagickFreeMemory(polygon_primitive);
+                  return((PrimitiveInfo *) NULL);
+                }
+            }/*p+arc_segments will point into extra; time to realloc*/
           path_p[p++]=box_p[1];
           for (j=1; j < arc_segments; j++)
           {

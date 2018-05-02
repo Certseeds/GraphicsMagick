@@ -1,3 +1,18 @@
+2018-05-02  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (TraceStrokePolygon): Excessively
+	large values of stroke-width were cascading through
+	other computations, causing the function to write beyond
+	the end of it's array of points when the stroke-linejoin
+	attribute value was "round". Code was added to reallocate
+	the array of points as needed, and to limit the size of
+	stroke-width (for computational purposes) to no more than
+	approximately twice the diagonal size of the output image.
+	Fixes ticket #515.
+
+	* The same limit on stroke-width was applied to all other
+	instances of the same computation in render.c.
+
 2018-05-01  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* This change set fixes ticket #471.
