@@ -1,3 +1,10 @@
+2018-05-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (ReadMETAImage): Detect and report 8BIMTEXT and
+	8BIMWTEXT decoding problems.  Fixes oss-fuzz 8125
+	"graphicsmagick/coder_8BIMTEXT_fuzzer: Use-of-uninitialized-value
+	in format8BIM". (Credit to OSS-Fuzz)
+
 2018-05-02  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (TraceStrokePolygon): Excessively
