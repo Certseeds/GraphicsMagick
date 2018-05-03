@@ -35,6 +35,22 @@
 <div class="document">
 
 
+<p>2018-05-02  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (TraceStrokePolygon): Excessively
+large values of stroke-width were cascading through
+other computations, causing the function to write beyond
+the end of it's array of points when the stroke-linejoin
+attribute value was &quot;round&quot;. Code was added to reallocate
+the array of points as needed, and to limit the size of
+stroke-width (for computational purposes) to no more than
+approximately twice the diagonal size of the output image.
+Fixes ticket #515.</li>
+<li>The same limit on stroke-width was applied to all other
+instances of the same computation in render.c.</li>
+</ul>
+</blockquote>
 <p>2018-05-01  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
