@@ -38,6 +38,10 @@
 <p>2018-05-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (ReadOneJNGImage): Add more JNG chunk
+validations. Fixes an issue reported by &quot;Trace Probe&quot; via a
+follow-up post to SourceForge issue 437 &quot;assertion failure in
+WriteBlob&quot;, although the issue described was not reproduced.</li>
 <li>coders/meta.c (ReadMETAImage): Detect and report 8BIMTEXT and
 8BIMWTEXT decoding problems.  Fixes oss-fuzz 8125
 &quot;graphicsmagick/coder_8BIMTEXT_fuzzer: Use-of-uninitialized-value

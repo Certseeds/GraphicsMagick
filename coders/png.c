@@ -3048,6 +3048,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   size_t
     length;
 
+  magick_off_t
+    blob_size;
+
   jng_alpha_compression_method=0;
   jng_alpha_sample_depth=8;
   jng_color_type=0;
@@ -3062,6 +3065,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                          "  enter ReadOneJNGImage()");
 
   image=mng_info->image;
+  blob_size=GetBlobSize(image);
   if (AccessMutablePixels(image) != (PixelPacket *) NULL)
     {
       /*
@@ -3102,8 +3106,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         Read a new JNG chunk.
       */
 
-      if (QuantumTick(TellBlob(image),2*GetBlobSize(image)))
-        if (!MagickMonitorFormatted(TellBlob(image),2*GetBlobSize(image),
+      if (QuantumTick(TellBlob(image),2*blob_size))
+        if (!MagickMonitorFormatted(TellBlob(image),2*blob_size,
                                     exception,LoadImagesTag,image->filename))
           break;
 
@@ -3124,13 +3128,38 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 "   count=%u",count);
         }
 
-      if (length > PNG_MAX_UINT || count == 0)
+      if (count == 0)
         {
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-              "chunk length (%" MAGICK_SIZE_T_F "u) > PNG_MAX_UINT",
+                                "chunk count is zero");
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
+          return ((Image*)NULL);
+        }
+      if (length > PNG_MAX_UINT)
+        {
+          DestroyJNG(NULL,&color_image,&color_image_info,
+            &alpha_image,&alpha_image_info);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "chunk length (%" MAGICK_SIZE_T_F "u) > PNG_MAX_UINT",
                                 (MAGICK_SIZE_T) length);
+          ThrowException(exception,CorruptImageError,
+                         ImproperImageHeader,image->filename);
+          return ((Image*)NULL);
+        }
+      if (length > (size_t) blob_size)
+        {
+          DestroyJNG(NULL,&color_image,&color_image_info,
+            &alpha_image,&alpha_image_info);
+          if (length > PNG_MAX_UINT)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "chunk length (%" MAGICK_SIZE_T_F "u)"
+                                  " is greater than input size"
+                                  " (%" MAGICK_OFF_F "d)",
+                                  (MAGICK_SIZE_T) length,
+                                  blob_size);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
           return ((Image*)NULL);
@@ -3231,27 +3260,20 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             }
 
           /* Rationalize dimensions with blob size if it is available */
-          if (BlobIsSeekable(image))
+          if ((blob_size == 0) ||
+              ((((double) jng_width*jng_height)/blob_size) > 512.0))
             {
-              magick_off_t
-                blob_size;
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "    Unreasonable dimensions: "
+                                    "geometry = %lux%lu, "
+                                    "blob size = %" MAGICK_OFF_F "d",
+                                    jng_width, jng_height, blob_size);
 
-              blob_size = GetBlobSize(image);
-              if ((blob_size == 0) ||
-                  ((((double) jng_width*jng_height)/blob_size) > 512.0))
-                {
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    Unreasonable dimensions: "
-                                        "geometry = %lux%lu, "
-                                        "blob size = %" MAGICK_OFF_F "d",
-                                        jng_width, jng_height, blob_size);
-
-                  ThrowException(exception,CorruptImageError,
-                                 InsufficientImageDataInFile,image->filename);
-                  DestroyJNG(chunk,&color_image,&color_image_info,
-                             &alpha_image,&alpha_image_info);
-                  return ((Image *)NULL);
-                }
+              ThrowException(exception,CorruptImageError,
+                             InsufficientImageDataInFile,image->filename);
+              DestroyJNG(chunk,&color_image,&color_image_info,
+                         &alpha_image,&alpha_image_info);
+              return ((Image *)NULL);
             }
 
           /* Temporarily set width and height resources to match JHDR */
@@ -6366,6 +6388,7 @@ ModuleExport void RegisterPNGImage(void)
 #endif
 #endif
       entry->magick=(MagickHandler) IsJNG;
+      entry->seekable_stream=MagickTrue;  /* To do: eliminate this. */
       entry->adjoin=MagickFalse;
       entry->thread_support=MagickTrue;
       entry->description="JPEG Network Graphics";
