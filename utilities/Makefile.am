@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2012 GraphicsMagick Group
+# Copyright (C) 2004-2018 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -16,7 +16,7 @@ utilities_gm_LDFLAGS	= $(LDFLAGS)
 utilities_gm_SOURCES	= utilities/gm.c
 
 
-UTILITIES_XFAIL_TESTS = 
+UTILITIES_XFAIL_TESTS =
 
 # Tests to run
 UTILITIES_TESTS = \
@@ -32,7 +32,7 @@ UTILITIES_TESTS = \
 	utilities/tests/preview.tap
 
 utilities/tests/montage.log : \
-	utilities/tests/effects.tap
+	utilities/tests/effects.log
 
 UTILITIES_MANS = \
 	utilities/gm.1 \

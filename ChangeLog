@@ -1,3 +1,9 @@
+2018-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/Makefile.am (utilities/tests/montage.log): Fix
+	dependency rule so that effects.tap is fully executed before
+	execution of montage.tap starts.
+
 2018-05-04  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (DrawImage, TraceXXX): The PrimitiveInfo

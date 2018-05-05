@@ -117,7 +117,7 @@
 # Makefile for building Wand API HTML files
 #
 
-# Copyright (C) 2004-2012 GraphicsMagick Group
+# Copyright (C) 2004-2018 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -9953,7 +9953,7 @@ uninstall-data-html:
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 utilities/tests/montage.log : \
-	utilities/tests/effects.tap
+	utilities/tests/effects.log
 @MAGICK_COMPAT_TRUE@install-exec-local-utilities:
 @MAGICK_COMPAT_TRUE@	$(mkdir_p) $(DESTDIR)$(bindir)
 @MAGICK_COMPAT_TRUE@	cd $(DESTDIR)$(bindir) ; \
