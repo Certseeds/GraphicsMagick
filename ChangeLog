@@ -1,3 +1,9 @@
+2018-05-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.tap: MIFF zip and bzip compression tests do not
+	fail if zlib and bzlib are not available because the compression
+	request is silently changed to no compression.
+
 2018-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/Makefile.am (utilities/tests/montage.log): Fix

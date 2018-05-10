@@ -207,14 +207,20 @@ do
     test_command_fn "MIFF RLE compressed ${type}" ${MEMCHECK} ${rwfile} -compress RLE -filespec "out_${type}_rle_%d" "${SRCDIR}/input_${type}.miff" MIFF
 done
 
+# Normally one would expect that -F BZLIB is required, but bzip
+# compression is silently translated to no compression if not
+# available.
 for type in ${check_types}
 do
-    test_command_fn "MIFF BZIP compressed ${type}" -F BZLIB ${MEMCHECK} ${rwfile} -compress BZIP -filespec "out_${type}_bzip_%d" "${SRCDIR}/input_${type}.miff" MIFF
+    test_command_fn "MIFF BZIP compressed ${type}" ${MEMCHECK} ${rwfile} -compress BZIP -filespec "out_${type}_bzip_%d" "${SRCDIR}/input_${type}.miff" MIFF
 done
 
+# Normally one would expect that -F ZLIB is required, but zip
+# compression is silently translated to no compression if not
+# available.
 for type in ${check_types}
 do
-    test_command_fn "MIFF ZIP compressed ${type}" -F ZLIB ${MEMCHECK} ${rwfile} -compress ZIP -filespec "out_${type}_zip_%d" "${SRCDIR}/input_${type}.miff" MIFF
+    test_command_fn "MIFF ZIP compressed ${type}" ${rwfile} -compress ZIP -filespec "out_${type}_zip_%d" "${SRCDIR}/input_${type}.miff" MIFF
 done
 
 # MNG format
