@@ -1,3 +1,8 @@
+2018-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Apply SourceForge patch #56 "Use a
+	few delegate libraries in fuzzing" by Alex Gaynor.
+
 2018-05-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwfile.tap: MIFF zip and bzip compression tests do not

@@ -3,9 +3,56 @@
 # This is intended to be run from OSS-Fuzz's build environment. We intend to
 # eventually refactor it to be easy to run locally.
 
+# build zlib
+pushd "$SRC/zlib"
 ./configure --prefix="$WORK"
+make -j$(nproc) CFLAGS="$CFLAGS -fPIC"
+make install
+popd
+
+pushd "$SRC/libpng"
+cmake . -DCMAKE_INSTALL_PREFIX=$WORK
+make -j$(nproc)
+make install
+popd
+
+# Build libtiff
+pushd "$SRC/libtiff"
+autoreconf -fiv
+./configure --prefix="$WORK"
+make -j$(nproc)
+make install
+popd
+
+# Build liblcms2
+pushd "$SRC/Little-CMS"
+autoreconf -fiv
+./configure --prefix="$WORK"
+make -j$(nproc)
+make install
+popd
+
+# Build freetype2
+pushd "$SRC/freetype2"
+./autogen.sh
+./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
+make -j$(nproc)
+make install
+popd
+
+# Build webp
+pushd "$SRC/libwebp"
+./autogen.sh
+./configure --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
+make -j$(nproc)
+make install
+popd
+
+./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
 make "-j$(nproc)"
 make install
+
+MAGICK_LIBS="$WORK/lib/libz.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libfreetype.a"
 
 for f in fuzzing/*_fuzzer.cc; do
     fuzzer=$(basename "$f" _fuzzer.cc)
@@ -17,12 +64,12 @@ for f in fuzzing/*_fuzzer.cc; do
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         "$f" -o "$OUT/${fuzzer}_fuzzer" \
         -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
-        "$WORK/lib/libGraphicsMagick.a"
+        "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
 done
 
 $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
     fuzzing/coder_list.cc -o "$WORK/coder_list" \
-    "$WORK/lib/libGraphicsMagick++.a" "$WORK/lib/libGraphicsMagick.a"
+    "$WORK/lib/libGraphicsMagick++.a" "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
 
 for item in $("$WORK/coder_list"); do
     coder="${item:1}"
@@ -34,5 +81,5 @@ for item in $("$WORK/coder_list"); do
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         fuzzing/coder_fuzzer.cc -o "${OUT}/coder_${coder}_fuzzer" \
         $coder_flags -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
-        "$WORK/lib/libGraphicsMagick.a"
+        "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
 done
