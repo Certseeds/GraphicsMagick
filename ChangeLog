@@ -1,3 +1,14 @@
+2018-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Apply SourceForge patch #56 "Use a
+	few delegate libraries in fuzzing" by Alex Gaynor.
+
+2018-05-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.tap: MIFF zip and bzip compression tests do not
+	fail if zlib and bzlib are not available because the compression
+	request is silently changed to no compression.
+
 2018-05-07  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (DrawImage, InsertAttributeIntoInputStream):
@@ -9,7 +20,7 @@
 
 	* These relaxed conditions are not specifically called out in
 	the SVG spec as being either acceptable or unacceptable, but
-	other SVG renders (e.g., Chrome) handle them this way. These
+	other SVG renderers (e.g., Chrome) handle them this way. These
 	changes do not resolve, but are related to, ticket #307.
 
 2018-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
