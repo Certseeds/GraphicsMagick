@@ -1257,8 +1257,11 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
   */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-     "    read_user_chunk: found %c%c%c%c chunk",
-       chunk->name[0],chunk->name[1],chunk->name[2],chunk->name[3]);
+     "    read_user_chunk: found %c%c%c%c chunk with size"
+                        " %" MAGICK_SIZE_T_F "u",
+                        chunk->name[0],chunk->name[1],
+                        chunk->name[2],chunk->name[3],
+                        (MAGICK_SIZE_T) chunk->size);
 
   if (chunk->name[0]  == 101 &&
       (chunk->name[1] ==  88 || chunk->name[1] == 120 ) &&
@@ -1279,41 +1282,55 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       size_t
         i;
 
-(void) LogMagickEvent(CoderEvent,GetMagickModule(),
-        " recognized eXIf chunk");
-
       image=(Image *) png_get_user_chunk_ptr(ping);
 
-#if PNG_LIBPNG_VER >= 14000
-      profile=(unsigned char *) png_malloc(ping,
-        (png_alloc_size_t) chunk->size+6);
-#else
-      profile=(unsigned char *) png_malloc(ping,
-         (png_size_t) chunk->size+6);
-#endif
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              " recognized eXIf chunk");
+
+      profile=MagickAllocateMemory(unsigned char *,chunk->size+6);
+
+      if (profile == (unsigned char *) NULL)
+        {
+          ThrowException(&image->exception,ResourceLimitError,
+                         MemoryAllocationFailed,image->filename);
+          return -1;
+        }
+
       p=profile;
 
-      if (*p != 'E' || *(p+1) != 'x' || *(p+2) != 'i' ||
-          *(p+3) != 'f' || *(p+4) != '\0' || *(p+5) != '\0')
+      /* Stored profile must start with "Exif\0\0" */
+      *p++ ='E';
+      *p++ ='x';
+      *p++ ='i';
+      *p++ ='f';
+      *p++ ='\0';
+      *p++ ='\0';
+
+      i=0;
+      s=chunk->data;
+
+      if (chunk->size > 6 &&
+          (s[0] == 'E' || s[1] == 'x' || s[2] == 'i' ||
+           s[3] == 'f' || s[4] == '\0' || s[5] == '\0'))
         {
-          /* Initialize profile with "Exif\0\0" if it
-             doesn't already begin with it by accident
+          /*
+            Skip over "Exif\0\0" if already present
           */
-          *p++ ='E';
-          *p++ ='x';
-          *p++ ='i';
-          *p++ ='f';
-          *p++ ='\0';
-          *p++ ='\0';
+          i=6;
+          s += 6;
         }
 
       /* copy chunk->data to profile */
-      s=chunk->data;
-      for (i=0; i<chunk->size; i++)
+      /* It is documented that the first four bytes of eXIf profile
+         should be '73 73 42 0' or '77 77 0 42' */
+      for (; i<chunk->size; i++)
         *p++ = *s++;
 
       (void) SetImageProfile(image,"exif",
-         (const unsigned char *)profile, chunk->size+6);
+         (const unsigned char *)profile, p-profile);
+      MagickFreeMemory(profile)
+
       return(1);
     }
 
