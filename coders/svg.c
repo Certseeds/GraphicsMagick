@@ -2885,10 +2885,9 @@ void    ProcessStyleClassDefs (
     {/*pClassDef loop*/
 
       ElementValue * pEV;
-      if  ( (pEV = pClassDef->ElementValueHead.pNext) == 0 )    /* just in case, should never happen */
-        continue;
       MVGPrintf(svg_info->file,"push class '%s'\n",pClassDef->pName);
-      for  ( ; pEV; pEV = pEV->pNext )
+      /* NOTE: we allow class definitions that are empty */
+      for  ( pEV = pClassDef->ElementValueHead.pNext; pEV; pEV = pEV->pNext )
         {/*pEV loop*/
 
           char * keyword = pEV->pKeyword;

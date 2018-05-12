@@ -2042,7 +2042,8 @@ char * InsertAttributeIntoInputStream (
   char ** ptoken,             /* ptr to ptr to big enough buffer for extracted string */
   size_t * ptoken_max_length,
   Image *image,
-  MagickPassFail * pStatus
+  MagickPassFail * pStatus,
+  MagickBool UndefAttrIsError
   )
 {/*InsertAttributeIntoInputStream*/
 
@@ -2062,8 +2063,10 @@ char * InsertAttributeIntoInputStream (
   attribute=GetImageAttribute(image,AttributeName);
   if (attribute == (ImageAttribute *) NULL)
     {
-    *pStatus = MagickFail;
-    return(q);
+      /* the client specifies whether or not an undefined attributes is an error */
+      if  ( UndefAttrIsError )
+        *pStatus = MagickFail;
+      return(q);
     }
 
   /*
@@ -2452,7 +2455,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("class",keyword) == 0)
           {/*class*/
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
+              &status,MagickFalse/*UndefAttrIsError*/);
             break;
           }/*class*/
         if (LocaleCompare("clip-path",keyword) == 0)
@@ -3685,7 +3689,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("use",keyword) == 0)
           {
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
+              &status,MagickTrue/*UndefAttrIsError*/);
             break;
           }
         status=MagickFail;

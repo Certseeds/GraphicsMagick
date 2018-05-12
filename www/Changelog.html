@@ -59,6 +59,20 @@ fail if zlib and bzlib are not available because the compression
 request is silently changed to no compression.</li>
 </ul>
 </blockquote>
+<p>2018-05-07  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage, InsertAttributeIntoInputStream):
+For a reference such as 'class=&quot;classname&quot;', the &quot;classname&quot;
+is now allowed to be undefined.</li>
+<li>coders.svg.c (ProcessStyleClassDefs): Class definitions
+defined within a &lt;style&gt; block may now be empty.</li>
+<li>These relaxed conditions are not specifically called out in
+the SVG spec as being either acceptable or unacceptable, but
+other SVG renderers (e.g., Chrome) handle them this way. These
+changes do not resolve, but are related to, ticket #307.</li>
+</ul>
+</blockquote>
 <p>2018-05-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

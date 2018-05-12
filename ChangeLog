@@ -16,6 +16,20 @@
 	fail if zlib and bzlib are not available because the compression
 	request is silently changed to no compression.
 
+2018-05-07  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (DrawImage, InsertAttributeIntoInputStream):
+	For a reference such as 'class="classname"', the "classname"
+	is now allowed to be undefined.
+
+	* coders.svg.c (ProcessStyleClassDefs): Class definitions
+	defined within a <style> block may now be empty.
+
+	* These relaxed conditions are not specifically called out in
+	the SVG spec as being either acceptable or unacceptable, but
+	other SVG renderers (e.g., Chrome) handle them this way. These
+	changes do not resolve, but are related to, ticket #307.
+
 2018-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/Makefile.am (utilities/tests/montage.log): Fix
