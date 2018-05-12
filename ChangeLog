@@ -1,5 +1,8 @@
 2018-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/oss-fuzz-build.sh: Apply SourceForge patch #57 "Add
+	fuzzing support for jpeg + freetype delegates" by Alex Gaynor.
+
 	* coders/png.c (read_user_chunk_callback): Fix memory leak and use
 	of uninitialized memory when handling eXIf chunk. Fixes oss-fuzz
 	8247 "graphicsmagick/coder_PNG24_fuzzer: Direct-leak in

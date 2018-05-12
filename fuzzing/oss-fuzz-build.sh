@@ -10,8 +10,23 @@ make -j$(nproc) CFLAGS="$CFLAGS -fPIC"
 make install
 popd
 
+# build xz
+pushd "$SRC/xz"
+./autogen.sh
+./configure --disable-xz --disable-xzdc --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
+make -j$(nproc)
+make install
+popd
+
 pushd "$SRC/libpng"
 cmake . -DCMAKE_INSTALL_PREFIX=$WORK
+make -j$(nproc)
+make install
+popd
+
+# build libjpeg
+pushd "$SRC/libjpeg-turbo"
+CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on
 make -j$(nproc)
 make install
 popd
@@ -35,7 +50,7 @@ popd
 # Build freetype2
 pushd "$SRC/freetype2"
 ./autogen.sh
-./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
+./configure --prefix="$WORK" --enable-freetype-config PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 make -j$(nproc)
 make install
 popd
@@ -48,11 +63,11 @@ make -j$(nproc)
 make install
 popd
 
-./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include/freetype2 -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
 make "-j$(nproc)"
 make install
 
-MAGICK_LIBS="$WORK/lib/libz.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libfreetype.a"
+MAGICK_LIBS="$WORK/lib/libz.a $WORK/lib/liblzma.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a"
 
 for f in fuzzing/*_fuzzer.cc; do
     fuzzer=$(basename "$f" _fuzzer.cc)
