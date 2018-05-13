@@ -1,5 +1,11 @@
 2018-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Fix leak of Image when
+	TIFFReadRGBAImage() reports failure.  Also harden buffer
+	allocation calculation.  Fixes oss-fuzz 8275
+	"graphicsmagick/coder_BIGTIFF_fuzzer: Indirect-leak in
+	AllocateImage". (Credit to OSS-Fuzz)
+
 	* coders/ept.c (ReadEPTImage): Add validations of 'count' and
 	'filesize' read from EPT file. In response to oss-fuzz 8248
 	"graphicsmagick/coder_EPT_fuzzer: Floating-point-exception in
