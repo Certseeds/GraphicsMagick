@@ -1,3 +1,11 @@
+2018-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/ept.c (ReadEPTImage): Add validations of 'count' and
+	'filesize' read from EPT file. In response to oss-fuzz 8248
+	"graphicsmagick/coder_EPT_fuzzer: Floating-point-exception in
+	WriteTIFFImage" but we are unable to recreate the oss-fuzz issue
+	since the EPT reader already immediately reports an EOF exception.
+
 2018-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Apply SourceForge patch #57 "Add

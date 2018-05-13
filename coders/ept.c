@@ -160,7 +160,7 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
   unsigned int
     antialias=4;
 
-  ExtendedSignedIntegralType
+  magick_uint32_t
     filesize;
 
   RectangleInfo
@@ -170,13 +170,13 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
   register char
     *p;
 
-  register long
+  register size_t
     i;
 
   SegmentInfo
     bounds;
 
-  size_t
+  magick_uint32_t
     count;
 
   unsigned long
@@ -228,13 +228,15 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
   (void) ReadBlobLSBLong(image);
   count=ReadBlobLSBLong(image);
   filesize=ReadBlobLSBLong(image);
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "File Size: %lu,  Offset: %lu",
-                          (unsigned long) filesize, (unsigned long) count);
   if (EOFBlob(image))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-  for (i=0; i < (long) (count-12); i++)
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "File Size: %u,  Offset: %u",
+                          (unsigned int) filesize, (unsigned int) count);
+  if ((count <= 12) || (filesize == 0))
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  for (i=0; i < (count-12); i++)
     if (ReadBlobByte(image) == EOF)
       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   /*
@@ -255,7 +257,7 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Copying Postscript to temporary file \"%s\" ...",
                           postscript_filename);
-  for (i=0; i < (long) filesize; i++)
+  for (i=0; i < filesize; i++)
   {
     if ((c=ReadBlobByte(image)) == EOF)
       break;
