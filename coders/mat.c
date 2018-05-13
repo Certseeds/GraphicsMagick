@@ -884,7 +884,16 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     }
 #endif
 
-    if(MATLAB_HDR.DataType!=miMATRIX) continue;  /* skip another objects. */
+    if(MATLAB_HDR.DataType!=miMATRIX) 
+    {
+#if defined(HasZLIB)
+      if(image2 != image)
+      {
+         DeleteImageFromList(&image2);	/* image2 is set to NULL */
+      }
+#endif
+      continue;  /* skip another objects. */
+    }
 
     MATLAB_HDR.unknown1 = ReadBlobXXXLong(image2);
     MATLAB_HDR.unknown2 = ReadBlobXXXLong(image2);
