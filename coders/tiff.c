@@ -3220,9 +3220,6 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               *pixels;
 
             size_t
-              alloc_size1,
-              alloc_size2,
-              alloc_size,
               number_pixels;
 
             if (logging)
@@ -3242,34 +3239,25 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
 
             /*
-              (number_pixels+6*image->columns)*sizeof(uint32)
+              TIFFReadRGBAImage reads a strip- or tile-based image
+              into memory, storing the result in the user supplied
+              raster.  The raster is assumed to be an array of width
+              times height 32-bit entries, where width must be less
+              than or equal to the width of the image (height may be
+              any non-zero size). If the raster dimensions are smaller
+              than the image, the image data is cropped to the raster
+              bounds.  If the raster height is greater than that of
+              the image, then the image data are placed in the lower
+              part of the raster.  (Note that the raster is assumed to
+              be organized such that the pixel at location (x,y) is
+              raster[y*width+x]; with the raster origin in the
+              lower-left hand corner.)
 
-              FIXME: Investigate this large allocation and algorithm
-              to see if it can be improved.
-
-              "TIFFReadRGBAImage  reads  a  strip- or tile-based image into
-              memory, storing the result in the user supplied raster.  The
-              raster  is  assumed  to  be  an  array of width times height
-              32-bit entries, where width must be less than  or  equal  to
-              the  width  of  the image (height may be any non-zero size).
-              If the raster dimensions are smaller  than  the  image,  the
-              image  data  is cropped to the raster bounds.  If the raster
-              height is greater than that of the  image,  then  the  image
-              data are placed in the lower part of the raster.  (Note that
-              the raster is assume to be organized such that the pixel  at
-              location  (x,y) is raster[y*width+x]; with the raster origin
-              in the lower-left hand corner.)"
+              Please note that this allocation used to be
+              (number_pixels+6*image->columns)*sizeof(uint32) for
+              unknown reasons.
             */
-            alloc_size1=MagickArraySize(MagickArraySize(6,image->columns),sizeof(uint32));
-            alloc_size2=MagickArraySize(number_pixels,sizeof(uint32));
-            if ((alloc_size1 > 0) && (alloc_size2 > 0) &&
-                (alloc_size1+alloc_size2 > alloc_size1) &&
-                (alloc_size1+alloc_size2 > alloc_size2))
-              alloc_size=alloc_size1+alloc_size2;
-            else
-              alloc_size=0;
-
-            pixels=MagickAllocateMemory(uint32 *,alloc_size);
+            pixels=MagickAllocateArray(uint32 *,number_pixels,sizeof(uint32));
             if (pixels == (uint32 *) NULL)
               {
                 ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
