@@ -43,6 +43,10 @@ Jaroslav Fojtik
                 build testing/fixes for many versions of Microsoft
                 Visual Studio.
 
+Gregory J Wolfe
+		Contributed significant improvements to the SVG
+		parsing and rendering code.
+
 
 Former GraphicsMagick Contributors
 ==================================
