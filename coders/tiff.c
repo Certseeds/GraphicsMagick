@@ -3939,9 +3939,6 @@ WriteNewsProfile(TIFF *tiff,
   MagickFreeMemory(profile);
 }
 
-#if !defined(TIFFDefaultStripSize)
-#define TIFFDefaultStripSize(tiff,request)  ((8*1024)/TIFFScanlineSize(tiff))
-#endif
 static MagickPassFail
 WriteTIFFImage(const ImageInfo *image_info,Image *image)
 {

@@ -1,7 +1,15 @@
+2018-05-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Use libtiff's
+	TIFFDefaultStripSize() function rather than an old porting macro
+	required by some defunct libtiff version.  Expected to fix
+	oss-fuzz 8248 "graphicsmagick/coder_EPT_fuzzer:
+	Floating-point-exception in WriteTIFFImage". (Credit to OSS-Fuzz)
+
 2018-05-13  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/mat.c Fix potentional leak when compressed object is 
-        corrupted. Fixes oss-fuzz 8251 (Credit to OSS-Fuzz)
+	* coders/mat.c Fix potentional leak when compressed object is
+	corrupted. Fixes oss-fuzz 8251 (Credit to OSS-Fuzz)
 
 2018-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
