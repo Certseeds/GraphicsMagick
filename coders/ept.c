@@ -452,7 +452,7 @@ ModuleExport void RegisterEPTImage(void)
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;
-  entry->blob_support=False;
+  entry->blob_support=MagickFalse;
   entry->description="Adobe Encapsulated PostScript with MS-DOS TIFF preview";
   entry->module="EPT";
   entry->coder_class=PrimaryCoderClass;
@@ -463,7 +463,7 @@ ModuleExport void RegisterEPTImage(void)
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;
-  entry->blob_support=False;
+  entry->blob_support=MagickFalse;
   entry->description="Adobe Level II Encapsulated PostScript with MS-DOS TIFF preview";
   entry->module="EPT";
   entry->coder_class=PrimaryCoderClass;
@@ -474,7 +474,7 @@ ModuleExport void RegisterEPTImage(void)
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;
-  entry->blob_support=False;
+  entry->blob_support=MagickFalse;
   entry->description="Adobe Level III Encapsulated PostScript with MS-DOS TIFF preview";
   entry->module="EPT";
   entry->coder_class=PrimaryCoderClass;

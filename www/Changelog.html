@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2018-05-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>tests/rwblob.tap: Add a test for PTIF format.</li>
+<li>coders/tiff.c (WritePTIFImage): Fix Image blob referencing in
+order to avoid double-free when writing PTIF to memory BLOB. Fixes
+oss-fuzz 8280 &quot;graphicsmagick/coder_PTIF_fuzzer: Heap-double-free
+in Magick::BlobRef::~BlobRef&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-05-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

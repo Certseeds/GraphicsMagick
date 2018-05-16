@@ -1,3 +1,12 @@
+2018-05-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwblob.tap: Add a test for PTIF format.
+
+	* coders/tiff.c (WritePTIFImage): Fix Image blob referencing in
+	order to avoid double-free when writing PTIF to memory BLOB. Fixes
+	oss-fuzz 8280 "graphicsmagick/coder_PTIF_fuzzer: Heap-double-free
+	in Magick::BlobRef::~BlobRef". (Credit to OSS-Fuzz)
+
 2018-05-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Use libtiff's

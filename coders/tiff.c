@@ -3798,6 +3798,8 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   pyramid_image=CloneImage(image,0,0,True,&image->exception);
   if (pyramid_image == (Image *) NULL)
     ThrowWriterException2(FileOpenError,image->exception.reason,image);
+  DestroyBlob(pyramid_image);
+  pyramid_image->blob=ReferenceBlob(image->blob);
   (void) SetImageAttribute(pyramid_image,"subfiletype","NONE");
   do
     {
@@ -3806,6 +3808,8 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
                                       1.0,&image->exception);
       if (pyramid_image->next == (Image *) NULL)
         ThrowWriterException2(FileOpenError,image->exception.reason,image);
+      DestroyBlob(pyramid_image->next);
+        pyramid_image->next->blob=ReferenceBlob(image->blob);
       if ((!image->is_monochrome) && (image->storage_class == PseudoClass))
         (void) MapImage(pyramid_image->next,image,False);
       pyramid_image->next->x_resolution=pyramid_image->x_resolution/2;

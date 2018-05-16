@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2004-2015 GraphicsMagick Group
+# Copyright (C) 2004-2018 GraphicsMagick Group
 . ./common.shi
 . ${top_srcdir}/tests/common.shi
 
@@ -10,7 +10,7 @@ rwblob=./rwblob
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 204
+test_plan_fn 208
 
 # ART format
 for type in ${check_types}
@@ -220,6 +220,12 @@ done
 for type in ${check_types}
 do
   test_command_fn "PPM ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PPM
+done
+
+# PTIF format
+for type in ${check_types}
+do
+  test_command_fn "PTIF ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PTIF
 done
 
 # RAS format
