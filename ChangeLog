@@ -1,3 +1,13 @@
+2018-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Add and use
+	ThrowTIFFWriterException() macro to consistently clean-up when
+	throwing writer exception.  May fix oss-fuzz 8321
+	"graphicsmagick/coder_EPT_fuzzer: Direct-leak in
+	TIFFClientOpen". (Credit to OSS-Fuzz)
+	(ReadTIFFImage): Add and use ThrowTIFFReaderException() macro to
+	consistently clean-up when throwing reader exception.
+
 2018-05-16  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/alpha_composite.h (AlphaCompositePixel): The
