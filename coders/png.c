@@ -3114,7 +3114,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         type[MaxTextExtent];
 
       unsigned char
-        *chunk;
+        *chunk = (unsigned char *) NULL;
 
       unsigned int
         count;
@@ -3182,7 +3182,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           return ((Image*)NULL);
         }
 
-      chunk=(unsigned char *) NULL;
       p=NULL;
       if (length)
         {
@@ -3422,17 +3421,27 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             Copy chunk to color_image->blob
           */
 
-          if (logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "    Copying %" MAGICK_SIZE_T_F
-                                  "u bytes of JDAT chunk data"
-                                  " to color_blob.",
-                                  (MAGICK_SIZE_T) length);
+
           if (length && color_image != (Image *)NULL)
-          {
-            (void) WriteBlob(color_image,length,(char *) chunk);
-            MagickFreeMemory(chunk);
-          }
+            {
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "    Copying %" MAGICK_SIZE_T_F
+                                      "u bytes of JDAT chunk data"
+                                      " to color_blob.",
+                                      (MAGICK_SIZE_T) length);
+              (void) WriteBlob(color_image,length,(char *) chunk);
+            }
+          else
+            {
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "    Skipping copy of %" MAGICK_SIZE_T_F
+                                      "u bytes of JDAT chunk data"
+                                      " to color_blob (color_image=%p).",
+                                      (MAGICK_SIZE_T) length, color_image);
+            }
+          MagickFreeMemory(chunk);
           continue;
         }
 

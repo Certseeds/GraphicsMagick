@@ -1,5 +1,9 @@
 2018-05-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): Unconditionally free JDAT chunk
+	memory.  Fixes oss-fuzz 8366 "graphicsmagick/coder_JNG_fuzzer:
+	Direct-leak in ReadOneJNGImage". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (WritePTIFImage): Fix leak of pyramid Image list
 	if ResizeImage() fails.  Fixes oss-fuzz 8364
 	"graphicsmagick/coder_PTIF_fuzzer: Indirect-leak in
