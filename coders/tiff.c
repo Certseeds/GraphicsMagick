@@ -3796,7 +3796,10 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
                                       pyramid_image->rows/2,filter,
                                       1.0,&image->exception);
       if (pyramid_image->next == (Image *) NULL)
-        ThrowWriterException2(FileOpenError,image->exception.reason,image);
+        {
+          DestroyImageList(pyramid_image);
+          ThrowWriterException2(FileOpenError,image->exception.reason,image);
+        }
       DestroyBlob(pyramid_image->next);
         pyramid_image->next->blob=ReferenceBlob(image->blob);
       if ((!image->is_monochrome) && (image->storage_class == PseudoClass))

@@ -1,3 +1,10 @@
+2018-05-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WritePTIFImage): Fix leak of pyramid Image list
+	if ResizeImage() fails.  Fixes oss-fuzz 8364
+	"graphicsmagick/coder_PTIF_fuzzer: Indirect-leak in
+	CloneImage". (Credit to OSS-Fuzz)
+
 2018-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Add and use
