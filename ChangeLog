@@ -1,5 +1,14 @@
 2018-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Remove strange addition of
+	image->columns to pixel buffer offsets which now causes a heap
+	overflow since the buffer has been right-sized.  Perhaps the extra
+	offset plus the over-sized allocation was some attempt to avoid
+	buffer over/underflows due to bugs in libtiff. Fixes oss-fuzz 8384
+	"graphicsmagick/coder_BIGTIFF_fuzzer: Heap-buffer-overflow in
+	put1bitbwtile" which is described to be a regression. (Credit to
+	OSS-Fuzz)
+
 	* magick/render.c (DrawImage): Fix wrong range checks which caused
 	spurious "Parsing of SVG images fail with "Non-conforming drawing
 	primitive definition (push)" failure.  Fixes SourceForge issue 561

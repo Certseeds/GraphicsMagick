@@ -3257,7 +3257,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             if (!TIFFReadRGBAImage(tiff,(uint32) image->columns,
                                    (uint32) image->rows,
-                                   pixels+image->columns,0))
+                                   pixels,0))
               {
                 MagickFreeMemory(pixels);
                 status=MagickFail;
@@ -3266,7 +3266,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert image to DirectClass pixel packets.
             */
-            p=pixels+number_pixels+image->columns-1;
+            p=pixels+number_pixels-1;
             for (y=0; y < image->rows; y++)
               {
                 q=SetImagePixels(image,0,y,image->columns,1);
