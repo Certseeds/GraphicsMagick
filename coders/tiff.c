@@ -3740,7 +3740,7 @@ WriteGROUP4RAWImage(const ImageInfo *image_info,Image *image)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  WritePTIFImage() writes an image in the pyrimid-encoded Tagged image file
+%  WritePTIFImage() writes an image in the pyramid-encoded Tagged image file
 %  format.
 %
 %  The format of the WritePTIFImage method is:
@@ -3792,8 +3792,15 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   (void) SetImageAttribute(pyramid_image,"subfiletype","NONE");
   do
     {
-      pyramid_image->next=ResizeImage(image,pyramid_image->columns/2,
-                                      pyramid_image->rows/2,filter,
+      unsigned long
+        columns,
+        rows;
+
+      columns=pyramid_image->columns/2;
+      rows=pyramid_image->rows/2;
+      if ((columns < 1) || (rows < 1))
+        break;
+      pyramid_image->next=ResizeImage(image,columns,rows,filter,
                                       1.0,&image->exception);
       if (pyramid_image->next == (Image *) NULL)
         {
