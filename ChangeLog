@@ -1,5 +1,12 @@
 2018-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Fix wrong range checks which caused
+	spurious "Parsing of SVG images fail with "Non-conforming drawing
+	primitive definition (push)" failure.  Fixes SourceForge issue 561
+	"Parsing of SVG images fail with "Non-conforming drawing primitive
+	definition (push)"" which is due to problems caused by the fix for
+	SourceForge issue 517.
+
 	* coders/tiff.c (WritePTIFImage): Use '-define
 	ptif:minimum-geometry=<geometry>' to specify the smallest
 	subresolution frame which is produced by the PTIF (Pyramid TIFF)

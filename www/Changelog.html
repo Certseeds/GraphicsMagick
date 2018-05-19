@@ -38,6 +38,12 @@
 <p>2018-05-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/render.c (DrawImage): Fix wrong range checks which caused
+spurious &quot;Parsing of SVG images fail with &quot;Non-conforming drawing
+primitive definition (push)&quot; failure.  Fixes SourceForge issue 561
+&quot;Parsing of SVG images fail with &quot;Non-conforming drawing primitive
+definition (push)&quot;&quot; which is due to problems caused by the fix for
+SourceForge issue 517.</li>
 <li>coders/tiff.c (WritePTIFImage): Use '-define
 ptif:minimum-geometry=&lt;geometry&gt;' to specify the smallest
 subresolution frame which is produced by the PTIF (Pyramid TIFF)

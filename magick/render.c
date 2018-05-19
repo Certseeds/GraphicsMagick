@@ -3046,7 +3046,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p+5U > q)
+                if (p-4 > q)
                   {
                     status=MagickFail;
                     break;
@@ -3198,7 +3198,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p+5U > q)
+                if (p-4 > q)
                   {
                     status=MagickFail;
                     break;
