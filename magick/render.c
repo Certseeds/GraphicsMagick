@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3046,7 +3046,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p-4 > q)
+                if ((q == NULL) || (p == NULL) || (q-4 < p))
                   {
                     status=MagickFail;
                     break;
@@ -3198,7 +3198,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p-4 > q)
+                if ((q == NULL) || (p == NULL) || (q-4 < p))
                   {
                     status=MagickFail;
                     break;
