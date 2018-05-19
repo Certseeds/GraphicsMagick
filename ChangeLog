@@ -1,3 +1,10 @@
+2018-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WritePTIFImage): Use '-define
+	ptif:minimum-geometry=<geometry>' to specify the smallest
+	subresolution frame which is produced by the PTIF (Pyramid TIFF)
+	writer.
+
 2018-05-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WritePTIFImage): Allow 1x1 input image to be

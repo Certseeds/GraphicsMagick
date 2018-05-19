@@ -1231,6 +1231,13 @@ create Postscript files that render bilevel images with the Postscript
 imagemask operator instead of the image operator.
 </dd>
 
+<dt>ptif:minimum-geometry=<geometry></dt>
+<dd>If the ptif:minimum-geometry key is defined, GraphicsMagick will
+use it to determine the minimum frame size to output when writing a
+pyramid TIFF file (a TIFF file containing a succession of reduced
+versions of the first frame). The default minimum geometry is 32x32.
+</dd>
+
 <dt>tiff:alpha={unspecified|associated|unassociated}</dt>
 <dd>Specify the TIFF alpha channel type when reading or writing TIFF files,
 overriding the normal value. The default alpha channel type for new files

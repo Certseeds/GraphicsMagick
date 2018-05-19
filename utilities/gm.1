@@ -1,4 +1,4 @@
-.TH gm 1 "2018/04/28" "GraphicsMagick"
+.TH gm 1 "2018/05/19" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1371,6 +1371,17 @@ requested pages.
 If the ps:imagemask flag is defined, the PS3 and EPS3 coders will
 create Postscript files that render bilevel images with the Postscript
 imagemask operator instead of the image operator.
+
+.in 15
+.in 15
+.B "ptif:minimum-geometry=<geometry>"
+.in 20
+ \fR
+.in 20
+If the ptif:minimum-geometry key is defined, GraphicsMagick will
+use it to determine the minimum frame size to output when writing a
+pyramid TIFF file (a TIFF file containing a succession of reduced
+versions of the first frame). The default minimum geometry is 32x32.
 
 .in 15
 .in 15

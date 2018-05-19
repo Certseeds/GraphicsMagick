@@ -3774,6 +3774,12 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   unsigned int
     status;
 
+  const char
+    *def;
+
+  RectangleInfo
+    min_geometry;
+
   /*
     Create pyramid-encoded TIFF image.
   */
@@ -3781,6 +3787,20 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  if (!(((def=AccessDefinition(image_info,"ptif","minimum-geometry")) != NULL) &&
+        (GetGeometry(def,&min_geometry.x,&min_geometry.y,&min_geometry.width,
+                     &min_geometry.height) & (WidthValue|HeightValue))))
+    {
+      /*
+        Minimum default subresolution frame is 32x32
+      */
+      min_geometry.height=32;
+      min_geometry.width=32;
+    }
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "PTIF minimum pyramid dimensions: %lux%lu",
+                          min_geometry.width, min_geometry.height);
   filter=TriangleFilter;
   if (image->is_monochrome)
     filter=PointFilter;
@@ -3790,17 +3810,14 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
   DestroyBlob(pyramid_image);
   pyramid_image->blob=ReferenceBlob(image->blob);
   (void) SetImageAttribute(pyramid_image,"subfiletype","NONE");
-  do
+  while(1)
     {
-      unsigned long
-        columns,
-        rows;
-
-      columns=pyramid_image->columns/2;
-      rows=pyramid_image->rows/2;
-      if ((columns < 1) || (rows < 1))
+      if ((pyramid_image->columns/2 < min_geometry.width) ||
+          (pyramid_image->rows/2 < min_geometry.height))
         break;
-      pyramid_image->next=ResizeImage(image,columns,rows,filter,
+
+      pyramid_image->next=ResizeImage(image,pyramid_image->columns/2,
+                                      pyramid_image->rows/2,filter,
                                       1.0,&image->exception);
       if (pyramid_image->next == (Image *) NULL)
         {
@@ -3811,12 +3828,12 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
         pyramid_image->next->blob=ReferenceBlob(image->blob);
       if ((!image->is_monochrome) && (image->storage_class == PseudoClass))
         (void) MapImage(pyramid_image->next,image,False);
-      pyramid_image->next->x_resolution=pyramid_image->x_resolution/2;
-      pyramid_image->next->y_resolution=pyramid_image->y_resolution/2;
+      pyramid_image->next->x_resolution=pyramid_image->x_resolution/2.0;
+      pyramid_image->next->y_resolution=pyramid_image->y_resolution/2.0;
       (void) SetImageAttribute(pyramid_image->next,"subfiletype","REDUCEDIMAGE");
       pyramid_image->next->previous=pyramid_image;
       pyramid_image=pyramid_image->next;
-    } while ((pyramid_image->columns > 64) && (pyramid_image->rows > 64));
+    };
   while (pyramid_image->previous != (Image *) NULL)
     pyramid_image=pyramid_image->previous;
   /*
