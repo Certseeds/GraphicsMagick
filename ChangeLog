@@ -1,5 +1,9 @@
 2018-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/oss-fuzz-build.sh: Patch from Paul Kehrer to disable
+	libpng test programs and binaries while building libpng in support
+	of oss-fuzz testing.
+
 	* coders/dcm.c (DCM_ReadGrayscaleImage): If a palette was
 	provided, the image may be in PseudoClass but we need DirectClass
 	for gray image when GRAYSCALE_USES_PALETTE is not defined.  Fixes

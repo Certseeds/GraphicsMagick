@@ -19,7 +19,7 @@ make install
 popd
 
 pushd "$SRC/libpng"
-cmake . -DCMAKE_INSTALL_PREFIX=$WORK
+cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DPNG_TESTS=OFF -DPNG_BINARIES=OFF
 make -j$(nproc)
 make install
 popd
