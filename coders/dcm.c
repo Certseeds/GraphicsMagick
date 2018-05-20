@@ -4159,6 +4159,13 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Reading Grayscale image...");
 
+#if !defined(GRAYSCALE_USES_PALETTE)
+  /*
+    If a palette was provided, the image may be in PseudoClass
+  */
+  image->storage_class=DirectClass;
+#endif
+
   dcm->lower_lim = dcm->max_value_in;
   dcm->upper_lim = -(dcm->lower_lim);
   byte=0;
@@ -4235,6 +4242,7 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
           q->red=index;
           q->green=index;
           q->blue=index;
+          q->opacity=OpaqueOpacity;
           q++;
 #endif
           if (EOFBlob(image))
@@ -4406,6 +4414,7 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
           q->red=(Quantum) red;
           q->green=(Quantum) green;
           q->blue=(Quantum) blue;
+          q->opacity=OpaqueOpacity;
           q++;
           if (EOFBlob(image))
             {

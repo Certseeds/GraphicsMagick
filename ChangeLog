@@ -1,3 +1,12 @@
+2018-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadGrayscaleImage): If a palette was
+	provided, the image may be in PseudoClass but we need DirectClass
+	for gray image when GRAYSCALE_USES_PALETTE is not defined.  Fixes
+	oss-fuzz 7550 "graphicsmagick/coder_DCM_fuzzer:
+	Use-of-uninitialized-value in SyncImageCallBack". (Credit to
+	OSS-Fuzz)
+
 2018-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Remove strange addition of
