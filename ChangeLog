@@ -6,6 +6,11 @@
 	oss-fuzz 7550 "graphicsmagick/coder_DCM_fuzzer:
 	Use-of-uninitialized-value in SyncImageCallBack". (Credit to
 	OSS-Fuzz)
+	(ReadDCMImage): Restore use of DCM_PostRescaleImage() in order to
+	obtain suitably scaled DICOM again.  Hopefully it is more robust
+	now.
+	(DCM_ReadPaletteImage): Assure that DirectClass pixels are
+	initialized.
 
 2018-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

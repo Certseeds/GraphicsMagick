@@ -183,7 +183,7 @@ typedef struct _DicomStream
     lower_lim;
 
   Quantum
-    *rescale_map;
+    *rescale_map; /* Allocated with dcm->max_value_in+1 entries */
 
 #if defined(USE_GRAYMAP)
   unsigned short
@@ -3336,6 +3336,10 @@ static MagickPassFail funcDCM_Palette(Image *image,DicomStream *dcm,ExceptionInf
       return MagickFail;
     }
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Palette with %" MAGICK_SIZE_T_F "u entries...",
+                          (MAGICK_SIZE_T) dcm->length);
   /*
     Initialize colormap (entries are always 16 bit)
     1201/2/3 = red/green/blue palette
@@ -3781,21 +3785,38 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
     Xw_min,
     Xw_max;
 
-  unsigned long
+  unsigned int
     i;
 
   if (dcm->rescaling == DCM_RS_NONE)
     return MagickPass;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Set up rescale map for input range of %u"
+                          " (%u entries)...",
+                          dcm->max_value_in+1,MaxMap+1);
+
+  /*
+    The rescale map must be limited to MaxMap+1 entries, which is 256
+    or 65536, depending on QuantumDepth.  Using a QuantumDepth less
+    than 16 for DICOM is a bad idea.
+
+    The dcm->significant_bits value is limited to 16 (larger values
+    are outright rejected) so dcm->max_value_in and dcm->max_value_out
+    are limited to 65535.
+  */
+
   if (dcm->rescale_map == (Quantum *) NULL)
     {
-      dcm->rescale_map=MagickAllocateArray(Quantum *,dcm->max_value_in+1,sizeof(Quantum));
+      size_t num_entries = Max(MaxMap+1,dcm->max_value_in+1);
+      dcm->rescale_map=MagickAllocateArray(Quantum *,num_entries,sizeof(Quantum));
       if (dcm->rescale_map == NULL)
         {
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
-      (void) memset(dcm->rescale_map,0,(size_t) dcm->max_value_in+1*sizeof(Quantum));
+      (void) memset(dcm->rescale_map,0,num_entries*sizeof(Quantum));
     }
 
   if (dcm->window_width == 0)
@@ -3837,8 +3858,9 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
         dcm->rescale_map[i]=(Quantum)(((Xr-Xw_min)/(win_width-1))*dcm->max_value_out+0.5);
     }
   if (dcm->phot_interp == DCM_PI_MONOCHROME1)
-    for (i=0; i < (dcm->max_value_in+1); i++)
+    for (i=0; i <= dcm->max_value_in; i++)
       dcm->rescale_map[i]=dcm->max_value_out-dcm->rescale_map[i];
+
   return MagickPass;
 }
 
@@ -3904,7 +3926,6 @@ void DCM_SetRescaling(DicomStream *dcm,int avoid_scaling)
   dcm->rescaling=DCM_RS_PRE;
 }
 
-#if 0
 /*
   FIXME: This code is totally broken since DCM_SetupRescaleMap
   populates dcm->rescale_map and dcm->rescale_map has
@@ -4023,14 +4044,13 @@ static MagickPassFail DCM_PostRescaleImage(Image *image,DicomStream *dcm,unsigne
     }
   return MagickPass;
 }
-#endif
 
 static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
-  long
+  unsigned long
     y;
 
-  register long
+  register unsigned long
     x;
 
   register PixelPacket
@@ -4051,13 +4071,13 @@ static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,Excepti
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Reading Palette image...");
 
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
     {
       q=SetImagePixels(image,0,y,image->columns,1);
       if (q == (PixelPacket *) NULL)
         return MagickFail;
       indexes=AccessMutableIndexes(image);
-      for (x=0; x < (long) image->columns; x++)
+      for (x=0; x < image->columns; x++)
         {
           if (dcm->bytes_per_pixel == 1)
             {
@@ -4113,6 +4133,8 @@ static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,Excepti
               index=(IndexPacket) (index);
               VerifyColormapIndex(image,index);
               indexes[x]=index;
+              *q=image->colormap[index];
+              q++;
             }
 
           if (EOFBlob(image))
@@ -4135,16 +4157,16 @@ static MagickPassFail DCM_ReadPaletteImage(Image *image,DicomStream *dcm,Excepti
 
 static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
-  long
+  unsigned long
     y;
 
-  register long
+  register unsigned long
     x;
 
   register PixelPacket
     *q;
 
-#if defined(GRAYSCALE_USES_PALETTE)
+#if defined(GRAYSCALE_USES_PALETTE) /* not used */
   register IndexPacket
     *indexes;
 #endif
@@ -4157,7 +4179,7 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Reading Grayscale image...");
+                          "Reading Grayscale %lux%lu image...",image->columns,image->rows);
 
 #if !defined(GRAYSCALE_USES_PALETTE)
   /*
@@ -4169,15 +4191,15 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
   dcm->lower_lim = dcm->max_value_in;
   dcm->upper_lim = -(dcm->lower_lim);
   byte=0;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
     {
-      q=SetImagePixels(image,0,y,image->columns,1);
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         return MagickFail;
-#if defined(GRAYSCALE_USES_PALETTE)
+#if defined(GRAYSCALE_USES_PALETTE) /* not used */
       indexes=AccessMutableIndexes(image);
 #endif
-      for (x=0; x < (long) image->columns; x++)
+      for (x=0; x < image->columns; x++)
         {
           if (dcm->bytes_per_pixel == 1)
             {
@@ -4230,7 +4252,7 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
               if ((int) l > dcm->upper_lim)
                 dcm->upper_lim = l;
             }
-#if defined(GRAYSCALE_USES_PALETTE)
+#if defined(GRAYSCALE_USES_PALETTE) /* not used */
           if (dcm->rescaling == DCM_RS_PRE)
             indexes[x]=dcm->rescale_map[index];
           else
@@ -4238,7 +4260,9 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
 #else
           if ((dcm->rescaling == DCM_RS_PRE) &&
               (dcm->rescale_map != (Quantum *) NULL))
-            index=dcm->rescale_map[index];
+            {
+              index=dcm->rescale_map[index];
+            }
           q->red=index;
           q->green=index;
           q->blue=index;
@@ -4251,7 +4275,7 @@ static MagickPassFail DCM_ReadGrayscaleImage(Image *image,DicomStream *dcm,Excep
               return MagickFail;
             }
         }
-      if (!SyncImagePixels(image))
+      if (!SyncImagePixelsEx(image,exception))
         return MagickFail;
       if (image->previous == (Image *) NULL)
         if (QuantumTick(y,image->rows))
@@ -4631,7 +4655,7 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
                   dcm->bytes_per_pixel=2;
                 dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
                 dcm->max_value_out=dcm->max_value_in;
-                /*status=DCM_PostRescaleImage(next_image,dcm,True,exception);*/
+                status=DCM_PostRescaleImage(next_image,dcm,True,exception);
               }
           if (status == MagickPass)
             {
@@ -4937,9 +4961,9 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "Rescaling image channels...");
-              /*status = DCM_PostRescaleImage(image,&dcm,False,exception);
-                if (status != MagickPass)
-                break;*/
+              status = DCM_PostRescaleImage(image,&dcm,False,exception);
+              if (status != MagickPass)
+                break;
             }
         }
 
