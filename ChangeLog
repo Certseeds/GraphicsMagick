@@ -1,3 +1,11 @@
+2018-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tile.c (ReadTILEImage): Remove any existing size request
+	when while image to tile.  This avoids size being used for both
+	the input image size and the tile image size.  Fixes SourceForge
+	issue #563 "tile:<image> appears to blow image up by 100% before
+	applying tiling".
+
 2018-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Patch from Paul Kehrer to disable

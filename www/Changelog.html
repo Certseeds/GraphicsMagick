@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2018-05-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/tile.c (ReadTILEImage): Remove any existing size request
+when while image to tile.  This avoids size being used for both
+the input image size and the tile image size.  Fixes SourceForge
+issue #563 &quot;tile:&lt;image&gt; appears to blow image up by 100% before
+applying tiling&quot;.</li>
+</ul>
+</blockquote>
 <p>2018-05-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
