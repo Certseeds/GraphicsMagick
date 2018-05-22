@@ -2743,8 +2743,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             tile_size_max=RoundUpToAlignment(tile_size_max,sizeof(magick_int32_t));
             if (0 == tile_size_max)
               {
-                status=MagickFail;
-                break;
+                ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
               }
             /*
               Compute the total number of pixels in one tile
@@ -2768,7 +2768,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (tile_size_max > file_size*max_compress_ratio)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "Unreasonable allocation size "
+                                      "Unreasonable tile allocation size "
                                       "(ratio of alloc to file size %g)",
                                       (double) tile_size_max/file_size);
                 ThrowTIFFReaderException(CorruptImageError,InsufficientImageDataInFile,
@@ -3056,6 +3056,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               tile_columns,
               tile_rows;
 
+            tsize_t
+              tile_size_max;
+
             size_t
               tile_total_pixels;
 
@@ -3080,6 +3083,27 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       (unsigned int)tile_columns,
                                       (unsigned int)tile_rows,
                                       (MAGICK_SIZE_T) tile_total_pixels);
+              }
+            /*
+              Obtain the maximum number of bytes required to contain a tile.
+            */
+            tile_size_max=TIFFTileSize(tiff);
+            if (0 == tile_size_max)
+              {
+                ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
+              }
+            /*
+              Rationalize memory request based on file size
+            */
+            if (tile_size_max > file_size*max_compress_ratio)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable tile allocation size "
+                                      "(ratio of alloc to file size %g)",
+                                      (double) tile_size_max/file_size);
+                ThrowTIFFReaderException(CorruptImageError,InsufficientImageDataInFile,
+                                         image);
               }
             /*
               Allocate tile buffer

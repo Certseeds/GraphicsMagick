@@ -1,3 +1,11 @@
+2018-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Validate tile memory requests for
+	the TIFFReadRGBATile() case in the same way as the TIFFReadTile()
+	case.  Fixes oss-fuzz 8434 "graphicsmagick/coder_BIGTIFF_fuzzer:
+	Out-of-memory in graphicsmagick_coder_BIGTIFF_fuzzer". (Credit to
+	OSS-Fuzz)
+
 2018-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tile.c (ReadTILEImage): Remove any existing size request
