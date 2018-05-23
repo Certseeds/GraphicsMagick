@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on April 29, 2017
+This file was last updated on April 29, 2018
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.29 (April 29, 2017)
+1.3.29 (April 29, 2018)
 =========================
 
 Special Issues:
@@ -129,7 +129,7 @@ Behavior Changes:
 * None
 
 
-1.3.28 (January 20, 2017)
+1.3.28 (January 20, 2018)
 =========================
 
 Special Issues:

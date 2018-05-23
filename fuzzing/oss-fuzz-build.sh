@@ -19,7 +19,8 @@ make install
 popd
 
 pushd "$SRC/libpng"
-cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DPNG_TESTS=OFF -DPNG_BINARIES=OFF
+autoreconf -fiv
+./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
 make -j$(nproc)
 make install
 popd
@@ -63,7 +64,7 @@ make -j$(nproc)
 make install
 popd
 
-./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include/freetype2 -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+./configure --prefix="$WORK" --with-quantum-depth=16 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include/freetype2 -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
 make "-j$(nproc)"
 make install
 

@@ -1,3 +1,9 @@
+2018-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Apply patch from Alex Gaynor to
+	switch libpng to autotools build system, as well as configure
+	GraphicsMagick with '--with-quantum-depth=16'.
+
 2018-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Validate tile memory requests for
