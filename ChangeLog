@@ -1,7 +1,12 @@
 2018-05-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/jnx.c The attribute should belong to only one scene
-        and not to whole image list.
+	* coders/jnx.c The attribute should belong to only one scene and
+	not to whole image list.
+
+2018-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Changes to add CPPFLAGS to configure
+	executions to hopefully get oss-fuzz build closer to success.
 
 2018-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
