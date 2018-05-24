@@ -1,3 +1,8 @@
+2018-05-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/jnx.c The attribute should belong to only one scene
+        and not to whole image list.
+
 2018-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/t/jpeg/read.t: Add a JNX reader test case.

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2012-2017 GraphicsMagick Group
+% Copyright (C) 2012-2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -20,7 +20,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                                  2012 -                                     %
+%                                2012 - 2018                                  %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -143,6 +143,16 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
                   if ((image->rows == 0) || (image->columns == 0))
                     DeleteImageFromList(&image);
 
+                  FormatString(img_label_str, "%.20g;%.20g",
+                    (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF,
+                    (double) TileInfo->TileBounds.NorthEast.lon*180.0/0x7FFFFFFF);
+                  SetImageAttribute(image2, "jnx:northeast", img_label_str);
+
+                  FormatString(img_label_str, "%.20g;%.20g",
+                    (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF,
+                    (double) TileInfo->TileBounds.SouthWest.lon*180.0/0x7FFFFFFF);
+                  SetImageAttribute(image2, "jnx:southwest", img_label_str);
+
                   AppendImageToList(&image, image2);
                 }
             }
@@ -166,17 +176,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
       /* Failed to allocate memory */
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
                      image->filename);
-    }
-
-  FormatString(img_label_str,"%.20g,%.20g",
-               (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF,
-               (double) TileInfo->TileBounds.NorthEast.lon*180.0/0x7FFFFFFF);
-  SetImageAttribute(image,"jnx:northeast",img_label_str);
-
-  FormatString(img_label_str,"%.20g,%.20g",
-               (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF,
-               (double) TileInfo->TileBounds.SouthWest.lon*180.0/0x7FFFFFFF);
-  SetImageAttribute(image,"jnx:southwest",img_label_str);
+    }  
 
   return(image);
 }
