@@ -136,7 +136,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
                                  sizeof(image2->magick_filename));
                   (void) strlcpy(image2->magick, image->magick,
                                  sizeof(image2->magick));
-                  image2->depth = image->depth;
+                  //image2->depth = image->depth;
                   DestroyBlob(image2);
                   image2->blob = ReferenceBlob(image->blob);
 
@@ -258,7 +258,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   if (status == False)
     ThrowReaderException(FileOpenError, UnableToOpenFile, image);
 
-  image->depth=8;
+  //image->depth=8;
 
   /* Read JNX image header. */
   (void) memset(&JNXHeader, 0, sizeof(JNXHeader));
