@@ -20,7 +20,7 @@ popd
 
 pushd "$SRC/libpng"
 autoreconf -fiv
-./configure --prefix="$WORK" PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --prefix="$WORK" CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
 make -j$(nproc)
 make install
 popd
@@ -35,7 +35,7 @@ popd
 # Build libtiff
 pushd "$SRC/libtiff"
 autoreconf -fiv
-./configure --prefix="$WORK"
+./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK"
 make -j$(nproc)
 make install
 popd
@@ -43,7 +43,7 @@ popd
 # Build liblcms2
 pushd "$SRC/Little-CMS"
 autoreconf -fiv
-./configure --prefix="$WORK"
+./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK"
 make -j$(nproc)
 make install
 popd
@@ -51,7 +51,7 @@ popd
 # Build freetype2
 pushd "$SRC/freetype2"
 ./autogen.sh
-./configure --prefix="$WORK" --enable-freetype-config PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --enable-freetype-config
 make -j$(nproc)
 make install
 popd
@@ -59,12 +59,12 @@ popd
 # Build webp
 pushd "$SRC/libwebp"
 ./autogen.sh
-./configure --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
+./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
 make -j$(nproc)
 make install
 popd
 
-./configure --prefix="$WORK" --with-quantum-depth=16 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" CFLAGS="$CFLAGS -I$WORK/include/freetype2 -I$WORK/include" LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --with-quantum-depth=16
 make "-j$(nproc)"
 make install
 
