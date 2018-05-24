@@ -1,5 +1,9 @@
 2018-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/jpeg/read.t: Add a JNX reader test case.
+
+	* coders/jnx.c (ReadJNXImage): JNX image depth should be 8.
+
 	* fuzzing/oss-fuzz-build.sh: Apply patch from Alex Gaynor to
 	switch libpng to autotools build system, as well as configure
 	GraphicsMagick with '--with-quantum-depth=16'.

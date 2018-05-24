@@ -258,6 +258,8 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   if (status == False)
     ThrowReaderException(FileOpenError, UnableToOpenFile, image);
 
+  image->depth=8;
+
   /* Read JNX image header. */
   (void) memset(&JNXHeader, 0, sizeof(JNXHeader));
   JNXHeader.Version = ReadBlobLSBLong(image);
