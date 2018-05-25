@@ -1,3 +1,8 @@
+2018-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: More fixes based on what is observed
+	in oss-fuzz build log.
+
 2018-05-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/jnx.c The attribute should belong to only one scene and
