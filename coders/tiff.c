@@ -1552,7 +1552,8 @@ CompactSamples( const unsigned long total_pixels,
                 const unsigned int quantum_samples,
                 unsigned char *samples)
 {
-  if (samples_per_pixel > quantum_samples)
+  if ((samples_per_pixel > quantum_samples) &&
+      (bits_per_sample > 0) && bits_per_sample <= 32)
     {
       /*
         Compact scanline to only contain raster data.
@@ -2225,6 +2226,19 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (CheckImagePixelLimits(image, exception) != MagickPass)
         {
           ThrowTIFFReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+        }
+
+      /*
+        Check if the bits-per-sample value is supported by the
+        implementation before proceeding.
+
+        Currently we support a range of 1-32, and 64 bits if the
+        samples are float.
+      */
+      if (!((sample_format == SAMPLEFORMAT_IEEEFP && bits_per_sample == 64) ||
+            ((bits_per_sample > 0) && (bits_per_sample <= 32))))
+        {
+          ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
         }
 
       /*

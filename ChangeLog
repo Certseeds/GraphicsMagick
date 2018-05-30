@@ -1,5 +1,10 @@
 2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Check that the bits-per-sample is
+	supported by the implementation before attempting to decode the
+	image. Fixes oss-fuzz 8554 "graphicsmagick/coder_BIGTIFF_fuzzer:
+	Undefined-shift in MagickBitStreamMSBWrite". (Credit to OSS-Fuzz)
+
 	* coders/png.c (ReadMNGImage): Eliminate use of uninitialized
 	header magic data by checking for EOF first.  Fixes oss-fuzz 8597
 	"graphicsmagick/coder_MNG_fuzzer: Use-of-uninitialized-value in
