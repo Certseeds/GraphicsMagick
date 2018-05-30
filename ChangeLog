@@ -1,3 +1,10 @@
+2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Eliminate use of uninitialized
+	header magic data by checking for EOF first.  Fixes oss-fuzz 8597
+	"graphicsmagick/coder_MNG_fuzzer: Use-of-uninitialized-value in
+	ReadMNGImage". (Credit to OSS-Fuzz)
+
 2018-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: More fixes based on what is observed

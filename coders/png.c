@@ -4139,8 +4139,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       /*
         Verify MNG signature.
       */
-      (void) ReadBlob(image,8,magic_number);
-      if (memcmp(magic_number,"\212MNG\r\n\032\n",8) != 0)
+      if ((ReadBlob(image,8,magic_number) != 8) ||
+          (memcmp(magic_number,"\212MNG\r\n\032\n",8) != 0))
         {
           MngInfoFreeStruct(mng_info,&have_mng_structure);
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
