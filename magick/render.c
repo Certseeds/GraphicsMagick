@@ -377,30 +377,139 @@ CloneDrawInfo(const ImageInfo *image_info,const DrawInfo *draw_info)
 extern "C" {
 #endif
 
+/*
+  Ticket #562: Inconsistent results from qsort callback.
+
+  NOTE: The right-handed coordinate system is: x right postive, y down positive,
+  z into the plane positive.
+
+  Prior to fixing ticket #562, the compare procedure in CompareEdges() looked at the
+  first segment in each edge (edges can have multiple segments) and compared them as
+  follows:
+
+    (1) Within MagickEpsilon, the edge with the smaller starting y coordinate should come
+        first.  Otherwise:
+    (2) Within MagickEpsilon, the edge with the smaller starting x coordinate should come
+        first.  Otherwise:
+    (3) As indicated by the cross product v0 X v1, the edge that rotates counter-clockwise
+        (as viewed) into the other edge through the smaller angle between them should come
+        first.  I.e., if v0 X v1 is negative, v0 should come first.
+
+  This procedure fails to properly differentiate between parallel and anti-parallel edges
+  whose starting x and y coordinates are within MagickEpsilon of each other (the cross
+  product of such edges is zero).  For these cases, the result for (v0,v1) says v0 comes
+  first, but the result for (v1,v0) says v1 comes first (the problem reported by ticket #562).
+
+  It's unclear to me why the x and y coordinate comparisons should use MagickEpsilon, but to
+  avoid changing existing behavior this part of the code has not been changed.
+
+  The new compare procedure is as follows:
+
+    (1) Within MagickEpsilon, the edge with the smaller starting y coordinate should come
+        first (UNCHANGED).  Otherwise:
+    (2) Within MagickEpsilon, the edge with the smaller starting x coordinate should come
+        first (UNCHANGED).  Otherwise:
+    (3) As indicated by the cross product v0 X v1, the edge that rotates counter-clockwise
+        (as viewed) into the other edge through the smaller angle between them should come
+        first AS LONG AS THE ANGLE BETWEEN THEM IS NON-ZERO.  I.e., if v0 X v1 is STRICTLY
+        NEGATIVE, v0 should come first.  If v0 X v1 IS STRICTLY POSITIVE, v1 should come
+        first.  Otherwise:
+    (4) (If we get here, the edges are either parallel or anti-parallel, but their starting
+        points may or may not be identical.)  The edge with the smaller starting y coordinate
+        should come first (DO NOT use MagickEpsilon).  Otherwise:
+    (5) The edge with the smaller starting x coordinate should come first (DO NOT use
+        MagickEpsilon).  Otherwise:
+    (6) (If we get here, the edges starting points are identical) The edge with the smaller
+        ending y coordinate should come first.  Otherwise:
+    (7) The edge with the smaller ending x coordinate should come first.  Otherwise:
+    (8) The edges are identical with respect to their first segments; return 0 to indicate
+        this.  Note that previously CompareEdges() never returned a 0.
+
+  While it may seem that steps 4 - 8 are a lot of additional code, note that this code will
+  be executed very infrequently, since most cases will be resolved by steps 1 - 3.
+
+  The new code subtracts the two coordinate values and then compares the result to +/- MagickEpsilon.
+  When using finite precision floating point arithmetic, this computation is numerically more
+  accurate that adding +/- MagickEpsilon to one coordinate and then comparing that result to
+  the other coordinate.
+*/
+
 static int
-CompareEdges(const void *x,const void *y)
+CompareEdges(const void *edge0,const void *edge1)
 {
-  register const EdgeInfo
-    *p,
-    *q;
+  register const PointInfo
+    *v0Points,
+    *v1Points;
+
+  double
+    v0CROSSv1,
+    v0x0,
+    v0y0,
+    v1x0,
+    v1y0,
+    DeltaYStart,
+    DeltaXStart,
+    DeltaYEnd,
+    DeltaXEnd,
+    NegMagickEpsilon = -MagickEpsilon;
 
   /*
     Compare two edges.
   */
-  p=(const EdgeInfo *) x;
-  q=(const EdgeInfo *) y;
-  if ((p->points[0].y-MagickEpsilon) > q->points[0].y)
-    return(1);
-  if ((p->points[0].y+MagickEpsilon) < q->points[0].y)
-    return(-1);
-  if ((p->points[0].x-MagickEpsilon) > q->points[0].x)
-    return(1);
-  if ((p->points[0].x+MagickEpsilon) < q->points[0].x)
-    return(-1);
-  if (((p->points[1].x-p->points[0].x)*(q->points[1].y-q->points[0].y)-
-       (p->points[1].y-p->points[0].y)*(q->points[1].x-q->points[0].x)) > 0.0)
-    return(1);
+  v0Points=((const EdgeInfo *) edge0)->points;
+  v1Points=((const EdgeInfo *) edge1)->points;
+
+  /* (1) the edge with the smaller starting y coordinate should come first */
+  DeltaYStart = (v0y0 = v0Points[0].y) - (v1y0 = v1Points[0].y);
+  if  ( DeltaYStart < NegMagickEpsilon )
+    return(-1);  /* v0y0 + epsi < v1y0 */
+  if  ( DeltaYStart > MagickEpsilon )
+    return(1);  /* v0y0 - epsi > v1y0 */
+
+  /* y start coordinates are the same within MagickEpsilon */
+
+  /* (2) the edge with the smaller starting x coordinate should come first */
+  DeltaXStart = (v0x0 = v0Points[0].x) - (v1x0 = v1Points[0].x);
+  if  ( DeltaXStart < NegMagickEpsilon )
+    return(-1);  /* v0x0 + epsi < v1x0 */
+  if  ( DeltaXStart > MagickEpsilon )
+    return(1);  /* v0x0 - epsi > v1x0 */
+
+  /* y and x start coordinates are the same within MagickEpsilon */
+
+  /* compute cross product v0 X v1 */
+  v0CROSSv1 = (v0Points[1].x-v0x0)*(v1Points[1].y-v1y0)-(v0Points[1].y-v0y0)*(v1Points[1].x-v1x0);
+
+  /* (3) the edge that rotates ccwise through the smaller angle between them should come first */
+  if  ( v0CROSSv1 < 0.0 )
   return(-1);
+  if  ( v0CROSSv1 > 0.0 )
+    return(1);
+
+  /* edges are either parallel or anti-parallel; check (4) y and (5) x start coords again w/o MagickEpsilon */
+  if  ( DeltaYStart < 0.0 )
+    return(-1);  /* v0y0 < v1y0 */
+  if  ( DeltaYStart > 0.0 )
+    return(1);  /* v0y0 > v1y0 */
+  if  ( DeltaXStart < 0.0 )
+    return(-1);  /* v0x0 < v1x0 */
+  if  ( DeltaXStart > 0.0 )
+    return(1);  /* v0x0 > v1x0 */
+
+  /* starting points are the same; compare (6) y and (7) x ending points */
+  DeltaYEnd = v0Points[1].y - v1Points[1].y;
+  if  ( DeltaYEnd < 0.0 )
+    return(-1);  /* v0y1 < v1y1 */
+  if  ( DeltaYEnd > 0.0 )
+    return(1);  /* v0y1 > v1y1 */
+  DeltaXEnd = v0Points[1].x - v1Points[1].x;
+  if  ( DeltaXEnd < 0.0 )
+    return(-1);  /* v0x1 < v1x1 */
+  if  ( DeltaXEnd > 0.0 )
+    return(1);  /* v0x1 > v1x1 */
+
+  /* (8) the edges are identical with respect to their first segments */
+  return(0);
 }
 
 #if defined(__cplusplus) || defined(c_plusplus)

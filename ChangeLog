@@ -1,3 +1,12 @@
+2018-05-30  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
+
+	* magick/render.c (CompareEdges): Per ticket #562,
+	function CompareEdges() did not conform to the qsort()
+	requirement that if CompareEdges(edge0,edge1) returns
+	-1 (i.e., edge0 "less than" edge1), then
+	CompareEdges(edge1,edge0) should return 1 (edge1
+	"greater than" edge0).  This has been fixed.
+
 2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Check that the bits-per-sample is
