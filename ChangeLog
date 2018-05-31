@@ -9,6 +9,11 @@
 
 2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): Deal with JDAA JNG chunk with
+	length zero.  Fixes oss-fuzz 8562
+	"graphicsmagick/coder_JNG_fuzzer: ASSERT: data != (const char *)
+	NULL". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (ReadTIFFImage): Check that the bits-per-sample is
 	supported by the implementation before attempting to decode the
 	image. Fixes oss-fuzz 8554 "graphicsmagick/coder_BIGTIFF_fuzzer:

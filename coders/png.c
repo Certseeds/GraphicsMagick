@@ -3488,7 +3488,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
             Copy chunk data to alpha_image->blob
           */
 
-          if (alpha_image != NULL && image_info->ping == MagickFalse)
+          if (alpha_image != NULL && image_info->ping == MagickFalse && length != 0)
             {
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
