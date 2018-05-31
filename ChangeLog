@@ -1,3 +1,11 @@
+2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Assure that object id index is
+	always less than MNG_MAX_OBJECTS to avoid overflow.  Fixes
+	oss-fuzz 8596 "graphicsmagick/coder_MNG_fuzzer:
+	Index-out-of-bounds in ReadMNGImage" and likely other issues yet
+	to be reported. (Credit to OSS-Fuzz)
+
 2018-05-30  Greg Wolfe  <gregory.wolfe@kodakalaris.com>
 
 	* magick/render.c (CompareEdges): Per ticket #562,

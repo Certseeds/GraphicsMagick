@@ -2733,7 +2733,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   /*
     Store the object if necessary.
   */
-  if (object_id && object_id <= MNG_MAX_OBJECTS && !mng_info->frozen[object_id])
+  if (object_id && object_id < MNG_MAX_OBJECTS && !mng_info->frozen[object_id])
     {
       if (mng_info->ob[object_id] == (MngBuffer *) NULL)
         {
@@ -4434,7 +4434,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                        "Nonzero object_id in MNG-LC"
                                        " datastream",
                                        (char *) NULL);
-              if (object_id > MNG_MAX_OBJECTS)
+              if (object_id >= MNG_MAX_OBJECTS)
                 {
                   /*
                     Instead of issuing a warning we should allocate a larger
@@ -4442,8 +4442,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "object id too large");
-                  object_id=MNG_MAX_OBJECTS;
+                                          "object id (%u) too large", object_id);
+                  object_id=MNG_MAX_OBJECTS-1;
                 }
               if (mng_info->exists[object_id])
                 if (mng_info->frozen[object_id])
@@ -4834,7 +4834,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
                   for (i=(int) first_object; i <= (int) last_object; i++)
                     {
-                      if (i > MNG_MAX_OBJECTS)
+                      if (i >= MNG_MAX_OBJECTS)
                         continue;
                       if (mng_info->exists[i] && !mng_info->frozen[i])
                         {
@@ -4908,7 +4908,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
                   for (i=(long) first_object; i <= (long) last_object; i++)
                     {
-                      if (i > MNG_MAX_OBJECTS)
+                      if (i >= MNG_MAX_OBJECTS)
                         continue;
                       if (mng_info->exists[i] && !mng_info->frozen[i] &&
                           (p-chunk) < (ssize_t) (length-8))

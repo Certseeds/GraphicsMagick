@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2018-05-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (ReadMNGImage): Assure that object id index is
+always less than MNG_MAX_OBJECTS to avoid overflow.  Fixes
+oss-fuzz 8596 &quot;graphicsmagick/coder_MNG_fuzzer:
+Index-out-of-bounds in ReadMNGImage&quot; and likely other issues yet
+to be reported. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-05-30  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
