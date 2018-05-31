@@ -557,6 +557,12 @@ Unsupported cell type in the matrix
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedSamplesPerPixel
+Language        = English
+Unsupported samples per pixel
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorWebPDecodingFailedUserAbort
 Language        = English
 WebP decoding failed: user abort

@@ -1,3 +1,10 @@
+2018-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Reject files with excessive
+	samples-per-pixel or extra-samples. Avoids potential issues
+	observed in oss-fuzz 8634 "graphicsmagick/coder_BIGTIFF_fuzzer:
+	Undefined-shift in ImportAlphaQuantumType". (Credit to OSS-Fuzz)
+
 2018-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Assure that object id index is

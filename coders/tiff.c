@@ -2070,14 +2070,15 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               else if (sample_info[0] == EXTRASAMPLE_ASSOCALPHA)
                 alpha_type=AssociatedAlpha;
             }
-          for (sample_index=0 ; sample_index < extra_samples; sample_index++)
-            {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Extra sample %u contains %s alpha",sample_index+1,
-                                    ((sample_info[sample_index] == EXTRASAMPLE_ASSOCALPHA) ? "ASSOCIATED" :
-                                     (sample_info[sample_index] == EXTRASAMPLE_UNASSALPHA) ? "UNASSOCIATED" :
-                                     "UNSPECIFIED"));
-            }
+          if (image->logging)
+            for (sample_index=0 ; sample_index < extra_samples; sample_index++)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Extra sample %u contains %s alpha",sample_index+1,
+                                      ((sample_info[sample_index] == EXTRASAMPLE_ASSOCALPHA) ? "ASSOCIATED" :
+                                       (sample_info[sample_index] == EXTRASAMPLE_UNASSALPHA) ? "UNASSOCIATED" :
+                                       "UNSPECIFIED"));
+              }
         }
       /*
         Handle RGBA images which are improperly marked.
@@ -2239,6 +2240,14 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ((bits_per_sample > 0) && (bits_per_sample <= 32))))
         {
           ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
+        }
+
+      /*
+        Check for excessive samples per pixel or excessive extra samples.
+      */
+      if ((samples_per_pixel > 8U) || (extra_samples > 8U))
+        {
+          ThrowTIFFReaderException(CoderError,UnsupportedSamplesPerPixel,image);
         }
 
       /*

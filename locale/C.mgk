@@ -333,6 +333,9 @@
       <Message name="UnsupportedBitsPerSample">
         Unsupported bits per sample
       </Message>
+      <Message name="UnsupportedSamplesPerPixel">
+        Unsupported samples per pixel
+      </Message>
       <Message name="ArithmeticOverflow">
         Arithmetic overflow
       </Message>
