@@ -3341,6 +3341,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                           exception);
           if (status == MagickFalse)
             {
+              CopyException(exception,&color_image->exception);
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3645,6 +3646,21 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
   if (color_image_info == (ImageInfo *) NULL || color_image == (Image *) NULL)
     {
+
+      if (logging)
+        {
+          if (color_image_info == (ImageInfo *) NULL)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Color image info is NULL!");
+          if (color_image == (Image *) NULL)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Color image is NULL!");
+        }
+      if (color_image == (Image *) NULL)
+        {
+          ThrowException(exception,CorruptImageError,
+                         ImageFileDoesNotContainAnyImageData,image->filename);
+        }
       DestroyImage(color_image);
       color_image=(Image *) NULL;
       return (Image *) NULL;

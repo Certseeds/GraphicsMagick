@@ -1,3 +1,11 @@
+2018-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Report a useful exception for
+	the case when the JNG file fails to provide the necessary image
+	chunks to allocate the color image.  Inspired by oss-fuzz 8666
+	"graphicsmagick/coder_JNG_fuzzer: ASSERT: data != (const char *)
+	NULL" although the reported issue was not reproduced.
+
 2018-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Fix off-by-one in length validation
