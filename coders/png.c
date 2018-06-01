@@ -5264,7 +5264,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             }
 #ifdef MNG_INSERT_LAYERS
           if (length < 8)
-            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+            {
+              MngInfoFreeStruct(mng_info,&have_mng_structure);
+              ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
           image_width=mng_get_long(p);
           image_height=mng_get_long(&p[4]);
 #endif

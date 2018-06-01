@@ -4,6 +4,9 @@
 	for TERM chunk which allowed one byte heap read overflow.  Fixes
 	oss-fuzz 8615 "graphicsmagick/coder_MNG_fuzzer:
 	Heap-buffer-overflow in mng_get_long". (Credit to OSS-Fuzz)
+	(ReadMNGImage): Fix leak of MngInfo in error reporting path.
+	Fixes oss-fuzz 8604 "graphicsmagick/coder_MNG_fuzzer: Direct-leak
+	in ReadMNGImage". (Credit to OSS-Fuzz)
 
 	* coders/tiff.c (ReadTIFFImage): Reject files with excessive
 	samples-per-pixel or extra-samples. Avoids potential issues
