@@ -1,5 +1,10 @@
 2018-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Fix off-by-one in length validation
+	for TERM chunk which allowed one byte heap read overflow.  Fixes
+	oss-fuzz 8615 "graphicsmagick/coder_MNG_fuzzer:
+	Heap-buffer-overflow in mng_get_long". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (ReadTIFFImage): Reject files with excessive
 	samples-per-pixel or extra-samples. Avoids potential issues
 	observed in oss-fuzz 8634 "graphicsmagick/coder_BIGTIFF_fuzzer:

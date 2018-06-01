@@ -4385,7 +4385,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 
               if (length)
                 repeat=p[0];
-              if (repeat == 3 && length > 8)
+              if (repeat == 3 && length > 9)
                 {
                   final_delay=(png_uint_32) mng_get_long(&p[2]);
                   mng_iterations=(png_uint_32) mng_get_long(&p[6]);
