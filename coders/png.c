@@ -3170,7 +3170,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
-          if (length > PNG_MAX_UINT)
+          if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "chunk length (%" MAGICK_SIZE_T_F "u)"
                                   " is greater than input size"
@@ -4093,6 +4093,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
     simplicity=0,
     subframe_height=0,
     subframe_width=0;
+
+  magick_off_t
+    blob_size;
+
   previous_fb.top=0;
   previous_fb.bottom=0;
   previous_fb.left=0;
@@ -4115,6 +4119,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  blob_size=GetBlobSize(image);
   first_mng_object=MagickFalse;
   skipping_loop=(-1);
   have_mng_structure=MagickFalse;
@@ -4217,13 +4222,25 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               MngInfoFreeStruct(mng_info,&have_mng_structure);
               ThrowReaderException(CorruptImageError,CorruptImage,image);
             }
+          if (length > (size_t) blob_size)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "chunk length (%" MAGICK_SIZE_T_F "u)"
+                                      " is greater than input size"
+                                      " (%" MAGICK_OFF_F "d)",
+                                      (MAGICK_SIZE_T) length,
+                                      blob_size);
+              MngInfoFreeStruct(mng_info,&have_mng_structure);
+              ThrowReaderException(CorruptImageError,CorruptImage,image);
+            }
           if (length)
             {
               chunk=MagickAllocateMemory(unsigned char *,length);
               if (chunk == (unsigned char *) NULL)
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                      image);
-              if (ReadBlob(image,length,chunk) < length)
+              if (ReadBlob(image,length,chunk) != length)
                 {
                   MagickFreeMemory(chunk);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
