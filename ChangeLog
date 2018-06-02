@@ -1,5 +1,12 @@
 2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/annotate.c (RenderFreetype): Throw an exception if
+	DrawInfo font is null.  Should fix oss-fuzz 8557
+	"graphicsmagick/coder_PCD_fuzzer: Unknown signal in
+	RenderFreetype" and may fix oss-fuzz 8544
+	"graphicsmagick/coder_PCD_fuzzer: Null-dereference READ in
+	RenderFreetype". (Credit to OSS-Fuzz)
+
 	* coders/jpeg.c (ReadGenericProfile): Add/improve tracing for
 	profile size and when JPEG header is being read.
 

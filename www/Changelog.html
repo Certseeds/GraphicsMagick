@@ -38,6 +38,12 @@
 <p>2018-06-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/annotate.c (RenderFreetype): Throw an exception if
+DrawInfo font is null.  Should fix oss-fuzz 8557
+&quot;graphicsmagick/coder_PCD_fuzzer: Unknown signal in
+RenderFreetype&quot; and may fix oss-fuzz 8544
+&quot;graphicsmagick/coder_PCD_fuzzer: Null-dereference READ in
+RenderFreetype&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/jpeg.c (ReadGenericProfile): Add/improve tracing for
 profile size and when JPEG header is being read.</li>
 </ul>

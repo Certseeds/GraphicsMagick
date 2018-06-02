@@ -3,7 +3,7 @@
 
 extern MagickExport const char *GetLocaleMessageFromID(const int);
 
-#define MAX_LOCALE_MSGS 572
+#define MAX_LOCALE_MSGS 573
 
 #define MGK_BlobErrorUnableToCreateBlob 1
 #define MGK_BlobErrorUnableToDeduceImageFormat 2
@@ -526,57 +526,58 @@ extern MagickExport const char *GetLocaleMessageFromID(const int);
 #define MGK_StreamErrorUnableToSyncPixelStream 519
 #define MGK_StreamFatalErrorDefault 520
 #define MGK_StreamWarningDefault 521
-#define MGK_TypeErrorFontSubstitutionRequired 522
-#define MGK_TypeErrorUnableToGetTypeMetrics 523
-#define MGK_TypeErrorUnableToInitializeFreetypeLibrary 524
-#define MGK_TypeErrorUnableToReadFont 525
-#define MGK_TypeErrorUnrecognizedFontEncoding 526
-#define MGK_TypeFatalErrorDefault 527
-#define MGK_TypeWarningDefault 528
-#define MGK_WandErrorInvalidColormapIndex 529
-#define MGK_WandErrorWandAPINotImplemented 530
-#define MGK_WandErrorWandContainsNoImageIndexs 531
-#define MGK_WandErrorWandContainsNoImages 532
-#define MGK_XServerErrorColorIsNotKnownToServer 533
-#define MGK_XServerErrorNoWindowWithSpecifiedIDExists 534
-#define MGK_XServerErrorStandardColormapIsNotInitialized 535
-#define MGK_XServerErrorUnableToConnectToRemoteDisplay 536
-#define MGK_XServerErrorUnableToCreateBitmap 537
-#define MGK_XServerErrorUnableToCreateColormap 538
-#define MGK_XServerErrorUnableToCreatePixmap 539
-#define MGK_XServerErrorUnableToCreateProperty 540
-#define MGK_XServerErrorUnableToCreateStandardColormap 541
-#define MGK_XServerErrorUnableToDisplayImageInfo 542
-#define MGK_XServerErrorUnableToGetProperty 543
-#define MGK_XServerErrorUnableToGetStandardColormap 544
-#define MGK_XServerErrorUnableToGetVisual 545
-#define MGK_XServerErrorUnableToGrabMouse 546
-#define MGK_XServerErrorUnableToLoadFont 547
-#define MGK_XServerErrorUnableToMatchVisualToStandardColormap 548
-#define MGK_XServerErrorUnableToOpenXServer 549
-#define MGK_XServerErrorUnableToReadXAttributes 550
-#define MGK_XServerErrorUnableToReadXWindowImage 551
-#define MGK_XServerErrorUnrecognizedColormapType 552
-#define MGK_XServerErrorUnrecognizedGravityType 553
-#define MGK_XServerErrorUnrecognizedVisualSpecifier 554
-#define MGK_XServerFatalErrorUnableToAllocateXHints 555
-#define MGK_XServerFatalErrorUnableToCreateCursor 556
-#define MGK_XServerFatalErrorUnableToCreateGraphicContext 557
-#define MGK_XServerFatalErrorUnableToCreateStandardColormap 558
-#define MGK_XServerFatalErrorUnableToCreateTextProperty 559
-#define MGK_XServerFatalErrorUnableToCreateXImage 560
-#define MGK_XServerFatalErrorUnableToCreateXPixmap 561
-#define MGK_XServerFatalErrorUnableToCreateXWindow 562
-#define MGK_XServerFatalErrorUnableToDisplayImage 563
-#define MGK_XServerFatalErrorUnableToDitherImage 564
-#define MGK_XServerFatalErrorUnableToGetPixelInfo 565
-#define MGK_XServerFatalErrorUnableToGetVisual 566
-#define MGK_XServerFatalErrorUnableToLoadFont 567
-#define MGK_XServerFatalErrorUnableToMakeXWindow 568
-#define MGK_XServerFatalErrorUnableToOpenXServer 569
-#define MGK_XServerFatalErrorUnableToViewFonts 570
-#define MGK_XServerWarningUnableToGetVisual 571
-#define MGK_XServerWarningUsingDefaultVisual 572
+#define MGK_TypeErrorFontNotSpecified 522
+#define MGK_TypeErrorFontSubstitutionRequired 523
+#define MGK_TypeErrorUnableToGetTypeMetrics 524
+#define MGK_TypeErrorUnableToInitializeFreetypeLibrary 525
+#define MGK_TypeErrorUnableToReadFont 526
+#define MGK_TypeErrorUnrecognizedFontEncoding 527
+#define MGK_TypeFatalErrorDefault 528
+#define MGK_TypeWarningDefault 529
+#define MGK_WandErrorInvalidColormapIndex 530
+#define MGK_WandErrorWandAPINotImplemented 531
+#define MGK_WandErrorWandContainsNoImageIndexs 532
+#define MGK_WandErrorWandContainsNoImages 533
+#define MGK_XServerErrorColorIsNotKnownToServer 534
+#define MGK_XServerErrorNoWindowWithSpecifiedIDExists 535
+#define MGK_XServerErrorStandardColormapIsNotInitialized 536
+#define MGK_XServerErrorUnableToConnectToRemoteDisplay 537
+#define MGK_XServerErrorUnableToCreateBitmap 538
+#define MGK_XServerErrorUnableToCreateColormap 539
+#define MGK_XServerErrorUnableToCreatePixmap 540
+#define MGK_XServerErrorUnableToCreateProperty 541
+#define MGK_XServerErrorUnableToCreateStandardColormap 542
+#define MGK_XServerErrorUnableToDisplayImageInfo 543
+#define MGK_XServerErrorUnableToGetProperty 544
+#define MGK_XServerErrorUnableToGetStandardColormap 545
+#define MGK_XServerErrorUnableToGetVisual 546
+#define MGK_XServerErrorUnableToGrabMouse 547
+#define MGK_XServerErrorUnableToLoadFont 548
+#define MGK_XServerErrorUnableToMatchVisualToStandardColormap 549
+#define MGK_XServerErrorUnableToOpenXServer 550
+#define MGK_XServerErrorUnableToReadXAttributes 551
+#define MGK_XServerErrorUnableToReadXWindowImage 552
+#define MGK_XServerErrorUnrecognizedColormapType 553
+#define MGK_XServerErrorUnrecognizedGravityType 554
+#define MGK_XServerErrorUnrecognizedVisualSpecifier 555
+#define MGK_XServerFatalErrorUnableToAllocateXHints 556
+#define MGK_XServerFatalErrorUnableToCreateCursor 557
+#define MGK_XServerFatalErrorUnableToCreateGraphicContext 558
+#define MGK_XServerFatalErrorUnableToCreateStandardColormap 559
+#define MGK_XServerFatalErrorUnableToCreateTextProperty 560
+#define MGK_XServerFatalErrorUnableToCreateXImage 561
+#define MGK_XServerFatalErrorUnableToCreateXPixmap 562
+#define MGK_XServerFatalErrorUnableToCreateXWindow 563
+#define MGK_XServerFatalErrorUnableToDisplayImage 564
+#define MGK_XServerFatalErrorUnableToDitherImage 565
+#define MGK_XServerFatalErrorUnableToGetPixelInfo 566
+#define MGK_XServerFatalErrorUnableToGetVisual 567
+#define MGK_XServerFatalErrorUnableToLoadFont 568
+#define MGK_XServerFatalErrorUnableToMakeXWindow 569
+#define MGK_XServerFatalErrorUnableToOpenXServer 570
+#define MGK_XServerFatalErrorUnableToViewFonts 571
+#define MGK_XServerWarningUnableToGetVisual 572
+#define MGK_XServerWarningUsingDefaultVisual 573
 
 #endif
 
@@ -669,13 +670,13 @@ static const SeverityInfo severity_map[] =
     { "Stream/FatalError", 519, StreamFatalError },
     { "Stream/Warning", 520, StreamWarning },
     { "Type/Error", 521, TypeError },
-    { "Type/FatalError", 526, TypeFatalError },
-    { "Type/Warning", 527, TypeWarning },
-    { "Wand/Error", 528, WandError },
-    { "XServer/Error", 532, XServerError },
-    { "XServer/FatalError", 554, XServerFatalError },
-    { "XServer/Warning", 570, XServerWarning },
-    { 0, 572, UndefinedException }
+    { "Type/FatalError", 527, TypeFatalError },
+    { "Type/Warning", 528, TypeWarning },
+    { "Wand/Error", 529, WandError },
+    { "XServer/Error", 533, XServerError },
+    { "XServer/FatalError", 555, XServerFatalError },
+    { "XServer/Warning", 571, XServerWarning },
+    { 0, 573, UndefinedException }
   };
 #endif
 
@@ -1209,57 +1210,58 @@ static const MessageInfo message_map[] =
     { "UnableToSyncPixelStream", 519 },
     { "Default", 520 },
     { "Default", 521 },
-    { "FontSubstitutionRequired", 522 },
-    { "UnableToGetTypeMetrics", 523 },
-    { "UnableToInitializeFreetypeLibrary", 524 },
-    { "UnableToReadFont", 525 },
-    { "UnrecognizedFontEncoding", 526 },
-    { "Default", 527 },
+    { "FontNotSpecified", 522 },
+    { "FontSubstitutionRequired", 523 },
+    { "UnableToGetTypeMetrics", 524 },
+    { "UnableToInitializeFreetypeLibrary", 525 },
+    { "UnableToReadFont", 526 },
+    { "UnrecognizedFontEncoding", 527 },
     { "Default", 528 },
-    { "InvalidColormapIndex", 529 },
-    { "WandAPINotImplemented", 530 },
-    { "WandContainsNoImageIndexs", 531 },
-    { "WandContainsNoImages", 532 },
-    { "ColorIsNotKnownToServer", 533 },
-    { "NoWindowWithSpecifiedIDExists", 534 },
-    { "StandardColormapIsNotInitialized", 535 },
-    { "UnableToConnectToRemoteDisplay", 536 },
-    { "UnableToCreateBitmap", 537 },
-    { "UnableToCreateColormap", 538 },
-    { "UnableToCreatePixmap", 539 },
-    { "UnableToCreateProperty", 540 },
-    { "UnableToCreateStandardColormap", 541 },
-    { "UnableToDisplayImageInfo", 542 },
-    { "UnableToGetProperty", 543 },
-    { "UnableToGetStandardColormap", 544 },
-    { "UnableToGetVisual", 545 },
-    { "UnableToGrabMouse", 546 },
-    { "UnableToLoadFont", 547 },
-    { "UnableToMatchVisualToStandardColormap", 548 },
-    { "UnableToOpenXServer", 549 },
-    { "UnableToReadXAttributes", 550 },
-    { "UnableToReadXWindowImage", 551 },
-    { "UnrecognizedColormapType", 552 },
-    { "UnrecognizedGravityType", 553 },
-    { "UnrecognizedVisualSpecifier", 554 },
-    { "UnableToAllocateXHints", 555 },
-    { "UnableToCreateCursor", 556 },
-    { "UnableToCreateGraphicContext", 557 },
-    { "UnableToCreateStandardColormap", 558 },
-    { "UnableToCreateTextProperty", 559 },
-    { "UnableToCreateXImage", 560 },
-    { "UnableToCreateXPixmap", 561 },
-    { "UnableToCreateXWindow", 562 },
-    { "UnableToDisplayImage", 563 },
-    { "UnableToDitherImage", 564 },
-    { "UnableToGetPixelInfo", 565 },
-    { "UnableToGetVisual", 566 },
-    { "UnableToLoadFont", 567 },
-    { "UnableToMakeXWindow", 568 },
-    { "UnableToOpenXServer", 569 },
-    { "UnableToViewFonts", 570 },
-    { "UnableToGetVisual", 571 },
-    { "UsingDefaultVisual", 572 },
+    { "Default", 529 },
+    { "InvalidColormapIndex", 530 },
+    { "WandAPINotImplemented", 531 },
+    { "WandContainsNoImageIndexs", 532 },
+    { "WandContainsNoImages", 533 },
+    { "ColorIsNotKnownToServer", 534 },
+    { "NoWindowWithSpecifiedIDExists", 535 },
+    { "StandardColormapIsNotInitialized", 536 },
+    { "UnableToConnectToRemoteDisplay", 537 },
+    { "UnableToCreateBitmap", 538 },
+    { "UnableToCreateColormap", 539 },
+    { "UnableToCreatePixmap", 540 },
+    { "UnableToCreateProperty", 541 },
+    { "UnableToCreateStandardColormap", 542 },
+    { "UnableToDisplayImageInfo", 543 },
+    { "UnableToGetProperty", 544 },
+    { "UnableToGetStandardColormap", 545 },
+    { "UnableToGetVisual", 546 },
+    { "UnableToGrabMouse", 547 },
+    { "UnableToLoadFont", 548 },
+    { "UnableToMatchVisualToStandardColormap", 549 },
+    { "UnableToOpenXServer", 550 },
+    { "UnableToReadXAttributes", 551 },
+    { "UnableToReadXWindowImage", 552 },
+    { "UnrecognizedColormapType", 553 },
+    { "UnrecognizedGravityType", 554 },
+    { "UnrecognizedVisualSpecifier", 555 },
+    { "UnableToAllocateXHints", 556 },
+    { "UnableToCreateCursor", 557 },
+    { "UnableToCreateGraphicContext", 558 },
+    { "UnableToCreateStandardColormap", 559 },
+    { "UnableToCreateTextProperty", 560 },
+    { "UnableToCreateXImage", 561 },
+    { "UnableToCreateXPixmap", 562 },
+    { "UnableToCreateXWindow", 563 },
+    { "UnableToDisplayImage", 564 },
+    { "UnableToDitherImage", 565 },
+    { "UnableToGetPixelInfo", 566 },
+    { "UnableToGetVisual", 567 },
+    { "UnableToLoadFont", 568 },
+    { "UnableToMakeXWindow", 569 },
+    { "UnableToOpenXServer", 570 },
+    { "UnableToViewFonts", 571 },
+    { "UnableToGetVisual", 572 },
+    { "UsingDefaultVisual", 573 },
     { 0, 0 }
   };
 #endif
@@ -1789,6 +1791,7 @@ static const char *message_dat[] =
     "Unable to sync pixel stream",
     "default error",
     "default warning",
+    "Font name not specified",
     "Font substitution required",
     "Unable to get type metrics",
     "Unable to initialize freetype library",

@@ -1684,6 +1684,9 @@
       <Message name="UnrecognizedFontEncoding">
         Unrecognized font encoding
       </Message>
+      <Message name="FontNotSpecified">
+        Font name not specified
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

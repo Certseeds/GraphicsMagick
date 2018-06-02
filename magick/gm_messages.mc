@@ -3131,6 +3131,12 @@ default warning
 .
 
 MessageId       = +1
+SymbolicName    = TypeErrorFontNotSpecified
+Language        = English
+Font name not specified
+.
+
+MessageId       = +1
 SymbolicName    = TypeErrorFontSubstitutionRequired
 Language        = English
 Font substitution required
