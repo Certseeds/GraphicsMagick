@@ -1,5 +1,9 @@
 2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/constitute.c (ReadImage): Assure that an error exception
+	is thrown if coder returns null without properly reporting an
+	exception.
+
 	* magick/blob.c (BlobToImage): Assure that an error exception is
 	thrown if coder returns null without properly reporting an
 	exception.

@@ -1536,8 +1536,8 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
               }
             else
               {
-              ThrowException(exception,FileOpenError,UnableToOpenFile,
-                             clone_info->filename);
+                ThrowException(exception,FileOpenError,UnableToOpenFile,
+                               clone_info->filename);
               }
           }
         DestroyExceptionInfo(&module_exception);
@@ -1609,19 +1609,26 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         UnlockSemaphoreInfo(constitute_semaphore);
 
       if (image != (Image *) NULL)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
-                              magick_info->name,
-                              GetImageListLength(image),
-                              (GetPixelCachePresent(image) ? "present" : "missing"),
-                              MagickBoolToString(image->is_monochrome),
-                              MagickBoolToString(image->is_grayscale),
-                              ClassTypeToString(image->storage_class),
-                              ColorspaceTypeToString(image->colorspace));
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Returned from \"%.1024s\" decoder: frames=%lu cache=%s"
+                                " monochrome=%s grayscale=%s class=%s colorspace=%s",
+                                magick_info->name,
+                                GetImageListLength(image),
+                                (GetPixelCachePresent(image) ? "present" : "missing"),
+                                MagickBoolToString(image->is_monochrome),
+                                MagickBoolToString(image->is_grayscale),
+                                ClassTypeToString(image->storage_class),
+                                ColorspaceTypeToString(image->colorspace));
+        }
       else
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder, returned image is NULL!",
-                              magick_info->name);
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Returned from \"%.1024s\" decoder, returned image is NULL!",
+                                magick_info->name);
+          if (exception->severity < ErrorException)
+            ThrowException(exception,CoderError,DecodedImageNotReturned,filename);
+        }
 
       /*
         Enforce that returned images do not have open blobs.
@@ -1718,19 +1725,27 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
         UnlockSemaphoreInfo(constitute_semaphore);
 
       if (image != (Image *) NULL)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder: frames=%lu cache=%s monochrome=%s grayscale=%s class=%s colorspace=%s",
-                              magick_info->name,
-                              GetImageListLength(image),
-                              (GetPixelCachePresent(image) ? "present" : "missing"),
-                              MagickBoolToString(image->is_monochrome),
-                              MagickBoolToString(image->is_grayscale),
-                              ClassTypeToString(image->storage_class),
-                              ColorspaceTypeToString(image->colorspace));
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Returned from \"%.1024s\" decoder: frames=%lu"
+                                " cache=%s monochrome=%s grayscale=%s class=%s"
+                                " colorspace=%s",
+                                magick_info->name,
+                                GetImageListLength(image),
+                                (GetPixelCachePresent(image) ? "present" : "missing"),
+                                MagickBoolToString(image->is_monochrome),
+                                MagickBoolToString(image->is_grayscale),
+                                ClassTypeToString(image->storage_class),
+                                ColorspaceTypeToString(image->colorspace));
+        }
       else
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Returned from \"%.1024s\" decoder: returned image is NULL!",
-                              magick_info->name);
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Returned from \"%.1024s\" decoder: returned image is NULL!",
+                                magick_info->name);
+          if (exception->severity < ErrorException)
+            ThrowException(exception,CoderError,DecodedImageNotReturned,filename);
+        }
 
       /*
         Enforce that returned images do not have open blobs.
