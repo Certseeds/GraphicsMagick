@@ -38,6 +38,12 @@
 <p>2018-06-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/tiff.c (ReadTIFFImage): Initialize allocated scanline,
+strip, or tile to zero in order to avoid complaint about use of
+uninitialized data if libtiff fails to write all the bytes.  Fixes
+oss-fuzz 8551 &quot;graphicsmagick/coder_TIFF_fuzzer:
+Use-of-uninitialized-value in ImportGrayQuantumType&quot;. (Credit to
+OSS-Fuzz)</li>
 <li>magick/annotate.c (RenderFreetype): Throw an exception if
 DrawInfo font is null.  Should fix oss-fuzz 8557
 &quot;graphicsmagick/coder_PCD_fuzzer: Unknown signal in

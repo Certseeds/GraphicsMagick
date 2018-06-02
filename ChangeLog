@@ -1,5 +1,12 @@
 2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Initialize allocated scanline,
+	strip, or tile to zero in order to avoid complaint about use of
+	uninitialized data if libtiff fails to write all the bytes.  Fixes
+	oss-fuzz 8551 "graphicsmagick/coder_TIFF_fuzzer:
+	Use-of-uninitialized-value in ImportGrayQuantumType". (Credit to
+	OSS-Fuzz)
+
 	* magick/annotate.c (RenderFreetype): Throw an exception if
 	DrawInfo font is null.  Should fix oss-fuzz 8557
 	"graphicsmagick/coder_PCD_fuzzer: Unknown signal in

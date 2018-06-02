@@ -2415,6 +2415,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
+            memset(scanline,0,(size_t) scanline_size);
             /*
               Prepare for separate/contiguous retrieval.
             */
@@ -2588,6 +2589,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
+            memset(strip,0,(size_t) strip_size_max);
             /*
               Prepare for separate/contiguous retrieval.
             */
@@ -2807,6 +2809,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
+            memset(tile,0,(size_t) tile_size_max);
             /*
               Prepare for separate/contiguous retrieval.
             */
@@ -3003,6 +3006,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
+            memset(strip_pixels,0,(size_t) number_pixels*sizeof(uint32));
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Allocated %" MAGICK_SIZE_T_F "u bytes for RGBA strip",
