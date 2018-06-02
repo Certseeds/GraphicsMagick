@@ -342,6 +342,9 @@
       <Message name="DivisionByZero">
         Division by zero
       </Message>
+      <Message name="DecodedImageNotReturned">
+        Coder did not return an image (this is a bug)
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">

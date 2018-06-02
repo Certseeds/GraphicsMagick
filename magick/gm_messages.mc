@@ -209,6 +209,12 @@ Data storage type is not supported
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorDecodedImageNotReturned
+Language        = English
+Coder did not return an image (this is a bug)
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorDeltaPNGNotSupported
 Language        = English
 Delta-PNG is not supported

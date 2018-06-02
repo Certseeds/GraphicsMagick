@@ -767,6 +767,9 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
       DestroyImageInfo(clone_info);
       (void) LogMagickEvent(BlobEvent,GetMagickModule(),
                             "Leaving BlobToImage");
+      if ((image == (Image *) NULL) &&
+          (exception->severity < ErrorException))
+        ThrowException(exception,CoderError,DecodedImageNotReturned,"blob");
       return(image);
     }
   /*
@@ -820,6 +823,9 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
       }
   }
   DestroyImageInfo(clone_info);
+  if ((image == (Image *) NULL) &&
+      (exception->severity < ErrorException))
+    ThrowException(exception,CoderError,DecodedImageNotReturned,"blob");
   (void) LogMagickEvent(BlobEvent,GetMagickModule(), "Leaving BlobToImage");
   return(image);
 }
