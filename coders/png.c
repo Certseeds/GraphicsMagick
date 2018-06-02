@@ -4271,7 +4271,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               skip_to_iend=MagickTrue;
               if (!mng_info->jhdr_warning)
-                (void) ThrowException(&image->exception,CoderError,
+                (void) ThrowException(exception,CoderError,
                                       JNGCompressionNotSupported,
                                       image->filename);
               mng_info->jhdr_warning++;
@@ -4281,7 +4281,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               skip_to_iend=MagickTrue;
               if (!mng_info->dhdr_warning)
-                (void) ThrowException(&image->exception,CoderError,
+                (void) ThrowException(exception,CoderError,
                                       DeltaPNGNotSupported,image->filename);
               mng_info->dhdr_warning++;
             }
@@ -4463,7 +4463,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 }
               object_id=((magick_uint32_t) p[0] << 8) | (magick_uint32_t) p[1];
               if (mng_type == 2 && object_id != 0)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "Nonzero object_id in MNG-LC"
                                        " datastream",
                                        (char *) NULL);
@@ -4697,7 +4697,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_FRAM,4))
             {
               if (mng_type == 3)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "FRAM chunk found in MNG-VLC"
                                        " datastream",
                                        (char *) NULL);
@@ -5056,7 +5056,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_CLON,4))
             {
               if (!mng_info->clon_warning)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "CLON is not implemented yet",
                                        image->filename);
               mng_info->clon_warning++;
@@ -5087,7 +5087,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (magn_first || magn_last)
                 if (!mng_info->magn_warning)
                   {
-                    (void) ThrowException2(&image->exception,CoderError,
+                    (void) ThrowException2(exception,CoderError,
                                            "MAGN is not implemented yet"
                                            " for nonzero objects",
                                            image->filename);
@@ -5149,7 +5149,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (magn_methx > 5 || magn_methy > 5)
                 if (!mng_info->magn_warning)
                   {
-                    (void) ThrowException2(&image->exception,CoderError,
+                    (void) ThrowException2(exception,CoderError,
                                            "Unknown MAGN method in"
                                            " MNG datastream",
                                            image->filename);
@@ -5175,7 +5175,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_PAST,4))
             {
               if (!mng_info->past_warning)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "PAST is not implemented yet",
                                        image->filename);
               mng_info->past_warning++;
@@ -5183,7 +5183,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_SHOW,4))
             {
               if (!mng_info->show_warning)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "SHOW is not implemented yet",
                                        image->filename);
               mng_info->show_warning++;
@@ -5217,7 +5217,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           if (!memcmp(type,mng_pHYg,4))
             {
               if (!mng_info->phyg_warning)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "pHYg is not implemented.",
                                        image->filename);
               mng_info->phyg_warning++;
@@ -5226,7 +5226,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               skip_to_iend=MagickTrue;
               if (!mng_info->basi_warning)
-                (void) ThrowException2(&image->exception,CoderError,
+                (void) ThrowException2(exception,CoderError,
                                        "BASI is not implemented yet",
                                        image->filename);
               mng_info->basi_warning++;
@@ -5697,8 +5697,8 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                           assert(yy < (long) large_image->rows);
                           p=prev;
                           n=next;
-                          q=SetImagePixels(large_image,0,yy,
-                                           large_image->columns,1);
+                          q=SetImagePixelsEx(large_image,0,yy,
+                                             large_image->columns,1,exception);
                           if (q == (const PixelPacket *) NULL)
                             break;
                           q+=(large_image->columns-image->columns);
@@ -6056,25 +6056,28 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
   while (image->previous != (Image *) NULL)
     {
       image_count++;
+#if 0
+      /* This code triggers and fails to reliease memory in oss-fuzz 8710 */
       if (image_count > 10*mng_info->image_found)
         {
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "  No beginning");
           MngInfoFreeStruct(mng_info,&have_mng_structure);
-          (void) ThrowException2(&image->exception,(ExceptionType) CoderError,
+          (void) ThrowException2(exception,(ExceptionType) CoderError,
                                  "Linked list is corrupted,"
                                  " beginning of list not found",
                                  image_info->filename);
           return((Image *) NULL);
         }
+#endif
       image=image->previous;
       if (image->next == (Image *) NULL)
         {
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "  Corrupt list");
-          (void) ThrowException2(&image->exception,(ExceptionType) CoderError,
+          (void) ThrowException2(exception,(ExceptionType) CoderError,
                                  "Linked list is corrupted;"
                                  " next_image is NULL",
                                  image_info->filename);
@@ -6086,7 +6089,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "  First image null");
-      (void) ThrowException2(&image->exception,(ExceptionType) CoderError,
+      (void) ThrowException2(exception,(ExceptionType) CoderError,
                              "image->next for first image is NULL but"
                              " shouldn't be.",
                              image_info->filename);
@@ -6096,7 +6099,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "  No visible images found.");
-      (void) ThrowException2(&image->exception,(ExceptionType) CoderError,
+      (void) ThrowException2(exception,(ExceptionType) CoderError,
                              "No visible images in file",image_info->filename);
       if (image != (Image *) NULL)
         DestroyImageList(image);
@@ -6159,7 +6162,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "  Coalesce Images");
       scene=image->scene;
-      next_image=CoalesceImages(image,&image->exception);
+      next_image=CoalesceImages(image,exception);
       if (next_image == (Image *) NULL)
         MagickFatalError2(image->exception.severity,image->exception.reason,
                           image->exception.description);

@@ -1,5 +1,11 @@
 2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Disable mystery "linked list is
+	corrupted" code.  Assure that exceptions are reported to the
+	correct place so they are not lost.  Fixes oss-fuzz 8710
+	"graphicsmagick/coder_MNG_fuzzer: Indirect-leak in
+	AllocateImage". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (ReadTIFFImage): Initialize allocated scanline,
 	strip, or tile to zero in order to avoid complaint about use of
 	uninitialized data if libtiff fails to write all the bytes.  Fixes
