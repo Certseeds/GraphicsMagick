@@ -479,8 +479,11 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
                             length-header_length);
   MagickFreeMemory(profile);
 
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Profile: %s, %lu bytes",
-                        profile_name, (unsigned long) header_length);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Profile: %s, header %" MAGICK_SIZE_T_F "u bytes, "
+                        "data %" MAGICK_SIZE_T_F "u bytes",
+                        profile_name, (MAGICK_SIZE_T) header_length,
+                        (MAGICK_SIZE_T) length-header_length);
 
   return (status);
 }
@@ -1074,7 +1077,13 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   for (i=1; i < 16; i++)
     if ((i != 2) && (i != 13) && (i != 14))
       jpeg_set_marker_processor(&jpeg_info,JPEG_APP0+i,ReadGenericProfile);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading JPEG header...");
   i=jpeg_read_header(&jpeg_info,True);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Done with reading JPEG header");
   if (IsITUFax(image))
     {
       if (image->logging)
@@ -1226,6 +1235,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
           jpeg_info.do_fancy_upsampling=True;
       }
   }
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Starting JPEG decompression...");
   (void) jpeg_start_decompress(&jpeg_info);
   image->columns=jpeg_info.output_width;
   image->rows=jpeg_info.output_height;

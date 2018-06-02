@@ -1,3 +1,8 @@
+2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadGenericProfile): Add/improve tracing for
+	profile size and when JPEG header is being read.
+
 2018-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Report a useful exception for
