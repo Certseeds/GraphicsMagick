@@ -4302,6 +4302,12 @@ static MagickPassFail DCM_ReadPlanarRGBImage(Image *image,DicomStream *dcm,Excep
                           "Reading Planar RGB %s compressed image with %u planes...",
                           (dcm->transfer_syntax == DCM_TS_RLE ? "RLE" : "not"),
                           dcm->samples_per_pixel);
+  /*
+    Force image to DirectClass since we are only updating DirectClass
+    representation.  The image may be in PseudoClass if we were
+    previously provided with a Palette.
+  */
+  image->storage_class=DirectClass;
 
   for (plane=0; plane < dcm->samples_per_pixel; plane++)
     {
@@ -4384,6 +4390,13 @@ static MagickPassFail DCM_ReadRGBImage(Image *image,DicomStream *dcm,ExceptionIn
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Reading RGB image...");
+
+  /*
+    Force image to DirectClass since we are only updating DirectClass
+    representation.  The image may be in PseudoClass if we were
+    previously provided with a Palette.
+  */
+  image->storage_class=DirectClass;
 
   for (y=0; y < image->rows; y++)
     {
