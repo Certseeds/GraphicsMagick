@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on April 29, 2018
+This file was last updated on June 3, 2018
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,78 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.30 (??? ??, 2018)
+=========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* GraphicsMagick is now participating in Google's oss-fuzz project due
+  to the contributions and assistance of Alex Gaynor. Since February 4
+  2018, ??? issues have been opened by oss-fuzz and ??? of those
+  issues have been resolved.  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  There are too many
+  fixes to list here.  Please consult the GraphicsMagick ChangeLog
+  file, Mercurial repository commit log, and the oss-fuzz issues list
+  for details.
+
+* SVG/Rendering: Fix heap write overflow of PrimitiveInfo and
+  PointInfo arrays.  This is another manefestation of CVE-2016-2317,
+  which should finally be fixed correctly due to active
+  detection/correction of pending overflow rather than using
+  estimation.
+
+Bug fixes:
+
+* Many oss-fuzz fixes are bug fixes.
+
+* Drawing/Rendering: Many more fixes by Gregory J Wolfe (see the ChangeLog).
+
+* SVG: Many more fixes by Gregory J Wolfe (see the ChangeLog).
+
+* The AlphaCompositePixel macro was producing wrong results when the
+  output alpha value was not 100% opaque. This is a regression
+  introduced in 1.3.29.
+
+* TILE: Fix problem with tiling JPEG images because the size request
+  used by the TILE algorithm was also causing re-scaling in the JPEG
+  reader.  The problem is solved by stripping the size request before
+  reading the image.
+
+New Features:
+
+* None
+
+API Updates:
+
+* None
+
+Feature improvements:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* The oss-fuzz build script (fuzzing/oss-fuzz-build.sh) now includes
+  many delegate libraries such as zlib, libpng, libtiff, libjpeg, and
+  freetype, resulting in more comprehensive testing.  The Q16 build is
+  now being tested rather than the 'configure' default of Q8.
+
+Behavior Changes:
+
+* None
+
 
 1.3.29 (April 29, 2018)
 =========================

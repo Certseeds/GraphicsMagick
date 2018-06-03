@@ -1,5 +1,7 @@
 2018-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update NEWS with latest changes.
+
 	* coders/dcm.c (DCM_ReadRGBImage): Force the image to DirectClass
 	to avoid later use of uninitialized indexes.  Fixes oss-fuzz 8602
 	"graphicsmagick/coder_DCM_fuzzer: Use-of-uninitialized-value in

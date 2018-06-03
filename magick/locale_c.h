@@ -1306,7 +1306,7 @@ static const char *message_dat[] =
     "Compression not valid",
     "Data encoding scheme is not supported",
     "Data storage type is not supported",
-    "Coder did not return an image (this is a bug)",
+    "Coder did not return an image (this is a bug, please report it!)",
     "Delta-PNG is not supported",
     "Division by zero",
     "Encrypted WPG image file not supported",
