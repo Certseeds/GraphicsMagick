@@ -1,3 +1,10 @@
+2018-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Free chunk memory in error
+	reporting path to avoid leak.  Fixes oss-fuzz 8721
+	"graphicsmagick/coder_MNG_fuzzer: Direct-leak in
+	ReadMNGImage". (Credit to OSS-Fuzz)
+
 2018-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/constitute.c (ReadImage): Assure that an error exception

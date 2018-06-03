@@ -5298,6 +5298,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #ifdef MNG_INSERT_LAYERS
           if (length < 8)
             {
+              MagickFreeMemory(chunk);
               MngInfoFreeStruct(mng_info,&have_mng_structure);
               ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
             }
