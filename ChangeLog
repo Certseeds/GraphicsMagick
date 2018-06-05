@@ -1,3 +1,10 @@
+2018-06-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOnePNGImage): Skip adding empty raw profile.
+	Fixes oss-fuzz "graphicsmagick/coder_PNG_fuzzer:
+	Heap-buffer-overflow in png_read_raw_profile". (Credit to
+	OSS-Fuzz)
+
 2018-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update NEWS with latest changes.
