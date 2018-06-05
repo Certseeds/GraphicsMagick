@@ -869,6 +869,7 @@ ImportGrayQuantumType(const unsigned char *source,
 
                 for (x = number_pixels ; x != 0 ; --x )
                   {
+                    fprintf(stderr,"%s: number_pixels=%lu, x=%lu, bit=%u\n", __func__, number_pixels, x, bit);
                     --bit;
                     index=(*p >> bit) & 0x01;
                     if (grayscale_miniswhite)
