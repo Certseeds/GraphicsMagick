@@ -692,7 +692,6 @@ ExportGrayQuantumType(unsigned char * restrict destination,
 
                 for (x = number_pixels ; x != 0UL ; --x )
                   {
-                    fprintf(stderr,"%s: number_pixels=%lu, x=%lu, bit=%u\n", __func__, number_pixels, x, bit);
                     if (image->is_grayscale)
                       unsigned_value=GetGraySample(p);
                     else

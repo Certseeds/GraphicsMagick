@@ -2694,56 +2694,41 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     image->depth=8;
 #endif
   if (png_get_text(ping,ping_info,&text,&num_text) != 0)
-    {
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "    Text chunks: %u", num_text);
-      for (i=0; i < (long) num_text; i++)
-        {
-          /* Check for a profile */
+    for (i=0; i < (long) num_text; i++)
+      {
+        /* Check for a profile */
 
-          if (logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "    Reading PNG text chunk[%ld] key=\"%.16s\","
-                                  " length=%" MAGICK_SSIZE_T_F "u",i,text[i].key,
-                                  (MAGICK_SSIZE_T) text[i].text_length);
-          if (strlen(text[i].key) > 16 &&
-              !memcmp(text[i].key, "Raw profile type ",17))
-            {
-              if (text[i].text_length == 0)
-                {
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "    Skipping empty raw profile...");
-                }
-              else
-                {
-                  if (png_read_raw_profile(image,image_info,text,(int) i) ==
-                      MagickFail)
-                    break;
-                }
-            }
-          else
-            {
-              char
-                *value;
+        if (logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    Reading PNG text chunk");
+        if (strlen(text[i].key) > 16 &&
+            !memcmp(text[i].key, "Raw profile type ",17))
+          {
+            if (png_read_raw_profile(image,image_info,text,(int) i) ==
+              MagickFail)
+            break;
+          }
+        else
+          {
+            char
+              *value;
 
-              length=(unsigned long) text[i].text_length;
-              value=MagickAllocateMemory(char *,length+1);
-              if (value == (char *) NULL)
-                {
-                  png_warning(ping, "Could not allocate memory for text chunk");
-                  break;
-                }
-              *value='\0';
-              (void) strlcat(value,text[i].text,length+1);
-              (void) SetImageAttribute(image,text[i].key,value);
-              if (logging)
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "      Keyword: %s",text[i].key);
-              MagickFreeMemory(value);
-            }
-        }
-    }
+            length=(unsigned long) text[i].text_length;
+            value=MagickAllocateMemory(char *,length+1);
+            if (value == (char *) NULL)
+              {
+                png_warning(ping, "Could not allocate memory for text chunk");
+                break;
+              }
+            *value='\0';
+            (void) strlcat(value,text[i].text,length+1);
+            (void) SetImageAttribute(image,text[i].key,value);
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "      Keyword: %s",text[i].key);
+            MagickFreeMemory(value);
+          }
+      }
 #ifdef MNG_OBJECT_BUFFERS
   /*
     Store the object if necessary.
