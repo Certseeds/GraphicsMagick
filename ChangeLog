@@ -1,3 +1,7 @@
+2018-05-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Check return values of SeekBlob for more safety.
+
 2018-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOneJNGImage): Use DestroyImageList() rather

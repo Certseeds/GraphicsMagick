@@ -777,10 +777,17 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     }
 
   /* Copy postscript to temporary file */
-  (void) SeekBlob(image,PS_Offset,SEEK_SET);
-  magick_size=ReadBlob(image, sizeof(magick), magick);
+  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset) goto BAD_SEEK;
+  magick_size = ReadBlob(image, sizeof(magick), magick);
 
-  (void) SeekBlob(image,PS_Offset,SEEK_SET);
+  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
+  {
+BAD_SEEK:
+    (void) fclose(ps_file);
+    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+    goto FINISH_UNL;
+  }
+
   while(PS_Size-- > 0)
     {
       int c;
@@ -1072,7 +1079,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
       while(!EOFBlob(image)) /* object parser loop */
         {
-          (void) SeekBlob(image,Header.DataOffset,SEEK_SET);
+          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
+            break;
           if(EOFBlob(image))
             break;
 
@@ -1290,7 +1298,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
       StartWPG.PosSizePrecision = 0;
       while(!EOFBlob(image)) /* object parser loop */
         {
-          (void) SeekBlob(image,Header.DataOffset,SEEK_SET);
+          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
+            break;
           if(EOFBlob(image))
             break;
 
