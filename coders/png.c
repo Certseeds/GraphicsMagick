@@ -3688,7 +3688,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
             "    Reading jng_image from color_blob.");
 
-      FormatString(color_image_info->filename,"%.1024s",color_image->filename);
+      FormatString(color_image_info->filename,"JPEG:%.1024s",color_image->filename);
 
       color_image_info->ping=MagickFalse;   /* To do: avoid this */
       jng_image=ReadImage(color_image_info,exception);
@@ -3724,7 +3724,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               (unsigned long)jng_width,(unsigned long)jng_height);
           DestroyJNG(NULL,&color_image,&color_image_info,
             &alpha_image,&alpha_image_info);
-          DestroyImage(jng_image);
+          DestroyImageList(jng_image);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
           return ((Image *)NULL);

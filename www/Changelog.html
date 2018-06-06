@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2018-06-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (ReadOneJNGImage): Use DestroyImageList() rather
+than DestroyImage() on returned Image from supposed read of JPEG
+data, in case multiple frames were unexpectedly returned.  Also
+add &quot;JPEG:&quot; prefix to filename when reading from temporary file to
+force that it can only be read as a JPEG file, disabling format
+auto-detection based on file header.  Fixes oss-fuzz 8755
+&quot;graphicsmagick/coder_JNG_fuzzer: Indirect-leak in
+AllocateImage&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-06-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

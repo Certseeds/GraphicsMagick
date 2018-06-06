@@ -1,3 +1,14 @@
+2018-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOneJNGImage): Use DestroyImageList() rather
+	than DestroyImage() on returned Image from supposed read of JPEG
+	data, in case multiple frames were unexpectedly returned.  Also
+	add "JPEG:" prefix to filename when reading from temporary file to
+	force that it can only be read as a JPEG file, disabling format
+	auto-detection based on file header.  Fixes oss-fuzz 8755
+	"graphicsmagick/coder_JNG_fuzzer: Indirect-leak in
+	AllocateImage". (Credit to OSS-Fuzz)
+
 2018-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (EOFBlob): Implement EOF detection for ZipStream.
