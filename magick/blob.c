@@ -1331,7 +1331,9 @@ MagickExport int EOFBlob(const Image *image)
     }
     case ZipStream:
     {
-      blob->eof=MagickFalse;
+#if defined(HasZLIB)
+      blob->eof=gzeof(blob->handle.gz);
+#endif /* defined(HasZLIB) */
       break;
     }
     case BZipStream:
@@ -1342,7 +1344,7 @@ MagickExport int EOFBlob(const Image *image)
 
       (void) BZ2_bzerror(blob->handle.bz,&status);
       blob->eof=status == BZ_UNEXPECTED_EOF;
-#endif
+#endif /* defined(HasBZLIB) */
       break;
     }
     case BlobStream:
@@ -3205,18 +3207,23 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
             break;
         }
       count=i;
-      if ((count != length) && !(blob->status))
+      if (count != length)
         {
-          int
-            gzerror_errnum=Z_OK;
-
-          (void) gzerror(blob->handle.gz,&gzerror_errnum);
-          if (gzerror_errnum != Z_OK)
+          if (!(blob->status))
             {
-              blob->status=1;
-              if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
-                blob->first_errno=errno;
+              int
+                gzerror_errnum=Z_OK;
+
+              (void) gzerror(blob->handle.gz,&gzerror_errnum);
+              if (gzerror_errnum != Z_OK)
+                {
+                  blob->status=1;
+                  if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
+                    blob->first_errno=errno;
+                }
             }
+          if (!blob->eof)
+            blob->eof = gzeof(blob->handle.gz);
         }
 #endif
       break;
@@ -3247,17 +3254,20 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
             break;
         }
       count=i;
-      if ((count != length) && !(blob->status))
+      if (count != length)
         {
-          int
-            bzerror_errnum=BZ_OK;
-
-          (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
-          if (bzerror_errnum != BZ_OK)
+          if (!(blob->status))
             {
-              blob->status=1;
-              if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
-                blob->first_errno=errno;
+              int
+                bzerror_errnum=BZ_OK;
+
+              (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
+              if (bzerror_errnum != BZ_OK)
+                {
+                  blob->status=1;
+                  if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
+                    blob->first_errno=errno;
+                }
             }
         }
 #endif

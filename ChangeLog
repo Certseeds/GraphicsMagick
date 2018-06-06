@@ -1,3 +1,10 @@
+2018-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (EOFBlob): Implement EOF detection for ZipStream.
+	Does some archaic zlib not provide gzeof()?  Fixes oss-fuzz 8550
+	"graphicsmagick/coder_MAT_fuzzer: Timeout in
+	graphicsmagick_coder_MAT_fuzzer". (Credit to OSS-Fuzz)
+
 2018-06-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOnePNGImage): Skip adding empty raw profile.
