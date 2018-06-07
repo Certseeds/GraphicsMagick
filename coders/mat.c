@@ -64,24 +64,24 @@ MinReal+j*MinComplex = blue  MaxReal+j*MinComplex = black
 typedef struct
 {
   char identific[124];
-  unsigned short Version;
+  magick_uint16_t Version;
   char EndianIndicator[2];
-  unsigned long DataType;
+  magick_uint32_t DataType;
   magick_uint32_t ObjectSize;
-  unsigned long unknown1;
-  unsigned long unknown2;
+  magick_uint32_t unknown1;
+  magick_uint32_t unknown2;
 
-  unsigned short unknown5;
-  unsigned char StructureFlag;
-  unsigned char StructureClass;
-  unsigned long unknown3;
-  unsigned long unknown4;
-  unsigned long DimFlag;
+  magick_uint16_t unknown5;
+  magick_uint8_t StructureFlag;
+  magick_uint8_t StructureClass;
+  magick_uint32_t unknown3;
+  magick_uint32_t unknown4;
+  magick_uint32_t DimFlag;
 
-  unsigned long SizeX;
-  unsigned long SizeY;
-  unsigned short Flag1;
-  unsigned short NameFlag;
+  magick_uint32_t SizeX;
+  magick_uint32_t SizeY;
+  magick_uint16_t Flag1;
+  magick_uint16_t NameFlag;
 }
 MATHeader;
 
@@ -749,7 +749,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
    *rotated_image;
   PixelPacket *q;
   unsigned int status;
-  MATHeader MATLAB_HDR;
+  MATHeader *MATLAB_HDR = NULL;
   unsigned long size;
   magick_uint32_t CellType;
   ImportPixelAreaOptions import_options;
@@ -761,7 +761,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   unsigned Frames;
   int logging;
   int sample_size;
-  magick_off_t filepos=0x80;
+  magick_off_t filepos = 0x80;
   BlobInfo *blob;
   ImageInfo *clone_info = NULL;
 
@@ -787,15 +787,19 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
     ThrowMATReaderException(FileOpenError, UnableToOpenFile, image);
   }
 
+  MATLAB_HDR = MagickMalloc(sizeof(MATHeader));
+  if(MATLAB_HDR==NULL) 
+    ThrowMATReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
   /*
      Read MATLAB image.
    */
-  if(ReadBlob(image,124,&MATLAB_HDR.identific) != 124)
+  if(ReadBlob(image,124,&MATLAB_HDR->identific) != 124)
   {
     ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   }
 
-  if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
+  if(strncmp(MATLAB_HDR->identific, "MATLAB", 6))
   {
     image2 = ReadMATImageV4(image_info,image,&import_options,exception,logging);
     if(image2==NULL) goto MATLAB_KO;    
@@ -803,8 +807,8 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
     goto END_OF_READING;
   }
 
-  MATLAB_HDR.Version = ReadBlobLSBShort(image);
-  if(ReadBlob(image,2,&MATLAB_HDR.EndianIndicator) != 2)
+  MATLAB_HDR->Version = ReadBlobLSBShort(image);
+  if(ReadBlob(image,2,&MATLAB_HDR->EndianIndicator) != 2)
   {
     ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   }
@@ -812,8 +816,8 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   ImportPixelAreaOptionsInit(&import_options);
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"  Endian %c%c",
-        MATLAB_HDR.EndianIndicator[0],MATLAB_HDR.EndianIndicator[1]);
-  if (!strncmp(MATLAB_HDR.EndianIndicator, "IM", 2))
+        MATLAB_HDR->EndianIndicator[0],MATLAB_HDR->EndianIndicator[1]);
+  if (!strncmp(MATLAB_HDR->EndianIndicator, "IM", 2))
   {
     ReadBlobXXXLong = ReadBlobLSBLong;
     ReadBlobXXXShort = ReadBlobLSBShort;
@@ -821,7 +825,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
     ReadBlobXXXFloats = ReadBlobLSBFloats;
     import_options.endian = LSBEndian;
   }
-  else if (!strncmp(MATLAB_HDR.EndianIndicator, "MI", 2))
+  else if (!strncmp(MATLAB_HDR->EndianIndicator, "MI", 2))
   {
     ReadBlobXXXLong = ReadBlobMSBLong;
     ReadBlobXXXShort = ReadBlobMSBShort;
@@ -845,26 +849,26 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     if(SeekBlob(image,filepos,SEEK_SET) != filepos) break;
     /* printf("pos=%X\n",TellBlob(image)); */
 
-    MATLAB_HDR.DataType = ReadBlobXXXLong(image);
+    MATLAB_HDR->DataType = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
-    MATLAB_HDR.ObjectSize = ReadBlobXXXLong(image);
+    MATLAB_HDR->ObjectSize = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
 
     if(BlobIsSeekable(image))
     {
-      if(MATLAB_HDR.ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
+      if(MATLAB_HDR->ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
+             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR->ObjectSize, (unsigned)(GetBlobSize(image)));
         goto MATLAB_KO;
       }
     }
 
-    filepos += MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
+    filepos += MATLAB_HDR->ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
 
     image2 = image;
 #if defined(HasZLIB)
-    if(MATLAB_HDR.DataType == miCOMPRESSED)
+    if(MATLAB_HDR->DataType == miCOMPRESSED)
     {
       if(clone_info==NULL)
         if((clone_info=CloneImageInfo(image_info)) == NULL)
@@ -873,18 +877,18 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
                                    "CloneImageInfo failed");
                   continue;
                 }
-      image2 = DecompressBlock(image,&MATLAB_HDR.ObjectSize,clone_info,exception);
+      image2 = DecompressBlock(image,&MATLAB_HDR->ObjectSize,clone_info,exception);
       if(image2==NULL)
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                    "Decompression failed");
         continue;
       }
-      MATLAB_HDR.DataType = ReadBlobXXXLong(image2); /* replace compressed object type. */
+      MATLAB_HDR->DataType = ReadBlobXXXLong(image2); /* replace compressed object type. */
     }
 #endif
 
-    if(MATLAB_HDR.DataType!=miMATRIX) 
+    if(MATLAB_HDR->DataType!=miMATRIX) 
     {
 #if defined(HasZLIB)
       if(image2 != image)
@@ -895,23 +899,23 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       continue;  /* skip another objects. */
     }
 
-    MATLAB_HDR.unknown1 = ReadBlobXXXLong(image2);
-    MATLAB_HDR.unknown2 = ReadBlobXXXLong(image2);
+    MATLAB_HDR->unknown1 = ReadBlobXXXLong(image2);
+    MATLAB_HDR->unknown2 = ReadBlobXXXLong(image2);
 
-    MATLAB_HDR.unknown5 = ReadBlobXXXLong(image2);
-    MATLAB_HDR.StructureClass = MATLAB_HDR.unknown5 & 0xFF;
-    MATLAB_HDR.StructureFlag = (MATLAB_HDR.unknown5>>8) & 0xFF;
+    MATLAB_HDR->unknown5 = ReadBlobXXXLong(image2);
+    MATLAB_HDR->StructureClass = MATLAB_HDR->unknown5 & 0xFF;
+    MATLAB_HDR->StructureFlag = (MATLAB_HDR->unknown5>>8) & 0xFF;
 
-    MATLAB_HDR.unknown3 = ReadBlobXXXLong(image2);
+    MATLAB_HDR->unknown3 = ReadBlobXXXLong(image2);
     if(image!=image2)
-      MATLAB_HDR.unknown4 = ReadBlobXXXLong(image2);    /* ??? don't understand why ?? */
-    MATLAB_HDR.unknown4 = ReadBlobXXXLong(image2);
-    MATLAB_HDR.DimFlag = ReadBlobXXXLong(image2);
-    MATLAB_HDR.SizeX = ReadBlobXXXLong(image2);
-    MATLAB_HDR.SizeY = ReadBlobXXXLong(image2);
+      MATLAB_HDR->unknown4 = ReadBlobXXXLong(image2);    /* ??? don't understand why ?? */
+    MATLAB_HDR->unknown4 = ReadBlobXXXLong(image2);
+    MATLAB_HDR->DimFlag = ReadBlobXXXLong(image2);
+    MATLAB_HDR->SizeX = ReadBlobXXXLong(image2);
+    MATLAB_HDR->SizeY = ReadBlobXXXLong(image2);
 
 
-    switch(MATLAB_HDR.DimFlag)
+    switch(MATLAB_HDR->DimFlag)
     {
       case  8: z2=z=1; break;                   /* 2D matrix*/
       case 12: z2=z = ReadBlobXXXLong(image2);  /* 3D matrix RGB*/
@@ -929,25 +933,25 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       default: ThrowImg2MATReaderException(CoderError, MultidimensionalMatricesAreNotSupported, image);
     }
 
-    MATLAB_HDR.Flag1 = ReadBlobXXXShort(image2);
-    MATLAB_HDR.NameFlag = ReadBlobXXXShort(image2);
+    MATLAB_HDR->Flag1 = ReadBlobXXXShort(image2);
+    MATLAB_HDR->NameFlag = ReadBlobXXXShort(image2);
 
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-          "MATLAB_HDR.StructureClass %d",MATLAB_HDR.StructureClass);
-    if (MATLAB_HDR.StructureClass != mxCHAR_CLASS &&
-        MATLAB_HDR.StructureClass != mxSINGLE_CLASS &&          /* float + complex float */
-        MATLAB_HDR.StructureClass != mxDOUBLE_CLASS &&          /* double + complex double */
-        MATLAB_HDR.StructureClass != mxINT8_CLASS &&
-        MATLAB_HDR.StructureClass != mxUINT8_CLASS &&           /* uint8 + uint8 3D */
-        MATLAB_HDR.StructureClass != mxINT16_CLASS &&
-        MATLAB_HDR.StructureClass != mxUINT16_CLASS &&          /* uint16 + uint16 3D */
-        MATLAB_HDR.StructureClass != mxINT32_CLASS &&
-        MATLAB_HDR.StructureClass != mxUINT32_CLASS &&          /* uint32 + uint32 3D */
-        MATLAB_HDR.StructureClass != mxINT64_CLASS &&
-        MATLAB_HDR.StructureClass != mxUINT64_CLASS)            /* uint64 + uint64 3D */
+          "MATLAB_HDR->StructureClass %d",MATLAB_HDR->StructureClass);
+    if (MATLAB_HDR->StructureClass != mxCHAR_CLASS &&
+        MATLAB_HDR->StructureClass != mxSINGLE_CLASS &&          /* float + complex float */
+        MATLAB_HDR->StructureClass != mxDOUBLE_CLASS &&          /* double + complex double */
+        MATLAB_HDR->StructureClass != mxINT8_CLASS &&
+        MATLAB_HDR->StructureClass != mxUINT8_CLASS &&           /* uint8 + uint8 3D */
+        MATLAB_HDR->StructureClass != mxINT16_CLASS &&
+        MATLAB_HDR->StructureClass != mxUINT16_CLASS &&          /* uint16 + uint16 3D */
+        MATLAB_HDR->StructureClass != mxINT32_CLASS &&
+        MATLAB_HDR->StructureClass != mxUINT32_CLASS &&          /* uint32 + uint32 3D */
+        MATLAB_HDR->StructureClass != mxINT64_CLASS &&
+        MATLAB_HDR->StructureClass != mxUINT64_CLASS)            /* uint64 + uint64 3D */
       ThrowImg2MATReaderException(CoderError,UnsupportedCellTypeInTheMatrix,image);
 
-    switch (MATLAB_HDR.NameFlag)
+    switch (MATLAB_HDR->NameFlag)
     {
       case 0:
         size = ReadBlobXXXLong(image2); /* Object name string size */
@@ -966,46 +970,46 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
     CellType = ReadBlobXXXLong(image2);    /* Additional object type */
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-          "MATLAB_HDR.CellType: %d",CellType);
+          "MATLAB_HDR->CellType: %d",CellType);
 
     (void) ReadBlob(image2, 4, &size);     /* data size */
 
 NEXT_FRAME:
       /* Image is gray when no complex flag is set and 2D Matrix */
-    image->is_grayscale = (MATLAB_HDR.DimFlag==8) &&
-           ((MATLAB_HDR.StructureFlag & FLAG_COMPLEX) == 0);
+    image->is_grayscale = (MATLAB_HDR->DimFlag==8) &&
+           ((MATLAB_HDR->StructureFlag & FLAG_COMPLEX) == 0);
 
     switch (CellType)
     {
       case miINT8:
       case miUINT8:
         sample_size = 8;
-        if(MATLAB_HDR.StructureFlag & FLAG_LOGICAL)
+        if(MATLAB_HDR->StructureFlag & FLAG_LOGICAL)
           image->depth = 1;
         else
           image->depth = Min(QuantumDepth,8);         /* Byte type cell */
         import_options.sample_type = UnsignedQuantumSampleType;
-        ldblk = (long) MATLAB_HDR.SizeX;
+        ldblk = (long) MATLAB_HDR->SizeX;
         break;
       case miINT16:
       case miUINT16:
         sample_size = 16;
         image->depth = Min(QuantumDepth,16);        /* Word type cell */
-        ldblk = (long) (2 * MATLAB_HDR.SizeX);
+        ldblk = (long) (2 * MATLAB_HDR->SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miINT32:
       case miUINT32:
         sample_size = 32;
         image->depth = Min(QuantumDepth,32);        /* Dword type cell */
-        ldblk = (long) (4 * MATLAB_HDR.SizeX);
+        ldblk = (long) (4 * MATLAB_HDR->SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miINT64:
       case miUINT64:
         sample_size = 64;
         image->depth = Min(QuantumDepth,32);        /* Qword type cell */
-        ldblk = (long) (8 * MATLAB_HDR.SizeX);
+        ldblk = (long) (8 * MATLAB_HDR->SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miSINGLE:
@@ -1016,10 +1020,10 @@ NEXT_FRAME:
       if (sizeof(float) != 4)
         ThrowImg2MATReaderException(CoderError, IncompatibleSizeOfFloat, image);
 #endif
-        if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
+        if (MATLAB_HDR->StructureFlag & FLAG_COMPLEX)
         {                                           /* complex float type cell */
         }
-        ldblk = (long) (4 * MATLAB_HDR.SizeX);
+        ldblk = (long) (4 * MATLAB_HDR->SizeX);
         break;
       case miDOUBLE:
         sample_size = 64;
@@ -1029,21 +1033,21 @@ NEXT_FRAME:
         {
           ThrowImg2MATReaderException(CoderError, IncompatibleSizeOfDouble, image);  /* this causes immediate return. */
         }
-        if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
+        if (MATLAB_HDR->StructureFlag & FLAG_COMPLEX)
         {                         /* complex double type cell */
         }
-        ldblk = (long) (8 * MATLAB_HDR.SizeX);
+        ldblk = (long) (8 * MATLAB_HDR->SizeX);
         break;
       default:
         ThrowImg2MATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
     }
 
-    image->columns = MATLAB_HDR.SizeX;
-    image->rows = MATLAB_HDR.SizeY;
+    image->columns = MATLAB_HDR->SizeX;
+    image->rows = MATLAB_HDR->SizeY;
     image->colors = 1l << image->depth;
     if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
-    if((unsigned long)ldblk*MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
+    if((unsigned long)ldblk*MATLAB_HDR->SizeY > MATLAB_HDR->ObjectSize)  /* Safety check for forged and or corrupted data. */
       goto MATLAB_KO;
 
     if(CheckImagePixelLimits(image, exception) != MagickPass)
@@ -1085,15 +1089,15 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
 
     if (CellType==miDOUBLE)        /* Find Min and Max Values for floats */
     {
-      (void) MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR.SizeX,
-                                      MATLAB_HDR.SizeY,DoublePixel, ldblk, BImgBuff,
+      (void) MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR->SizeX,
+                                      MATLAB_HDR->SizeY,DoublePixel, ldblk, BImgBuff,
                                       &import_options.double_minvalue,
                                       &import_options.double_maxvalue);
     }
     if (CellType==miSINGLE)        /* Find Min and Max Values for floats */
     {
-      (void) MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR.SizeX,
-                                      MATLAB_HDR.SizeY,FloatPixel, ldblk, BImgBuff,
+      (void) MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR->SizeX,
+                                      MATLAB_HDR->SizeY,FloatPixel, ldblk, BImgBuff,
                                       &import_options.double_minvalue,
                                       &import_options.double_maxvalue);
     }
@@ -1103,29 +1107,29 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
                 /* else read color scanlines */
     do
     {
-      for(i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+      for(i = 0; i < (long) MATLAB_HDR->SizeY; i++)
       {
-        q = SetImagePixels(image,0,MATLAB_HDR.SizeY-i-1,image->columns,1);
+        q = SetImagePixels(image,0,MATLAB_HDR->SizeY-i-1,image->columns,1);
         if (q == (PixelPacket *)NULL)
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1));
+              "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR->SizeY-i-1));
           goto skip_reading_current;            /* Skip image rotation, when cannot set image pixels */
         }
         if(ReadBlob(image2,ldblk,(char *)BImgBuff) != (size_t) ldblk)
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-             "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
+             "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR->SizeY-i-1));
           goto ExitLoop;
         }
-        if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR.StructureFlag & FLAG_LOGICAL))
+        if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR->StructureFlag & FLAG_LOGICAL))
         {
           FixLogical((unsigned char *)BImgBuff,ldblk);
           if(ImportImagePixelArea(image,z2qtype[z],1,BImgBuff,&import_options,0) == MagickFail)
           {
 ImportImagePixelAreaFailed:
             if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-              "  MAT failed to ImportImagePixelArea for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
+              "  MAT failed to ImportImagePixelArea for a row %u", (unsigned)(MATLAB_HDR->SizeY-i-1));
             break;
           }
         }
@@ -1136,13 +1140,13 @@ ImportImagePixelAreaFailed:
 
           if (z<=1 &&                    /* fix only during a last pass z==0 || z==1 */
                 (CellType==miINT8 || CellType==miINT16 || CellType==miINT32 || CellType==miINT64))
-            FixSignedValues(q,MATLAB_HDR.SizeX);
+            FixSignedValues(q,MATLAB_HDR->SizeX);
         }
 
         if (!SyncImagePixels(image))
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-            "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
+            "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR->SizeY-i-1));
           goto ExitLoop;
         }
       }
@@ -1151,7 +1155,7 @@ ExitLoop:
 
 
     /* Read complex part of numbers here */
-    if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
+    if (MATLAB_HDR->StructureFlag & FLAG_COMPLEX)
     {        /* Find Min and Max Values for complex parts of floats */
       MinVal_c = MaxVal_c = 0;
       CellType = ReadBlobXXXLong(image2);    /* Additional object type */
@@ -1159,26 +1163,26 @@ ExitLoop:
 
       if (CellType==miDOUBLE)
       {
-        (void) MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR.SizeX,
-                                        MATLAB_HDR.SizeY, DoublePixel, ldblk, BImgBuff,
+        (void) MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR->SizeX,
+                                        MATLAB_HDR->SizeY, DoublePixel, ldblk, BImgBuff,
                                         &MinVal_c, &MaxVal_c);
       }
       if(CellType==miSINGLE)
       {
-        (void) MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR.SizeX,
-                                        MATLAB_HDR.SizeY, FloatPixel, ldblk, BImgBuff,
+        (void) MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR->SizeX,
+                                        MATLAB_HDR->SizeY, FloatPixel, ldblk, BImgBuff,
                                         &MinVal_c, &MaxVal_c);
       }
 
       if (CellType==miDOUBLE)
-        for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+        for (i = 0; i < (long) MATLAB_HDR->SizeY; i++)
         {
           ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff);
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
 
       if (CellType==miSINGLE)
-        for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+        for (i = 0; i < (long) MATLAB_HDR->SizeY; i++)
         {
           ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff);
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
@@ -1186,8 +1190,8 @@ ExitLoop:
     }
 
       /* Image is gray when no complex flag is set and 2D Matrix AGAIN!!! */
-    image->is_grayscale = (MATLAB_HDR.DimFlag==8) &&
-             ((MATLAB_HDR.StructureFlag & FLAG_COMPLEX) == 0);
+    image->is_grayscale = (MATLAB_HDR->DimFlag==8) &&
+             ((MATLAB_HDR->StructureFlag & FLAG_COMPLEX) == 0);
     image->is_monochrome = image->depth==1;
     if(image->is_monochrome)
       image->colorspace=GRAYColorspace;
@@ -1255,6 +1259,11 @@ skip_reading_current:
   MagickFreeMemory(BImgBuff);
 END_OF_READING:
   CloseBlob(image);
+  if(MATLAB_HDR != NULL)
+  {
+    MagickFree(MATLAB_HDR); 
+    MATLAB_HDR = NULL;
+  }
 
   {
     Image *p;

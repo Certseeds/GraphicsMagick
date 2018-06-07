@@ -1,4 +1,8 @@
-2018-05-24  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2018-06-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Reduce stack ussage for 64 bit architecture.
+
+2018-06-06  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Check return values of SeekBlob for more safety.
 
