@@ -1055,6 +1055,12 @@ Static planes value not equal to one
 .
 
 MessageId       = +1
+SymbolicName    = ImageWarningUnableToParseEmbeddedProfile
+Language        = English
+Unable to parse embedded profile
+.
+
+MessageId       = +1
 SymbolicName    = ImageWarningUnrecognizedBitsPerPixel
 Language        = English
 Unrecognized bits per pixel

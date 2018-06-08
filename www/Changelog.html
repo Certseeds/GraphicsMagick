@@ -35,6 +35,27 @@
 <div class="document">
 
 
+<p>2018-06-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (png_read_raw_profile): Try to shore up parsing of
+raw profile reading to avoid heap read overruns.  Fixes oss-fuzz
+8763 &quot;graphicsmagick/coder_PNG32_fuzzer: Heap-buffer-overflow in
+png_read_raw_profile&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-06-07  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mat.c Reduce stack usage for 64 bit architecture.</li>
+</ul>
+</blockquote>
+<p>2018-06-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/wpg.c Check return values of SeekBlob for more safety.</li>
+</ul>
+</blockquote>
 <p>2018-06-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

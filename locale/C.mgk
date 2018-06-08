@@ -570,6 +570,9 @@
         <Message name="LengthAndFilesizeDoNotMatch">
           Length and filesize do not match
         </Message>
+        <Message name="UnableToParseEmbeddedProfile">
+          Unable to parse embedded profile
+        </Message>
       </Warning>
     </Image>
   </Corrupt>
@@ -1587,7 +1590,7 @@
         <Message name="UnableToAllocateQuantizeInfo">
           unable to allocate quantize info
         </Message>
-	<Message name="UnableToAllocateRandomKernel">
+        <Message name="UnableToAllocateRandomKernel">
           unable to allocate random kernel
         </Message>
         <Message name="UnableToAllocateSemaphoreInfo">

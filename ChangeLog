@@ -1,6 +1,13 @@
+2018-06-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (png_read_raw_profile): Try to shore up parsing of
+	raw profile reading to avoid heap read overruns.  Fixes oss-fuzz
+	8763 "graphicsmagick/coder_PNG32_fuzzer: Heap-buffer-overflow in
+	png_read_raw_profile". (Credit to OSS-Fuzz)
+
 2018-06-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/mat.c Reduce stack ussage for 64 bit architecture.
+	* coders/mat.c Reduce stack usage for 64 bit architecture.
 
 2018-06-06  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 

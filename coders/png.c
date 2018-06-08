@@ -1126,7 +1126,7 @@ static png_free_ptr png_IM_free(png_structp png_ptr,png_voidp ptr)
 
 static MagickPassFail
 png_read_raw_profile(Image *image, const ImageInfo *image_info,
-                     png_textp text,int ii)
+                     png_textp text,long ii,ExceptionInfo *exception)
 {
   char
     profile_description[MaxTextExtent],
@@ -1144,11 +1144,14 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   register png_charp
     sp;
 
+  png_charp
+    ep;
+
   png_uint_32
     length,
     nibbles;
 
-  unsigned char
+  static const unsigned char
     unhex[103]={0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,
                 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,
                 0,0,0,0,0,0,0,0,0,1, 2,3,4,5,6,7,8,9,0,0,
@@ -1156,21 +1159,51 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
                 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,10,11,12,
                 13,14,15};
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "    Read raw profile[%ld]",ii);
+
   sp=text[ii].text+1;
+  ep=text[ii].text+text[ii].text_length;
   /* look for newline */
-  while (*sp != '\n')
+  while ((sp < ep) && (*sp != '\n'))
     sp++;
+  if (sp == ep)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "    Failed to find new-line in raw profile");
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return MagickFail;
+    }
   /* look for length */
-  while (*sp == '\0' || *sp == ' ' || *sp == '\n')
+  while ((sp < ep) && (*sp == '\0' || *sp == ' ' || *sp == '\n'))
     sp++;
+  if (sp == ep)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "    Failed to find raw profile length!");
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return MagickFail;
+    }
   length=MagickAtoL(sp);
-  while (*sp != ' ' && *sp != '\n')
+  while ((sp < ep) && (*sp != ' ' && *sp != '\n'))
     sp++;
+  if (sp == ep)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "    End of text while looking for start of hex-encoded profile");
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return MagickFail;
+    }
   /* allocate space */
-  if (length == 0)
+  if ((length == 0) || (length*2 + sp >= ep))
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "invalid profile length");
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return (MagickFail);
     }
   info=MagickAllocateMemory(unsigned char *,length);
@@ -2717,7 +2750,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                 }
               else
                 {
-                  if (png_read_raw_profile(image,image_info,text,(int) i) ==
+                  if (png_read_raw_profile(image,image_info,text,i,exception) ==
                       MagickFail)
                     break;
                 }
