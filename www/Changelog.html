@@ -35,6 +35,18 @@
 <div class="document">
 
 
+<p>2018-06-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/blob.c (ReadBlob, WriteBlob): gzread(), BZ2_bzread(),
+gzwrite(), BZ2_bzwrite() return type 'int' rather than 'size_t'
+like their stdio equivalents.  Use correct signed type to avoid
+returning a negative value into an unsigned type, forming a huge
+positive value.  Fixes oss-fuzz 8600
+&quot;graphicsmagick/coder_MAT_fuzzer: Heap-buffer-overflow in
+ReadBlobLSBDoubles&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-06-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

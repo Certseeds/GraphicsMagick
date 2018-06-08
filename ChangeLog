@@ -1,3 +1,13 @@
+2018-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (ReadBlob, WriteBlob): gzread(), BZ2_bzread(),
+	gzwrite(), BZ2_bzwrite() return type 'int' rather than 'size_t'
+	like their stdio equivalents.  Use correct signed type to avoid
+	returning a negative value into an unsigned type, forming a huge
+	positive value.  Fixes oss-fuzz 8600
+	"graphicsmagick/coder_MAT_fuzzer: Heap-buffer-overflow in
+	ReadBlobLSBDoubles". (Credit to OSS-Fuzz)
+
 2018-06-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (png_read_raw_profile): Try to shore up parsing of
