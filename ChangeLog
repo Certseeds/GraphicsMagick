@@ -1,3 +1,7 @@
+2018-06-09   Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+        * coders/mat.c More than 4GiB are not supported in MAT!
+
 2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c (ReadMATImage): Add casts to avoid arithmetic

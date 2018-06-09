@@ -835,13 +835,15 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   }
 
   filepos = TellBlob(image);
-  if(filepos < 0)
-  {
-    ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
-  }
+
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
+    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||	/* More than 4GiB are not supported in MAT! */
+        filepos < 0)
+    {
+      ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
+    }
     if(SeekBlob(image,filepos,SEEK_SET) != filepos) break;
     /* printf("pos=%X\n",TellBlob(image)); */
 
