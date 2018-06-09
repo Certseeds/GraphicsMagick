@@ -750,7 +750,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   PixelPacket *q;
   unsigned int status;
   MATHeader MATLAB_HDR;
-  unsigned long size;
+  size_t size;
   magick_uint32_t CellType;
   ImportPixelAreaOptions import_options;
   int i;
@@ -860,7 +860,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     }
 
-    filepos += MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
+    filepos += (magick_off_t) MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
 
     image2 = image;
 #if defined(HasZLIB)
@@ -951,7 +951,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     {
       case 0:
         size = ReadBlobXXXLong(image2); /* Object name string size */
-        size = 4 * (long) ((size + 3 + 1) / 4);
+        size = 4 * (((size_t) size + 3 + 1) / 4);
         (void) SeekBlob(image2, size, SEEK_CUR);
         break;
       case 1:

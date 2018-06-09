@@ -1,5 +1,10 @@
 2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (ReadMATImage): Add casts to avoid arithmetic
+	overflow when computing size and offsets.  Fixes oss-fuzz 8801
+	"graphicsmagick/coder_MAT_fuzzer: Timeout in
+	graphicsmagick_coder_MAT_fuzzer". (Credit to OSS-Fuzz)
+
 	* magick/blob.c (ReadBlobLSBDoubles, ReadBlobMSBDoubles): Only
 	byte-swap doubles or test doubles for NAN if we have read enough
 	bytes for at least one double value.
