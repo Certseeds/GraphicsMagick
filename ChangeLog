@@ -1,3 +1,12 @@
+2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (ReadBlobLSBDoubles, ReadBlobMSBDoubles): Only
+	byte-swap doubles or test doubles for NAN if we have read enough
+	bytes for at least one double value.
+	(ReadBlob): Add an assertion to enforce that ReadBlob() will never
+	report reading more bytes than requested due to some
+	implementation issue.
+
 2018-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (ReadBlob, WriteBlob): gzread(), BZ2_bzread(),

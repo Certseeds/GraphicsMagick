@@ -3309,6 +3309,7 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
         break;
       }
     }
+  assert(count <= length);
   return(count);
 }
 
@@ -3545,14 +3546,16 @@ MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data
   assert(data != (double *) NULL);
 
   octets_read=ReadBlob(image,octets,data);
-#if defined(WORDS_BIGENDIAN)
   if (octets_read >= sizeof(double))
-    MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
+    {
+#if defined(WORDS_BIGENDIAN)
+        MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
 
-  for (i=0; i < octets_read/sizeof(double); i++)
-    if (MAGICK_ISNAN(data[i]))
-      data[i] = 0.0;
+      for (i=0; i < octets_read/sizeof(double); i++)
+        if (MAGICK_ISNAN(data[i]))
+          data[i] = 0.0;
+    }
 
   return octets_read;
 }
@@ -4122,14 +4125,16 @@ MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data
   assert(data != (double *) NULL);
 
   octets_read=ReadBlob(image,octets,data);
+  if (octets_read >= sizeof(double))
+    {
 #if !defined(WORDS_BIGENDIAN)
-  if (octets_read > 0)
-    MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
+        MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
 
-  for (i=0; i < octets_read/sizeof(double); i++)
-    if (MAGICK_ISNAN(data[i]))
-      data[i] = 0.0;
+      for (i=0; i < octets_read/sizeof(double); i++)
+        if (MAGICK_ISNAN(data[i]))
+          data[i] = 0.0;
+    }
 
   return octets_read;
 }
