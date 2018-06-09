@@ -1,6 +1,14 @@
-2018-06-09   Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-        * coders/mat.c More than 4GiB are not supported in MAT!
+	* magick/import.c (ImportViewPixelArea): Use appropriate
+	bits_per_sample validations for FloatQuantumSampleType. Fixes
+	oss-fuzz 8780 "graphicsmagick/coder_PTIF_fuzzer:
+	Use-of-uninitialized-value in HorizontalFilter". (Credit to
+	OSS-Fuzz)
+
+2018-06-09  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c More than 4GiB are not supported in MAT!
 
 2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

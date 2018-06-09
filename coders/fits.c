@@ -250,6 +250,7 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
 
   ImportPixelAreaOptionsInit(&import_options);
   import_options.endian = MSBEndian;
+  import_options.sample_type = UnsignedQuantumSampleType;
 
   /*
     Decode image header.

@@ -1514,7 +1514,10 @@ QuantumTransferMode(const Image *image,
           }
         }
     }
-  /* fprintf(stderr,"Quantum Type: %d Quantum Samples: %d\n",(int) *quantum_type,*quantum_samples); */
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Quantum Type: %s, Quantum Samples: %d",
+                          QuantumTypeToString(*quantum_type),*quantum_samples);
   /* FIXME: We do need to support YCbCr! */
 
   if (*quantum_samples != 0)
@@ -2544,6 +2547,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             QuantumType
               quantum_type;
 
+            ImportPixelAreaInfo
+              import_info;
+
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Using stripped read method with %u bits per sample",
@@ -2675,7 +2681,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       Import strip row into image.
                     */
                     if (ImportImagePixelArea(image,quantum_type,bits_per_sample,p,
-                                             &import_options,0) == MagickFail)
+                                             &import_options,&import_info) == MagickFail)
                       {
                         CopyException(exception,&image->exception);
                         status=MagickFail;

@@ -38,6 +38,22 @@
 <p>2018-06-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/import.c (ImportViewPixelArea): Use appropriate
+bits_per_sample validations for FloatQuantumSampleType. Fixes
+oss-fuzz 8780 &quot;graphicsmagick/coder_PTIF_fuzzer:
+Use-of-uninitialized-value in HorizontalFilter&quot;. (Credit to
+OSS-Fuzz)</li>
+</ul>
+</blockquote>
+<p>2018-06-09  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mat.c More than 4GiB are not supported in MAT!</li>
+</ul>
+</blockquote>
+<p>2018-06-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
 <li>coders/mat.c (ReadMATImage): Add casts to avoid arithmetic
 overflow when computing size and offsets.  Fixes oss-fuzz 8801
 &quot;graphicsmagick/coder_MAT_fuzzer: Timeout in
