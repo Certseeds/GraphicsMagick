@@ -4533,6 +4533,16 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
   assert(image->signature == MagickSignature);
   assert(image->blob != (BlobInfo *) NULL);
   assert(image->blob->type != UndefinedStream);
+#if 0
+  if (image->logging)
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Seek %" MAGICK_OFF_F "d, whence = %s",
+                          offset,
+                          (whence == SEEK_SET ? "SEEK_SET" :
+                           (whence == SEEK_CUR ? "SEEK_CUR" :
+                            (whence == SEEK_END ? "SEEK_END" :
+                             "?"))));
+#endif
   switch (image->blob->type)
     {
     case UndefinedStream:
