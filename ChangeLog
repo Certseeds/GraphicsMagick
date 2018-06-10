@@ -1,5 +1,10 @@
 2018-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (ReadMIFFImage): Detect end of file while reading
+	image directory. Fixes SourceForge issue 565 "ImageMagick
+	CVE-2017-18272 applies to GraphicsMagick".  Thanks to Petr Gajdos
+	for reporting this issue to us.
+
 	* magick/import.c (ImportViewPixelArea): Use appropriate
 	bits_per_sample validations for FloatQuantumSampleType. Fixes
 	oss-fuzz 8780 "graphicsmagick/coder_PTIF_fuzzer:
