@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2018-06-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mpc.c (ReadMPCImage): Detect end of file while reading
+image directory.  Similar to MIFF fixes for ImageMagick
+CVE-2017-18272.
+(RegisterMPCImage): Require seekable stream since MPC is strictly
+a file-based format and so GetBlobSize() is assured to work.
+Similar to MIFF behavior.  Claimed to be part of the resolution
+for ImageMagick CVE CVE-2017-11449. Suggested by Petr Gajdos via
+email on January 3, 2018.</li>
+</ul>
+</blockquote>
 <p>2018-06-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
