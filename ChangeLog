@@ -1,3 +1,10 @@
+2018-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): ENDL chunk must be at least one
+	byte in size. Fixes oss-fuzz 8832
+	"graphicsmagick/coder_MNG_fuzzer: Null-dereference READ in
+	ReadMNGImage". (Credit to OSS-Fuzz)
+
 2018-06-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mpc.c (ReadMPCImage): Detect end of file while reading

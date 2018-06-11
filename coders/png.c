@@ -5058,6 +5058,14 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             }
           if (!memcmp(type,mng_ENDL,4))
             {
+              if (length < 1)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Ignoring empty ENDL chunk");
+                  MagickFreeMemory(chunk);
+                  continue;
+                }
               loop_level=chunk[0];
               if (skipping_loop > 0)
                 {
