@@ -4,6 +4,9 @@
 	byte in size. Fixes oss-fuzz 8832
 	"graphicsmagick/coder_MNG_fuzzer: Null-dereference READ in
 	ReadMNGImage". (Credit to OSS-Fuzz)
+	(ReadMNGImage): Length of DISC chunk must be evenly divisible by
+	2.  Fixes oss-fuzz 8834 "graphicsmagick/coder_MNG_fuzzer:
+	Heap-buffer-overflow in ReadMNGImage". (Credit to OSS-Fuzz)
 
 2018-06-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
