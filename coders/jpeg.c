@@ -138,7 +138,7 @@ typedef struct _DestinationManager
     *buffer;
 } DestinationManager;
 
-typedef struct _ErrorManager /* FIXME: Can include a tally of error/warning message counts here */
+typedef struct _ErrorManager
 {
   Image
     *image;
@@ -203,8 +203,6 @@ typedef struct _SourceManager
   Format a libjpeg warning or trace event.  Warnings are converted to
   GraphicsMagick warning exceptions while traces are optionally
   logged.
-
-  JPEG message codes range from 0 to JMSG_LASTMSGCODE
 */
 static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
 {
@@ -233,12 +231,10 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
       if (image->logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "[%s] JPEG Warning[%ld]: \"%s\" (code=%d, "
+                                "[%s] JPEG Warning: \"%s\" (code=%d, "
                                 "parms=0x%02x,0x%02x,"
                                 "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x)",
-                                image->filename,
-                                err->num_warnings,
-                                message,err->msg_code,
+                                image->filename,message,err->msg_code,
                                 err->msg_parm.i[0], err->msg_parm.i[1],
                                 err->msg_parm.i[2], err->msg_parm.i[3],
                                 err->msg_parm.i[4], err->msg_parm.i[5],
@@ -246,11 +242,9 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
         }
       if ((err->num_warnings == 0) ||
           (err->trace_level >= 3))
-        ThrowException2(&image->exception,CorruptImageWarning,message,
-                        image->filename);
-      /* JWRN_JPEG_EOF - "Premature end of JPEG file" */
+        ThrowBinaryException2(CorruptImageWarning,(char *) message,
+                                    image->filename);
       err->num_warnings++;
-      return False;
     }
   else
     {
@@ -263,7 +257,7 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
                                 message);
         }
     }
-  return True;
+  return(True);
 }
 
 static boolean FillInputBuffer(j_decompress_ptr cinfo)
