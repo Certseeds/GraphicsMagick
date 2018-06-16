@@ -6,6 +6,10 @@
 	oss-fuzz 8896 "graphicsmagick/coder_BIGTIFF_fuzzer:
 	Use-of-uninitialized-value in DisassociateAlphaRegion". (Credit to
 	OSS-Fuzz)
+	(ReadTIFFImage): tsize_t is a signed type so be prepared for
+	unexpected negative values produced by libtiff size functions.
+	Fixes oss-fuzz 8934 "graphicsmagick/coder_TIFF_fuzzer: Sanitizer
+	CHECK failure in "((0)) != (0)" (0x0, 0x0)". (Credit to OSS-Fuzz)
 
 2018-06-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 

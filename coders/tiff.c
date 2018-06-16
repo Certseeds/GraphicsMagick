@@ -2403,7 +2403,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Allocate memory for one scanline.
             */
             scanline_size=TIFFScanlineSize(tiff);
-            if (0 == scanline_size)
+            if (scanline_size <= 0)
               {
                 status=MagickFail;
                 break;
@@ -2582,6 +2582,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Allocate memory for one strip.
             */
             strip_size_max=TIFFStripSize(tiff);
+            if (strip_size_max <= 0)
+              {
+                status=MagickFail;
+                break;
+              }
             /*
               Scale up to size of 32-bit word.
             */
@@ -2590,7 +2595,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Maximum strip size %" MAGICK_SIZE_T_F "u",
                                     (MAGICK_SSIZE_T) strip_size_max);
-            if (0 == strip_size_max)
+            if (strip_size_max <= 0)
               {
                 status=MagickFail;
                 break;
@@ -2787,6 +2792,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Obtain the maximum number of bytes required to contain a tile.
             */
             tile_size_max=TIFFTileSize(tiff);
+            if (tile_size_max <= 0)
+              {
+                ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
+              }
             /*
               Scale up to size of 32-bit word.
             */
@@ -3121,7 +3131,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Obtain the maximum number of bytes required to contain a tile.
             */
             tile_size_max=TIFFTileSize(tiff);
-            if (0 == tile_size_max)
+            if (tile_size_max <= 0)
               {
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);

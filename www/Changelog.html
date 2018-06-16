@@ -43,7 +43,11 @@ so that QuantumTransferMode() exceptions thrown for
 PLANARCONFIG_SEPARATE images are handled immediately.  Fixes
 oss-fuzz 8896 &quot;graphicsmagick/coder_BIGTIFF_fuzzer:
 Use-of-uninitialized-value in DisassociateAlphaRegion&quot;. (Credit to
-OSS-Fuzz)</li>
+OSS-Fuzz)
+(ReadTIFFImage): tsize_t is a signed type so be prepared for
+unexpected negative values produced by libtiff size functions.
+Fixes oss-fuzz 8934 &quot;graphicsmagick/coder_TIFF_fuzzer: Sanitizer
+CHECK failure in &quot;((0)) != (0)&quot; (0x0, 0x0)&quot;. (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-06-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
