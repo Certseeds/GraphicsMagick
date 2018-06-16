@@ -1,7 +1,7 @@
-2018-16-06  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2018-06-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/wpg.c This could perhaps fix fix OssFuzz 7735,
-        thanks to oss fuzz.
+	* coders/wpg.c Fix oss-fuzz 7735 "graphicsmagick/coder_WPG_fuzzer:
+	Use-of-uninitialized-value in ReadWPGImage".  (Credit to OSS-Fuzz)
 
 2018-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
