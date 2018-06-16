@@ -1,3 +1,8 @@
+2018-16-06  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c This could perhaps fix fix OssFuzz 7735,
+        thanks to oss fuzz.
+
 2018-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): ENDL chunk must be at least one
