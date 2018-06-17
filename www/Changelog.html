@@ -38,6 +38,10 @@
 <p>2018-06-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/xcf.c (load_level): Make sure to free 'tile_image' before
+returning exception.  Fixes oss-fuzz 8935
+&quot;graphicsmagick/coder_XCF_fuzzer: Indirect-leak in
+CloneImage&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/jpeg.c (ReadJPEGImage): Allow three warnings of any given
 type before promoting the next warning of the same type to a hard
 error.  The warning limit may be adjusted by the user using

@@ -840,7 +840,10 @@ static MagickPassFail load_level (Image* image,
                                       "Final tile data size: %lu",
                                       (unsigned long) tile_data_size);
               if (offset2 <= offset)
-                ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+                {
+                  tile_image = (Image *) NULL;
+                  ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
+                }
             }
         }
 
@@ -856,9 +859,11 @@ static MagickPassFail load_level (Image* image,
                                tile_data_size);
           break;
         case COMPRESS_ZLIB:
+          DestroyImage(tile_image);
           ThrowBinaryException(CoderError,ZipCompressionNotSupported,
                                image->filename);
         case COMPRESS_FRACTAL:
+          DestroyImage(tile_image);
           ThrowBinaryException(CoderError,FractalCompressionNotSupported,
                                image->filename);
         }
