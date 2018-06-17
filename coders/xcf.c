@@ -841,7 +841,7 @@ static MagickPassFail load_level (Image* image,
                                       (unsigned long) tile_data_size);
               if (offset2 <= offset)
                 {
-                  tile_image = (Image *) NULL;
+                  DestroyImage(tile_image);
                   ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
                 }
             }
