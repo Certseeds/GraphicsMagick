@@ -2918,8 +2918,8 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
   /*
     Verify PNG signature.
   */
-  (void) ReadBlob(image,8,magic_number);
-  if (memcmp(magic_number,"\211PNG\r\n\032\n",8) != 0)
+  if ((ReadBlob(image,8,magic_number) != 8) ||
+      (memcmp(magic_number,"\211PNG\r\n\032\n",8) != 0))
   {
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   }
