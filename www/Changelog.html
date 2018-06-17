@@ -38,6 +38,12 @@
 <p>2018-06-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/jpeg.c (ReadJPEGImage): Allow three warnings of any given
+type before promoting the next warning of the same type to a hard
+error.  The warning limit may be adjusted by the user using
+-define jpeg:max-warnings=&lt;value&gt;.  Fixes oss-fuzz 8704
+&quot;graphicsmagick/coder_JPG_fuzzer: Out-of-memory in
+graphicsmagick_coder_JPG_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/png.c (ReadPNGImage): Detect EOF when reading
 magic_number.  Fixes oss-fuzz 8944
 &quot;graphicsmagick/coder_PNG_fuzzer: Use-of-uninitialized-value in

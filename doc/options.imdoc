@@ -1182,6 +1182,13 @@ behaves.
 (default enabled).
 </dd>
 
+<dt>jpeg:max-warnings=<value></dt>
+
+<dd>Specifies an integer value for how many warnings are allowed for
+any given error type before being promoted to a hard error.  JPEG
+files producing excessive warnings indicate a problem with the file.
+</dd>
+
 <dt>jpeg:optimize-coding={true|false}</dt>
 <dd>
 Selects if huffman encoding should be used. Huffman encoding is enabled

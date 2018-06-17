@@ -1,4 +1,4 @@
-.TH gm 1 "2018/05/19" "GraphicsMagick"
+.TH gm 1 "2018/06/17" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1294,6 +1294,16 @@ behaves.
 .in 20
 Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
+
+.in 15
+.in 15
+.B "jpeg:max-warnings=<value>"
+.in 20
+ \fR
+.in 20
+Specifies an integer value for how many warnings are allowed for
+any given error type before being promoted to a hard error.  JPEG
+files producing excessive warnings indicate a problem with the file.
 
 .in 15
 .in 15

@@ -123,6 +123,7 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
 #define XML_MARKER  (JPEG_APP0+1)
 #define MaxBufferExtent  8192
 #define JPEG_MARKER_MAX_SIZE 65533
+#define MaxWarningCount 3
 static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
 
 
@@ -136,6 +137,7 @@ typedef struct _DestinationManager
 
   JOCTET
     *buffer;
+
 } DestinationManager;
 
 typedef struct _ErrorManager /* FIXME: Can include a tally of error/warning message counts here */
@@ -148,6 +150,12 @@ typedef struct _ErrorManager /* FIXME: Can include a tally of error/warning mess
 
   jmp_buf
     error_recovery;
+
+  unsigned int
+    max_warning_count;
+
+  magick_uint16_t
+    warning_counts[JMSG_LASTMSGCODE];
 
 } ErrorManager;
 
@@ -227,23 +235,39 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
   /* msg_level is -1 for warnings, 0 and up for trace messages. */
   if (msg_level < 0)
     {
+      unsigned int strikes = 0;
       /* A warning */
       (err->format_message)(jpeg_info,message);
+
+      if ((err->msg_code >= 0) &&
+          ((size_t) err->msg_code < ArraySize(error_manager->warning_counts)))
+        {
+          error_manager->warning_counts[err->msg_code]++;
+          strikes=error_manager->warning_counts[err->msg_code];
+        }
 
       if (image->logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "[%s] JPEG Warning[%ld]: \"%s\" (code=%d, "
+                                "[%s] JPEG Warning[%u]: \"%s\""
+                                " (code=%d "
                                 "parms=0x%02x,0x%02x,"
                                 "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x)",
                                 image->filename,
-                                err->num_warnings,
+                                strikes,
                                 message,err->msg_code,
                                 err->msg_parm.i[0], err->msg_parm.i[1],
                                 err->msg_parm.i[2], err->msg_parm.i[3],
                                 err->msg_parm.i[4], err->msg_parm.i[5],
                                 err->msg_parm.i[6], err->msg_parm.i[7]);
         }
+      if (strikes > error_manager->max_warning_count)
+        {
+          ThrowException2(&image->exception,CorruptImageError,(char *) message,
+                          image->filename);
+          longjmp(error_manager->error_recovery,1);
+        }
+
       if ((err->num_warnings == 0) ||
           (err->trace_level >= 3))
         ThrowException2(&image->exception,CorruptImageWarning,message,
@@ -1015,6 +1039,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   JSAMPROW
     scanline[1];
 
+  const char
+    *value;
+
   register long
     i;
 
@@ -1059,6 +1086,14 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   jpeg_pixels=(JSAMPLE *) NULL;
   error_manager.image=image;
+  error_manager.max_warning_count=MaxWarningCount;
+
+  /*
+    Allow the user to set how many warnings of any given type are
+    allowed before promotion of the warning to a hard error.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
+    error_manager.max_warning_count=strtol(value,(char **) NULL, 10);
 
   /*
     Set initial longjmp based error handler.
@@ -1198,49 +1233,46 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   image->compression=JPEGCompression;
   image->interlace=LineInterlace;
 #endif
-  {
-    const char
-      *value;
 
-    /*
-      Allow the user to enable/disable block smoothing.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","block-smoothing")))
-      {
-        if (LocaleCompare(value,"FALSE") == 0)
-          jpeg_info.do_block_smoothing=False;
-        else
-          jpeg_info.do_block_smoothing=True;
-      }
+  /*
+    Allow the user to enable/disable block smoothing.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","block-smoothing")))
+    {
+      if (LocaleCompare(value,"FALSE") == 0)
+        jpeg_info.do_block_smoothing=False;
+      else
+        jpeg_info.do_block_smoothing=True;
+    }
 
-    /*
-      Allow the user to select the DCT decoding algorithm.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","dct-method")))
-      {
-        if (LocaleCompare(value,"ISLOW") == 0)
-          jpeg_info.dct_method=JDCT_ISLOW;
-        else if (LocaleCompare(value,"IFAST") == 0)
-          jpeg_info.dct_method=JDCT_IFAST;
-        else if (LocaleCompare(value,"FLOAT") == 0)
-          jpeg_info.dct_method=JDCT_FLOAT;
-        else if (LocaleCompare(value,"DEFAULT") == 0)
-          jpeg_info.dct_method=JDCT_DEFAULT;
-        else if (LocaleCompare(value,"FASTEST") == 0)
-          jpeg_info.dct_method=JDCT_FASTEST;
-      }
+  /*
+    Allow the user to select the DCT decoding algorithm.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","dct-method")))
+    {
+      if (LocaleCompare(value,"ISLOW") == 0)
+        jpeg_info.dct_method=JDCT_ISLOW;
+      else if (LocaleCompare(value,"IFAST") == 0)
+        jpeg_info.dct_method=JDCT_IFAST;
+      else if (LocaleCompare(value,"FLOAT") == 0)
+        jpeg_info.dct_method=JDCT_FLOAT;
+      else if (LocaleCompare(value,"DEFAULT") == 0)
+        jpeg_info.dct_method=JDCT_DEFAULT;
+      else if (LocaleCompare(value,"FASTEST") == 0)
+        jpeg_info.dct_method=JDCT_FASTEST;
+    }
 
-    /*
-      Allow the user to enable/disable fancy upsampling.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","fancy-upsampling")))
-      {
-        if (LocaleCompare(value,"FALSE") == 0)
-          jpeg_info.do_fancy_upsampling=False;
-        else
-          jpeg_info.do_fancy_upsampling=True;
-      }
-  }
+  /*
+    Allow the user to enable/disable fancy upsampling.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","fancy-upsampling")))
+    {
+      if (LocaleCompare(value,"FALSE") == 0)
+        jpeg_info.do_fancy_upsampling=False;
+      else
+        jpeg_info.do_fancy_upsampling=True;
+    }
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Starting JPEG decompression...");
@@ -1992,8 +2024,11 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     scanline[1];
 
   char
-   *sampling_factors,
-   *preserve_settings;
+    *sampling_factors,
+    *preserve_settings;
+
+  const char
+    *value;
 
   long
     y;
@@ -2052,6 +2087,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   error_manager.image=imagev;
+  error_manager.max_warning_count=MaxWarningCount;
+  /*
+    Allow the user to set how many warnings of any given type are
+    allowed before promotion of the warning to a hard error.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
+    error_manager.max_warning_count=strtol(value,(char **) NULL, 10);
   jpeg_info.client_data=(void *) &error_manager;
   if (setjmp(error_manager.error_recovery))
     {
