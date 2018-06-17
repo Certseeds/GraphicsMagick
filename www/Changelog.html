@@ -41,7 +41,9 @@
 <li>coders/png.c (ReadPNGImage): Detect EOF when reading
 magic_number.  Fixes oss-fuzz 8944
 &quot;graphicsmagick/coder_PNG_fuzzer: Use-of-uninitialized-value in
-ReadPNGImage&quot;.  (Credit to OSS-Fuzz)</li>
+ReadPNGImage&quot;.  (Credit to OSS-Fuzz)
+(ReadPNGImage, ReadJNGImage): Makes sure that return value of
+ReadBlob() is always checked to detect EOF.</li>
 </ul>
 </blockquote>
 <p>2018-06-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

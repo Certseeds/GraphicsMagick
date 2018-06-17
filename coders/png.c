@@ -853,6 +853,8 @@ static void mng_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
             {
               check=(png_size_t) ReadBlob(image,(size_t) length,
                                           (char *) mng_info->read_buffer);
+              if (check != length)
+                png_error(png_ptr,"Read Exception");
               mng_info->read_buffer[4]=0;
               mng_info->bytes_in_read_buffer=4;
               if (!memcmp(mng_info->read_buffer,mng_PLTE,4))
@@ -868,6 +870,8 @@ static void mng_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
             {
               check=(png_size_t) ReadBlob(image,(size_t) length,
                                           (char *) mng_info->read_buffer);
+              if (check != length)
+                png_error(png_ptr,"Read Exception");
               mng_info->read_buffer[4]=0;
               mng_info->bytes_in_read_buffer=4;
               if (!memcmp(mng_info->read_buffer,mng_bKGD,4))
@@ -878,9 +882,13 @@ static void mng_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
                     */
                     check=(png_size_t)
                       ReadBlob(image,5,(char *) mng_info->read_buffer);
+                    if (check != 5)
+                      png_error(png_ptr,"Read Exception");
                     check=(png_size_t) ReadBlob(image,(size_t) length,
                                                 (char *)
                                                 mng_info->read_buffer);
+                    if (check != length)
+                      png_error(png_ptr,"Read Exception");
                     mng_info->saved_bkgd_index=mng_info->read_buffer[0];
                     mng_info->have_saved_bkgd_index=MagickTrue;
                     mng_info->bytes_in_read_buffer=0;
@@ -3180,7 +3188,16 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
       (void) strcat(type,"errr");
       length=(size_t) ReadBlobMSBLong(image);
       count=(unsigned int) ReadBlob(image,4,type);
-
+      if (count != 4)
+        {
+          DestroyJNG(NULL,&color_image,&color_image_info,
+            &alpha_image,&alpha_image_info);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "chunk count is zero");
+          ThrowException(exception,CorruptImageError,
+                         UnexpectedEndOfFile,image->filename);
+          return ((Image*)NULL);
+        }
       if (logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3193,16 +3210,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 "   count=%u",count);
         }
 
-      if (count == 0)
-        {
-          DestroyJNG(NULL,&color_image,&color_image_info,
-            &alpha_image,&alpha_image_info);
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "chunk count is zero");
-          ThrowException(exception,CorruptImageError,
-                         ImproperImageHeader,image->filename);
-          return ((Image*)NULL);
-        }
       if (length > PNG_MAX_UINT)
         {
           DestroyJNG(NULL,&color_image,&color_image_info,
@@ -3244,7 +3251,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                              MemoryAllocationFailed,image->filename);
               return ((Image*)NULL);
             }
-          if (ReadBlob(image,length,chunk) < length)
+          if (ReadBlob(image,length,chunk) != length)
             {
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
@@ -4264,7 +4271,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           (void) strcat(type,"errr");
           length=(size_t) ReadBlobMSBLong(image);
           count=ReadBlob(image,4,type);
-          if (count < 4)
+          if (count != 4)
             {
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),

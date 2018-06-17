@@ -4,6 +4,8 @@
 	magic_number.  Fixes oss-fuzz 8944
 	"graphicsmagick/coder_PNG_fuzzer: Use-of-uninitialized-value in
 	ReadPNGImage".  (Credit to OSS-Fuzz)
+	(ReadPNGImage, ReadJNGImage): Makes sure that return value of
+	ReadBlob() is always checked to detect EOF.
 
 2018-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
