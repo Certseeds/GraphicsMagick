@@ -542,9 +542,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
         AllocateNextImage(image_info,image);
         if (image->next == (Image *) NULL)
           {
-            MagickFreeMemory(scanline);
-            DestroyImageList(image);
-            return((Image *) NULL);
+            ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           }
         image=SyncNextImageInList(image);
         status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),

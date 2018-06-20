@@ -345,8 +345,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
         if (image->next == (Image *) NULL)
           {
             MagickFreeMemory(scanline);
-            DestroyImageList(image);
-            return((Image *) NULL);
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           }
         image=SyncNextImageInList(image);
         if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),exception,
