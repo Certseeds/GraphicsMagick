@@ -1,3 +1,10 @@
+2018-06-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Avoid memory leak of profile
+	buffer when longjmp-based exception is thrown while reading a
+	profile. Fixes oss-fuzz 8957 "graphicsmagick/enhance_fuzzer:
+	Direct-leak in ReadGenericProfile". (Credit to OSS-Fuzz)
+
 2018-06-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xcf.c (load_level): Make sure to free 'tile_image' before

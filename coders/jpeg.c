@@ -140,7 +140,7 @@ typedef struct _DestinationManager
 
 } DestinationManager;
 
-typedef struct _ErrorManager /* FIXME: Can include a tally of error/warning message counts here */
+typedef struct _ErrorManager
 {
   Image
     *image;
@@ -156,6 +156,9 @@ typedef struct _ErrorManager /* FIXME: Can include a tally of error/warning mess
 
   magick_uint16_t
     warning_counts[JMSG_LASTMSGCODE];
+
+  unsigned char
+    buffer[65537+200];
 
 } ErrorManager;
 
@@ -312,10 +315,12 @@ static boolean FillInputBuffer(j_decompress_ptr cinfo)
   return(TRUE);
 }
 
-static unsigned int GetCharacter(j_decompress_ptr jpeg_info)
+static int GetCharacter(j_decompress_ptr jpeg_info)
 {
   if (jpeg_info->src->bytes_in_buffer == 0)
-    (void) (*jpeg_info->src->fill_input_buffer)(jpeg_info);
+    if ((!((*jpeg_info->src->fill_input_buffer)(jpeg_info))) ||
+        (jpeg_info->src->bytes_in_buffer == 0))
+      return EOF;
   jpeg_info->src->bytes_in_buffer--;
   return(GETJOCTET(*jpeg_info->src->next_input_byte++));
 }
@@ -404,10 +409,7 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
   if (length <= 2)
     return(True);
   length-=2;
-  comment=MagickAllocateMemory(char *,length+1);
-  if (comment == (char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-      (char *) NULL);
+  comment=(char *) error_manager->buffer;
   /*
     Read comment.
   */
@@ -419,7 +421,6 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
     }
   *p='\0';
   (void) SetImageAttribute(image,"comment",comment);
-  MagickFreeMemory(comment);
   return(True);
 }
 
@@ -475,10 +476,7 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   /*
     Copy profile from JPEG to allocated memory.
   */
-  profile=MagickAllocateMemory(unsigned char *,length);
-  if (profile == (unsigned char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-                         (char *) NULL);
+  profile=error_manager->buffer;
 
   for (i=0 ; i < length ; i++)
     profile[i]=GetCharacter(jpeg_info);
@@ -507,7 +505,6 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   */
   status=AppendImageProfile(image,profile_name,profile+header_length,
                             length-header_length);
-  MagickFreeMemory(profile);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Profile: %s, header %" MAGICK_SIZE_T_F "u bytes, "
@@ -570,10 +567,7 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
   /*
     Read color profile.
   */
-  profile=MagickAllocateMemory(unsigned char *,(size_t) length);
-  if (profile == (unsigned char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-      (char *) NULL);
+  profile=error_manager->buffer;
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "ICC profile chunk: %ld bytes",
@@ -583,8 +577,6 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
    profile[i]=GetCharacter(jpeg_info);
 
   (void) AppendImageProfile(image,"ICM",profile,length);
-
-  MagickFreeMemory(profile);
 
   return(True);
 }
@@ -672,10 +664,10 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   if (length <= 0)
     return(True);
 
-  profile=MagickAllocateMemory(unsigned char *,(size_t) length+tag_length);
-  if (profile == (unsigned char *) NULL)
+  if ((size_t) length+tag_length > sizeof(error_manager->buffer))
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
       (char *) NULL);
+  profile=error_manager->buffer;
   /*
     Read the payload of this binary data.
   */
@@ -688,7 +680,6 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
 
   (void) AppendImageProfile(image,"IPTC",profile,length);
 
-  MagickFreeMemory(profile);
   return(True);
 }
 
@@ -1021,11 +1012,11 @@ IsITUFax(const Image* image)
 static Image *ReadJPEGImage(const ImageInfo *image_info,
                             ExceptionInfo *exception)
 {
-  ErrorManager
-    error_manager;
-
   Image
     *image;
+
+  ErrorManager
+    error_manager;
 
   IndexPacket
     index;
