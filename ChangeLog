@@ -1,5 +1,17 @@
 2018-06-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cmyk.c (ReadCMYKImage): Free scanline buffer in error
+	path. Fixes SourceForge issue #567 "small memory leak in rgb.c,
+	gray.c and cmyk.c" reported by Petr Gajdos.
+
+	* coders/gray.c (ReadGRAYImage): Free scanline buffer in error
+	path. Fixes SourceForge issue #567 "small memory leak in rgb.c,
+	gray.c and cmyk.c" reported by Petr Gajdos.
+
+	* coders/rgb.c (ReadRGBImage): Free scanline buffer in error
+	path. Fixes SourceForge issue #567 "small memory leak in rgb.c,
+	gray.c and cmyk.c" reported by Petr Gajdos.
+
 	* coders/jpeg.c (ReadJPEGImage): Avoid memory leak of profile
 	buffer when longjmp-based exception is thrown while reading a
 	profile. Fixes oss-fuzz 8957 "graphicsmagick/enhance_fuzzer:

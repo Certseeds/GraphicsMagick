@@ -498,6 +498,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         AllocateNextImage(image_info,image);
         if (image->next == (Image *) NULL)
           {
+            MagickFreeMemory(scanline);
             DestroyImageList(image);
             return((Image *) NULL);
           }

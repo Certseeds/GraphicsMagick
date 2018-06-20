@@ -38,6 +38,15 @@
 <p>2018-06-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/cmyk.c (ReadCMYKImage): Free scanline buffer in error
+path. Fixes SourceForge issue #567 &quot;small memory leak in rgb.c,
+gray.c and cmyk.c&quot; reported by Petr Gajdos.</li>
+<li>coders/gray.c (ReadGRAYImage): Free scanline buffer in error
+path. Fixes SourceForge issue #567 &quot;small memory leak in rgb.c,
+gray.c and cmyk.c&quot; reported by Petr Gajdos.</li>
+<li>coders/rgb.c (ReadRGBImage): Free scanline buffer in error
+path. Fixes SourceForge issue #567 &quot;small memory leak in rgb.c,
+gray.c and cmyk.c&quot; reported by Petr Gajdos.</li>
 <li>coders/jpeg.c (ReadJPEGImage): Avoid memory leak of profile
 buffer when longjmp-based exception is thrown while reading a
 profile. Fixes oss-fuzz 8957 &quot;graphicsmagick/enhance_fuzzer:
