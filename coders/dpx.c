@@ -1978,7 +1978,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           to be an Alpha channel, but is not.  Things would not be so bad if
           it was coded according to the DPX standard.  Luckly, it always comes
           after the color channels.
-         */
+        */
         if ((element_descriptor == ImageElementAlpha) &&
             (bits_per_sample == 1) &&
             (LocaleNCompare(dpx_image_info.element_info[element].description,
@@ -2716,10 +2716,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (thread_status != MagickFail)
                 {
                   if (element == 0)
-                      pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
+                    pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
                   else
-                      pixels=GetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
-               }
+                    pixels=GetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
+                }
 
               if (pixels == (PixelPacket *) NULL)
                 thread_status=MagickFail;
@@ -3002,7 +3002,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (EOFBlob(image))
     ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,
-      image);
+                            image);
 
   /*
     Support explicitly overriding the input file's colorspace.  Mostly
