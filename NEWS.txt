@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on June 3, 2018
+This file was last updated on June 23, 2018
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.30 (??? ??, 2018)
+1.3.30 (June 23, 2018)
 =========================
 
 Special Issues:
@@ -30,7 +30,7 @@ Security Fixes:
 
 * GraphicsMagick is now participating in Google's oss-fuzz project due
   to the contributions and assistance of Alex Gaynor. Since February 4
-  2018, ??? issues have been opened by oss-fuzz and ??? of those
+  2018, 238 issues have been opened by oss-fuzz and 230 of those
   issues have been resolved.  The issues list is available at
   https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
   "graphicsmagick".  Issues are available for anyone to view and
@@ -52,6 +52,8 @@ Bug fixes:
 
 * Drawing/Rendering: Many more fixes by Gregory J Wolfe (see the ChangeLog).
 
+* MIFF: Detect end of file while reading image directory.
+
 * SVG: Many more fixes by Gregory J Wolfe (see the ChangeLog).
 
 * The AlphaCompositePixel macro was producing wrong results when the
@@ -69,7 +71,10 @@ New Features:
 
 API Updates:
 
-* None
+* The size of PrimitiveInfo (believed to be an internal/private
+  structure but in a header which is installed, has been increased to
+  store a 'flags' argument. This is intended to be an internal
+  interface but but may be detected as an ABI change.
 
 Feature improvements:
 
@@ -88,7 +93,16 @@ Build Changes:
 
 Behavior Changes:
 
-* None
+* JPEG: The JPEG reader now allows 3 warnings of any particular type
+  before giving up on reading and throwing an exception.  This choice
+  was made after observing files which produce hundreds of warnings
+  and consume massive amounts of memory before reading the image data
+  has even started.  It is currently unknown how many files which were
+  previously accepted will be rejected by default.  The number of
+  allowed warnings may be adjusted using '-define
+  jpeg:max-warnings=<value>'.  The default limit will be adjusted
+  based on reported user experiences and may be adjusted prior to
+  compilation via the MaxWarningCount definition in coders/jpeg.c.
 
 
 1.3.29 (April 29, 2018)
