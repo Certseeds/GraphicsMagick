@@ -2693,7 +2693,11 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
                 {
                   if (ReadBlobZC(image,row_octets,&scanline_data) != row_octets)
-                    thread_status=MagickFail;
+                    {
+                      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                                     image->filename);
+                      thread_status=MagickFail;
+                    }
 
                   thread_row_count=row_count;
                   row_count++;
@@ -2712,10 +2716,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (thread_status != MagickFail)
                 {
                   if (element == 0)
-                    pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
+                      pixels=SetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
                   else
-                    pixels=GetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
-                }
+                      pixels=GetImagePixelsEx(image,0,thread_row_count,image->columns,1,exception);
+               }
 
               if (pixels == (PixelPacket *) NULL)
                 thread_status=MagickFail;
@@ -2993,9 +2997,12 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
     }
 
+  if (status != MagickPass)
+    ThrowDPXReaderException(CorruptImageError,CorruptImage,image);
+
   if (EOFBlob(image))
-    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                   image->filename);
+    ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,
+      image);
 
   /*
     Support explicitly overriding the input file's colorspace.  Mostly

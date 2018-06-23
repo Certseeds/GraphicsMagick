@@ -1,3 +1,13 @@
+2018-06-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Report exception on EOF file
+	reading DPX pixel data. Fixes oss-fuzz 8104
+	"graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+	WriteDPXImage", oss-fuzz 8297 "graphicsmagick/enhance_fuzzer:
+	Use-of-uninitialized-value in EnhanceImage", and oss-fuzz 8133
+	"graphicsmagick/coder_DPX_fuzzer: Use-of-uninitialized-value in
+	RGBTransformPackets". (Credit to OSS-Fuzz)
+
 2018-06-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/cmyk.c (ReadCMYKImage): Free scanline buffer in error
