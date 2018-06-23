@@ -225,7 +225,7 @@ done
 # PTIF format
 for type in ${check_types}
 do
-  test_command_fn "PTIF ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PTIF
+  test_command_fn "PTIF ${type}" -F TIFF ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" PTIF
 done
 
 # RAS format
