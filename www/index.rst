@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.29 (Released April 29, 2018) `download release`__
+Current Release              1.3.30 (Released June 23, 2018) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -107,25 +107,25 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
 
   * GM is used to process billions of files at the world's largest photo
     sites (e.g. `Flickr`_ and `Etsy`_).
-  
+
   * GM does not conflict with other installed software.
 
   * GM suffers from fewer security issues and exploits.
 
   * GM `valgrind`_'s 100% clean (memcheck and helgrind).
-  
+
   * GM passes rigorous memory error testing using `ASan_`.
 
   * GM comes with a comprehensive `manual page`_.
-  
+
   * GM provides API and ABI stability and managed releases that you can
     count on.
-  
+
   * GM provides detailed yet comprehensible `ChangeLog`_ and `NEWS`_ files.
-  
+
   * GM is available for free, and may be used to support both open and
     proprietary applications.
-  
+
   * GM is distributed under an X11-style license (`MIT License`_),
     approved by the `Open Source Initiative`_, recommended for use by
     the `OSSCC`_, and compatible with the `GNU GPL`_.
@@ -145,24 +145,24 @@ Group as well as many others.
 Here are just a few examples of what GraphicsMagick can do:
 
   * Convert an image from one format to another (e.g. TIFF to JPEG)
-  
+
   * Resize, rotate, sharpen, color reduce, or add special effects to an
     image
-  
-  * Create a montage of image thumbnails  
-  
+
+  * Create a montage of image thumbnails
+
   * Create a transparent image suitable for use on the Web
 
   * Compare two images
-  
+
   * Turn a group of images into a GIF animation sequence
-  
-  * Create a composite image by combining several separate images  
-  
-  * Draw shapes or text on an image  
-  
-  * Decorate an image with a border or frame  
-  
+
+  * Create a composite image by combining several separate images
+
+  * Draw shapes or text on an image
+
+  * Decorate an image with a border or frame
+
   * Describe the format and characteristics of an image
 
 ------------

@@ -308,6 +308,8 @@ typedef struct _DrawInfo
     signature;
 } DrawInfo;
 
+#if defined(MAGICK_IMPLEMENTATION)
+
 typedef struct _ElementInfo
 {
   double
@@ -318,12 +320,16 @@ typedef struct _ElementInfo
     angle;
 } ElementInfo;
 
+#endif /* if defined(MAGICK_IMPLEMENTATION) */
+
 typedef struct _PointInfo
 {
   double
     x,
     y;
 } PointInfo;
+
+#if defined(MAGICK_IMPLEMENTATION)
 
 typedef struct _PrimitiveInfo
 {
@@ -341,7 +347,23 @@ typedef struct _PrimitiveInfo
 
   char
     *text;
+
+  /*
+    "flags" indicates:
+
+       bit 0:  shape/subpath is closed (e.g., rectangle, path with 'z' or 'Z')
+
+    Macro arg "pi" is a PrimitiveInfo *.
+    Macro arg "zero_or_one" should be 0 (turn off) or 1 (turn on).
+  */
+  unsigned long
+    flags;
+#define PRIMINF_CLEAR_FLAGS(pi) ((pi)->flags=0)
+#define PRIMINF_GET_IS_CLOSED_SUBPATH(pi) ((MagickBool)((pi)->flags&1U))
+#define PRIMINF_SET_IS_CLOSED_SUBPATH(pi,zero_or_one) ((pi)->flags=((pi)->flags&(~1U))|(unsigned long)zero_or_one)
 } PrimitiveInfo;
+
+#endif /* if defined(MAGICK_IMPLEMENTATION) */
 
 typedef struct _TypeMetric
 {

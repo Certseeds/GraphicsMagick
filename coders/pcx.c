@@ -325,6 +325,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         pcx_info.bottom=ReadBlobLSBShort(image);
         pcx_info.horizontal_resolution=ReadBlobLSBShort(image);
         pcx_info.vertical_resolution=ReadBlobLSBShort(image);
+        (void) memset(pcx_colormap,0,sizeof(pcx_colormap));
         if (ReadBlob(image,3*16,(char *) pcx_colormap) != 3*16)
           break;
         if ((c = ReadBlobByte(image)) == EOF)
@@ -431,25 +432,39 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (pcx_info.planes > 6)
       ThrowPCXReaderException(CorruptImageError,UnsupportedNumberOfPlanes,image);
 
-    if ((pcx_info.bits_per_pixel != 8) || (pcx_info.planes == 1))
-      if ((pcx_info.version == 3) || (pcx_info.version == 5) ||
-          ((pcx_info.bits_per_pixel*pcx_info.planes) == 1))
+    if ((pcx_info.bits_per_pixel >= 8) || (pcx_info.planes != 1))
+      {
+        image->storage_class=DirectClass;
+      }
+    else
+      {
+        if ((pcx_info.bits_per_pixel != 8) || (pcx_info.planes == 1))
+          if ((pcx_info.version == 3) || (pcx_info.version == 5) ||
+              ((pcx_info.bits_per_pixel*pcx_info.planes) == 1))
+            {
+              image->colors=1 << (pcx_info.bits_per_pixel*pcx_info.planes);
+              if (image->colors > 256)
+                image->colors = 256;
+            }
+
+      if (!AllocateImageColormap(image,image->colors))
+        ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+      /*
+        256 color images have their color map at the end of the file.
+        Colormap for 1 bit/pixel images is explicitly initialized.
+      */
+      if (image->colors <= 16)
         {
-          image->colors=1 << (pcx_info.bits_per_pixel*pcx_info.planes);
-          if (image->colors > 256)
-            image->colors = 256;
+          p=pcx_colormap;
+          for (i=0; i < image->colors; i++)
+            {
+              image->colormap[i].red=ScaleCharToQuantum(*p++);
+              image->colormap[i].green=ScaleCharToQuantum(*p++);
+              image->colormap[i].blue=ScaleCharToQuantum(*p++);
+            }
         }
-    if (!AllocateImageColormap(image,image->colors))
-      ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    if ((pcx_info.bits_per_pixel >= 8) && (pcx_info.planes != 1))
-      image->storage_class=DirectClass;
-    p=pcx_colormap;
-    for (i=0; i < image->colors; i++)
-    {
-      image->colormap[i].red=ScaleCharToQuantum(*p++);
-      image->colormap[i].green=ScaleCharToQuantum(*p++);
-      image->colormap[i].blue=ScaleCharToQuantum(*p++);
-    }
+      }
 
     for (i=0; i < 54; i++)
       (void) ReadBlobByte(image);

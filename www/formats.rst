@@ -344,8 +344,8 @@ image formats.
    | PS3          | RW   | Adobe Level III           | Requires Ghostscript_ to read.                   |
    |              |      | PostScript file           |                                                  |
    +--------------+------+---------------------------+--------------------------------------------------+
-   | PSD          | RW   | Adobe Photoshop bitmap    |                                                  |
-   |              |      | file                      |                                                  |
+   | PSD          | RW   | Adobe Photoshop bitmap    | PSD format is no longer supported since the      |
+   |              |      | file                      | 1.3.24 release.                                  |
    +--------------+------+---------------------------+--------------------------------------------------+
    |              |      |                           | Multi-resolution TIFF_ containing successively   |
    | PTIF         | RW   | Pyramid encoded TIFF_     | smaller versions of the image down to the size   |

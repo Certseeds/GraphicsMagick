@@ -333,11 +333,17 @@
       <Message name="UnsupportedBitsPerSample">
         Unsupported bits per sample
       </Message>
+      <Message name="UnsupportedSamplesPerPixel">
+        Unsupported samples per pixel
+      </Message>
       <Message name="ArithmeticOverflow">
         Arithmetic overflow
       </Message>
       <Message name="DivisionByZero">
         Division by zero
+      </Message>
+      <Message name="DecodedImageNotReturned">
+        Coder did not return an image (this is a bug, please report it!)
       </Message>
     </Error>
     <FatalError>
@@ -563,6 +569,9 @@
         </Message>
         <Message name="LengthAndFilesizeDoNotMatch">
           Length and filesize do not match
+        </Message>
+        <Message name="UnableToParseEmbeddedProfile">
+          Unable to parse embedded profile
         </Message>
       </Warning>
     </Image>
@@ -1581,7 +1590,7 @@
         <Message name="UnableToAllocateQuantizeInfo">
           unable to allocate quantize info
         </Message>
-	<Message name="UnableToAllocateRandomKernel">
+        <Message name="UnableToAllocateRandomKernel">
           unable to allocate random kernel
         </Message>
         <Message name="UnableToAllocateSemaphoreInfo">
@@ -1680,6 +1689,9 @@
       </Message>
       <Message name="UnrecognizedFontEncoding">
         Unrecognized font encoding
+      </Message>
+      <Message name="FontNotSpecified">
+        Font name not specified
       </Message>
     </Error>
     <FatalError>

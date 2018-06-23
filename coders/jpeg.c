@@ -123,6 +123,7 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
 #define XML_MARKER  (JPEG_APP0+1)
 #define MaxBufferExtent  8192
 #define JPEG_MARKER_MAX_SIZE 65533
+#define MaxWarningCount 3
 static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
 
 
@@ -136,6 +137,7 @@ typedef struct _DestinationManager
 
   JOCTET
     *buffer;
+
 } DestinationManager;
 
 typedef struct _ErrorManager
@@ -148,6 +150,15 @@ typedef struct _ErrorManager
 
   jmp_buf
     error_recovery;
+
+  unsigned int
+    max_warning_count;
+
+  magick_uint16_t
+    warning_counts[JMSG_LASTMSGCODE];
+
+  unsigned char
+    buffer[65537+200];
 
 } ErrorManager;
 
@@ -203,6 +214,8 @@ typedef struct _SourceManager
   Format a libjpeg warning or trace event.  Warnings are converted to
   GraphicsMagick warning exceptions while traces are optionally
   logged.
+
+  JPEG message codes range from 0 to JMSG_LASTMSGCODE
 */
 static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
 {
@@ -225,26 +238,46 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
   /* msg_level is -1 for warnings, 0 and up for trace messages. */
   if (msg_level < 0)
     {
+      unsigned int strikes = 0;
       /* A warning */
       (err->format_message)(jpeg_info,message);
+
+      if ((err->msg_code >= 0) &&
+          ((size_t) err->msg_code < ArraySize(error_manager->warning_counts)))
+        {
+          error_manager->warning_counts[err->msg_code]++;
+          strikes=error_manager->warning_counts[err->msg_code];
+        }
 
       if (image->logging)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "[%s] JPEG Warning: \"%s\" (code=%d, "
+                                "[%s] JPEG Warning[%u]: \"%s\""
+                                " (code=%d "
                                 "parms=0x%02x,0x%02x,"
                                 "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x)",
-                                image->filename,message,err->msg_code,
+                                image->filename,
+                                strikes,
+                                message,err->msg_code,
                                 err->msg_parm.i[0], err->msg_parm.i[1],
                                 err->msg_parm.i[2], err->msg_parm.i[3],
                                 err->msg_parm.i[4], err->msg_parm.i[5],
                                 err->msg_parm.i[6], err->msg_parm.i[7]);
         }
+      if (strikes > error_manager->max_warning_count)
+        {
+          ThrowException2(&image->exception,CorruptImageError,(char *) message,
+                          image->filename);
+          longjmp(error_manager->error_recovery,1);
+        }
+
       if ((err->num_warnings == 0) ||
           (err->trace_level >= 3))
-        ThrowBinaryException2(CorruptImageWarning,(char *) message,
-                                    image->filename);
+        ThrowException2(&image->exception,CorruptImageWarning,message,
+                        image->filename);
+      /* JWRN_JPEG_EOF - "Premature end of JPEG file" */
       err->num_warnings++;
+      return False;
     }
   else
     {
@@ -257,7 +290,7 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
                                 message);
         }
     }
-  return(True);
+  return True;
 }
 
 static boolean FillInputBuffer(j_decompress_ptr cinfo)
@@ -282,10 +315,12 @@ static boolean FillInputBuffer(j_decompress_ptr cinfo)
   return(TRUE);
 }
 
-static unsigned int GetCharacter(j_decompress_ptr jpeg_info)
+static int GetCharacter(j_decompress_ptr jpeg_info)
 {
   if (jpeg_info->src->bytes_in_buffer == 0)
-    (void) (*jpeg_info->src->fill_input_buffer)(jpeg_info);
+    if ((!((*jpeg_info->src->fill_input_buffer)(jpeg_info))) ||
+        (jpeg_info->src->bytes_in_buffer == 0))
+      return EOF;
   jpeg_info->src->bytes_in_buffer--;
   return(GETJOCTET(*jpeg_info->src->next_input_byte++));
 }
@@ -374,10 +409,7 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
   if (length <= 2)
     return(True);
   length-=2;
-  comment=MagickAllocateMemory(char *,length+1);
-  if (comment == (char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-      (char *) NULL);
+  comment=(char *) error_manager->buffer;
   /*
     Read comment.
   */
@@ -389,7 +421,6 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
     }
   *p='\0';
   (void) SetImageAttribute(image,"comment",comment);
-  MagickFreeMemory(comment);
   return(True);
 }
 
@@ -445,10 +476,7 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   /*
     Copy profile from JPEG to allocated memory.
   */
-  profile=MagickAllocateMemory(unsigned char *,length);
-  if (profile == (unsigned char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-                         (char *) NULL);
+  profile=error_manager->buffer;
 
   for (i=0 ; i < length ; i++)
     profile[i]=GetCharacter(jpeg_info);
@@ -477,10 +505,12 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   */
   status=AppendImageProfile(image,profile_name,profile+header_length,
                             length-header_length);
-  MagickFreeMemory(profile);
 
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Profile: %s, %lu bytes",
-                        profile_name, (unsigned long) header_length);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Profile: %s, header %" MAGICK_SIZE_T_F "u bytes, "
+                        "data %" MAGICK_SIZE_T_F "u bytes",
+                        profile_name, (MAGICK_SIZE_T) header_length,
+                        (MAGICK_SIZE_T) length-header_length);
 
   return (status);
 }
@@ -537,10 +567,7 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
   /*
     Read color profile.
   */
-  profile=MagickAllocateMemory(unsigned char *,(size_t) length);
-  if (profile == (unsigned char *) NULL)
-    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-      (char *) NULL);
+  profile=error_manager->buffer;
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "ICC profile chunk: %ld bytes",
@@ -550,8 +577,6 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
    profile[i]=GetCharacter(jpeg_info);
 
   (void) AppendImageProfile(image,"ICM",profile,length);
-
-  MagickFreeMemory(profile);
 
   return(True);
 }
@@ -639,10 +664,10 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   if (length <= 0)
     return(True);
 
-  profile=MagickAllocateMemory(unsigned char *,(size_t) length+tag_length);
-  if (profile == (unsigned char *) NULL)
+  if ((size_t) length+tag_length > sizeof(error_manager->buffer))
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
       (char *) NULL);
+  profile=error_manager->buffer;
   /*
     Read the payload of this binary data.
   */
@@ -655,7 +680,6 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
 
   (void) AppendImageProfile(image,"IPTC",profile,length);
 
-  MagickFreeMemory(profile);
   return(True);
 }
 
@@ -988,11 +1012,11 @@ IsITUFax(const Image* image)
 static Image *ReadJPEGImage(const ImageInfo *image_info,
                             ExceptionInfo *exception)
 {
-  ErrorManager
-    error_manager;
-
   Image
     *image;
+
+  ErrorManager
+    error_manager;
 
   IndexPacket
     index;
@@ -1005,6 +1029,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 
   JSAMPROW
     scanline[1];
+
+  const char
+    *value;
 
   register long
     i;
@@ -1050,6 +1077,14 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   jpeg_pixels=(JSAMPLE *) NULL;
   error_manager.image=image;
+  error_manager.max_warning_count=MaxWarningCount;
+
+  /*
+    Allow the user to set how many warnings of any given type are
+    allowed before promotion of the warning to a hard error.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
+    error_manager.max_warning_count=strtol(value,(char **) NULL, 10);
 
   /*
     Set initial longjmp based error handler.
@@ -1074,7 +1109,13 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   for (i=1; i < 16; i++)
     if ((i != 2) && (i != 13) && (i != 14))
       jpeg_set_marker_processor(&jpeg_info,JPEG_APP0+i,ReadGenericProfile);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Reading JPEG header...");
   i=jpeg_read_header(&jpeg_info,True);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Done with reading JPEG header");
   if (IsITUFax(image))
     {
       if (image->logging)
@@ -1183,49 +1224,49 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   image->compression=JPEGCompression;
   image->interlace=LineInterlace;
 #endif
-  {
-    const char
-      *value;
 
-    /*
-      Allow the user to enable/disable block smoothing.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","block-smoothing")))
-      {
-        if (LocaleCompare(value,"FALSE") == 0)
-          jpeg_info.do_block_smoothing=False;
-        else
-          jpeg_info.do_block_smoothing=True;
-      }
+  /*
+    Allow the user to enable/disable block smoothing.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","block-smoothing")))
+    {
+      if (LocaleCompare(value,"FALSE") == 0)
+        jpeg_info.do_block_smoothing=False;
+      else
+        jpeg_info.do_block_smoothing=True;
+    }
 
-    /*
-      Allow the user to select the DCT decoding algorithm.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","dct-method")))
-      {
-        if (LocaleCompare(value,"ISLOW") == 0)
-          jpeg_info.dct_method=JDCT_ISLOW;
-        else if (LocaleCompare(value,"IFAST") == 0)
-          jpeg_info.dct_method=JDCT_IFAST;
-        else if (LocaleCompare(value,"FLOAT") == 0)
-          jpeg_info.dct_method=JDCT_FLOAT;
-        else if (LocaleCompare(value,"DEFAULT") == 0)
-          jpeg_info.dct_method=JDCT_DEFAULT;
-        else if (LocaleCompare(value,"FASTEST") == 0)
-          jpeg_info.dct_method=JDCT_FASTEST;
-      }
+  /*
+    Allow the user to select the DCT decoding algorithm.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","dct-method")))
+    {
+      if (LocaleCompare(value,"ISLOW") == 0)
+        jpeg_info.dct_method=JDCT_ISLOW;
+      else if (LocaleCompare(value,"IFAST") == 0)
+        jpeg_info.dct_method=JDCT_IFAST;
+      else if (LocaleCompare(value,"FLOAT") == 0)
+        jpeg_info.dct_method=JDCT_FLOAT;
+      else if (LocaleCompare(value,"DEFAULT") == 0)
+        jpeg_info.dct_method=JDCT_DEFAULT;
+      else if (LocaleCompare(value,"FASTEST") == 0)
+        jpeg_info.dct_method=JDCT_FASTEST;
+    }
 
-    /*
-      Allow the user to enable/disable fancy upsampling.
-    */
-    if ((value=AccessDefinition(image_info,"jpeg","fancy-upsampling")))
-      {
-        if (LocaleCompare(value,"FALSE") == 0)
-          jpeg_info.do_fancy_upsampling=False;
-        else
-          jpeg_info.do_fancy_upsampling=True;
-      }
-  }
+  /*
+    Allow the user to enable/disable fancy upsampling.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","fancy-upsampling")))
+    {
+      if (LocaleCompare(value,"FALSE") == 0)
+        jpeg_info.do_fancy_upsampling=False;
+      else
+        jpeg_info.do_fancy_upsampling=True;
+    }
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Starting JPEG decompression...");
   (void) jpeg_start_decompress(&jpeg_info);
   image->columns=jpeg_info.output_width;
   image->rows=jpeg_info.output_height;
@@ -1974,8 +2015,11 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     scanline[1];
 
   char
-   *sampling_factors,
-   *preserve_settings;
+    *sampling_factors,
+    *preserve_settings;
+
+  const char
+    *value;
 
   long
     y;
@@ -2034,6 +2078,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   error_manager.image=imagev;
+  error_manager.max_warning_count=MaxWarningCount;
+  /*
+    Allow the user to set how many warnings of any given type are
+    allowed before promotion of the warning to a hard error.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
+    error_manager.max_warning_count=strtol(value,(char **) NULL, 10);
   jpeg_info.client_data=(void *) &error_manager;
   if (setjmp(error_manager.error_recovery))
     {

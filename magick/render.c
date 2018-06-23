@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -117,6 +117,27 @@ typedef struct _PathInfo
     code;
 } PathInfo;
 
+
+/*
+  A data structure to help manage automatically growing a PrimitiveInfo array.
+  Intended to be used in DrawImage() and the TraceXXX() functions.  See static
+  function PrimitiveInfoRealloc().  Motivated by ticket #516.
+*/
+typedef struct _PrimitiveInfoMgr
+{
+  PrimitiveInfo ** pp_PrimitiveInfo;  /* address of a pointer to the start of the PrimitiveInfo array */
+                                      /* (updated when the array is reallocated) */
+
+  size_t *         p_AllocCount;      /* address of a location containing the number of elements allocated */
+                                      /* (updated when the array is reallocated) */
+
+  size_t           StoreStartingAt;   /* index to the element at which to start storing new elements */
+                                      /* (must be updated before calling PrimitiveInfoRealloc()) */
+
+  ExceptionInfo *  p_Exception;       /* for when reallocation fails */
+} PrimitiveInfoMgr;
+
+
 /*
   DrawInfoExtra allows for expansion of DrawInfo without increasing its
   size.  The internals are defined only in this source file.  Clients
@@ -155,8 +176,8 @@ DrawInfoGetCompositePath(const DrawInfo * draw_info)
 /*
   Forward declarations.
 */
-static PrimitiveInfo
-  *TraceStrokePolygon(const DrawInfo *,const PrimitiveInfo *);
+static PrimitiveInfo  /* added Image* param so DrawInfo::stroke_width can be clamped */
+  *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickPassFail
   DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *),
@@ -172,26 +193,39 @@ static void
   SetDrawInfoSVGCompliant(DrawInfo *, MagickBool SVGCompliant);   /* tag DrawInfo as SVG compliant or not */
 
 static unsigned long
-  TracePath(Image *image, PrimitiveInfo *,const char *);
+  TracePath(Image *image, PrimitiveInfoMgr *,const char *);
 
 static void
 #if 0
   DestroyGradientInfo(GradientInfo *),
 #endif
   DestroyPolygonInfo(void *polygon_info_void),
-  TraceArc(PrimitiveInfo *,const PointInfo,const PointInfo,const PointInfo),
-  TraceArcPath(PrimitiveInfo *,const PointInfo,const PointInfo,const PointInfo,
+  TraceArc(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
+  TraceArcPath(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo,
     const double,const unsigned int,const unsigned int),
-  TraceBezier(PrimitiveInfo *,const unsigned long),
-  TraceCircle(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TraceEllipse(PrimitiveInfo *,const PointInfo,const PointInfo,const PointInfo),
+  TraceBezier(PrimitiveInfoMgr *,const unsigned long),
+  TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo),
+  TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
   TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo),
   TracePoint(PrimitiveInfo *,const PointInfo),
   TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TraceRoundRectangle(PrimitiveInfo *,const PointInfo,const PointInfo,
+  TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,
     PointInfo),
   TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
-
+
+static MagickBool
+  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed);
+/*
+  Ticket #515 showed how an excessively big DrawInfo::stroke_width can cause writes
+  beyond the end of an array of points when computing a stroked polygon.  So we want
+  to clamp it to some reasonable value before using it in computations.  The value
+  sqrt(2)*max(width,height) will always be >= the diagonal size of any image.  The
+  computed upper limit will be twice this value.  Note that 1.415 is just slightly
+  bigger than sqrt(2).
+*/
+
+#define STROKE_WIDTH_LIMIT(image) ((2.0*1.415) * Max((image)->columns,(image)->rows))
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -343,30 +377,139 @@ CloneDrawInfo(const ImageInfo *image_info,const DrawInfo *draw_info)
 extern "C" {
 #endif
 
+/*
+  Ticket #562: Inconsistent results from qsort callback.
+
+  NOTE: The right-handed coordinate system is: x right postive, y down positive,
+  z into the plane positive.
+
+  Prior to fixing ticket #562, the compare procedure in CompareEdges() looked at the
+  first segment in each edge (edges can have multiple segments) and compared them as
+  follows:
+
+    (1) Within MagickEpsilon, the edge with the smaller starting y coordinate should come
+        first.  Otherwise:
+    (2) Within MagickEpsilon, the edge with the smaller starting x coordinate should come
+        first.  Otherwise:
+    (3) As indicated by the cross product v0 X v1, the edge that rotates counter-clockwise
+        (as viewed) into the other edge through the smaller angle between them should come
+        first.  I.e., if v0 X v1 is negative, v0 should come first.
+
+  This procedure fails to properly differentiate between parallel and anti-parallel edges
+  whose starting x and y coordinates are within MagickEpsilon of each other (the cross
+  product of such edges is zero).  For these cases, the result for (v0,v1) says v0 comes
+  first, but the result for (v1,v0) says v1 comes first (the problem reported by ticket #562).
+
+  It's unclear to me why the x and y coordinate comparisons should use MagickEpsilon, but to
+  avoid changing existing behavior this part of the code has not been changed.
+
+  The new compare procedure is as follows:
+
+    (1) Within MagickEpsilon, the edge with the smaller starting y coordinate should come
+        first (UNCHANGED).  Otherwise:
+    (2) Within MagickEpsilon, the edge with the smaller starting x coordinate should come
+        first (UNCHANGED).  Otherwise:
+    (3) As indicated by the cross product v0 X v1, the edge that rotates counter-clockwise
+        (as viewed) into the other edge through the smaller angle between them should come
+        first AS LONG AS THE ANGLE BETWEEN THEM IS NON-ZERO.  I.e., if v0 X v1 is STRICTLY
+        NEGATIVE, v0 should come first.  If v0 X v1 IS STRICTLY POSITIVE, v1 should come
+        first.  Otherwise:
+    (4) (If we get here, the edges are either parallel or anti-parallel, but their starting
+        points may or may not be identical.)  The edge with the smaller starting y coordinate
+        should come first (DO NOT use MagickEpsilon).  Otherwise:
+    (5) The edge with the smaller starting x coordinate should come first (DO NOT use
+        MagickEpsilon).  Otherwise:
+    (6) (If we get here, the edges starting points are identical) The edge with the smaller
+        ending y coordinate should come first.  Otherwise:
+    (7) The edge with the smaller ending x coordinate should come first.  Otherwise:
+    (8) The edges are identical with respect to their first segments; return 0 to indicate
+        this.  Note that previously CompareEdges() never returned a 0.
+
+  While it may seem that steps 4 - 8 are a lot of additional code, note that this code will
+  be executed very infrequently, since most cases will be resolved by steps 1 - 3.
+
+  The new code subtracts the two coordinate values and then compares the result to +/- MagickEpsilon.
+  When using finite precision floating point arithmetic, this computation is numerically more
+  accurate that adding +/- MagickEpsilon to one coordinate and then comparing that result to
+  the other coordinate.
+*/
+
 static int
-CompareEdges(const void *x,const void *y)
+CompareEdges(const void *edge0,const void *edge1)
 {
-  register const EdgeInfo
-    *p,
-    *q;
+  register const PointInfo
+    *v0Points,
+    *v1Points;
+
+  double
+    v0CROSSv1,
+    v0x0,
+    v0y0,
+    v1x0,
+    v1y0,
+    DeltaYStart,
+    DeltaXStart,
+    DeltaYEnd,
+    DeltaXEnd,
+    NegMagickEpsilon = -MagickEpsilon;
 
   /*
     Compare two edges.
   */
-  p=(const EdgeInfo *) x;
-  q=(const EdgeInfo *) y;
-  if ((p->points[0].y-MagickEpsilon) > q->points[0].y)
-    return(1);
-  if ((p->points[0].y+MagickEpsilon) < q->points[0].y)
-    return(-1);
-  if ((p->points[0].x-MagickEpsilon) > q->points[0].x)
-    return(1);
-  if ((p->points[0].x+MagickEpsilon) < q->points[0].x)
-    return(-1);
-  if (((p->points[1].x-p->points[0].x)*(q->points[1].y-q->points[0].y)-
-       (p->points[1].y-p->points[0].y)*(q->points[1].x-q->points[0].x)) > 0.0)
-    return(1);
+  v0Points=((const EdgeInfo *) edge0)->points;
+  v1Points=((const EdgeInfo *) edge1)->points;
+
+  /* (1) the edge with the smaller starting y coordinate should come first */
+  DeltaYStart = (v0y0 = v0Points[0].y) - (v1y0 = v1Points[0].y);
+  if  ( DeltaYStart < NegMagickEpsilon )
+    return(-1);  /* v0y0 + epsi < v1y0 */
+  if  ( DeltaYStart > MagickEpsilon )
+    return(1);  /* v0y0 - epsi > v1y0 */
+
+  /* y start coordinates are the same within MagickEpsilon */
+
+  /* (2) the edge with the smaller starting x coordinate should come first */
+  DeltaXStart = (v0x0 = v0Points[0].x) - (v1x0 = v1Points[0].x);
+  if  ( DeltaXStart < NegMagickEpsilon )
+    return(-1);  /* v0x0 + epsi < v1x0 */
+  if  ( DeltaXStart > MagickEpsilon )
+    return(1);  /* v0x0 - epsi > v1x0 */
+
+  /* y and x start coordinates are the same within MagickEpsilon */
+
+  /* compute cross product v0 X v1 */
+  v0CROSSv1 = (v0Points[1].x-v0x0)*(v1Points[1].y-v1y0)-(v0Points[1].y-v0y0)*(v1Points[1].x-v1x0);
+
+  /* (3) the edge that rotates ccwise through the smaller angle between them should come first */
+  if  ( v0CROSSv1 < 0.0 )
   return(-1);
+  if  ( v0CROSSv1 > 0.0 )
+    return(1);
+
+  /* edges are either parallel or anti-parallel; check (4) y and (5) x start coords again w/o MagickEpsilon */
+  if  ( DeltaYStart < 0.0 )
+    return(-1);  /* v0y0 < v1y0 */
+  if  ( DeltaYStart > 0.0 )
+    return(1);  /* v0y0 > v1y0 */
+  if  ( DeltaXStart < 0.0 )
+    return(-1);  /* v0x0 < v1x0 */
+  if  ( DeltaXStart > 0.0 )
+    return(1);  /* v0x0 > v1x0 */
+
+  /* starting points are the same; compare (6) y and (7) x ending points */
+  DeltaYEnd = v0Points[1].y - v1Points[1].y;
+  if  ( DeltaYEnd < 0.0 )
+    return(-1);  /* v0y1 < v1y1 */
+  if  ( DeltaYEnd > 0.0 )
+    return(1);  /* v0y1 > v1y1 */
+  DeltaXEnd = v0Points[1].x - v1Points[1].x;
+  if  ( DeltaXEnd < 0.0 )
+    return(-1);  /* v0x1 < v1x1 */
+  if  ( DeltaXEnd > 0.0 )
+    return(1);  /* v0x1 > v1x1 */
+
+  /* (8) the edges are identical with respect to their first segments */
+  return(0);
 }
 
 #if defined(__cplusplus) || defined(c_plusplus)
@@ -715,6 +858,9 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     coordinates,  /* number of points in subpath */
     start;        /* index to start of subpath in path_info */
 
+  MagickBool
+    IsClosedSubPath;
+
   ARG_NOT_USED(draw_info);
 
   /*
@@ -752,18 +898,22 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
         p=primitive_info[i].point;  /* first point in subpath */
         start=n;  /* index to start of subpath in path_info */
         code=MoveToCode;
+        IsClosedSubPath=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[i]);
       }
     coordinates--;
     /*
       Do not put the current point into path_info if it is a duplicate of
       (i.e. "too close" to) the previous point.  However, the current point
-      is always put into path_info when it is the first point in a subpath.
-      This condition is true whenever code==MoveToCode (checking i==0 only
-      detects the first subpath).  Note that for this case the "previous
+      is always put into path_info when it is the first (code==MoveToCode)
+      or last point in a subpath.  Note that for the first point the "previous
       point" (q) is not valid (usually a leftover from the previous subpath),
-      so the start-of-subpath test must be done first.
+      so the first point test should be done first.  W.r.t. the last point,
+      sometimes eliminating the last point as a "duplicate" will result in a
+      polygon (path) not being completely closed, causing small "nubs" to
+      protrude from the filled shape at that point.
     */
-    if ((code == MoveToCode) || (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
+    if ((code == MoveToCode) || (coordinates <= 0) ||
+        (fabs(q.x-primitive_info[i].point.x) > MagickEpsilon) ||
         (fabs(q.y-primitive_info[i].point.y) > MagickEpsilon))
       {
         /* put current point into path_info*/
@@ -776,16 +926,17 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       continue;   /* go process next point in current subpath */
     /*
       The current point is the last point in the subpath.  If it closes
-      the subpath (i.e., it's "close enough" to "p", the start of the
-      subpath), go on to the next subpath.
+      the subpath, go on to the next subpath.
     */
-    if ((fabs(p.x-primitive_info[i].point.x) <= MagickEpsilon) &&
-        (fabs(p.y-primitive_info[i].point.y) <= MagickEpsilon))
-      continue;   
+    if  ( IsClosedSubPath )
+      {
+        IsClosedSubPath = MagickFalse;
+        continue;
+      }
     /*
       The just completed subpath is not closed.  Mark it as "open" and add two
-      more points (repeat of current point + subpath start point) to close
-      it (this is a "ghost line").
+      more points (repeat of current point + subpath start point) to "virtually"
+      close it (this is a "ghost line").
     */
     path_info[start].code=OpenCode;
     path_info[n].code=GhostlineCode;
@@ -1331,7 +1482,8 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
     *clone_info;
 
   double
-    mid;
+    mid,
+    stroke_width_limited;
 
   PointInfo
     end,
@@ -1350,6 +1502,7 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
   long
     coordinates;
 
+  memset(primitive_info,0,sizeof(primitive_info));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   (void) QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception);
   resolution.x=72.0;
@@ -1363,8 +1516,13 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
       if (count != 2)
         resolution.y=resolution.x;
     }
+
+  /* sanity check for excessively big stroke_width (ticket #515) */
+  if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > clone_info->stroke_width )
+      stroke_width_limited = clone_info->stroke_width;
+
   mid=(resolution.x/72.0)*ExpandAffine(&clone_info->affine)*
-    clone_info->stroke_width/2.0;
+    stroke_width_limited/2.0;
   bounds.x1=0.0;
   bounds.y1=0.0;
   bounds.x2=0.0;
@@ -1993,7 +2151,8 @@ char * InsertAttributeIntoInputStream (
   char ** ptoken,             /* ptr to ptr to big enough buffer for extracted string */
   size_t * ptoken_max_length,
   Image *image,
-  MagickPassFail * pStatus
+  MagickPassFail * pStatus,
+  MagickBool UndefAttrIsError
   )
 {/*InsertAttributeIntoInputStream*/
 
@@ -2013,8 +2172,10 @@ char * InsertAttributeIntoInputStream (
   attribute=GetImageAttribute(image,AttributeName);
   if (attribute == (ImageAttribute *) NULL)
     {
-    *pStatus = MagickFail;
-    return(q);
+      /* the client specifies whether or not an undefined attributes is an error */
+      if  ( UndefAttrIsError )
+        *pStatus = MagickFail;
+      return(q);
     }
 
   /*
@@ -2058,6 +2219,33 @@ char * InsertAttributeIntoInputStream (
   return(q);
 
 }/*InsertAttributeIntoInputStream*/
+
+
+static MagickBool
+PrimitiveInfoRealloc  (
+  PrimitiveInfoMgr * p_PIMgr,
+  const size_t       Needed
+  )
+{/*PrimitiveInfoRealloc*/
+
+  /* grow the PrimitiveInfo array if Needed elements are not available; return true if reallocated */
+
+  PrimitiveInfo * primitive_info;
+  size_t NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100);  /* +100 for headroom */
+  if  ( NeedAllocCount <= *p_PIMgr->p_AllocCount )
+    return(MagickFalse);
+
+  /*need to realloc*/
+  primitive_info = *p_PIMgr->pp_PrimitiveInfo;
+  MagickReallocMemory(PrimitiveInfo *,primitive_info,MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo)));
+  if  ( primitive_info == (PrimitiveInfo *) NULL )
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+  *p_PIMgr->pp_PrimitiveInfo = primitive_info;
+  *p_PIMgr->p_AllocCount = NeedAllocCount;
+
+  return(MagickTrue);
+
+}/*PrimitiveInfoRealloc*/
 
 
 MagickExport MagickPassFail
@@ -2152,6 +2340,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   MagickBool
     UseCurrentTextPosition;	/* true=>use (possibly modified) current text position */
 
+  PrimitiveInfoMgr
+    PIMgr;
+
   /*
     Ensure the annotation info is valid.
   */
@@ -2206,6 +2397,13 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
         UnableToDrawOnImage)
     }
+
+  /* set up to manage growing the PrimitiveInfo array */
+  PIMgr.pp_PrimitiveInfo = &primitive_info;
+  PIMgr.p_AllocCount = &number_points;
+  PIMgr.StoreStartingAt = 0;
+  PIMgr.p_Exception = &image->exception;
+
   graphic_context[n]=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   /* next two lines: don't need copy of primitive, just a buffer of the same size */
   token=MagickAllocateMemory(char *,primitive_extent+1);
@@ -2366,7 +2564,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("class",keyword) == 0)
           {/*class*/
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
+              &status,MagickFalse/*UndefAttrIsError*/);
             break;
           }/*class*/
         if (LocaleCompare("clip-path",keyword) == 0)
@@ -2956,7 +3155,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p+5U > q)
+                if ((q == NULL) || (p == NULL) || (q-4 < p))
                   {
                     status=MagickFail;
                     break;
@@ -3108,7 +3307,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     continue;
                   break;
                 }
-                if (p+5U > q)
+                if ((q == NULL) || (p == NULL) || (q-4 < p))
                   {
                     status=MagickFail;
                     break;
@@ -3599,7 +3798,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("use",keyword) == 0)
           {
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,&status);
+            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
+              &status,MagickTrue/*UndefAttrIsError*/);
             break;
           }
         status=MagickFail;
@@ -3654,12 +3854,13 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     /*
       Parse the primitive attributes.
     */
-    i=0;
+    PIMgr.StoreStartingAt = i = 0;
     j=0;
     primitive_info[0].point.x=0.0;
     primitive_info[0].point.y=0.0;
     primitive_info[0].coordinates=0;
     primitive_info[0].method=FloodfillMethod;
+    PRIMINF_CLEAR_FLAGS(&primitive_info[0]);
     for (x=0; *q != '\0'; x++)
     {
       /*
@@ -3681,18 +3882,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       primitive_info[i].point=point;
       primitive_info[i].coordinates=0;
       primitive_info[i].method=FloodfillMethod;
+      PRIMINF_CLEAR_FLAGS(&primitive_info[i]);
       i++;
+      PIMgr.StoreStartingAt = i;
       if (i < (long) number_points)
         continue;
-      number_points<<=1;
-      MagickReallocMemory(PrimitiveInfo *,primitive_info,
-                          MagickArraySize(number_points,sizeof(PrimitiveInfo)));
-      if (primitive_info == (PrimitiveInfo *) NULL)
-        {
-          ThrowException3(&image->exception,ResourceLimitError,
-            MemoryAllocationFailed,UnableToDrawOnImage);
-          break;
-        }
+      PrimitiveInfoRealloc(&PIMgr,number_points);  /* array is full; double the array size */
     }
     /*
       Special handling when using textc with character rotation; see comments
@@ -3701,6 +3896,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     if  ( (primitive_type == TextPrimitive) && UseCurrentTextPosition && (i == 0) )
       {
         primitive_info[0].primitive=primitive_type;
+        PRIMINF_CLEAR_FLAGS(&primitive_info[0]);
         if  ( TextRotationPerformed )
           {
             /* text positioning has already been performed by translate/rotate sequence */
@@ -3716,12 +3912,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         primitive_info[0].coordinates=0;
         primitive_info[0].method=FloodfillMethod;
         i++;
+        PIMgr.StoreStartingAt = i;
         x++;
       }
     assert(j < (long) number_points);
     primitive_info[j].primitive=primitive_type;
     primitive_info[j].coordinates=x;
     primitive_info[j].method=FloodfillMethod;
+    PRIMINF_CLEAR_FLAGS(&primitive_info[j]);
     primitive_info[j].text=(char *) NULL;
     /*
       Circumscribe primitive within a circle.
@@ -3826,6 +4024,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 
     if (((size_t) points_length) < points_length)
       {
+        /* points_length too big to be represented as a size_t */
         status=MagickFail;
         ThrowException(&image->exception,DrawError,
                        PrimitiveArithmeticOverflow,keyword);
@@ -3837,27 +4036,29 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     if ((i+points_length) >= number_points)
       {
         double new_number_points = ceil(number_points+points_length+1);
-        if (((size_t) new_number_points) != new_number_points)
+        size_t new_number_points_size_t = (size_t) new_number_points;
+        if (new_number_points_size_t != new_number_points)
           {
+            /* new_number_points too big to be represented as a size_t */
             status=MagickFail;
             ThrowException3(&image->exception,ResourceLimitError,
                             MemoryAllocationFailed,UnableToDrawOnImage);
             break;
           }
 
-        number_points=new_number_points;
-        MagickReallocMemory(PrimitiveInfo *,primitive_info,
-                            MagickArraySize(number_points,sizeof(PrimitiveInfo)));
-        if (primitive_info == (PrimitiveInfo *) NULL)
-          {
-            status=MagickFail;
-            ThrowException3(&image->exception,ResourceLimitError,
-              MemoryAllocationFailed,UnableToDrawOnImage);
-            break;
-          }
+        PIMgr.StoreStartingAt = i;  /* should already be this value; just bein' sure */
+        PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points);
       }
 
     assert(j < (long) number_points);
+
+    /*
+      The TraceXXX funtions that generate a dynamic number of points will automatically
+      grow the primitive array as needed.  To make sure that the simpler ones (TracePoint()
+      TraceLine(), TraceRectangle(), etc.) have enough space, we make sure there are at
+      least 100 elements available.
+    */
+    PrimitiveInfoRealloc(&PIMgr,100);
 
     /*
       Trace points
@@ -3873,7 +4074,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         TracePoint(primitive_info+j,primitive_info[j].point);
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case LinePrimitive:
@@ -3885,7 +4086,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
         TraceLine(primitive_info+j,primitive_info[j].point,
                   primitive_info[j+1].point);
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case RectanglePrimitive:
@@ -3914,10 +4115,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceRectangle(/*start*/primitive_info+j,
-                       /*end*/primitive_info[j].point,
-          primitive_info[j+1].point);
-        i=(long) (j+primitive_info[j].coordinates);
+        TraceRectangle(primitive_info+j,
+                       /*start*/primitive_info[j].point,
+                       /*end*/primitive_info[j+1].point);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case RoundRectanglePrimitive:
@@ -3954,11 +4155,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceRoundRectangle(primitive_info+j,
+        PIMgr.StoreStartingAt=j;
+        TraceRoundRectangle(&PIMgr,
                             /*start*/primitive_info[j].point,
                             /*end*/primitive_info[j+1].point,
                             /*arc*/primitive_info[j+2].point);
-        i=(long) (j+primitive_info[j].coordinates);
+         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case ArcPrimitive:
@@ -3968,9 +4170,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             primitive_type=UndefinedPrimitive;
             break;
           }
-        TraceArc(primitive_info+j,primitive_info[j].point,
+        PIMgr.StoreStartingAt=j;
+        TraceArc(&PIMgr,primitive_info[j].point,
           primitive_info[j+1].point,primitive_info[j+2].point);
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case EllipsePrimitive:
@@ -3989,11 +4192,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceEllipse(primitive_info+j,
+        PIMgr.StoreStartingAt=j;
+        TraceEllipse(&PIMgr,
                      /*start*/primitive_info[j].point, /*centerX,centerY*/
                      /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
                      /*degrees*/primitive_info[j+2].point); /*arcStart,arcEnd*/
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case CirclePrimitive:
@@ -4003,14 +4207,16 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-       TraceCircle(primitive_info+j,primitive_info[j].point,
+        PIMgr.StoreStartingAt=j;
+        TraceCircle(&PIMgr,primitive_info[j].point,
           primitive_info[j+1].point);
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case PolylinePrimitive:
       {
-        if (primitive_info[j].coordinates < 2)
+        /* the SVG spec does not prohibit polylines containing a single point */
+        if (primitive_info[j].coordinates < 1)
           {
             status=MagickFail;
             break;
@@ -4030,6 +4236,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         primitive_info[i]=primitive_info[j];
         primitive_info[i].coordinates=0;
         primitive_info[j].coordinates++;
+        PRIMINF_SET_IS_CLOSED_SUBPATH(&primitive_info[j],1);
         i++;
         break;
       }
@@ -4040,13 +4247,15 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceBezier(primitive_info+j,primitive_info[j].coordinates);
-        i=(long) (j+primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=j;
+        TraceBezier(&PIMgr,primitive_info[j].coordinates);
+        PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case PathPrimitive:
       {
-        i=(long) (j+TracePath(image,primitive_info+j,token));
+        PIMgr.StoreStartingAt=j;
+        PIMgr.StoreStartingAt=i=(long) (j+TracePath(image,&PIMgr,token));
         break;
       }
       case ColorPrimitive:
@@ -4374,29 +4583,39 @@ GetPixelOpacity(PolygonInfo * restrict polygon_info,const double mid,
         }
       /*
         Compute distance between a point and an edge.
+
+        In the comments below, let seg0, seg1 be the end points of the line
+        segment (edge), and let pt be (x,y).  Conceptually, consider the segment
+        to be a vector from seg0 to seg1, and pt to be a vector from seg0 to pt.
+        Let seglen be the length of the segment vector, and ptlen be the length
+        of the pt vector.
+
+        The "if" tests below now test "beta <= 0" instead of "beta < 0", and
+        "beta >= alpha" instead of "beta > alpha".  This captures the case of
+        a zero-length segment and avoids a divide-by-zero when computing 1/alpha.
       */
-      q=p->points+i-1;
-      dx=(q+1)->x-q->x,
-      dy=(q+1)->y-q->y;
-      beta=dx*(x-q->x)+dy*(y-q->y);
-      if (beta < 0.0)
-        {
+      q=p->points+i-1;    /* q is seg0, q+1 is seg1 */
+      dx=(q+1)->x-q->x,   /* seg1.x - seg0.x */
+      dy=(q+1)->y-q->y;   /* seg1.y - seg0.y */
+      beta=dx*(x-q->x)+dy*(y-q->y);   /* dot(segvec,ptvec) = seglen * ptlen * costheta */
+      if (beta <= 0.0)
+        {/*cosine<=0, pt is closest to seg0*/
           dx=x-q->x;
           dy=y-q->y;
           distance=dx*dx+dy*dy;
         }
       else
         {
-          alpha=dx*dx+dy*dy;
-          if (beta > alpha)
-            {
+          alpha=dx*dx+dy*dy;  /*seglen*seglen*/
+          if (beta >= alpha)
+            {/*pt is closest to seg1*/
               dx=x-(q+1)->x;
               dy=y-(q+1)->y;
               distance=dx*dx+dy*dy;
             }
           else
-            {
-              alpha=1.0/alpha;
+            {/*pt is closest to a point between seg0 and seg1*/
+              alpha=1.0/alpha;  /*don't get here if alpha==0*/
               beta=dx*(y-q->y)-dy*(x-q->x);
               distance=alpha*beta*beta;
             }
@@ -4504,7 +4723,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                      const PrimitiveInfo *primitive_info)
 {
   double
-    mid;
+    mid,
+    stroke_width_limited;
 
   SegmentInfo
     bounds;
@@ -4523,7 +4743,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
   /*
     Nothing to do.
   */
-  if (primitive_info->coordinates == 0)
+  if (primitive_info->coordinates <= 1)   /*single point polygons have zero area; don't draw*/
     return(MagickPass);
 
   {
@@ -4622,7 +4842,12 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       not, clip based on columns-1 and rows-1 instead of columns
       and rows.
     */
-    mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
+
+    /* sanity check for excessively big stroke_width (ticket #515) */
+    if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+        stroke_width_limited = draw_info->stroke_width;
+
+    mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
     bounds.x1-=(mid+1.0);
     bounds.y1-=(mid+1.0);
     bounds.x2+=(mid+1.0);
@@ -5329,6 +5554,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
     {
       double
         mid,
+        stroke_width_limited,
         scale;
 
       DrawInfo
@@ -5353,7 +5579,12 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           status&=DrawDashPolygon(draw_info,primitive_info,image);
           break;
         }
-      mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;
+
+      /* sanity check for excessively big stroke_width (ticket #515) */
+      if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+          stroke_width_limited = draw_info->stroke_width;
+
+      mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
       if ((mid > 1.0) && (draw_info->stroke.opacity != TransparentOpacity))
         {
           unsigned int
@@ -5362,10 +5593,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           /*
             Draw strokes while respecting line cap/join attributes.
           */
-          for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
-          closed_path=
-            (primitive_info[i-1].point.x == primitive_info[0].point.x) &&
-            (primitive_info[i-1].point.y == primitive_info[0].point.y);
+          closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[0]);
           i=(long) primitive_info[0].coordinates;
           if ((((draw_info->linecap == RoundCap) || closed_path) &&
                (draw_info->linejoin == RoundJoin)) ||
@@ -5374,11 +5602,13 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
               status&=DrawPolygonPrimitive(image,draw_info,primitive_info);
               break;
             }
+          /* first fill the polygon by cloning and turning off stroking ... */
           clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
           clone_info->stroke_width=0.0;
           clone_info->stroke.opacity=TransparentOpacity;
           status&=DrawPolygonPrimitive(image,clone_info,primitive_info);
           DestroyDrawInfo(clone_info);
+          /* ... and then stroke the polygon */
           status&=DrawStrokePolygon(image,draw_info,primitive_info);
           break;
         }
@@ -5482,13 +5712,41 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
   status=MagickPass;
   for (p=primitive_info; p->primitive != UndefinedPrimitive; p+=p->coordinates)
   {
-    stroke_polygon=TraceStrokePolygon(draw_info,p);
+    /*
+      Per the SVG spec:  A subpath (see Paths) consisting of a
+      single moveto shall not be stroked.
+    */
+    if  ( p->coordinates == 1 )
+      continue;
+    /*
+      *** BUG ALERT! ***
+
+      The sequence below has a bug in it somewhere.  "Thin" polygons that are
+      stroked with a stroke-width whose magnitude is close to the size of the
+      "thinness" of the polygon are rendered incorrectly.  For example, this
+      SVG path renders correctly:
+
+      <path fill="none" stroke="rgb(0,255,0)" stroke-width="3" stroke-linecap="round"
+        stroke-linejoin="miter" d="M 10 10 110 10 110 10.5 z" />
+
+      But this one does not:
+
+      <path fill="none" stroke="rgb(0,255,0)" stroke-width="3" stroke-linecap="round"
+        stroke-linejoin="miter" d="M 10 10 110 10 110 10.4 z" />
+
+      The only difference is the y coordinate of the last path point (10.5 vs. 10.4).
+
+      The "stroke_polygon" produced by TraceStrokePolygon() for the second path is
+      significantly different from that for the first path, so my suspicion is that
+      that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
+    */
+    stroke_polygon=TraceStrokePolygon(image,draw_info,p);
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
     MagickFreeMemory(stroke_polygon);
     if (status == MagickFail)
       break;
     q=p+p->coordinates-1;
-    closed_path=(q->point.x == p->point.x) && (q->point.y == p->point.y);
+    closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(p);
     if ((draw_info->linecap == RoundCap) && !closed_path)
       {
         DrawRoundLinecap(image,draw_info,p);
@@ -5639,7 +5897,7 @@ Permutate(const long n,const long k)
 */
 
 static void
-TraceArc(PrimitiveInfo *primitive_info,const PointInfo start,
+TraceArc(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
          const PointInfo end,const PointInfo arc)
 {
   PointInfo
@@ -5650,11 +5908,11 @@ TraceArc(PrimitiveInfo *primitive_info,const PointInfo start,
   center.y=0.5*(end.y+start.y);
   radius.x=fabs(center.x-start.x);
   radius.y=fabs(center.y-start.y);
-  TraceEllipse(primitive_info,center,radius,arc);
+  TraceEllipse(p_PIMgr,center,radius,arc);
 }
 
 static void
-TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
+TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo end,const PointInfo arc,const double angle,
              const unsigned int large_arc,const unsigned int sweep)
 {
@@ -5684,9 +5942,28 @@ TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
   unsigned long
     arc_segments;
 
+  PrimitiveInfo
+    **pp_PrimitiveInfo,
+    *primitive_info;
+
+  size_t
+    InitialStoreStartingAt;
+
+  pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
+  InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
+  primitive_info = *pp_PrimitiveInfo + InitialStoreStartingAt;
+
   primitive_info->coordinates = 0;	/* in case we return without doing anything */
-  if ((start.x == end.x) && (start.y == end.y))
-    return;
+  /*
+    Per the SVG spec: If the endpoints (x1, y1) and (x2, y2) are identical, then
+    this is equivalent to omitting the elliptical arc segment entirely.
+  */
+  if  ( (fabs(start.x-end.x) < MagickEpsilon) && (fabs(start.y-end.y) < MagickEpsilon) )
+    {
+      /* substitute a lineto command (so zero length arc looks like a zero length segment) */
+      TracePoint(primitive_info,end);
+      return;
+    }
   radii.x=fabs(arc.x);
   radii.y=fabs(arc.y);
   if ((radii.x == 0.0) || (radii.y == 0.0))
@@ -5761,10 +6038,15 @@ TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
     (p+3)->point.y=sine*radii.x*points[2].x+cosine*radii.y*points[2].y;
     if (i == (long) (arc_segments-1))
       (p+3)->point=end;
-    TraceBezier(p,4);
+    TraceBezier(p_PIMgr,4);
+    p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have changed */
+    p_PIMgr->StoreStartingAt+=p->coordinates;
     p+=p->coordinates;
   }
+  primitive_info = *pp_PrimitiveInfo + InitialStoreStartingAt;
+  p_PIMgr->StoreStartingAt = InitialStoreStartingAt;  /* restore original value */
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -5773,7 +6055,7 @@ TraceArcPath(PrimitiveInfo *primitive_info,const PointInfo start,
 }
 
 static void
-TraceBezier(PrimitiveInfo *primitive_info,
+TraceBezier(PrimitiveInfoMgr *p_PIMgr,
             const unsigned long number_coordinates)
 {
   double
@@ -5786,6 +6068,10 @@ TraceBezier(PrimitiveInfo *primitive_info,
     point,
     *points;
 
+  PrimitiveInfo
+    *primitive_info,
+    **pp_PrimitiveInfo;
+
   register PrimitiveInfo
     *p;
 
@@ -5796,6 +6082,9 @@ TraceBezier(PrimitiveInfo *primitive_info,
   unsigned long
     control_points,
     quantum;
+
+  pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   /*
     Allocate coeficients.
@@ -5815,6 +6104,11 @@ TraceBezier(PrimitiveInfo *primitive_info,
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
   control_points=quantum*number_coordinates;
+
+  /* make sure we have enough space */
+  if  ( PrimitiveInfoRealloc(p_PIMgr,control_points+1) )
+    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
   points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
   if ((coefficients == (double *) NULL) || (points == (PointInfo *) NULL))
@@ -5855,6 +6149,7 @@ TraceBezier(PrimitiveInfo *primitive_info,
   TracePoint(p,end);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -5865,7 +6160,7 @@ TraceBezier(PrimitiveInfo *primitive_info,
 }
 
 static void
-TraceCircle(PrimitiveInfo *primitive_info,const PointInfo start,
+TraceCircle(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
             const PointInfo end)
 {
   double
@@ -5884,11 +6179,11 @@ TraceCircle(PrimitiveInfo *primitive_info,const PointInfo start,
   offset.y=radius;
   degrees.x=0.0;
   degrees.y=360.0;
-  TraceEllipse(primitive_info,start,offset,degrees);
+  TraceEllipse(p_PIMgr,start,offset,degrees);
 }
 
 static void
-TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
+TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo stop,const PointInfo degrees)
 {
   double
@@ -5903,13 +6198,20 @@ TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
   register PrimitiveInfo
     *p;
 
-  register long
-    i;
+  PrimitiveInfo
+    *primitive_info,
+    **pp_PrimitiveInfo;
+
+  size_t
+    Needed;
 
   /*
     Ellipses are just short segmented polys.
   */
-  if (stop.x == 0.0 || stop.y == 0.0)
+  pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  primitive_info->coordinates = 0;  /* in case we return without doing anything */
+  if (stop.x == 0.0 || stop.y == 0.0)  /* actually the x and y radii of the corner ellipse */
     return;
   delta=2.0/Max(stop.x,stop.y);
   step=MagickPI/8.0;
@@ -5920,6 +6222,12 @@ TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
   while (y < degrees.x)
     y+=360.0;
   angle.y=DegreesToRadians(y);
+
+  /* make sure we have enough space */
+  Needed = ((size_t)1) + (size_t) ceil((angle.y - angle.x) / step);
+  if  ( PrimitiveInfoRealloc(p_PIMgr,Needed) )
+    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+
   for (p=primitive_info; angle.x < angle.y; angle.x+=step)
   {
     point.x=cos(fmod(angle.x,DegreesToRadians(360.0)))*stop.x+start.x;
@@ -5932,11 +6240,15 @@ TraceEllipse(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(p,point);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
-  for (i=0; i < (long) primitive_info->coordinates; i++)
-  {
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  if  (
+    (fabs(primitive_info[0].point.x-primitive_info[primitive_info->coordinates-1].point.x) < MagickEpsilon)
+    && (fabs(primitive_info[0].point.y-primitive_info[primitive_info->coordinates-1].point.y) < MagickEpsilon)
+    )
+    PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
+  /* NOTE: p pointing just past last traced point! */
+  for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
-    p--;
-  }
 }
 
 static void
@@ -5954,6 +6266,7 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(primitive_info+1,end);
   (primitive_info+1)->primitive=primitive_info->primitive;
   primitive_info->coordinates=2;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
 }
 
 /*
@@ -5999,7 +6312,7 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
 
 
 static unsigned long
-TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
+TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
 {
   char
     token[MaxTextExtent];
@@ -6024,6 +6337,10 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
   PrimitiveType
     primitive_type;
 
+  PrimitiveInfo
+    *primitive_info,
+    **pp_PrimitiveInfo;
+
   register PrimitiveInfo
     *q;
 
@@ -6034,6 +6351,12 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
     number_coordinates,
     z_count;
 
+  size_t
+    SubpathOffset;  /* index to start of current subpath */
+
+  pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
+  SubpathOffset = p_PIMgr->StoreStartingAt;
+  primitive_info = *pp_PrimitiveInfo + SubpathOffset;
   attribute=0;
   number_coordinates=0;
   z_count=0;
@@ -6100,7 +6423,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           MagickTracePathAtoF(token,&y);
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
-          TraceArcPath(q,point,end,arc,angle,large_arc,sweep);
+          TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep);
+          q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           point=end;
           while (isspace((int) ((unsigned char) *p)) != 0)
@@ -6138,7 +6463,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(q,4);
+          TraceBezier(p_PIMgr,4);
+          q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           point=end;
           /* consume comma if present (as in elliptical arc above) */
@@ -6159,7 +6486,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           MagickTracePathAtoF(token,&x);
           point.x=attribute == 'H' ? x: point.x+x;
+          /* make sure we have at least 100 elements available */
+          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           TracePoint(q,point);
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
@@ -6187,7 +6518,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           MagickTracePathAtoF(token,&y);
           point.x=attribute == 'L' ? x : point.x+x;
           point.y=attribute == 'L' ? y : point.y+y;
+          /* make sure we have at least 100 elements available */
+          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           TracePoint(q,point);
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
@@ -6203,11 +6538,13 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
       case 'M':
       case 'm':
       {
-        if (q != primitive_info)
+        if  ( p_PIMgr->StoreStartingAt != SubpathOffset )
           {
+            primitive_info = *pp_PrimitiveInfo + SubpathOffset;
             primitive_info->coordinates=q-primitive_info;
             number_coordinates+=primitive_info->coordinates;
             primitive_info=q;
+            SubpathOffset=p_PIMgr->StoreStartingAt;
           }
         i=0;
         do
@@ -6223,15 +6560,17 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           point.x=attribute == 'M' ? x : point.x+x;
           point.y=attribute == 'M' ? y : point.y+y;
           if (i == 0)
-            start=point;
+            start=point; /*otherwise it's an implied lineto command for both 'M' and 'm'*/
           i++;
+          /* make sure we have at least 100 elements available */
+          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           TracePoint(q,point);
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
-          if ((i != 0) && (attribute == 'M'))
-            {
-              TracePoint(q,point);
-              q+=q->coordinates;
-            }
+
+          /* there was code here that added the point again, but only if 'M' (?) ... deleted */
+
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
             p++;
@@ -6270,7 +6609,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
           }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(q,3);
+          TraceBezier(p_PIMgr,3);
+          q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           point=end;
           /* consume comma if present (as in elliptical arc above) */
@@ -6323,7 +6664,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(q,4);
+          TraceBezier(p_PIMgr,4);
+          q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           point=end;
           previous_path_data_command = attribute;   /* current path data command becomes previous for next loop iteration */
@@ -6375,7 +6718,9 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(q,3);
+          TraceBezier(p_PIMgr,3);
+          q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           point=end;
           previous_path_data_command = attribute;   /* current path data command becomes previous for next loop iteration */
@@ -6400,7 +6745,11 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
             MagickGetTracePathToken(p,&p,token,MaxTextExtent);
           MagickTracePathAtoF(token,&y);
           point.y=attribute == 'V' ? y : point.y+y;
+          /* make sure we have at least 100 elements available */
+          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           TracePoint(q,point);
+          p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
           while (isspace((int) ((unsigned char) *p)) != 0)
@@ -6417,11 +6766,18 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
       case 'Z':
       {
         point=start;
+        /* make sure we have at least 100 elements available */
+        if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+            q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
         TracePoint(q,point);
+        p_PIMgr->StoreStartingAt += q->coordinates;
         q+=q->coordinates;
+        primitive_info = *pp_PrimitiveInfo + SubpathOffset;
         primitive_info->coordinates=q-primitive_info;
+        PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
         number_coordinates+=primitive_info->coordinates;
         primitive_info=q;
+        SubpathOffset = p_PIMgr->StoreStartingAt;
         z_count++;
         break;
       }
@@ -6434,6 +6790,7 @@ TracePath(Image *image,PrimitiveInfo *primitive_info,const char *path)
     }
   }
 
+  primitive_info = *pp_PrimitiveInfo + SubpathOffset;
   primitive_info->coordinates=q-primitive_info;
   number_coordinates+=primitive_info->coordinates;
   for (i=0; i < (long) number_coordinates; i++)
@@ -6451,6 +6808,7 @@ static void
 TracePoint(PrimitiveInfo *primitive_info,const PointInfo point)
 {
   primitive_info->coordinates=1;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
   primitive_info->point=point;
 }
 
@@ -6467,6 +6825,15 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   register long
     i;
 
+  /*
+    Per the SVG spec, if the width and/or height are zero, rendering
+    the element is disabled.
+  */
+  if  ( (start.x == end.x) || (start.y == end.y) )
+  {
+    primitive_info->coordinates = 0;
+    return;
+  }
   p=primitive_info;
   TracePoint(p,start);
   p+=p->coordinates;
@@ -6483,6 +6850,8 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   TracePoint(p,start);
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
   for (i=0; i < (long) primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
@@ -6491,7 +6860,7 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
 }
 
 static void
-TraceRoundRectangle(PrimitiveInfo *primitive_info,
+TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
                     const PointInfo start,const PointInfo end,PointInfo arc)
 {
   PointInfo
@@ -6502,48 +6871,80 @@ TraceRoundRectangle(PrimitiveInfo *primitive_info,
   register PrimitiveInfo
     *p;
 
-  register long
-    i;
+  size_t
+    InitialStoreStartingAt;
 
-  p=primitive_info;
-  offset.x=AbsoluteValue(end.x-start.x);
-  offset.y=AbsoluteValue(end.y-start.y);
+  PrimitiveInfo
+    *primitive_info,
+    **pp_PrimitiveInfo;
+
+  pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
+  InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
+
+  offset.x=AbsoluteValue(end.x-start.x);  /* rect width */
+  offset.y=AbsoluteValue(end.y-start.y);  /* rect height */
+  /*
+    Per the SVG spec, if the width and/or height are zero, rendering
+    the element is disabled.
+  */
+  if  ( (offset.x == 0.0) || (offset.y == 0.0) )
+  {
+	(*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
+    return;
+  }
+
   if (arc.x > (0.5*offset.x))
     arc.x=0.5*offset.x;
   if (arc.y > (0.5*offset.y))
     arc.y=0.5*offset.y;
+
   point.x=start.x+offset.x-arc.x;
   point.y=start.y+arc.y;
   degrees.x=270.0;
   degrees.y=360.0;
-  TraceEllipse(p,point,arc,degrees);
-  p+=p->coordinates;
+  TraceEllipse(p_PIMgr,point,arc,degrees);
+  p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
+  p_PIMgr->StoreStartingAt += p->coordinates;
+
   point.x=start.x+offset.x-arc.x;
   point.y=start.y+offset.y-arc.y;
   degrees.x=0.0;
   degrees.y=90.0;
-  TraceEllipse(p,point,arc,degrees);
-  p+=p->coordinates;
+  TraceEllipse(p_PIMgr,point,arc,degrees);
+  p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
+  p_PIMgr->StoreStartingAt += p->coordinates;
+
   point.x=start.x+arc.x;
   point.y=start.y+offset.y-arc.y;
   degrees.x=90.0;
   degrees.y=180.0;
-  TraceEllipse(p,point,arc,degrees);
-  p+=p->coordinates;
+  TraceEllipse(p_PIMgr,point,arc,degrees);
+  p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
+  p_PIMgr->StoreStartingAt += p->coordinates;
+
   point.x=start.x+arc.x;
   point.y=start.y+arc.y;
   degrees.x=180.0;
   degrees.y=270.0;
-  TraceEllipse(p,point,arc,degrees);
+  TraceEllipse(p_PIMgr,point,arc,degrees);
+  p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
+  p_PIMgr->StoreStartingAt += p->coordinates;
+
+  /* need only one element, but make sure there is some headroom */
+  if  ( (p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount )
+    PrimitiveInfoRealloc(p_PIMgr,100);
+  p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  TracePoint(p,(*pp_PrimitiveInfo+InitialStoreStartingAt)->point);
   p+=p->coordinates;
-  TracePoint(p,primitive_info->point);
-  p+=p->coordinates;
+  p_PIMgr->StoreStartingAt = InitialStoreStartingAt;  /* restore original value */
+
+  primitive_info = *pp_PrimitiveInfo + InitialStoreStartingAt;
   primitive_info->coordinates=p-primitive_info;
-  for (i=0; i < (long) primitive_info->coordinates; i++)
-  {
+  PRIMINF_CLEAR_FLAGS(primitive_info);
+  PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
+  /* NOTE: p pointing just past last traced point! */
+  for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
-    p--;
-  }
 }
 
 static void
@@ -6594,7 +6995,8 @@ TraceSquareLinecap(PrimitiveInfo *primitive_info,
 }
 
 static PrimitiveInfo *
-TraceStrokePolygon(const DrawInfo *draw_info,
+TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::stroke_width can be clamped */
+                   const DrawInfo *draw_info,
                    const PrimitiveInfo *primitive_info)
 {
   typedef struct _LineSegment
@@ -6618,7 +7020,8 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     delta_theta,
     dot_product,
     mid,
-    miterlimit;
+    miterlimit,
+    stroke_width_limited;
 
   PointInfo
     box_p[5],
@@ -6637,7 +7040,9 @@ TraceStrokePolygon(const DrawInfo *draw_info,
 
   unsigned long
     arc_segments,
-    max_strokes,
+    max_strokes_p,
+    max_strokes_q,
+    max_strokes_extra,
     number_vertices;
 
   unsigned long
@@ -6647,33 +7052,27 @@ TraceStrokePolygon(const DrawInfo *draw_info,
     q;
 
   /*
-    Allocate paths.
+    Compute initial sizes for paths based on the number of primitive coordinates.  We
+    will always allocate max_strokes_extra additional points, so that for each loop
+    iteration there will always be enough space, provided we haven't passed
+    max_strokes_{p|q} yet.
   */
   number_vertices=primitive_info->coordinates;
-  max_strokes=2*number_vertices+6*BezierQuantum+360;
-  path_p=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
-  if (path_p == (PointInfo *) NULL)
-    return((PrimitiveInfo *) NULL);
-  path_q=MagickAllocateArray(PointInfo *,max_strokes,sizeof(PointInfo));
-  if (path_q == (PointInfo *) NULL)
-    {
-      MagickFreeMemory(path_p);
-      return((PrimitiveInfo *) NULL);
-    }
+  max_strokes_p=max_strokes_q=2*number_vertices;
+  max_strokes_extra=6*BezierQuantum+360;  /* will always allocate this much extra */
+
+  /* moved path_p and path_q mem alloc to later since we might not need them */
+
   polygon_primitive=
     MagickAllocateArray(PrimitiveInfo *,(number_vertices+2),
                         sizeof(PrimitiveInfo));
   if (polygon_primitive == (PrimitiveInfo *) NULL)
     {
-      MagickFreeMemory(path_p);
-      MagickFreeMemory(path_q);
       return((PrimitiveInfo *) NULL);
     }
   (void) memcpy(polygon_primitive,primitive_info,number_vertices*
     sizeof(PrimitiveInfo));
-  closed_path=
-    (primitive_info[number_vertices-1].point.x == primitive_info[0].point.x) &&
-    (primitive_info[number_vertices-1].point.y == primitive_info[0].point.y);
+  closed_path=PRIMINF_GET_IS_CLOSED_SUBPATH(&primitive_info[0]);
   if ((draw_info->linejoin == RoundJoin) ||
       ((draw_info->linejoin == MiterJoin) && closed_path))
     {
@@ -6692,10 +7091,50 @@ TraceStrokePolygon(const DrawInfo *draw_info,
       break;
   }
   if (n == number_vertices)
-    n=number_vertices-1;
+    {
+      /*
+        If we get here the subpath consists entirely of "zero length" (within MagickEpsilon)
+        segments.  According to the SVG spec:  "Any zero length subpath shall not be stroked
+        if the 'stroke-linecap' property has a value of butt but shall be stroked if the
+        'stroke-linecap' property has a value of round or square".  Since 'stroke-linecap'
+        is only used for open paths, this is only significant if the path is not closed.
+      */
+      MagickBool DoStroke;
+      DoStroke = (!closed_path && (draw_info->linecap == RoundCap));
+      if  ( !DoStroke )
+        {/*skip stroking*/
+          /* create polygon with one element and 0 coords; DrawPolygonPrimitive() will ignore it */
+          stroke_polygon = MagickAllocateArray(PrimitiveInfo *,1,sizeof(PrimitiveInfo));
+          stroke_polygon[0] = polygon_primitive[0];
+          stroke_polygon[0].coordinates = 0;
+          MagickFreeMemory(polygon_primitive);
+          return(stroke_polygon);
+        }/*skip stroking*/
+      n=number_vertices-1;
+    }
+
+  /* moved path_p and path_q mem allocs to here */
+
+  /*
+    Allocate paths.
+  */
+  path_p=MagickAllocateArray(PointInfo *,max_strokes_p+max_strokes_extra,sizeof(PointInfo));
+  if (path_p == (PointInfo *) NULL)
+    {
+      MagickFreeMemory(polygon_primitive);
+      return((PrimitiveInfo *) NULL);
+    }
+  path_q=MagickAllocateArray(PointInfo *,max_strokes_q+max_strokes_extra,sizeof(PointInfo));
+  if (path_q == (PointInfo *) NULL)
+    {
+      MagickFreeMemory(path_p);
+      MagickFreeMemory(polygon_primitive);
+      return((PrimitiveInfo *) NULL);
+    }
+
   slope.p=0.0;
   inverse_slope.p=0.0;
-  if (fabs(dx.p) <= MagickEpsilon)
+  if (fabs(dx.p) < MagickEpsilon)
     {
       if (dx.p >= 0.0)
         slope.p=dy.p < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
@@ -6703,7 +7142,7 @@ TraceStrokePolygon(const DrawInfo *draw_info,
         slope.p=dy.p < 0.0 ? 1.0/MagickEpsilon : -1.0/MagickEpsilon;
     }
   else
-    if (fabs(dy.p) <= MagickEpsilon)
+    if (fabs(dy.p) < MagickEpsilon)
       {
         if (dy.p >= 0.0)
           inverse_slope.p=dx.p < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
@@ -6715,7 +7154,12 @@ TraceStrokePolygon(const DrawInfo *draw_info,
         slope.p=dy.p/dx.p;
         inverse_slope.p=(-1.0/slope.p);
       }
-  mid=ExpandAffine(&draw_info->affine)*draw_info->stroke_width/2.0;/* FIXME: 'mid' BLOWS UP  */
+
+  /* sanity check for excessively big stroke_width (ticket #515) */
+  if  ( (stroke_width_limited = STROKE_WIDTH_LIMIT(image)) > draw_info->stroke_width )
+      stroke_width_limited = draw_info->stroke_width;
+
+  mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
   miterlimit=draw_info->miterlimit*draw_info->miterlimit*mid*mid;
   if ((draw_info->linecap == SquareCap) && !closed_path)
     TraceSquareLinecap(polygon_primitive,number_vertices,mid);
@@ -6770,7 +7214,7 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           slope.q=dy.q < 0.0 ? 1.0/MagickEpsilon : -1.0/MagickEpsilon;
       }
     else
-      if (fabs(dy.q) <= MagickEpsilon)
+      if (fabs(dy.q) < MagickEpsilon)
         {
           if (dy.q >= 0.0)
             inverse_slope.q=dx.q < 0.0 ? -1.0/MagickEpsilon : 1.0/MagickEpsilon;
@@ -6821,19 +7265,30 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           box_q[3].y)/(slope.p-slope.q);
         box_q[4].y=slope.p*(box_q[4].x-box_q[0].x)+box_q[0].y;
       }
-    if (q >= (max_strokes-6*BezierQuantum-360))
+    if (p >= max_strokes_p)
+      {/*p pointing into extra; time to realloc*/
+         max_strokes_p+=max_strokes_extra;
+         MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+         if (path_p == (PointInfo *) NULL)
       {
-         max_strokes+=6*BezierQuantum+360;
-         MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes,sizeof(PointInfo)));
-         MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes,sizeof(PointInfo)));
-         if ((path_p == (PointInfo *) NULL) || (path_q == (PointInfo *) NULL))
+             MagickFreeMemory(path_p);
+             MagickFreeMemory(path_q);
+             MagickFreeMemory(polygon_primitive);
+             return((PrimitiveInfo *) NULL);
+           }
+      }/*p pointing into extra; time to realloc*/
+    if (q >= max_strokes_q)
+      {/*q pointing into extra; time to realloc*/
+         max_strokes_q+=max_strokes_extra;
+         MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+         if (path_q == (PointInfo *) NULL)
            {
              MagickFreeMemory(path_p);
              MagickFreeMemory(path_q);
              MagickFreeMemory(polygon_primitive);
              return((PrimitiveInfo *) NULL);
            }
-      }
+      }/*q pointing into extra; time to realloc*/
     dot_product=dx.q*dy.p-dx.p*dy.q;
     if (dot_product <= 0.0)
       switch (draw_info->linejoin)
@@ -6888,6 +7343,19 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           if (theta.q < theta.p)
             theta.q+=2.0*MagickPI;
           arc_segments=(long) ceil((theta.q-theta.p)/(2.0*sqrt(1.0/mid)));
+          /* in case arc_segments is big */
+          if  ( (q+arc_segments) >= max_strokes_q )
+            {/*q+arc_segments will point into extra; time to realloc*/
+              max_strokes_q+=arc_segments+max_strokes_extra;
+              MagickReallocMemory(PointInfo *,path_q,MagickArraySize(max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+              if (path_q == (PointInfo *) NULL)
+                {
+                  MagickFreeMemory(path_p);
+                  MagickFreeMemory(path_q);
+                  MagickFreeMemory(polygon_primitive);
+                  return((PrimitiveInfo *) NULL);
+                }
+            }/*q+arc_segments will point into extra; time to realloc*/
           path_q[q].x=box_q[1].x;
           path_q[q].y=box_q[1].y;
           q++;
@@ -6959,6 +7427,19 @@ TraceStrokePolygon(const DrawInfo *draw_info,
           if (theta.p < theta.q)
             theta.p+=2.0*MagickPI;
           arc_segments=(long) ceil((theta.p-theta.q)/(2.0*sqrt(1.0/mid)));
+          /* in case arc_segments is big */
+          if  ( (p+arc_segments) >= max_strokes_p )
+            {/*p+arc_segments will point into extra; time to realloc*/
+              max_strokes_p+=arc_segments+max_strokes_extra;
+              MagickReallocMemory(PointInfo *,path_p,MagickArraySize(max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+              if (path_p == (PointInfo *) NULL)
+                {
+                  MagickFreeMemory(path_p);
+                  MagickFreeMemory(path_q);
+                  MagickFreeMemory(polygon_primitive);
+                  return((PrimitiveInfo *) NULL);
+                }
+            }/*p+arc_segments will point into extra; time to realloc*/
           path_p[p++]=box_p[1];
           for (j=1; j < arc_segments; j++)
           {

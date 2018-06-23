@@ -64,24 +64,24 @@ MinReal+j*MinComplex = blue  MaxReal+j*MinComplex = black
 typedef struct
 {
   char identific[124];
-  unsigned short Version;
+  magick_uint16_t Version;
   char EndianIndicator[2];
-  unsigned long DataType;
+  magick_uint32_t DataType;
   magick_uint32_t ObjectSize;
-  unsigned long unknown1;
-  unsigned long unknown2;
+  magick_uint32_t unknown1;
+  magick_uint32_t unknown2;
 
-  unsigned short unknown5;
-  unsigned char StructureFlag;
-  unsigned char StructureClass;
-  unsigned long unknown3;
-  unsigned long unknown4;
-  unsigned long DimFlag;
+  magick_uint16_t unknown5;
+  magick_uint8_t StructureFlag;
+  magick_uint8_t StructureClass;
+  magick_uint32_t unknown3;
+  magick_uint32_t unknown4;
+  magick_uint32_t DimFlag;
 
-  unsigned long SizeX;
-  unsigned long SizeY;
-  unsigned short Flag1;
-  unsigned short NameFlag;
+  magick_uint32_t SizeX;
+  magick_uint32_t SizeY;
+  magick_uint16_t Flag1;
+  magick_uint16_t NameFlag;
 }
 MATHeader;
 
@@ -750,7 +750,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   PixelPacket *q;
   unsigned int status;
   MATHeader MATLAB_HDR;
-  unsigned long size;
+  size_t size;
   magick_uint32_t CellType;
   ImportPixelAreaOptions import_options;
   int i;
@@ -761,7 +761,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   unsigned Frames;
   int logging;
   int sample_size;
-  magick_off_t filepos=0x80;
+  magick_off_t filepos = 0x80;
   BlobInfo *blob;
   ImageInfo *clone_info = NULL;
 
@@ -835,13 +835,15 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   }
 
   filepos = TellBlob(image);
-  if(filepos < 0)
-  {
-    ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
-  }
+
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
+    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||	/* More than 4GiB are not supported in MAT! */
+        filepos < 0)
+    {
+      ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
+    }
     if(SeekBlob(image,filepos,SEEK_SET) != filepos) break;
     /* printf("pos=%X\n",TellBlob(image)); */
 
@@ -860,7 +862,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     }
 
-    filepos += MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
+    filepos += (magick_off_t) MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
 
     image2 = image;
 #if defined(HasZLIB)
@@ -884,7 +886,16 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     }
 #endif
 
-    if(MATLAB_HDR.DataType!=miMATRIX) continue;  /* skip another objects. */
+    if(MATLAB_HDR.DataType!=miMATRIX) 
+    {
+#if defined(HasZLIB)
+      if(image2 != image)
+      {
+         DeleteImageFromList(&image2);	/* image2 is set to NULL */
+      }
+#endif
+      continue;  /* skip another objects. */
+    }
 
     MATLAB_HDR.unknown1 = ReadBlobXXXLong(image2);
     MATLAB_HDR.unknown2 = ReadBlobXXXLong(image2);
@@ -942,7 +953,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     {
       case 0:
         size = ReadBlobXXXLong(image2); /* Object name string size */
-        size = 4 * (long) ((size + 3 + 1) / 4);
+        size = 4 * (((size_t) size + 3 + 1) / 4);
         (void) SeekBlob(image2, size, SEEK_CUR);
         break;
       case 1:
@@ -1245,7 +1256,7 @@ skip_reading_current:
 
   MagickFreeMemory(BImgBuff);
 END_OF_READING:
-  CloseBlob(image);
+  CloseBlob(image); 
 
   {
     Image *p;

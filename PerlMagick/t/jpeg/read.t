@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# Copyright (C) 2003 - 2012 GraphicsMagick Group
+# Copyright (C) 2003 - 2018 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 #
@@ -12,7 +12,7 @@
 #
 # Contributed by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
 #
-BEGIN { $| = 1; $test=1; print "1..3\n"; }
+BEGIN { $| = 1; $test=1; print "1..4\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -23,13 +23,13 @@ chdir 't/jpeg' || die 'Cd failed';
 
 #
 # 1) Test non-interlaced image read
-# 
+#
 print( "Non-interlaced JPEG ...\n" );
 testReadCompare('input.jpg', '../reference/jpeg/read_non_interlaced.miff', q//, 0, 0);
 
 #
 # 2) Test plane-interlaced image read
-# 
+#
 ++$test;
 print( "Plane-interlaced JPEG ...\n" );
 testReadCompare('input_plane.jpg', '../reference/jpeg/read_plane_interlaced.miff', q//, 0, 0);
@@ -40,3 +40,10 @@ testReadCompare('input_plane.jpg', '../reference/jpeg/read_plane_interlaced.miff
 print("Seattle FilmWorks image file ...\n");
 ++$test;
 testReadCompare('input.sfw', '../reference/jpeg/read_sfw.miff', q//, 0.003, 0.1);
+
+#
+# 4) Test JNX file ...\n");
+#
+print("Garmin JNX image file ...\n");
+++$test;
+testReadCompare('input.jnx', '../reference/jpeg/read_jnx.miff', q//, 0.003, 0.1);

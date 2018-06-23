@@ -767,6 +767,9 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
       DestroyImageInfo(clone_info);
       (void) LogMagickEvent(BlobEvent,GetMagickModule(),
                             "Leaving BlobToImage");
+      if ((image == (Image *) NULL) &&
+          (exception->severity < ErrorException))
+        ThrowException(exception,CoderError,DecodedImageNotReturned,"blob");
       return(image);
     }
   /*
@@ -820,6 +823,9 @@ MagickExport Image *BlobToImage(const ImageInfo *image_info,const void *blob,
       }
   }
   DestroyImageInfo(clone_info);
+  if ((image == (Image *) NULL) &&
+      (exception->severity < ErrorException))
+    ThrowException(exception,CoderError,DecodedImageNotReturned,"blob");
   (void) LogMagickEvent(BlobEvent,GetMagickModule(), "Leaving BlobToImage");
   return(image);
 }
@@ -1325,7 +1331,9 @@ MagickExport int EOFBlob(const Image *image)
     }
     case ZipStream:
     {
-      blob->eof=MagickFalse;
+#if defined(HasZLIB)
+      blob->eof=gzeof(blob->handle.gz);
+#endif /* defined(HasZLIB) */
       break;
     }
     case BZipStream:
@@ -1336,7 +1344,7 @@ MagickExport int EOFBlob(const Image *image)
 
       (void) BZ2_bzerror(blob->handle.bz,&status);
       blob->eof=status == BZ_UNEXPECTED_EOF;
-#endif
+#endif /* defined(HasBZLIB) */
       break;
     }
     case BlobStream:
@@ -3136,157 +3144,172 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
   blob=image->blob;
   count=0;
   switch (blob->type)
-  {
+    {
     case UndefinedStream:
       break;
     case FileStream:
     case StandardStream:
     case PipeStream:
-    {
-      if (length == 1)
-        {
-          int
-            c;
+      {
+        if (length == 1)
+          {
+            int
+              c;
 
-          if ((c=getc(blob->handle.std)) != EOF)
-            {
-              *((unsigned char *)data)=(unsigned char) c;
-              count=1;
-            }
-          else
-            {
-              count=0;
-            }
-        }
-      else
-        {
-          count=fread(data,1,length,blob->handle.std);
-        }
-      if (count != length)
-        {
-          if (!(blob->status) && ferror(blob->handle.std))
-            {
-              blob->status=1;
-              if (errno != 0)
-                blob->first_errno=errno;
-            }
-        }
-      break;
-    }
+            if ((c=getc(blob->handle.std)) != EOF)
+              {
+                *((unsigned char *)data)=(unsigned char) c;
+                count=1;
+              }
+            else
+              {
+                count=0;
+              }
+          }
+        else
+          {
+            count=fread(data,1,length,blob->handle.std);
+          }
+        if (count != length)
+          {
+            if (!(blob->status) && ferror(blob->handle.std))
+              {
+                blob->status=1;
+                if (errno != 0)
+                  blob->first_errno=errno;
+              }
+          }
+        break;
+      }
     case ZipStream:
-    {
+      {
 #if defined(HasZLIB)
-      size_t
-        i;
+        size_t
+          i;
 
-      for (i=0; i < length; i+=count)
-        {
-          size_t
-            remaining;
+        int
+          gz_count = 0;
 
-          unsigned int
-            amount;
+        for (i=0; i < length; i+=gz_count)
+          {
+            size_t
+              remaining;
 
-          remaining=length - i;
-          if (remaining > blob->block_size)
-            amount=(unsigned int) blob->block_size;
-          else
-            amount=(unsigned int) remaining;
+            unsigned int
+              amount;
 
-          count=gzread(blob->handle.gz,
-                       (void *) ((unsigned char *) data+i),amount);
-          if (count <= 0)
-            break;
-        }
-      count=i;
-      if ((count != length) && !(blob->status))
-        {
-          int
-            gzerror_errnum=Z_OK;
+            remaining=length - i;
+            if (remaining > blob->block_size)
+              amount=(unsigned int) blob->block_size;
+            else
+              amount=(unsigned int) remaining;
 
-          (void) gzerror(blob->handle.gz,&gzerror_errnum);
-          if (gzerror_errnum != Z_OK)
-            {
-              blob->status=1;
-              if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
-                blob->first_errno=errno;
-            }
-        }
+            gz_count=gzread(blob->handle.gz,
+                            (void *) ((unsigned char *) data+i),amount);
+            if (gz_count <= 0)
+              break;
+          }
+        count=i;
+        if (count != length)
+          {
+            if (!(blob->status))
+              {
+                int
+                  gzerror_errnum=Z_OK;
+
+                (void) gzerror(blob->handle.gz,&gzerror_errnum);
+                if (gzerror_errnum != Z_OK)
+                  {
+                    blob->status=1;
+                    if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
+                      blob->first_errno=errno;
+                  }
+              }
+            if (!blob->eof)
+              blob->eof = gzeof(blob->handle.gz);
+          }
 #endif
-      break;
-    }
+        break;
+      }
     case BZipStream:
-    {
+      {
 #if defined(HasBZLIB)
-      size_t
-        i;
+        size_t
+          i;
 
-      for (i=0; i < length; i+=count)
-        {
-          size_t
-            remaining;
+        int
+          bz_count = 0;
 
-          int
-            amount;
+        for (i=0; i < length; i+=bz_count)
+          {
+            size_t
+              remaining;
 
-          remaining=length - i;
-          if (remaining > blob->block_size)
-            amount=(int) blob->block_size;
-          else
-            amount=(int) remaining;
+            int
+              amount;
 
-          count=BZ2_bzread(blob->handle.bz,
-                           (void *) ((unsigned char *) data+i),amount);
-          if (count <= 0)
-            break;
-        }
-      count=i;
-      if ((count != length) && !(blob->status))
-        {
-          int
-            bzerror_errnum=BZ_OK;
+            remaining=length - i;
+            if (remaining > blob->block_size)
+              amount=(int) blob->block_size;
+            else
+              amount=(int) remaining;
 
-          (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
-          if (bzerror_errnum != BZ_OK)
-            {
-              blob->status=1;
-              if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
-                blob->first_errno=errno;
-            }
-        }
+            bz_count=BZ2_bzread(blob->handle.bz,
+                                (void *) ((unsigned char *) data+i),amount);
+            if (bz_count <= 0)
+              break;
+          }
+        count=i;
+        if (count != length)
+          {
+            if (!(blob->status))
+              {
+                int
+                  bzerror_errnum=BZ_OK;
+
+                (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
+                if (bzerror_errnum != BZ_OK)
+                  {
+                    blob->status=1;
+                    if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
+                      blob->first_errno=errno;
+                  }
+              }
+          }
 #endif
-      break;
-    }
+        break;
+      }
     case BlobStream:
-    {
-      void
-        *source_void = 0;
+      {
+        void
+          *source_void = 0;
 
-      const unsigned char
-        *source;
+        const unsigned char
+          *source;
 
-      count=ReadBlobStream(image,length,&source_void);
-      source=source_void;
-      if (count <= 10)
-        {
-          register size_t
-            i;
+        count=ReadBlobStream(image,length,&source_void);
+        source=source_void;
+        if (count <= 10)
+          {
+            register size_t
+              i;
 
-          register unsigned char
-            *target=(unsigned char*) data;
+            register unsigned char
+              *target=(unsigned char*) data;
 
-          for(i=count; i > 0; i--)
-            {
-              *target=*source;
-              target++;
-              source++;
-            }
-        }
-      else
-        (void) memcpy(data,source,count);
-      break;
+            for(i=count; i > 0; i--)
+              {
+                *target=*source;
+                target++;
+                source++;
+              }
+          }
+        else
+          (void) memcpy(data,source,count);
+        break;
+      }
     }
-  }
+  assert(count <= length);
   return(count);
 }
 
@@ -3523,14 +3546,16 @@ MagickExport size_t ReadBlobLSBDoubles(Image *image, size_t octets, double *data
   assert(data != (double *) NULL);
 
   octets_read=ReadBlob(image,octets,data);
-#if defined(WORDS_BIGENDIAN)
   if (octets_read >= sizeof(double))
-    MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
+    {
+#if defined(WORDS_BIGENDIAN)
+        MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
 
-  for (i=0; i < octets_read/sizeof(double); i++)
-    if (MAGICK_ISNAN(data[i]))
-      data[i] = 0.0;
+      for (i=0; i < octets_read/sizeof(double); i++)
+        if (MAGICK_ISNAN(data[i]))
+          data[i] = 0.0;
+    }
 
   return octets_read;
 }
@@ -4100,14 +4125,16 @@ MagickExport size_t ReadBlobMSBDoubles(Image *image, size_t octets, double *data
   assert(data != (double *) NULL);
 
   octets_read=ReadBlob(image,octets,data);
+  if (octets_read >= sizeof(double))
+    {
 #if !defined(WORDS_BIGENDIAN)
-  if (octets_read > 0)
-    MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
+        MagickSwabArrayOfDouble(data,(octets_read+sizeof(double)-1)/sizeof(double));
 #endif
 
-  for (i=0; i < octets_read/sizeof(double); i++)
-    if (MAGICK_ISNAN(data[i]))
-      data[i] = 0.0;
+      for (i=0; i < octets_read/sizeof(double); i++)
+        if (MAGICK_ISNAN(data[i]))
+          data[i] = 0.0;
+    }
 
   return octets_read;
 }
@@ -4506,6 +4533,16 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
   assert(image->signature == MagickSignature);
   assert(image->blob != (BlobInfo *) NULL);
   assert(image->blob->type != UndefinedStream);
+#if 0
+  if (image->logging)
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Seek %" MAGICK_OFF_F "d, whence = %s",
+                          offset,
+                          (whence == SEEK_SET ? "SEEK_SET" :
+                           (whence == SEEK_CUR ? "SEEK_CUR" :
+                            (whence == SEEK_END ? "SEEK_END" :
+                             "?"))));
+#endif
   switch (image->blob->type)
     {
     case UndefinedStream:
@@ -4883,125 +4920,131 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
   blob=image->blob;
   count=length;
   switch (blob->type)
-  {
+    {
     case UndefinedStream:
       break;
     case FileStream:
     case StandardStream:
     case PipeStream:
-    {
-      if (length == 1)
-        {
-          if ((putc((int)*((unsigned char *)data),blob->handle.std)) == EOF)
-            count=0;
-        }
-      else
-        {
-          count=fwrite((char *) data,1,length,blob->handle.std);
-        }
-      if (count != length)
-        {
-          if (!(blob->status) && ferror(blob->handle.std))
-            {
-              blob->status=1;
-              if (errno != 0)
-                blob->first_errno=errno;
-            }
-        }
-      break;
-    }
+      {
+        if (length == 1)
+          {
+            if ((putc((int)*((unsigned char *)data),blob->handle.std)) == EOF)
+              count=0;
+          }
+        else
+          {
+            count=fwrite((char *) data,1,length,blob->handle.std);
+          }
+        if (count != length)
+          {
+            if (!(blob->status) && ferror(blob->handle.std))
+              {
+                blob->status=1;
+                if (errno != 0)
+                  blob->first_errno=errno;
+              }
+          }
+        break;
+      }
     case ZipStream:
-    {
+      {
 #if defined(HasZLIB)
-      size_t
-        i;
+        size_t
+          i;
 
-      for (i=0; i < length; i+=count)
-        {
-          size_t
-            remaining;
+        int
+          gz_count = 0;
 
-          unsigned int
-            amount;
+        for (i=0; i < length; i+=gz_count)
+          {
+            size_t
+              remaining;
 
-          remaining=length - i;
-          if (remaining > blob->block_size)
-            amount=(unsigned int) blob->block_size;
-          else
-            amount=(unsigned int) remaining;
+            unsigned int
+              amount;
 
-          count=gzwrite(blob->handle.gz,
-                        (void *) ((unsigned char *) data+i),amount);
-          if (count <= 0)
-            break;
-        }
-      count=i;
-      if ((count != length) && !(blob->status))
-        {
-          int
-            gzerror_errnum=Z_OK;
+            remaining=length - i;
+            if (remaining > blob->block_size)
+              amount=(unsigned int) blob->block_size;
+            else
+              amount=(unsigned int) remaining;
 
-          (void) gzerror(blob->handle.gz,&gzerror_errnum);
-          if (gzerror_errnum != Z_OK)
-            {
-              blob->status=1;
-              if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
-                blob->first_errno=errno;
-            }
-        }
+            gz_count=gzwrite(blob->handle.gz,
+                             (void *) ((unsigned char *) data+i),amount);
+            if (gz_count <= 0)
+              break;
+          }
+        count=i;
+        if ((count != length) && !(blob->status))
+          {
+            int
+              gzerror_errnum=Z_OK;
+
+            (void) gzerror(blob->handle.gz,&gzerror_errnum);
+            if (gzerror_errnum != Z_OK)
+              {
+                blob->status=1;
+                if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
+                  blob->first_errno=errno;
+              }
+          }
 #endif
-      break;
-    }
+        break;
+      }
     case BZipStream:
-    {
+      {
 #if defined(HasBZLIB)
-      size_t
-        i;
+        size_t
+          i;
 
-      for (i=0; i < length; i+=count)
-        {
-          size_t
-            remaining;
+        int
+          bz_count = 0;
 
-          int
-            amount;
+        for (i=0; i < length; i+=bz_count)
+          {
+            size_t
+              remaining;
 
-          remaining=length - i;
-          if (remaining > blob->block_size)
-            amount=(int) blob->block_size;
-          else
-            amount=(int) remaining;
+            int
+              amount;
 
-          count=BZ2_bzwrite(blob->handle.gz,
-                            (void *) ((unsigned char *) data+i),amount);
-          if (count <= 0)
-            break;
-        }
-      count=i;
-      if ((count != length) && !(blob->status))
-        {
-          int
-            bzerror_errnum=BZ_OK;
+            remaining=length - i;
+            if (remaining > blob->block_size)
+              amount=(int) blob->block_size;
+            else
+              amount=(int) remaining;
 
-          (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
-          if (bzerror_errnum != BZ_OK)
-            {
-              blob->status=1;
-              if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
-                blob->first_errno=errno;
-            }
-        }
+            bz_count=BZ2_bzwrite(blob->handle.gz,
+                                 (void *) ((unsigned char *) data+i),amount);
+            if (bz_count <= 0)
+              break;
+          }
+        count=i;
+        if ((count != length) && !(blob->status))
+          {
+            int
+              bzerror_errnum=BZ_OK;
+
+            (void) BZ2_bzerror(blob->handle.bz,&bzerror_errnum);
+            if (bzerror_errnum != BZ_OK)
+              {
+                blob->status=1;
+                if ((bzerror_errnum == BZ_IO_ERROR) && (errno != 0))
+                  blob->first_errno=errno;
+              }
+          }
 #endif
-      break;
-    }
+        break;
+      }
     case BlobStream:
-    {
-      count=WriteBlobStream(image,length,data);
-      if (count != length)
-        blob->status=1;
-      break;
+      {
+        count=WriteBlobStream(image,length,data);
+        if (count != length)
+          blob->status=1;
+        break;
+      }
     }
-  }
   return(count);
 }
 

@@ -1503,6 +1503,11 @@ behaves.
 <dd>Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
 </dd>
+<dt>jpeg:max-warnings=&lt;value&gt;</dt>
+<dd>Specifies an integer value for how many warnings are allowed for
+any given error type before being promoted to a hard error.  JPEG
+files producing excessive warnings indicate a problem with the file.
+</dd>
 <dt>jpeg:optimize-coding={true|false}</dt>
 <dd>
 Selects if huffman encoding should be used. Huffman encoding is enabled
@@ -1544,6 +1549,12 @@ requested pages.
 <dd>If the ps:imagemask flag is defined, the PS3 and EPS3 coders will
 create Postscript files that render bilevel images with the Postscript
 imagemask operator instead of the image operator.
+</dd>
+<dt>ptif:minimum-geometry=&lt;geometry&gt;</dt>
+<dd>If the ptif:minimum-geometry key is defined, GraphicsMagick will
+use it to determine the minimum frame size to output when writing a
+pyramid TIFF file (a TIFF file containing a succession of reduced
+versions of the first frame). The default minimum geometry is 32x32.
 </dd>
 <dt>tiff:alpha={unspecified|associated|unassociated}</dt>
 <dd>Specify the TIFF alpha channel type when reading or writing TIFF files,

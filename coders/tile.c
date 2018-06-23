@@ -100,6 +100,7 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
   *clone_info->magick='\0';
+  MagickFreeMemory(clone_info->size);
   tile_image=ReadImage(clone_info,exception);
   DestroyImageInfo(clone_info);
   if (tile_image == (Image *) NULL)

@@ -1355,6 +1355,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               p=image->directory+strlen(image->directory);
             }
           c=ReadBlobByte(image);
+          if (c == EOF)
+            break;
           *p++=c;
         } while (c != '\0');
       }

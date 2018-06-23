@@ -126,7 +126,7 @@ static inline void BlendCompositePixel(PixelPacket *composite,
 */
 
 #define  MagickAlphaCompositeQuantum(change,change_alpha,base,base_alpha) \
-   (1.0-(change_alpha/MaxRGBDouble))*(double) change+(1.0-(base_alpha/MaxRGBDouble))*(double) base*(change_alpha/MaxRGBDouble)
+   ((1.0-(change_alpha/MaxRGBDouble))*(double) change+(1.0-(base_alpha/MaxRGBDouble))*(double) base*(change_alpha/MaxRGBDouble))
 
 static inline void AlphaCompositePixel(PixelPacket *composite, const PixelPacket *change,
                                        const double change_alpha,const PixelPacket *base,

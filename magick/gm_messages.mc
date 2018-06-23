@@ -209,6 +209,12 @@ Data storage type is not supported
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorDecodedImageNotReturned
+Language        = English
+Coder did not return an image (this is a bug, please report it!)
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorDeltaPNGNotSupported
 Language        = English
 Delta-PNG is not supported
@@ -554,6 +560,12 @@ MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedCellTypeInTheMatrix
 Language        = English
 Unsupported cell type in the matrix
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedSamplesPerPixel
+Language        = English
+Unsupported samples per pixel
 .
 
 MessageId       = +1
@@ -1040,6 +1052,12 @@ MessageId       = +1
 SymbolicName    = ImageWarningStaticPlanesValueNotEqualToOne
 Language        = English
 Static planes value not equal to one
+.
+
+MessageId       = +1
+SymbolicName    = ImageWarningUnableToParseEmbeddedProfile
+Language        = English
+Unable to parse embedded profile
 .
 
 MessageId       = +1
@@ -3122,6 +3140,12 @@ MessageId       = +1
 SymbolicName    = StreamWarningDefault
 Language        = English
 default warning
+.
+
+MessageId       = +1
+SymbolicName    = TypeErrorFontNotSpecified
+Language        = English
+Font name not specified
 .
 
 MessageId       = +1

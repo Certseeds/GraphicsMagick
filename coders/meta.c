@@ -1097,7 +1097,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
   size_t
     length;
 
-  unsigned int
+  MagickPassFail
     status;
 
   unsigned char
@@ -1112,7 +1112,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   image->columns=1;
   image->rows=1;
@@ -1133,10 +1133,19 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
             image)
         }
+      (void) memset(blob,0,length);
       AttachBlob(buff->blob,blob,length);
       if (LocaleCompare(image_info->magick,"8BIMTEXT") == 0)
         {
           length=parse8BIM(image, buff);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "META CODER Parse8BIM returned: %lu",
+                                (unsigned long) length);
+          if (length == 0)
+            {
+              status = MagickFail;
+              goto t8bim_failure;
+            }
           if (length & 1)
             (void) WriteBlobByte(buff,0x0);
         }
@@ -1146,6 +1155,11 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "META CODER Parse8BIMW returned: %lu",
                                 (unsigned long) length);
+          if (length == 0)
+            {
+              status = MagickFail;
+              goto t8bim_failure;
+            }
           if (length & 1)
             (void) WriteBlobByte(buff,0x0);
         }
@@ -1165,9 +1179,12 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
                             "Store IPTC profile, size %lu bytes",
                             (unsigned long) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
+    t8bim_failure:;
       DetachBlob(buff->blob);
       MagickFreeMemory(blob);
       DestroyImage(buff);
+      if (status == MagickFail)
+        ThrowReaderException(CorruptImageError,CorruptImage,image);
     }
   if (LocaleNCompare(image_info->magick,"APP1",4) == 0)
     {

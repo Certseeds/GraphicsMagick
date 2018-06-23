@@ -777,10 +777,17 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     }
 
   /* Copy postscript to temporary file */
-  (void) SeekBlob(image,PS_Offset,SEEK_SET);
-  magick_size=ReadBlob(image, sizeof(magick), magick);
+  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset) goto BAD_SEEK;
+  magick_size = ReadBlob(image, sizeof(magick), magick);
 
-  (void) SeekBlob(image,PS_Offset,SEEK_SET);
+  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
+  {
+BAD_SEEK:
+    (void) fclose(ps_file);
+    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+    goto FINISH_UNL;
+  }
+
   while(PS_Size-- > 0)
     {
       int c;
@@ -1072,7 +1079,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
       while(!EOFBlob(image)) /* object parser loop */
         {
-          (void) SeekBlob(image,Header.DataOffset,SEEK_SET);
+          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
+            break;
           if(EOFBlob(image))
             break;
 
@@ -1199,14 +1207,18 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                                           (size_t) (1U<<bpp)*sizeof(PixelPacket));
                 }
 
-              if (bpp == 1)
+              if(bpp == 1)
                 {
-                  if(image->colormap[0].red==0 &&
-                     image->colormap[0].green==0 &&
-                     image->colormap[0].blue==0 &&
-                     image->colormap[1].red==0 &&
-                     image->colormap[1].green==0 &&
-                     image->colormap[1].blue==0)
+                  if(image->colors<=0)
+				  {
+			        image->colormap[0].red =
+                        image->colormap[0].green =
+                        image->colormap[0].blue = 0;
+                      image->colormap[0].opacity = OpaqueOpacity;
+				  }
+                  if(image->colors<=1 ||	/* Realloc has been enforced and value [1] remains uninitialised, or .. */
+					   (image->colormap[0].red==0 && image->colormap[0].green==0 && image->colormap[0].blue==0 &&
+                        image->colormap[1].red==0 && image->colormap[1].green==0 && image->colormap[1].blue==0))
                     {  /* fix crippled monochrome palette */
                       image->colormap[1].red =
                         image->colormap[1].green =
@@ -1290,7 +1302,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
       StartWPG.PosSizePrecision = 0;
       while(!EOFBlob(image)) /* object parser loop */
         {
-          (void) SeekBlob(image,Header.DataOffset,SEEK_SET);
+          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
+            break;
           if(EOFBlob(image))
             break;
 

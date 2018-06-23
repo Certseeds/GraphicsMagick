@@ -3531,17 +3531,6 @@ ImportViewPixelArea(ViewInfo *view,
   assert((options == (const ImportPixelAreaOptions *) NULL) ||
          (options->signature == MagickSignature));
 
-  if ((quantum_size == 0U) ||
-      ((quantum_size > 32U) && (quantum_size != 64U)))
-    {
-      char quantum_size_str[MaxTextExtent];
-      FormatString(quantum_size_str,"%u",quantum_size);
-      status=0;
-      ThrowException(&GetCacheViewImage(view)->exception,CoderError,
-                     UnsupportedBitsPerSample,quantum_size_str);
-      return MagickFail;
-    }
-
   /*
     Transfer any special options.
   */
@@ -3582,6 +3571,22 @@ ImportViewPixelArea(ViewInfo *view,
     {
       import_info->bytes_imported=0;
     }
+
+  if (!(((sample_type == FloatQuantumSampleType) &&
+         ((quantum_size == 16) || (quantum_size == 24) ||
+          (quantum_size == 32) || (quantum_size == 64))) ||
+        ((sample_type == UnsignedQuantumSampleType) &&
+         (((quantum_size > 0) && (quantum_size <= 32)) ||
+          (quantum_size == 64)))))
+    {
+      char quantum_size_str[MaxTextExtent];
+      FormatString(quantum_size_str,"%u",quantum_size);
+      status=0;
+      ThrowException(&GetCacheViewImage(view)->exception,CoderError,
+                     UnsupportedBitsPerSample,quantum_size_str);
+      return MagickFail;
+    }
+
 
   /* printf("quantum_type=%d  quantum_size=%u\n",(int) quantum_type, quantum_size); */
 

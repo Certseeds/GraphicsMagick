@@ -759,6 +759,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               p=image->directory+strlen(image->directory);
             }
           c=ReadBlobByte(image);
+          if (c == EOF)
+            break;
           *p++=c;
         } while (c != '\0');
       }
@@ -930,6 +932,7 @@ ModuleExport void RegisterMPCImage(void)
   entry->encoder=(EncoderHandler) WriteMPCImage;
   entry->magick=(MagickHandler) IsMPC;
   entry->description="Magick Persistent Cache image format";
+  entry->seekable_stream=MagickTrue;
   entry->module="MPC";
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);

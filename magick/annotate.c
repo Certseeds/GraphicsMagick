@@ -1182,6 +1182,9 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
   MagickPassFail
     status=MagickPass;
 
+  if (draw_info->font == (char *) NULL)
+    ThrowBinaryException(TypeError,FontNotSpecified,image->filename);
+
   glyph.image=(FT_Glyph) 0;
   last_glyph.image=(FT_Glyph) 0;
 
@@ -1191,7 +1194,7 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
   ft_status=FT_Init_FreeType(&library);
   if (ft_status)
     ThrowBinaryException(TypeError,UnableToInitializeFreetypeLibrary,
-      draw_info->font);
+                         draw_info->font);
   if (*draw_info->font != '@')
     ft_status=FT_New_Face(library,draw_info->font,0,&face);
   else
