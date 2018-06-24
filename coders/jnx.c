@@ -123,6 +123,8 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
               Image
                 *image2;
 
+              /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
+
               if ((image2 = BlobToImage(image_info,blob,alloc_size,exception))
                   != NULL)
                 {
@@ -143,13 +145,13 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
                     DeleteImageFromList(&image);
 
                   FormatString(img_label_str, "%.20g;%.20g",
-                    (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF,
-                    (double) TileInfo->TileBounds.NorthEast.lon*180.0/0x7FFFFFFF);
+                               (double) TileInfo->TileBounds.NorthEast.lat*180.0/0x7FFFFFFF,
+                               (double) TileInfo->TileBounds.NorthEast.lon*180.0/0x7FFFFFFF);
                   SetImageAttribute(image2, "jnx:northeast", img_label_str);
 
                   FormatString(img_label_str, "%.20g;%.20g",
-                    (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF,
-                    (double) TileInfo->TileBounds.SouthWest.lon*180.0/0x7FFFFFFF);
+                               (double) TileInfo->TileBounds.SouthWest.lat*180.0/0x7FFFFFFF,
+                               (double) TileInfo->TileBounds.SouthWest.lon*180.0/0x7FFFFFFF);
                   SetImageAttribute(image2, "jnx:southwest", img_label_str);
 
                   AppendImageToList(&image, image2);
@@ -175,7 +177,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
       /* Failed to allocate memory */
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
                      image->filename);
-    }  
+    }
 
   return(image);
 }
