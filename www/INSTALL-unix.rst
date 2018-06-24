@@ -293,6 +293,10 @@ Optional Packages/Options
 
     disable JBIG support
 
+--without-webp
+
+    disable WEBP support
+
 --without-jp2
 
     disable JPEG v2 support

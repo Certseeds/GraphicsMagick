@@ -300,10 +300,11 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   /* Read features out of the WebP container */
   {
     uint32_t webp_flags=0;
-    WebPData flag_data={0};
+    WebPData flag_data;
     WebPData content={stream,length};
 
     WebPMux *mux=WebPMuxCreate(&content,0);
+    (void) memset(&flag_data,0,sizeof(flag_data));
     WebPMuxGetFeatures(mux,&webp_flags);
 
     if (webp_flags & ICCP_FLAG) {
@@ -827,8 +828,9 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
       for (idx=0;idx<sizeof(data_features)/sizeof(data_features[0]);idx++)
         {
           /* Get feature data */
-          WebPData chunk={0};
+          WebPData chunk;
 
+          (void) memset(&chunk,0,sizeof(chunk));
           chunk.bytes=GetImageProfile(image,data_features[idx][0],&chunk.size);
 
           if (!chunk.bytes)
