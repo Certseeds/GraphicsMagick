@@ -43,7 +43,12 @@
 to limit how much memory it might consume for itself while reading
 a file.  Fixes oss-fuzz 9096 &quot;graphicsmagick/coder_JPEG_fuzzer:
 Timeout in graphicsmagick_coder_JPEG_fuzzer&quot;.  (Credit to
-OSS-Fuzz)</li>
+OSS-Fuzz)
+(ReadJPEGImage): Make sure that JPEG pixels array is initialized
+in case libjpeg fails to completely initialize it.  May fix
+oss-fuzz 9115 &quot;graphicsmagick/coder_JPEG_fuzzer:
+Use-of-uninitialized-value in ReadJPEGImage&quot;.  We are not sure
+since the problem was not reproduced.  (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-06-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

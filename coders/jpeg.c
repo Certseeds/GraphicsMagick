@@ -1393,6 +1393,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_destroy_decompress(&jpeg_info);
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
+  (void) memset(jpeg_pixels,0,MagickArraySize(jpeg_info.output_components,
+                                              MagickArraySize(image->columns,
+                                                              sizeof(JSAMPLE))));
 
   /*
     Extended longjmp-based error handler (with jpeg_pixels)

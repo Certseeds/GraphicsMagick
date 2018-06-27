@@ -6,6 +6,11 @@
 	a file.  Fixes oss-fuzz 9096 "graphicsmagick/coder_JPEG_fuzzer:
 	Timeout in graphicsmagick_coder_JPEG_fuzzer".  (Credit to
 	OSS-Fuzz)
+	(ReadJPEGImage): Make sure that JPEG pixels array is initialized
+	in case libjpeg fails to completely initialize it.  May fix
+	oss-fuzz 9115 "graphicsmagick/coder_JPEG_fuzzer:
+	Use-of-uninitialized-value in ReadJPEGImage".  We are not sure
+	since the problem was not reproduced.  (Credit to OSS-Fuzz)
 
 2018-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
