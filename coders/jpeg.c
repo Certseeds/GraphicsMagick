@@ -1102,6 +1102,16 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   jpeg_info.client_data=(void *) &error_manager;
 
   jpeg_create_decompress(&jpeg_info);
+  /*
+    Specify a memory limit for libjpeg which is 1/5th the absolute
+    limit.  Don't actually consume the resource since we don't know
+    how much libjpeg will actually consume.
+  */
+  jpeg_info.mem->max_memory_to_use=(long) (GetMagickResourceLimit(MemoryResource) -
+                                           GetMagickResource(MemoryResource))/5U;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Memory capped to %ld bytes", jpeg_info.mem->max_memory_to_use);
   JPEGSourceManager(&jpeg_info,image);
   jpeg_set_marker_processor(&jpeg_info,JPEG_COM,ReadComment);
   jpeg_set_marker_processor(&jpeg_info,ICC_MARKER,ReadICCProfile);

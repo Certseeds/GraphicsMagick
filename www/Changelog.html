@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2018-06-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/jpeg.c (ReadJPEGImage): Provide a memory resource limit
+(of 1/5th the memory resource limit for Graphicsmagick) to libjpeg
+to limit how much memory it might consume for itself while reading
+a file.  Fixes oss-fuzz 9096 &quot;graphicsmagick/coder_JPEG_fuzzer:
+Timeout in graphicsmagick_coder_JPEG_fuzzer&quot;.  (Credit to
+OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-06-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
