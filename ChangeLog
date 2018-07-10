@@ -1,3 +1,12 @@
+2018-07-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (WriteOnePNGImage): Free png_pixels as soon as
+	possible.  This might help with oss-fuzz 9334
+	"graphicsmagick/coder_PNG8_fuzzer: Direct-leak in
+	WriteOnePNGImage", which we have yet to reproduce.  It is not
+	clear if png_pixels is being clobbered by longjmp or if something
+	else is going on.
+
 2018-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (ReadJPEGImage): Provide a memory resource limit

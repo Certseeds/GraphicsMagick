@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2018-07-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (WriteOnePNGImage): Free png_pixels as soon as
+possible.  This might help with oss-fuzz 9334
+&quot;graphicsmagick/coder_PNG8_fuzzer: Direct-leak in
+WriteOnePNGImage&quot;, which we have yet to reproduce.  It is not
+clear if png_pixels is being clobbered by longjmp or if something
+else is going on.</li>
+</ul>
+</blockquote>
 <p>2018-06-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

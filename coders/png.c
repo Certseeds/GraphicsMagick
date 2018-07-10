@@ -8300,6 +8300,8 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
             }
       }
 
+  MagickFreeMemory(png_pixels);
+
   if (logging)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -8472,8 +8474,6 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
     Free PNG resources.
   */
   png_destroy_write_struct(&ping,&ping_info);
-
-  MagickFreeMemory(png_pixels);
 
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
   UnlockSemaphoreInfo(png_semaphore);
