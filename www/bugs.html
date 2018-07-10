@@ -39,7 +39,7 @@
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <p>The following bugs are known to exist in GraphicsMagick. Please report
-any additional bugs to the GraphicsMagick <a class="reference external" href="http://sourceforge.net/tracker/?group_id=73485">bug tracker</a> at SourceForge.</p>
+any additional bugs to the GraphicsMagick <a class="reference external" href="https://sourceforge.net/p/graphicsmagick/_list/tickets">bug tracker</a> at SourceForge.</p>
 <blockquote>
 <ul class="simple">
 <li>BMP reader is not working for some obscure low-color packed files.</li>
@@ -47,15 +47,14 @@ any additional bugs to the GraphicsMagick <a class="reference external" href="ht
 samples spill over the storage word boundary. This means that
 single-channel/grayscale 10-bit DPX files will only work for widths
 evenly divisible by three. (SF 1533184)</li>
-<li>PSD reader is not working for some files. Can fix by extracting the
-already rendered image from the PSD file rather than the layers.</li>
+<li>The PSD reader is disabled by default because it does not work well
+enough and several man-years worth of dedicated volunteer time is
+required to make it work properly.</li>
 <li>Scitex reader is not working for some files.</li>
-<li>SVG writer works only if you are particularly luckly.</li>
+<li>SVG writer works only if you are particularly luckly and so it is
+not included in the build by default..</li>
 <li>SVG reader mishandles basic units and many other syntax elements (SF
 1231547, 1298606).</li>
-<li>BlobToImage ignores the value of the 'magick' parameter. I don't know
-how to fix this due to how things work. (SF 1839932).</li>
-<li>Text annotation options do not work perfectly (SF 1539050, 1539052, 1539059)</li>
 </ul>
 </blockquote>
 </div>

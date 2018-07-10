@@ -8,7 +8,7 @@ GraphicsMagick Bugs
 
 The following bugs are known to exist in GraphicsMagick. Please report
 any additional bugs to the GraphicsMagick `bug tracker
-<http://sourceforge.net/tracker/?group_id=73485>`_ at SourceForge.
+<https://sourceforge.net/p/graphicsmagick/_list/tickets>`_ at SourceForge.
 
  * BMP reader is not working for some obscure low-color packed files.
 
@@ -17,17 +17,14 @@ any additional bugs to the GraphicsMagick `bug tracker
    single-channel/grayscale 10-bit DPX files will only work for widths
    evenly divisible by three. (SF 1533184)
 
- * PSD reader is not working for some files. Can fix by extracting the
-   already rendered image from the PSD file rather than the layers.
+ * The PSD reader is disabled by default because it does not work well
+   enough and several man-years worth of dedicated volunteer time is
+   required to make it work properly.
 
  * Scitex reader is not working for some files.
 
- * SVG writer works only if you are particularly luckly.
+ * SVG writer works only if you are particularly luckly and so it is
+   not included in the build by default..
 
  * SVG reader mishandles basic units and many other syntax elements (SF
    1231547, 1298606).
-
- * BlobToImage ignores the value of the 'magick' parameter. I don't know
-   how to fix this due to how things work. (SF 1839932).
-
- * Text annotation options do not work perfectly (SF 1539050, 1539052, 1539059)
