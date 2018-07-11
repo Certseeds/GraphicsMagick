@@ -1,3 +1,8 @@
+2018-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh (CFLAGS): Try disabling SIMD
+	instructions in libjpeg-turbo build.
+
 2018-07-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (WriteOnePNGImage): Free png_pixels as soon as

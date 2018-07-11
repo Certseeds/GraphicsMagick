@@ -31,7 +31,7 @@ popd
 # build libjpeg
 echo "=== Building libjpeg..."
 pushd "$SRC/libjpeg-turbo"
-CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on
+CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on -DWITH_JPEG8=1 -DWITH_SIMD=0
 make -j$(nproc)
 make install
 popd
