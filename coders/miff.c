@@ -137,7 +137,7 @@ static unsigned int IsMIFF(const unsigned char *magick,const size_t length)
 */
 
 
-static unsigned int
+static MagickPassFail
 ImportRLEPixels(Image *image,
                 const QuantumType quantum_type,
                 const unsigned int quantum_size,
@@ -683,7 +683,7 @@ ImportRLEPixels(Image *image,
       {
       }
     }
-  return(True);
+  return(MagickPass);
 }
 
 #if 0
@@ -777,7 +777,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
   void
     *pixels_p;
 
-  unsigned int
+  MagickPassFail
     status;
 
   unsigned int
@@ -806,7 +806,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   /*
     Decode image header;  header terminates one character beyond a ':'.
@@ -1603,7 +1603,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   code=inflateEnd(&zip_info);
                   status|=code >= 0;
                 }
-              (void) ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0);
+              if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -1680,7 +1681,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   code=BZ2_bzDecompressEnd(&bzip_info);
                   status|=code >= 0;
                 }
-              (void) ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0);
+              if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -1710,7 +1712,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   length+=*(p-1)+1;
                 }
 
-              (void) ImportRLEPixels(image,quantum_type,quantum_size,pixels);
+              if (!ImportRLEPixels(image,quantum_type,quantum_size,pixels))
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -1731,8 +1734,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               if (q == (PixelPacket *) NULL)
                 break;
               pixels_p=pixels;
-              (void) ReadBlobZC(image,packet_size*image->columns,&pixels_p);
-              (void) ImportImagePixelArea(image,quantum_type,quantum_size,(const unsigned char*) pixels_p,0,0);
+              if (ReadBlobZC(image,packet_size*image->columns,&pixels_p)
+                  != (size_t) packet_size*image->columns)
+                break;
+              if (!ImportImagePixelArea(image,quantum_type,quantum_size,
+                                        (const unsigned char*) pixels_p,0,0))
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -1746,26 +1753,27 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         }
       } /* End switch (image->compression) */
 
+    MagickFreeMemory(pixels);
+    MagickFreeMemory(compress_pixels);
+
+    if (EOFBlob(image))
+      {
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+          image->filename);
+        status=MagickFail;
+      }
     /*
       Verify that pixel transfer loops completed
     */
     if (y != (long) image->rows)
-      status=False;
+      status=MagickFail;
 
-    MagickFreeMemory(pixels);
-    MagickFreeMemory(compress_pixels);
-    if (status == False)
+    if (status == MagickFail)
       {
         GetImageException(image,exception);
         CloseBlob(image);
         DestroyImageList(image);
         return((Image *) NULL);
-      }
-    if (EOFBlob(image))
-      {
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-          image->filename);
-        break;
       }
     /*
       Proceed to next image.
@@ -1792,7 +1800,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
                                       exception,LoadImagesText,
                                       image->filename);
-        if (status == False)
+        if (status == MagickFail)
           break;
       }
   } while (c != EOF);

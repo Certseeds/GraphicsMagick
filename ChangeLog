@@ -1,3 +1,11 @@
+2018-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Detect EOF when reading using
+	ReadBlobZC() and avoid subsequent heap read overflow.  Fixes
+	oss-fuzz 9357 "graphicsmagick/coder_MIFF_fuzzer:
+	Heap-buffer-overflow in ImportRGBQuantumType". (Credit to
+	OSS-Fuzz)
+
 2018-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh (CFLAGS): Try disabling SIMD
