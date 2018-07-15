@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated on June 23, 2018
+This file was last updated on July 15, 2018
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,62 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.31 (??? ??, 2018)
+=========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* GraphicsMagick is now participating in Google's oss-fuzz project due
+  to the contributions and assistance of Alex Gaynor. Since February 4
+  2018, 244 issues have been opened by oss-fuzz and 236 of those
+  issues have been resolved.  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  There are too many
+  fixes to list here.  Please consult the GraphicsMagick ChangeLog
+  file, Mercurial repository commit log, and the oss-fuzz issues list
+  for details.
+
+Bug fixes:
+
+* See above note about oss-fuzz fixes.
+
+New Features:
+
+* None
+
+API Updates:
+
+* None
+
+Feature improvements:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* None
+
+Behavior Changes:
+
+* JPEG: Libjpeg-turbo is allowed 1/5th the memory resource limit
+  provided for Graphicsmagick via the cinfo->mem->max_memory_to_use
+  option, which is part of the IJG JPEG API/ABI, but usually not
+  supported there.  This feature works for libjpeg-turbo 1.5.2 and
+  later.  Limiting the memory usage is useful since libjpeg-turbo may
+  otherwise consume arbitrary amounts of memory even before
+  Graphicsmagick is informed of the image dimensions.
+
 
 1.3.30 (June 23, 2018)
 =========================
