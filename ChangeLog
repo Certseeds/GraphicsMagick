@@ -1,3 +1,10 @@
+2018-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mvg.c (ReadMVGImage): Don't assume that in-memory MVG
+	blob is a null-terminated C string. Fixes oss-fuzz 9469
+	"graphicsmagick/coder_MVG_fuzzer: Heap-buffer-overflow in
+	AllocateString". (Credit to OSS-Fuzz)
+
 2018-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ReadMIFFImage): Detect EOF when reading using
