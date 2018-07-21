@@ -35,6 +35,18 @@
 <div class="document">
 
 
+<p>2018-07-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/blob.c (FileToBlob): Use confirm access APIs to verify
+that read access to this path is allowed by policy.  Check that
+file is a regular file before proceeding to open and read from it.</li>
+<li>coders/mvg.c (ReadMVGImage): Don't allow MVG files to side-load
+a file as the drawing primitive using '&#64;' syntax.  Fixes oss-fuzz
+9494 &quot;graphicsmagick/coder_MVG_fuzzer: Sanitizer CHECK failure in
+&quot;((0)) != (0)&quot; (0x0, 0x0)&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-07-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

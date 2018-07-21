@@ -1,3 +1,14 @@
+2018-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (FileToBlob): Use confirm access APIs to verify
+	that read access to this path is allowed by policy.  Check that
+	file is a regular file before proceeding to open and read from it.
+
+	* coders/mvg.c (ReadMVGImage): Don't allow MVG files to side-load
+	a file as the drawing primitive using '@' syntax.  Fixes oss-fuzz
+	9494 "graphicsmagick/coder_MVG_fuzzer: Sanitizer CHECK failure in
+	"((0)) != (0)" (0x0, 0x0)". (Credit to OSS-Fuzz)
+
 2018-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mvg.c (ReadMVGImage): Don't assume that in-memory MVG
