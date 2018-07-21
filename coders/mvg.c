@@ -36,6 +36,7 @@
 #include "magick/studio.h"
 #include "magick/attribute.h"
 #include "magick/blob.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/render.h"
 #include "magick/pixel_cache.h"
@@ -176,6 +177,10 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             image->columns=(unsigned long) (bounds.x2-bounds.x1+0.5);
             image->rows=(unsigned long) (bounds.y2-bounds.y1+0.5);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "ViewBox: %g %g %g %g, Geometry: %lux%lu",
+                                  bounds.x1, bounds.y1, bounds.x2, bounds.y2,
+                                  image->columns,image->rows);
           }
         break;
       }
@@ -221,6 +226,11 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       CloseBlob(image);
       return (Image *) NULL;
     }
+  /*
+    Don't allow MVG files to side-load a file as the primitive
+  */
+  if (draw_info->primitive[0] == '@')
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   (void) DrawImage(image,draw_info);
   DestroyDrawInfo(draw_info);
   CloseBlob(image);
