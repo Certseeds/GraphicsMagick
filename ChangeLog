@@ -1,5 +1,13 @@
 2018-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (SetNexus): For requests one pixel tall,
+	SetNexus() was wrongly using pixels in-core rather than using a
+	staging area for the case where the nexus rows extend beyond the
+	image raster boundary, leading to heap overflow.  This can happen
+	when virtual pixels outside the image bounds are accessed.  Fixes
+	oss-fuzz 9512 "graphicsmagick/graphicsmagick_coder_MVG_fuzzer:
+	Heap-buffer-overflow in AcquireCacheNexus". (Credit to OSS-Fuzz)
+
 	* magick/render.c (ExtractTokensBetweenPushPop):
 	ExtractTokensBetweenPushPop() needs to always return a valid
 	pointer into the primitive string.  Fixes oss-fuzz 9511

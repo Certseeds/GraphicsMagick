@@ -826,6 +826,11 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                      image->filename);
       return((const PixelPacket *) NULL);
     }
+#if 0
+  fprintf(stderr,"AcquireCacheNexus(): image->columns=%lu, image->rows=%lu, "
+          "x=%ld, y=%ld, columns=%lu, rows=%lu\n",
+          image->columns,image->rows,x,y,columns,rows);
+#endif
   if ((image->columns != cache_info->columns) ||
       (image->rows > cache_info->rows))
     {
@@ -4398,40 +4403,38 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
 #endif
   if ((cache_info->type != PingCache) &&
       (cache_info->type != DiskCache) &&
+      (/* Region must entirely be in bounds of image raster */
+       (region->x >= 0) &&
+       (region->y >= 0) &&
+       ((region->y+region->height) <= cache_info->rows)) &&
+      ((/* All/part of one row */
+        (region->height == 1) &&
+        ((region->x+region->width) <= cache_info->columns)
+        )
+       ||
+       (/* One or more full rows */
+        (region->x == 0) &&
+        (region->width == cache_info->columns)
+        )) &&
       (*ImageGetClipMask(image) == (const Image *) NULL) &&
-      (*ImageGetCompositeMask(image) == (const Image *) NULL) &&
-      (region->x >=0) &&
-      (region->y >= 0))
+      (*ImageGetCompositeMask(image) == (const Image *) NULL))
     {
-      if ((/* All/part of one row */
-           (region->height == 1) &&
-           ((region->x+region->width) <= cache_info->columns)
-           )
-          ||
-          (/* One or more full rows */
-           (region->x == 0) &&
-           (region->width == cache_info->columns) &&
-           (region->y+region->height <= cache_info->rows)
-           )
-          )
-        {
-          /*
-            Pixels are accessed directly from memory.
-          */
-          size_t
-            offset;
+      /*
+        Pixels are accessed directly from memory.
+      */
+      size_t
+        offset;
 
-          offset=((size_t) region->y)*cache_info->columns+((size_t) region->x);
+      offset=((size_t) region->y)*cache_info->columns+((size_t) region->x);
 
-          nexus_info->pixels=cache_info->pixels+offset;
-          nexus_info->indexes=(IndexPacket *) NULL;
-          if (cache_info->indexes_valid)
-            nexus_info->indexes=cache_info->indexes+offset;
-          nexus_info->in_core=MagickTrue;
-          nexus_info->region=*region;
-          /* fprintf(stderr,"Pixels in core\n"); */
-          return(nexus_info->pixels);
-        }
+      nexus_info->pixels=cache_info->pixels+offset;
+      nexus_info->indexes=(IndexPacket *) NULL;
+      if (cache_info->indexes_valid)
+        nexus_info->indexes=cache_info->indexes+offset;
+      nexus_info->in_core=MagickTrue;
+      nexus_info->region=*region;
+      /* fprintf(stderr,"Pixels in core (%p)\n",nexus_info->pixels); */
+      return(nexus_info->pixels);
     }
   /*
     Pixels are stored in a staging area until they are synced to the cache.
@@ -4488,7 +4491,7 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
       nexus_info->in_core=IsNexusInCore(cache_info,nexus_info);
     }
 
-  /* fprintf(stderr,"Pixels in staging\n"); */
+  /* fprintf(stderr,"Pixels in staging (%p)\n",nexus_info->pixels); */
   return(nexus_info->pixels);
 }
 
