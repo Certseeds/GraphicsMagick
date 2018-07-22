@@ -2083,7 +2083,7 @@ static void DrawImageRecurseOut(Image *image)
   "class".
 */
 static
-char *	ExtractTokensBetweenPushPop (
+char *  ExtractTokensBetweenPushPop (
   char * q,                 /* address of pointer into primitive string */
   char * token,             /* big enough buffer for extracted string */
   size_t token_max_length,
@@ -2105,22 +2105,22 @@ char *	ExtractTokensBetweenPushPop (
 
   /* search for "pop <pop_string>" */
   for (p=q; *q != '\0'; )
-  {
-    char * qStart = q;
-    MagickGetToken(q,&q,token,token_max_length);
-    if  ( q == qStart )
-      {
-        /* infinite loop detection */
-        pAfterPopString = q;  /* need this to be valid */
-        break;
-      }
-    if (LocaleCompare(token,"pop") == 0)
-      {
-        MagickGetToken(q,&pAfterPopString,token,token_max_length);
-        if (LocaleCompare(token,pop_string) == 0)
-          break;  /* found "pop <pop_string>" */
-      }
-  }
+    {
+      char * qStart = q;
+      MagickGetToken(q,&q,token,token_max_length);
+      if  ( q == qStart )
+        {
+          /* infinite loop detection */
+          pAfterPopString = q;  /* need this to be valid */
+          break;
+        }
+      if (LocaleCompare(token,"pop") == 0)
+        {
+          MagickGetToken(q,&pAfterPopString,token,token_max_length);
+          if (LocaleCompare(token,pop_string) == 0)
+            break;  /* found "pop <pop_string>" */
+        }
+    }
 
   /* sanity check on extracted string length */
   if  ( q > (p+4U) )
@@ -2130,10 +2130,11 @@ char *	ExtractTokensBetweenPushPop (
     }
   token[ExtractedLength] = '\0';
   (void) SetImageAttribute(image,name,token);
-  q = pAfterPopString;  /* skip ID string after "pop" */
+  if (pAfterPopString != NULL)
+    q = pAfterPopString;  /* skip ID string after "pop" */
   if  ( pExtractedLength )
     *pExtractedLength = ExtractedLength;
-	return(q);
+  return(q);
 
 }/*ExtractTokensBetweenPushPop*/
 
@@ -2338,7 +2339,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     xTextCurrent,
     yTextCurrent;
   MagickBool
-    UseCurrentTextPosition;	/* true=>use (possibly modified) current text position */
+    UseCurrentTextPosition;     /* true=>use (possibly modified) current text position */
 
   PrimitiveInfoMgr
     PIMgr;
@@ -2693,7 +2694,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to fill color */
+              break;    /* if drawing clip path, ignore changes to fill color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
@@ -2744,7 +2745,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to fill opacity */
+              break;    /* if drawing clip path, ignore changes to fill opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 (opacity < 0.0))
@@ -2945,7 +2946,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity,opacityGroupOld,opacityGroupNew;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to group/global opacity */
+              break;    /* if drawing clip path, ignore changes to group/global opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if (MagickAtoFChk(token,&opacity) != MagickPass)
               {
@@ -3083,7 +3084,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   into new function ExtractTokensBetweenPushPop().
                 */
                 size_t ExtractedLength;
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength);
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength); /* NULLED */
                 if  ( ExtractedLength == 0 )
                   status=MagickFail;
                 break;
@@ -3240,7 +3241,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               {
                 if  ( defsPushCount > 0 )
                   q = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
-                else	/* extract <identifier> from "push id <identifier>" */
+                else    /* extract <identifier> from "push id <identifier>" */
                   MagickGetToken(q,&q,token,token_max_length);
                 break;
               }
@@ -3438,7 +3439,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke color */
+              break;    /* if drawing clip path, ignore changes to stroke color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
@@ -3592,7 +3593,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke opacity */
+              break;    /* if drawing clip path, ignore changes to stroke opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 opacity < 0.0)
@@ -3621,7 +3622,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke width */
+              break;    /* if drawing clip path, ignore changes to stroke width */
             if ((MagickAtoFChk(token,&graphic_context[n]->stroke_width)
                  == MagickFail) ||
                 (graphic_context[n]->stroke_width < 0.0))
@@ -3656,7 +3657,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("textc",keyword) == 0)  /* draw text at current text position */
           {
             primitive_type=TextPrimitive;
-            UseCurrentTextPosition = MagickTrue;	/* use internally tracked text location*/
+            UseCurrentTextPosition = MagickTrue;        /* use internally tracked text location*/
             break;
           }
         if (LocaleCompare("textdx",keyword) == 0)  /* update current x position for text */
@@ -3668,12 +3669,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleNCompare(q,"em",2) == 0)
               {
                 value *= graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "em" */
               }
             else if (LocaleNCompare(q,"ex",2) == 0)
               {
                 value *= 0.5 * graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "ex" */
               }
             xTextCurrent += value;
             break;
@@ -3687,12 +3688,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleNCompare(q,"em",2) == 0)
               {
                 value *= graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "em" */
               }
             else if (LocaleNCompare(q,"ex",2) == 0)
               {
                 value *= 0.5 * graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "ex" */
               }
             yTextCurrent += value;
             break;
@@ -4299,7 +4300,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           DrawInfo * clone_info;
           TypeMetric  metrics;
           clone_info=CloneDrawInfo((ImageInfo *) NULL,graphic_context[n]);
-          MagickFreeMemory(clone_info->density);	/* density values already converted, don't do again! */
+          MagickFreeMemory(clone_info->density);        /* density values already converted, don't do again! */
           clone_info->render = 0;
           clone_info->text=AllocateString(token);
           (void) ConcatenateString(&clone_info->text," ");
@@ -5953,7 +5954,7 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
   primitive_info = *pp_PrimitiveInfo + InitialStoreStartingAt;
 
-  primitive_info->coordinates = 0;	/* in case we return without doing anything */
+  primitive_info->coordinates = 0;      /* in case we return without doing anything */
   /*
     Per the SVG spec: If the endpoints (x1, y1) and (x2, y2) are identical, then
     this is equivalent to omitting the elliptical arc segment entirely.
@@ -6889,7 +6890,7 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   */
   if  ( (offset.x == 0.0) || (offset.y == 0.0) )
   {
-	(*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
+        (*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
     return;
   }
 
