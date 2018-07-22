@@ -42,7 +42,11 @@
 ExtractTokensBetweenPushPop() needs to always return a valid
 pointer into the primitive string.  Fixes oss-fuzz 9511
 &quot;graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Null-dereference
-READ in DrawImage&quot;. (Credit to OSS-Fuzz)</li>
+READ in DrawImage&quot;. (Credit to OSS-Fuzz)
+(DrawPolygonPrimitive): Fix leak of polygon set when object is
+completely outside image.  Fixes oss-fuzz 9513
+&quot;graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Direct-leak in
+AllocateThreadViewDataSet&quot;. (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-07-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

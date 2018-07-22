@@ -5,6 +5,10 @@
 	pointer into the primitive string.  Fixes oss-fuzz 9511
 	"graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Null-dereference
 	READ in DrawImage". (Credit to OSS-Fuzz)
+	(DrawPolygonPrimitive): Fix leak of polygon set when object is
+	completely outside image.  Fixes oss-fuzz 9513
+	"graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Direct-leak in
+	AllocateThreadViewDataSet". (Credit to OSS-Fuzz)
 
 2018-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

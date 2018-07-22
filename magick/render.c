@@ -4853,9 +4853,14 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds.y1-=(mid+1.0);
     bounds.x2+=(mid+1.0);
     bounds.y2+=(mid+1.0);
-    if  ( (bounds.x1 >= image->columns) || (bounds.y1 >= image->rows)
-      || (bounds.x2 <= 0.0) || (bounds.y2 <= 0.0) )
-      return(MagickPass);   /* object completely outside image */
+    if ( (bounds.x1 >= image->columns) || (bounds.y1 >= image->rows)
+         || (bounds.x2 <= 0.0) || (bounds.y2 <= 0.0) )
+      {
+        /* object completely outside image */
+        DestroyThreadViewDataSet(polygon_set);
+        polygon_set = (ThreadViewDataSet *) NULL;
+        return(MagickPass);
+      }
     bounds.x1=bounds.x1 <= 0.0 ? 0.0 : bounds.x1 >= image->columns-1 ?
       image->columns-1 : bounds.x1;
     bounds.y1=bounds.y1 <= 0.0 ? 0.0 : bounds.y1 >= image->rows-1 ?
