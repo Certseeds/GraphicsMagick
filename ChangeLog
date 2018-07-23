@@ -1,3 +1,8 @@
+2018-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh, fuzzing/dictionaries/MVG.dict: Added
+	MVG fuzzing dictionary by Alex Gaynor.
+
 2018-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (SetNexus): For requests one pixel tall,

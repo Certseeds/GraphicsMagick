@@ -112,4 +112,8 @@ for item in $("$WORK/coder_list"); do
         fuzzing/coder_fuzzer.cc -o "${OUT}/coder_${coder}_fuzzer" \
         $coder_flags -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
         "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
+
+    if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
+        cp "fuzzing/dictionaries/${coder}.dict" "${OUT}/coder_${coder}_fuzzer.dict"
+    fi
 done
