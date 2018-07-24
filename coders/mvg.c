@@ -230,7 +230,10 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Don't allow MVG files to side-load a file as the primitive
   */
   if (draw_info->primitive[0] == '@')
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    {
+      DestroyDrawInfo(draw_info);
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    }
   (void) DrawImage(image,draw_info);
   DestroyDrawInfo(draw_info);
   CloseBlob(image);

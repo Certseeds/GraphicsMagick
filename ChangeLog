@@ -1,3 +1,9 @@
+2018-07-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mvg.c (ReadMVGImage): Fix memory leak added on
+	2018-07-21.  Fixes oss-fuzz 9548 "graphicsmagick/coder_MVG_fuzzer:
+	Direct-leak in CloneDrawInfo". (Credit to OSS-Fuzz)
+
 2018-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/cineon.c (ReadCINEONImage): Fix SourceForge issue 571
