@@ -1,5 +1,10 @@
 2018-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/cineon.c (ReadCINEONImage): Fix SourceForge issue 571
+	"Unexpected hang on a crafted Cineon image" by detecting and
+	quitting on EOF appropriately, and verifying that file size is
+	sufficient for claimed pixel dimensions when possible.
+
 	* fuzzing/oss-fuzz-build.sh, fuzzing/dictionaries/MVG.dict: Added
 	MVG fuzzing dictionary by Alex Gaynor.
 
