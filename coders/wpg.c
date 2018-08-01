@@ -189,6 +189,13 @@ const RGB_Record WPG1_Palette[256]={
 };
 
 
+int ApproveFormatForWPG(const char *Format)
+{
+  if(!strcmp(Format,"PFB")) return 0;
+  return 1;
+}
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -810,6 +817,14 @@ BAD_SEEK:
       ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
       goto FINISH_UNL;
     }
+
+  if(!ApproveFormatForWPG(clone_info->magick))
+  {
+    (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                        "Format \"%s\" cannot be embedded inside WPG.", clone_info->magick);
+    ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+    goto FINISH_UNL;
+  }
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content...", clone_info->magick);

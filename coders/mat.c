@@ -970,7 +970,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "MATLAB_HDR.CellType: %d",CellType);
 
-    (void) ReadBlob(image2, 4, &size);     /* data size */
+    (void)ReadBlob(image2, 4, &size);     /* data size */
 
 NEXT_FRAME:
       /* Image is gray when no complex flag is set and 2D Matrix */
@@ -1118,7 +1118,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
-          goto ExitLoop;
+          goto ExitLoop;	/* It would be great to be abble to read corrupted images. */
+				/* this goto will abort reading, but there remains not fully read image 
+				   in the memory. */
         }
         if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR.StructureFlag & FLAG_LOGICAL))
         {

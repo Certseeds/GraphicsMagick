@@ -1,3 +1,8 @@
+2018-06-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Add mechanism to approve embedded subformats in WPG.
+        This should mute oss-fuzz 9559.  (Credit to OSS-Fuzz)
+
 2018-07-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mvg.c (ReadMVGImage): Fix memory leak added on
