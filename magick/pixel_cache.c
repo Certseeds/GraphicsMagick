@@ -220,7 +220,7 @@ typedef struct _NexusInfo
   /* Selected region (width, height, x, y) */
   RectangleInfo region;
 
-  /* Nexus pixels are non-strided and in core */
+  /* Nexus pixels are non-strided and in core (sync not needed) */
   MagickBool in_core;
 
 #if 0
