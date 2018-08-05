@@ -171,6 +171,10 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     x,
     y;
 
+  long
+    columns_signed,
+    rows_signed;
+
   register PixelPacket
     *q;
 
@@ -211,16 +215,24 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   (void) memset(buffer,0,sizeof(buffer));
   name[0]='\0';
+  columns_signed=0;
+  rows_signed=0;
   while (ReadBlobString(image,buffer) != (char *) NULL)
-    if (sscanf(buffer,"#define %s %lu",name,&image->columns) == 2)
+    if (sscanf(buffer,"#define %s %ld",name,&columns_signed) == 2)
       if ((strlen(name) >= 6) &&
           (LocaleCompare(name+strlen(name)-6,"_width") == 0))
           break;
   while (ReadBlobString(image,buffer) != (char *) NULL)
-    if (sscanf(buffer,"#define %s %lu",name,&image->rows) == 2)
+    if (sscanf(buffer,"#define %s %ld",name,&rows_signed) == 2)
       if ((strlen(name) >= 7) &&
           (LocaleCompare(name+strlen(name)-7,"_height") == 0))
           break;
+  if (EOFBlob(image))
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  if ((columns_signed <= 0) || (rows_signed <= 0))
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  image->columns=(unsigned long) columns_signed;
+  image->rows=(unsigned long) rows_signed;
   image->depth=8;
   image->storage_class=PseudoClass;
   image->colors=2;
@@ -248,8 +260,9 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (LocaleCompare("bits[]",(char *) p) == 0)
       break;
   }
-  if ((image->columns == 0) || (image->rows == 0) || EOFBlob(image))
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if (EOFBlob(image))
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+
   /*
     Initialize image structure.
   */
@@ -269,6 +282,8 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       CloseBlob(image);
       return(image);
     }
+  if (CheckImagePixelLimits(image, exception) != MagickPass)
+      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   /*
     Allocate temporary storage for X bitmap image
   */

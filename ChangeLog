@@ -1,3 +1,10 @@
+2018-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xbm.c (ReadXBMImage): Add validations for row and column
+	dimensions.  Fixes oss-fuzz 9736 "graphicsmagick/coder_XBM_fuzzer:
+	Out-of-memory in graphicsmagick_coder_XBM_fuzzer". (Credit to
+	OSS-Fuzz)
+
 2018-06-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Add mechanism to approve embedded subformats in WPG.
