@@ -214,7 +214,8 @@ static void
   TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
 
 static MagickBool
-  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed);
+  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed);
+
 /*
   Ticket #515 showed how an excessively big DrawInfo::stroke_width can cause writes
   beyond the end of an array of points when computing a stroked polygon.  So we want
