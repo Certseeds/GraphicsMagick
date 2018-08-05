@@ -38,6 +38,9 @@
 <p>2018-08-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/mat.c (InsertComplexFloatRow): Avoid signed
+overflow. Fixes oss-fuzz 9667 &quot;graphicsmagick/coder_MAT_fuzzer:
+Integer-overflow in InsertComplexFloatRow&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/xbm.c (ReadXBMImage): Add validations for row and column
 dimensions.  Fixes oss-fuzz 9736 &quot;graphicsmagick/coder_XBM_fuzzer:
 Out-of-memory in graphicsmagick_coder_XBM_fuzzer&quot;. (Credit to

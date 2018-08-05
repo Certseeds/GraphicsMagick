@@ -1,5 +1,9 @@
 2018-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (InsertComplexFloatRow): Avoid signed
+	overflow. Fixes oss-fuzz 9667 "graphicsmagick/coder_MAT_fuzzer:
+	Integer-overflow in InsertComplexFloatRow". (Credit to OSS-Fuzz)
+
 	* coders/xbm.c (ReadXBMImage): Add validations for row and column
 	dimensions.  Fixes oss-fuzz 9736 "graphicsmagick/coder_XBM_fuzzer:
 	Out-of-memory in graphicsmagick_coder_XBM_fuzzer". (Credit to

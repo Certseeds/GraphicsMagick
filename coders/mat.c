@@ -147,7 +147,7 @@ typedef enum
 static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, RedQuantum};
 
 
-static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal, 
+static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal,
                                   double MaxVal)
 {
   double f;
@@ -224,26 +224,26 @@ static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
       if (f + q->red < MaxRGB)
         q->red += (int)f;
       else
-        q->red = MaxRGB;        
+        q->red = MaxRGB;
       f /= 2.0;
-      if(f < q->green)
+      if(f < q->blue)
         q->green = q->blue -= (int)(f);
       else
-        q->green = q->blue = 0;        
+        q->green = q->blue = 0;
     }
     if (*p < 0)
     {
       f = (*p / MinVal) * (MaxRGB - q->blue); /* f is positive only <0; inf> */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;
-      else	/* 'else' branch is executed when NaN occurs. */
-        q->blue = MaxRGB;        
+      else      /* 'else' branch is executed when NaN occurs. */
+        q->blue = MaxRGB;
 
       f /= 2.0;
-      if(f < q->green)
+      if(f < q->red)
         q->green = q->red -= (int)(f);
-      else	/* 'else' branch is executed when NaN occurs. */
-        q->green = q->red = 0;        
+      else      /* 'else' branch is executed when NaN occurs. */
+        q->green = q->red = 0;
     }
     p++;
     q++;
@@ -463,7 +463,7 @@ typedef struct {
 
 
 /* Load Matlab V4 file. */
-static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, 
+static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options,
                              ExceptionInfo *exception, const int logging)
 {
 MAT4_HDR HDR;
@@ -617,7 +617,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                    "  MAT cannot read scanrow %u from a file.", (unsigned)(i));
-        DestroyImagePixels(image);		/* The unread data contains crap in memory, erase current image data. */
+        DestroyImagePixels(image);              /* The unread data contains crap in memory, erase current image data. */
         image->columns = image->rows = 0;
         goto ExitLoop;
       }
@@ -798,7 +798,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
     image2 = ReadMATImageV4(image_info,image,&import_options,exception,logging);
-    if(image2==NULL) goto MATLAB_KO;    
+    if(image2==NULL) goto MATLAB_KO;
     image = image2;
     goto END_OF_READING;
   }
@@ -839,7 +839,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
-    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||	/* More than 4GiB are not supported in MAT! */
+    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||    /* More than 4GiB are not supported in MAT! */
         filepos < 0)
     {
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
@@ -886,12 +886,12 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     }
 #endif
 
-    if(MATLAB_HDR.DataType!=miMATRIX) 
+    if(MATLAB_HDR.DataType!=miMATRIX)
     {
 #if defined(HasZLIB)
       if(image2 != image)
       {
-         DeleteImageFromList(&image2);	/* image2 is set to NULL */
+         DeleteImageFromList(&image2);  /* image2 is set to NULL */
       }
 #endif
       continue;  /* skip another objects. */
@@ -1118,9 +1118,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
-          goto ExitLoop;	/* It would be great to be abble to read corrupted images. */
-				/* this goto will abort reading, but there remains not fully read image 
-				   in the memory. */
+          goto ExitLoop;        /* It would be great to be abble to read corrupted images. */
+                                /* this goto will abort reading, but there remains not fully read image
+                                   in the memory. */
         }
         if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR.StructureFlag & FLAG_LOGICAL))
         {
@@ -1231,7 +1231,7 @@ skip_reading_current:
     BImgBuff = NULL;
 
     if(--Frames>0)
-    {      
+    {
       z = z2;
       if(image2==NULL) image2 = image;
       if(!EOFBlob(image) && TellBlob(image)<filepos)
@@ -1258,7 +1258,7 @@ skip_reading_current:
 
   MagickFreeMemory(BImgBuff);
 END_OF_READING:
-  CloseBlob(image); 
+  CloseBlob(image);
 
   {
     Image *p;
