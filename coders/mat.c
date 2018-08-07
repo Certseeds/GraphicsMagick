@@ -147,7 +147,10 @@ typedef enum
 static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, RedQuantum};
 
 
-static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal, 
+/* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
+ Please note that this function expects gray image on input. Additional channel contents
+ checking is wasting of resources only. */
+static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal, 
                                   double MaxVal)
 {
   double f;
@@ -206,7 +209,10 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
 }
 
 
-static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal, double MaxVal)
+/* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
+ Please note that this function expects gray image on input. Additional channel contents
+ checking is wasting of resources only. */
+static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, double MaxVal)
 {
   double f;
   int x;
