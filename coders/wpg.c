@@ -776,7 +776,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   clone_info->length=0;
 
   /* Obtain temporary file */
-  ps_file=AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
+  ps_file = AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
   if (!ps_file)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Gannot create file stream for PS image");

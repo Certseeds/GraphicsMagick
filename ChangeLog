@@ -1,3 +1,7 @@
+2018-08-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Typecast difference to quantum.
+
 2018-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c (InsertComplexFloatRow): Avoid signed
@@ -9,7 +13,7 @@
 	Out-of-memory in graphicsmagick_coder_XBM_fuzzer". (Credit to
 	OSS-Fuzz)
 
-2018-06-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+2018-08-04  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Add mechanism to approve embedded subformats in WPG.
         This should mute oss-fuzz 9559.  (Credit to OSS-Fuzz)
