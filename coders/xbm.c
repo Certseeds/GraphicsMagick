@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -119,18 +119,23 @@ static unsigned int IsXBM(const unsigned char *magick,const size_t length)
 %
 */
 
-static int XBMInteger(Image *image,short int *hex_digits)
+static int XBMInteger(Image *image,const unsigned int max_digits, short int *hex_digits)
 {
   unsigned int
-    flag;
+    digits;
 
   int
     c,
     value;
 
+  /*
+    Read hex value in form 0xhh or 0xhhhh from text which may look
+    like ", 0x7f".  FIXME: This implementation is non-validating.
+  */
+
   value=0;
-  flag=0U;
-  for ( ; ; )
+  digits=0U;
+  for ( digits=0U; digits <= max_digits+1; )
   {
     c=ReadBlobByte(image);
     if (c == EOF)
@@ -142,12 +147,15 @@ static int XBMInteger(Image *image,short int *hex_digits)
     if (isxdigit(c))
       {
         value=(value << 4)+hex_digits[c];
-        flag++;
+        digits++;
         continue;
       }
-    if ((hex_digits[c]) < 0 && flag)
+    if ((hex_digits[c]) < 0 && digits)
       break;
   }
+  /* The '0' in '0x' is currently counted as a digit */
+  if (digits > max_digits+1)
+    value=(-1);
   return(value);
 }
 
@@ -334,7 +342,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (version == 10)
     for (i=0; i < (bytes_per_line*image->rows); (i+=2))
     {
-      value=XBMInteger(image,hex_digits);
+      value=XBMInteger(image,4,hex_digits);
       if (value < 0)
         {
           MagickFreeMemory(data);
@@ -347,7 +355,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else
     for (i=0; i < (bytes_per_line*image->rows); i++)
     {
-      value=XBMInteger(image,hex_digits);
+      value=XBMInteger(image,2,hex_digits);
       if (value < 0)
         {
           MagickFreeMemory(data);
