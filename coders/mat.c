@@ -859,7 +859,8 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
-    if(filepos >= filesize || filepos < 0)
+    if(filepos == filesize) break;
+    if(filepos > filesize || filepos < 0)
     {
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
     }
