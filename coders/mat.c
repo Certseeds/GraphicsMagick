@@ -170,8 +170,7 @@ static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
-      /*if(f<0)
-	 f=0; */
+      /*if(f<0) f=0; */
       if (f + q->red >= MaxRGB)
         q->red = MaxRGB;
       else
@@ -185,8 +184,7 @@ static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
-      /*if(f<0)
-	 f=0; */
+      /*if(f<0) f=0; */
       if (f + q->blue >= MaxRGB)
         q->blue = MaxRGB;
       else
@@ -231,8 +229,7 @@ static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, 
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
-      /*if(f<0)		//Only for Assert, should be commented out
-	 f=0; */
+      /*if(f<0) f=0;	//Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
         q->red += (int)f;
       else
@@ -246,8 +243,7 @@ static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, 
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* f is positive only <0; inf> */
-      /*if(f<0)		//Only for Assert, should be commented out
-	 f=0; */
+      /*if(f<0)	f=0; 	//Only for Assert, should be commented out */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;
       else	/* 'else' branch is executed when NaN occurs. */
@@ -776,6 +772,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   int logging;
   int sample_size;
   magick_off_t filepos = 0x80;
+  magick_off_t filesize;
   BlobInfo *blob;
   ImageInfo *clone_info = NULL;
 
@@ -850,11 +847,19 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   filepos = TellBlob(image);
 
+  if(BlobIsSeekable(image))
+  {
+    filesize = GetBlobSize(image);
+    if(filesize > (magick_off_t)0xFFFFFFFF)
+        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
+  }
+  else
+    filesize = (magick_off_t)0xFFFFFFFF;
+
   while(!EOFBlob(image)) /* object parser loop */
   {
     Frames = 1;
-    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||	/* More than 4GiB are not supported in MAT! */
-        filepos < 0)
+    if(filepos >= filesize || filepos < 0)
     {
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
     }
@@ -866,14 +871,11 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     MATLAB_HDR.ObjectSize = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
 
-    if(BlobIsSeekable(image))
+    if(MATLAB_HDR.ObjectSize+filepos >= filesize)   /* Safety check for forged and or corrupted data. */
     {
-      if(MATLAB_HDR.ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
-      {
-        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
-        goto MATLAB_KO;
-      }
+      if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(filesize));
+      goto MATLAB_KO;    
     }
 
     filepos += (magick_off_t) MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
@@ -984,7 +986,8 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "MATLAB_HDR.CellType: %d",CellType);
 
-    (void)ReadBlob(image2, 4, &size);     /* data size */
+    if(4 != ReadBlob(image2,4,&size))     /* data size */
+        goto MATLAB_KO;
 
 NEXT_FRAME:
       /* Image is gray when no complex flag is set and 2D Matrix */
@@ -1406,7 +1409,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
 
     DataSize = image->rows /*Y*/ * image->columns /*X*/;
     if(!is_gray) DataSize *= 3 /*Z*/;
-    padding=((unsigned char)(DataSize-1) & 0x7) ^ 0x7;
+    padding = ((unsigned char)(DataSize-1) & 0x7) ^ 0x7;
 
     (void) WriteBlobLSBLong(image, miMATRIX); /* 0x80 */
     (void) WriteBlobLSBLong(image, DataSize + padding + (is_gray?48l:56l)); /* 0x84 */

@@ -1,3 +1,7 @@
+2018-08-14  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c More aggresive data corruption checking.
+
 2018-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xbm.c (XBMInteger): Limit the number of hex digits parsed
