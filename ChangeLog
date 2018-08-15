@@ -1,3 +1,8 @@
+2018-08-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+        * coder/mat.c Correctly check GetBlobSize(image) even for zipstreams.
+
+
 2018-08-14  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/mat.c More aggresive data corruption checking.
