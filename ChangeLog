@@ -1,3 +1,8 @@
+2018-08-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+        * coder/mat.c Explicitly reject non-seekable streams.
+
+
 2018-08-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
         * coder/mat.c Correctly check GetBlobSize(image) even for zipstreams.

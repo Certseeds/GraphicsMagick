@@ -848,13 +848,18 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
   filepos = TellBlob(image);
 
   filesize = GetBlobSize(image);	      /* zero is returned if the size cannot be determined. */
-  if(filesize!=0 || BlobIsSeekable(image))
+  if(filesize>0 && BlobIsSeekable(image))
   { 
     if(filesize > (magick_off_t)0xFFFFFFFF)
         filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
   }
   else
+  {
     filesize = (magick_off_t)0xFFFFFFFF;
+    if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          "Blob is not seekable, MAT reader could fail.");
+    ThrowMATReaderException(BlobError,AnErrorHasOccurredReadingFromFile,image);
+  }
 
   while(filepos<filesize && !EOFBlob(image)) /* object parser loop */
   {
