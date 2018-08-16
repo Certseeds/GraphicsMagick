@@ -858,7 +858,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     filesize = (magick_off_t)0xFFFFFFFF;
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "Blob is not seekable, MAT reader could fail.");
-    ThrowMATReaderException(BlobError,AnErrorHasOccurredReadingFromFile,image);
+    ThrowMATReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
   }
 
   while(filepos<filesize && !EOFBlob(image)) /* object parser loop */
