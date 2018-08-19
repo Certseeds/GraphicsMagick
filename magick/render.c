@@ -57,6 +57,7 @@
 #include "magick/paint.h"
 #include "magick/pixel_cache.h"
 #include "magick/render.h"
+#include "magick/resource.h"
 #include "magick/transform.h"
 #include "magick/utility.h"
 
@@ -180,8 +181,22 @@ static PrimitiveInfo  /* added Image* param so DrawInfo::stroke_width can be cla
   *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickPassFail
-  DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *),
-  DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *);
+  DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
+                         const PolygonInfo *polygon_info) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceArc(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceArcPath(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo,
+               const double,const unsigned int,const unsigned int) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceBezier(PrimitiveInfoMgr *,const unsigned long) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TracePoint(PrimitiveInfo *,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double) MAGICK_FUNC_WARN_UNUSED_RESULT;
 
 static MagickBool
   /*IsDrawInfoClippingPath(const DrawInfo *),*/           /* is DrawInfo a clipping path */
@@ -199,22 +214,7 @@ static void
 #if 0
   DestroyGradientInfo(GradientInfo *),
 #endif
-  DestroyPolygonInfo(void *polygon_info_void),
-  TraceArc(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
-  TraceArcPath(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo,
-    const double,const unsigned int,const unsigned int),
-  TraceBezier(PrimitiveInfoMgr *,const unsigned long),
-  TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo),
-  TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
-  TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TracePoint(PrimitiveInfo *,const PointInfo),
-  TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,
-    PointInfo),
-  TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
-
-static MagickBool
-  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed);
+  DestroyPolygonInfo(void *polygon_info_void);
 
 /*
   Ticket #515 showed how an excessively big DrawInfo::stroke_width can cause writes
@@ -1475,7 +1475,7 @@ DrawAffineImage(Image *image,const Image *composite,
 %
 %
 */
-static void
+static MagickPassFail
 DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
                        const PolygonInfo *polygon_info)
 {
@@ -1503,9 +1503,13 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
   long
     coordinates;
 
+  MagickPassFail
+    status = MagickPass;
+
   memset(primitive_info,0,sizeof(primitive_info));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception);
+  if ((status=QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   resolution.x=72.0;
   resolution.y=72.0;
   if (clone_info->density != (char *) NULL)
@@ -1557,35 +1561,51 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
       for (i=0; i < polygon_info->number_edges; i++)
       {
         if (polygon_info->edges[i].direction)
-          (void) QueryColorDatabase("red",&clone_info->stroke,
-            &image->exception);
+          {
+          if ((status=QueryColorDatabase("red",&clone_info->stroke,
+                                         &image->exception)) == MagickFail)
+            goto draw_bounding_rectangles_end;
+          }
         else
-          (void) QueryColorDatabase("green",&clone_info->stroke,
-            &image->exception);
+          {
+            if ((status=QueryColorDatabase("green",&clone_info->stroke,
+                                           &image->exception)) == MagickFail)
+              goto draw_bounding_rectangles_end;
+          }
         start.x=polygon_info->edges[i].bounds.x1-mid;
         start.y=polygon_info->edges[i].bounds.y1-mid;
         end.x=polygon_info->edges[i].bounds.x2+mid;
         end.y=polygon_info->edges[i].bounds.y2+mid;
         primitive_info[0].primitive=RectanglePrimitive;
-        TraceRectangle(primitive_info,start,end);
+        if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+          goto draw_bounding_rectangles_end;
         primitive_info[0].method=ReplaceMethod;
         coordinates=(long) primitive_info[0].coordinates;
         primitive_info[coordinates].primitive=UndefinedPrimitive;
-        (void) DrawPrimitive(image,clone_info,primitive_info);
+        if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+          goto draw_bounding_rectangles_end;
       }
     }
-  (void) QueryColorDatabase("blue",&clone_info->stroke,&image->exception);
+  if ((status=QueryColorDatabase("blue",&clone_info->stroke,&image->exception)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   start.x=bounds.x1-mid;
   start.y=bounds.y1-mid;
   end.x=bounds.x2+mid;
   end.y=bounds.y2+mid;
   primitive_info[0].primitive=RectanglePrimitive;
-  TraceRectangle(primitive_info,start,end);
+  if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   primitive_info[0].method=ReplaceMethod;
   coordinates=(long) primitive_info[0].coordinates;
   primitive_info[coordinates].primitive=UndefinedPrimitive;
-  (void) DrawPrimitive(image,clone_info,primitive_info);
+  if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+    goto draw_bounding_rectangles_end;
+
+ draw_bounding_rectangles_end:;
+
   DestroyDrawInfo(clone_info);
+
+  return status;
 }
 
 /*
@@ -2223,29 +2243,50 @@ char * InsertAttributeIntoInputStream (
 }/*InsertAttributeIntoInputStream*/
 
 
-static MagickBool
-PrimitiveInfoRealloc  (
-  PrimitiveInfoMgr * p_PIMgr,
-  const size_t       Needed
-  )
+/*
+  Re-allocate PrimitiveInfo array if needed.  Return MagickFail if
+  allocation has failed.  PrimitiveInfo array pointer is set to NULL
+  if allocation has failed, and any already allocated memory is freed.
+*/
+static MagickPassFail
+PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
 {/*PrimitiveInfoRealloc*/
 
+  MagickPassFail status = MagickPass;
   /* grow the PrimitiveInfo array if Needed elements are not available; return true if reallocated */
 
-  PrimitiveInfo * primitive_info;
+  /* ANSI C says that SIZE_MAX gives maximum value of size_t */
   size_t NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100);  /* +100 for headroom */
-  if  ( NeedAllocCount <= *p_PIMgr->p_AllocCount )
-    return(MagickFalse);
+  if (NeedAllocCount > *p_PIMgr->p_AllocCount)
+    {
+      const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
+      const size_t needed_memory=MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo));
+      const size_t added_memory=needed_memory-have_memory;
 
-  /*need to realloc*/
-  primitive_info = *p_PIMgr->pp_PrimitiveInfo;
-  MagickReallocMemory(PrimitiveInfo *,primitive_info,MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo)));
-  if  ( primitive_info == (PrimitiveInfo *) NULL )
-      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
-  *p_PIMgr->pp_PrimitiveInfo = primitive_info;
-  *p_PIMgr->p_AllocCount = NeedAllocCount;
+      /* Need to realloc */
+      if ((status=AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
+        {
+          ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+          status = MagickFail;
+        }
+      else
+        {
+          MagickReallocMemory(PrimitiveInfo *,*p_PIMgr->pp_PrimitiveInfo,needed_memory);
+          if (*p_PIMgr->pp_PrimitiveInfo == (PrimitiveInfo *) NULL)
+            {
+              ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+              status = MagickFail;
+              /* Record that the memory was unexpectedly released */
+              LiberateMagickResource(MemoryResource,(*p_PIMgr->p_AllocCount)*sizeof(PrimitiveInfo));
+            }
+          else
+            {
+              *p_PIMgr->p_AllocCount = NeedAllocCount;
+            }
+        }
+    }
 
-  return(MagickTrue);
+  return status;
 
 }/*PrimitiveInfoRealloc*/
 
@@ -2289,7 +2330,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     start_color;
 
   PrimitiveInfo
-    *primitive_info;
+    *primitive_info = (PrimitiveInfo *) NULL;
 
   PrimitiveType
     primitive_type;
@@ -2313,7 +2354,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     status;
 
   size_t
-    number_points;
+    number_points=0;
 
   MagickBool
     FillOpacityPending,
@@ -2387,24 +2428,21 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
         UnableToDrawOnImage)
     }
-  number_points=6553;
-  primitive_info=
-    MagickAllocateArray(PrimitiveInfo *,number_points,sizeof(PrimitiveInfo));
-  if (primitive_info == (PrimitiveInfo *) NULL)
+
+  /* Set up to manage growing the PrimitiveInfo array */
+  PIMgr.pp_PrimitiveInfo = &primitive_info;
+  PIMgr.p_AllocCount = &number_points;
+  PIMgr.StoreStartingAt = 0;
+  PIMgr.p_Exception = &image->exception;
+
+  if ((status=PrimitiveInfoRealloc(&PIMgr,6553)) == MagickFail)
     {
       MagickFreeMemory(primitive);
       for ( ; n >= 0; n--)
         DestroyDrawInfo(graphic_context[n]);
       MagickFreeMemory(graphic_context);
-      ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-        UnableToDrawOnImage)
+      return MagickFail;
     }
-
-  /* set up to manage growing the PrimitiveInfo array */
-  PIMgr.pp_PrimitiveInfo = &primitive_info;
-  PIMgr.p_AllocCount = &number_points;
-  PIMgr.StoreStartingAt = 0;
-  PIMgr.p_Exception = &image->exception;
 
   graphic_context[n]=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   /* next two lines: don't need copy of primitive, just a buffer of the same size */
@@ -3889,8 +3927,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       PIMgr.StoreStartingAt = i;
       if (i < (long) number_points)
         continue;
-      PrimitiveInfoRealloc(&PIMgr,number_points);  /* array is full; double the array size */
+      /* Array is full; double the array size */
+      if ((status=PrimitiveInfoRealloc(&PIMgr,number_points)) == MagickFail)
+        break;
     }
+    if (status == MagickFail)
+      break;
     /*
       Special handling when using textc with character rotation; see comments
       above near "textr".
@@ -4049,7 +4091,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
 
         PIMgr.StoreStartingAt = i;  /* should already be this value; just bein' sure */
-        PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points);
+        if (PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points) == MagickFail)
+          {
+            status=MagickFail;
+            break;
+          }
       }
 
     assert(j < (long) number_points);
@@ -4060,7 +4106,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       TraceLine(), TraceRectangle(), etc.) have enough space, we make sure there are at
       least 100 elements available.
     */
-    PrimitiveInfoRealloc(&PIMgr,100);
+    if (PrimitiveInfoRealloc(&PIMgr,100) == MagickFail)
+      {
+        status=MagickFail;
+        break;
+      }
 
     /*
       Trace points
@@ -4075,7 +4125,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TracePoint(primitive_info+j,primitive_info[j].point);
+        if ((status=TracePoint(primitive_info+j,primitive_info[j].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4086,8 +4137,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceLine(primitive_info+j,primitive_info[j].point,
-                  primitive_info[j+1].point);
+        if ((status=TraceLine(primitive_info+j,primitive_info[j].point,
+                              primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4117,9 +4169,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceRectangle(primitive_info+j,
-                       /*start*/primitive_info[j].point,
-                       /*end*/primitive_info[j+1].point);
+        if ((status=TraceRectangle(primitive_info+j,
+                                   /*start*/primitive_info[j].point,
+                                   /*end*/primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4158,10 +4211,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceRoundRectangle(&PIMgr,
-                            /*start*/primitive_info[j].point,
-                            /*end*/primitive_info[j+1].point,
-                            /*arc*/primitive_info[j+2].point);
+        if ((status=TraceRoundRectangle(&PIMgr,
+                                        /*start*/primitive_info[j].point,
+                                        /*end*/primitive_info[j+1].point,
+                                        /*arc*/primitive_info[j+2].point)) == MagickFail)
+          break;
          PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4173,8 +4227,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceArc(&PIMgr,primitive_info[j].point,
-          primitive_info[j+1].point,primitive_info[j+2].point);
+        if ((status=TraceArc(&PIMgr,primitive_info[j].point,
+                             primitive_info[j+1].point,primitive_info[j+2].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4195,10 +4250,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceEllipse(&PIMgr,
-                     /*start*/primitive_info[j].point, /*centerX,centerY*/
-                     /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
-                     /*degrees*/primitive_info[j+2].point); /*arcStart,arcEnd*/
+        if ((status=TraceEllipse(&PIMgr,
+                                 /*start*/primitive_info[j].point, /*centerX,centerY*/
+                                 /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
+                                 /*degrees*/primitive_info[j+2].point)) == MagickFail) /*arcStart,arcEnd*/
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4210,8 +4266,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceCircle(&PIMgr,primitive_info[j].point,
-          primitive_info[j+1].point);
+        if ((status=TraceCircle(&PIMgr,primitive_info[j].point,
+                                primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4250,7 +4307,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceBezier(&PIMgr,primitive_info[j].coordinates);
+        if ((status=TraceBezier(&PIMgr,primitive_info[j].coordinates)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4392,6 +4450,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   */
   DrawImageRecurseOut(image);
   MagickFreeMemory(token);
+  if (primitive_info != (PrimitiveInfo *) NULL)
+    LiberateMagickResource(MemoryResource,(*PIMgr.p_AllocCount)*sizeof(PrimitiveInfo));
   MagickFreeMemory(primitive_info);
   MagickFreeMemory(primitive);
   for ( ; n >= 0; n--)
@@ -4732,7 +4792,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds;
 
   ThreadViewDataSet
-    * restrict polygon_set;
+    * restrict polygon_set = (ThreadViewDataSet *) NULL;
 
   MagickPassFail
     status = MagickPass;
@@ -4758,7 +4818,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     unsigned int
       index;
 
-    polygon_set=(ThreadViewDataSet *) NULL;
     path_info=(PathInfo *) NULL;
     if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info))
         != (PathInfo *) NULL)
@@ -4805,7 +4864,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds=polygon_info->edges[0].bounds;
 
     if (0) /* DEBUG ??? */
-      DrawBoundingRectangles(image,draw_info,polygon_info);
+      if ((status=DrawBoundingRectangles(image,draw_info,polygon_info)) == MagickFail)
+        goto draw_polygon_primitive_end;
 
     for (i=1; i < polygon_info->number_edges; i++)
       {
@@ -5110,6 +5170,9 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
         }
     }
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    end draw-polygon");
+
+ draw_polygon_primitive_end:;
+
   DestroyThreadViewDataSet(polygon_set);
 
   return(status);
@@ -5903,7 +5966,7 @@ Permutate(const long n,const long k)
 %
 */
 
-static void
+static MagickPassFail
 TraceArc(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
          const PointInfo end,const PointInfo arc)
 {
@@ -5915,10 +5978,10 @@ TraceArc(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   center.y=0.5*(end.y+start.y);
   radius.x=fabs(center.x-start.x);
   radius.y=fabs(center.y-start.y);
-  TraceEllipse(p_PIMgr,center,radius,arc);
+  return TraceEllipse(p_PIMgr,center,radius,arc);
 }
 
-static void
+static MagickPassFail
 TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo end,const PointInfo arc,const double angle,
              const unsigned int large_arc,const unsigned int sweep)
@@ -5968,15 +6031,13 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   if  ( (fabs(start.x-end.x) < MagickEpsilon) && (fabs(start.y-end.y) < MagickEpsilon) )
     {
       /* substitute a lineto command (so zero length arc looks like a zero length segment) */
-      TracePoint(primitive_info,end);
-      return;
+      return (TracePoint(primitive_info,end));
     }
   radii.x=fabs(arc.x);
   radii.y=fabs(arc.y);
   if ((radii.x == 0.0) || (radii.y == 0.0))
     {
-      TraceLine(primitive_info,start,end);
-      return;
+      return (TraceLine(primitive_info,start,end));
     }
   cosine=cos(DegreesToRadians(fmod(angle,360.0)));
   sine=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -6045,7 +6106,8 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     (p+3)->point.y=sine*radii.x*points[2].x+cosine*radii.y*points[2].y;
     if (i == (long) (arc_segments-1))
       (p+3)->point=end;
-    TraceBezier(p_PIMgr,4);
+    if (TraceBezier(p_PIMgr,4) == MagickFail)
+      return MagickFail;
     p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have changed */
     p_PIMgr->StoreStartingAt+=p->coordinates;
     p+=p->coordinates;
@@ -6059,9 +6121,10 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     p->primitive=primitive_info->primitive;
     p--;
   }
+  return MagickPass;
 }
 
-static void
+static MagickPassFail
 TraceBezier(PrimitiveInfoMgr *p_PIMgr,
             const unsigned long number_coordinates)
 {
@@ -6090,6 +6153,9 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     control_points,
     quantum;
 
+  MagickPassFail
+    status = MagickPass;
+
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
@@ -6113,8 +6179,9 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   control_points=quantum*number_coordinates;
 
   /* make sure we have enough space */
-  if  ( PrimitiveInfoRealloc(p_PIMgr,control_points+1) )
-    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
+    return MagickFail;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
   points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
@@ -6150,10 +6217,12 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   p=primitive_info;
   for (i=0; i < (long) control_points; i++)
   {
-    TracePoint(p,points[i]);
+    if ((status=TracePoint(p,points[i])) != MagickPass)
+      goto trace_bezier_done;
     p+=p->coordinates;
   }
-  TracePoint(p,end);
+  if ((status=TracePoint(p,end)) == MagickFail)
+    goto trace_bezier_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6162,11 +6231,13 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     p->primitive=primitive_info->primitive;
     p--;
   }
+ trace_bezier_done:;
   MagickFreeMemory(points);
   MagickFreeMemory(coefficients);
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceCircle(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
             const PointInfo end)
 {
@@ -6186,10 +6257,10 @@ TraceCircle(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   offset.y=radius;
   degrees.x=0.0;
   degrees.y=360.0;
-  TraceEllipse(p_PIMgr,start,offset,degrees);
+  return TraceEllipse(p_PIMgr,start,offset,degrees);
 }
 
-static void
+static MagickPassFail
 TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo stop,const PointInfo degrees)
 {
@@ -6212,6 +6283,9 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   size_t
     Needed;
 
+  MagickPassFail
+    status = MagickPass;
+
   /*
     Ellipses are just short segmented polys.
   */
@@ -6219,7 +6293,7 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
   primitive_info->coordinates = 0;  /* in case we return without doing anything */
   if (stop.x == 0.0 || stop.y == 0.0)  /* actually the x and y radii of the corner ellipse */
-    return;
+    return MagickPass;
   delta=2.0/Max(stop.x,stop.y);
   step=MagickPI/8.0;
   if (delta < (MagickPI/8.0))
@@ -6232,19 +6306,22 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
 
   /* make sure we have enough space */
   Needed = ((size_t)1) + (size_t) ceil((angle.y - angle.x) / step);
-  if  ( PrimitiveInfoRealloc(p_PIMgr,Needed) )
-    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  if ((status=PrimitiveInfoRealloc(p_PIMgr,Needed)) == MagickFail)
+    goto trace_ellipse_done;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   for (p=primitive_info; angle.x < angle.y; angle.x+=step)
   {
     point.x=cos(fmod(angle.x,DegreesToRadians(360.0)))*stop.x+start.x;
     point.y=sin(fmod(angle.x,DegreesToRadians(360.0)))*stop.y+start.y;
-    TracePoint(p,point);
+    if ((status=TracePoint(p,point)) == MagickFail)
+      goto trace_ellipse_done;
     p+=p->coordinates;
   }
   point.x=cos(fmod(angle.y,DegreesToRadians(360.0)))*stop.x+start.x;
   point.y=sin(fmod(angle.y,DegreesToRadians(360.0)))*stop.y+start.y;
-  TracePoint(p,point);
+  if ((status=TracePoint(p,point))  == MagickFail)
+    goto trace_ellipse_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6256,24 +6333,35 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   /* NOTE: p pointing just past last traced point! */
   for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
+ trace_ellipse_done:
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
           const PointInfo end)
 {
-  TracePoint(primitive_info,start);
+  MagickPassFail
+    status = MagickPass;
+
+  if ((status=TracePoint(primitive_info,start)) == MagickFail)
+    goto trace_line_done;
   if ((AbsoluteValue(start.x-end.x) <= MagickEpsilon) &&
       (AbsoluteValue(start.y-end.y) <= MagickEpsilon))
     {
       primitive_info->primitive=PointPrimitive;
       primitive_info->coordinates=1;
-      return;
+      goto trace_line_done;
     }
-  TracePoint(primitive_info+1,end);
+  if ((status=TracePoint(primitive_info+1,end)) == MagickFail)
+    goto trace_line_done;
   (primitive_info+1)->primitive=primitive_info->primitive;
   primitive_info->coordinates=2;
   PRIMINF_CLEAR_FLAGS(primitive_info);
+
+ trace_line_done:
+
+  return status;
 }
 
 /*
@@ -6361,6 +6449,9 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
   size_t
     SubpathOffset;  /* index to start of current subpath */
 
+  MagickPassFail
+    status = MagickPass;
+
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   SubpathOffset = p_PIMgr->StoreStartingAt;
   primitive_info = *pp_PrimitiveInfo + SubpathOffset;
@@ -6430,7 +6521,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&y);
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
-          TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep);
+          if ((status=TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6470,7 +6562,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,4);
+          if ((status=TraceBezier(p_PIMgr,4)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6494,9 +6587,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&x);
           point.x=attribute == 'H' ? x: point.x+x;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
+                return 0; /* FIXME: How to return useful error? */
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6526,9 +6624,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           point.x=attribute == 'L' ? x : point.x+x;
           point.y=attribute == 'L' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
-              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+          {
+            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+              goto trace_path_done;
+            q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
+          }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6570,9 +6673,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             start=point; /*otherwise it's an implied lineto command for both 'M' and 'm'*/
           i++;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if  ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
+                return 0; /* FIXME: How to return useful error? */
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
 
@@ -6616,7 +6724,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,3);
+          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6671,7 +6780,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,4);
+          if ((TraceBezier(p_PIMgr,4)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6725,7 +6835,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,3);
+          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6753,9 +6864,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&y);
           point.y=attribute == 'V' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+                goto trace_path_done;
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6774,9 +6890,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       {
         point=start;
         /* make sure we have at least 100 elements available */
-        if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+        if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+          {
+            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+              goto trace_path_done;
             q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-        TracePoint(q,point);
+          }
+        if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
         p_PIMgr->StoreStartingAt += q->coordinates;
         q+=q->coordinates;
         primitive_info = *pp_PrimitiveInfo + SubpathOffset;
@@ -6808,18 +6929,25 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       q->method=FillToBorderMethod;
   }
   q=primitive_info;
+
+ trace_path_done:;
+
+  if (status == MagickFail)
+    number_coordinates = 0;
+
   return(number_coordinates);
 }
 
-static void
+static MagickPassFail
 TracePoint(PrimitiveInfo *primitive_info,const PointInfo point)
 {
   primitive_info->coordinates=1;
   PRIMINF_CLEAR_FLAGS(primitive_info);
   primitive_info->point=point;
+  return MagickPass;
 }
 
-static void
+static MagickPassFail
 TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   const PointInfo end)
 {
@@ -6832,29 +6960,37 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   register long
     i;
 
+  MagickPassFail
+    status = MagickPass;
+
   /*
     Per the SVG spec, if the width and/or height are zero, rendering
     the element is disabled.
   */
-  if  ( (start.x == end.x) || (start.y == end.y) )
+  if ((start.x == end.x) || (start.y == end.y))
   {
     primitive_info->coordinates = 0;
-    return;
+    goto trace_rectangle_done;
   }
   p=primitive_info;
-  TracePoint(p,start);
+  if ((status = TracePoint(p,start)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   point.x=start.x;
   point.y=end.y;
-  TracePoint(p,point);
+  if ((status = TracePoint(p,point)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
-  TracePoint(p,end);
+  if ((status = TracePoint(p,end)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   point.x=end.x;
   point.y=start.y;
-  TracePoint(p,point);
+  if ((status = TracePoint(p,point)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
-  TracePoint(p,start);
+  if ((status = TracePoint(p,start)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6864,9 +7000,13 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
     p->primitive=primitive_info->primitive;
     p--;
   }
+
+ trace_rectangle_done:
+
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
                     const PointInfo start,const PointInfo end,PointInfo arc)
 {
@@ -6885,6 +7025,9 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
     *primitive_info,
     **pp_PrimitiveInfo;
 
+  MagickPassFail
+    status = MagickPass;
+
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
 
@@ -6894,10 +7037,10 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
     Per the SVG spec, if the width and/or height are zero, rendering
     the element is disabled.
   */
-  if  ( (offset.x == 0.0) || (offset.y == 0.0) )
+  if ((offset.x == 0.0) || (offset.y == 0.0))
   {
-        (*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
-    return;
+    (*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
+    goto round_rectangle_done;
   }
 
   if (arc.x > (0.5*offset.x))
@@ -6909,7 +7052,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+arc.y;
   degrees.x=270.0;
   degrees.y=360.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6917,7 +7061,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+offset.y-arc.y;
   degrees.x=0.0;
   degrees.y=90.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6925,7 +7070,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+offset.y-arc.y;
   degrees.x=90.0;
   degrees.y=180.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6933,15 +7079,20 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+arc.y;
   degrees.x=180.0;
   degrees.y=270.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
   /* need only one element, but make sure there is some headroom */
-  if  ( (p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount )
-    PrimitiveInfoRealloc(p_PIMgr,100);
+  if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+    {
+      if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+        goto round_rectangle_done;
+    }
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
-  TracePoint(p,(*pp_PrimitiveInfo+InitialStoreStartingAt)->point);
+  if ((status=TracePoint(p,(*pp_PrimitiveInfo+InitialStoreStartingAt)->point))  == MagickFail)
+    goto round_rectangle_done;
   p+=p->coordinates;
   p_PIMgr->StoreStartingAt = InitialStoreStartingAt;  /* restore original value */
 
@@ -6952,9 +7103,13 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   /* NOTE: p pointing just past last traced point! */
   for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
+
+ round_rectangle_done:;
+
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceSquareLinecap(PrimitiveInfo *primitive_info,
                    const unsigned long number_vertices,const double offset)
 {
@@ -6999,6 +7154,8 @@ TraceSquareLinecap(PrimitiveInfo *primitive_info,
     dx*(distance+offset)/distance;
   primitive_info[number_vertices-1].point.y=primitive_info[j].point.y+
     dy*(distance+offset)/distance;
+
+  return MagickPass;
 }
 
 static PrimitiveInfo *
@@ -7040,7 +7197,7 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
 
   PrimitiveInfo
     *polygon_primitive,
-    *stroke_polygon;
+    *stroke_polygon = (PrimitiveInfo *) NULL;
 
   register long
     i;
@@ -7057,6 +7214,9 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
     n,
     p,
     q;
+
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Compute initial sizes for paths based on the number of primitive coordinates.  We
@@ -7169,7 +7329,10 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
   mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
   miterlimit=draw_info->miterlimit*draw_info->miterlimit*mid*mid;
   if ((draw_info->linecap == SquareCap) && !closed_path)
-    TraceSquareLinecap(polygon_primitive,number_vertices,mid);
+    {
+      if ((status=TraceSquareLinecap(polygon_primitive,number_vertices,mid)) == MagickFail)
+        goto trace_stroke_polygon_done;
+    }
   offset.x=sqrt(mid*mid/(inverse_slope.p*inverse_slope.p+1.0));
   offset.y=offset.x*inverse_slope.p;
   if ((dy.p*offset.x-dx.p*offset.y) > 0.0)
@@ -7511,6 +7674,9 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
       stroke_polygon[i].primitive=UndefinedPrimitive;
       stroke_polygon[0].coordinates=p+q+2*closed_path+1;
     }
+
+ trace_stroke_polygon_done:;
+
   MagickFreeMemory(path_p);
   MagickFreeMemory(path_q);
   MagickFreeMemory(polygon_primitive);

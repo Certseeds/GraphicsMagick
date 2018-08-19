@@ -35,12 +35,32 @@
 <div class="document">
 
 
+<p>2018-08-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Add missing error-reporting logic
+to return immediately upon memory reallocation failure.  Apply
+memory resource limits to PrimitiveInfo array allocation.  Fixes
+oss-fuzz 9576 &quot;graphicsmagick/coder_MVG_fuzzer: Null-dereference
+READ in DrawImage&quot;, oss-fuzz 9593
+&quot;graphicsmagick/coder_MVG_fuzzer: Out-of-memory in
+graphicsmagick_coder_MVG_fuzzer&quot;, oss-fuzz 9648
+&quot;graphicsmagick/coder_MVG_fuzzer: Unknown signal in
+DrawImage&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-08-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
-* coder/mat.c Explicitly reject non-seekable streams.</blockquote>
+<ul class="simple">
+<li>coder/mat.c Explicitly reject non-seekable streams.</li>
+</ul>
+</blockquote>
 <p>2018-08-15  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
-* coder/mat.c Correctly check GetBlobSize(image) even for zipstreams.</blockquote>
+<ul class="simple">
+<li>coder/mat.c Correctly check GetBlobSize(image) even for zipstreams.</li>
+</ul>
+</blockquote>
 <p>2018-08-14  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -77,11 +97,8 @@ OSS-Fuzz)</li>
 <p>2018-08-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>coders/wpg.c Add mechanism to approve embedded subformats in WPG.</dt>
-<dd>This should mute oss-fuzz 9559.  (Credit to OSS-Fuzz)</dd>
-</dl>
-</li>
+<li>coders/wpg.c Add mechanism to approve embedded subformats in
+WPG.  This should mute oss-fuzz 9559.  (Credit to OSS-Fuzz)</li>
 </ul>
 </blockquote>
 <p>2018-07-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
