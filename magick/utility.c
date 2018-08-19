@@ -3495,34 +3495,73 @@ MagickExport void LocaleUpper(char *string)
 
 MagickExport MagickPassFail MagickAtoFChk(const char *str, double *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   *value=strtod(str,&estr);
   if (str == estr)
-    *value=0.0;
-  return (str == estr ? MagickFail : MagickPass);
+    {
+      *value=0.0;
+      status=MagickFail;
+    }
+#if defined(INFINITY)
+  else if ((*value == +INFINITY) || (*value == -INFINITY))
+    {
+      *value=0.0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
+#endif
+  else if (isnan(*value))
+    {
+      *value=0.0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((int) lvalue != lvalue))
-    lvalue=0;
+  if (str == estr)
+    {
+      lvalue=0;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((int) lvalue != lvalue)
+    {
+      lvalue=0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(int) lvalue;
-  return (str == estr ? MagickFail : MagickPass);
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
-    lvalue=0U;
+  if (str == estr)
+    {
+      lvalue=0U;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((long) ((unsigned int) lvalue) != lvalue)
+    {
+      lvalue=0U;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(unsigned int) lvalue;
-  return (((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
-          ? MagickFail : MagickPass);
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
@@ -3536,14 +3575,24 @@ MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
 
 MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((long) ((unsigned long) lvalue) != lvalue))
-    lvalue=0L;
+  if (str == estr)
+    {
+      lvalue=0L;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((long) ((unsigned long) lvalue) != lvalue)
+    {
+      lvalue=0L;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(unsigned long) lvalue;
-  return (((str == estr) || ((long) ((unsigned long) lvalue) != lvalue)) ?
-          MagickFail : MagickPass);
+  return status;
 }
 
 /*

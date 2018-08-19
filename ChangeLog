@@ -1,5 +1,12 @@
 2018-08-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/utility.c (MagickAtoFChk): Add additional validation
+	checks for floating point values.  NAN and +/- INFINITY values
+	also map to 0.0. Fixes oss-fuzz 9630
+	"graphicsmagick/coder_MVG_fuzzer: Integer-overflow in
+	IsNexusInCore" and oss-fuzz 9612 "graphicsmagick/coder_MVG_fuzzer:
+	Integer-overflow in SetCacheNexus". (Credit to OSS-Fuzz)
+
 	* magick/render.c (DrawImage): Add missing error-reporting logic
 	to return immediately upon memory reallocation failure.  Apply
 	memory resource limits to PrimitiveInfo array allocation.  Fixes
