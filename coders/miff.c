@@ -782,7 +782,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 
   unsigned int
     colors,
+    comment_count,
     depth,
+    keyword_count,
     packet_size,
     quantum_size;
 
@@ -828,6 +830,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     image->depth=8;
     image->compression=NoCompression;
     image->storage_class=DirectClass;
+    comment_count=0;
+    keyword_count=0;
     while (isgraph(c) && (c != ':'))
     {
       register char
@@ -840,6 +844,26 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 
           size_t
             comment_length;
+
+          /*
+            Insist that format is identified prior to any comments.
+          */
+          if (id[0] == '\0')
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Comment precedes format identifier (id=ImageMagick)");
+              ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+
+          /*
+            Insist that only one comment is provided
+          */
+          if (comment_count > 0)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Too many comments!");
+              ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
 
           /*
             Read comment-- any text between { }.
@@ -870,7 +894,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
             ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
               image);
           *p='\0';
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Comment: \"%s\"", comment);
           (void) SetImageAttribute(image,"comment",comment);
+          comment_count++;
           MagickFreeMemory(comment);
           c=ReadBlobByte(image);
         }
@@ -899,7 +925,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
             } while ((c != '=') && (c != EOF));
             *p='\0';
             if (c == EOF)
-              ThrowMIFFReaderException(CorruptImageWarning,ImproperImageHeader,image);
+              ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
 
             /*
               Get values.
@@ -940,8 +966,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     break;
               }
             *p='\0';
+            keyword_count++;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "keyword=\"%s\" values=\"%s\"",keyword,values);
+                                  "keyword[%u]=\"%s\" values=\"%s\"",keyword_count,keyword,values);
             /*
               Assign a value to the specified keyword.
             */

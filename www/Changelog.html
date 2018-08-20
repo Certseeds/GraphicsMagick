@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2018-08-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/mpc.c (ReadMPCImage): Insist that the format be
+identified prior to any comment, and that there is only one
+comment.</li>
+<li>coders/miff.c (ReadMIFFImage): Insist that the format be
+identified prior to any comment, and that there is only one
+comment.  Fixes oss-fuzz 9979 &quot;graphicsmagick/coder_MIFF_fuzzer:
+Timeout in graphicsmagick_coder_MIFF_fuzzer&quot;.  This is not a
+serious issue, but the code runs slowly under UBSAN.  (Credit to
+OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-08-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

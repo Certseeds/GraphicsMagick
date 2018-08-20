@@ -1,3 +1,16 @@
+2018-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mpc.c (ReadMPCImage): Insist that the format be
+	identified prior to any comment, and that there is only one
+	comment.
+
+	* coders/miff.c (ReadMIFFImage): Insist that the format be
+	identified prior to any comment, and that there is only one
+	comment.  Fixes oss-fuzz 9979 "graphicsmagick/coder_MIFF_fuzzer:
+	Timeout in graphicsmagick_coder_MIFF_fuzzer".  This is not a
+	serious issue, but the code runs slowly under UBSAN.  (Credit to
+	OSS-Fuzz)
+
 2018-08-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/utility.c (MagickAtoFChk): Add additional validation

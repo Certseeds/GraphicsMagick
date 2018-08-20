@@ -164,6 +164,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   unsigned int
+    comment_count,
+    keyword_count,
     status;
 
   unsigned long
@@ -215,6 +217,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->depth=8;
     image->compression=NoCompression;
     image->storage_class=DirectClass;
+    comment_count=0;
+    keyword_count=0;
     while (isgraph(c) && (c != ':'))
     {
       register char
@@ -227,6 +231,26 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           size_t
             comment_length;
+
+          /*
+            Insist that format is identified prior to any comments.
+          */
+          if (id[0] == '\0')
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Comment precedes format identifier (id=MagickCache)");
+              ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+
+          /*
+            Insist that only one comment is provided
+          */
+          if (comment_count > 0)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Too many comments!");
+              ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
 
           /*
             Read comment-- any text between { }.
@@ -258,6 +282,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image);
           *p='\0';
           (void) SetImageAttribute(image,"comment",comment);
+          comment_count++;
           MagickFreeMemory(comment);
           c=ReadBlobByte(image);
         }
@@ -327,8 +352,9 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     break;
               }
             *p='\0';
+            keyword_count++;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "keyword=\"%s\" values=\"%s\"",keyword,values);
+                                  "keyword[%u]=\"%s\" values=\"%s\"",keyword_count,keyword,values);
             /*
               Assign a value to the specified keyword.
             */
