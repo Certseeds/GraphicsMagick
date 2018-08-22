@@ -4104,7 +4104,7 @@ SetCacheNexus(Image *image,const long x,const long y,
       */
       assert(image->cache != (Cache) NULL);
       cache_info=(CacheInfo *) image->cache;
-      offset=y*(magick_off_t) cache_info->columns+x;
+      offset=y*(magick_off_t) cache_info->columns+x; /* FIXME: oss-fuzz 9612 signed integer overflow */
       if (offset >= 0)
         {
           magick_uint64_t

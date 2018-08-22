@@ -1,3 +1,11 @@
+2018-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPrimitiveToPath): Need to enlarge
+	PathInfo array allocation to avoid possible heap write overflow.
+	Fixes oss-fuzz 9651 "graphicsmagick/coder_MVG_fuzzer:
+	Heap-buffer-overflow in ConvertPrimitiveToPath". (Credit to
+	OSS-Fuzz)
+
 2018-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mpc.c (ReadMPCImage): Insist that the format be

@@ -879,7 +879,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       break;
   }
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
-  path_info=MagickAllocateArray(PathInfo *,(2*i+3),sizeof(PathInfo));
+  path_info=MagickAllocateArray(PathInfo *,(2*i+5),sizeof(PathInfo));
   if (path_info == (PathInfo *) NULL)
     return((PathInfo *) NULL);
   coordinates=0;
