@@ -1,3 +1,8 @@
+2018-08-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c This should fix intentional 64 bit file offset
+        overflow as depictedin OSS-fuzz-9936. Thanks to OSS-Fuzz.
+
 2018-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (ConvertPrimitiveToPath): Need to enlarge

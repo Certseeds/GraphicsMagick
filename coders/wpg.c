@@ -236,27 +236,26 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
 }
 
 
-static void Rd_WP_DWORD(Image *image,unsigned long *d)
+static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
-  unsigned char
-    b;
+  unsigned char b;
 
-  b=ReadBlobByte(image);
-  *d=b;
+  b = ReadBlobByte(image);
+  *d = b;
   if (b < 0xFFU)
-    return;
-  b=ReadBlobByte(image);
-  *d=(unsigned long) b;
-  b=ReadBlobByte(image);
+    return 1;
+  b = ReadBlobByte(image);
+  *d = (unsigned long) b;
+  b = ReadBlobByte(image);
   *d+=(unsigned long) b*256l;
   if (*d < 0x8000)
-    return;
+    return 3;
   *d=(*d & 0x7FFF) << 16;
+  b = ReadBlobByte(image);
+  *d += (unsigned long) b;
   b=ReadBlobByte(image);
-  *d+=(unsigned long) b;
-  b=ReadBlobByte(image);
-  *d+=(unsigned long) b*256l;
-  return;
+  *d += (unsigned long) b*256l;
+  return 5;
 }
 
 
@@ -928,7 +927,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   typedef struct
   {
     unsigned long FileId;
-    ExtendedSignedIntegralType DataOffset;
+    ExtendedSignedIntegralType DataOffset;  /* magick_uint32_t */
     unsigned int ProductType;
     unsigned int FileType;
     unsigned char MajorVersion;
@@ -1045,6 +1044,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   unsigned char
     *BImgBuff;
   BlobInfo *TmpBlob;
+  magick_off_t FilePos, filesize;
 
   tCTM CTM;         /*current transform matrix*/
 
@@ -1087,28 +1087,49 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "File type: %d", Header.FileType);
 
+	/* Determine file size. */
+  filesize = GetBlobSize(image);	      /* zero is returned if the size cannot be determined. */
+  if(filesize>0 && BlobIsSeekable(image))
+  { 
+    if(filesize > (magick_off_t)0xFFFFFFFF)
+        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
+  }
+  else
+  {
+    filesize = (magick_off_t)0xFFFFFFFF;
+    if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          "Blob is not seekable, MAT reader could fail.");
+    ThrowReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
+  }
+
   switch(Header.FileType)
     {
     case 1:     /* WPG level 1 */
       BitmapHeader2.RotAngle = 0;
-
+      FilePos = Header.DataOffset;
       while(!EOFBlob(image)) /* object parser loop */
         {
-          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
+          if(SeekBlob(image,FilePos,SEEK_SET) != FilePos)
             break;
           if(EOFBlob(image))
             break;
 
-          Rec.RecType=(i=ReadBlobByte(image));
-          if(i==EOF)
-            break;
-          Rd_WP_DWORD(image,&Rec.RecordLength);
-          if ((magick_off_t) Rec.RecordLength > GetBlobSize(image))
+          Rec.RecType = (i=ReadBlobByte(image));
+          if(i==EOF) break;
+	  FilePos += 1;
+
+          FilePos += Rd_WP_DWORD(image,&Rec.RecordLength);
+          if((magick_off_t)Rec.RecordLength > filesize)
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-          if(EOFBlob(image))
-            break;
-
-          Header.DataOffset=TellBlob(image)+Rec.RecordLength;
+          if(EOFBlob(image)) break;
+	  
+          if(FilePos>filesize || FilePos<Header.DataOffset)
+	  {
+            if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                "Invalid record length: %X", (unsigned)Rec.RecType);
+	    break;
+	  }
+          Header.DataOffset = FilePos;
 
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec.RecType);
