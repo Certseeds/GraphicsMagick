@@ -1110,9 +1110,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
       while(!EOFBlob(image)) /* object parser loop */
         {
           if(SeekBlob(image,FilePos,SEEK_SET) != FilePos)
-            break;
-          if(EOFBlob(image))
-            break;
+            break;          
 
           Rec.RecType = (i=ReadBlobByte(image));
           if(i==EOF) break;
