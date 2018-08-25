@@ -245,6 +245,18 @@ extern "C" {
 #endif
 
 /*
+  The isnan() function was implemented starting in Visual Studio 2003
+*/
+#if (defined(_MSC_VER) && _MSC_VER < 1700 && !defined(isnan))
+#  if defined(_WIN64)
+#    define isnan(f) _isnanf(f)
+#  else
+#    define isnan(f) _isnan(f)
+#  endif
+#endif
+
+
+/*
   Typedef declarations.
 */
 typedef UINT (CALLBACK *LPFNDLLFUNC1)(DWORD,UINT);
