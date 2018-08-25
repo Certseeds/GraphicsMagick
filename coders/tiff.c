@@ -1353,22 +1353,28 @@ QuantumTransferMode(const Image *image,
           }
         case PHOTOMETRIC_LOGL:
           {
-            *quantum_type=CIEYQuantum;
-            *quantum_samples=1;
+            if (!image->matte)
+              {
+                *quantum_type=CIEYQuantum;
+                *quantum_samples=1;
+              }
             break;
           }
         case PHOTOMETRIC_LOGLUV:
           {
-            if (samples_per_pixel == 1)
+            if (!image->matte)
               {
-                /* FIXME: this might not work. */
-                *quantum_type=CIEYQuantum;
-                *quantum_samples=1;
-              }
-            else
-              {
-                *quantum_type=CIEXYZQuantum;
-                *quantum_samples=3;
+                if (samples_per_pixel == 1)
+                  {
+                    /* FIXME: this might not work. */
+                    *quantum_type=CIEYQuantum;
+                    *quantum_samples=1;
+                  }
+                else
+                  {
+                    *quantum_type=CIEXYZQuantum;
+                    *quantum_samples=3;
+                  }
               }
             break;
           }

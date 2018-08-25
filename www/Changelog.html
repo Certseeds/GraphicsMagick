@@ -38,6 +38,10 @@
 <p>2018-08-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/tiff.c (&quot;QuantumTransferMode&quot;): CIE Log images with an
+alpha channel are not supported.  Fixes oss-fuzz 10013
+&quot;graphicsmagick/coder_TIFF_fuzzer: Use-of-uninitialized-value in
+DisassociateAlphaRegion&quot;. (Credit to OSS-Fuzz)</li>
 <li>magick/render.c (DrawImage): SetImageAttribute() appends new
 text to any existing value, leading to every increasing memory
 consumption if the existing value is not deleted first by the
