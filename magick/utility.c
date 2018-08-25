@@ -6357,7 +6357,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
 
         /* Extract attribute key string. */
         p++;
-        for (i=0; (i < MaxTextExtent) && (*p) && (*p != ']'); i++)
+        for (i=0; (i < MaxTextExtent-1) && (*p) && (*p != ']'); i++)
           {
           key[i]=(*p++);
           }
