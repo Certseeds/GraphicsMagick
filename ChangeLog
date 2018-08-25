@@ -1,5 +1,11 @@
 2018-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Be more precise about error
+	detection and reporting, and return from an error more quickly.
+	Also added MAX_DRAWIMAGE_RECURSION pre-processor definition to
+	allow adjusting the drawing recursion limit.  The drawing
+	recursion limit is still 100, which seems exceptionally generous.
+
 	* magick/constitute.c (WriteImage): Produce a more useful error
 	message if an encoding delegate is not available.
 

@@ -65,6 +65,11 @@
   Define declarations.
 */
 #define BezierQuantum  200
+
+/* Maximum amount of recursion allowed when executing MVG */
+#if !defined(MAX_DRAWIMAGE_RECURSION)
+#  define MAX_DRAWIMAGE_RECURSION 100
+#endif /* defined(MAX_DRAWIMAGE_RECURSION) */
 
 /*
   Typedef declarations.
@@ -1646,7 +1651,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
     *attribute;
 
   DrawInfo
-    *clone_info;
+    *clone_info = (DrawInfo *) NULL;
 
   MagickPassFail
     status=MagickPass;
@@ -1659,8 +1664,13 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   assert(draw_info != (const DrawInfo *) NULL);
   FormatString(clip_path,"[%.1024s]",name);
   attribute=GetImageAttribute(image,clip_path);
+  /*
+    FIXME: Desired error handling for missing clip-path attribute is
+    not clear (was returning MagickFail).  Maybe the caller does not
+    know.
+  */
   if (attribute == (ImageAttribute *) NULL)
-    return(MagickFail);
+    return(MagickPass);
   image_clip_mask = *ImageGetClipMask(image);
   if (image_clip_mask == (Image *) NULL)
     {
@@ -1671,8 +1681,10 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
         &image->exception);
       if (clip_mask == (Image *) NULL)
         return(MagickFail);
-      (void) SetImageClipMask(image,clip_mask);
+      status=SetImageClipMask(image,clip_mask);
       DestroyImage(clip_mask);
+      if (status == MagickFail)
+        return(MagickFail);
       image_clip_mask = *ImageGetClipMask(image);
     }
   else
@@ -1684,14 +1696,18 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       DestroyImageAttributes(image_clip_mask);
       CloneImageAttributes(image_clip_mask,image);
     }
-  (void) QueryColorDatabase("none",&image_clip_mask->background_color,
-    &image->exception);
-  (void) SetImage(image_clip_mask,TransparentOpacity);
+  if ((status=QueryColorDatabase("none",&image_clip_mask->background_color,
+                                 &image->exception)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=SetImage(image_clip_mask,TransparentOpacity)) == MagickFail)
+    goto draw_clip_path_end;
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "\nbegin clip-path %.1024s",draw_info->extra->clip_path);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) CloneString(&clone_info->primitive,attribute->value);
-  (void) QueryColorDatabase("white",&clone_info->fill,&image->exception);
+  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=QueryColorDatabase("white",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_clip_path_end;
 
   /*
     According to the SVG spec:
@@ -1709,15 +1725,32 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   if  ( IsDrawInfoSVGCompliant(clone_info) )
     {
       /* changes to fill, etc. will be ignored */
-      (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);  /* SVG default */
+      if ((status=QueryColorDatabase("none",
+                                     &clone_info->stroke,&image->exception))  /* SVG default */
+          == MagickFail)
+        {
+          goto draw_clip_path_end;
+        }
       clone_info->stroke_width = 0.0;   /* SVG default */
       clone_info->opacity = OpaqueOpacity;  /* SVG default */
     }
 
-  MagickFreeMemory(clone_info->extra->clip_path);
-  status&=DrawImage(image_clip_mask,clone_info);
-  status&=NegateImage(image_clip_mask,False);
-  DestroyDrawInfo(clone_info);
+  if (clone_info != (DrawInfo *) NULL)
+    MagickFreeMemory(clone_info->extra->clip_path);
+  if ((status=DrawImage(image_clip_mask,clone_info)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=NegateImage(image_clip_mask,False)) == MagickFail)
+    goto draw_clip_path_end;
+
+ draw_clip_path_end:
+
+  if (clone_info != (DrawInfo *) NULL)
+    {
+      MagickFreeMemory(clone_info->extra->clip_path);
+      DestroyDrawInfo(clone_info);
+      clone_info = (DrawInfo *) NULL;
+    }
+
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
   return(status);
 }
@@ -1762,7 +1795,7 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
     *attribute;
 
   DrawInfo
-    *clone_info;
+    *clone_info = (DrawInfo *) NULL;
 
   MagickPassFail
     status=MagickPass;
@@ -1787,9 +1820,11 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
         &image->exception);
       if (composite_mask == (Image *) NULL)
         return(MagickFail);
-      (void) SetImageCompositeMask(image,composite_mask);
+      status=SetImageCompositeMask(image,composite_mask);
       DestroyImage(composite_mask);
       image_composite_mask = *ImageGetCompositeMask(image);
+      if (status == MagickFail)
+        return(MagickFail);
     }
   else
     {
@@ -1800,19 +1835,26 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
       DestroyImageAttributes(image_composite_mask);
       CloneImageAttributes(image_composite_mask,image);
     }
-  (void) QueryColorDatabase("none",&image_composite_mask->background_color,
-    &image->exception);
-  (void) SetImage(image_composite_mask,TransparentOpacity);
+  if ((status=QueryColorDatabase("none",&image_composite_mask->background_color,
+                                 &image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
+  if ((status=SetImage(image_composite_mask,TransparentOpacity)) == MagickFail)
+    goto draw_composite_mask_end;
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "\nbegin mask %.1024s",draw_info->extra->composite_path);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) CloneString(&clone_info->primitive,attribute->value);
+  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+    goto draw_composite_mask_end;
   /* these settings are per the SVG spec */
-  (void) QueryColorDatabase("black",&clone_info->fill,&image->exception);
-  (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);
+  if ((status=QueryColorDatabase("black",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
+  if ((status=QueryColorDatabase("none",&clone_info->stroke,&image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
   clone_info->stroke_width = 1.0;
   clone_info->opacity = OpaqueOpacity;
-  status&=DrawImage(image_composite_mask,clone_info);
+  if ((status=DrawImage(image_composite_mask,clone_info)) == MagickFail)
+    goto draw_composite_mask_end;
+ draw_composite_mask_end:;
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end composite-path");
   return(status);
@@ -2074,7 +2116,7 @@ static MagickPassFail DrawImageRecurseIn(Image *image)
   recurse_level++;
   DrawImageSetCurrentRecurseLevel(image,recurse_level);
 
-  if ((recurse_level < 0) || (recurse_level > 100))
+  if ((recurse_level < 0) || (recurse_level > MAX_DRAWIMAGE_RECURSION))
     {
       char
         recursion_str[MaxTextExtent];
@@ -2619,8 +2661,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 break;
               }
             (void) CloneString(&graphic_context[n]->extra->clip_path,token);
-            (void) DrawClipPath(image,graphic_context[n],
-              graphic_context[n]->extra->clip_path);
+            if (DrawClipPath(image,graphic_context[n],
+                             graphic_context[n]->extra->clip_path) == MagickFail)
+              status=MagickFail;
             break;
           }
         if (LocaleCompare("clip-rule",keyword) == 0)
