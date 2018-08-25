@@ -1,5 +1,13 @@
 2018-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): SetImageAttribute() appends new
+	text to any existing value, leading to every increasing memory
+	consumption if the existing value is not deleted first by the
+	unwary.  Fixes oss-fuzz 9983 "graphicsmagick/coder_MVG_fuzzer:
+	Timeout in graphicsmagick_coder_MVG_fuzzer" and oss-fuzz 10016
+	"graphicsmagick/coder_MVG_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MVG_fuzzer". (Credit to OSS-Fuzz)
+
 	* magick/utility.c (TranslateTextEx): Fix off-by-one in loop
 	bounds check which allowed a one-byte stack write overflow.  Fixes
 	oss-fuzz 10055 "graphicsmagick/coder_MVG_fuzzer:

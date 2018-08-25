@@ -2192,6 +2192,7 @@ char *  ExtractTokensBetweenPushPop (
       (void) strncpy(token,p,ExtractedLength);
     }
   token[ExtractedLength] = '\0';
+  (void) SetImageAttribute(image,name,NULL);
   (void) SetImageAttribute(image,name,token);
   if (pAfterPopString != NULL)
     q = pAfterPopString;  /* skip ID string after "pop" */
@@ -2453,6 +2454,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   if (primitive == (char *) NULL)
     return(MagickFail);
   primitive_extent=strlen(primitive);
+
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(image,"[MVG]",NULL);
   (void) SetImageAttribute(image,"[MVG]",primitive);
   if (getenv("MAGICK_SKIP_RENDERING") != NULL)
     {
@@ -3309,12 +3313,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 FormatString(key,"[%.1024s]",name);
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
                 FormatString(key,"[%.1024s-geometry]",name);
                 FormatString(geometry,"%gx%g%+g%+g",
                   Max(AbsoluteValue(bounds.x2-bounds.x1+1),1),
                   Max(AbsoluteValue(bounds.y2-bounds.y1+1),1),
                   bounds.x1,bounds.y1);
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,geometry);
                 MagickGetToken(q,&q,token,token_max_length);
                 break;
@@ -3398,10 +3404,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
                 FormatString(key,"[%.1024s]",name);
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
                 FormatString(key,"[%.1024s-geometry]",name);
                 FormatString(geometry,"%lux%lu%+ld%+ld",bounds.width,
                   bounds.height,bounds.x,bounds.y);
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,geometry);
                 MagickGetToken(q,&q,token,token_max_length);
                 break;
