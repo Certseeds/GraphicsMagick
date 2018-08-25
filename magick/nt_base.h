@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include "magick/delegate.h"
+
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 #include <windows.h>
@@ -248,6 +249,9 @@ extern "C" {
   The function prototype for isnan() and _isnanf() comes from <math.h>
   and the prototype for _isnan() comes from <float.h>.  The _isnanf()
   function is only available in _WIN64 builds.
+
+  Some useful documentation was found at
+  https://msdn.microsoft.com/en-us/library/tzthab44.aspx.
 */
 #if (defined(_MSC_VER) && _MSC_VER < 1700 && !defined(isnan))
 #  if defined(_WIN64)
