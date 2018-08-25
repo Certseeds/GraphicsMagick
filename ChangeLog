@@ -1,5 +1,8 @@
 2018-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/constitute.c (WriteImage): Produce a more useful error
+	message if an encoding delegate is not available.
+
 	* magick/nt_base.h (isnan): Try adding a MSVC replacement for
 	missing isnan() function.  Not yet tested.
 
