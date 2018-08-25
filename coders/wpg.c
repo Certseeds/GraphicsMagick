@@ -1121,6 +1121,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if(EOFBlob(image)) break;
 	  
+	  FilePos += (magick_off_t)Rec.RecordLength;
           if(FilePos>filesize || FilePos<Header.DataOffset)
 	  {
             if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
