@@ -856,13 +856,16 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     p,  /* first point in subpath (i.e., just did a "moveto" to this point) */
     q;  /* previous point in subpath */
 
-  register long
+  register size_t
     i,
     n;
 
-  long
-    coordinates,  /* number of points in subpath */
+  size_t
+    path_info_elem, /* Number of elements in path_info */
     start;        /* index to start of subpath in path_info */
+
+  ssize_t
+    coordinates;  /* number of points in subpath */
 
   MagickBool
     IsClosedSubPath;
@@ -884,7 +887,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       break;
   }
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
-  path_info=MagickAllocateArray(PathInfo *,(2*i+5),sizeof(PathInfo));
+  path_info_elem=(2*i+6);
+  path_info=MagickAllocateArray(PathInfo *,path_info_elem,sizeof(PathInfo));
   if (path_info == (PathInfo *) NULL)
     return((PathInfo *) NULL);
   coordinates=0;
@@ -927,6 +931,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
         path_info[n].point=primitive_info[i].point;
         q=primitive_info[i].point;  /* will be "previous point" for next iteration */
         n++;
+        if (n == path_info_elem - 1)
+          break;
       }
     if (coordinates > 0)
       continue;   /* go process next point in current subpath */
@@ -944,6 +950,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       more points (repeat of current point + subpath start point) to "virtually"
       close it (this is a "ghost line").
     */
+    if ((start >= path_info_elem - 3) || (n >= path_info_elem - 3))
+      break;
     path_info[start].code=OpenCode;
     path_info[n].code=GhostlineCode;
     path_info[n].point=primitive_info[i].point;
@@ -2306,10 +2314,12 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
     {
       const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
       const size_t needed_memory=MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo));
-      const size_t added_memory=needed_memory-have_memory;
+      const magick_uint64_t added_memory=needed_memory-have_memory;
 
       /* Need to realloc */
-      if ((status=AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
+      if (((*p_PIMgr->p_AllocCount > 0) && (have_memory == 0)) ||
+          ((NeedAllocCount > 0) && (needed_memory == 0)) ||
+          (status=AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
         {
           ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
           status = MagickFail;

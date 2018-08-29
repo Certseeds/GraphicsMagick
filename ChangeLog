@@ -1,3 +1,10 @@
+2018-08-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPrimitiveToPath): Second attempt to
+	prevent heap write overflow of PathInfo array.  Fixes oss-fuzz
+	10096 "Heap-buffer-overflow in ConvertPrimitiveToPath". (Credit to
+	OSS-Fuzz)
+
 2018-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c ("QuantumTransferMode"): CIE Log images with an
