@@ -389,6 +389,22 @@ return RetVal;
     } \
 }
 
+
+/** Call this function to ensure that all data matrix is filled with something. This function
+ * is used only to error recovery. */
+static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image, 
+			 int bpp, long ldblk)
+{
+  while(y < image->rows)
+  {
+    if(x<ldblk) memset(BImgBuff+x, 0, ldblk-x);
+    InsertRow(BImgBuff,y,image,bpp);
+    x = 0;
+    y++;
+  }
+}
+
+
 /* WPG1 raster reader.
  * @return      0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl
                 -5 - blob read error; -6 - row insert problem  */
@@ -426,6 +442,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
       i = ReadBlobByte(image);
       if(i==EOF)
         {
+	  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
           MagickFreeMemory(BImgBuff);
           return(-5);
         }
@@ -457,6 +474,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
           i = ReadBlobByte(image);
           if(i==EOF)
           {
+	    ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
             MagickFreeMemory(BImgBuff);
             return -7;
           }
@@ -466,6 +484,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
             InsertRow(BImgBuff,y,image,bpp);   /* May be line flush can fix a situation. */
             x=0;
             y++;
+	    ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
             MagickFreeMemory(BImgBuff);
             return(-3);
           }
@@ -474,11 +493,13 @@ static int UnpackWPGRaster(Image *image,int bpp)
 			/* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
                 {
+		  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 {
+		  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
@@ -1098,7 +1119,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   {
     filesize = (magick_off_t)0xFFFFFFFF;
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-          "Blob is not seekable, MAT reader could fail.");
+          "Blob is not seekable, WPG reader could fail.");
     ThrowReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
   }
 
@@ -1132,6 +1153,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec.RecType);
+	  //printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType);
 
           switch(Rec.RecType)
             {
