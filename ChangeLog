@@ -1,3 +1,12 @@
+2018-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadElement): Add more size checks.
+
+	* coders/jnx.c (ExtractTileJPG): Enforce that JPEG tiles are read
+	by the JPEG coder.  Fixes oss-fuzz 10147
+	"graphicsmagick/coder_JNX_fuzzer: Use-of-uninitialized-value in
+	funcDCM_PhotometricInterpretation". (Credit to OSS-Fuzz)
+
 2018-09-10  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Zero fill raster error recovery.

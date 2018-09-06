@@ -123,9 +123,15 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
               Image
                 *image2;
 
+              ImageInfo
+                *clone_info;
+
+              clone_info=CloneImageInfo(image_info);
+
               /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
 
-              if ((image2 = BlobToImage(image_info,blob,alloc_size,exception))
+              (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
+              if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
                   != NULL)
                 {
                   /*
@@ -156,6 +162,8 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
 
                   AppendImageToList(&image, image2);
                 }
+              DestroyImageInfo(clone_info);
+              clone_info = (ImageInfo *) NULL;
             }
           else
             {

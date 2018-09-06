@@ -3033,18 +3033,18 @@ static MagickPassFail funcDCM_SamplesPerPixel(Image *image,DicomStream *dcm,Exce
 static MagickPassFail funcDCM_PhotometricInterpretation(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
   char photometric[MaxTextExtent];
-  int i;
+  unsigned int i;
 
   ARG_NOT_USED(image);
   ARG_NOT_USED(exception);
 
-  if (dcm->data == (unsigned char *) NULL)
+  if ((dcm->data == (unsigned char *) NULL) || (dcm->length == 0))
     {
       ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
       return MagickFail;
     }
 
-  for (i=0; i < (long) Min(dcm->length, MaxTextExtent-1); i++)
+  for (i=0; i < Min(dcm->length, MaxTextExtent-1); i++)
     photometric[i]=dcm->data[i];
   photometric[i]='\0';
 
@@ -3688,6 +3688,11 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
           return MagickFail;
         }
       size=MagickArraySize(dcm->quantum,dcm->length);
+      if (size == 0)
+        {
+          ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+          return MagickFail;
+        }
       if (ReadBlob(image,size,(char *) dcm->data) != size)
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
