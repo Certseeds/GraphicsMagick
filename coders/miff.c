@@ -1033,6 +1033,22 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                         image->storage_class=DirectClass;
                     break;
                   }
+                /* Legacy ImageMagick 4.2.9 used keyword "color-profile" for ICC profile */
+                if (LocaleCompare(keyword,"color-profile") == 0)
+                  {
+                    i=(long) number_of_profiles;
+                    MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
+                    if (profiles == (ProfileInfo *) NULL)
+                      {
+                        MagickFreeMemory(values);
+                        ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                      }
+                    profiles[i].name=AllocateString("icc");
+                    profiles[i].length=MagickAtoL(values);
+                    profiles[i].info=(unsigned char *) NULL;
+                    number_of_profiles++;
+                    break;
+                  }
                 if (LocaleCompare(keyword,"colors") == 0)
                   {
                     colors=MagickAtoL(values);
