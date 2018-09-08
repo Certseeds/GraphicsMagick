@@ -928,6 +928,17 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
 
             /*
+              Insist that the first keyword must be 'id' (id=ImageMagick)
+            */
+            if ((keyword_count == 0) && (LocaleCompare(keyword,"id") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword must be 'id' (have '%s')",
+                                      keyword);
+                ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
+
+            /*
               Get values.
 
               Values not containing spaces are terminated by the first
@@ -969,6 +980,15 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
             keyword_count++;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "keyword[%u]=\"%s\" values=\"%s\"",keyword_count,keyword,values);
+            /*
+              Insist that the first keyword value must be 'ImageMagick' (id=ImageMagick)
+            */
+            if ((keyword_count == 1) && (LocaleCompare(values,"ImageMagick") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword/value must be 'id=ImageMagick'");
+                ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
             /*
               Assign a value to the specified keyword.
             */

@@ -1,3 +1,11 @@
+2018-09-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mpc.c (ReadMPCImage): Require that first keyword/value be
+	id=MagickCache
+
+	* coders/miff.c (ReadMIFFImage): Require that first keyword/value
+	be id=ImageMagick.
+
 2018-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c (DCM_ReadElement): Add more size checks.

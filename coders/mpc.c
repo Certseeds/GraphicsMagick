@@ -314,6 +314,17 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               ThrowMPCReaderException(CorruptImageWarning,ImproperImageHeader,image);
 
             /*
+              Insist that the first keyword must be 'id' (id=MagickCache)
+            */
+            if ((keyword_count == 0) && (LocaleCompare(keyword,"id") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword must be 'id' (have '%s')",
+                                      keyword);
+                ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
+
+            /*
               Get values.
 
               Values not containing spaces are terminated by the first
@@ -355,6 +366,15 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
             keyword_count++;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "keyword[%u]=\"%s\" values=\"%s\"",keyword_count,keyword,values);
+            /*
+              Insist that the first keyword value must be 'MagickCache' (id=MagickCache)
+            */
+            if ((keyword_count == 1) && (LocaleCompare(values,"MagickCache") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword/value must be 'id=MagickCache'");
+                ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
             /*
               Assign a value to the specified keyword.
             */
