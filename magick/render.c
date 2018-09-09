@@ -1743,8 +1743,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       clone_info->opacity = OpaqueOpacity;  /* SVG default */
     }
 
-  if (clone_info != (DrawInfo *) NULL)
-    MagickFreeMemory(clone_info->extra->clip_path);
+  MagickFreeMemory(clone_info->extra->clip_path);
   if ((status=DrawImage(image_clip_mask,clone_info)) == MagickFail)
     goto draw_clip_path_end;
   if ((status=NegateImage(image_clip_mask,False)) == MagickFail)

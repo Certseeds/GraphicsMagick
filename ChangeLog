@@ -1,5 +1,11 @@
 2018-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawClipPath): Fix Coverity 319663 "Null
+	pointer dereferences".  Totally insignificant.
+
+	* coders/wpg.c (ReadWPGImage): Mask/fix Coverity 319664 "Error
+	handling issues".
+
 	* magick/attribute.c (FindEXIFAttribute): Change size types from
 	signed to unsigned and check for unsigned overflow.
 	(GenerateEXIFAttribute): Change size types from signed to unsigned
