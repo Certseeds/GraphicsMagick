@@ -1,5 +1,12 @@
 2018-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/attribute.c (FindEXIFAttribute): Change size types from
+	signed to unsigned and check for unsigned overflow.
+	(GenerateEXIFAttribute): Change size types from signed to unsigned
+	and check for unsigned overflow. Fixes oss-fuzz 10283
+	"graphicsmagick/coder_JPG_fuzzer: Integer-overflow in
+	GenerateEXIFAttribute". (Credit to OSS-Fuzz)
+
 	* coders/sfw.c (ReadSFWImage): Enforce that file is read using the
 	JPEG reader. (Credit to OSS-Fuzz)
 

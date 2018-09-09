@@ -38,6 +38,12 @@
 <p>2018-09-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/attribute.c (FindEXIFAttribute): Change size types from
+signed to unsigned and check for unsigned overflow.
+(GenerateEXIFAttribute): Change size types from signed to unsigned
+and check for unsigned overflow. Fixes oss-fuzz 10283
+&quot;graphicsmagick/coder_JPG_fuzzer: Integer-overflow in
+GenerateEXIFAttribute&quot;. (Credit to OSS-Fuzz)</li>
 <li>coders/sfw.c (ReadSFWImage): Enforce that file is read using the
 JPEG reader. (Credit to OSS-Fuzz)</li>
 <li>coders/miff.c (ReadMIFFImage): Fix leak of 'values' buffer due
