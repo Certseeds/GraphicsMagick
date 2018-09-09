@@ -714,6 +714,8 @@ static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 
 #define ThrowMIFFReaderException(code_,reason_,image_) \
 do { \
+  MagickFreeMemory(comment); \
+  MagickFreeMemory(values); \
   if (number_of_profiles > 0) \
     { \
       unsigned int _index; \
@@ -794,6 +796,10 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
   unsigned int
     number_of_profiles=0;
 
+  char
+    *comment = NULL,
+    *values = NULL;
+
 #if defined(HasZLIB)
   z_stream
     zip_info;
@@ -839,9 +845,6 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 
       if (c == '{')
         {
-          char
-            *comment;
-
           size_t
             comment_length;
 
@@ -903,9 +906,6 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
       else
         if (isalnum(c))
           {
-            char
-              *values;
-
             size_t
               values_length;
 

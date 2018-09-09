@@ -128,6 +128,8 @@ static MagickBool IsMPC(const unsigned char *magick,const size_t length)
 
 #define ThrowMPCReaderException(code_,reason_,image_) \
 do { \
+  MagickFreeMemory(comment); \
+  MagickFreeMemory(values); \
   if (number_of_profiles > 0) \
     { \
       unsigned int _index; \
@@ -176,6 +178,10 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned int
     number_of_profiles=0;
+
+  char
+    *comment = NULL,
+    *values = NULL;
 
   /*
     Open image file.
@@ -226,9 +232,6 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       if (c == '{')
         {
-          char
-            *comment;
-
           size_t
             comment_length;
 
@@ -289,9 +292,6 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
       else
         if (isalnum(c))
           {
-            char
-              *values;
-
             size_t
               values_length;
 
