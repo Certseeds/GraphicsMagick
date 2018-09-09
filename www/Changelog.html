@@ -38,6 +38,8 @@
 <p>2018-09-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/sfw.c (ReadSFWImage): Enforce that file is read using the
+JPEG reader. (Credit to OSS-Fuzz)</li>
 <li>coders/miff.c (ReadMIFFImage): Fix leak of 'values' buffer due
 to change made yesterday.</li>
 <li>coders/mpc.c (ReadMPCImage): Fix leak of 'values' buffer due to

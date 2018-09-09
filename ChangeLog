@@ -1,5 +1,8 @@
 2018-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sfw.c (ReadSFWImage): Enforce that file is read using the
+	JPEG reader. (Credit to OSS-Fuzz)
+
 	* coders/miff.c (ReadMIFFImage): Fix leak of 'values' buffer due
 	to change made yesterday.
 
