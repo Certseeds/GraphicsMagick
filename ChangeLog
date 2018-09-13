@@ -1,3 +1,10 @@
+2018-09-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Eliminate undefined
+	shift.  Also right-sized involved data types.  Fixes oss-fuzz
+	10309 "graphicsmagick/coder_JPG_fuzzer: Undefined-shift in
+	Read32s". (Credit to OSS-Fuzz)
+
 2018-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawClipPath): Fix Coverity 319663 "Null

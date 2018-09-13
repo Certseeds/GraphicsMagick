@@ -1471,55 +1471,61 @@ static unsigned int
     8  /* DOUBLE */
   };
 
-static short
-Read16s(int morder,void *ishort)
+static magick_int16_t
+Read16s(int morder,unsigned char *ishort)
 {
-  short
+  union
+  {
+    magick_uint16_t u;
+    magick_int16_t s;
+  } value;
+
+  if (morder)
+    value.u=((magick_uint16_t) ishort[0] << 8) | ishort[1];
+  else
+    value.u=((magick_uint16_t) ishort[1] << 8) | ishort[0];
+  return(value.s);
+}
+
+static magick_uint16_t
+Read16u(int morder,unsigned char *ishort)
+{
+  magick_uint16_t
     value;
 
   if (morder)
-    value=(((unsigned char *) ishort)[0] << 8) | ((unsigned char *) ishort)[1];
+    value=((magick_uint16_t) ishort[0] << 8) | ishort[1];
   else
-    value=(((unsigned char *) ishort)[1] << 8) | ((unsigned char *) ishort)[0];
+    value=((magick_uint16_t) ishort[1] << 8) | ishort[0];
   return(value);
 }
 
-static unsigned short
-Read16u(int morder,void *ishort)
+static magick_int32_t
+Read32s(int morder,unsigned char *ilong)
 {
-  unsigned short
-    value;
+  union
+  {
+    magick_uint32_t u;
+    magick_int32_t s;
+  } value;
 
   if (morder)
-    value=(((unsigned char *) ishort)[0] << 8) | ((unsigned char *) ishort)[1];
+    value.u=((magick_uint32_t) ilong[0] << 24) | (ilong[1] << 16) |
+      (ilong[2] << 8) | (ilong[3]);
   else
-    value=(((unsigned char *) ishort)[1] << 8) | ((unsigned char *) ishort)[0];
-  return(value);
+    value.u=((magick_uint32_t) ilong[3] << 24) | (ilong[2] << 16) |
+      (ilong[1] << 8 ) | (ilong[0]);
+  return(value.s);
 }
 
-static long
-Read32s(int morder,void *ilong)
+static magick_uint32_t
+Read32u(int morder, unsigned char *ilong)
 {
-  long
-    value;
-
-  if (morder)
-    value=(((char *) ilong)[0] << 24) | (((unsigned char *) ilong)[1] << 16) |
-      (((unsigned char *) ilong)[2] << 8) | (((unsigned char *) ilong)[3]);
-  else
-    value=(((char *) ilong)[3] << 24) | (((unsigned char *) ilong)[2] << 16) |
-      (((unsigned char *) ilong)[1] << 8 ) | (((unsigned char *) ilong)[0]);
-  return(value);
-}
-
-static unsigned long
-Read32u(int morder, void *ilong)
-{
-  return(Read32s(morder,ilong) & 0xffffffffUL);
+  return(Read32s(morder,ilong) & 0xffffffff);
 }
 
 static void
-Write16u(int morder, void *location, unsigned short value)
+Write16u(int morder, void *location, magick_uint16_t value)
 {
   char
     *pval;
@@ -1527,13 +1533,13 @@ Write16u(int morder, void *location, unsigned short value)
   pval = (char *)location;
   if (morder)
     {
-      *pval++ = (char)((value >> 8) & 0xffL);
-      *pval++ = (char)(value & 0xffL);
+      *pval++ = (char)((value >> 8) & 0xff);
+      *pval++ = (char)(value & 0xff);
     }
   else
     {
-      *pval++ = (char)(value & 0xffL);
-      *pval++ = (char)((value >> 8) & 0xffL);
+      *pval++ = (char)(value & 0xff);
+      *pval++ = (char)((value >> 8) & 0xff);
     }
 }
 
@@ -1928,7 +1934,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SLONG:
                   {
-                    FormatString(s,"%ld",Read32s(morder,pval));
+                    FormatString(s,"%d",(int) Read32s(morder,pval));
                     value=AllocateString(s);
                     break;
                   }
@@ -1939,20 +1945,20 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                          t == GPS_LONGITUDE ||
                          t == GPS_TIMESTAMP))
                       {
-                        FormatString(s,"%ld/%ld,%ld/%ld,%ld/%ld"
-                                     ,Read32u(morder,pval),
-                                     Read32u(morder,4+(char *) pval)
-                                     ,Read32u(morder,8+(char *)pval),
-                                     Read32u(morder,12+(char *) pval)
-                                     ,Read32u(morder,16+(char *)pval),
-                                     Read32u(morder,20+(char *) pval)
+                        FormatString(s,"%u/%u,%u/%u,%u/%u"
+                                     ,(unsigned) Read32u(morder,pval),
+                                     (unsigned) Read32u(morder,4+pval)
+                                     ,(unsigned) Read32u(morder,8+pval),
+                                     (unsigned) Read32u(morder,12+pval)
+                                     ,(unsigned) Read32u(morder,16+pval),
+                                     (unsigned) Read32u(morder,20+pval)
                                      );
                       }
                     else
                       {
-                        FormatString(s,"%ld/%ld"
-                                     ,Read32u(morder,pval),
-                                     Read32u(morder,4+(char *) pval)
+                        FormatString(s,"%u/%u"
+                                     ,(unsigned) Read32u(morder,pval),
+                                     (unsigned) Read32u(morder,4+pval)
                                      );
                       }
                     value=AllocateString(s);
@@ -1960,8 +1966,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SRATIONAL:
                   {
-                    FormatString(s,"%ld/%ld",Read32s(morder,pval),
-                                 Read32s(morder,4+(char *) pval));
+                    FormatString(s,"%d/%d",(int) Read32s(morder,pval),
+                                 (int) Read32s(morder,4+pval));
                     value=AllocateString(s);
                     break;
                   }
