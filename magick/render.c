@@ -6215,8 +6215,10 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     i,
     j;
 
+  size_t
+    control_points;
+
   unsigned long
-    control_points,
     quantum;
 
   MagickPassFail
@@ -6242,7 +6244,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     }
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
-  control_points=quantum*number_coordinates;
+  control_points=(size_t) quantum*number_coordinates;
 
   /* make sure we have enough space */
   if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
@@ -6332,6 +6334,7 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
 {
   double
     delta,
+    points_length,
     step,
     y;
 
@@ -6345,9 +6348,6 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   PrimitiveInfo
     *primitive_info,
     **pp_PrimitiveInfo;
-
-  size_t
-    Needed;
 
   MagickPassFail
     status = MagickPass;
@@ -6363,16 +6363,29 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   delta=2.0/Max(stop.x,stop.y);
   step=MagickPI/8.0;
   if (delta < (MagickPI/8.0))
-    step=MagickPI/(4*ceil(MagickPI/delta/2));
+    step=(MagickPI/4.0)/ceil(MagickPI/delta/2.0);
   angle.x=DegreesToRadians(degrees.x);
   y=degrees.y;
   while (y < degrees.x)
     y+=360.0;
   angle.y=DegreesToRadians(y);
 
+  /* FIXME: The number of points could become arbitrarily large.  It
+     would be good to add an algorithm which decreases ellipse drawing
+     quality when necessary in order to limit the number of points
+     required. */
+
   /* make sure we have enough space */
-  Needed = ((size_t)1) + (size_t) ceil((angle.y - angle.x) / step);
-  if ((status=PrimitiveInfoRealloc(p_PIMgr,Needed)) == MagickFail)
+  points_length = ceil(1.0 + ceil((angle.y - angle.x) / step));
+  if ((size_t) points_length < points_length)
+    {
+      /* points_length too big to be represented as a size_t */
+      status=MagickFail;
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,
+                     MemoryAllocationFailed,UnableToDrawOnImage);
+      goto trace_ellipse_done;
+    }
+  if ((status=PrimitiveInfoRealloc(p_PIMgr,(size_t) points_length)) == MagickFail)
     goto trace_ellipse_done;
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 

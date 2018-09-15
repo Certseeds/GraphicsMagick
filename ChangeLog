@@ -1,3 +1,10 @@
+2018-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (TraceEllipse): Detect arithmetic overflow when
+	computing the number of points to allocate for an ellipse.  Fixes
+	oss-fuzz 10306 "graphicsmagick/coder_MVG_fuzzer:
+	Heap-buffer-overflow in TracePoint". (Credit to OSS-Fuzz)
+
 2018-09-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Eliminate undefined
