@@ -1,3 +1,10 @@
+2018-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): mng_LOOP chunk must be at least 5
+	bytes long.  Fixes oss-fuzz 10455
+	"graphicsmagick/coder_MNG_fuzzer: Use-of-uninitialized-value in
+	ReadMNGImage". (Credit to OSS-Fuzz)
+
 2018-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (TraceEllipse): Detect arithmetic overflow when

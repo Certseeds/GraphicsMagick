@@ -5023,15 +5023,15 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               long loop_iters=1;
 
-              if (length > 0) /* To do: check spec, if empty LOOP is allowed */
+              if (length >= 5) /* To do: check spec, if empty LOOP is allowed */
                 {
-                  loop_level=chunk[0];
+                  loop_level=chunk[0]; /* 1 byte */
                   loops_active++;
                   mng_info->loop_active[loop_level]=1;  /* mark loop active */
                   /*
                     Record starting point.
                   */
-                  loop_iters=mng_get_long(&chunk[1]);
+                  loop_iters=mng_get_long(&chunk[1]); /* 4 bytes */
                   if (loop_iters <= 0)
                     skipping_loop=loop_level;
                   else
@@ -5059,6 +5059,12 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       mng_info->loop_count[loop_level]=loop_iters;
                     }
                   mng_info->loop_iteration[loop_level]=0;
+                }
+              else
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Ignoring short LOOP chunk (%lu bytes)", length);
                 }
               MagickFreeMemory(chunk);
               continue;
