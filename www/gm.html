@@ -1503,6 +1503,12 @@ behaves.
 <dd>Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
 </dd>
+<dt>jpeg:max-scan-number=&lt;value&gt;</dt>
+<dd>Specifies an integer value for the maximum number of progressive
+scans allowed in a JPEG file.  The default maximum is 100 scans.  This
+limit is imposed due to a weakness in the JPEG standard which allows
+small JPEG files to take many minutes or hours to be read.
+</dd>
 <dt>jpeg:max-warnings=&lt;value&gt;</dt>
 <dd>Specifies an integer value for how many warnings are allowed for
 any given error type before being promoted to a hard error.  JPEG

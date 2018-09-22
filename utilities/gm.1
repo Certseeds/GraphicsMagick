@@ -1,4 +1,4 @@
-.TH gm 1 "2018/06/17" "GraphicsMagick"
+.TH gm 1 "2018/09/22" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1294,6 +1294,17 @@ behaves.
 .in 20
 Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
+
+.in 15
+.in 15
+.B "jpeg:max-scan-number=<value>"
+.in 20
+ \fR
+.in 20
+Specifies an integer value for the maximum number of progressive
+scans allowed in a JPEG file.  The default maximum is 100 scans.  This
+limit is imposed due to a weakness in the JPEG standard which allows
+small JPEG files to take many minutes or hours to be read.
 
 .in 15
 .in 15

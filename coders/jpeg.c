@@ -124,6 +124,15 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
 #define MaxBufferExtent  8192
 #define JPEG_MARKER_MAX_SIZE 65533
 #define MaxWarningCount 3
+
+/*
+  Set to 1 to use libjpeg callback for progress indication.  This is
+  not enabled by default since it outputs multiple progress
+  indications, which may be confusing for the user.  However, the
+  libjpeg method provides more detailed progress.
+*/
+#define USE_LIBJPEG_PROGRESS 0 // Use libjpeg callback for progress
+
 static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
 
 
@@ -146,6 +155,9 @@ typedef struct _ErrorManager
     *image;
 
   MagickBool
+    ping;
+
+  MagickBool
     completed;
 
   jmp_buf
@@ -156,6 +168,9 @@ typedef struct _ErrorManager
 
   magick_uint16_t
     warning_counts[JMSG_LASTMSGCODE];
+
+  int
+    max_scan_number;
 
   unsigned char
     buffer[65537+200];
@@ -210,14 +225,15 @@ typedef struct _SourceManager
 %
 */
 
+
 /*
-  Format a libjpeg warning or trace event.  Warnings are converted to
-  GraphicsMagick warning exceptions while traces are optionally
-  logged.
+  Format a libjpeg warning or trace event while decoding.  Warnings
+  are converted to GraphicsMagick warning exceptions while traces are
+  optionally logged.
 
   JPEG message codes range from 0 to JMSG_LASTMSGCODE
 */
-static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
+static unsigned int JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
 {
   char
     message[JMSG_LENGTH_MAX];
@@ -291,6 +307,55 @@ static unsigned int JPEGMessageHandler(j_common_ptr jpeg_info,int msg_level)
         }
     }
   return True;
+}
+
+void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
+{
+  ErrorManager *error_manager = (ErrorManager *) cinfo->client_data;
+  Image *image = error_manager->image;
+  const int max_scan_number = error_manager->max_scan_number;
+
+#if USE_LIBJPEG_PROGRESS
+  {
+    struct jpeg_progress_mgr *p = cinfo->progress;
+
+#if 0
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Progress: pass_counter=%ld, pass_limit=%ld,"
+                          " completed_passes=%d, total_passes=%d, filename=%s",
+                          p->pass_counter, p->pass_limit,
+                          p->completed_passes, p->total_passes, image->filename);
+#endif
+
+    if (QuantumTick(p->pass_counter,p->pass_limit))
+      if (!MagickMonitorFormatted(p->pass_counter,p->pass_limit,&image->exception,
+                                  "[%s] Loading image: %lux%lu (pass %d of %d)...  ",
+                                  image->filename,
+                                  image->columns,image->rows,
+                                  p->completed_passes+1, p->total_passes))
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Quitting due to progress monitor");
+          longjmp(error_manager->error_recovery,1);
+        }
+  }
+#endif /* USE_LIBJPEG_PROGRESS */
+
+  if (cinfo->is_decompressor)
+    {
+      int scan_no = ((j_decompress_ptr) cinfo)->input_scan_number;
+
+      if (scan_no > max_scan_number)
+        {
+          char message[MaxTextExtent];
+          FormatString(message,"Scan number %d exceeds maximum scans (%d)",
+                       scan_no, max_scan_number);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s", message);
+          ThrowException2(&image->exception,CorruptImageError,(char *) message,
+                          image->filename);
+          longjmp(error_manager->error_recovery,1);
+        }
+    }
 }
 
 static boolean FillInputBuffer(j_decompress_ptr cinfo)
@@ -1036,11 +1101,14 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   register long
     i;
 
-  struct jpeg_decompress_struct
-    jpeg_info;
-
   struct jpeg_error_mgr
     jpeg_error;
+
+  struct jpeg_progress_mgr
+    jpeg_progress;
+
+  struct jpeg_decompress_struct
+    jpeg_info;
 
   register JSAMPLE
     *p;
@@ -1070,13 +1138,16 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     Initialize structures.
   */
   (void) memset(&error_manager,0,sizeof(error_manager));
+  (void) memset(&jpeg_progress,0,sizeof(jpeg_progress));
   (void) memset(&jpeg_info,0,sizeof(jpeg_info));
   (void) memset(&jpeg_error,0,sizeof(jpeg_error));
   jpeg_info.err=jpeg_std_error(&jpeg_error);
-  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
+  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGDecodeMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   jpeg_pixels=(JSAMPLE *) NULL;
   error_manager.image=image;
+  error_manager.ping=image_info->ping;
+  error_manager.max_scan_number=100;
   error_manager.max_warning_count=MaxWarningCount;
 
   /*
@@ -1112,6 +1183,12 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Memory capped to %ld bytes", jpeg_info.mem->max_memory_to_use);
+  /*
+    Register our progress monitor
+  */
+  jpeg_progress.progress_monitor=(void (*)(j_common_ptr)) JPEGDecodeProgressMonitor;
+  jpeg_info.progress=&jpeg_progress;
+
   JPEGSourceManager(&jpeg_info,image);
   jpeg_set_marker_processor(&jpeg_info,JPEG_COM,ReadComment);
   jpeg_set_marker_processor(&jpeg_info,ICC_MARKER,ReadICCProfile);
@@ -1162,6 +1239,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                                   ResolutionTypeToString(image->units));
         }
     }
+
   /*
     If the desired image size is pre-set (e.g. by using -size), then
     let the JPEG library subsample for us.
@@ -1274,12 +1352,23 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_info.do_fancy_upsampling=True;
     }
 
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Starting JPEG decompression...");
-  (void) jpeg_start_decompress(&jpeg_info);
+  /*
+    Allow the user to adjust the maximum JPEG scan number
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","max-scan-number")))
+    {
+      error_manager.max_scan_number=strtol(value,(char **) NULL, 10);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "JPEG max-scan-number set to %d",
+                            error_manager.max_scan_number);
+    }
+
+  jpeg_calc_output_dimensions(&jpeg_info);
   image->columns=jpeg_info.output_width;
   image->rows=jpeg_info.output_height;
+  image->storage_class = jpeg_info.output_components == 1 ? PseudoClass : DirectClass;
+  image->depth=Min(jpeg_info.data_precision,QuantumDepth);
+
   if (image->logging)
     {
       if (image->interlace == LineInterlace)
@@ -1303,6 +1392,25 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             (jpeg_info.do_block_smoothing ? "true" : "false"));
     }
 
+  if (image_info->ping)
+    {
+      jpeg_destroy_decompress(&jpeg_info);
+      CloseBlob(image);
+      return(image);
+    }
+
+  if (CheckImagePixelLimits(image, exception) != MagickPass)
+    {
+      jpeg_destroy_decompress(&jpeg_info);
+      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+    }
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Starting JPEG decompression...");
+  (void) jpeg_start_decompress(&jpeg_info);
+  image->columns=jpeg_info.output_width;
+  image->rows=jpeg_info.output_height;
   {
     char
       attribute[MaxTextExtent];
@@ -1337,12 +1445,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_destroy_decompress(&jpeg_info);
         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
-  if (image_info->ping)
-    {
-      jpeg_destroy_decompress(&jpeg_info);
-      CloseBlob(image);
-      return(image);
-    }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
@@ -1516,6 +1618,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
           status=MagickFail;
           break;
         }
+#if !USE_LIBJPEG_PROGRESS
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
                                     image->filename,
@@ -1525,6 +1628,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
             jpeg_abort_decompress(&jpeg_info);
             break;
           }
+#endif /* !USE_LIBJPEG_PROGRESS */
     }
   /*
     Free jpeg resources.
@@ -2009,6 +2113,124 @@ static void JPEGDestinationManager(j_compress_ptr cinfo,Image * image)
   destination->image=image;
 }
 
+/*
+  Format a libjpeg warning or trace event while encoding.  Warnings
+  are converted to GraphicsMagick warning exceptions while traces are
+  optionally logged.
+
+  JPEG message codes range from 0 to JMSG_LASTMSGCODE
+*/
+static unsigned int JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
+{
+  char
+    message[JMSG_LENGTH_MAX];
+
+  struct jpeg_error_mgr
+    *err;
+
+  ErrorManager
+    *error_manager;
+
+  Image
+    *image;
+
+  message[0]='\0';
+  err=jpeg_info->err;
+  error_manager=(ErrorManager *) jpeg_info->client_data;
+  image=error_manager->image;
+  /* msg_level is -1 for warnings, 0 and up for trace messages. */
+  if (msg_level < 0)
+    {
+      unsigned int strikes = 0;
+      /* A warning */
+      (err->format_message)(jpeg_info,message);
+
+      if ((err->msg_code >= 0) &&
+          ((size_t) err->msg_code < ArraySize(error_manager->warning_counts)))
+        {
+          error_manager->warning_counts[err->msg_code]++;
+          strikes=error_manager->warning_counts[err->msg_code];
+        }
+
+      if (image->logging)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "[%s] JPEG Warning[%u]: \"%s\""
+                                " (code=%d "
+                                "parms=0x%02x,0x%02x,"
+                                "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x)",
+                                image->filename,
+                                strikes,
+                                message,err->msg_code,
+                                err->msg_parm.i[0], err->msg_parm.i[1],
+                                err->msg_parm.i[2], err->msg_parm.i[3],
+                                err->msg_parm.i[4], err->msg_parm.i[5],
+                                err->msg_parm.i[6], err->msg_parm.i[7]);
+        }
+      /*
+      if (strikes > error_manager->max_warning_count)
+        {
+          ThrowException2(&image->exception,CorruptImageError,(char *) message,
+                          image->filename);
+          longjmp(error_manager->error_recovery,1);
+        }
+
+      if ((err->num_warnings == 0) ||
+          (err->trace_level >= 3))
+        ThrowException2(&image->exception,CorruptImageWarning,message,
+                        image->filename);
+      */
+      /* JWRN_JPEG_EOF - "Premature end of JPEG file" */
+      err->num_warnings++;
+      return False;
+    }
+  else
+    {
+      /* A trace message */
+      if ((image->logging) && (msg_level >= err->trace_level))
+        {
+          (err->format_message)(jpeg_info,message);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "[%s] JPEG Trace: \"%s\"",image->filename,
+                                message);
+        }
+    }
+  return True;
+}
+
+
+void JPEGEncodeProgressMonitor(j_common_ptr cinfo)
+{
+#if USE_LIBJPEG_PROGRESS
+  struct jpeg_progress_mgr *p = cinfo->progress;
+  ErrorManager *error_manager = (ErrorManager *) cinfo->client_data;
+  Image *image = error_manager->image;
+
+#if 0
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Progress: pass_counter=%ld, pass_limit=%ld,"
+                        " completed_passes=%d, total_passes=%d, filename=%s",
+                        p->pass_counter, p->pass_limit,
+                        p->completed_passes, p->total_passes, image->filename);
+#endif
+
+  if (QuantumTick(p->pass_counter,p->pass_limit))
+    if (!MagickMonitorFormatted(p->pass_counter,p->pass_limit,&image->exception,
+                                "[%s] Saving image: %lux%lu (pass %d of %d)...  ",
+                                image->filename,
+                                image->columns,image->rows,
+                                p->completed_passes+1, p->total_passes))
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Quitting due to progress monitor");
+        longjmp(error_manager->error_recovery,1);
+      }
+#else
+  (void) cinfo;
+#endif /* USE_LIBJPEG_PROGRESS */
+}
+
+
 static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 {
   Image
@@ -2047,11 +2269,14 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     i,
     x;
 
-  struct jpeg_compress_struct
-    jpeg_info;
-
   struct jpeg_error_mgr
     jpeg_error;
+
+  struct jpeg_progress_mgr
+    jpeg_progress;
+
+  struct jpeg_compress_struct
+    jpeg_info;
 
   MagickPassFail
     status;
@@ -2080,6 +2305,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     ThrowWriterException(FileOpenError,UnableToOpenFile,imagev);
 
   (void) memset(&error_manager,0,sizeof(error_manager));
+  (void) memset(&jpeg_progress,0,sizeof(jpeg_progress));
   (void) memset(&jpeg_info,0,sizeof(jpeg_info));
   (void) memset(&jpeg_error,0,sizeof(jpeg_error));
 
@@ -2088,7 +2314,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   */
   jpeg_info.client_data=(void *) imagev;
   jpeg_info.err=jpeg_std_error(&jpeg_error);
-  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGMessageHandler;
+  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGEncodeMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   error_manager.image=imagev;
   error_manager.max_warning_count=MaxWarningCount;
@@ -2145,6 +2371,12 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   jpeg_info.image_height=(unsigned int) image->rows;
   jpeg_info.input_components=3;
   jpeg_info.in_color_space=JCS_RGB;
+
+  /*
+    Register our progress monitor
+  */
+  jpeg_progress.progress_monitor=(void (*)(j_common_ptr)) JPEGEncodeProgressMonitor;
+  jpeg_info.progress=&jpeg_progress;
 
   /*
     Set JPEG colorspace as per user request.
@@ -2637,11 +2869,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                     }
                 }
               (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
                                             image->columns,image->rows))
                   break;
+#endif /* !USE_LIBJPEG_PROGRESS */
             }
         }
       else
@@ -2668,11 +2902,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                     p++;
                   }
                 (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                               SaveImageText,image->filename,
                                               image->columns,image->rows))
                     break;
+#endif /* !USE_LIBJPEG_PROGRESS */
               }
           }
         else
@@ -2700,11 +2936,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                     p++;
                   }
                 (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                               SaveImageText,image->filename,
                                               image->columns,image->rows))
                     break;
+#endif /* !USE_LIBJPEG_PROGRESS */
               }
           }
     }
@@ -2739,11 +2977,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                   }
               }
             (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                           SaveImageText,image->filename,
                                           image->columns,image->rows))
                 break;
+#endif /* !USE_LIBJPEG_PROGRESS */
           }
       }
     else
@@ -2769,11 +3009,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                   p++;
                 }
               (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
                                             image->columns,image->rows))
                   break;
+#endif /* !USE_LIBJPEG_PROGRESS */
             }
         }
       else
@@ -2801,11 +3043,13 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
                   p++;
                 }
               (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+#if !USE_LIBJPEG_PROGRESS
               if (QuantumTick(y,image->rows))
                 if (!MagickMonitorFormatted(y,image->rows,&image->exception,
                                             SaveImageText,image->filename,
                                             image->columns,image->rows))
                   break;
+#endif /* !USE_LIBJPEG_PROGRESS */
             }
         }
   if (image->logging)

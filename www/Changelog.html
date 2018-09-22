@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2018-09-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>fuzzing/coder_fuzzer.cc (LLVMFuzzerTestOneInput): Limit the
+maximum number of JPEG progressive scanlines to 50.</li>
+<li>coders/jpeg.c (ReadJPEGImage): Apply a default limit of 100
+progressive scans before the reader quits with an error.  This
+limit may be adjusted using the -define mechanism like -define
+JPEG:max-scan-number=500.  Also respond more quickly to files
+which exceed the maximum image dimensions.  Fixes oss-fuzz 10258
+&quot;graphicsmagick/coder_JPEG_fuzzer: Timeout in
+graphicsmagick_coder_JPEG_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2018-09-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

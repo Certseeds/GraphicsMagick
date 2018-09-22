@@ -1182,6 +1182,14 @@ behaves.
 (default enabled).
 </dd>
 
+<dt>jpeg:max-scan-number=<value></dt>
+
+<dd>Specifies an integer value for the maximum number of progressive
+scans allowed in a JPEG file.  The default maximum is 100 scans.  This
+limit is imposed due to a weakness in the JPEG standard which allows
+small JPEG files to take many minutes or hours to be read.
+</dd>
+
 <dt>jpeg:max-warnings=<value></dt>
 
 <dd>Specifies an integer value for how many warnings are allowed for
