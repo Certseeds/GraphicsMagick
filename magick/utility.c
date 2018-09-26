@@ -3876,7 +3876,7 @@ MagickExport size_t MagickGetToken(const char *start,char **end,char *token,
         ((r = strrchr(token,')')) != NULL))
       {
         *r='\0';
-        (void) memmove(token,token+5,r-token+1);
+        (void) memmove(token,token+5,r-token-4);
       }
   }
   if (end != (char **) NULL)

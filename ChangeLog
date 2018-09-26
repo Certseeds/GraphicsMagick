@@ -1,7 +1,14 @@
+2018-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (MagickGetToken): Fix possible read up to four
+	bytes beyond end of stack allocated token buffer.  Fixes oss-fuzz
+	10653 "graphicsmagick/coder_MVG_fuzzer: Stack-buffer-overflow in
+	MagickGetToken". (Credit to OSS-Fuzz)
+
 2018-09-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/coder_fuzzer.cc (LLVMFuzzerTestOneInput): Limit the
-	maximum number of JPEG progressive scanlines to 50.
+	maximum number of JPEG progressive scans to 50.
 
 	* coders/jpeg.c (ReadJPEGImage): Apply a default limit of 100
 	progressive scans before the reader quits with an error.  This
