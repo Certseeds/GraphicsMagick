@@ -1,3 +1,10 @@
+2018-09-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (parse8BIM): Eliminate repeated use of strlen()
+	which scans the entire remaining string on each cycle.  Fixes
+	oss-fuzz 10667 "graphicsmagick/coder_IPTCTEXT_fuzzer: Timeout in
+	graphicsmagick_coder_IPTCTEXT_fuzzer". (Credit to OSS-Fuzz)
+
 2018-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/utility.c (MagickGetToken): Fix possible read up to four

@@ -181,9 +181,28 @@ static int stringnicmp(const char *p,const char *q,size_t n)
   return(toupper((int) *p)-toupper((int) *q));
 }
 
-static size_t convertHTMLcodes(char *s, const size_t len)
+/*
+   This routine parses the next HTML ampersand code ("&FOO;") from the
+   provided string and replaces the HTML ampersand code with the
+   equivalent character, moving the remainder of the string forward.
+   The return value is the number of characters consumed (length of
+   code minus one character).
+ */
+static size_t convertHTMLcodes(char *s)
 {
+  size_t len;
+  size_t i;
   int val;
+
+  for (i = 0, len = 0; (i < 7U) && (s[i] != '\0') ; i++)
+    {
+      if (s[i] == ';')
+        {
+          len=i+1;
+          break;
+        }
+    }
+
 
   if ((len == 0) || (s == (char*) NULL) || (*s=='\0'))
     return 0;
@@ -197,8 +216,7 @@ static size_t convertHTMLcodes(char *s, const size_t len)
     and that it does not require the terminating ';' to appear in
     order to parse the numeric argument.
   */
-  if ((len > 3) && (s[1] == '#') && (strchr(s,';') != (char *) NULL) &&
-      (sscanf(s,"&#%d;",&val) == 1))
+  if ((len > 3) && (s[1] == '#') && (sscanf(s,"&#%d;",&val) == 1))
     {
       size_t o = 3;
       while (s[o] != ';')
@@ -212,11 +230,11 @@ static size_t convertHTMLcodes(char *s, const size_t len)
       *s = val;
       return o;
     }
-  else
+  else /* Symbolic code, e.g. "&amp;" */
     {
       int
         i,
-        codes = sizeof(html_codes) / sizeof(html_code);
+        codes = ArraySize(html_codes);
 
       for (i=0; i < codes; i++)
       {
@@ -402,7 +420,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                   char
                     *s = &token[next-1];
 
-                  codes_len = convertHTMLcodes(s, strlen(s));
+                  codes_len = convertHTMLcodes(s);
                   if (codes_len > len)
                     len = 0;
                   else
@@ -695,7 +713,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                   char
                     *s = &token[next-1];
 
-                  codes_len = convertHTMLcodes(s, strlen(s));
+                  codes_len = convertHTMLcodes(s);
                   if (codes_len > len)
                     len = 0;
                   else
