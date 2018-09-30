@@ -992,7 +992,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                            "Lines per page: %ld",
                            lines_per_page);
     (void) strlcpy(filename,image_info->filename,MaxTextExtent);
-    if (draw_info->text != '\0')
+    if (draw_info->text != NULL)
       *draw_info->text='\0';
 
     page_num=1;

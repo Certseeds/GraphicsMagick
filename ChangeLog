@@ -1,5 +1,8 @@
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/txt.c (ReadTXTImage): Fix comparison between pointer and
+	'\0' rather than NULL as was obviously intended.
+
 	* coders/msl.c (MSLStartElement): Add missing 'break' statements
 	after ThrowException() calls.  Otherwise execution falls through
 	into unrelated switch cases and throws a redundant exception.
