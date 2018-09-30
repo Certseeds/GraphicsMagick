@@ -1,5 +1,8 @@
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (WritePICTImage): Add more checks to memory
+	allocation calculations.
+
 	* magick/pixel_cache.c (DestroyCacheInfo): Eliminate intentional
 	fall-through logic in switch statement which results in compiler
 	warnings.  Eliminate switch statements entirely and split
