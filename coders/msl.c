@@ -796,6 +796,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'C':
     case 'c':
@@ -1331,6 +1332,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'D':
     case 'd':
@@ -1362,6 +1364,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'E':
     case 'e':
@@ -1551,6 +1554,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'F':
     case 'f':
@@ -1669,6 +1673,7 @@ MSLStartElement(void *context,const xmlChar *name,
                             }
                           ThrowException(msl_info->exception,OptionError,
                                          UnrecognizedAttribute,keyword);
+                          break;
                         }
                       case 'G':
                       case 'g':
@@ -1796,6 +1801,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'G':
     case 'g':
@@ -1907,6 +1913,7 @@ MSLStartElement(void *context,const xmlChar *name,
                         }
                       ThrowException(msl_info->exception,OptionError,
                                      UnrecognizedAttribute,keyword);
+                      break;
                     }
                   case 'W':
                   case 'w':
@@ -1923,6 +1930,7 @@ MSLStartElement(void *context,const xmlChar *name,
                         }
                       ThrowException(msl_info->exception,OptionError,
                                      UnrecognizedAttribute,keyword);
+                      break;
                     }
                   default:
                     {
@@ -1943,6 +1951,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'I':
     case 'i':
@@ -2130,6 +2139,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'M':
     case 'm':
@@ -2258,6 +2268,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'N':
     case 'n':
@@ -2281,6 +2292,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'O':
     case 'o':
@@ -2350,6 +2362,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'P':
     case 'p':
@@ -2508,6 +2521,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'R':
     case 'r':
@@ -2931,6 +2945,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'S':
     case 's':
@@ -3873,6 +3888,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'T':
     case 't':
@@ -4117,6 +4133,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     case 'W':
     case 'w':
@@ -4156,6 +4173,7 @@ MSLStartElement(void *context,const xmlChar *name,
                         }
                       ThrowException(msl_info->exception,OptionError,
                                      UnrecognizedAttribute,keyword);
+                      break;
                     }
                   default:
                     {
@@ -4170,6 +4188,7 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         ThrowException(msl_info->exception,OptionError,
                        UnrecognizedElement,(const char *) name);
+        break;
       }
     default:
       {

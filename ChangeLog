@@ -1,3 +1,9 @@
+2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/msl.c (MSLStartElement): Add missing 'break' statements
+	after ThrowException() calls.  Otherwise execution falls through
+	into unrelated switch cases and throws a redundant exception.
+
 2018-09-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/meta.c (parse8BIM): Eliminate repeated use of strlen()

@@ -1986,7 +1986,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
         if (draw_info->dash_pattern[n] == 0.0)
           n=0;
         length=scale*draw_info->dash_pattern[n];
-      }
+      }  /* oss-fuzz 10614 maximum_length = 2120554, length = 0.5 yeilds 4,241,108 iterations*/
     for (total_length=0.0; (length >= 0.0) && (maximum_length >= (length+total_length)); )
     {
       total_length+=length;
