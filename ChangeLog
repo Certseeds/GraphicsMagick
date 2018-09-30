@@ -1,5 +1,9 @@
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Magick++/Drawable.h: Block unused-private-field
+	warnings from Clang due to _dummy members which were intentionally
+	included in some parent class definitions.
+
 	* magick/widget.c (XEditText): Fix compilation warnings about
 	cases which fall-through.
 
