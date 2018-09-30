@@ -40,7 +40,8 @@
 <ul class="simple">
 <li>magick/pixel_cache.c (DestroyCacheInfo): Eliminate intentional
 fall-through logic in switch statement which results in compiler
-warnings.</li>
+warnings.  Eliminate switch statements entirely and split
+unrelated logic.</li>
 <li>coders/txt.c (ReadTXTImage): Fix comparison between pointer and
 '0' rather than NULL as was obviously intended.</li>
 <li>coders/msl.c (MSLStartElement): Add missing 'break' statements
