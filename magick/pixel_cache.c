@@ -2036,8 +2036,12 @@ DestroyCacheInfo(Cache cache_info)
     {
     default:
       {
-        if (cache_info->pixels == (PixelPacket *) NULL)
-          break;
+        if (cache_info->pixels != (PixelPacket *) NULL)
+          {
+            MagickFreeMemory(cache_info->pixels);
+            LiberateMagickResource(MemoryResource,cache_info->length);
+          }
+        break;
       }
     case MemoryCache:
       {
@@ -2049,6 +2053,18 @@ DestroyCacheInfo(Cache cache_info)
       {
         (void) UnmapBlob(cache_info->pixels,(size_t) cache_info->length);
         LiberateMagickResource(MapResource,cache_info->length);
+        if (cache_info->file != -1)
+          {
+            (void) close(cache_info->file);
+            LiberateMagickResource(FileResource,1);
+          }
+        cache_info->file=(-1);
+        (void) LiberateTemporaryFile(cache_info->cache_filename);
+        (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                              "remove %.1024s (%.1024s)",cache_info->filename,
+                              cache_info->cache_filename);
+        LiberateMagickResource(DiskResource,cache_info->length);
+        break;
       }
     case DiskCache:
       {

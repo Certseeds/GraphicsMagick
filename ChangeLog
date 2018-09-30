@@ -1,5 +1,9 @@
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (DestroyCacheInfo): Eliminate intentional
+	fall-through logic in switch statement which results in compiler
+	warnings.
+
 	* coders/txt.c (ReadTXTImage): Fix comparison between pointer and
 	'\0' rather than NULL as was obviously intended.
 
