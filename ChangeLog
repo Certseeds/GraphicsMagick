@@ -1,5 +1,11 @@
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/widget.c (XEditText): Fix compilation warnings about
+	cases which fall-through.
+
+	* magick/display.c (MagickXAnnotateEditImage): Fix compilation
+	warnings about cases which fall-through.
+
 	* coders/pict.c (WritePICTImage): Add more checks to memory
 	allocation calculations.
 
