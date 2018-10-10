@@ -17345,6 +17345,7 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
         "animate",
         "composite",
         "conjure",
+        "compare",
         "convert",
         "display",
         "identify",

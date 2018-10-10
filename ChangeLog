@@ -1,3 +1,13 @@
+2018-10-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (GMCommandSingle): Add 'compare' to the list of
+	command names that gm will support as a command if copied to or
+	linked from that name.  There was already a 'compare' link
+	installed when the '--enable-magick-compat' configure option is
+	used, but it could not possibly function without being blessed by
+	this list.  Related to Debian bug #910652
+	"graphicsmagick-imagemagick-compat: Doesn't ship a compare tool".
+
 2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Magick++/Drawable.h: Block unused-private-field
