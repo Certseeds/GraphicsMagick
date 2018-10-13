@@ -344,6 +344,13 @@ building under Microsoft Windows:
 
   to read or write the PNG or Zip compressed MIFF images.
 
+* GraphicsMagick requires the Zstd library from
+
+     https://facebook.github.io/zstd/
+
+  to read or write Zstd compressed TIFF images.  In the future it is
+  likely that other purposes will be found for Zstd.
+
 
 --------------------------------------------------------------------------
 

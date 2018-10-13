@@ -361,6 +361,10 @@ Optional Packages/Options
 
     disable ZLIB support
 
+--without-zstd
+
+    disable Zstd support
+
 --with-x
 
     use the X Window System

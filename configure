@@ -765,6 +765,9 @@ X_LIBS
 X_PRE_LIBS
 X_CFLAGS
 XMKMF
+LIB_ZSTD
+HasZSTD_FALSE
+HasZSTD_TRUE
 LIB_LZMA
 HasLZMA_FALSE
 HasLZMA_TRUE
@@ -1057,6 +1060,7 @@ with_gs_font_dir
 with_windows_font_dir
 with_xml
 with_zlib
+with_zstd
 with_libstdc
 with_x
 '
@@ -1770,6 +1774,7 @@ Optional Packages:
                           directory containing MS-Windows fonts
   --without-xml           disable XML support
   --without-zlib          disable ZLIB support
+  --without-zstd          disable Zstd support
   --with-libstdc=DIR      use libstdc++ in DIR (for GNU C++)
   --with-x                use the X Window System
   --without-png           disable PNG support
@@ -19856,6 +19861,19 @@ if test "$with_zlib" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-zlib=$with_zlib "
 fi
 
+# Disable Zstd (zstd library)
+
+# Check whether --with-zstd was given.
+if test "${with_zstd+set}" = set; then :
+  withval=$with_zstd; with_zstd=$withval
+else
+  with_zstd='yes'
+fi
+
+if test "$with_zstd" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-zstd=$with_zstd "
+fi
+
 #
 # Specify path to shared libstdc++ if not in normal location
 #
@@ -24394,6 +24412,103 @@ fi
 else
   HasLZMA_TRUE='#'
   HasLZMA_FALSE=
+fi
+
+
+
+#
+# Check for Zstd
+#
+have_zstd='no'
+LIB_ZSTD=''
+if test "$with_zstd" != 'no'
+then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Zstd support " >&5
+$as_echo_n "checking for Zstd support ... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+$as_echo "" >&6; }
+  failed=0
+  passed=0
+  ac_fn_c_check_header_mongrel "$LINENO" "zstd.h" "ac_cv_header_zstd_h" "$ac_includes_default"
+if test "x$ac_cv_header_zstd_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ZSTD_createDStream in -lzstd" >&5
+$as_echo_n "checking for ZSTD_createDStream in -lzstd... " >&6; }
+if ${ac_cv_lib_zstd_ZSTD_createDStream+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lzstd  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ZSTD_createDStream ();
+int
+main ()
+{
+return ZSTD_createDStream ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_zstd_ZSTD_createDStream=yes
+else
+  ac_cv_lib_zstd_ZSTD_createDStream=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_zstd_ZSTD_createDStream" >&5
+$as_echo "$ac_cv_lib_zstd_ZSTD_createDStream" >&6; }
+if test "x$ac_cv_lib_zstd_ZSTD_createDStream" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if Zstd package is complete" >&5
+$as_echo_n "checking if Zstd package is complete... " >&6; }
+  if test $passed -gt 0
+  then
+    if test $failed -gt 0
+    then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+$as_echo "no -- some components failed test" >&6; }
+      have_zstd='no (failed tests)'
+    else
+      LIB_ZSTD='-lzstd'
+      LIBS="$LIB_ZSTD $LIBS"
+
+$as_echo "#define HasZSTD 1" >>confdefs.h
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      have_zstd='yes'
+    fi
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  fi
+fi
+ if test "$have_zstd" = 'yes'; then
+  HasZSTD_TRUE=
+  HasZSTD_FALSE='#'
+else
+  HasZSTD_TRUE='#'
+  HasZSTD_FALSE=
 fi
 
 
@@ -29779,7 +29894,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 
 
@@ -30090,6 +30205,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasLZMA_TRUE}" && test -z "${HasLZMA_FALSE}"; then
   as_fn_error $? "conditional \"HasLZMA\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HasZSTD_TRUE}" && test -z "${HasZSTD_FALSE}"; then
+  as_fn_error $? "conditional \"HasZSTD\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasX11_TRUE}" && test -z "${HasX11_FALSE}"; then
@@ -32693,6 +32812,7 @@ echo "WMF               --with-wmf=$with_wmf          	$have_wmf"
 echo "X11               --with-x=$with_x             	$have_x"
 echo "XML               --with-xml=$with_xml          	$have_xml"
 echo "ZLIB              --with-zlib=$with_zlib        	$have_zlib"
+echo "Zstd              --with-zstd=$with_zstd        	$have_zstd"
 echo ""
 echo "X11 Configuration:"
 if test "$have_x" != 'no'

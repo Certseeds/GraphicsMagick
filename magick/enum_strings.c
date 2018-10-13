@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2008 - 2016 GraphicsMagick Group
+% Copyright (C) 2008 - 2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -598,6 +598,9 @@ MagickExport const char* CompressionTypeToString(const CompressionType compressi
     case JBIG2Compression:
       compression_string="JBIG2";
       break;
+    case ZSTDCompression:
+      compression_string="ZSTD";
+      break;
     }
   return compression_string;
 }
@@ -642,6 +645,9 @@ MagickExport CompressionType StringToCompressionType(const char *option)
     compression_type=JBIG1Compression;
   else if (LocaleCompare("JBIG2",option) == 0)
     compression_type=JBIG2Compression;
+  else if ((LocaleCompare("ZSTD",option) == 0) ||
+           (LocaleCompare("Zstandard",option) == 0))
+    compression_type=ZSTDCompression;
 
   return compression_type;
 }

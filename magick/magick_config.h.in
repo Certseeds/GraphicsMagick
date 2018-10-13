@@ -444,6 +444,9 @@
 /* Define if you have zlib compression library */
 #undef HasZLIB
 
+/* Define if you have zstd compression library */
+#undef HasZSTD
+
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 

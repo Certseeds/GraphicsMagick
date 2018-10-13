@@ -65,6 +65,9 @@
 #  if !defined(COMPRESSION_ADOBE_DEFLATE)
 #     define COMPRESSION_ADOBE_DEFLATE  8
 #  endif  /* !defined(COMPRESSION_ADOBE_DEFLATE) */
+#  if defined(COMPRESSION_ZSTD) && defined(HasZSTD)
+#    include "zstd.h"
+#  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
 /*
   JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
@@ -516,6 +519,15 @@ CompressionSupported(const CompressionType compression,
 #endif
         break;
       }
+    case ZSTDCompression:
+      {
+        strlcpy(compression_name,"Zstandard",MaxTextExtent);
+#if defined(COMPRESSION_ZSTD)
+        compress_tag=COMPRESSION_ZSTD;
+        status=MagickTrue;
+#endif
+        break;
+      }
     }
 
   if (MagickTrue == status)
@@ -553,6 +565,9 @@ CompressionSupported(const CompressionType compression,
 #  endif
 #  if defined(ZIP_SUPPORT)
         case COMPRESSION_ADOBE_DEFLATE:
+#  endif
+#  if defined(ZSTD_SUPPORT)
+        case COMPRESSION_ZSTD:
 #  endif
         case COMPRESSION_NONE:
           {
@@ -631,6 +646,16 @@ CompressionTagToString(unsigned int compress_tag)
 #if defined(COMPRESSION_THUNDERSCAN)
     case COMPRESSION_THUNDERSCAN:
       result="ThunderScan RLE";
+      break;
+#endif
+#if defined(COMPRESSION_LZMA)
+    case COMPRESSION_LZMA:
+      result="LZMA";
+      break;
+#endif
+#if defined(COMPRESSION_ZSTD)
+    case COMPRESSION_ZSTD:
+      result="Zstandard";
       break;
 #endif
   }
@@ -2053,6 +2078,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case COMPRESSION_ADOBE_DEFLATE:
           image->compression=ZipCompression;
           break;
+#if defined(COMPRESSION_ZSTD)
+        case COMPRESSION_ZSTD:
+          image->compression=ZSTDCompression;
+          break;
+#endif /* defined(COMPRESSION_ZSTD) */
         default:
           image->compression=NoCompression;
           break;
@@ -4296,6 +4326,13 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             compress_tag=COMPRESSION_ADOBE_DEFLATE;
             break;
           }
+#if defined(COMPRESSION_ZSTD)
+        case ZSTDCompression:
+          {
+            compress_tag=COMPRESSION_ZSTD;
+            break;
+          }
+#endif /* defined(COMPRESSION_ZSTD) */
         default:
           {
             compress_tag=COMPRESSION_NONE;
@@ -4906,11 +4943,21 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               is 2,2 then RowsPerStrip must be a multiple of 16.
             */
             rows_per_strip=(((rows_per_strip < 16 ? 16 : rows_per_strip)+1)/16)*16;
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JPEG Quality: %u", (unsigned) image_info->quality);
             (void) TIFFSetField(tiff,TIFFTAG_JPEGQUALITY,image_info->quality);
             if (IsRGBColorspace(image->colorspace))
-              (void) TIFFSetField(tiff,TIFFTAG_JPEGCOLORMODE,JPEGCOLORMODE_RGB);
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_JPEGCOLORMODE: JPEGCOLORMODE_RGB");
+                (void) TIFFSetField(tiff,TIFFTAG_JPEGCOLORMODE,JPEGCOLORMODE_RGB);
+              }
             if (bits_per_sample == 12)
-              (void) TIFFSetField(tiff,TIFFTAG_JPEGTABLESMODE,JPEGTABLESMODE_QUANT);
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_JPEGTABLESMODE: JPEGTABLESMODE_QUANT");
+                (void) TIFFSetField(tiff,TIFFTAG_JPEGTABLESMODE,JPEGTABLESMODE_QUANT);
+              }
             break;
           }
         case COMPRESSION_ADOBE_DEFLATE:
@@ -4943,6 +4990,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 zip_quality=1;
               if (zip_quality > 9)
                 zip_quality=9;
+
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_ZIPQUALITY: %u", zip_quality);
               (void) TIFFSetField(tiff,TIFFTAG_ZIPQUALITY,zip_quality);
             }
             break;
@@ -5108,6 +5158,59 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               predictor=PREDICTOR_HORIZONTAL;
             break;
           }
+#if defined(COMPRESSION_ZSTD)
+        case COMPRESSION_ZSTD:
+          {
+            /*
+              Larger strips compress better with diminishing returns
+              (enlarge if necessary)..
+              TIFFTAG_ZSTD_LEVEL
+            */
+            unsigned int
+              proposed_rows_per_strip;
+
+            proposed_rows_per_strip = (uint32) (512*1024) / Max(scanline_size,1);
+            if (proposed_rows_per_strip > rows_per_strip)
+              rows_per_strip=proposed_rows_per_strip;
+            /*
+              Use horizontal differencing (type 2) for images which are
+              likely to be continuous tone.  The TIFF spec says that this
+              usually leads to better compression.
+            */
+            if (((photometric == PHOTOMETRIC_RGB) ||
+                 (photometric == PHOTOMETRIC_MINISBLACK)) &&
+                ((bits_per_sample == 8) || (bits_per_sample == 16)))
+              predictor=PREDICTOR_HORIZONTAL;
+            {
+              /*
+                Zstd level has a useful range of 1-19 (or even 22).
+
+                Libtiff uses a default level of 9.
+
+                Default for ImageInfo 'quality' is 75, which is translated to 9.
+
+                Use -define tiff:zstd-compress-level=<value> to specify a value.
+              */
+              const char *value;
+              int compress_level = (image_info->quality*9)/75;
+#if defined(HasZSTD)
+              int max_compression = ZSTD_maxCLevel();
+#else
+              int max_compression = 19;
+#endif
+              if ((value=AccessDefinition(image_info,"tiff","zstd-compress-level")))
+                compress_level=MagickAtoI(value);
+              if (compress_level < 1)
+                compress_level=1;
+              if (compress_level > max_compression)
+                compress_level=max_compression;
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_ZSTD_LEVEL: %u", compress_level);
+              (void) TIFFSetField(tiff,TIFFTAG_ZSTD_LEVEL,compress_level);
+            }
+            break;
+          }
+#endif /* defined(COMPRESSION_ZSTD) */
         default:
           {
             break;

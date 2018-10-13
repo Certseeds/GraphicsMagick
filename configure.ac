@@ -832,6 +832,16 @@ if test "$with_zlib" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-zlib=$with_zlib "
 fi
 
+# Disable Zstd (zstd library)
+AC_ARG_WITH(zstd,
+	      AS_HELP_STRING([--without-zstd],
+                             [disable Zstd support]),
+	      [with_zstd=$withval],
+	      [with_zstd='yes'])
+if test "$with_zstd" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-zstd=$with_zstd "
+fi
+
 #
 # Specify path to shared libstdc++ if not in normal location
 #
@@ -1696,6 +1706,40 @@ then
 fi
 AM_CONDITIONAL(HasLZMA, test "$have_lzma" = 'yes')
 AC_SUBST(LIB_LZMA)
+
+#
+# Check for Zstd
+#
+have_zstd='no'
+LIB_ZSTD=''
+if test "$with_zstd" != 'no'
+then
+  AC_MSG_CHECKING(for Zstd support )
+  AC_MSG_RESULT()
+  failed=0
+  passed=0
+  AC_CHECK_HEADER(zstd.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
+  AC_CHECK_LIB(zstd,ZSTD_createDStream,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+  AC_MSG_CHECKING(if Zstd package is complete)
+  if test $passed -gt 0
+  then
+    if test $failed -gt 0
+    then
+      AC_MSG_RESULT(no -- some components failed test)
+      have_zstd='no (failed tests)'
+    else
+      LIB_ZSTD='-lzstd'
+      LIBS="$LIB_ZSTD $LIBS"
+      AC_DEFINE(HasZSTD,1,Define if you have zstd compression library)
+      AC_MSG_RESULT(yes)
+      have_zstd='yes'
+    fi
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+AM_CONDITIONAL(HasZSTD, test "$have_zstd" = 'yes')
+AC_SUBST(LIB_ZSTD)
 
 #
 # Find the X11 include and library directories.
@@ -3482,7 +3526,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_OMP $LIB_UMEM $LIB_THREAD"
 fi
 AC_SUBST(MAGICK_DEP_LIBS)
 
@@ -3631,6 +3675,7 @@ echo "WMF               --with-wmf=$with_wmf          	$have_wmf"
 echo "X11               --with-x=$with_x             	$have_x"
 echo "XML               --with-xml=$with_xml          	$have_xml"
 echo "ZLIB              --with-zlib=$with_zlib        	$have_zlib"
+echo "Zstd              --with-zstd=$with_zstd        	$have_zstd"
 echo ""
 echo "X11 Configuration:"
 if test "$have_x" != 'no'

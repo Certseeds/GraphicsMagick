@@ -1271,9 +1271,10 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>the type of image compression</td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Choices are: <em>None</em>, <em>BZip</em>, <em>Fax</em>,
-<em>Group4</em>,
+<em>Group3</em>, <em>Group4</em>,
 <em>JPEG</em>, <em>Lossless</em>,
-<em>LZW</em>, <em>RLE</em>, <em>Zip</em>, or <em>LZMA</em>.
+<em>LZW</em>, <em>RLE</em>, <em>Zip</em>, <em>LZMA</em>, <em>JPEG2000</em>,
+<em>JPEG2000</em>, <em>JBIG</em>, <em>JBIG2</em>, or <em>ZSTD</em>.
 </font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Specify <strong>+compress</strong> to store the binary image in an uncompressed format.
@@ -1283,10 +1284,11 @@ The default is the compression type of the specified image file.</font></td></tr
 the JPEG library has been patched to support it. Use of lossless JPEG is
 generally not recommended.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-Use the <strong>-quality</strong> option to set the compression level to be used by
-JPEG, PNG, MIFF, and MPEG encoders. Use the <strong>-sampling-factor</strong>
-option to set the sampling factor to be used by the DPX, JPEG, MPEG, and
-YUV encoders for downsampling the chroma channels.</font></td></tr></table>
+Use the <strong>-quality</strong> option to set the compression level to be used
+by the JPEG, JPEG-2000, PNG, MIFF, MPEG, and TIFF encoders. Use the
+<strong>-sampling-factor</strong> option to set the sampling factor to be used
+by the DPX, JPEG, MPEG, and YUV encoders for downsampling the chroma
+channels.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -1723,6 +1725,13 @@ Enables tiled TIFF if it has not already been enabled.
 is then defaulted to an appropriate size. Height should be a multiple of
 16. If the value is not a multiple of 16, then it will be rounded down.
 Enables tiled TIFF if it has not already been enabled.
+</dd>
+<dt>tiff:zstd-compress-level=&lt;value&gt;</dt>
+<dd>Specify the compression level to use while writing Zstd-compressed
+TIFF files. The valid range is 1 to 22. If this define is not
+specified, then the 'quality' value is used such that the default
+quality setting of 75 is translated to a compress level of 9 such that
+'quality' has a useful range of 10-184 if used for this purpose.
 </dd>
 <dt>webp:lossless={true|false}</dt>
 <dd>Enable lossless encoding.
@@ -4489,7 +4498,7 @@ When writing a JNG image with transparency, two quality values are required,
 one for the main image and one for the grayscale image that conveys the
 opacity channel.  These are written as a single integer equal to the main
 image quality plus 1000 times the opacity quality.  For example, if you
-want to use quality 75 for the main image and quality 90 to compress 
+want to use quality 75 for the main image and quality 90 to compress
 the opacity data, use <tt>-quality 90075</tt>.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 For the PNM family of formats (PNM, PGM, and PPM) specify a quality
@@ -4497,6 +4506,13 @@ factor of zero in order to obtain the ASCII variant of the format. Note
 that -compress <em>none</em> used to be used to trigger ASCII output but
 provided the opposite result of what was expected as compared with other
 formats.</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+For the TIFF format, the JPEG, Zip, and Zstd compression algorithms
+are influenced by the quality value.  JPEG uses lossy compression so
+higher quality produces a larger file with less degradation.  The Zip
+and Zstd compression algorithms are lossless and for these algorithms
+a higher 'quality' means to work harder to produce a smaller file, but
+with no difference in image quality.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
