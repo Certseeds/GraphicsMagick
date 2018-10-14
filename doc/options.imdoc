@@ -875,7 +875,7 @@ Choices are: <i>None</i>, <i>BZip</i>, <i>Fax</i>,
 <i>Group3</i>, <i>Group4</i>,
 <i>JPEG</i>, <i>Lossless</i>,
 <i>LZW</i>, <i>RLE</i>, <i>Zip</i>, <i>LZMA</i>, <i>JPEG2000</i>,
-<i>JPEG2000</i>, <i>JBIG</i>, <i>JBIG2</i>, or <i>ZSTD</i>.
+<i>JPEG2000</i>, <i>JBIG</i>, <i>JBIG2</i>, <i>WebP</i>, or <i>ZSTD</i>.
 </pp>
 
 <pp>
@@ -1129,7 +1129,7 @@ type implied by the DPX header (if any).
 <dt>dpx:packing-method={packed|a|b|lsbpad|msbpad}</dt>
 <dd>DPX samples are output within 32-bit words. They may be tightly
 packed end-to-end within the words ("packed"), padded with null bits to
-the right of the sample ("a" or "lsbpad), or padded with null bits to the
+the right of the sample ("a" or "lsbpad"), or padded with null bits to the
 left of the sample ("b" or "msbpad"). This option only has an effect for
 sample sizes of 10 or 12 bits. If samples are not packed, the DPX
 standard recommends type A padding. Many DPX readers demand a sample size
@@ -1200,8 +1200,7 @@ files producing excessive warnings indicate a problem with the file.
 </dd>
 
 <dt>jpeg:optimize-coding={true|false}</dt>
-<dd>
-Selects if huffman encoding should be used. Huffman encoding is enabled
+<dd>Selects if huffman encoding should be used. Huffman encoding is enabled
 by default, but may be disabled for very large images since it encoding
 requires that the entire image be buffered in memory. Huffman encoding
 produces smaller JPEG files at the expense of added compression time and
@@ -1396,8 +1395,15 @@ is then defaulted to an appropriate size. Height should be a multiple of
 Enables tiled TIFF if it has not already been enabled.
 </dd>
 
-<dt>tiff:zstd-compress-level=<value></dt>
+<dt>tiff:webp-lossless={TRUE|FALSE}</dt>
+<dd>Specify a value of <s>TRUE</s> to enable lossless mode while
+writing WebP-compressed TIFF files. The WebP <s>webp:lossless</s>
+option may also be used.  The quality factor set by the
+<s>-quality</s> option may be used to influence the level of effort
+expended while compressing.
+</dd>
 
+<dt>tiff:zstd-compress-level=<value></dt>
 <dd>Specify the compression level to use while writing Zstd-compressed
 TIFF files. The valid range is 1 to 22. If this define is not
 specified, then the 'quality' value is used such that the default
@@ -4567,12 +4573,13 @@ provided the opposite result of what was expected as compared with other
 formats.</pp>
 
 <pp>
-For the TIFF format, the JPEG, Zip, and Zstd compression algorithms
-are influenced by the quality value.  JPEG uses lossy compression so
-higher quality produces a larger file with less degradation.  The Zip
-and Zstd compression algorithms are lossless and for these algorithms
-a higher 'quality' means to work harder to produce a smaller file, but
-with no difference in image quality.</pp>
+For the TIFF format, the JPEG, WebP, Zip, and Zstd compression
+algorithms are influenced by the quality value.  JPEG and WebP provide
+lossy compression so higher quality produces a larger file with less
+degradation.  The Zip and Zstd compression algorithms (and WebP in
+lossless mode) are lossless and for these algorithms a higher
+'quality' means to work harder to produce a smaller file, but with no
+difference in image quality.</pp>
 
 </utils>
 

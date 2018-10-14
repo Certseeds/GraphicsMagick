@@ -35,6 +35,15 @@
 <div class="document">
 
 
+<p>2018-10-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/tiff.c (WriteTIFFImage): Support WebP compression in
+TIFF. This requires a libtiff release after 4.0.9.</li>
+<li>magick/image.h (&quot;C&quot;): WebPCompression added to CompressionType
+enumeration.</li>
+</ul>
+</blockquote>
 <p>2018-10-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -42,7 +51,10 @@
 --without-zstd to disable searching for this library.  Libtiff may
 require this library to successfully link so static linkage could
 fail if searching for libzstd is disabled.</li>
-<li>coders/tiff.c (WriteTIFFImage): Support Zstd compression in TIFF.</li>
+<li>magick/image.h (&quot;C&quot;): ZSTDCompression added to CompressionType
+enumeration.</li>
+<li>coders/tiff.c (WriteTIFFImage): Support Zstd compression in
+TIFF.  This requires a libtiff release after 4.0.9.</li>
 </ul>
 </blockquote>
 <p>2018-10-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

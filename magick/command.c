@@ -17343,9 +17343,9 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
     static const char *command_names [] =
       {
         "animate",
+        "compare",
         "composite",
         "conjure",
-        "compare",
         "convert",
         "display",
         "identify",

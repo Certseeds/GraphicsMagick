@@ -1,8 +1,8 @@
-/* 
+/*
  * tclAppInit.c --
  *
- *	Provides a default version of the main program and Tcl_AppInit
- *	procedure for Tcl applications (without Tk).
+ *      Provides a default version of the main program and Tcl_AppInit
+ *      procedure for Tcl applications (without Tk).
  *
  * Copyright (c) 1993 The Regents of the University of California.
  * Copyright (c) 1994-1997 Sun Microsystems, Inc.
@@ -22,19 +22,19 @@
 
 #include "tclInt.h"
 
-extern int		Procbodytest_Init _ANSI_ARGS_((Tcl_Interp *interp));
-extern int		Procbodytest_SafeInit _ANSI_ARGS_((Tcl_Interp *interp));
-extern int		TclObjTest_Init _ANSI_ARGS_((Tcl_Interp *interp));
-extern int		Tcltest_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern int              Procbodytest_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern int              Procbodytest_SafeInit _ANSI_ARGS_((Tcl_Interp *interp));
+extern int              TclObjTest_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern int              Tcltest_Init _ANSI_ARGS_((Tcl_Interp *interp));
 #ifdef TCL_THREADS
-extern int		TclThread_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern int              TclThread_Init _ANSI_ARGS_((Tcl_Interp *interp));
 #endif
 
 #endif /* TCL_TEST */
 
 #ifdef TCL_XT_TEST
-extern void		XtToolkitInitialize _ANSI_ARGS_((void));
-extern int		Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern void             XtToolkitInitialize _ANSI_ARGS_((void));
+extern int              Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
 #endif
 
 /*
@@ -42,22 +42,22 @@ extern int		Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  *
  * main --
  *
- *	This is the main program for the application.
+ *      This is the main program for the application.
  *
  * Results:
- *	None: Tcl_Main never returns here, so this procedure never
- *	returns either.
+ *      None: Tcl_Main never returns here, so this procedure never
+ *      returns either.
  *
  * Side effects:
- *	Whatever the application does.
+ *      Whatever the application does.
  *
  *----------------------------------------------------------------------
  */
 
 int
 main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+    int argc;                   /* Number of command-line arguments. */
+    char **argv;                /* Values of command-line arguments. */
 {
     /*
      * The following #if block allows you to change the AppInit
@@ -67,7 +67,7 @@ main(argc, argv)
      */
 
 #ifndef TCL_LOCAL_APPINIT
-#define TCL_LOCAL_APPINIT Tcl_AppInit    
+#define TCL_LOCAL_APPINIT Tcl_AppInit
 #endif
     extern int TCL_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
 
@@ -91,7 +91,7 @@ main(argc, argv)
 
     Tcl_Main(argc, argv, TCL_LOCAL_APPINIT);
 
-    return 0;			/* Needed only to prevent compiler warning. */
+    return 0;                   /* Needed only to prevent compiler warning. */
 }
 
 /*
@@ -99,49 +99,49 @@ main(argc, argv)
  *
  * TclMagick_AppInit --
  *
- *	This procedure performs application-specific initialization.
- *	Most applications, especially those that incorporate additional
- *	packages, will have their own version of this procedure.
+ *      This procedure performs application-specific initialization.
+ *      Most applications, especially those that incorporate additional
+ *      packages, will have their own version of this procedure.
  *
  * Results:
- *	Returns a standard Tcl completion code, and leaves an error
- *	message in the interp's result if an error occurs.
+ *      Returns a standard Tcl completion code, and leaves an error
+ *      message in the interp's result if an error occurs.
  *
  * Side effects:
- *	Depends on the startup script.
+ *      Depends on the startup script.
  *
  *----------------------------------------------------------------------
  */
 
 int
 TclMagick_AppInit(interp)
-    Tcl_Interp *interp;		/* Interpreter for application. */
+    Tcl_Interp *interp;         /* Interpreter for application. */
 {
     if (Tcl_Init(interp) == TCL_ERROR) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 
 #ifdef TCL_TEST
 #ifdef TCL_XT_TEST
      if (Tclxttest_Init(interp) == TCL_ERROR) {
-	 return TCL_ERROR;
+         return TCL_ERROR;
      }
 #endif
     if (Tcltest_Init(interp) == TCL_ERROR) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
     Tcl_StaticPackage(interp, "Tcltest", Tcltest_Init,
             (Tcl_PackageInitProc *) NULL);
     if (TclObjTest_Init(interp) == TCL_ERROR) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 #ifdef TCL_THREADS
     if (TclThread_Init(interp) == TCL_ERROR) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 #endif
     if (Procbodytest_Init(interp) == TCL_ERROR) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
     Tcl_StaticPackage(interp, "procbodytest", Procbodytest_Init,
             Procbodytest_SafeInit);

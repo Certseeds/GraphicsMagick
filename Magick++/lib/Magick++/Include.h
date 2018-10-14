@@ -331,6 +331,7 @@ namespace Magick
   using MagickLib::JBIG1Compression;
   using MagickLib::JBIG2Compression;
   using MagickLib::ZSTDCompression;
+  using MagickLib::WebPCompression;
 
   using MagickLib::DisposeType;
   using MagickLib::UndefinedDispose;

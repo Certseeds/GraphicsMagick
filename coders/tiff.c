@@ -510,6 +510,15 @@ CompressionSupported(const CompressionType compression,
 #endif
         break;
       }
+    case WebPCompression:
+      {
+        strlcpy(compression_name,"WebP",MaxTextExtent);
+#if defined(COMPRESSION_WEBP)
+        compress_tag=COMPRESSION_WEBP;
+        status=MagickTrue;
+#endif
+        break;
+      }
     case ZipCompression:
       {
         strlcpy(compression_name,"Adobe Deflate",MaxTextExtent);
@@ -565,9 +574,6 @@ CompressionSupported(const CompressionType compression,
 #  endif
 #  if defined(ZIP_SUPPORT)
         case COMPRESSION_ADOBE_DEFLATE:
-#  endif
-#  if defined(ZSTD_SUPPORT)
-        case COMPRESSION_ZSTD:
 #  endif
         case COMPRESSION_NONE:
           {
@@ -656,6 +662,11 @@ CompressionTagToString(unsigned int compress_tag)
 #if defined(COMPRESSION_ZSTD)
     case COMPRESSION_ZSTD:
       result="Zstandard";
+      break;
+#endif
+#if defined(COMPRESSION_WEBP)
+    case COMPRESSION_WEBP:
+      result="WebP";
       break;
 #endif
   }
@@ -2083,6 +2094,11 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->compression=ZSTDCompression;
           break;
 #endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case COMPRESSION_WEBP:
+          image->compression=WebPCompression;
+          break;
+#endif /* if defined(COMPRESSION_WEBP) */
         default:
           image->compression=NoCompression;
           break;
@@ -4333,6 +4349,13 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             break;
           }
 #endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case WebPCompression:
+          {
+            compress_tag=COMPRESSION_WEBP;
+            break;
+          }
+#endif /* defined(COMPRESSION_WEBP) */
         default:
           {
             compress_tag=COMPRESSION_NONE;
@@ -5164,7 +5187,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             /*
               Larger strips compress better with diminishing returns
               (enlarge if necessary)..
-              TIFFTAG_ZSTD_LEVEL
             */
             unsigned int
               proposed_rows_per_strip;
@@ -5211,6 +5233,49 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             break;
           }
 #endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case COMPRESSION_WEBP:
+          {
+            /*
+              Larger strips compress better with diminishing returns
+              (enlarge if necessary)..
+            */
+            unsigned int
+              proposed_rows_per_strip;
+
+            proposed_rows_per_strip = (uint32) (1024*1024) / Max(scanline_size,1);
+            if (proposed_rows_per_strip > rows_per_strip)
+              rows_per_strip=proposed_rows_per_strip;
+
+            /* TIFFTAG_WEBP_LEVEL */
+            if (image_info->quality != DefaultCompressionQuality)
+              {
+                int quality = (int) image_info->quality;
+                if (quality < 1)
+                  quality=1;
+                else if (quality > 100)
+                  quality=100;
+
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_WEBP_LEVEL: %d", quality);
+                (void) TIFFSetField(tiff,TIFFTAG_WEBP_LEVEL,quality);
+              }
+
+            /* TIFFTAG_WEBP_LOSSLESS */
+            {
+              const char *value;
+              if (((value=AccessDefinition(image_info,"tiff","webp-lossless")) != NULL) ||
+                  ((value=AccessDefinition(image_info,"webp","lossless")) != NULL))
+                {
+                  int lossless=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_WEBP_LOSSLESS: %d", lossless);
+                  (void) TIFFSetField(tiff,TIFFTAG_WEBP_LOSSLESS,lossless);
+                }
+            }
+            break;
+          }
+#endif /* defined(COMPRESSION_WEBP) */
         default:
           {
             break;

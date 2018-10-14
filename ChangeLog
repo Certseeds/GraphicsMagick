@@ -1,3 +1,11 @@
+2018-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Support WebP compression in
+	TIFF. This requires a libtiff release after 4.0.9.
+
+	* magick/image.h ("C"): WebPCompression added to CompressionType
+	enumeration.
+
 2018-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Configure for the Zstd library.  Use
@@ -5,7 +13,11 @@
 	require this library to successfully link so static linkage could
 	fail if searching for libzstd is disabled.
 
-	* coders/tiff.c (WriteTIFFImage): Support Zstd compression in TIFF.
+	* magick/image.h ("C"): ZSTDCompression added to CompressionType
+	enumeration.
+
+	* coders/tiff.c (WriteTIFFImage): Support Zstd compression in
+	TIFF.  This requires a libtiff release after 4.0.9.
 
 2018-10-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

@@ -646,13 +646,13 @@ coders_ps_la_LIBADD        = $(LIBMAGICK) $(LIB_GS) $(LIB_MATH)
 coders_ps2_la_SOURCES      = coders/ps2.c
 coders_ps2_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ps2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ps2_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
+coders_ps2_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PS3 coder module
 coders_ps3_la_SOURCES      = coders/ps3.c
 coders_ps3_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ps3_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ps3_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
+coders_ps3_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PSD coder module
 coders_psd_la_SOURCES      = coders/psd.c
@@ -730,7 +730,7 @@ coders_tga_la_LIBADD       = $(LIBMAGICK)
 coders_tiff_la_SOURCES     = coders/tiff.c
 coders_tiff_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_tiff_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_tiff_la_LIBADD      = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
+coders_tiff_la_LIBADD      = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # TILE coder module
 coders_tile_la_SOURCES     = coders/tile.c

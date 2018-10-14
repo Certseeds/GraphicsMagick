@@ -1274,7 +1274,7 @@ Choices are: <em>None</em>, <em>BZip</em>, <em>Fax</em>,
 <em>Group3</em>, <em>Group4</em>,
 <em>JPEG</em>, <em>Lossless</em>,
 <em>LZW</em>, <em>RLE</em>, <em>Zip</em>, <em>LZMA</em>, <em>JPEG2000</em>,
-<em>JPEG2000</em>, <em>JBIG</em>, <em>JBIG2</em>, or <em>ZSTD</em>.
+<em>JPEG2000</em>, <em>JBIG</em>, <em>JBIG2</em>, <em>WebP</em>, or <em>ZSTD</em>.
 </font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Specify <strong>+compress</strong> to store the binary image in an uncompressed format.
@@ -1497,7 +1497,7 @@ type implied by the DPX header (if any).
 <dt>dpx:packing-method={packed|a|b|lsbpad|msbpad}</dt>
 <dd>DPX samples are output within 32-bit words. They may be tightly
 packed end-to-end within the words ("packed"), padded with null bits to
-the right of the sample ("a" or "lsbpad), or padded with null bits to the
+the right of the sample ("a" or "lsbpad"), or padded with null bits to the
 left of the sample ("b" or "msbpad"). This option only has an effect for
 sample sizes of 10 or 12 bits. If samples are not packed, the DPX
 standard recommends type A padding. Many DPX readers demand a sample size
@@ -1554,8 +1554,7 @@ any given error type before being promoted to a hard error.  JPEG
 files producing excessive warnings indicate a problem with the file.
 </dd>
 <dt>jpeg:optimize-coding={true|false}</dt>
-<dd>
-Selects if huffman encoding should be used. Huffman encoding is enabled
+<dd>Selects if huffman encoding should be used. Huffman encoding is enabled
 by default, but may be disabled for very large images since it encoding
 requires that the entire image be buffered in memory. Huffman encoding
 produces smaller JPEG files at the expense of added compression time and
@@ -1725,6 +1724,13 @@ Enables tiled TIFF if it has not already been enabled.
 is then defaulted to an appropriate size. Height should be a multiple of
 16. If the value is not a multiple of 16, then it will be rounded down.
 Enables tiled TIFF if it has not already been enabled.
+</dd>
+<dt>tiff:webp-lossless={TRUE|FALSE}</dt>
+<dd>Specify a value of <strong>TRUE</strong> to enable lossless mode while
+writing WebP-compressed TIFF files. The WebP <strong>webp:lossless</strong>
+option may also be used.  The quality factor set by the
+<strong>-quality</strong> option may be used to influence the level of effort
+expended while compressing.
 </dd>
 <dt>tiff:zstd-compress-level=&lt;value&gt;</dt>
 <dd>Specify the compression level to use while writing Zstd-compressed
@@ -4507,12 +4513,13 @@ that -compress <em>none</em> used to be used to trigger ASCII output but
 provided the opposite result of what was expected as compared with other
 formats.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-For the TIFF format, the JPEG, Zip, and Zstd compression algorithms
-are influenced by the quality value.  JPEG uses lossy compression so
-higher quality produces a larger file with less degradation.  The Zip
-and Zstd compression algorithms are lossless and for these algorithms
-a higher 'quality' means to work harder to produce a smaller file, but
-with no difference in image quality.</font></td></tr></table>
+For the TIFF format, the JPEG, WebP, Zip, and Zstd compression
+algorithms are influenced by the quality value.  JPEG and WebP provide
+lossy compression so higher quality produces a larger file with less
+degradation.  The Zip and Zstd compression algorithms (and WebP in
+lossless mode) are lossless and for these algorithms a higher
+'quality' means to work harder to produce a smaller file, but with no
+difference in image quality.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
