@@ -638,16 +638,6 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
-# Enable Ghostscript library support.
-AC_ARG_WITH(gslib,
-	      AS_HELP_STRING([--with-gslib],
-                             [enable Ghostscript library support (not recommended)]),
-	      [with_gslib=$withval],
-	      [with_gslib='no'])
-if test "$with_gslib" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gslib=$with_gslib "
-fi
-
 # Disable JBIG.
 AC_ARG_WITH(jbig,
 	      AS_HELP_STRING([--without-jbig],
@@ -2181,41 +2171,6 @@ fi
 AM_CONDITIONAL(HasJP2, test "$have_jp2" = 'yes')
 AC_SUBST(LIB_JP2)
 
-#
-# Check for Ghostscript library
-#
-# Test for iapi.h & test for gsapi_new_instance in -lgs
-have_gslib='no'
-LIB_GS=''
-if test "$with_gslib" != 'no'
-then
-    AC_MSG_CHECKING(for Ghostscript library support )
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    AC_CHECK_HEADER(ghostscript/iapi.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(gs,gsapi_new_instance,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if Ghostscript library package is complete)
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-	AC_MSG_RESULT(no -- some components failed test)
-	have_gslib='no (failed tests)'
-    else
-	LIB_GS='-lgs'
-	LIBS="$LIB_GS $LIBS"
-	AC_DEFINE(HasGS,1,Define if you have Ghostscript library)
-	AC_MSG_RESULT(yes)
-	have_gslib='yes'
-    fi
-    else
-    AC_MSG_RESULT(no)
-    fi
-fi
-AM_CONDITIONAL(HasGS, test "$have_gslib" = 'yes')
-AC_SUBST(LIB_GS)
-
 # #
 # # Check for MPEG2 library
 # #
@@ -3647,7 +3602,6 @@ then
   result_ghostscript_font_dir="$ghostscript_font_dir"
 fi
 echo "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir    $result_ghostscript_font_dir"
-echo "Ghostscript lib   --with-gslib=$with_gslib       	$have_gslib"
 echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
 echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
 echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"

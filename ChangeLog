@@ -1,5 +1,11 @@
 2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Remove Ghostscript library support (--with-gslib)
+	from configure script.  The 'HasGS' pre-processor defines which
+	were enabled by this remain in the source code so it is still
+	possible to use this library if absolutely necessary
+	(e.g. CPPFLAGS=-DHasGS LIBS=-lgs).
+
 	* tests/rwfile.tap: Test TIFF format with all supported
 	compression options.
 

@@ -384,9 +384,6 @@
 /* Define if you have FlashPIX library */
 #undef HasFPX
 
-/* Define if you have Ghostscript library */
-#undef HasGS
-
 /* Define if you have JBIG library */
 #undef HasJBIG
 
