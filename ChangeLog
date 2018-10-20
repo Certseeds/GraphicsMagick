@@ -1,5 +1,8 @@
 2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/rwblob.tap: Added a rwblob test to verify that lower-case
+	magick works.
+
 	* magick/static.c (OpenModule): Upper case magick string before
 	searching static modules list.  Fixes Debian bug 911386
 	"libgraphicsmagick-q16-3: graphicsmagick 1.3.30 has made formats
