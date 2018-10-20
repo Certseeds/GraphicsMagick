@@ -306,9 +306,10 @@ OpenModule(const char *module,ExceptionInfo *exception)
     Assign module name from alias.
   */
   assert(module != (const char *) NULL);
-  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-                        "Magick \"%s\"", module);
   name_length=strlcpy(module_name,module,MaxTextExtent);
+  LocaleUpper(module_name);
+  (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                        "Magick \"%s\"", module_name);
   for (index=0; index < ArraySize(ModuleAliases);index++)
     {
       if (ModuleAliases[index].magick[0] > module[0])

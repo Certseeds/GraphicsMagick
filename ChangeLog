@@ -1,5 +1,10 @@
 2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/static.c (OpenModule): Upper case magick string before
+	searching static modules list.  Fixes Debian bug 911386
+	"libgraphicsmagick-q16-3: graphicsmagick 1.3.30 has made formats
+	case-sensitive at the API level".
+
 	* filters/analyze.c (AnalyzeImage): X and y should be unsigned
 	long to match image rows/columns type.  Calculate total pixels by
 	simple multiplication rather than counting.
