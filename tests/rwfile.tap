@@ -11,7 +11,7 @@ rwfile=./rwfile
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 576
+test_plan_fn 648
 
 # ART format
 for type in ${check_types}
@@ -427,10 +427,13 @@ do
 done
 
 # TIFF format
-for type in ${check_types}
+for compress in None Fax Group4 JPEG LZW RLE Zip LZMA WebP ZSTD
 do
-  test_command_fn "TIFF ${type}" -F TIFF ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" TIFF
-  test_command_fn "TIFF ${type} (stdio)" -F TIFF ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" TIFF
+  for type in ${check_types}
+  do
+    test_command_fn "TIFF ${type} compress=${compress}" -F TIFF ${MEMCHECK} ${rwfile} -compress ${compress} -filespec "out_${type}_${compress}_%d" "${SRCDIR}/input_${type}.miff" TIFF
+    test_command_fn "TIFF ${type}  compress=${compress} (stdio)" -F TIFF ${MEMCHECK} ${rwfile} -stdio -compress ${compress} -filespec "out_${type}_${compress}_stdio_%d" "${SRCDIR}/input_${type}.miff" TIFF
+  done
 done
 
 # VDA format
