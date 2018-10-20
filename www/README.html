@@ -146,8 +146,7 @@ available as</p>
 </blockquote>
 <p>to annotate with TrueType and Postscript Type 1 fonts.</p>
 </li>
-<li><p class="first">GraphicsMagick requires Ghostscript software (version 9.04
-recommended) available from</p>
+<li><p class="first">GraphicsMagick requires Ghostscript software available from</p>
 <blockquote>
 <p><a class="reference external" href="http://pages.cs.wisc.edu/~ghost/">http://pages.cs.wisc.edu/~ghost/</a></p>
 <blockquote>
@@ -160,6 +159,15 @@ recommended) available from</p>
 <blockquote>
 <p><a class="reference external" href="https://sourceforge.net/projects/gs-fonts/">https://sourceforge.net/projects/gs-fonts/</a></p>
 </blockquote>
+<p>Ghostscript (at the time this text is written in October, 2018) has
+been observed to have severe security issues when reading untrusted
+Postscript files (does not apply to PDF).  Examples of these severe
+security issues are being tricked into reading or writing arbitrary
+files when executing in &quot;-dSAFER&quot; mode, which which is supposed to
+prevent such access.  Users of Ghostscript who may encounter
+untrusted Postscript files are recommended to assure that all
+security patches have been applied and it might be necessary to use
+the latest upstream release.</p>
 <p>Ghostscript is available for use under both free (GPL) and
 commercial licenses.  We are not lawyers so we can not provide
 advice as to when the commercial license from Artifex is required.
