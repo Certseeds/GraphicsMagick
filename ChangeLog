@@ -1,3 +1,9 @@
+2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* filters/analyze.c (AnalyzeImage): X and y should be unsigned
+	long to match image rows/columns type.  Calculate total pixels by
+	simple multiplication rather than counting.
+
 2018-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Support WebP compression in
