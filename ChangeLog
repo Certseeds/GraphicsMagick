@@ -1,5 +1,16 @@
 2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/rwfile.tap: Test TIFF format with all supported
+	compression options.
+
+	* tests/{rwblob.c, rwfile.c} (main): Use StringToCompressionType()
+	to parse compression option. Also consider requested compression
+	algorithm when deciding if format is lossy.
+
+	* coders/tiff.c (WriteTIFFImage): WebP compression needs
+	PHOTOMETRIC_RGB. Fix wrong rows-per-strip calculation when using
+	LZMA compression.
+
 	* tests/rwblob.tap: Added a rwblob test to verify that lower-case
 	magick works.
 

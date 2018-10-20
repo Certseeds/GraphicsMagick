@@ -38,6 +38,14 @@
 <p>2018-10-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>tests/rwfile.tap: Test TIFF format with all supported
+compression options.</li>
+<li>tests/{rwblob.c, rwfile.c} (main): Use StringToCompressionType()
+to parse compression option. Also consider requested compression
+algorithm when deciding if format is lossy.</li>
+<li>coders/tiff.c (WriteTIFFImage): WebP compression needs
+PHOTOMETRIC_RGB. Fix wrong rows-per-strip calculation when using
+LZMA compression.</li>
 <li>tests/rwblob.tap: Added a rwblob test to verify that lower-case
 magick works.</li>
 <li>magick/static.c (OpenModule): Upper case magick string before
