@@ -4505,6 +4505,16 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                   " for JBIG compression.");
         }
 #endif /* defined(COMPRESSION_JBIG) */
+#if defined(COMPRESSION_WEBP)
+      else if (compress_tag == COMPRESSION_WEBP)
+        {
+          photometric=PHOTOMETRIC_RGB;
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Using RGB photometric due to request for"
+                                  " WebP compression.");
+        }
+#endif /* defined(COMPRESSION_WEBP) */
 
       /*
         Allow user to override the photometric.
@@ -5131,9 +5141,12 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                   66U  /*   9     311 MB     33 MB    */
                 };
 
-              rows_per_strip = (uint32) (((lzma_memory_mb[lzma_preset-1]*1024U*1024U))/
-                                         ((((unsigned long) bits_per_sample*samples_per_pixel)/
-                                           8U)*image->rows));
+              rows_per_strip =
+                (uint32) ceil((((double) lzma_memory_mb[lzma_preset-1]*
+                                1024.0*1024.0*8.0))/
+                              (((double) bits_per_sample*samples_per_pixel
+                                *image->columns)))/8.0;
+
               if (rows_per_strip < 1)
                 rows_per_strip=1U;
               if (rows_per_strip > image->rows)
