@@ -1,3 +1,13 @@
+2018-10-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/Makefile.PL.in: Use MAGICK_API_LIBS to obtain the
+	list of libraries to use when linking.
+
+	* configure.ac: OpenMP library is normally supplied due to a
+	CFLAGS option so only supply it in cases where the CFLAGS option
+	may be lost or it might not be used.  Otherwise the compiler may
+	apply the library twice when linking.
+
 2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Remove Ghostscript library support (--with-gslib)

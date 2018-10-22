@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2018-10-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>PerlMagick/Makefile.PL.in: Use MAGICK_API_LIBS to obtain the
+list of libraries to use when linking.</li>
+<li>configure.ac: OpenMP library is normally supplied due to a
+CFLAGS option so only supply it in cases where the CFLAGS option
+may be lost or it might not be used.  Otherwise the compiler may
+apply the library twice when linking.</li>
+</ul>
+</blockquote>
 <p>2018-10-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
