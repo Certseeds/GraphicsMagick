@@ -184,6 +184,24 @@ extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int 
 extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
 
+/*
+  Compute a value which is the next kilobyte power of 2 larger than
+  the requested value or MaxTextExtent, whichever is larger.
+
+  The objective is to round up the size quickly (and in repeatable
+  steps) in order to reduce the number of memory copies due to realloc
+  for strings which grow rapidly, while producing a reasonable size
+  for smaller strings.
+*/
+#define MagickRoundUpStringLength(size) \
+{ \
+  size_t \
+    _rounded; \
+ \
+  for (_rounded=256U; _rounded < (Max(size,256)); _rounded *= 2); \
+  size=_rounded; \
+}
+
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)

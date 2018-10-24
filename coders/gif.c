@@ -962,21 +962,33 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
           case 0xfe:
           {
-            char
-              *comments;
-
             /*
               Read Comment extension.
             */
-            comments=AllocateString((char *) NULL);
+            char
+              *comments = (char *) NULL;
+
+            size_t
+              allocation_length=0,
+              offset=0;
+
             for ( ; ; )
-            {
-              count=ReadBlobBlock(image,header);
-              if (count == 0)
-                break;
-              header[count]='\0';
-              (void) ConcatenateString(&comments,(const char *) header);
-            }
+              {
+                count=ReadBlobBlock(image,header);
+                if (count == 0)
+                  break;
+                header[count]='\0';
+                if (count+offset+1 >= allocation_length)
+                  {
+                    allocation_length=allocation_length+count+1;
+                    MagickRoundUpStringLength(allocation_length);
+                    MagickReallocMemory(char *,comments,allocation_length);
+                    if (comments == (char *) NULL)
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                    (void) strlcpy(&comments[offset],(char *)header,allocation_length-offset);
+                  }
+              }
+            (void) SetImageAttribute(image,"comment",NULL);
             (void) SetImageAttribute(image,"comment",comments);
             MagickFreeMemory(comments);
             break;
