@@ -185,15 +185,15 @@ static unsigned int
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  DestroyMagickResources() destroys the resource environment.
+%  DestroyMagickModules() destroys the modules environment.
 %
-%  The format of the DestroyMagickResources() method is:
+%  The format of the DestroyMagickModules() method is:
 %
-%      DestroyMagickResources(void)
+%      DestroyMagickModules(void)
 %
 %
 */
-MagickExport void
+void
 DestroyMagickModules(void)
 {
   DestroyModuleInfo();
@@ -248,7 +248,7 @@ DestroyModuleInfoEntry(ModuleInfo *entry)
   MagickFreeMemory(entry);
 }
 
-MagickExport void
+void
 DestroyModuleInfo(void)
 {
   CoderInfo
@@ -340,7 +340,7 @@ DestroyModuleInfo(void)
 %      arguments.
 %
 */
-MagickExport MagickPassFail
+MagickPassFail
 ExecuteModuleProcess(const char *tag,Image **image,
                      const int argc,char **argv)
 {
@@ -793,7 +793,7 @@ GetModuleList(ExceptionInfo *exception)
 %
 %
 */
-MagickExport void
+void
 InitializeMagickModules(void)
 {
   ExceptionInfo
@@ -1196,7 +1196,7 @@ InitializeModuleSearchPath(MagickModuleType module_type,
 %
 %
 */
-MagickExport const ModuleInfo *
+const ModuleInfo *
 GetModuleInfo(const char *name,ExceptionInfo *exception)
 {
   const ModuleInfo
@@ -1331,7 +1331,7 @@ ListModuleInfo(FILE *file,ExceptionInfo *exception)
 %
 %
 */
-MagickExport MagickPassFail
+MagickPassFail
 OpenModule(const char *module,ExceptionInfo *exception)
 {
   {
@@ -1492,7 +1492,7 @@ OpenModule(const char *module,ExceptionInfo *exception)
 %    o exception: Return any errors or warnings in this structure.
 %
 */
-MagickExport MagickPassFail
+MagickPassFail
 OpenModules(ExceptionInfo *exception)
 {
   (void) GetMagickInfo((char *) NULL,exception);

@@ -218,7 +218,7 @@ StaticModules[] =
 %
 %
 */
-MagickExport void
+void
 DestroyMagickModules(void)
 {
   unsigned int index;
@@ -252,7 +252,7 @@ DestroyMagickModules(void)
 %
 %
 */
-MagickExport void
+void
 InitializeMagickModules(void)
 {
 }
@@ -286,7 +286,7 @@ InitializeMagickModules(void)
 %
 %
 */
-MagickExport MagickPassFail
+MagickPassFail
 OpenModule(const char *module,ExceptionInfo *exception)
 {
   char
@@ -376,7 +376,7 @@ OpenModule(const char *module,ExceptionInfo *exception)
 %    o exception: Return any errors or warnings in this structure.
 %
 */
-MagickExport MagickPassFail
+MagickPassFail
 OpenModules(ExceptionInfo *exception)
 {
   unsigned int index;
@@ -428,10 +428,10 @@ OpenModules(ExceptionInfo *exception)
 %
 */
 #if defined(SupportMagickModules)
-MagickExport unsigned int ExecuteStaticModuleProcess(const char *tag,
+unsigned int ExecuteStaticModuleProcess(const char *tag,
   Image **image,const int argc,char **argv)
 #else
-MagickExport unsigned int ExecuteModuleProcess(const char *tag,
+unsigned int ExecuteModuleProcess(const char *tag,
   Image **image,const int argc,char **argv)
 #endif /* defined(SupportMagickModules) */
 {
@@ -485,7 +485,7 @@ RegisterStaticModules() statically registers all the available module
 %
 %
 */
-MagickExport void RegisterStaticModules(void)
+void RegisterStaticModules(void)
 {
 #if !defined(SupportMagickModules)
   unsigned int index;
@@ -521,7 +521,7 @@ MagickExport void RegisterStaticModules(void)
 %
 %
 */
-MagickExport void UnregisterStaticModules(void)
+void UnregisterStaticModules(void)
 {
 #if !defined(SupportMagickModules)
   unsigned int index;

@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2018-10-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/monitor.c (MagickMonitorFormatted): Serialize calls to
+the progress monitor so that the caller does not need to perform
+this serialization.
+(MagickMonitor): Serialize calls to the progress monitor so that
+the caller does not need to perform this serialization.  This
+function is now marked as deprecated.
+(InitializeMagickMonitor): New private function to initialize
+monitor functionality.
+(DestroyMagickMonitor): New private function to destroy monitor
+functionality.</li>
+</ul>
+</blockquote>
 <p>2018-10-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

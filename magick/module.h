@@ -48,10 +48,10 @@ typedef struct _ModuleInfo
     *next;
 } ModuleInfo;
 
-extern MagickExport const ModuleInfo
+extern const ModuleInfo
   *GetModuleInfo(const char *,ExceptionInfo *);
 
-extern MagickExport MagickPassFail
+extern MagickPassFail
   ExecuteModuleProcess(const char *tag,Image **image,
                        const int argc,char **argv),
   ExecuteStaticModuleProcess(const char *,Image **,const int,char **),
@@ -59,7 +59,7 @@ extern MagickExport MagickPassFail
   OpenModule(const char *module,ExceptionInfo *exception),
   OpenModules(ExceptionInfo *exception);
 
-extern MagickExport void
+extern void
   DestroyModuleInfo(void),
   DestroyMagickModules(void),
   InitializeMagickModules(void),
