@@ -1,5 +1,9 @@
 2018-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_iterator.c (PixelIterateMonoModifyImplementation):
+	Use atomic and flush rather than critical construct for a small
+	speedup.
+
 	* magick/monitor.c (MagickMonitorFormatted): Serialize calls to
 	the progress monitor so that the caller does not need to perform
 	this serialization.

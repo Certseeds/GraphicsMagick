@@ -350,20 +350,13 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
 #endif
   for (row=y; row < (long) (y+rows); row++)
     {
-      MagickBool
-        thread_status;
-
       PixelPacket
         * restrict pixels;
 
       IndexPacket
         * restrict indexes;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_PixelIterateMonoModify)
-#endif
-      thread_status=status;
-      if (thread_status == MagickFail)
+      if (status == MagickFail)
         continue;
 
       if (set)
@@ -371,29 +364,31 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
       else
         pixels=GetImagePixelsEx(image, x, row, columns, 1, exception);
       if (!pixels)
-        thread_status=MagickFail;
+        goto mono_modify_fail;
       indexes=AccessMutableIndexes(image);
 
-      if (thread_status != MagickFail)
-        thread_status=(call_back)(mutable_data,immutable_data,image,pixels,indexes,columns,exception);
-
-      if (thread_status != MagickFail)
-        if (!SyncImagePixelsEx(image,exception))
-          thread_status=MagickFail;
-
+      if (!((call_back)(mutable_data,immutable_data,image,pixels,indexes,columns,exception)))
+        goto mono_modify_fail;
+      if (!SyncImagePixelsEx(image,exception))
+        goto mono_modify_fail;
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_PixelIterateMonoModify)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,rows))
-          if (!MagickMonitorFormatted(row_count,rows,exception,
-                                      description,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,rows))
+        if (!MagickMonitorFormatted(row_count,rows,exception,
+                                    description,image->filename))
+          goto mono_modify_fail;
 
-        if (thread_status == MagickFail)
-          status=MagickFail;
-      }
+      /* Continue loop processing */
+      continue;
+
+      /* There was a problem */
+    mono_modify_fail:;
+      status=MagickFail;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
     }
 
   return (status);
