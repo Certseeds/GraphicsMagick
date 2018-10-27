@@ -38,6 +38,11 @@
 <p>2018-10-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/miff.c (WriteMIFFImage): Only run
+strlen(attribute-&gt;value) once per attribute since the length won't
+change.  May address oss-fuzz 11158
+&quot;graphicsmagick/coder_MIFF_fuzzer: Timeout in
+graphicsmagick_coder_MIFF_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
 <li>Fix compilation warnings observed with GCC 8.2.0.</li>
 </ul>
 </blockquote>

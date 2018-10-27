@@ -1,5 +1,11 @@
 2018-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (WriteMIFFImage): Only run
+	strlen(attribute->value) once per attribute since the length won't
+	change.  May address oss-fuzz 11158
+	"graphicsmagick/coder_MIFF_fuzzer: Timeout in
+	graphicsmagick_coder_MIFF_fuzzer". (Credit to OSS-Fuzz)
+
 	* Fix compilation warnings observed with GCC 8.2.0.
 
 2018-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

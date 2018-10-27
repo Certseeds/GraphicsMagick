@@ -2504,17 +2504,19 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
     attribute=GetImageAttribute(image,(char *) NULL);
     for ( ; attribute != (ImageAttribute *) NULL; attribute=attribute->next)
     {
+      size_t attribute_length;
       if (*attribute->key == '[')
         continue;
       FormatString(buffer,"%.1024s=",attribute->key);
       (void) WriteBlobString(image,buffer);
-      for (i=0; i < (long) strlen(attribute->value); i++)
+      attribute_length=strlen(attribute->value);
+      for (i=0; i < (long) attribute_length; i++)
         if (isspace((int) attribute->value[i]))
           break;
-      if (i < (long) strlen(attribute->value))
+      if (i < (long) attribute_length)
         (void) WriteBlobByte(image,'{');
-      (void) WriteBlob(image,strlen(attribute->value),attribute->value);
-      if (i < (long) strlen(attribute->value))
+      (void) WriteBlob(image,attribute_length,attribute->value);
+      if (i < (long) attribute_length)
         (void) WriteBlobByte(image,'}');
       (void) WriteBlobByte(image,'\n');
     }
