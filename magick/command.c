@@ -1444,7 +1444,7 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
@@ -7973,7 +7973,7 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
@@ -16105,7 +16105,7 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
