@@ -233,7 +233,7 @@ typedef struct _SourceManager
 
   JPEG message codes range from 0 to JMSG_LASTMSGCODE
 */
-static unsigned int JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
+static void JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
 {
   char
     message[JMSG_LENGTH_MAX];
@@ -293,7 +293,7 @@ static unsigned int JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_leve
                         image->filename);
       /* JWRN_JPEG_EOF - "Premature end of JPEG file" */
       err->num_warnings++;
-      return False;
+      return /* False */;
     }
   else
     {
@@ -306,7 +306,7 @@ static unsigned int JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_leve
                                 message);
         }
     }
-  return True;
+  return /* True */;
 }
 
 void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
@@ -1142,7 +1142,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   (void) memset(&jpeg_info,0,sizeof(jpeg_info));
   (void) memset(&jpeg_error,0,sizeof(jpeg_error));
   jpeg_info.err=jpeg_std_error(&jpeg_error);
-  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGDecodeMessageHandler;
+  jpeg_info.err->emit_message=/*(void (*)(j_common_ptr,int))*/ JPEGDecodeMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   jpeg_pixels=(JSAMPLE *) NULL;
   error_manager.image=image;
@@ -2120,7 +2120,7 @@ static void JPEGDestinationManager(j_compress_ptr cinfo,Image * image)
 
   JPEG message codes range from 0 to JMSG_LASTMSGCODE
 */
-static unsigned int JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
+static void JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
 {
   char
     message[JMSG_LENGTH_MAX];
@@ -2182,7 +2182,7 @@ static unsigned int JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_leve
       */
       /* JWRN_JPEG_EOF - "Premature end of JPEG file" */
       err->num_warnings++;
-      return False;
+      return /* False */;
     }
   else
     {
@@ -2195,7 +2195,7 @@ static unsigned int JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_leve
                                 message);
         }
     }
-  return True;
+  return /* True */;
 }
 
 
@@ -2314,7 +2314,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   */
   jpeg_info.client_data=(void *) imagev;
   jpeg_info.err=jpeg_std_error(&jpeg_error);
-  jpeg_info.err->emit_message=(void (*)(j_common_ptr,int)) JPEGEncodeMessageHandler;
+  jpeg_info.err->emit_message=/*(void (*)(j_common_ptr,int))*/ JPEGEncodeMessageHandler;
   jpeg_info.err->error_exit=(void (*)(j_common_ptr)) JPEGErrorHandler;
   error_manager.image=imagev;
   error_manager.max_warning_count=MaxWarningCount;

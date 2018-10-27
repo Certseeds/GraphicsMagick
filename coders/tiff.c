@@ -886,7 +886,7 @@ TIFFCloseBlob(thandle_t image_handle)
 }
 
 /* Report errors. */
-static unsigned int
+static void
 TIFFErrors(const char *module,const char *format,
   va_list warning)
 {
@@ -902,7 +902,6 @@ TIFFErrors(const char *module,const char *format,
   (void) strlcat(message,".",MaxTextExtent);
   tiff_exception=(ExceptionInfo *) MagickTsdGetSpecific(tsd_key);
   ThrowException2(tiff_exception,CoderError,message,module);
-  return(True);
 }
 
 /* Memory map entire input file in read-only mode. */
@@ -1024,7 +1023,7 @@ TIFFUnmapBlob(thandle_t image,
 }
 
 /* Report warnings as a coder log message. */
-static unsigned int
+static void
 TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 {
 /*   ExceptionInfo */
@@ -1042,11 +1041,10 @@ TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 /*   ThrowException2(tiff_exception,CoderWarning,message,module); */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "TIFF Warning: %s",message);
-  return(True);
 }
 
 /* Report warnings as exception in thread-specific ExceptionInfo */
-static unsigned int
+static void
 TIFFWarningsThrowException(const char *module,const char *format,va_list warning)
 {
   ExceptionInfo
@@ -1064,7 +1062,6 @@ TIFFWarningsThrowException(const char *module,const char *format,va_list warning
   ThrowException2(tiff_exception,CoderWarning,message,module);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "TIFF Warning: %s",message);
-  return(True);
 }
 
 /* Write data at current offset */

@@ -1,3 +1,7 @@
+2018-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Fix compilation warnings observed with GCC 8.2.0.
+
 2018-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_iterator.c (PixelIterateMonoModifyImplementation):

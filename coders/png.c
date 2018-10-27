@@ -1120,11 +1120,11 @@ static png_voidp png_IM_malloc(png_structp png_ptr,png_size_t size)
 /*
   Free a pointer.  It is removed from the list at the same time.
 */
-static png_free_ptr png_IM_free(png_structp png_ptr,png_voidp ptr)
+static void png_IM_free(png_structp png_ptr,png_voidp ptr)
 {
   (void) png_ptr;
   MagickFreeMemory(ptr);
-  return((png_free_ptr) NULL);
+  return;
 }
 #endif
 

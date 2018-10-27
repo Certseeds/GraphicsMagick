@@ -5,7 +5,7 @@
 // background color, or to create a similar looking effect without
 // transparency.
 //
-// Copyright Bob Friesenhahn, 2000
+// Copyright Bob Friesenhahn, 2000 - 2018
 //
 // Usage: detrans color file...
 //
@@ -30,7 +30,7 @@ int main(int argc,char **argv)
     try {
       color = Color(argv[1]);
     }
-    catch ( Exception error_ )
+    catch ( Exception &error_ )
       {
         cout << error_.what() << endl;
         cout.flush();

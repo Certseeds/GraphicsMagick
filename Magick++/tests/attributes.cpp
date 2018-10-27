@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2002, 2003
+// Copyright Bob Friesenhahn, 1999 - 2018
 //
 // Tests for setting/getting Magick::Image attributes
 //
@@ -826,7 +826,7 @@ int main( int /*argc*/, char ** argv)
         {
           image.geometry();
         }
-      catch ( Exception )
+      catch ( Exception & )
         {
           caughtException = true;
         }
@@ -1009,7 +1009,7 @@ int main( int /*argc*/, char ** argv)
         {
           image.montageGeometry();
         }
-      catch ( Exception )
+      catch ( Exception & )
         {
           caughtException = true;
         }
