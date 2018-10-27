@@ -189,7 +189,7 @@ const RGB_Record WPG1_Palette[256]={
 };
 
 
-int ApproveFormatForWPG(const char *Format)
+static int ApproveFormatForWPG(const char *Format)
 {
   if(!strcmp(Format,"PFB")) return 0;
   return 1;

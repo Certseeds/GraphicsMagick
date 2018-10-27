@@ -309,7 +309,7 @@ static void JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
   return /* True */;
 }
 
-void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
+static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
 {
   ErrorManager *error_manager = (ErrorManager *) cinfo->client_data;
   Image *image = error_manager->image;
@@ -2199,7 +2199,7 @@ static void JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
 }
 
 
-void JPEGEncodeProgressMonitor(j_common_ptr cinfo)
+static void JPEGEncodeProgressMonitor(j_common_ptr cinfo)
 {
 #if USE_LIBJPEG_PROGRESS
   struct jpeg_progress_mgr *p = cinfo->progress;
