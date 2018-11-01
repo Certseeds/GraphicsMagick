@@ -4543,7 +4543,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MSLInfo
     msl_info;
 
-  unsigned int
+  MagickPassFail
     status;
 
   xmlSAXHandlerPtr
@@ -4557,11 +4557,12 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   assert(image != (Image **) NULL);
   msl_image=AllocateImage(image_info);
   status=OpenBlob(image_info,msl_image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFail)
     {
+      DestroyImage(msl_image);
       ThrowException(exception,FileOpenError,UnableToOpenFile,
                      msl_image->filename);
-      return(False);
+      return(MagickFail);
     }
 
   /*
