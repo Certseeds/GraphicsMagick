@@ -38,6 +38,10 @@
 <p>2018-11-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>configure.ac: Use pkg-config data as the initial choice when
+configuring for FreeType 2.0 and libxml-2.0.  Only fall back to
+invoking an external script (and then traditional methods) if
+pkg-config fails.</li>
 <li>coders/msl.c (ProcessMSLScript): Release msl_image if OpenBlob
 fails.  Similar to ImageMagick CVE-2018-18544.  Problem was
 reported to us via email from Petr Gajdos on Thu, 1 Nov 2018.</li>

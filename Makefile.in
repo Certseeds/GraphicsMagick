@@ -225,8 +225,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -2420,6 +2420,8 @@ EXEEXT = @EXEEXT@
 EditorDelegate = @EditorDelegate@
 FGREP = @FGREP@
 FIGDecodeDelegate = @FIGDecodeDelegate@
+FT_CFLAGS = @FT_CFLAGS@
+FT_LIBS = @FT_LIBS@
 GMDelegate = @GMDelegate@
 GREP = @GREP@
 GSCMYKDevice = @GSCMYKDevice@
@@ -2576,6 +2578,9 @@ PERL = @PERL@
 PERLMAINCC = @PERLMAINCC@
 PERL_MAKE_OPTIONS = @PERL_MAKE_OPTIONS@
 PERL_SUPPORTS_DESTDIR = @PERL_SUPPORTS_DESTDIR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PREFIX_DIR = @PREFIX_DIR@
 PSDelegate = @PSDelegate@
 PTHREAD_CC = @PTHREAD_CC@
@@ -2610,6 +2615,8 @@ UINTPTR_T = @UINTPTR_T@
 VERSION = @VERSION@
 WinPathScript = @WinPathScript@
 XMKMF = @XMKMF@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@

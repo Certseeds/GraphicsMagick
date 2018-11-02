@@ -721,6 +721,8 @@ LIB_XML_DEPS
 LIB_XML
 HasXML_FALSE
 HasXML_TRUE
+XML_LIBS
+XML_CFLAGS
 xml2_config
 LIB_WEBP
 HasWEBP_FALSE
@@ -734,6 +736,11 @@ HasTIFF_TRUE
 LIB_TTF
 HasTTF_FALSE
 HasTTF_TRUE
+FT_LIBS
+FT_CFLAGS
+PKG_CONFIG_LIBDIR
+PKG_CONFIG_PATH
+PKG_CONFIG
 freetype_config
 LIB_JP2
 HasJP2_FALSE
@@ -1075,7 +1082,14 @@ CXX
 CXXFLAGS
 CCC
 CXXCPP
-XMKMF'
+XMKMF
+PKG_CONFIG
+PKG_CONFIG_PATH
+PKG_CONFIG_LIBDIR
+FT_CFLAGS
+FT_LIBS
+XML_CFLAGS
+XML_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1790,6 +1804,15 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   CXXCPP      C++ preprocessor
   XMKMF       Path to xmkmf, Makefile generator for X Window System
+  PKG_CONFIG  path to pkg-config utility
+  PKG_CONFIG_PATH
+              directories to add to pkg-config's search path
+  PKG_CONFIG_LIBDIR
+              path overriding pkg-config's built-in search path
+  FT_CFLAGS   C compiler flags for FT, overriding pkg-config
+  FT_LIBS     linker flags for FT, overriding pkg-config
+  XML_CFLAGS  C compiler flags for XML, overriding pkg-config
+  XML_LIBS    linker flags for XML, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -19685,10 +19708,10 @@ fi
 
 # # Disable MPEG.
 # AC_ARG_WITH(mpeg2,
-# 	      AS_HELP_STRING([--without-mpeg2],
+#             AS_HELP_STRING([--without-mpeg2],
 #                            [disable MPEG support]),
-# 	      [with_mpeg2=$withval],
-# 	      [with_mpeg2='yes'])
+#             [with_mpeg2=$withval],
+#             [with_mpeg2='yes'])
 
 # Disable PNG.
 
@@ -22993,7 +23016,7 @@ else
   # Look for the header file in a standard set of common directories.
 # Check X11 before X11Rn because it is often a symlink to the current release.
   for ac_dir in               \
-    /lib/usr/lib/X11	  \
+    /lib/usr/lib/X11      \
     /usr/X11/lib          \
     /usr/X11R4/lib        \
     /usr/X11R5/lib        \
@@ -23030,7 +23053,7 @@ else
     if test -f "$ac_dir/X11/rgb.txt"
     then
         gm_cv_x_configure="$ac_dir/X11/"
-	break
+        break
     elif test -f "$ac_dir/rgb.txt"
     then
         gm_cv_x_configure="$ac_dir/"
@@ -23845,8 +23868,10 @@ then
 $as_echo_n "checking for ZLIB support ... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
+
   failed=0
   passed=0
+  # PKG_CHECK_MODULES([ZLIB], [zlib], [], [])
   ac_fn_c_check_header_mongrel "$LINENO" "zconf.h" "ac_cv_header_zconf_h" "$ac_includes_default"
 if test "x$ac_cv_header_zconf_h" = xyes; then :
   passed=`expr $passed + 1`
@@ -24313,6 +24338,7 @@ then
 $as_echo_n "checking for LZMA support ... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
+  # PKG_CHECK_MODULES([LZMA], [liblzma], [], [])
   failed=0
   passed=0
   ac_fn_c_check_header_mongrel "$LINENO" "lzma.h" "ac_cv_header_lzma_h" "$ac_includes_default"
@@ -24412,6 +24438,7 @@ $as_echo_n "checking for Zstd support ... " >&6; }
 $as_echo "" >&6; }
   failed=0
   passed=0
+  # PKG_CHECK_MODULES([ZSTD], [libzstd], [], [])
   ac_fn_c_check_header_mongrel "$LINENO" "zstd.h" "ac_cv_header_zstd_h" "$ac_includes_default"
 if test "x$ac_cv_header_zstd_h" = xyes; then :
   passed=`expr $passed + 1`
@@ -25602,19 +25629,19 @@ $as_echo_n "checking if DPS package is complete... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
         have_dps='no (failed tests)'
-	CPPFLAGS="$O_CPPFLAGS"
+        CPPFLAGS="$O_CPPFLAGS"
     else
-	LIB_DPS="-ldpstk -ldps ${LIBDPS_XT}"
-	LIBS="$LIB_DPS $LIBS"
+        LIB_DPS="-ldpstk -ldps ${LIBDPS_XT}"
+        LIBS="$LIB_DPS $LIBS"
 
 $as_echo "#define HasDPS 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	have_dps='yes'
+        have_dps='yes'
     fi
     else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -25714,16 +25741,16 @@ $as_echo_n "checking if FlashPIX package is complete... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-	have_fpx='no (failed tests)'
+        have_fpx='no (failed tests)'
     else
-	LIB_FPX='-lfpx'
-	# LIBS="$LIB_FPX $LIBS"
+        LIB_FPX='-lfpx'
+        # LIBS="$LIB_FPX $LIBS"
 
 $as_echo "#define HasFPX 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_fpx='yes'
         PERLMAINCC="$CXX"
@@ -25757,6 +25784,8 @@ $as_echo "" >&6; }
     failed=0
     passed=0
     have_lcms_header='no'
+
+    # PKG_CHECK_MODULES([LCMS2], [lcms2], [], [])
 
     # Check for <lcms2.h>
     ac_fn_c_check_header_mongrel "$LINENO" "lcms2.h" "ac_cv_header_lcms2_h" "$ac_includes_default"
@@ -25894,6 +25923,7 @@ else
   with_png='yes'
 fi
 
+      # PKG_CHECK_MODULES([PNG], [libpng], [], [])
 
   if test "$with_png" != 'yes'; then
       DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-png=$with_png "
@@ -25924,9 +25954,9 @@ fi
           pnglib="png1${var}"
         fi
         if test "$have_png" = 'no'
-	then
+        then
 
-  	  # Test for compatible LIBPNG library
+          # Test for compatible LIBPNG library
           failed=0
           passed=0
           if test "$with_png" = 'yes' -o "$with_png" = "libpng1${var}" ; then
@@ -26242,18 +26272,18 @@ fi
 $as_echo_n "checking if ${pnglib} package is complete... " >&6; }
               if test $passed -gt 0 ; then
                 if test $failed -gt 0 ; then
-  	        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-  	        have_png='no (failed tests)'
+                have_png='no (failed tests)'
                 else
-  	        LIB_PNG="-l${pnglib}"
-  	        LIBS="$LIB_PNG $LIBS"
+                LIB_PNG="-l${pnglib}"
+                LIBS="$LIB_PNG $LIBS"
 
 $as_echo "#define HasPNG 1" >>confdefs.h
 
-  	        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-  	        have_png='yes'
+                have_png='yes'
                 fi
               fi
             fi
@@ -26289,6 +26319,9 @@ $as_echo_n "checking for JPEG support ... " >&6; }
 $as_echo "" >&6; }
     failed=0
     passed=0
+
+    # PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [], [])
+
     ac_fn_c_check_header_mongrel "$LINENO" "jconfig.h" "ac_cv_header_jconfig_h" "$ac_includes_default"
 if test "x$ac_cv_header_jconfig_h" = xyes; then :
   passed=`expr $passed + 1`
@@ -26412,16 +26445,16 @@ $as_echo_n "checking if JPEG package is complete... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
         have_jpeg='no (failed tests)'
     else
-	LIB_JPEG='-ljpeg'
-	LIBS="$LIB_JPEG $LIBS"
+        LIB_JPEG='-ljpeg'
+        LIBS="$LIB_JPEG $LIBS"
 
 $as_echo "#define HasJPEG 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_jpeg='yes'
     fi
@@ -26509,18 +26542,18 @@ $as_echo_n "checking if JPEG version 2 support package is complete... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-	have_jp2='no (failed tests)'
+        have_jp2='no (failed tests)'
     else
-	LIB_JP2='-ljasper'
-	LIBS="$LIB_JP2 $LIBS"
+        LIB_JP2='-ljasper'
+        LIBS="$LIB_JP2 $LIBS"
 
 $as_echo "#define HasJP2 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	have_jp2='yes'
+        have_jp2='yes'
     fi
     else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -26555,14 +26588,14 @@ fi
 #     then
 #     if test $failed -gt 0
 #     then
-# 	AC_MSG_RESULT(no -- some components failed test)
-# 	have_mpeg2='no (failed tests)'
+#       AC_MSG_RESULT(no -- some components failed test)
+#       have_mpeg2='no (failed tests)'
 #     else
-# 	LIB_MPEG2='-lmpeg2'
-# 	LIBS="$LIB_MPEG2 $LIBS"
-# 	AC_DEFINE(HasMPEG2,1,Define if you have MPEG2 library)
-# 	AC_MSG_RESULT(yes)
-# 	have_mpeg2='yes'
+#       LIB_MPEG2='-lmpeg2'
+#       LIBS="$LIB_MPEG2 $LIBS"
+#       AC_DEFINE(HasMPEG2,1,Define if you have MPEG2 library)
+#       AC_MSG_RESULT(yes)
+#       have_mpeg2='yes'
 #     fi
 #     else
 #     AC_MSG_RESULT(no)
@@ -26587,21 +26620,20 @@ $as_echo "" >&6; }
 
     OLD_LDFLAGS="$LDFLAGS"
     OLD_CPPFLAGS="$CPPFLAGS"
+    # https://autotools.io/pkgconfig/pkg_check_modules.html
+    # PKG_CHECK_MODULES(prefix, list-of-modules, action-if-found, action-if-not-found)
+    # % pkg-config --libs freetype2
+    # -lfreetype
+    # % pkg-config --cflags freetype2
+    # -I/usr/include/freetype2 -I/usr/include/libpng12
+    #
+    # % grep FT_ config.status
+    # S["FT_LIBS"]="-R/usr/lib -lfreetype  "
+    # S["FT_CFLAGS"]="-I/usr/include/freetype2
+    freetype_cflags=''
+    freeype_libs=''
     freetype_config=''
-    # Allow the user to specify the location of freetype.
-    if test "$with_ttf" != 'yes'
-    then
-      if test -x "${with_ttf}/bin/freetype-config"
-      then
-        freetype_config="${with_ttf}/bin/freetype-config"
-      elif test -x "${with_ttf}"
-      then
-        freetype_config=${with_ttf}
-      fi
-    fi
-    if test -z "$freetype_config"
-    then
-      # Extract the first word of "freetype-config", so it can be a program name with args.
+    # Extract the first word of "freetype-config", so it can be a program name with args.
 set dummy freetype-config; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -26640,10 +26672,205 @@ else
 $as_echo "no" >&6; }
 fi
 
-    fi
-    if test -n "$freetype_config"
-    then
-      freetype_cflags=`${freetype_config} --cflags`
+
+
+
+
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
+
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0.9.0
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+fi
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for freetype2" >&5
+$as_echo_n "checking for freetype2... " >&6; }
+
+if test -n "$FT_CFLAGS"; then
+    pkg_cv_FT_CFLAGS="$FT_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"freetype2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "freetype2") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_FT_CFLAGS=`$PKG_CONFIG --cflags "freetype2" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$FT_LIBS"; then
+    pkg_cv_FT_LIBS="$FT_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"freetype2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "freetype2") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_FT_LIBS=`$PKG_CONFIG --libs "freetype2" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        FT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "freetype2" 2>&1`
+        else
+	        FT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "freetype2" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$FT_PKG_ERRORS" >&5
+
+	if test -n "$freetype_config"
+      then
+        freetype_cflags=`${freetype_config} --cflags`
+        freeype_libs=`${freetype_config}  --libs`
+      fi
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	if test -n "$freetype_config"
+      then
+        freetype_cflags=`${freetype_config} --cflags`
+        freeype_libs=`${freetype_config}  --libs`
+      fi
+else
+	FT_CFLAGS=$pkg_cv_FT_CFLAGS
+	FT_LIBS=$pkg_cv_FT_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	freetype_cflags=$FT_CFLAGS; freeype_libs=$FT_LIBS
+fi
       # freetype-config --cflags may output values such as
       # -I/usr/local/include/freetype2 -I/usr/local/include
       # Take only the first -I option since non-Freetype include
@@ -26672,7 +26899,6 @@ fi
       # Freetype.  In the future we may need to do something different
       # if the FreeType library was to depend on some weird library
       # that we don't normally test for.
-      freeype_libs=`${freetype_config}  --libs`
       for flag in $freeype_libs
       do
         case $flag in
@@ -26695,7 +26921,6 @@ fi
             ;;
         esac
       done
-    fi
 
     as_ac_Lib=`$as_echo "ac_cv_lib_$LIB_TTF_BASE''_FT_Init_FreeType" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for FT_Init_FreeType in -l$LIB_TTF_BASE" >&5
@@ -26776,9 +27001,9 @@ fi
     fi
     if test "$have_freetype_h" = 'yes'
     then
-	passed=`expr $passed + 1`
+        passed=`expr $passed + 1`
     else
-	failed=`expr $failed + 1`
+        failed=`expr $failed + 1`
         CPPFLAGS="$OLD_CPPFLAGS"
     fi
 
@@ -26786,14 +27011,14 @@ fi
 $as_echo_n "checking if FreeType package is complete... " >&6; }
     if test $passed -gt 0
     then
-	if test $failed -gt 0
-	then
+        if test $failed -gt 0
+        then
             LIB_TTF=''
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-	    have_ttf='no (failed tests)'
-	else
-	    LIBS="$LIB_TTF $LIBS"
+            have_ttf='no (failed tests)'
+        else
+            LIBS="$LIB_TTF $LIBS"
 
 $as_echo "#define HasTTF 1" >>confdefs.h
 
@@ -26803,12 +27028,12 @@ $as_echo "#define HasTTF 1" >>confdefs.h
 $as_echo "#define HAVE_FT2BUILD_H 1" >>confdefs.h
 
              fi
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	    have_ttf='yes'
-	fi
+            have_ttf='yes'
+        fi
     else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
     fi
 fi
@@ -26835,6 +27060,7 @@ $as_echo_n "checking for TIFF support ... " >&6; }
 $as_echo "" >&6; }
     failed=0
     passed=0
+    # PKG_CHECK_MODULES([TIFF], [libtiff-4], [], [])
     ac_fn_c_check_header_mongrel "$LINENO" "tiff.h" "ac_cv_header_tiff_h" "$ac_includes_default"
 if test "x$ac_cv_header_tiff_h" = xyes; then :
   passed=`expr $passed + 1`
@@ -27067,19 +27293,19 @@ $as_echo_n "checking if TIFF package is complete... " >&6; }
     then
         if test $failed -gt 0
         then
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-	    have_tiff='no (failed tests)'
+            have_tiff='no (failed tests)'
         else
-	    LIB_TIFF='-ltiff'
-	    LIBS="$LIB_TIFF $LIBS"
+            LIB_TIFF='-ltiff'
+            LIBS="$LIB_TIFF $LIBS"
 
 $as_echo "#define HasTIFF 1" >>confdefs.h
 
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	    have_tiff='yes'
-	    for ac_header in tiffconf.h
+            have_tiff='yes'
+            for ac_header in tiffconf.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "tiffconf.h" "ac_cv_header_tiffconf_h" "$ac_includes_default"
 if test "x$ac_cv_header_tiffconf_h" = xyes; then :
@@ -27193,16 +27419,16 @@ $as_echo_n "checking if JBIG package is complete... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
         have_jbig='no (failed tests)'
     else
-	LIB_JBIG='-ljbig'
-	LIBS="$LIB_JBIG $LIBS"
+        LIB_JBIG='-ljbig'
+        LIBS="$LIB_JBIG $LIBS"
 
 $as_echo "#define HasJBIG 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_jbig='yes'
     fi
@@ -27234,6 +27460,7 @@ $as_echo_n "checking for WEBP support ... " >&6; }
 $as_echo "" >&6; }
     failed=0
     passed=0
+    # PKG_CHECK_MODULES([WEBP], [libwebp], [], [])
     ac_fn_c_check_header_mongrel "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
 if test "x$ac_cv_header_webp_decode_h" = xyes; then :
   passed=`expr $passed + 1`
@@ -27329,7 +27556,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webpmux_WebPMuxSetImage" >&5
 $as_echo "$ac_cv_lib_webpmux_WebPMuxSetImage" >&6; }
 if test "x$ac_cv_lib_webpmux_WebPMuxSetImage" = xyes; then :
-  LIB_WEBP="$LIB_WEBP -lwebpmux"; echo "Hello world"
+  LIB_WEBP="$LIB_WEBP -lwebpmux"
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking if WEBP package is complete" >&5
@@ -27381,6 +27608,8 @@ $as_echo_n "checking for XML support ... " >&6; }
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
     xml2_config=''
+    xml2_cflags=''
+    xml2_libs=''
     # Extract the first word of "xml2-config", so it can be a program name with args.
 set dummy xml2-config; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -27420,17 +27649,106 @@ else
 $as_echo "no" >&6; }
 fi
 
-    if test -n "$xml2_config"
-    then
-        # Sample output from xml2-config --cflags:
-        # -I/usr/include/libxml2
-        # -I/usr/local/include/libxml2 -I/usr/local/include
-        xml2_cflags=`"$xml2_config" --cflags`
-        for flag in $xml2_cflags
-        do
-            case $flag in
-                -I*)
-                    # Add flag to CPPFLAGS if not already present
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml-2.0" >&5
+$as_echo_n "checking for libxml-2.0... " >&6; }
+
+if test -n "$XML_CFLAGS"; then
+    pkg_cv_XML_CFLAGS="$XML_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XML_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$XML_LIBS"; then
+    pkg_cv_XML_LIBS="$XML_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XML_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        XML_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libxml-2.0" 2>&1`
+        else
+	        XML_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libxml-2.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$XML_PKG_ERRORS" >&5
+
+	if test -n "$xml2_config"
+       then
+          # Sample output from xml2-config --cflags:
+          # -I/usr/include/libxml2
+          # -I/usr/local/include/libxml2 -I/usr/local/include
+          xml2_cflags=`"$xml2_config" --cflags`
+          # Sample output from xml2-config --libs:
+          # -lxml2
+          # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
+          #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
+          xml2_libs=`$xml2_config  --libs`
+       fi
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	if test -n "$xml2_config"
+       then
+          # Sample output from xml2-config --cflags:
+          # -I/usr/include/libxml2
+          # -I/usr/local/include/libxml2 -I/usr/local/include
+          xml2_cflags=`"$xml2_config" --cflags`
+          # Sample output from xml2-config --libs:
+          # -lxml2
+          # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
+          #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
+          xml2_libs=`$xml2_config  --libs`
+       fi
+
+else
+	XML_CFLAGS=$pkg_cv_XML_CFLAGS
+	XML_LIBS=$pkg_cv_XML_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	xml2_cflags=$XML_CFLAGS; xml2_libs=$XML_LIBS
+fi
+      for flag in $xml2_cflags
+      do
+        case $flag in
+             -I*)
+                # Add flag to CPPFLAGS if not already present
                     add=yes;
                     for test_flag in $CPPFLAGS
                     do
@@ -27448,15 +27766,10 @@ fi
                     ;;
                 *)
                     ;;
-            esac
-        done
-        # Sample output from xml2-config --libs:
-        # -lxml2
-        # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
-        #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
-        xml2_libs=`$xml2_config  --libs`
-        for flag in $xml2_libs
-        do
+        esac
+      done
+      for flag in $xml2_libs
+      do
             case $flag in
                 -L*)
                     # Add flag to LDFLAGS if not already present
@@ -27478,9 +27791,9 @@ fi
                 *)
                     ;;
             esac
-        done
-        for flag in $xml2_libs
-        do
+      done
+      for flag in $xml2_libs
+      do
             case $flag in
                 -l*)
                     # The first library listed is assumed to be the
@@ -27496,8 +27809,7 @@ fi
                 *)
                     ;;
             esac
-        done
-    fi
+      done
     if test "x$LIB_XML2_BASE" = "x"
     then
         LIB_XML2_BASE=xml2
@@ -27655,13 +27967,13 @@ $as_echo_n "checking if XML package is complete ... " >&6; }
     then
     if test $failed -gt 0
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
         have_xml='no (failed tests)'
         LDFLAGS="$OLD_LDFLAGS"
         CPPFLAGS="$OLD_CPPFLAGS"
     else
-	LIB_XML="-l$LIB_XML2_BASE"
+        LIB_XML="-l$LIB_XML2_BASE"
         # Add lib to LIBS if not already present
         for test_lib in $LIB_XML $LIB_XML_DEPS
         do
@@ -27682,7 +27994,7 @@ $as_echo "no -- some components failed test" >&6; }
 
 $as_echo "#define HasXML 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_xml='yes'
     fi
@@ -27785,7 +28097,7 @@ $as_echo "#define HasWMFlite 1" >>confdefs.h
             LIBS="$LIB_WMF $LIBS"
             have_wmf='yes'
         else
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
             have_wmf='no (failed tests)'
             have_wmflite='no (failed tests)'
@@ -29431,7 +29743,7 @@ if test "$with_perl" != 'no'
 then
     if test "$with_perl" != 'yes'
     then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for perl" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for perl" >&5
 $as_echo_n "checking for perl... " >&6; }
 if ${ac_cv_path_PERL+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -29440,10 +29752,10 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_PERL" >&5
 $as_echo "$ac_cv_path_PERL" >&6; };
-	PERL=$ac_cv_path_PERL
-		have_perl="$ac_cv_path_PERL"
+        PERL=$ac_cv_path_PERL
+                have_perl="$ac_cv_path_PERL"
     else
-	for ac_prog in perl perl5
+        for ac_prog in perl perl5
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -29487,9 +29799,9 @@ fi
 
   test -n "$PERL" && break
 done
-	if test "$ac_cv_path_PERL"
+        if test "$ac_cv_path_PERL"
         then
-	  have_perl="$ac_cv_path_PERL"
+          have_perl="$ac_cv_path_PERL"
         fi
     fi
 fi
@@ -32650,54 +32962,54 @@ echo ""
 echo "Host system type : $host"
 echo "Build system type : $build"
 echo ""
-echo "Option            Configure option           	Configured value"
+echo "Option            Configure option      \tConfigured value"
+echo ""
 echo "-----------------------------------------------------------------"
-echo "Shared libraries  --enable-shared=$enable_shared    	$libtool_build_shared_libs"
-echo "Static libraries  --enable-static=$enable_static    	$libtool_build_static_libs"
-echo "GNU ld            --with-gnu-ld=$with_gnu_ld        	$lt_cv_prog_gnu_ld"
-echo "Quantum depth     --with-quantum-depth=$with_quantum_depth 	$with_quantum_depth"
-echo "Modules           --with-modules=$with_modules        	$build_modules"
+echo "Shared libraries  --enable-shared=$enable_shared\t\t$libtool_build_shared_libs"
+echo "Static libraries  --enable-static=$enable_static\t\t$libtool_build_static_libs"
+echo "GNU ld            --with-gnu-ld=$with_gnu_ld    \t\t$lt_cv_prog_gnu_ld"
+echo "Quantum depth     --with-quantum-depth=$with_quantum_depth\t$with_quantum_depth"
+echo "Modules           --with-modules=$with_modules  \t\t$build_modules"
 echo ""
 echo "Delegate Configuration:"
-echo "BZLIB             --with-bzlib=$with_bzlib          	$have_bzlib"
-echo "DPS               --with-dps=$with_dps              	$have_dps"
-echo "FlashPIX          --with-fpx=$with_fpx              	$have_fpx"
-echo "FreeType 2.0      --with-ttf=$with_ttf          	$have_ttf"
-echo "Ghostscript       None                   	$PSDelegate ($GSVersion)"
+echo "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib"
+echo "DPS               --with-dps=$with_dps          \t$have_dps"
+echo "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx"
+echo "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf"
+echo "Ghostscript       None                  \t$PSDelegate ($GSVersion)"
 result_ghostscript_font_dir='none'
 if test "${ghostscript_font_dir}x" != 'x'
 then
   result_ghostscript_font_dir="$ghostscript_font_dir"
 fi
-echo "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir    $result_ghostscript_font_dir"
-echo "JBIG              --with-jbig=$with_jbig        	$have_jbig"
-echo "JPEG v1           --with-jpeg=$with_jpeg        	$have_jpeg"
-echo "JPEG-2000         --with-jp2=$with_jp2          	$have_jp2"
-echo "LCMS v2           --with-lcms2=$with_lcms2        	$have_lcms2"
-# echo "MPEG v2           --with-mpeg2=$with_mpeg2      	$have_mpeg2"
-echo "LZMA              --with-lzma=$with_lzma        	$have_lzma"
-echo "Magick++          --with-magick-plus-plus=$with_magick_plus_plus 	$have_magick_plus_plus"
-echo "PERL              --with-perl=$with_perl            	$have_perl"
+echo "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir\t$result_ghostscript_font_dir"
+echo "JBIG              --with-jbig=$with_jbig        \t$have_jbig"
+echo "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg"
+echo "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2"
+echo "LCMS v2           --with-lcms2=$with_lcms2        \t$have_lcms2"
+# echo "MPEG v2           --with-mpeg2=$with_mpeg2    \t$have_mpeg2"
+echo "LZMA              --with-lzma=$with_lzma        \t$have_lzma"
+echo "Magick++          --with-magick-plus-plus=$with_magick_plus_plus\t$have_magick_plus_plus"
+echo "PERL              --with-perl=$with_perl        \t$have_perl"
 if test "${LIB_PNG}x" != 'x'
 then
-echo "PNG               --with-png=$with_png          	$have_png ($LIB_PNG)"
+echo "PNG               --with-png=$with_png          \t$have_png ($LIB_PNG)"
 else
-echo "PNG               --with-png=$with_png          	$have_png"
+echo "PNG               --with-png=$with_png          \t$have_png"
 fi
-echo "TIFF              --with-tiff=$with_tiff        	$have_tiff"
-echo "TRIO              --with-trio=$with_trio        	$have_trio"
-echo "WEBP              --with-webp=$with_webp        	$have_webp"
+echo "TIFF              --with-tiff=$with_tiff        \t$have_tiff"
+echo "TRIO              --with-trio=$with_trio        \t$have_trio"
+echo "WEBP              --with-webp=$with_webp        \t$have_webp"
 result_windows_font_dir='none'
 if test "${windows_font_dir}x" != 'x'
 then
   result_windows_font_dir="${windows_font_dir}"
 fi
-echo "Windows fonts     --with-windows-font-dir=$with_windows_font_dir	$result_windows_font_dir"
-echo "WMF               --with-wmf=$with_wmf          	$have_wmf"
-echo "X11               --with-x=$with_x             	$have_x"
-echo "XML               --with-xml=$with_xml          	$have_xml"
-echo "ZLIB              --with-zlib=$with_zlib        	$have_zlib"
-echo "Zstd              --with-zstd=$with_zstd        	$have_zstd"
+echo "Windows fonts     --with-windows-font-dir=$with_windows_font_dir\t$result_windows_font_dir"
+echo "WMF               --with-wmf=$with_wmf          \t$have_wmf"
+echo "X11               --with-x=$with_x              \t$have_x"
+echo "XML               --with-xml=$with_xml          \t$have_xml"
+echo "ZLIB              --with-zlib=$with_zlib        \t$have_zlib"
 echo ""
 echo "X11 Configuration:"
 if test "$have_x" != 'no'
