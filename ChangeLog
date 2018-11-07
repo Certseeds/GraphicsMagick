@@ -1,3 +1,8 @@
+2018-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Use printf rather than echo to portably expand tab
+	requests in configuration summary.
+
 2018-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Use pkg-config data as the initial choice when
