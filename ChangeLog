@@ -1,3 +1,8 @@
+2018-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/authors.rst: Moved "Glenn Randers-Pehrson" and "Gregory J
+	Wolfe" to the "Former Contributor" category.
+
 2018-11-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Added many GCC function annotations in the libraries and coders.

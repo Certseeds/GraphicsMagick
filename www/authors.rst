@@ -18,38 +18,39 @@ Active GraphicsMagick Contributors
 ==================================
 
 Bob Friesenhahn
-		Principal maintainer of GraphicsMagick. Author of
-		Magick++ (C++ API to ImageMagick and GraphicsMagick).
-		Author of module loader facility, automatic file
-		identification (magic) support, Unix/Cygwin/MinGW
-		configure/make facility, Windows setup.exe style
-		installer, WMF renderer, C API documentation formatter,
-		and the C, C++, and Perl test suites used by ImageMagick
-		and GraphicsMagick.
-
-Glenn Randers-Pehrson
-		Contributed significantly to the utilities, including
-		writing the 'gm' utility wrapper. Authored support for
-		JNG, MNG, and PNG formats. Provided significant support
-		for the BMP format. Significant improvements to the
-		documentation, including creating a documentation
-		authoring environment based on the <imdoc> format.
-		Maintains the SourceForge mailing lists.
+                Principal maintainer of GraphicsMagick. Author of
+                Magick++ (C++ API to ImageMagick and GraphicsMagick).
+                Author of module loader facility, automatic file
+                identification (magic) support, Unix/Cygwin/MinGW
+                configure/make facility, Windows setup.exe style
+                installer, WMF renderer, C API documentation formatter,
+                and the C, C++, and Perl test suites used by ImageMagick
+                and GraphicsMagick.
 
 Jaroslav Fojtik
-		Authored the ART, CUT, HRZ, JNX, MAC, MATLAB, TOPOL,
+                Authored the ART, CUT, HRZ, JNX, MAC, MATLAB, TOPOL,
                 and WPG coder modules. Improved the FITS and TXT coder
                 modules.  VisualMagick 'configure' improvements and
                 build testing/fixes for many versions of Microsoft
                 Visual Studio.
 
-Gregory J Wolfe
-		Contributed significant improvements to the SVG
-		parsing and rendering code.
-
-
 Former GraphicsMagick Contributors
 ==================================
+
+Glenn Randers-Pehrson
+                Contributed significantly to the utilities, including
+                writing the 'gm' utility wrapper. Authored support for
+                JNG, MNG, and PNG formats. Provided significant
+                support for the BMP format. Significant improvements
+                to the documentation, including creating a
+                documentation authoring environment based on the
+                <imdoc> format.  Maintained the SourceForge mailing
+                lists.  GraphicsMagick would not be what it is today
+                without Glenn and he will always be remembered.
+
+Gregory J Wolfe
+                Contributed significant improvements to the SVG
+                parsing and rendering code.
 
 Kenneth Xu
                 Contributed the implementation of 'gm batch', a simple
@@ -80,42 +81,42 @@ Roman Hiestand
                 Contributed WebP coder improvements.
 
 Mike Chiarappa
-		Created and maintains the Borland C++ Builder 6.0 build
-		environment for GraphicsMagick.
+                Created and maintains the Borland C++ Builder 6.0 build
+                environment for GraphicsMagick.
 
 Daniel Kobras
-		Provided many security patches and fixes from the Debian
-		project.
+                Provided many security patches and fixes from the Debian
+                project.
 
 William Radcliffe
-		Author of the VisualMagick project configure facility for
-		Visual C++. Author of FlashPix module. Author of the
-		ImageMagickObject COM object for Windows. Author of the
-		EMF, XTRN, and META coders. Significant contributions to
-		the MSL, JPEG, TIFF, SVG, and URL coders. Authored
-		"process" module support. Wrote the micro-timer facility
-		used by 'identify'. Ported module loader support to
-		Windows. Significantly improved polygon rendering
-		performance.
+                Author of the VisualMagick project configure facility for
+                Visual C++. Author of FlashPix module. Author of the
+                ImageMagickObject COM object for Windows. Author of the
+                EMF, XTRN, and META coders. Significant contributions to
+                the MSL, JPEG, TIFF, SVG, and URL coders. Authored
+                "process" module support. Wrote the micro-timer facility
+                used by 'identify'. Ported module loader support to
+                Windows. Significantly improved polygon rendering
+                performance.
 
 Leonard Rosenthol
-		Authored the 'conjure' utility and associated MSL
-		execution environment. Provided MacOS support. Authored
-		the CLIPBOARD, XCF, and PSD coders. Postscript and PDF
-		expertise. Significant drawing enhancements including
-		support for dash patterns, linecap stroking, clipping
-		masks and a mask image.
+                Authored the 'conjure' utility and associated MSL
+                execution environment. Provided MacOS support. Authored
+                the CLIPBOARD, XCF, and PSD coders. Postscript and PDF
+                expertise. Significant drawing enhancements including
+                support for dash patterns, linecap stroking, clipping
+                masks and a mask image.
 
 Lars Ruben Skyum
-		Contributed the -clippath functionality, added
-		-define support, improved color profile support,
-		and re-wrote the PS3 coder.
+                Contributed the -clippath functionality, added
+                -define support, improved color profile support,
+                and re-wrote the PS3 coder.
 
 Rolf Schroedter
-		Principal author of TclMagick.
+                Principal author of TclMagick.
 
 David N. Welton
-		Co-author of TclMagick, particularly in the Unix environment.
+                Co-author of TclMagick, particularly in the Unix environment.
 
 Mark Mitchell
                 Contributed a new design for the web pages, including the
@@ -123,17 +124,17 @@ Mark Mitchell
                 format.
 
 Richard Nolde
-		Contributed code for converting between native floating
-		point types, and short (16/24) bit float types.
+                Contributed code for converting between native floating
+                point types, and short (16/24) bit float types.
 
 Clément Follet
-		Contributed Hald CLUT and ASC-CDL implementations.
+                Contributed Hald CLUT and ASC-CDL implementations.
 
 John Sergeant
-		Re-wrote the HP PCL writer to work much better,
-		including support for compression.  Implemented
-		support for CALS type 1 format.  Re-wrote the DICOM
-		reader.
+                Re-wrote the HP PCL writer to work much better,
+                including support for compression.  Implemented
+                support for CALS type 1 format.  Re-wrote the DICOM
+                reader.
 
 Roberto de Deus Barbosa Murta
                 Contributed the adaptive threshold implementation
@@ -145,49 +146,49 @@ Other Contributors (via ImageMagick)
 ====================================
 
 John Cristy
-		Creator, principal author, and principal maintainer of
-		ImageMagick, from which GraphicsMagick is originally
-		derived (from ImageMagick 5.5.2).  Also the author of
-		the Wand API to ImageMagick which is incorporated as
-		a stand-alone library by GraphicsMagick.
+                Creator, principal author, and principal maintainer of
+                ImageMagick, from which GraphicsMagick is originally
+                derived (from ImageMagick 5.5.2).  Also the author of
+                the Wand API to ImageMagick which is incorporated as
+                a stand-alone library by GraphicsMagick.
 
 Kelly Bergougnoux
-		Authored the initial Cineon coder (which has since been
-		replaced).
+                Authored the initial Cineon coder (which has since been
+                replaced).
 
 Christopher R. Hawks
-		Authored the PALM coder.
+                Authored the PALM coder.
 
 Francis J. Franklin
-		Ported the WMF coder to the libwmf 0.2 API.
+                Ported the WMF coder to the libwmf 0.2 API.
 
 Rick Mabry
-		Contributed code to support filling drawn objects using a
-		pattern image.
+                Contributed code to support filling drawn objects using a
+                pattern image.
 Nathan Brown
-		Original author of the JP2 coder.
+                Original author of the JP2 coder.
 
 Kyle Shorter
-		Original author of PerlMagick. Original author of the
-		LOCALE coder.
+                Original author of PerlMagick. Original author of the
+                LOCALE coder.
 
 Markus Friedl
-		Original author of Base64 encode/decode sources.
+                Original author of Base64 encode/decode sources.
 
 David Harr
-		Contributed (with Leonard Rosenthol) dash pattern,
-		linecap stroking algorithm, and minor rendering
-		improvements.
+                Contributed (with Leonard Rosenthol) dash pattern,
+                linecap stroking algorithm, and minor rendering
+                improvements.
 
 Troy Edwards
-		Authored the source RPM spec file for GraphicsMagick.
+                Authored the source RPM spec file for GraphicsMagick.
 
 Milan Votava
-		Contributed support for Wireless BitMap, used in WAP -
-		Wireless Access Protocol.
+                Contributed support for Wireless BitMap, used in WAP -
+                Wireless Access Protocol.
 
 Mike Edmonds
-		Contributed the median filter algorithm.
+                Contributed the median filter algorithm.
 
 
 ---------------------------------------------------------------------------
@@ -199,4 +200,3 @@ Mike Edmonds
 This program is covered by multiple licenses, which are described in
 Copyright.txt. You should have received a copy of Copyright.txt with this
 package; otherwise see http://www.graphicsmagick.org/Copyright.html.
-
