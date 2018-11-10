@@ -38,8 +38,8 @@ extern "C" {
 #define MagickLibVersion  0x211801
 #define MagickLibVersionText  "1.4"
 #define MagickLibVersionNumber 21,18,1
-#define MagickChangeDate   "20181107"
-#define MagickReleaseDate  "snapshot-20181107"
+#define MagickChangeDate   "20181109"
+#define MagickReleaseDate  "snapshot-20181109"
 	
 /*
   The MagickLibInterfaceNewest and MagickLibInterfaceOldest defines
@@ -75,9 +75,9 @@ extern "C" {
   Method declarations.
 */
 extern MagickExport const char
-  *GetMagickCopyright(void),
-  *GetMagickVersion(unsigned long *),
-  *GetMagickWebSite(void);
+  *GetMagickCopyright(void) MAGICK_FUNC_CONST,
+  *GetMagickVersion(unsigned long *) MAGICK_FUNC_CONST,
+  *GetMagickWebSite(void) MAGICK_FUNC_CONST;
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

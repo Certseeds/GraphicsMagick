@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 GraphicsMagick Group
+  Copyright (C) 2003-2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -34,40 +34,40 @@ extern "C" {
 typedef struct _DrawContext *DrawContext;
 
 extern MagickExport ClipPathUnits
-  DrawGetClipUnits(DrawContext context);
+  DrawGetClipUnits(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport DrawInfo
   *DrawPeekGraphicContext(const DrawContext context);
 
 extern MagickExport DecorationType
-  DrawGetTextDecoration(DrawContext context);
+  DrawGetTextDecoration(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport DrawContext
   DrawAllocateContext(const DrawInfo *draw_info, Image *image);
 
 extern MagickExport FillRule
-  DrawGetClipRule(DrawContext context),
-  DrawGetFillRule(DrawContext context);
+  DrawGetClipRule(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetFillRule(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport GravityType
-  DrawGetGravity(DrawContext context);
+  DrawGetGravity(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport LineCap
-  DrawGetStrokeLineCap(DrawContext context);
+  DrawGetStrokeLineCap(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport LineJoin
-  DrawGetStrokeLineJoin(DrawContext context);
+  DrawGetStrokeLineJoin(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport PixelPacket
-  DrawGetFillColor(DrawContext context),
-  DrawGetStrokeColor(DrawContext context),
-  DrawGetTextUnderColor(DrawContext context);
+  DrawGetFillColor(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetStrokeColor(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetTextUnderColor(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport StretchType
-  DrawGetFontStretch(DrawContext context);
+  DrawGetFontStretch(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport StyleType
-  DrawGetFontStyle(DrawContext context);
+  DrawGetFontStyle(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport char
   *DrawGetClipPath(DrawContext context),
@@ -79,20 +79,20 @@ extern MagickExport int
   DrawRender(const DrawContext context);
 
 extern MagickExport unsigned int
-  DrawGetStrokeAntialias(DrawContext context),
-  DrawGetTextAntialias(DrawContext context);
+  DrawGetStrokeAntialias(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetTextAntialias(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport unsigned long
-  DrawGetFontWeight(DrawContext context),
-  DrawGetStrokeMiterLimit(DrawContext context);
+  DrawGetFontWeight(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetStrokeMiterLimit(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport double
-  DrawGetFillOpacity(DrawContext context),
-  DrawGetFontSize(DrawContext context),
+  DrawGetFillOpacity(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetFontSize(DrawContext context) MAGICK_FUNC_PURE,
   *DrawGetStrokeDashArray(DrawContext context, unsigned long *num_elems),
-  DrawGetStrokeDashOffset(DrawContext context),
-  DrawGetStrokeOpacity(DrawContext context),
-  DrawGetStrokeWidth(DrawContext context);
+  DrawGetStrokeDashOffset(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetStrokeOpacity(DrawContext context) MAGICK_FUNC_PURE,
+  DrawGetStrokeWidth(DrawContext context) MAGICK_FUNC_PURE;
 
 extern MagickExport void
   DrawAffine(DrawContext context, const AffineMatrix *affine),

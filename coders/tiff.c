@@ -888,6 +888,9 @@ TIFFCloseBlob(thandle_t image_handle)
 /* Report errors. */
 static void
 TIFFErrors(const char *module,const char *format,
+           va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
+TIFFErrors(const char *module,const char *format,
   va_list warning)
 {
   ExceptionInfo
@@ -1024,6 +1027,8 @@ TIFFUnmapBlob(thandle_t image,
 
 /* Report warnings as a coder log message. */
 static void
+TIFFWarningsLogOnly(const char *module,const char *format,va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
 TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 {
 /*   ExceptionInfo */
@@ -1044,6 +1049,8 @@ TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 }
 
 /* Report warnings as exception in thread-specific ExceptionInfo */
+static void
+TIFFWarningsThrowException(const char *module,const char *format,va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
 static void
 TIFFWarningsThrowException(const char *module,const char *format,va_list warning)
 {

@@ -1089,11 +1089,11 @@ extern MagickExport void
 
 /* provide public access to the clip_mask member of Image */
 extern MagickExport Image
-  **ImageGetClipMask(const Image *);
+  **ImageGetClipMask(const Image *) MAGICK_FUNC_PURE;
 
 /* provide public access to the composite_mask member of Image */
 extern MagickExport Image
-  **ImageGetCompositeMask(const Image *);
+  **ImageGetCompositeMask(const Image *) MAGICK_FUNC_PURE;
 
 #if defined(MAGICK_IMPLEMENTATION)
   /*

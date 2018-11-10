@@ -183,6 +183,9 @@ static SemaphoreInfo
 */
 static MagickPassFail
   ReadLogConfigureFile(const char *,const unsigned int,ExceptionInfo *);
+
+static LogEventType
+ParseEvents(const char *event_string) MAGICK_FUNC_PURE;
 
 /*
   Parse an event specification string and return the equivalent bits.

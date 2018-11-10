@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 GraphicsMagick Group
+  Copyright (C) 2008-2018 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -48,14 +48,14 @@ extern "C" {
                               size_t count,size_t size);
 
   extern MagickExport unsigned int
-  GetThreadViewDataSetAllocatedViews(ThreadViewDataSet *data_set);
+  GetThreadViewDataSetAllocatedViews(ThreadViewDataSet *data_set) MAGICK_FUNC_PURE;
 
   extern MagickExport void
   *AccessThreadViewData(ThreadViewDataSet *data_set);
 
   extern MagickExport void
   *AccessThreadViewDataById(ThreadViewDataSet *data_set,
-                            unsigned int index);
+                            unsigned int index) MAGICK_FUNC_PURE;
 
   extern MagickExport void
   AssignThreadViewData(ThreadViewDataSet *data_set, unsigned int index,

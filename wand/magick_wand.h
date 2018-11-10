@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2016 GraphicsMagick Group */
+/* Copyright (C) 2003-2018 GraphicsMagick Group */
 
 /*
   ImageMagick MagickWand interface.
@@ -54,7 +54,7 @@ typedef struct _MagickWand
 
 extern WandExport char
   *MagickDescribeImage(MagickWand *),
-  *MagickGetConfigureInfo(MagickWand *,const char *),
+  *MagickGetConfigureInfo(MagickWand *,const char *) MAGICK_FUNC_CONST,
   *MagickGetException(const MagickWand *,ExceptionType *),
   *MagickGetFilename(const MagickWand *),
   *MagickGetImageAttribute(MagickWand *, const char *),
@@ -74,13 +74,13 @@ extern WandExport CompressionType
   MagickGetImageCompression(MagickWand *);
 
 extern WandExport const char
-  *MagickGetCopyright(void),
-  *MagickGetHomeURL(void),
+  *MagickGetCopyright(void) MAGICK_FUNC_CONST,
+  *MagickGetHomeURL(void) MAGICK_FUNC_CONST,
   *MagickGetImageGeometry(MagickWand *),
-  *MagickGetPackageName(void),
+  *MagickGetPackageName(void) MAGICK_FUNC_CONST,
   *MagickGetQuantumDepth(unsigned long *),
-  *MagickGetReleaseDate(void),
-  *MagickGetVersion(unsigned long *);
+  *MagickGetReleaseDate(void) MAGICK_FUNC_CONST,
+  *MagickGetVersion(unsigned long *) MAGICK_FUNC_CONST;
 
 extern WandExport DisposeType
   MagickGetImageDispose(MagickWand *);
@@ -98,7 +98,7 @@ extern WandExport ImageType
   MagickGetImageType(MagickWand *);
 
 extern WandExport ImageType
-  MagickGetImageSavedType(MagickWand *);
+  MagickGetImageSavedType(MagickWand *) MAGICK_FUNC_CONST;
 
 extern WandExport InterlaceType
   MagickGetImageInterlaceScheme(MagickWand *);

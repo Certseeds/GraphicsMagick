@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2009 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -405,11 +405,11 @@ extern MagickExport void
 
 /* provide public access to the clip_path member of DrawInfo */
 extern MagickExport char
-  **DrawInfoGetClipPath(const DrawInfo *);
+  **DrawInfoGetClipPath(const DrawInfo *) MAGICK_FUNC_PURE;
 
 /* provide public access to the composite_path member of DrawInfo */
 extern MagickExport char
-  **DrawInfoGetCompositePath(const DrawInfo *);
+  **DrawInfoGetCompositePath(const DrawInfo *) MAGICK_FUNC_PURE;
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

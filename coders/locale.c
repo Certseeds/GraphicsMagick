@@ -881,7 +881,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
       WriteBlobStringWithEOL(image,"#ifndef _LOCAL_C_H");
       WriteBlobStringWithEOL(image,"#define _LOCAL_C_H");
       WriteBlobStringEOL(image);
-      WriteBlobStringWithEOL(image,"extern MagickExport const char *GetLocaleMessageFromID(const int);");
+      WriteBlobStringWithEOL(image,"extern MagickExport const char *GetLocaleMessageFromID(const int) MAGICK_FUNC_CONST;");
       WriteBlobStringEOL(image);
       FormatString(text, "#define MAX_LOCALE_MSGS %d",count);
       WriteBlobStringWithEOL(image,text);

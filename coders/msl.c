@@ -4363,6 +4363,9 @@ MSLComment(void *context,const xmlChar *value)
 }
 
 static void
+MSLWarning(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
+
+static void
 MSLWarning(void *context,const char *format,...)
 {
   char
@@ -4390,6 +4393,9 @@ MSLWarning(void *context,const char *format,...)
   ThrowException2(msl_info->exception,CoderError,reason,(char *) NULL);
   va_end(operands);
 }
+
+static void
+MSLError(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
 
 static void
 MSLError(void *context,const char *format,...)

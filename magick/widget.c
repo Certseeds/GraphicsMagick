@@ -5316,6 +5316,8 @@ MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *wind
 extern "C" {
 #endif
 
+static int FontCompare(const void *x,const void *y) MAGICK_FUNC_PURE;
+
 static int FontCompare(const void *x,const void *y)
 {
   register char

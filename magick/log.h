@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2014 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -78,13 +78,13 @@ typedef void
   Method declarations.
 */
 extern MagickExport MagickBool
-  IsEventLogging(void),
+  IsEventLogging(void) MAGICK_FUNC_PURE,
   LogMagickEvent(const ExceptionType type,
     const char *module,const char *function,const unsigned long line,
     const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,5,6))),
   LogMagickEventList(const ExceptionType type,
     const char *module,const char *function,const unsigned long line,
-    const char *format,va_list operands);
+    const char *format,va_list operands) MAGICK_ATTRIBUTE((__format__ (__printf__,5,0)));
 
 extern MagickExport unsigned long
   SetLogEventMask(const char *events);

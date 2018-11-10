@@ -250,18 +250,18 @@ extern WandExport char
   *DrawGetTextEncoding(const DrawingWand *);
 
 extern WandExport ClipPathUnits
-  DrawGetClipUnits(const DrawingWand *);
+  DrawGetClipUnits(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport DecorationType
-  DrawGetTextDecoration(const DrawingWand *);
+  DrawGetTextDecoration(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport double
-  DrawGetFillOpacity(const DrawingWand *),
-  DrawGetFontSize(const DrawingWand *),
+  DrawGetFillOpacity(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetFontSize(const DrawingWand *) MAGICK_FUNC_PURE,
   *DrawGetStrokeDashArray(const DrawingWand *,unsigned long *),
-  DrawGetStrokeDashOffset(const DrawingWand *),
-  DrawGetStrokeOpacity(const DrawingWand *),
-  DrawGetStrokeWidth(const DrawingWand *);
+  DrawGetStrokeDashOffset(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetStrokeOpacity(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetStrokeWidth(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport DrawInfo
   *DrawPeekGraphicContext(const DrawingWand *);
@@ -272,33 +272,33 @@ extern WandExport DrawingWand
   *NewDrawingWand(void);
 
 extern WandExport FillRule
-  DrawGetClipRule(const DrawingWand *),
-  DrawGetFillRule(const DrawingWand *);
+  DrawGetClipRule(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetFillRule(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport GravityType
-  DrawGetGravity(const DrawingWand *);
+  DrawGetGravity(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport LineCap
-  DrawGetStrokeLineCap(const DrawingWand *);
+  DrawGetStrokeLineCap(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport LineJoin
-  DrawGetStrokeLineJoin(const DrawingWand *);
+  DrawGetStrokeLineJoin(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport StretchType
-  DrawGetFontStretch(const DrawingWand *);
+  DrawGetFontStretch(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport StyleType
-  DrawGetFontStyle(const DrawingWand *);
+  DrawGetFontStyle(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport unsigned int
   DrawClearException(DrawingWand *),
-  DrawGetStrokeAntialias(const DrawingWand *),
-  DrawGetTextAntialias(const DrawingWand *),
+  DrawGetStrokeAntialias(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetTextAntialias(const DrawingWand *) MAGICK_FUNC_PURE,
   DrawRender(const DrawingWand *) MAGICK_ATTRIBUTE ((deprecated)); /* Use MagickDrawImage() instead */
 
 extern WandExport unsigned long
-  DrawGetFontWeight(const DrawingWand *),
-  DrawGetStrokeMiterLimit(const DrawingWand *);
+  DrawGetFontWeight(const DrawingWand *) MAGICK_FUNC_PURE,
+  DrawGetStrokeMiterLimit(const DrawingWand *) MAGICK_FUNC_PURE;
 
 extern WandExport void
   DrawAffine(DrawingWand *,const AffineMatrix *),

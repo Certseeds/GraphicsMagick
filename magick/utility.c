@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -5580,6 +5580,8 @@ MagickExport int SystemCommand(const unsigned int verbose,const char *command)
 #define IN_TOKEN 1
 #define IN_QUOTE 2
 #define IN_OZONE 3
+
+static long sindex(char c,char *string) MAGICK_FUNC_PURE;
 
 static long sindex(char c,char *string)
 {

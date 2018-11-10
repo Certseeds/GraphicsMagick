@@ -1983,10 +1983,11 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
 %
 */
 
+static voidpf ZLIBAllocFunc(voidpf opaque, uInt items, uInt size) MAGICK_FUNC_MALLOC;
 static voidpf ZLIBAllocFunc(voidpf opaque, uInt items, uInt size)
 {
   ARG_NOT_USED(opaque);
-  return MagickMallocCleared((size_t) items*size);
+  return MagickMallocCleared(MagickArraySize(items,size));
 }
 static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 {

@@ -534,7 +534,7 @@ extern MagickExport int
   MagickXError(Display *,XErrorEvent *);
 
 extern MagickExport unsigned int
-  MagickIsTrue(const char *),
+  MagickIsTrue(const char *) MAGICK_FUNC_PURE,
   MagickXAnnotateImage(Display *,const MagickXPixelInfo *,MagickXAnnotateInfo *,Image *),
   MagickXDisplayBackgroundImage(Display *,MagickXResourceInfo *,Image *),
   MagickXDrawImage(Display *,const MagickXPixelInfo *,MagickXDrawInfo *,Image *),

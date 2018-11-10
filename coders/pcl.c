@@ -205,6 +205,10 @@ ModuleExport void UnregisterPCLImage(void)
 */
 static PCL_CompressionType PCL_ChooseCompression(unsigned long row_width,
                                                  unsigned char *row,
+                                                 unsigned char *last_row) MAGICK_FUNC_PURE;
+
+static PCL_CompressionType PCL_ChooseCompression(unsigned long row_width,
+                                                 unsigned char *row,
                                                  unsigned char *last_row)
 {
   unsigned long

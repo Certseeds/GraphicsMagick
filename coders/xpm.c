@@ -179,6 +179,8 @@ static char **StringToListMod(char *text)
   return(textlist);
 }
 
+static char *ParseColor(char *data) MAGICK_FUNC_PURE;
+
 static char *ParseColor(char *data)
 {
 #define NumberTargets  6

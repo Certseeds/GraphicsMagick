@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 GraphicsMagick Group
+  Copyright (C) 2003-2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -17,23 +17,23 @@ extern "C" {
 
 extern MagickExport Image
   *CloneImageList(const Image *,ExceptionInfo *),
-  *GetFirstImageInList(const Image *),
-  *GetImageFromList(const Image *,const long),
-  *GetLastImageInList(const Image *),
-  *GetNextImageInList(const Image *),
-  *GetPreviousImageInList(const Image *),
+  *GetFirstImageInList(const Image *) MAGICK_FUNC_PURE,
+  *GetImageFromList(const Image *,const long) MAGICK_FUNC_PURE,
+  *GetLastImageInList(const Image *) MAGICK_FUNC_PURE,
+  *GetNextImageInList(const Image *) MAGICK_FUNC_PURE,
+  *GetPreviousImageInList(const Image *) MAGICK_FUNC_PURE,
   **ImageListToArray(const Image *,ExceptionInfo *),
-  *NewImageList(void),
+  *NewImageList(void) MAGICK_FUNC_CONST,
   *RemoveLastImageFromList(Image **),
   *RemoveFirstImageFromList(Image **),
   *SplitImageList(Image *),
   *SyncNextImageInList(const Image *);
 
 extern MagickExport long
-  GetImageIndexInList(const Image *);
+  GetImageIndexInList(const Image *) MAGICK_FUNC_PURE;
 
 extern MagickExport unsigned long
-  GetImageListLength(const Image *);
+  GetImageListLength(const Image *) MAGICK_FUNC_PURE;
 
 extern MagickExport void
   AppendImageToList(Image **,Image *),

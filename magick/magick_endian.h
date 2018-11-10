@@ -19,7 +19,7 @@ extern MagickExport void
   MagickSwabUInt32(magick_uint32_t *lp);
 
 extern MagickExport const unsigned char
-  *MagickGetBitRevTable(int);
+  *MagickGetBitRevTable(int) MAGICK_FUNC_CONST;
 
 /*
  * Local Variables:
