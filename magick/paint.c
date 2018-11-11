@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -614,9 +614,9 @@ typedef struct _OpaqueImageOptions_t
 static MagickPassFail
 OpaqueImageCallBack(void *mutable_data,         /* User provided mutable data */
                       const void *immutable_data, /* User provided immutable data */
-                      Image *image,               /* Modify image */
-                      PixelPacket *pixels,        /* Pixel row */
-                      IndexPacket *indexes,       /* Pixel row indexes */
+                      Image * restrict image,               /* Modify image */
+                      PixelPacket * restrict pixels,        /* Pixel row */
+                      IndexPacket * restrict indexes,       /* Pixel row indexes */
                       const long npixels,         /* Number of pixels in row */
                       ExceptionInfo *exception)   /* Exception report */
 {
@@ -731,9 +731,9 @@ typedef struct _TransparentImageOptions_t
 static MagickPassFail
 TransparentImageCallBack(void *mutable_data,         /* User provided mutable data */
                          const void *immutable_data, /* User provided immutable data */
-                         Image *image,               /* Modify image */
-                         PixelPacket *pixels,        /* Pixel row */
-                         IndexPacket *indexes,       /* Pixel row indexes */
+                         Image * restrict image,               /* Modify image */
+                         PixelPacket * restrict pixels,        /* Pixel row */
+                         IndexPacket * restrict indexes,       /* Pixel row indexes */
                          const long npixels,         /* Number of pixels in row */
                          ExceptionInfo *exception)   /* Exception report */
 {

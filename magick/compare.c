@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -77,15 +77,15 @@
 static MagickPassFail
 DifferenceImagePixels(void *mutable_data,                  /* User provided mutable data */
                       const void *immutable_data,          /* User provided immutable data */
-                      const Image *reference_image,        /* Source 1 image */
-                      const PixelPacket *reference_pixels, /* Pixel row in source 1 image */
-                      const IndexPacket *reference_indexes,/* Pixel row indexes in source 1 image */
-                      const Image *compare_image,          /* Source 2 image */
-                      const PixelPacket *compare_pixels,   /* Pixel row in source 2 image */
-                      const IndexPacket *compare_indexes,  /* Pixel row indexes in source 2 image */
-                      Image *result_image,                 /* Update image */
-                      PixelPacket *result_pixels,          /* Pixel row in update image */
-                      IndexPacket *result_indexes,         /* Pixel row indexes in update image */
+                      const Image * restrict reference_image,        /* Source 1 image */
+                      const PixelPacket * restrict reference_pixels, /* Pixel row in source 1 image */
+                      const IndexPacket * restrict reference_indexes,/* Pixel row indexes in source 1 image */
+                      const Image * restrict compare_image,          /* Source 2 image */
+                      const PixelPacket * restrict compare_pixels, /* Pixel row in source 2 image */
+                      const IndexPacket * restrict compare_indexes, /* Pixel row indexes in source 2 image */
+                      Image * restrict result_image,                 /* Update image */
+                      PixelPacket * restrict result_pixels, /* Pixel row in update image */
+                      IndexPacket * restrict result_indexes, /* Pixel row indexes in update image */
                       const long npixels,                  /* Number of pixels in row */
                       ExceptionInfo *exception             /* Exception report */
                    )
@@ -312,12 +312,12 @@ DifferenceImage(const Image *reference_image,const Image *compare_image,
 static MagickPassFail
 ComputeAbsoluteError(void *mutable_data,
                      const void *immutable_data,
-                     const Image *first_image,
-                     const PixelPacket *first_pixels,
-                     const IndexPacket *first_indexes,
-                     const Image *second_image,
-                     const PixelPacket *second_pixels,
-                     const IndexPacket *second_indexes,
+                     const Image * restrict first_image,
+                     const PixelPacket * restrict first_pixels,
+                     const IndexPacket * restrict first_indexes,
+                     const Image * restrict second_image,
+                     const PixelPacket * restrict second_pixels,
+                     const IndexPacket * restrict second_indexes,
                      const long npixels,
                      ExceptionInfo *exception)
 {
@@ -367,12 +367,12 @@ ComputeAbsoluteError(void *mutable_data,
 static MagickPassFail
 ComputePeakAbsoluteError(void *mutable_data,
                          const void *immutable_data,
-                         const Image *first_image,
-                         const PixelPacket *first_pixels,
-                         const IndexPacket *first_indexes,
-                         const Image *second_image,
-                         const PixelPacket *second_pixels,
-                         const IndexPacket *second_indexes,
+                         const Image * restrict first_image,
+                         const PixelPacket * restrict first_pixels,
+                         const IndexPacket * restrict first_indexes,
+                         const Image * restrict second_image,
+                         const PixelPacket * restrict second_pixels,
+                         const IndexPacket * restrict second_indexes,
                          const long npixels,
                          ExceptionInfo *exception)
 {
@@ -438,12 +438,12 @@ ComputePeakAbsoluteError(void *mutable_data,
 static MagickPassFail
 ComputeSquaredError(void *mutable_data,
                     const void *immutable_data,
-                    const Image *first_image,
-                    const PixelPacket *first_pixels,
-                    const IndexPacket *first_indexes,
-                    const Image *second_image,
-                    const PixelPacket *second_pixels,
-                    const IndexPacket *second_indexes,
+                    const Image * restrict first_image,
+                    const PixelPacket * restrict first_pixels,
+                    const IndexPacket * restrict first_indexes,
+                    const Image * restrict second_image,
+                    const PixelPacket * restrict second_pixels,
+                    const IndexPacket * restrict second_indexes,
                     const long npixels,
                     ExceptionInfo *exception)
 {
@@ -820,12 +820,12 @@ typedef struct _ErrorStatistics {
 static MagickPassFail
 ComputePixelError(void *mutable_data,
                   const void *immutable_data,
-                  const Image *first_image,
-                  const PixelPacket *first_pixels,
-                  const IndexPacket *first_indexes,
-                  const Image *second_image,
-                  const PixelPacket *second_pixels,
-                  const IndexPacket *second_indexes,
+                  const Image * restrict first_image,
+                  const PixelPacket * restrict first_pixels,
+                  const IndexPacket * restrict first_indexes,
+                  const Image * restrict second_image,
+                  const PixelPacket * restrict second_pixels,
+                  const IndexPacket * restrict second_indexes,
                   const long npixels,
                   ExceptionInfo *exception)
 {

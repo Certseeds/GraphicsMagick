@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1971,9 +1971,6 @@ BenchmarkImageCommand(ImageInfo *image_info,
                   MagickBool
                     thread_quit;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BenchmarkImageCommand)
-#endif
                   thread_quit=quit;
 
                   if (thread_quit)
@@ -1988,6 +1985,9 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     if (!thread_status)
                       {
                         status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                         thread_quit=MagickTrue;
                       }
                     if (GetElapsedTime(&timer) > duration)
@@ -1995,7 +1995,12 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     else
                       (void) ContinueTimer(&timer);
                     if (thread_quit)
-                      quit=thread_quit;
+                      {
+                        quit=thread_quit;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (quit)
+#endif
+                      }
                   }
                 }
             }
@@ -2012,9 +2017,6 @@ BenchmarkImageCommand(ImageInfo *image_info,
                   MagickBool
                     thread_quit;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BenchmarkImageCommand)
-#endif
                   thread_quit=quit;
 
                   if (thread_quit)
@@ -2029,10 +2031,16 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     if (!thread_status)
                       {
                         status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                         thread_quit=MagickTrue;
                       }
                     if (thread_quit)
                       quit=thread_quit;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (quit)
+#endif
                   }
                 }
             }

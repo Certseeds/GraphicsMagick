@@ -1,3 +1,16 @@
+2018-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/*: Changed row_count tallying to use 'omp atomic' and
+	status update to use 'omp flush' for progress and error
+	indication.  This replaces most use of 'omp critical' for this
+	purpose.  Changed some lumpy algorithms which were using 'static'
+	scheduling to 'guided' scheduling due to observing better results.
+	Also added prolific 'restrict' annotations where they were
+	missing.
+
+	* www/security.rst: Documented a PGP private key for file signing
+	or private correspondence.
+
 2018-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/authors.rst: Moved "Glenn Randers-Pehrson" and "Gregory J

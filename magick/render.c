@@ -1367,7 +1367,7 @@ DrawAffineImage(Image *image,const Image *composite,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
   for (y=y_min; y <= y_max; y++)
@@ -1388,9 +1388,6 @@ DrawAffineImage(Image *image,const Image *composite,
       register long
         x;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawAffineImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1442,18 +1439,21 @@ DrawAffineImage(Image *image,const Image *composite,
               thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawAffineImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,y_max-y_min+1))
-          if (!MagickMonitorFormatted(row_count,y_max-y_min+1,&image->exception,
-                                      AffineDrawImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,y_max-y_min+1))
+        if (!MagickMonitorFormatted(row_count,y_max-y_min+1,&image->exception,
+                                    AffineDrawImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   return (status);
@@ -5024,7 +5024,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status)
 #  else
-#    pragma omp parallel for schedule(static) shared(status)
+#    pragma omp parallel for schedule(guided) shared(status)
 #  endif
 #endif
       for (y=y_start; y <= y_stop; y++)
@@ -5038,9 +5038,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
           MagickPassFail
             thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
           thread_status=status;
           if (thread_status == MagickFail)
             continue;
@@ -5063,10 +5060,10 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
             }
           if (thread_status == MagickFail)
             {
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
               status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
             }
         }
     } /* if (primitive_info->coordinates == 1) */
@@ -5127,9 +5124,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
           MagickPassFail
             thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
           thread_status=status;
           if (thread_status == MagickFail)
             continue;
@@ -5227,10 +5221,10 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 
               if (thread_status == MagickFail)
                 {
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
                   status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                 }
             }
         }

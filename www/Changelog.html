@@ -35,6 +35,27 @@
 <div class="document">
 
 
+<p>2018-11-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/*: Changed row_count tallying to use 'omp atomic' and
+status update to use 'omp flush' for progress and error
+indication.  This replaces most use of 'omp critical' for this
+purpose.  Changed some lumpy algorithms which were using 'static'
+scheduling to 'guided' scheduling due to observing better results.
+Also added prolific 'restrict' annotations where they were
+missing.</li>
+<li>www/security.rst: Documented a PGP private key for file signing
+or private correspondence.</li>
+</ul>
+</blockquote>
+<p>2018-11-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>www/authors.rst: Moved &quot;Glenn Randers-Pehrson&quot; and &quot;Gregory J
+Wolfe&quot; to the &quot;Former Contributor&quot; category.</li>
+</ul>
+</blockquote>
 <p>2018-11-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

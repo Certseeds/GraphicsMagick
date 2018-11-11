@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2010 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -52,9 +52,9 @@
 static MagickPassFail
 BuildChannelHistogramsCB(void *mutable_data,          /* User provided mutable data */
                          const void *immutable_data,  /* User provided immutable data */
-                         const Image *const_image,    /* Input image */
-                         const PixelPacket *pixels,   /* Pixel row */
-                         const IndexPacket *indexes,  /* Pixel indexes */
+                         const Image * restrict const_image,    /* Input image */
+                         const PixelPacket * restrict pixels,   /* Pixel row */
+                         const IndexPacket * restrict indexes,  /* Pixel indexes */
                          const long npixels,          /* Number of pixels in row */
                          ExceptionInfo *exception     /* Exception report */
                          )
@@ -156,9 +156,9 @@ BuildChannelHistograms(const Image *image, ExceptionInfo *exception)
 static MagickPassFail
 ContrastImagePixels(void *mutable_data,         /* User provided mutable data */
                     const void *immutable_data, /* User provided immutable data */
-                    Image *image,               /* Modify image */
-                    PixelPacket *pixels,        /* Pixel row */
-                    IndexPacket *indexes,       /* Pixel row indexes */
+                    Image * restrict image,               /* Modify image */
+                    PixelPacket * restrict pixels,        /* Pixel row */
+                    IndexPacket * restrict indexes,       /* Pixel row indexes */
                     const long npixels,         /* Number of pixels in row */
                     ExceptionInfo *exception)   /* Exception report */
 {
@@ -275,9 +275,9 @@ typedef struct _ApplyLevelsOptions_t
 static MagickPassFail
 ApplyLevels(void *mutable_data,          /* User provided mutable data */
             const void *immutable_data,  /* User provided immutable data */
-            Image *image,                /* Modify image */
-            PixelPacket *pixels,         /* Pixel row */
-            IndexPacket *indexes,        /* Pixel row indexes */
+            Image * restrict image,                /* Modify image */
+            PixelPacket * restrict pixels,         /* Pixel row */
+            IndexPacket * restrict indexes,        /* Pixel row indexes */
             const long npixels,          /* Number of pixels in row */
             ExceptionInfo *exception)    /* Exception report */
 {
@@ -474,7 +474,7 @@ typedef struct _ApplyLevelsDiscrete_t
 static MagickPassFail
 ApplyLevelsDiscrete(void *mutable_data,             /* User provided mutable data */
                     const void *immutable_data,     /* User provided immutable data */
-                    Image *image,                   /* Modify image */
+                    Image * restrict image,                   /* Modify image */
                     PixelPacket * restrict pixels,  /* Pixel row */
                     IndexPacket * restrict indexes, /* Pixel row indexes */
                     const long npixels,             /* Number of pixels in row */
@@ -534,7 +534,7 @@ typedef DoublePixelPacket GammaCorrectPixelsOptions_t;
 static MagickPassFail
 GammaCorrectPixels(void *mutable_data,             /* User provided mutable data */
                    const void *immutable_data,     /* User provided immutable data */
-                   Image *image,                   /* Modify image */
+                   Image * restrict image,                   /* Modify image */
                    PixelPacket * restrict pixels,  /* Pixel row */
                    IndexPacket * restrict indexes, /* Pixel row indexes */
                    const long npixels,             /* Number of pixels in row */
@@ -1062,9 +1062,9 @@ typedef struct _ModulateImageParameters_t
 static MagickPassFail
 ModulateImagePixels(void *mutable_data,         /* User provided mutable data */
                     const void *immutable_data, /* User provided immutable data */
-                    Image *image,               /* Modify image */
-                    PixelPacket *pixels,        /* Pixel row */
-                    IndexPacket *indexes,       /* Pixel row indexes */
+                    Image * restrict image,               /* Modify image */
+                    PixelPacket * restrict pixels,        /* Pixel row */
+                    IndexPacket * restrict indexes,       /* Pixel row indexes */
                     const long npixels,         /* Number of pixels in row */
                     ExceptionInfo *exception)   /* Exception report */
 {
@@ -1193,9 +1193,9 @@ MagickExport MagickPassFail ModulateImage(Image *image,const char *modulate)
 static MagickPassFail
 NegateImagePixels(void *mutable_data,         /* User provided mutable data */
                   const void *immutable_data, /* User provided immutable data */
-                  Image *image,               /* Modify image */
-                  PixelPacket *pixels,        /* Pixel row */
-                  IndexPacket *indexes,       /* Pixel row indexes */
+                  Image * restrict image,               /* Modify image */
+                  PixelPacket * restrict pixels,        /* Pixel row */
+                  IndexPacket * restrict indexes,       /* Pixel row indexes */
                   const long npixels,         /* Number of pixels in row */
                   ExceptionInfo *exception)   /* Exception report */
 {

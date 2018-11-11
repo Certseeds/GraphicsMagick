@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -55,7 +55,7 @@
 */
 
 #define GradientImageText "[%s] Gradient..."
-MagickExport MagickPassFail GradientImage(Image *image,
+MagickExport MagickPassFail GradientImage(Image *restrict image,
                                           const PixelPacket *start_color,
                                           const PixelPacket *stop_color)
 {
@@ -97,9 +97,6 @@ MagickExport MagickPassFail GradientImage(Image *image,
       register PixelPacket
         *q;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_GradientImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -121,18 +118,21 @@ MagickExport MagickPassFail GradientImage(Image *image,
         }
 
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_GradientImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
-                                      GradientImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
+                                    GradientImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (IsGray(*start_color) && IsGray(*stop_color))
     image->is_grayscale=MagickTrue;

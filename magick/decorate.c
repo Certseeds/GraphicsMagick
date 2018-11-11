@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -152,13 +152,13 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
     y;
 
   register const PixelPacket
-    *p;
+    * restrict p;
 
   register long
     x;
 
   register PixelPacket
-    *q;
+    * restrict q;
 
   PixelPacket
     accentuate,
@@ -302,9 +302,6 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FrameImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -340,24 +337,27 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
           if (!SyncImagePixelsEx(frame_image,exception))
             thread_status=MagickFail;
         }
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FrameImage)
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      FrameImageText,image->filename,
-                                      frame_info->width,frame_info->height,
-                                      frame_info->x,
-                                      frame_info->y,
-                                      frame_info->inner_bevel,
-                                      frame_info->outer_bevel))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                    FrameImageText,image->filename,
+                                    frame_info->width,frame_info->height,
+                                    frame_info->x,
+                                    frame_info->y,
+                                    frame_info->inner_bevel,
+                                    frame_info->outer_bevel))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   /*
     Draw bottom of ornamental border.
@@ -365,7 +365,7 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
   height=(long) (frame_info->inner_bevel+frame_info->height-frame_info->y-
                  image->rows-bevel_width+frame_info->outer_bevel);
   q=SetImagePixelsEx(frame_image,0,(long) (frame_image->rows-height),
-                        frame_image->columns,height,exception);
+                     frame_image->columns,height,exception);
   if (q == (PixelPacket *) NULL)
     return(frame_image);
   for (y=frame_info->inner_bevel-1; y >= 0; y--)
@@ -471,7 +471,7 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
     is_grayscale;
 
   register PixelPacket
-    *q;
+    * restrict q;
 
   MagickPassFail
     status=MagickPass;
@@ -506,9 +506,6 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_RaiseImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -604,19 +601,22 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
           if (!SyncImagePixelsEx(image,&image->exception))
             thread_status=MagickFail;
         }
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_RaiseImage)
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
-                                      RaiseImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
+                                    RaiseImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   image->is_grayscale=is_grayscale;

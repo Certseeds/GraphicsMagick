@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2008 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -136,9 +136,6 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_AverageImages)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -213,19 +210,22 @@ MagickExport Image *AverageImages(const Image *image,ExceptionInfo *exception)
         }
 
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_AverageImages)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,average_image->rows))
-          if (!MagickMonitorFormatted(row_count,average_image->rows,exception,
-                                      "[%s,...,%s] Average image sequence...",
-                                      image->filename,last_image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,average_image->rows))
+        if (!MagickMonitorFormatted(row_count,average_image->rows,exception,
+                                    "[%s,...,%s] Average image sequence...",
+                                    image->filename,last_image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   DestroyThreadViewDataSet(pixels_sums);

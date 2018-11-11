@@ -813,9 +813,9 @@ MagickExport MagickPassFail ClipImage(Image *image)
 static MagickPassFail
 ClipPathImageCallBack(void *mutable_data,         /* User provided mutable data */
                       const void *immutable_data, /* User provided immutable data */
-                      Image *image,               /* Modify image */
-                      PixelPacket *pixels,        /* Pixel row */
-                      IndexPacket *indexes,       /* Pixel row indexes */
+                      Image * restrict image,               /* Modify image */
+                      PixelPacket * restrict pixels,        /* Pixel row */
+                      IndexPacket * restrict indexes,       /* Pixel row indexes */
                       const long npixels,         /* Number of pixels in row */
                       ExceptionInfo *exception)   /* Exception report */
 {
@@ -825,7 +825,7 @@ ClipPathImageCallBack(void *mutable_data,         /* User provided mutable data 
     renderer.
   */
   const MagickBool
-    inside = *((MagickBool *) immutable_data);
+     inside = *((MagickBool *) immutable_data);
 
   register Quantum
     intensity;
@@ -961,9 +961,9 @@ MagickExport MagickPassFail CompositeMaskImage(Image *image)
 static MagickPassFail
 CompositePathImageCallBack(void *mutable_data,    /* User provided mutable data */
                       const void *immutable_data, /* User provided immutable data */
-                      Image *image,               /* Modify image */
-                      PixelPacket *pixels,        /* Pixel row */
-                      IndexPacket *indexes,       /* Pixel row indexes */
+                      Image * restrict image,               /* Modify image */
+                      PixelPacket * restrict pixels,        /* Pixel row */
+                      IndexPacket * restrict indexes,       /* Pixel row indexes */
                       const long npixels,         /* Number of pixels in row */
                       ExceptionInfo *exception)   /* Exception report */
 {
@@ -988,7 +988,7 @@ CompositePathImageCallBack(void *mutable_data,    /* User provided mutable data 
     {
       intensity=PixelIntensityToQuantum(&pixels[i]);
       if (!inside)
-        intensity=MaxRGB - intensity;	/* invert */
+        intensity=MaxRGB - intensity;   /* invert */
       pixels[i].red=intensity;
       pixels[i].green=intensity;
       pixels[i].blue=intensity;
@@ -2323,9 +2323,9 @@ ResetImagePage(Image *image,const char *page)
 static MagickPassFail
 SetImageColorCallBack(void *mutable_data,         /* User provided mutable data */
                       const void *immutable_data, /* User provided immutable data */
-                      Image *image,               /* Modify image */
-                      PixelPacket *pixels,        /* Pixel row */
-                      IndexPacket *indexes,       /* Pixel row indexes */
+                      Image * restrict image,               /* Modify image */
+                      PixelPacket * restrict pixels,        /* Pixel row */
+                      IndexPacket * restrict indexes,       /* Pixel row indexes */
                       const long npixels,         /* Number of pixels in row */
                       ExceptionInfo *exception)   /* Exception report */
 {
@@ -3281,9 +3281,9 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
 static MagickPassFail
 ModulateImageOpacityCallBack(void *mutable_data,         /* User provided mutable data */
                              const void *immutable_data, /* User provided immutable data */
-                             Image *image,               /* Modify image */
-                             PixelPacket *pixels,        /* Pixel row */
-                             IndexPacket *indexes,       /* Pixel row indexes */
+                             Image * restrict image,               /* Modify image */
+                             PixelPacket * restrict pixels,        /* Pixel row */
+                             IndexPacket * restrict indexes,       /* Pixel row indexes */
                              const long npixels,         /* Number of pixels in row */
                              ExceptionInfo *exception)   /* Exception report */
 {
@@ -3312,9 +3312,9 @@ ModulateImageOpacityCallBack(void *mutable_data,         /* User provided mutabl
 static MagickPassFail
 SetImageOpacityCallBack(void *mutable_data,         /* User provided mutable data */
                         const void *immutable_data, /* User provided immutable data */
-                        Image *image,               /* Modify image */
-                        PixelPacket *pixels,        /* Pixel row */
-                        IndexPacket *indexes,       /* Pixel row indexes */
+                        Image * restrict image,               /* Modify image */
+                        PixelPacket * restrict pixels,        /* Pixel row */
+                        IndexPacket * restrict indexes,       /* Pixel row indexes */
                         const long npixels,         /* Number of pixels in row */
                         ExceptionInfo *exception)   /* Exception report */
 {
@@ -3723,9 +3723,9 @@ StripImage(Image *image)
 static MagickPassFail
 SyncImageCallBack(void *mutable_data,         /* User provided mutable data */
                   const void *immutable_data, /* User provided immutable data */
-                  Image *image,               /* Modify image */
-                  PixelPacket *pixels,        /* Pixel row */
-                  IndexPacket *indexes,       /* Pixel row indexes */
+                  Image * restrict image,               /* Modify image */
+                  PixelPacket * restrict pixels,        /* Pixel row */
+                  IndexPacket * restrict indexes,       /* Pixel row indexes */
                   const long npixels,         /* Number of pixels in row */
                   ExceptionInfo *exception)   /* Exception report */
 {

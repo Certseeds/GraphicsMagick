@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -89,7 +89,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
   (void) AcquireOnePixelByReference(image,&corners[1],(long) image->columns-1,0,exception);
   (void) AcquireOnePixelByReference(image,&corners[2],0,(long) image->rows-1,exception);
 #if defined(HAVE_OPENMP)
-#  pragma omp parallel for schedule(static,4) shared(row_count, status)
+#  pragma omp parallel for schedule(static,4) shared(bounds, row_count, status)
 #endif
   for (y=0; y < (long) image->rows; y++)
     {
@@ -189,15 +189,18 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
         }
 
 #if defined(HAVE_OPENMP)
+#  pragma omp atomic
+#endif
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                    GetImageBoundingBoxText,image->filename))
+          thread_status=MagickFail;
+
+#if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_GetImageBoundingBox)
 #endif
       {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      GetImageBoundingBoxText,image->filename))
-            thread_status=MagickFail;
-
         if (thread_bounds.x < bounds.x)
           bounds.x=thread_bounds.x;
         if (thread_bounds.y < bounds.y)
@@ -206,10 +209,15 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
           bounds.width=thread_bounds.width;
         if (thread_bounds.height > bounds.height)
           bounds.height=thread_bounds.height;
-
-        if (thread_status == MagickFail)
-          status=MagickFail;
       }
+
+      if (thread_status == MagickFail)
+        {
+          status=MagickFail;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if ((bounds.width != 0) || (bounds.height != 0))
     {
@@ -306,11 +314,11 @@ static magick_uint8_t* AllocateDepthMap(void)
 static MagickPassFail
 GetImageDepthCallBack(void *mutable_data,          /* User provided mutable data */
                       const void *immutable_data,  /* User provided immutable data */
-                      const Image *image,          /* Input image */
-                      const PixelPacket *pixels,   /* Pixel row */
-                      const IndexPacket *indexes,  /* Pixel indexes */
+                      const Image * restrict image,          /* Input image */
+                      const PixelPacket * restrict pixels,   /* Pixel row */
+                      const IndexPacket * restrict indexes,  /* Pixel indexes */
                       const long npixels,          /* Number of pixels in row */
-                      ExceptionInfo *exception     /* Exception report */
+                      ExceptionInfo * restrict exception     /* Exception report */
                       )
 {
   unsigned int

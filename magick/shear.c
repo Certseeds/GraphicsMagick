@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -569,11 +569,6 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
             MagickPassFail
               thread_status;
 
-#if defined(IntegralRotateImageUseOpenMP)
-#  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
-#  endif
-#endif
             thread_status=status;
             if (thread_status == MagickFail)
               continue;
@@ -691,28 +686,33 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
 #if defined(IntegralRotateImageUseOpenMP)
 #  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
+#    pragma omp atomic
 #  endif
 #endif
-                {
-                  tile++;
-                  if (QuantumTick(tile,total_tiles))
-                    if (!MagickMonitorFormatted(tile,total_tiles,exception,
-                                                message,image->filename))
-                      thread_status=MagickFail;
+                tile++;
+                if (QuantumTick(tile,total_tiles))
+                  if (!MagickMonitorFormatted(tile,total_tiles,exception,
+                                              message,image->filename))
+                    thread_status=MagickFail;
 
-                  if (thread_status == MagickFail)
+                if (thread_status == MagickFail)
+                  {
                     status=MagickFail;
-                }
+#if defined(IntegralRotateImageUseOpenMP)
+#  if defined(HAVE_OPENMP)
+#    pragma omp flush (status)
+#  endif
+#endif
+                  }
               }
             if (thread_status == MagickFail)
               {
+                status = thread_status;
 #if defined(IntegralRotateImageUseOpenMP)
 #  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
+#    pragma omp flush (status)
 #  endif
 #endif
-                    status = thread_status;
               }
           }
         Swap(page.width,page.height);
@@ -768,11 +768,6 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
             MagickPassFail
               thread_status;
 
-#if defined(IntegralRotateImageUseOpenMP)
-#  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
-#  endif
-#endif
             thread_status=status;
             if (thread_status == MagickFail)
               continue;
@@ -798,19 +793,24 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
               }
 #if defined(IntegralRotateImageUseOpenMP)
 #  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
+#    pragma omp atomic
 #  endif
 #endif
-            {
-              row_count++;
-              if (QuantumTick(row_count,image->rows))
-                if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                            message,image->filename))
-                  thread_status=MagickFail;
+            row_count++;
+            if (QuantumTick(row_count,image->rows))
+              if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                          message,image->filename))
+                thread_status=MagickFail;
 
-              if (thread_status == MagickFail)
+            if (thread_status == MagickFail)
+              {
                 status=MagickFail;
-            }
+#if defined(IntegralRotateImageUseOpenMP)
+#  if defined(HAVE_OPENMP)
+#    pragma omp flush (status)
+#  endif
+#endif
+              }
           }
         page.x=(long) (page.width-rotate_image->columns-page.x);
         page.y=(long) (page.height-rotate_image->rows-page.y);
@@ -859,11 +859,6 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
             MagickPassFail
               thread_status;
 
-#if defined(IntegralRotateImageUseOpenMP)
-#  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
-#  endif
-#endif
             thread_status=status;
             if (thread_status == MagickFail)
               continue;
@@ -981,19 +976,24 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
 #if defined(IntegralRotateImageUseOpenMP)
 #  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
+#    pragma omp atomic
 #  endif
 #endif
-                {
-                  tile++;
-                  if (QuantumTick(tile,total_tiles))
-                    if (!MagickMonitorFormatted(tile,total_tiles,exception,
-                                                message,image->filename))
-                      thread_status=MagickFail;
+                tile++;
+                if (QuantumTick(tile,total_tiles))
+                  if (!MagickMonitorFormatted(tile,total_tiles,exception,
+                                              message,image->filename))
+                    thread_status=MagickFail;
 
-                  if (thread_status == MagickFail)
+                if (thread_status == MagickFail)
+                  {
                     status=MagickFail;
-                }
+#if defined(IntegralRotateImageUseOpenMP)
+#  if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#  endif
+#endif
+                  }
 
                 if (thread_status == MagickFail)
                   break;
@@ -1001,12 +1001,12 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 
             if (thread_status == MagickFail)
               {
+                status = thread_status;
 #if defined(IntegralRotateImageUseOpenMP)
 #  if defined(HAVE_OPENMP)
-#    pragma omp critical (GM_IntegralRotateImage)
+#  pragma omp flush (status)
 #  endif
 #endif
-                    status = thread_status;
               }
           }
         Swap(page.width,page.height);
@@ -1137,9 +1137,6 @@ XShearImage(Image *image,const double degrees,
       MagickPassFail
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_XShearImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1208,20 +1205,23 @@ XShearImage(Image *image,const double degrees,
             thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_XShearImage)
+#  pragma omp atomic
 #endif
-          {
-            row_count++;
-            if (QuantumTick(row_count,height))
-              if (!MagickMonitorFormatted(row_count,height,exception,
-                                          XShearImageText,image->filename,
-                                          degrees,width,height,
-                                          x_offset,y_offset))
-                thread_status=MagickFail;
+          row_count++;
+          if (QuantumTick(row_count,height))
+            if (!MagickMonitorFormatted(row_count,height,exception,
+                                        XShearImageText,image->filename,
+                                        degrees,width,height,
+                                        x_offset,y_offset))
+              thread_status=MagickFail;
 
-            if (thread_status == MagickFail)
+          if (thread_status == MagickFail)
+            {
               status=MagickFail;
-          }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+            }
 
           continue;
         }
@@ -1295,20 +1295,23 @@ XShearImage(Image *image,const double degrees,
       if (!SyncImagePixelsEx(image,exception))
         thread_status=MagickFail;
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_XShearImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,height))
-          if (!MagickMonitorFormatted(row_count,height,exception,
-                                          XShearImageText,image->filename,
-                                          degrees,width,height,
-                                          x_offset,y_offset))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,height))
+        if (!MagickMonitorFormatted(row_count,height,exception,
+                                    XShearImageText,image->filename,
+                                    degrees,width,height,
+                                    x_offset,y_offset))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (is_grayscale && IsGray(image->background_color))
     image->is_grayscale=True;
@@ -1423,9 +1426,6 @@ YShearImage(Image *image,const double degrees,
       MagickPassFail
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_YShearImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1494,20 +1494,23 @@ YShearImage(Image *image,const double degrees,
             thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_YShearImage)
+#  pragma omp atomic
 #endif
-          {
-            row_count++;
-            if (QuantumTick(row_count,width))
-              if (!MagickMonitorFormatted(row_count,width,exception,
-                                          YShearImageText,image->filename,
-                                          degrees,width,height,
-                                          x_offset,y_offset))
-                thread_status=MagickFail;
+          row_count++;
+          if (QuantumTick(row_count,width))
+            if (!MagickMonitorFormatted(row_count,width,exception,
+                                        YShearImageText,image->filename,
+                                        degrees,width,height,
+                                        x_offset,y_offset))
+              thread_status=MagickFail;
 
-            if (thread_status == MagickFail)
+          if (thread_status == MagickFail)
+            {
               status=MagickFail;
-          }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+            }
 
           continue;
         }
@@ -1582,20 +1585,23 @@ YShearImage(Image *image,const double degrees,
         thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_YShearImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,width))
-          if (!MagickMonitorFormatted(row_count,width,exception,
-                                      YShearImageText,image->filename,
-                                      degrees,width,height,
-                                      x_offset,y_offset))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,width))
+        if (!MagickMonitorFormatted(row_count,width,exception,
+                                    YShearImageText,image->filename,
+                                    degrees,width,height,
+                                    x_offset,y_offset))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (is_grayscale && IsGray(image->background_color))
     image->is_grayscale=True;

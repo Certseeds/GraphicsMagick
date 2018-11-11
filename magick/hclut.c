@@ -77,21 +77,21 @@ typedef struct _HaldClutImageParameters_t
 static MagickPassFail
 HaldClutImagePixels(void *mutable_data,         /* User provided mutable data */
                     const void *immutable_data, /* User provided immutable data */
-                    Image *image,               /* Modify image */
-                    PixelPacket *pixels,        /* Pixel row */
-                    IndexPacket *indexes,       /* Pixel row indexes */
+                    Image * restrict image,               /* Modify image */
+                    PixelPacket * restrict pixels,        /* Pixel row */
+                    IndexPacket * restrict indexes,       /* Pixel row indexes */
                     const long npixels,         /* Number of pixels in row */
                     ExceptionInfo *exception)   /* Exception report */
 {
 
   const HaldClutImageParameters_t *
-    param = (const HaldClutImageParameters_t *) immutable_data;
+     param = (const HaldClutImageParameters_t *) immutable_data;
 
   unsigned int
     level = param->level;
 
   const PixelPacket
-    *clut = param->ppcl;
+    * restrict clut = param->ppcl;
 
   unsigned int
     color;

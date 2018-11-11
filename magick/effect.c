@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -639,8 +639,8 @@ MagickExport MagickPassFail BlackThresholdImage(Image *image,const char *thresho
 #define BlurImageColumnsText "[%s] Blur columns: order %lu..."
 #define BlurImageRowsText "[%s] Blur rows: order %lu...  "
 static void
-BlurScanline(const double *kernel,const unsigned long width,
-             const PixelPacket *source,PixelPacket *destination,
+BlurScanline(const double * restrict kernel,const unsigned long width,
+             const PixelPacket * restrict source,PixelPacket * restrict destination,
              const unsigned long columns, const MagickBool matte)
 {
   double
@@ -844,7 +844,7 @@ static MagickPassFail BlurImageScanlines(Image *image,const double *kernel,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
       for (y=0; y < (long) image->rows; y++)
@@ -858,9 +858,6 @@ static MagickPassFail BlurImageScanlines(Image *image,const double *kernel,
           MagickBool
             thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BlurImageScanlines)
-#endif
           thread_status=status;
           if (thread_status == MagickFail)
             continue;
@@ -893,18 +890,21 @@ static MagickPassFail BlurImageScanlines(Image *image,const double *kernel,
                 }
             }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BlurImageScanlines)
+#  pragma omp atomic
 #endif
-          {
-            row_count++;
-            if (QuantumTick(row_count,image->rows))
-              if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                          format,image->filename,width))
-                thread_status=MagickFail;
+          row_count++;
+          if (QuantumTick(row_count,image->rows))
+            if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                        format,image->filename,width))
+              thread_status=MagickFail;
 
-            if (thread_status == MagickFail)
+          if (thread_status == MagickFail)
+            {
               status=MagickFail;
-          }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+            }
         }
     }
 
@@ -1103,9 +1103,9 @@ typedef struct _ChannelThresholdOptions_t
 static MagickPassFail
 ChannelThresholdPixels(void *mutable_data,         /* User provided mutable data */
                        const void *immutable_data, /* User provided immutable data */
-                       Image *image,               /* Modify image */
-                       PixelPacket *pixels,        /* Pixel row */
-                       IndexPacket *indexes,       /* Pixel row indexes */
+                       Image * restrict image,               /* Modify image */
+                       PixelPacket * restrict pixels,        /* Pixel row */
+                       IndexPacket * restrict indexes,       /* Pixel row indexes */
                        const long npixels,         /* Number of pixels in row */
                        ExceptionInfo *exception)   /* Exception report */
 {
@@ -1272,8 +1272,8 @@ MagickExport MagickPassFail ChannelThresholdImage(Image *image,
 %
 */
 #define ConvolveImageText "[%s] Convolve: order %u..."
-MagickExport Image *ConvolveImage(const Image *image,const unsigned int order,
-                                  const double *kernel,ExceptionInfo *exception)
+MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned int order,
+                                  const double * restrict kernel,ExceptionInfo *exception)
 {
 #if QuantumDepth < 32
   typedef float float_quantum_t;
@@ -1439,9 +1439,6 @@ MagickExport Image *ConvolveImage(const Image *image,const unsigned int order,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ConvolveImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -1538,20 +1535,23 @@ MagickExport Image *ConvolveImage(const Image *image,const unsigned int order,
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ConvolveImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        ConvolveImageText,
-                                        convolve_image->filename,
-                                        order))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      ConvolveImageText,
+                                      convolve_image->filename,
+                                      order))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   MagickFreeAlignedMemory(normal_kernel);
@@ -1701,14 +1701,14 @@ MagickExport Image *DespeckleImage(const Image *image,ExceptionInfo *exception)
         y;
 
       register const PixelPacket
-        *p;
+        * restrict p;
 
       register long
         i,
         x;
 
       register PixelPacket
-        *q;
+        * restrict q;
 
 
       /*
@@ -2089,9 +2089,6 @@ MagickExport Image *EnhanceImage(const Image *image,ExceptionInfo *exception)
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_EnhanceImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -2187,18 +2184,21 @@ MagickExport Image *EnhanceImage(const Image *image,ExceptionInfo *exception)
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_EnhanceImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        EnhanceImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      EnhanceImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   enhance_image->is_grayscale=image->is_grayscale;
@@ -2688,7 +2688,7 @@ MagickExport Image *MedianFilterImage(const Image *image,const double radius,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) median_image->rows; y++)
@@ -2708,9 +2708,6 @@ MagickExport Image *MedianFilterImage(const Image *image,const double radius,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MedianFilterImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -2746,19 +2743,22 @@ MagickExport Image *MedianFilterImage(const Image *image,const double radius,
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MedianFilterImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,median_image->rows))
-            if (!MagickMonitorFormatted(row_count,median_image->rows,exception,
-                                        MedianFilterImageText,
-                                        median_image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,median_image->rows))
+          if (!MagickMonitorFormatted(row_count,median_image->rows,exception,
+                                      MedianFilterImageText,
+                                      median_image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   DestroyThreadViewDataSet(data_set);
@@ -2944,7 +2944,7 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -2961,9 +2961,6 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MotionBlurImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -3015,18 +3012,21 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MotionBlurImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        MotionBlurImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      MotionBlurImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   MagickFreeMemory(kernel);
@@ -3086,9 +3086,9 @@ RandomChannelThresholdImage(Image *image,const char *channel,
 
   const double
     o4[16]={ 1.0,  9.0,  3.0, 11.0,
-            13.0,  5.0, 15.0,  7.0,
+             13.0,  5.0, 15.0,  7.0,
              4.0, 12.0,  2.0, 10.0,
-            16.0,  8.0, 14.0,  6.0};
+             16.0,  8.0, 14.0,  6.0};
 
   const double
     o5[25]={ 1.0,  5.0, 16.0, 15.0,  4.0,
@@ -3100,17 +3100,17 @@ RandomChannelThresholdImage(Image *image,const char *channel,
   const double
     o6[36]={ 1.0,   5.0,  14.0,  13.0,  12.0,   4.0,
              6.0,  22.0,  28.0,  27.0,  21.0,  11.0,
-            15.0,  29.0,  35.0,  34.0,  26.0,  20.0,
-            16.0,  30.0,  36.0,  33.0,  25.0,  19.0,
+             15.0,  29.0,  35.0,  34.0,  26.0,  20.0,
+             16.0,  30.0,  36.0,  33.0,  25.0,  19.0,
              7.0,  23.0,  31.0,  32.0,  24.0,  10.0,
              2.0,   8.0,  17.0,  18.0,   9.0,   3.0};
 
   const double
     o7[49]={ 2.0,   7.0,  17.0,  26.0,  15.0,   6.0,   1.0,
              8.0,  16.0,  33.0,  39.0,  32.0,  13.0,   5.0,
-            18.0,  34.0,  44.0,  48.0,  43.0,  31.0,  14.0,
-            27.0,  40.0,  45.0,  49.0,  47.0,  38.0,  25.0,
-            20.0,  35.0,  41.0,  46.0,  42.0,  30.0,  24.0,
+             18.0,  34.0,  44.0,  48.0,  43.0,  31.0,  14.0,
+             27.0,  40.0,  45.0,  49.0,  47.0,  38.0,  25.0,
+             20.0,  35.0,  41.0,  46.0,  42.0,  30.0,  24.0,
              9.0,  19.0,  36.0,  37.0,  29.0,  22.0,  12.0,
              3.0,  10.0,  21.0,  28.0,  23.0,  11.0,   4.0};
 
@@ -3270,7 +3270,7 @@ RandomChannelThresholdImage(Image *image,const char *channel,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -3297,9 +3297,6 @@ RandomChannelThresholdImage(Image *image,const char *channel,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_RandomChannelThresholdImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -3321,7 +3318,7 @@ RandomChannelThresholdImage(Image *image,const char *channel,
                     for (x=(long) image->columns; x > 0; x--)
                       {
                         intensity=(is_grayscale ?
-                            q->red : PixelIntensityToQuantum(q));
+                                   q->red : PixelIntensityToQuantum(q));
                         if (intensity < lower_threshold)
                           threshold=lower_threshold;
                         else if (intensity > upper_threshold)
@@ -3343,7 +3340,7 @@ RandomChannelThresholdImage(Image *image,const char *channel,
                     for (x=(long) image->columns; x > 0; x--)
                       {
                         intensity=(is_grayscale ?
-                            q->red : PixelIntensityToQuantum(q));
+                                   q->red : PixelIntensityToQuantum(q));
                         threshold=matrix[(x%order)+order*(y%order)];
                         index=intensity <= threshold ? 0U : 1U;
                         *indexes++=index;
@@ -3496,19 +3493,22 @@ RandomChannelThresholdImage(Image *image,const char *channel,
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_RandomChannelThresholdImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        RandomChannelThresholdImageText,
-                                        image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      RandomChannelThresholdImageText,
+                                      image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   if ((AllChannels == channel_type) ||
@@ -3677,7 +3677,7 @@ MagickExport Image *ReduceNoiseImage(const Image *image,const double radius,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
   for (y=0; y < (long) noise_image->rows; y++)
@@ -3697,9 +3697,6 @@ MagickExport Image *ReduceNoiseImage(const Image *image,const double radius,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ReduceNoiseImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -3736,19 +3733,22 @@ MagickExport Image *ReduceNoiseImage(const Image *image,const double radius,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ReduceNoiseImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,noise_image->rows))
-          if (!MagickMonitorFormatted(row_count,noise_image->rows,exception,
-                                      ReduceNoiseImageText,
-                                      noise_image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,noise_image->rows))
+        if (!MagickMonitorFormatted(row_count,noise_image->rows,exception,
+                                    ReduceNoiseImageText,
+                                    noise_image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   DestroyThreadViewDataSet(data_set);
   noise_image->is_grayscale=image->is_grayscale;
@@ -3835,7 +3835,7 @@ MagickExport Image *ShadeImage(const Image *image,const unsigned int gray,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -3844,13 +3844,13 @@ MagickExport Image *ShadeImage(const Image *image,const unsigned int gray,
           normal;
 
         register const PixelPacket
-          *p,
+          * restrict p,
           *s0,
           *s1,
           *s2;
 
         register PixelPacket
-          *q;
+          * restrict q;
 
         register long
           x;
@@ -3858,9 +3858,6 @@ MagickExport Image *ShadeImage(const Image *image,const unsigned int gray,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ShadeImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -3931,18 +3928,21 @@ MagickExport Image *ShadeImage(const Image *image,const unsigned int gray,
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ShadeImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        ShadeImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      ShadeImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   shade_image->is_grayscale=image->is_grayscale;
@@ -4179,7 +4179,7 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,8) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -4207,9 +4207,6 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_SpreadImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -4274,19 +4271,22 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
             if (!SyncImagePixelsEx(spread_image,exception))
               thread_status=MagickFail;
           }
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_SpreadImage)
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        EnhanceImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      EnhanceImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   MagickFreeMemory(offsets);
@@ -4376,7 +4376,7 @@ MagickExport MagickPassFail ThresholdImage(Image *image,const double threshold)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,8) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -4402,9 +4402,6 @@ MagickExport MagickPassFail ThresholdImage(Image *image,const double threshold)
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ThresholdImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -4440,19 +4437,22 @@ MagickExport MagickPassFail ThresholdImage(Image *image,const double threshold)
               if (!SyncImagePixelsEx(image,&image->exception))
                 thread_status=MagickFail;
           }
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ThresholdImage)
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
-                                        ThresholdImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
+                                      ThresholdImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   image->is_monochrome=MagickTrue;

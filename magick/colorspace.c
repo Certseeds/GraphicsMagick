@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2008 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -73,9 +73,9 @@
 static MagickPassFail
 RGBToCMYKTransform(void *mutable_data,          /* User provided mutable data */
                    const void *immutable_data,  /* User provided immutable data */
-                   Image *image,                /* Modify image */
-                   PixelPacket *pixels,         /* Pixel row */
-                   IndexPacket *indexes,        /* Pixel row indexes */
+                   Image * restrict image,                /* Modify image */
+                   PixelPacket * restrict pixels,         /* Pixel row */
+                   IndexPacket * restrict indexes,        /* Pixel row indexes */
                    const long npixels,          /* Number of pixels in row */
                    ExceptionInfo *exception)    /* Exception report */
 {
@@ -115,9 +115,9 @@ RGBToCMYKTransform(void *mutable_data,          /* User provided mutable data */
 static MagickPassFail
 RGBToCineonLogTransform(void *mutable_data,          /* User provided mutable data */
                         const void *immutable_data,  /* User provided immutable data */
-                        Image *image,                /* Modify image */
-                        PixelPacket *pixels,         /* Pixel row */
-                        IndexPacket *indexes,        /* Pixel row indexes */
+                        Image * restrict image,                /* Modify image */
+                        PixelPacket * restrict pixels,         /* Pixel row */
+                        IndexPacket * restrict indexes,        /* Pixel row indexes */
                         const long npixels,          /* Number of pixels in row */
                         ExceptionInfo *exception)    /* Exception report */
 {
@@ -149,9 +149,9 @@ RGBToCineonLogTransform(void *mutable_data,          /* User provided mutable da
 static MagickPassFail
 RGBToHSLTransform(void *mutable_data,          /* User provided mutable data */
                   const void *immutable_data,  /* User provided immutable data */
-                  Image *image,                /* Modify image */
-                  PixelPacket *pixels,         /* Pixel row */
-                  IndexPacket *indexes,        /* Pixel row indexes */
+                  Image * restrict image,                /* Modify image */
+                  PixelPacket * restrict pixels,         /* Pixel row */
+                  IndexPacket * restrict indexes,        /* Pixel row indexes */
                   const long npixels,          /* Number of pixels in row */
                   ExceptionInfo *exception)    /* Exception report */
 {
@@ -189,9 +189,9 @@ RGBToHSLTransform(void *mutable_data,          /* User provided mutable data */
 static MagickPassFail
 RGBToHWBTransform(void *mutable_data,          /* User provided mutable data */
                   const void *immutable_data,  /* User provided immutable data */
-                  Image *image,                /* Modify image */
-                  PixelPacket *pixels,         /* Pixel row */
-                  IndexPacket *indexes,        /* Pixel row indexes */
+                  Image * restrict image,                /* Modify image */
+                  PixelPacket * restrict pixels,         /* Pixel row */
+                  IndexPacket * restrict indexes,        /* Pixel row indexes */
                   const long npixels,          /* Number of pixels in row */
                   ExceptionInfo *exception)    /* Exception report */
 {
@@ -249,9 +249,9 @@ static const size_t
 static MagickPassFail
 XYZTransformPackets(void *mutable_data,          /* User provided mutable data */
                     const void *immutable_data,  /* User provided immutable data */
-                    Image *image,                /* Modify image */
-                    PixelPacket *pixels,         /* Pixel row */
-                    IndexPacket *indexes,        /* Pixel row indexes */
+                    Image * restrict image,                /* Modify image */
+                    PixelPacket * restrict pixels,         /* Pixel row */
+                    IndexPacket * restrict indexes,        /* Pixel row indexes */
                     const long npixels,          /* Number of pixels in row */
                     ExceptionInfo *exception)    /* Exception report */
 {
@@ -1112,9 +1112,9 @@ MagickExport MagickPassFail TransformColorspace(Image *image,
 static MagickPassFail
 CMYKToRGBTransform(void *mutable_data,          /* User provided mutable data */
                    const void *immutable_data,  /* User provided immutable data */
-                   Image *image,                /* Modify image */
-                   PixelPacket *pixels,         /* Pixel row */
-                   IndexPacket *indexes,        /* Pixel row indexes */
+                   Image * restrict image,                /* Modify image */
+                   PixelPacket * restrict pixels,         /* Pixel row */
+                   IndexPacket * restrict indexes,        /* Pixel row indexes */
                    const long npixels,          /* Number of pixels in row */
                    ExceptionInfo *exception)    /* Exception report */
 {
@@ -1152,9 +1152,9 @@ CMYKToRGBTransform(void *mutable_data,          /* User provided mutable data */
 static MagickPassFail
 CineonLogToRGBTransform(void *mutable_data,         /* User provided mutable data */
                         const void *immutable_data, /* User provided immutable data */
-                        Image *image,               /* Modify image */
-                        PixelPacket *pixels,        /* Pixel row */
-                        IndexPacket *indexes,       /* Pixel row indexes */
+                        Image * restrict image,               /* Modify image */
+                        PixelPacket * restrict pixels,        /* Pixel row */
+                        IndexPacket * restrict indexes,       /* Pixel row indexes */
                         const long npixels,         /* Number of pixels in row */
                         ExceptionInfo *exception)   /* Exception report */
 {
@@ -1187,8 +1187,8 @@ static MagickPassFail
 HSLToRGBTransform(void *mutable_data,         /* User provided mutable data */
                   const void *immutable_data, /* User provided immutable data */
                   Image *image,               /* Modify image */
-                  PixelPacket *pixels,        /* Pixel row */
-                  IndexPacket *indexes,       /* Pixel row indexes */
+                  PixelPacket * restrict pixels,        /* Pixel row */
+                  IndexPacket * restrict indexes,       /* Pixel row indexes */
                   const long npixels,         /* Number of pixels in row */
                   ExceptionInfo *exception)   /* Exception report */
 {
@@ -1216,9 +1216,9 @@ HSLToRGBTransform(void *mutable_data,         /* User provided mutable data */
 static MagickPassFail
 HWBToRGBTransform(void *mutable_data,         /* User provided mutable data */
                   const void *immutable_data, /* User provided immutable data */
-                  Image *image,               /* Modify image */
-                  PixelPacket *pixels,        /* Pixel row */
-                  IndexPacket *indexes,       /* Pixel row indexes */
+                  Image * restrict image,               /* Modify image */
+                  PixelPacket * restrict pixels,        /* Pixel row */
+                  IndexPacket * restrict indexes,       /* Pixel row indexes */
                   const long npixels,         /* Number of pixels in row */
                   ExceptionInfo *exception)   /* Exception report */
 {
@@ -1263,9 +1263,9 @@ typedef struct _RGBTransformInfo_t
 static MagickPassFail
 RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
                     const void *immutable_data, /* User provided immutable data */
-                    Image *image,               /* Modify image */
-                    PixelPacket *pixels,        /* Pixel row */
-                    IndexPacket *indexes,       /* Pixel row indexes */
+                    Image * restrict image,               /* Modify image */
+                    PixelPacket * restrict pixels,        /* Pixel row */
+                    IndexPacket * restrict indexes,       /* Pixel row indexes */
                     const long npixels,         /* Number of pixels in row */
                     ExceptionInfo *exception)   /* Exception report */
 {
