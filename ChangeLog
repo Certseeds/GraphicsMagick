@@ -1,3 +1,9 @@
+2018-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (HorizontalFilter, VerticalFilter): quantum is a
+	pointer so it's value can not be usefully flushed.  Use a local
+	variable and then update quantum pointer when done.
+
 2018-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/*: Changed row_count tallying to use 'omp atomic' and

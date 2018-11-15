@@ -811,7 +811,7 @@ static MagickPassFail
 HorizontalFilter(const Image * restrict source,Image * restrict destination,
                  const double x_factor,const FilterInfo * restrict filter_info,
                  const double blur,ThreadViewDataSet *view_data_set,
-                 const size_t span,unsigned long * restrict quantum,
+                 const size_t span,unsigned long * restrict quantum_p,
                  ExceptionInfo *exception)
 {
 #define ResizeImageText "[%s] Resize..."
@@ -826,12 +826,17 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
   long
     x;
 
+  unsigned long
+    quantum;
+
   MagickPassFail
     status=MagickPass;
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Enter HorizontalFilter() ...");
+
+  quantum = *quantum_p;
 
   scale=blur*Max(1.0/x_factor,1.0);
   support=scale*filter_info->support;
@@ -1009,15 +1014,15 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(*quantum,span))
-        if (!MagickMonitorFormatted(*quantum,span,exception,
+      if (QuantumTick(quantum,span))
+        if (!MagickMonitorFormatted(quantum,span,exception,
                                     ResizeImageText,source->filename))
           thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      (*quantum)++;
+      quantum++;
 
       if (thread_status == MagickFail)
         {
@@ -1033,6 +1038,8 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
                           "%s exit HorizontalFilter()",
                           (status == MagickFail ? "Error" : "Normal"));
 
+  *quantum_p = quantum;
+
   return (status);
 }
 
@@ -1040,7 +1047,7 @@ static MagickPassFail
 VerticalFilter(const Image * restrict source,Image * restrict destination,
                const double y_factor,const FilterInfo * restrict filter_info,
                const double blur,ThreadViewDataSet *view_data_set,
-               const size_t span,unsigned long * restrict quantum,
+               const size_t span,unsigned long * restrict quantum_p,
                ExceptionInfo *exception)
 {
   double
@@ -1053,12 +1060,17 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
   long
     y;
 
+  unsigned long
+    quantum;
+
   MagickPassFail
     status=MagickPass;
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Enter VerticalFilter() ...");
+
+  quantum = *quantum_p;
 
   /*
     Apply filter to resize vertically from source to destination.
@@ -1239,15 +1251,15 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(*quantum,span))
-        if (!MagickMonitorFormatted(*quantum,span,exception,
+      if (QuantumTick(quantum,span))
+        if (!MagickMonitorFormatted(quantum,span,exception,
                                     ResizeImageText,source->filename))
           thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      (*quantum)++;
+      quantum++;
 
       if (thread_status == MagickFail)
         {
@@ -1262,6 +1274,8 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "%s exit VerticalFilter()",
                           (status == MagickFail ? "Error" : "Normal"));
+
+  *quantum_p = quantum;
 
   return (status);
 }
