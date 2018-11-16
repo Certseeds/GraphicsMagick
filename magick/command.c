@@ -1714,8 +1714,9 @@ static void BenchmarkUsage(void)
   static const char
     *options[]=
     {
-      "-duration duration  duration to run each benchmark (in seconds)",
-      "-iterations loops   number of command iterations",
+      "-concurrent         run multiple commands in parallel",
+      "-duration duration  duration to run benchmark (in seconds)",
+      "-iterations loops   number of command iterations per benchmark",
       "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)",
       "-stepthreads step   step benchmark with increasing number of threads",
       (char *) NULL
@@ -1729,7 +1730,12 @@ static void BenchmarkUsage(void)
   (void) printf("\nWhere options include one of:\n");
   for (p=options; *p != (char *) NULL; p++)
     (void) printf("  %.1024s\n",*p);
-  (void) printf("Followed by some other GraphicsMagick command\n");
+  (void) printf("Followed by some other arbitrary GraphicsMagick command.\n\n"
+                "The -concurrent option requires use of -iterations or -duration.\n\n"
+                "Example usages:\n"
+                "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
+                "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
+                "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:\n");
 }
 
 /*
