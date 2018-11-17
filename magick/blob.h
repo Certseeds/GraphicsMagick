@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2017 GraphicsMagick Group
+  Copyright (C) 2003-2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -191,19 +191,19 @@ extern "C" {
     Test to see if an error has been encountered while doing I/O to the file
     or BLOB.  Non-zero is returned if an error occured.
   */
-  extern MagickExport int GetBlobStatus(const Image *image);
+  extern MagickExport int GetBlobStatus(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Return the first errno present when an error has been encountered while
     doing I/O to the file or BLOB.  This is only useful if GetBlobStatus() has
     already reported that an error occured.
   */
-  extern MagickExport int GetBlobFirstErrno(const Image *image);
+  extern MagickExport int GetBlobFirstErrno(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Test to see if blob is currently open.
   */
-  extern MagickExport MagickBool GetBlobIsOpen(const Image *image);
+  extern MagickExport MagickBool GetBlobIsOpen(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Obtain the current size of the file or BLOB.  Zero is returned if
@@ -216,14 +216,14 @@ extern "C" {
   /*
     Obtain the underlying stdio FILE* for the file (if any).
   */
-  extern MagickExport FILE *GetBlobFileHandle(const Image *image);
+  extern MagickExport FILE *GetBlobFileHandle(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Obtain a pointer to the base of where BLOB data is stored.  The data
     is only available if the data is stored on the heap, or is memory
     mapped.  Otherwise NULL is returned.
   */
-  extern MagickExport unsigned char *GetBlobStreamData(const Image *image);
+  extern MagickExport unsigned char *GetBlobStreamData(const Image *image) MAGICK_FUNC_PURE;
 
 
   /*
@@ -443,7 +443,7 @@ extern "C" {
     Blob supports seek operations.  BlobSeek() and BlobTell() may safely be
     used.
   */
-  extern MagickExport MagickBool BlobIsSeekable(const Image *image);
+  extern MagickExport MagickBool BlobIsSeekable(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Allow file descriptor to be closed (if True).
@@ -461,7 +461,7 @@ extern "C" {
     Returns MagickTrue if the file associated with the blob is a temporary
     file and should be removed when the associated image is destroyed.
   */
-  extern MagickExport MagickBool GetBlobTemporary(const Image *image);
+  extern MagickExport MagickBool GetBlobTemporary(const Image *image) MAGICK_FUNC_PURE;
 
   /*
    *

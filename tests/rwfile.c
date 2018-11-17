@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 - 2013 GraphicsMagick Group
+ * Copyright (C) 2003 - 2018 GraphicsMagick Group
  * Copyright (C) 2003 ImageMagick Studio
  * Copyright 1991-1999 E. I. du Pont de Nemours and Company
  *
@@ -19,6 +19,7 @@
  * */
 
 #include <magick/api.h>
+#include <magick/enum_strings.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,27 +89,7 @@ int main ( int argc, char **argv )
             {
               arg++;
               option=argv[arg];
-              imageInfo->compression=UndefinedCompression;
-              if (LocaleCompare("Undefined",option) == 0)
-                imageInfo->compression=UndefinedCompression;
-              if (LocaleCompare("None",option) == 0)
-                imageInfo->compression=NoCompression;
-              if (LocaleCompare("BZip",option) == 0)
-                imageInfo->compression=BZipCompression;
-              if (LocaleCompare("Fax",option) == 0)
-                imageInfo->compression=FaxCompression;
-              if (LocaleCompare("Group4",option) == 0)
-                imageInfo->compression=Group4Compression;
-              if (LocaleCompare("JPEG",option) == 0)
-                imageInfo->compression=JPEGCompression;
-              if (LocaleCompare("Lossless",option) == 0)
-                imageInfo->compression=LosslessJPEGCompression;
-              if (LocaleCompare("LZW",option) == 0)
-                imageInfo->compression=LZWCompression;
-              if (LocaleCompare("RLE",option) == 0)
-                imageInfo->compression=RLECompression;
-              if (LocaleCompare("Zip",option) == 0)
-                imageInfo->compression=ZipCompression;
+              imageInfo->compression=StringToCompressionType(option);
             }
           else if (LocaleCompare("debug",option+1) == 0)
             {
@@ -545,6 +526,20 @@ int main ( int argc, char **argv )
           (!strcmp( "YUV", format )) ||
           (final->compression == JPEGCompression))
         fuzz_factor = 0.06;
+
+      switch(imageInfo->compression)
+        {
+        case JPEGCompression:
+        case JPEG2000Compression:
+        case WebPCompression:
+          {
+            fuzz_factor = 0.06;
+            break;
+          }
+        default:
+          {
+          }
+        }
 
       {
         Image

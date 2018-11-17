@@ -260,7 +260,9 @@ typedef enum
   LZMACompression,              /* Lempel-Ziv-Markov chain algorithm */
   JPEG2000Compression,          /* ISO/IEC std 15444-1 */
   JBIG1Compression,             /* ISO/IEC std 11544 / ITU-T rec T.82 */
-  JBIG2Compression              /* ISO/IEC std 14492 / ITU-T rec T.88 */
+  JBIG2Compression,             /* ISO/IEC std 14492 / ITU-T rec T.88 */
+  ZSTDCompression,              /* Facebook's Zstandard compression */
+  WebPCompression               /* Google's WebP compression */
 } CompressionType;
 
 typedef enum
@@ -1087,11 +1089,11 @@ extern MagickExport void
 
 /* provide public access to the clip_mask member of Image */
 extern MagickExport Image
-  **ImageGetClipMask(const Image *);
+  **ImageGetClipMask(const Image *) MAGICK_FUNC_PURE;
 
 /* provide public access to the composite_mask member of Image */
 extern MagickExport Image
-  **ImageGetCompositeMask(const Image *);
+  **ImageGetCompositeMask(const Image *) MAGICK_FUNC_PURE;
 
 #if defined(MAGICK_IMPLEMENTATION)
   /*

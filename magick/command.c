@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1444,7 +1444,7 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
@@ -1714,8 +1714,9 @@ static void BenchmarkUsage(void)
   static const char
     *options[]=
     {
-      "-duration duration  duration to run each benchmark (in seconds)",
-      "-iterations loops   number of command iterations",
+      "-concurrent         run multiple commands in parallel",
+      "-duration duration  duration to run benchmark (in seconds)",
+      "-iterations loops   number of command iterations per benchmark",
       "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)",
       "-stepthreads step   step benchmark with increasing number of threads",
       (char *) NULL
@@ -1729,7 +1730,12 @@ static void BenchmarkUsage(void)
   (void) printf("\nWhere options include one of:\n");
   for (p=options; *p != (char *) NULL; p++)
     (void) printf("  %.1024s\n",*p);
-  (void) printf("Followed by some other GraphicsMagick command\n");
+  (void) printf("Followed by some other arbitrary GraphicsMagick command.\n\n"
+                "The -concurrent option requires use of -iterations or -duration.\n\n"
+                "Example usages:\n"
+                "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
+                "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
+                "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:\n");
 }
 
 /*
@@ -1971,9 +1977,6 @@ BenchmarkImageCommand(ImageInfo *image_info,
                   MagickBool
                     thread_quit;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BenchmarkImageCommand)
-#endif
                   thread_quit=quit;
 
                   if (thread_quit)
@@ -1988,6 +1991,9 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     if (!thread_status)
                       {
                         status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                         thread_quit=MagickTrue;
                       }
                     if (GetElapsedTime(&timer) > duration)
@@ -1995,7 +2001,12 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     else
                       (void) ContinueTimer(&timer);
                     if (thread_quit)
-                      quit=thread_quit;
+                      {
+                        quit=thread_quit;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (quit)
+#endif
+                      }
                   }
                 }
             }
@@ -2012,9 +2023,6 @@ BenchmarkImageCommand(ImageInfo *image_info,
                   MagickBool
                     thread_quit;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_BenchmarkImageCommand)
-#endif
                   thread_quit=quit;
 
                   if (thread_quit)
@@ -2029,10 +2037,16 @@ BenchmarkImageCommand(ImageInfo *image_info,
                     if (!thread_status)
                       {
                         status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                         thread_quit=MagickTrue;
                       }
                     if (thread_quit)
                       quit=thread_quit;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (quit)
+#endif
                   }
                 }
             }
@@ -7973,7 +7987,7 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
@@ -16105,7 +16119,7 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
   ARG_NOT_USED(metadata);
   ARG_NOT_USED(exception);
 
-  MagickFatalError(MissingDelegateError,XWindowLibraryIsNotAvailable,
+  MagickError(MissingDelegateError,XWindowLibraryIsNotAvailable,
     (char *) NULL);
   return(MagickFail);
 #endif
@@ -17343,6 +17357,7 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
     static const char *command_names [] =
       {
         "animate",
+        "compare",
         "composite",
         "conjure",
         "convert",

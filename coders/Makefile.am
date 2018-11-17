@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2016 GraphicsMagick Group
+# Copyright (C) 2004-2018 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -346,7 +346,7 @@ coders_dps_la_LIBADD       = $(LIBMAGICK) $(LIB_DPS) $(LIB_XEXT) $(LIB_X11)
 coders_dpx_la_SOURCES      = coders/dpx.c
 coders_dpx_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_dpx_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_dpx_la_LIBADD       = $(LIBMAGICK) 
+coders_dpx_la_LIBADD       = $(LIBMAGICK)
 
 # EMF coder module
 coders_emf_la_SOURCES      = coders/emf.c
@@ -358,7 +358,7 @@ coders_emf_la_LIBADD       = $(LIBMAGICK) $(LIB_GDI32)
 coders_ept_la_SOURCES      = coders/ept.c
 coders_epd_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ept_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ept_la_LIBADD       = $(LIBMAGICK) $(LIB_GS) $(LIB_MATH)
+coders_ept_la_LIBADD       = $(LIBMAGICK) $(LIB_MATH)
 
 # FAX coder module
 coders_fax_la_SOURCES      = coders/fax.c
@@ -598,7 +598,7 @@ coders_pdb_la_LIBADD       = $(LIBMAGICK)
 coders_pdf_la_SOURCES      = coders/pdf.c
 coders_pdf_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_pdf_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_pdf_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB) $(LIB_GS)
+coders_pdf_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB)
 
 # PICT coder module
 coders_pict_la_SOURCES     = coders/pict.c
@@ -640,19 +640,19 @@ coders_preview_la_LIBADD   = $(LIBMAGICK)
 coders_ps_la_SOURCES       = coders/ps.c
 coders_ps_la_CPPFLAGS      = $(MAGICK_CODER_CPPFLAGS)
 coders_ps_la_LDFLAGS       = $(MODULECOMMONFLAGS)
-coders_ps_la_LIBADD        = $(LIBMAGICK) $(LIB_GS) $(LIB_MATH)
+coders_ps_la_LIBADD        = $(LIBMAGICK) $(LIB_MATH)
 
 # PS2 coder module
 coders_ps2_la_SOURCES      = coders/ps2.c
 coders_ps2_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ps2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ps2_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_ps2_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PS3 coder module
 coders_ps3_la_SOURCES      = coders/ps3.c
 coders_ps3_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ps3_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ps3_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_ps3_la_LIBADD       = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PSD coder module
 coders_psd_la_SOURCES      = coders/psd.c
@@ -730,7 +730,7 @@ coders_tga_la_LIBADD       = $(LIBMAGICK)
 coders_tiff_la_SOURCES     = coders/tiff.c
 coders_tiff_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_tiff_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_tiff_la_LIBADD      = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_tiff_la_LIBADD      = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # TILE coder module
 coders_tile_la_SOURCES     = coders/tile.c

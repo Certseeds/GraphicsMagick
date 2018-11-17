@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -210,7 +210,8 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   char
     original_filename[MaxTextExtent],
-    original_magick[MaxTextExtent];
+    original_magick[MaxTextExtent],
+    temporary_filename[MaxTextExtent];
 
   size_t
     count;
@@ -312,16 +313,12 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
-  file=AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
+  file=AcquireTemporaryFileStream(temporary_filename,BinaryFileIOMode);
   if (file == (FILE *) NULL)
     {
-      char
-        filename[MaxTextExtent];
-
-      (void) strcpy(filename,clone_info->filename);
       MagickFreeMemory(buffer);
       DestroyImageInfo(clone_info);
-      ThrowReaderTemporaryFileException(filename)
+      ThrowReaderTemporaryFileException(image_info->filename)
     }
   (void) fwrite(header,(size_t) (offset-header+1),1,file);
   (void) fwrite(HuffmanTable,1,sizeof(HuffmanTable)/sizeof(*HuffmanTable),file);
@@ -331,7 +328,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(buffer);
   if (status)
     {
-      (void) LiberateTemporaryFile(clone_info->filename);
+      (void) LiberateTemporaryFile(temporary_filename);
       DestroyImageInfo(clone_info);
       ThrowReaderException(FileOpenError,UnableToWriteFile,image)
     }
@@ -342,8 +339,10 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read JPEG image.
   */
+  (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
+  (void) strlcat(clone_info->filename,temporary_filename,sizeof(clone_info->filename));
   image=ReadImage(clone_info,exception);
-  (void) LiberateTemporaryFile(clone_info->filename);
+  (void) LiberateTemporaryFile(temporary_filename);
   DestroyImageInfo(clone_info);
   if (image == (Image *) NULL)
     return(image);

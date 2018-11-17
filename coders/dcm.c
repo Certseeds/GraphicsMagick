@@ -3033,7 +3033,7 @@ static MagickPassFail funcDCM_SamplesPerPixel(Image *image,DicomStream *dcm,Exce
 static MagickPassFail funcDCM_PhotometricInterpretation(Image *image,DicomStream *dcm,ExceptionInfo *exception)
 {
   char photometric[MaxTextExtent];
-  int i;
+  unsigned int i;
 
   ARG_NOT_USED(image);
   ARG_NOT_USED(exception);
@@ -3044,7 +3044,8 @@ static MagickPassFail funcDCM_PhotometricInterpretation(Image *image,DicomStream
       return MagickFail;
     }
 
-  for (i=0; i < (long) Min(dcm->length, MaxTextExtent-1); i++)
+  (void) memset(photometric,0,sizeof(photometric));
+  for (i=0; i < Min(dcm->length, MaxTextExtent-1); i++)
     photometric[i]=dcm->data[i];
   photometric[i]='\0';
 
@@ -3688,6 +3689,11 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
           return MagickFail;
         }
       size=MagickArraySize(dcm->quantum,dcm->length);
+      if (size == 0)
+        {
+          ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+          return MagickFail;
+        }
       if (ReadBlob(image,size,(char *) dcm->data) != size)
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
@@ -4805,9 +4811,12 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         status=pfunc(image,&dcm,exception);
       MagickFreeMemory(dcm.data);
       dcm.data = NULL;
+      dcm.length = 0;
       if (status == MagickPass)
         status=DCM_ReadElement(image,&dcm,exception);
     }
+  if (status == MagickFail)
+    goto dcm_read_failure;
 #if defined(IGNORE_WINDOW_FOR_UNSPECIFIED_SCALE_TYPE)
   if (dcm.rescale_type == DCM_RT_UNSPECIFIED)
     {
@@ -4820,9 +4829,6 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Now process the image data
   */
-  if (status == MagickFail)
-    goto dcm_read_failure;
-
   if ((dcm.columns == 0) || (dcm.rows == 0))
     {
       ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);

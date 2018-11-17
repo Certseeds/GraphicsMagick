@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -164,9 +164,6 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ChopImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -196,18 +193,21 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ChopImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,chop_image->rows))
-          if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
-                                      ChopImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,chop_image->rows))
+        if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
+                                    ChopImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   /*
     Extract chop image.
@@ -239,9 +239,6 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ChopImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -271,18 +268,21 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_ChopImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,chop_image->rows))
-          if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
-                                      ChopImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,chop_image->rows))
+        if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
+                                    ChopImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (row_count < chop_image->rows)
     {
@@ -560,9 +560,6 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_CropImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -585,21 +582,24 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_CropImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,crop_image->rows))
-          if (!MagickMonitorFormatted(row_count,crop_image->rows,exception,
-                                      "[%s] Crop: %lux%lu+%ld+%ld...",
-                                      crop_image->filename,
-                                      crop_image->columns,crop_image->rows,
-                                      page.x,page.y))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,crop_image->rows))
+        if (!MagickMonitorFormatted(row_count,crop_image->rows,exception,
+                                    "[%s] Crop: %lux%lu+%ld+%ld...",
+                                    crop_image->filename,
+                                    crop_image->columns,crop_image->rows,
+                                    page.x,page.y))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (row_count < crop_image->rows)
     {
@@ -1036,9 +1036,6 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FlipImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1061,18 +1058,21 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FlipImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,flip_image->rows))
-          if (!MagickMonitorFormatted(row_count,flip_image->rows,exception,
-                                      FlipImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,flip_image->rows))
+        if (!MagickMonitorFormatted(row_count,flip_image->rows,exception,
+                                    FlipImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (row_count < flip_image->rows)
     {
@@ -1165,9 +1165,6 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FlopImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1195,18 +1192,21 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
-#  pragma omp critical (GM_FlopImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,flop_image->rows))
-          if (!MagickMonitorFormatted(row_count,flop_image->rows,exception,
-                                      FlopImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,flop_image->rows))
+        if (!MagickMonitorFormatted(row_count,flop_image->rows,exception,
+                                    FlopImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   if (row_count < flop_image->rows)
     {

@@ -22,6 +22,11 @@ extern "C" {
 extern MagickExport MagickPassFail
   ListModuleInfo(FILE *file,ExceptionInfo *exception);
 
+extern MagickExport MagickPassFail
+  ExecuteModuleProcess(const char *tag,Image **image,
+                       const int argc,char **argv);
+
+
 #if defined(MAGICK_IMPLEMENTATION)
 
 /*
@@ -48,18 +53,16 @@ typedef struct _ModuleInfo
     *next;
 } ModuleInfo;
 
-extern MagickExport const ModuleInfo
+extern const ModuleInfo
   *GetModuleInfo(const char *,ExceptionInfo *);
 
-extern MagickExport MagickPassFail
-  ExecuteModuleProcess(const char *tag,Image **image,
-                       const int argc,char **argv),
+extern MagickPassFail
   ExecuteStaticModuleProcess(const char *,Image **,const int,char **),
   ListModuleInfo(FILE *file,ExceptionInfo *exception),
   OpenModule(const char *module,ExceptionInfo *exception),
   OpenModules(ExceptionInfo *exception);
 
-extern MagickExport void
+extern void
   DestroyModuleInfo(void),
   DestroyMagickModules(void),
   InitializeMagickModules(void),

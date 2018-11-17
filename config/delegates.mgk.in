@@ -98,6 +98,15 @@
   <!-- Read CMYK Postscript, EPS, and PDF  -->
   <delegate decode="gs-cmyk" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSCMYKDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
+  <!-- Read monochrome PDF using Poppler's pdftoppm -->
+  <delegate decode="poppler-mono" stealth="True" command='"pdftoppm" "-mono" "-freetype" "yes" "-aa" "yes" "-aaVector" "yes" "-rx" "72" "-ry" "72" "%s" ">" "%s"' />
+
+  <!-- Read grayscale PDF using Poppler's pdftoppm -->
+  <delegate decode="poppler-grey" stealth="True" command='"pdftoppm" "-gray" "-freetype" "yes" "-aa" "yes" "-aaVector" "yes" "-rx" "72" "-ry" "72" "%s" ">" "%s"' />
+
+  <!-- Read color PDF using Poppler's pdftoppm -->
+  <delegate decode="poppler-color" stealth="True" command='"pdftoppm" "-freetype" "yes" "-rx" "-aa" "yes" "-aaVector" "yes" "72" "-ry" "72" "%s" ">" "%s"' />
+
   <delegate decode="hpg" command='"@HPGLDecodeDelegate@" -q -m eps -f `basename "%o"` "%i" && @MVDelegate@ -f `basename "%o"` "%o"' />
   <delegate decode="hpgl" command='"@HPGLDecodeDelegate@" -q -m eps -f `basename "%o"` "%i" && @MVDelegate@ -f `basename "%o"` "%o"' />
   <!-- Read HTML file  -->

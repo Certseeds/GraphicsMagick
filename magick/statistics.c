@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -58,18 +58,18 @@ typedef struct _StatisticsContext {
 } StatisticsContext;
 static MagickPassFail GetImageStatisticsMean(void *mutable_data,
                                              const void *immutable_data,
-                                             const Image *image,
-                                             const PixelPacket *pixel,
-                                             const IndexPacket *indexes,
+                                             const Image * restrict image,
+                                             const PixelPacket * restrict pixel,
+                                             const IndexPacket * restrict indexes,
                                              const long npixels,
                                              ExceptionInfo *exception)
 {
   ImageStatistics
     lstatistics,
-    *statistics=(ImageStatistics *) mutable_data;
+    * restrict statistics=(ImageStatistics *) mutable_data;
 
   const StatisticsContext
-    *context=(const StatisticsContext *) immutable_data;
+    * restrict context=(const StatisticsContext *) immutable_data;
 
   double
     normalized;
@@ -162,18 +162,18 @@ static MagickPassFail GetImageStatisticsMean(void *mutable_data,
 #define Square(x)  ((x)*(x))
 static MagickPassFail GetImageStatisticsVariance(void *mutable_data,
                                                  const void *immutable_data,
-                                                 const Image *image,
-                                                 const PixelPacket *pixel,
-                                                 const IndexPacket *indexes,
+                                                 const Image * restrict image,
+                                                 const PixelPacket * restrict pixel,
+                                                 const IndexPacket * restrict indexes,
                                                  const long npixels,
                                                  ExceptionInfo *exception)
 {
   ImageStatistics
     lstatistics,
-    *statistics=(ImageStatistics *) mutable_data;
+    * restrict statistics=(ImageStatistics *) mutable_data;
 
   const StatisticsContext
-    *context=(const StatisticsContext *) immutable_data;
+    * restrict context=(const StatisticsContext *) immutable_data;
 
   double
     normalized;

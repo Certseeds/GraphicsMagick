@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2009 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -189,7 +189,7 @@ extern MagickExport MagickPassFail
     double *min, double *max);
 
 extern MagickExport unsigned int
-  MagickGetQuantumSamplesPerPixel(const QuantumType quantum_type);
+  MagickGetQuantumSamplesPerPixel(const QuantumType quantum_type) MAGICK_FUNC_CONST;
 
 #if defined(MAGICK_IMPLEMENTATION)
 

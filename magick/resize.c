@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -271,26 +271,26 @@ static double BesselOrderOne(double x)
 %
 %
 */
-MagickExport Image *MagnifyImage(const Image *image,ExceptionInfo *exception)
+MagickExport Image *MagnifyImage(const Image * restrict image,ExceptionInfo *exception)
 {
 #define MagnifyImageText "[%s] Magnify...  "
 
   Image
-    *magnify_image;
+    * restrict magnify_image;
 
   long
     rows,
     y;
 
   PixelPacket
-    *scanline;
+    * restrict scanline;
 
   register long
     x;
 
   register PixelPacket
-    *p,
-    *q,
+    * restrict p,
+    * restrict q,
     *r;
 
   /*
@@ -318,8 +318,8 @@ MagickExport Image *MagnifyImage(const Image *image,ExceptionInfo *exception)
     {
       DestroyImage(magnify_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
-                           UnableToMagnifyImage)
-        }
+                           UnableToMagnifyImage);
+    }
   /*
     Initialize magnify image pixels.
   */
@@ -457,7 +457,7 @@ MagickExport Image *MagnifyImage(const Image *image,ExceptionInfo *exception)
 %
 %
 */
-MagickExport Image *MinifyImage(const Image *image,ExceptionInfo *exception)
+MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exception)
 {
 #define Minify(weight)                          \
   total.red+=(weight)*(r->red);                 \
@@ -468,7 +468,7 @@ MagickExport Image *MinifyImage(const Image *image,ExceptionInfo *exception)
 #define MinifyImageText "[%s] Minify..."
 
   Image
-    *minify_image;
+    *restrict minify_image;
 
   long
     y;
@@ -535,9 +535,6 @@ MagickExport Image *MinifyImage(const Image *image,ExceptionInfo *exception)
         MagickBool
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MinifyImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -573,17 +570,20 @@ MagickExport Image *MinifyImage(const Image *image,ExceptionInfo *exception)
               thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_MinifyImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        MinifyImageText,image->filename))
-              thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                    MinifyImageText,image->filename))
+          thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
-            status=MagickFail;
+      if (thread_status == MagickFail)
+        {
+          status=MagickFail;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
         }
       }
   }
@@ -808,10 +808,10 @@ static double Triangle(const double x,const double support)
 }
 
 static MagickPassFail
-HorizontalFilter(const Image *source,Image *destination,
-                 const double x_factor,const FilterInfo *filter_info,
+HorizontalFilter(const Image * restrict source,Image * restrict destination,
+                 const double x_factor,const FilterInfo * restrict filter_info,
                  const double blur,ThreadViewDataSet *view_data_set,
-                 const size_t span,unsigned long *quantum,
+                 const size_t span,unsigned long * restrict quantum_p,
                  ExceptionInfo *exception)
 {
 #define ResizeImageText "[%s] Resize..."
@@ -826,12 +826,17 @@ HorizontalFilter(const Image *source,Image *destination,
   long
     x;
 
+  unsigned long
+    quantum;
+
   MagickPassFail
     status=MagickPass;
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Enter HorizontalFilter() ...");
+
+  quantum = *quantum_p;
 
   scale=blur*Max(1.0/x_factor,1.0);
   support=scale*filter_info->support;
@@ -850,12 +855,12 @@ HorizontalFilter(const Image *source,Image *destination,
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
-#    pragma omp parallel for schedule(runtime) shared(status)
+#    pragma omp parallel for schedule(runtime) shared(status, quantum)
 #  else
 #    if defined(USE_STATIC_SCHEDULING_ONLY)
-#      pragma omp parallel for schedule(static) shared(status)
+#      pragma omp parallel for schedule(static) shared(status, quantum)
 #    else
-#      pragma omp parallel for schedule(guided) shared(status)
+#      pragma omp parallel for schedule(guided) shared(status, quantum)
 #    endif
 #  endif
 #endif
@@ -866,19 +871,19 @@ HorizontalFilter(const Image *source,Image *destination,
         density;
 
       ContributionInfo
-        *contribution;
+        * restrict contribution;
 
       register const PixelPacket
-        *p;
+        * restrict p;
 
       register PixelPacket
-        *q = (PixelPacket *) NULL;
+        * restrict q = (PixelPacket *) NULL;
 
       const IndexPacket
-        *source_indexes;
+        * restrict source_indexes;
 
       IndexPacket
-        *indexes;
+        * restrict indexes;
 
       long
         n,
@@ -889,9 +894,6 @@ HorizontalFilter(const Image *source,Image *destination,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_HorizontalFilter)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1010,19 +1012,25 @@ HorizontalFilter(const Image *source,Image *destination,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_HorizontalFilter)
+#  pragma omp flush (quantum)
 #endif
-      {
-        if (QuantumTick(*quantum,span))
-          if (!MagickMonitorFormatted(*quantum,span,exception,
-                                      ResizeImageText,source->filename))
-            thread_status=MagickFail;
+      if (QuantumTick(quantum,span))
+        if (!MagickMonitorFormatted(quantum,span,exception,
+                                    ResizeImageText,source->filename))
+          thread_status=MagickFail;
 
-        (*quantum)++;
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
+#endif
+      quantum++;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   if (IsEventLogging())
@@ -1030,14 +1038,16 @@ HorizontalFilter(const Image *source,Image *destination,
                           "%s exit HorizontalFilter()",
                           (status == MagickFail ? "Error" : "Normal"));
 
+  *quantum_p = quantum;
+
   return (status);
 }
 
 static MagickPassFail
-VerticalFilter(const Image *source,Image *destination,
-               const double y_factor,const FilterInfo *filter_info,
+VerticalFilter(const Image * restrict source,Image * restrict destination,
+               const double y_factor,const FilterInfo * restrict filter_info,
                const double blur,ThreadViewDataSet *view_data_set,
-               const size_t span,unsigned long *quantum,
+               const size_t span,unsigned long * restrict quantum_p,
                ExceptionInfo *exception)
 {
   double
@@ -1050,12 +1060,17 @@ VerticalFilter(const Image *source,Image *destination,
   long
     y;
 
+  unsigned long
+    quantum;
+
   MagickPassFail
     status=MagickPass;
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Enter VerticalFilter() ...");
+
+  quantum = *quantum_p;
 
   /*
     Apply filter to resize vertically from source to destination.
@@ -1077,12 +1092,12 @@ VerticalFilter(const Image *source,Image *destination,
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
-#    pragma omp parallel for schedule(runtime) shared(status)
+#    pragma omp parallel for schedule(runtime) shared(status, quantum)
 #  else
 #    if defined(USE_STATIC_SCHEDULING_ONLY)
-#      pragma omp parallel for schedule(static) shared(status)
+#      pragma omp parallel for schedule(static) shared(status, quantum)
 #    else
-#      pragma omp parallel for schedule(guided) shared(status)
+#      pragma omp parallel for schedule(guided) shared(status, quantum)
 #    endif
 #  endif
 #endif
@@ -1093,19 +1108,19 @@ VerticalFilter(const Image *source,Image *destination,
         density;
 
       ContributionInfo
-        *contribution;
+        * restrict contribution;
 
       register const PixelPacket
-        *p;
+        * restrict p;
 
       register PixelPacket
-        *q = (PixelPacket *) NULL;
+        * restrict q = (PixelPacket *) NULL;
 
       const IndexPacket
-        *source_indexes;
+        * restrict source_indexes;
 
       IndexPacket
-        *indexes;
+        * restrict indexes;
 
       long
         n,
@@ -1116,9 +1131,6 @@ VerticalFilter(const Image *source,Image *destination,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_VerticalFilter)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1237,25 +1249,33 @@ VerticalFilter(const Image *source,Image *destination,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_VerticalFilter)
+#  pragma omp flush (quantum)
 #endif
-      {
-        if (QuantumTick(*quantum,span))
-          if (!MagickMonitorFormatted(*quantum,span,exception,
-                                      ResizeImageText,source->filename))
-            thread_status=MagickFail;
+      if (QuantumTick(quantum,span))
+        if (!MagickMonitorFormatted(quantum,span,exception,
+                                    ResizeImageText,source->filename))
+          thread_status=MagickFail;
 
-        (*quantum)++;
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
+#endif
+      quantum++;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "%s exit VerticalFilter()",
                           (status == MagickFail ? "Error" : "Normal"));
+
+  *quantum_p = quantum;
 
   return (status);
 }

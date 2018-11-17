@@ -59,6 +59,7 @@ MagickPassFail MagickMonitor( const char *text, const magick_int64_t quantum,
 describes the task and a measure of completion.  The method returns True
 on success otherwise False if an error is encountered, e.g. if there was a
 user interrupt.</p>
+<p>This function is deprecated.  Please use MagickMonitorFormatted() instead.</p>
 <p>The format of the MagickMonitor method is:</p>
 <pre class="literal-block">
 MagickPassFail MagickMonitor( const char *text, const magick_int64_t quantum,
@@ -93,8 +94,15 @@ MagickPassFail MagickMonitorFormatted( const magick_int64_t quantum,
 <p>MagickMonitorFormatted() calls the monitor handler method with a
 printf type format specification and variable argument list.  Also
 passed are quantum and span values which provide a measure of
-completion.  The method returns True on success otherwise False if
-an error is encountered, e.g. if there was a user interrupt.</p>
+completion.  The method returns MagickPass on success otherwise
+MagickFail if an error is encountered, e.g. if there was a user
+interrupt.  If MagickFail is returned, the calling code is expected
+to terminate whatever is being monitored as soon as possible.</p>
+<p>Most callers of this function will use the QuantumTick() macro to
+decide when it should be called.  The QuantumTick() macro is designed
+to deliver no more than 100 events in a span (representing 1-100%)
+and to distribute events as evenly as possible over the span so that
+events are reported for every 1% of progress when possible.</p>
 <p>The format of the MagickMonitorFormatted method is:</p>
 <pre class="literal-block">
 MagickPassFail MagickMonitorFormatted( const magick_int64_t quantum,

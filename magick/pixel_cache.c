@@ -220,7 +220,7 @@ typedef struct _NexusInfo
   /* Selected region (width, height, x, y) */
   RectangleInfo region;
 
-  /* Nexus pixels are non-strided and in core */
+  /* Nexus pixels are non-strided and in core (sync not needed) */
   MagickBool in_core;
 
 #if 0
@@ -826,6 +826,11 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                      image->filename);
       return((const PixelPacket *) NULL);
     }
+#if 0
+  fprintf(stderr,"AcquireCacheNexus(): image->columns=%lu, image->rows=%lu, "
+          "x=%ld, y=%ld, columns=%lu, rows=%lu\n",
+          image->columns,image->rows,x,y,columns,rows);
+#endif
   if ((image->columns != cache_info->columns) ||
       (image->rows > cache_info->rows))
     {
@@ -2027,40 +2032,40 @@ DestroyCacheInfo(Cache cache_info)
       return;
     }
   UnlockSemaphoreInfo(cache_info->reference_semaphore);
-  switch (cache_info->type)
+
+  /*
+    Release Cache Pixel Resources
+  */
+  if (MemoryCache == cache_info->type)
     {
-    default:
-      {
-        if (cache_info->pixels == (PixelPacket *) NULL)
-          break;
-      }
-    case MemoryCache:
-      {
-        MagickFreeMemory(cache_info->pixels);
-        LiberateMagickResource(MemoryResource,cache_info->length);
-        break;
-      }
-    case MapCache:
-      {
-        (void) UnmapBlob(cache_info->pixels,(size_t) cache_info->length);
-        LiberateMagickResource(MapResource,cache_info->length);
-      }
-    case DiskCache:
-      {
-        if (cache_info->file != -1)
-          {
-            (void) close(cache_info->file);
-            LiberateMagickResource(FileResource,1);
-          }
-        cache_info->file=(-1);
-        (void) LiberateTemporaryFile(cache_info->cache_filename);
-        (void) LogMagickEvent(CacheEvent,GetMagickModule(),
-                              "remove %.1024s (%.1024s)",cache_info->filename,
-                              cache_info->cache_filename);
-        LiberateMagickResource(DiskResource,cache_info->length);
-        break;
-      }
+      MagickFreeMemory(cache_info->pixels);
+      LiberateMagickResource(MemoryResource,cache_info->length);
     }
+  else if (MapCache == cache_info->type)
+    {
+      (void) UnmapBlob(cache_info->pixels,(size_t) cache_info->length);
+      cache_info->pixels = NULL;
+      LiberateMagickResource(MapResource,cache_info->length);
+    }
+
+  /*
+    Release Cache File Resources
+  */
+  if ((MapCache == cache_info->type) || (DiskCache == cache_info->type))
+    {
+      if (cache_info->file != -1)
+        {
+          (void) close(cache_info->file);
+          LiberateMagickResource(FileResource,1);
+          cache_info->file=(-1);
+        }
+      (void) LiberateTemporaryFile(cache_info->cache_filename);
+      (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                            "remove %.1024s (%.1024s)",cache_info->filename,
+                            cache_info->cache_filename);
+      LiberateMagickResource(DiskResource,cache_info->length);
+    }
+
   DestroySemaphoreInfo(&cache_info->file_semaphore);
   DestroySemaphoreInfo(&cache_info->reference_semaphore);
   (void) LogMagickEvent(CacheEvent,GetMagickModule(),"destroy cache %.1024s",
@@ -4099,7 +4104,7 @@ SetCacheNexus(Image *image,const long x,const long y,
       */
       assert(image->cache != (Cache) NULL);
       cache_info=(CacheInfo *) image->cache;
-      offset=y*(magick_off_t) cache_info->columns+x;
+      offset=y*(magick_off_t) cache_info->columns+x; /* FIXME: oss-fuzz 9612 signed integer overflow */
       if (offset >= 0)
         {
           magick_uint64_t
@@ -4398,40 +4403,38 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
 #endif
   if ((cache_info->type != PingCache) &&
       (cache_info->type != DiskCache) &&
+      (/* Region must entirely be in bounds of image raster */
+       (region->x >= 0) &&
+       (region->y >= 0) &&
+       ((region->y+region->height) <= cache_info->rows)) &&
+      ((/* All/part of one row */
+        (region->height == 1) &&
+        ((region->x+region->width) <= cache_info->columns)
+        )
+       ||
+       (/* One or more full rows */
+        (region->x == 0) &&
+        (region->width == cache_info->columns)
+        )) &&
       (*ImageGetClipMask(image) == (const Image *) NULL) &&
-      (*ImageGetCompositeMask(image) == (const Image *) NULL) &&
-      (region->x >=0) &&
-      (region->y >= 0))
+      (*ImageGetCompositeMask(image) == (const Image *) NULL))
     {
-      if ((/* All/part of one row */
-           (region->height == 1) &&
-           ((region->x+region->width) <= cache_info->columns)
-           )
-          ||
-          (/* One or more full rows */
-           (region->x == 0) &&
-           (region->width == cache_info->columns) &&
-           (region->y+region->height <= cache_info->rows)
-           )
-          )
-        {
-          /*
-            Pixels are accessed directly from memory.
-          */
-          size_t
-            offset;
+      /*
+        Pixels are accessed directly from memory.
+      */
+      size_t
+        offset;
 
-          offset=((size_t) region->y)*cache_info->columns+((size_t) region->x);
+      offset=((size_t) region->y)*cache_info->columns+((size_t) region->x);
 
-          nexus_info->pixels=cache_info->pixels+offset;
-          nexus_info->indexes=(IndexPacket *) NULL;
-          if (cache_info->indexes_valid)
-            nexus_info->indexes=cache_info->indexes+offset;
-          nexus_info->in_core=MagickTrue;
-          nexus_info->region=*region;
-          /* fprintf(stderr,"Pixels in core\n"); */
-          return(nexus_info->pixels);
-        }
+      nexus_info->pixels=cache_info->pixels+offset;
+      nexus_info->indexes=(IndexPacket *) NULL;
+      if (cache_info->indexes_valid)
+        nexus_info->indexes=cache_info->indexes+offset;
+      nexus_info->in_core=MagickTrue;
+      nexus_info->region=*region;
+      /* fprintf(stderr,"Pixels in core (%p)\n",nexus_info->pixels); */
+      return(nexus_info->pixels);
     }
   /*
     Pixels are stored in a staging area until they are synced to the cache.
@@ -4488,7 +4491,7 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
       nexus_info->in_core=IsNexusInCore(cache_info,nexus_info);
     }
 
-  /* fprintf(stderr,"Pixels in staging\n"); */
+  /* fprintf(stderr,"Pixels in staging (%p)\n",nexus_info->pixels); */
   return(nexus_info->pixels);
 }
 

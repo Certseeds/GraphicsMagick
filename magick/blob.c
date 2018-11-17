@@ -1406,6 +1406,26 @@ MagickExport void *FileToBlob(const char *filename,size_t *length,
   assert(exception != (ExceptionInfo *) NULL);
 
   blob=(unsigned char *) NULL;
+
+  /*
+    Verify that read access to this file path is allowed
+  */
+  if (MagickConfirmAccess(FileReadConfirmAccessMode,filename,
+                          exception) == MagickFail)
+    {
+      length=0;
+      return blob;
+    }
+  /*
+    Validate that filename exists, is a normal file, and contains at
+    least one byte of data
+  */
+  if (!IsAccessibleAndNotEmpty(filename))
+    {
+      ThrowException(exception,BlobError,UnableToOpenFile,filename);
+      length=0;
+      return blob;
+    }
   /* Open file */
   if ((file=fopen(filename,"rb")) != (FILE *) NULL)
     {

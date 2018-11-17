@@ -15,15 +15,15 @@
  *
  * MagickToPhoto --
  *
- * 	Implements "magicktophoto".  Takes the name of a "magick wand"
- * 	and a Tk image as arguments.  Both must already exist,
- * 	although they don't necessarily have to contain anything.
+ *      Implements "magicktophoto".  Takes the name of a "magick wand"
+ *      and a Tk image as arguments.  Both must already exist,
+ *      although they don't necessarily have to contain anything.
  *
  * Results:
- *	A normal Tcl result.
+ *      A normal Tcl result.
  *
  * Side Effects:
- *	Sets the image photo size.
+ *      Sets the image photo size.
  *
  *-----------------------------------------------------------------------------
  */
@@ -52,15 +52,15 @@ static int MagickToPhoto(
     magickname = Tcl_GetStringFromObj(objv[1], NULL);
     tclmagick = findMagickObj(interp, TM_TYPE_WAND, magickname);
     if (tclmagick == NULL) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
     wand = tclmagick->wandPtr;
 
     photoname = Tcl_GetStringFromObj(objv[2], NULL);
     photohandle = Tk_FindPhoto(interp, photoname);
     if (photohandle == NULL) {
-	Tcl_AppendResult(interp, "Not a photo image.", NULL);
-	return TCL_ERROR;
+        Tcl_AppendResult(interp, "Not a photo image.", NULL);
+        return TCL_ERROR;
     }
 
     /* pixelSize corresponds to "RGB" format below. */
@@ -68,8 +68,8 @@ static int MagickToPhoto(
     magickblock.width = MagickGetImageWidth (wand);
     magickblock.height = MagickGetImageHeight (wand);
     magickblock.pixelPtr = (unsigned char *) ckalloc((unsigned)magickblock.height *
-						     (unsigned)magickblock.width *
-						     magickblock.pixelSize);
+                                                     (unsigned)magickblock.width *
+                                                     magickblock.pixelSize);
     magickblock.pitch = magickblock.width * magickblock.pixelSize;
     magickblock.offset[0] = 0;
     magickblock.offset[1] = 1;
@@ -84,28 +84,28 @@ static int MagickToPhoto(
        required a different map.
     */
     if (strcmp(MagickPackageName, "ImageMagick") == 0) {
-	map = "RGBA";
+        map = "RGBA";
     } else {
-	map = "RGBO";
+        map = "RGBO";
     }
 #endif
 
     if (MagickGetImagePixels (
-	    wand, 0, 0, (unsigned)magickblock.width, (unsigned)magickblock.height,
-	    map, CharPixel, magickblock.pixelPtr) == False) {
-	    return myMagickError(interp, wand);
+            wand, 0, 0, (unsigned)magickblock.width, (unsigned)magickblock.height,
+            map, CharPixel, magickblock.pixelPtr) == False) {
+            return myMagickError(interp, wand);
     }
 
 #if TCL_MAJOR_VERSION <= 8 && TCL_MINOR_VERSION <= 4
     Tk_PhotoPutBlock(photohandle, &magickblock, 0, 0,
-		     magickblock.width, magickblock.height,
-		     TK_PHOTO_COMPOSITE_SET);
+                     magickblock.width, magickblock.height,
+                     TK_PHOTO_COMPOSITE_SET);
 #else
     if (Tk_PhotoPutBlock(interp, photohandle, &magickblock,
-			 0, 0, magickblock.width, magickblock.height,
-			 TK_PHOTO_COMPOSITE_SET) != TCL_OK) {
+                         0, 0, magickblock.width, magickblock.height,
+                         TK_PHOTO_COMPOSITE_SET) != TCL_OK) {
         ckfree((char *) magickblock.pixelPtr);
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 #endif /* TCL_MAJOR_VERSION <= 8 && TCL_MINOR_VERSION <= 4 */
 
@@ -123,12 +123,12 @@ static int MagickToPhoto(
  *      the magick wand.
  *
  * Results:
- *	Normal Tcl result.
+ *      Normal Tcl result.
  *
  * Side Effects:
  *
- *	Erases the image that was previously in the magick wand, or
- *	creates a new one.
+ *      Erases the image that was previously in the magick wand, or
+ *      creates a new one.
  *
  *-----------------------------------------------------------------------------
  */
@@ -157,52 +157,52 @@ static int PhotoToMagick(
 
     photoname = Tcl_GetStringFromObj(objv[1], NULL);
     photohandle = Tk_FindPhoto(
-	interp, photoname);
+        interp, photoname);
     if (photohandle == NULL) {
-	Tcl_AppendResult(interp, "Not a photo image.", NULL);
-	return TCL_ERROR;
+        Tcl_AppendResult(interp, "Not a photo image.", NULL);
+        return TCL_ERROR;
     }
     Tk_PhotoGetImage(photohandle, &photoblock);
 
     magickname = Tcl_GetStringFromObj(objv[2], NULL);
     tclmagick = findMagickObj(interp, TM_TYPE_WAND, magickname);
     if (tclmagick == NULL) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
     wand = tclmagick->wandPtr;
     MagickSetSize (wand, (unsigned)photoblock.width, (unsigned)photoblock.height);
     result = MagickReadImage(wand, "xc:white");
     if (!result) {
-	return myMagickError(interp, wand);
+        return myMagickError(interp, wand);
     }
 
     /* This could be improved some, but I don't know how Tk deals with
        'unusual' pixelSize's. */
     switch (photoblock.pixelSize) {
     case 3:
-	map[photoblock.offset[0]] = 'R';
-	map[photoblock.offset[1]] = 'G';
-	map[photoblock.offset[2]] = 'B';
-	break;
+        map[photoblock.offset[0]] = 'R';
+        map[photoblock.offset[1]] = 'G';
+        map[photoblock.offset[2]] = 'B';
+        break;
     case 4:
-	map[photoblock.offset[0]] = 'R';
-	map[photoblock.offset[1]] = 'G';
-	map[photoblock.offset[2]] = 'B';
-	if (strcmp(MagickPackageName, "ImageMagick") == 0) {
-	    map[photoblock.offset[3]] = 'A';
-	} else {
-	    map[photoblock.offset[3]] = 'O';
-	}
-	break;
+        map[photoblock.offset[0]] = 'R';
+        map[photoblock.offset[1]] = 'G';
+        map[photoblock.offset[2]] = 'B';
+        if (strcmp(MagickPackageName, "ImageMagick") == 0) {
+            map[photoblock.offset[3]] = 'A';
+        } else {
+            map[photoblock.offset[3]] = 'O';
+        }
+        break;
     default:
-	Tcl_AppendResult(interp, "Unsupported pixelSize in Tk image.", NULL);
-	return TCL_ERROR;
+        Tcl_AppendResult(interp, "Unsupported pixelSize in Tk image.", NULL);
+        return TCL_ERROR;
     };
 
-    if (MagickSetImagePixels (wand, 0, 0, (unsigned)photoblock.width, 
-			      (unsigned)photoblock.height,
-			      map, CharPixel, photoblock.pixelPtr) == False) {
-	return myMagickError(interp, wand);
+    if (MagickSetImagePixels (wand, 0, 0, (unsigned)photoblock.width,
+                              (unsigned)photoblock.height,
+                              map, CharPixel, photoblock.pixelPtr) == False) {
+        return myMagickError(interp, wand);
     }
 
     return TCL_OK;
@@ -213,15 +213,15 @@ static int PhotoToMagick(
  *
  * Tkmagick_Init --
  *
- * 	Initialize this module.
+ *      Initialize this module.
  *
  * Results:
- *	Normal Tcl results.
+ *      Normal Tcl results.
  *
  * Side Effects:
  *
- *	Requires TclMagick module, creates magicktophoto and
- *	phototomagick commands.
+ *      Requires TclMagick module, creates magicktophoto and
+ *      phototomagick commands.
  *
  *-----------------------------------------------------------------------------
  */
@@ -230,12 +230,12 @@ EXPORT(int, Tkmagick_Init)(Tcl_Interp *interp)
 {
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, "8", 0) == NULL) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 #endif
 #ifdef USE_TK_STUBS
     if (Tk_InitStubs(interp, "8", 0) == NULL) {
-	return TCL_ERROR;
+        return TCL_ERROR;
     }
 #endif
 

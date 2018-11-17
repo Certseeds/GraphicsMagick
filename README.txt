@@ -113,8 +113,7 @@ building under Microsoft Windows:
 
   to annotate with TrueType and Postscript Type 1 fonts.
 
-* GraphicsMagick requires Ghostscript software (version 9.04
-  recommended) available from
+* GraphicsMagick requires Ghostscript software available from
 
     http://pages.cs.wisc.edu/~ghost/
 
@@ -127,6 +126,16 @@ building under Microsoft Windows:
   Ghostscript Fonts are available from
 
     https://sourceforge.net/projects/gs-fonts/
+
+  Ghostscript (at the time this text is written in October, 2018) has
+  been observed to have severe security issues when reading untrusted
+  Postscript files (does not apply to PDF).  Examples of these severe
+  security issues are being tricked into reading or writing arbitrary
+  files when executing in "-dSAFER" mode, which which is supposed to
+  prevent such access.  Users of Ghostscript who may encounter
+  untrusted Postscript files are recommended to assure that all
+  security patches have been applied and it might be necessary to use
+  the latest upstream release.
 
   Ghostscript is available for use under both free (GPL) and
   commercial licenses.  We are not lawyers so we can not provide
@@ -343,6 +352,13 @@ building under Microsoft Windows:
      http://www.zlib.net/
 
   to read or write the PNG or Zip compressed MIFF images.
+
+* GraphicsMagick requires the Zstd library from
+
+     https://facebook.github.io/zstd/
+
+  to read or write Zstd compressed TIFF images.  In the future it is
+  likely that other purposes will be found for Zstd.
 
 
 --------------------------------------------------------------------------

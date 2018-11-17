@@ -23,14 +23,14 @@ extern WandExport char
   *PixelGetColorAsString(const PixelWand *);
 
 extern WandExport double
-  PixelGetBlack(const PixelWand *),
-  PixelGetBlue(const PixelWand *),
-  PixelGetCyan(const PixelWand *),
-  PixelGetGreen(const PixelWand *),
-  PixelGetMagenta(const PixelWand *),
-  PixelGetOpacity(const PixelWand *),
-  PixelGetRed(const PixelWand *),
-  PixelGetYellow(const PixelWand *);
+  PixelGetBlack(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetBlue(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetCyan(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetGreen(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetMagenta(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetOpacity(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetRed(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetYellow(const PixelWand *) MAGICK_FUNC_PURE;
 
 extern WandExport PixelWand
   *ClonePixelWand(const PixelWand *),
@@ -39,20 +39,20 @@ extern WandExport PixelWand
   **NewPixelWands(const unsigned long);
 
 extern WandExport Quantum
-  PixelGetBlackQuantum(const PixelWand *),
-  PixelGetBlueQuantum(const PixelWand *),
-  PixelGetCyanQuantum(const PixelWand *),
-  PixelGetGreenQuantum(const PixelWand *),
-  PixelGetMagentaQuantum(const PixelWand *),
-  PixelGetOpacityQuantum(const PixelWand *),
-  PixelGetRedQuantum(const PixelWand *),
-  PixelGetYellowQuantum(const PixelWand *);
+  PixelGetBlackQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetBlueQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetCyanQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetGreenQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetMagentaQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetOpacityQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetRedQuantum(const PixelWand *) MAGICK_FUNC_PURE,
+  PixelGetYellowQuantum(const PixelWand *) MAGICK_FUNC_PURE;
 
 extern WandExport unsigned int
   PixelSetColor(PixelWand *,const char *);
 
 extern WandExport unsigned long
-  PixelGetColorCount(const PixelWand *);
+  PixelGetColorCount(const PixelWand *) MAGICK_FUNC_PURE;
 
 extern WandExport void
   DestroyPixelWand(PixelWand *),

@@ -49,7 +49,7 @@
 %
 %  The format of the AnalyzeImage method is:
 %
-%      unsigned int AnalyzeImage(Image *image)
+%      MagickPassFail AnalyzeImage(Image *image)
 %
 %  A description of each parameter follows:
 %
@@ -57,30 +57,25 @@
 %
 */
 #define PRECISION "%.0f"
-ModuleExport unsigned int AnalyzeImage(Image **image,
-  const int argc,char **argv)
+ModuleExport MagickPassFail AnalyzeImage(Image **image,
+                                         const int argc,char **argv)
 {
   double
     bsumX = 0.0,
     bsumX2 = 0.0,
-    brightness_mean = 0.0,
-    brightness_stdev = 0.0,
     ssumX = 0.0,
-    ssumX2 = 0.0,
-    saturation_mean = 0.0,
-    saturation_stdev = 0.0,
-    total_pixels = 0.0;
+    ssumX2 = 0.0;
 
   double
     brightness,
     hue,
     saturation;
 
-  long
+  unsigned long
     y;
 
-  register long
-    x;
+  register unsigned long
+    x = 0;
 
   register PixelPacket
     *p;
@@ -88,58 +83,72 @@ ModuleExport unsigned int AnalyzeImage(Image **image,
   char
     text[MaxTextExtent];
 
+  MagickPassFail
+    status = MagickPass;
+
   ARG_NOT_USED(argc);
   ARG_NOT_USED(argv);
 
   assert(image != (Image **) NULL);
   assert(*image != (Image *) NULL);
-  for (y=0; y < (int) (*image)->rows; y++)
-  {
-    p=GetImagePixels((*image),0,y,(*image)->columns,1);
-    if (p == (PixelPacket *) NULL)
-      break;
-    if (y == 0)
-      {
-        FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-        (void) SetImageAttribute((*image),"TopLeftColor",text);
-      }
-    if (y == (long) ((*image)->rows-1))
-      {
-        FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-        (void) SetImageAttribute((*image),"BottomLeftColor",text);
-      }
-    for (x=0; x < (long) (*image)->columns; x++)
+  for (y=0; y < (*image)->rows; y++)
     {
-      TransformHSL(p->red,p->green,p->blue,&hue,&saturation,&brightness);
-      brightness *= MaxRGB;
-            bsumX += brightness;
-            bsumX2 += brightness * brightness;
-      saturation *= MaxRGB;
-            ssumX += saturation;
-            ssumX2 += saturation * saturation;
-      total_pixels++;
-      p++;
+      p=GetImagePixels((*image),0,y,(*image)->columns,1);
+      if (p == (PixelPacket *) NULL)
+        break;
+      if (y == 0)
+        {
+          FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
+          (void) SetImageAttribute((*image),"TopLeftColor",text);
+        }
+      if (y == ((*image)->rows-1))
+        {
+          FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
+          (void) SetImageAttribute((*image),"BottomLeftColor",text);
+        }
+      for (x=0; x < (*image)->columns; x++)
+        {
+          TransformHSL(p->red,p->green,p->blue,&hue,&saturation,&brightness);
+          brightness *= MaxRGBDouble;
+          bsumX += brightness;
+          bsumX2 += brightness * brightness;
+          saturation *= MaxRGBDouble;
+          ssumX += saturation;
+          ssumX2 += saturation * saturation;
+          p++;
+        }
+      p--; /* backup one pixel to allow us to sample */
+      if (y == 0)
+        {
+          FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
+          (void) SetImageAttribute((*image),"TopRightColor",text);
+        }
+      if (y == ((*image)->rows-1))
+        {
+          FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
+          (void) SetImageAttribute((*image),"BottomRightColor",text);
+        }
     }
-    p--; /* backup one pixel to allow us to sample */
-    if (y == 0)
-      {
-        FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-        (void) SetImageAttribute((*image),"TopRightColor",text);
-      }
-    if (y == (long) ((*image)->rows-1))
-      {
-        FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-        (void) SetImageAttribute((*image),"BottomRightColor",text);
-      }
-  }
-  if (total_pixels > 0.0)
+  if ((x != (*image)->columns) || (y != (*image)->rows))
     {
+      status = MagickFail;
+    }
+  else
+    {
+      double
+        brightness_mean,
+        brightness_stdev,
+        saturation_mean,
+        saturation_stdev,
+        total_pixels;
+
+      total_pixels = (double) (*image)->columns * (double) (*image)->rows;
       brightness_mean = bsumX/total_pixels;
       FormatString(text,PRECISION,brightness_mean);
       (void) SetImageAttribute((*image),"BrightnessMean",text);
       /*  This formula gives a slightly biased result */
       brightness_stdev =
-          sqrt(bsumX2/total_pixels - (bsumX/total_pixels*bsumX/total_pixels));
+        sqrt(bsumX2/total_pixels - (bsumX/total_pixels*bsumX/total_pixels));
       FormatString(text,PRECISION,brightness_stdev);
       (void) SetImageAttribute((*image),"BrightnessStddev",text);
       /* Now the correction for bias. */
@@ -152,7 +161,7 @@ ModuleExport unsigned int AnalyzeImage(Image **image,
       (void) SetImageAttribute((*image),"SaturationMean",text);
       /* This formula gives a slightly biased result */
       saturation_stdev =
-          sqrt(ssumX2/total_pixels - (ssumX/total_pixels*ssumX/total_pixels));
+        sqrt(ssumX2/total_pixels - (ssumX/total_pixels*ssumX/total_pixels));
       FormatString(text,PRECISION,saturation_stdev);
       (void) SetImageAttribute((*image),"SaturationStddev",text);
       /* Now the correction for bias. */
@@ -160,5 +169,5 @@ ModuleExport unsigned int AnalyzeImage(Image **image,
       /* Now calculate the standard deviation of the mean */
       /*  saturation_stdevmean = sstdev/sqrt((double)total_pixels); */
     }
-  return(True);
+  return status;
 }

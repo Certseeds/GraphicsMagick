@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2016 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -78,9 +78,9 @@ extern MagickExport char
   *TranslateTextEx(const ImageInfo *,Image *,const char *,MagickTextTranslate);
 
 extern MagickExport const char
-  *GetClientFilename(void),
-  *GetClientName(void),
-  *GetClientPath(void),
+  *GetClientFilename(void) MAGICK_FUNC_CONST,
+  *GetClientName(void) MAGICK_FUNC_CONST,
+  *GetClientPath(void) MAGICK_FUNC_CONST,
   *SetClientFilename(const char *),
   *SetClientName(const char *),
   *SetClientPath(const char *);
@@ -90,9 +90,9 @@ extern MagickExport double
 
 extern MagickExport int
   GetGeometry(const char *,long *,long *,unsigned long *,unsigned long *),
-  GlobExpression(const char *,const char *),
-  LocaleNCompare(const char *,const char *,const size_t),
-  LocaleCompare(const char *,const char *),
+  GlobExpression(const char *,const char *) MAGICK_FUNC_PURE,
+  LocaleNCompare(const char *,const char *,const size_t) MAGICK_FUNC_PURE,
+  LocaleCompare(const char *,const char *) MAGICK_FUNC_PURE,
   GetMagickDimension(const char *str,double *width,double *height,double *xoff,double *yoff),
   GetMagickGeometry(const char *geometry,long *x,long *y,unsigned long *width,
     unsigned long *height),
@@ -121,14 +121,14 @@ extern MagickExport MagickBool
   IsAccessibleNoLogging(const char *),
   IsAccessibleAndNotEmpty(const char *),
   IsGeometry(const char *),
-  IsGlob(const char *),
+  IsGlob(const char *) MAGICK_FUNC_PURE,
   IsWriteable(const char *),
   MagickSceneFileName(char *filename,const char* filename_template,
     const char* scene_template,const MagickBool force,unsigned long scene),
   SubstituteString(char **buffer,const char *search,const char *replace);
 
 extern MagickExport unsigned long
-  MultilineCensus(const char *);
+  MultilineCensus(const char *) MAGICK_FUNC_PURE;
 
 extern MagickExport void
   AppendImageFormat(const char *,char *),
@@ -145,9 +145,9 @@ extern MagickExport void
 
 extern MagickExport void
   FormatString(char *string,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3))),
-  FormatStringList(char *string,const char *format,va_list operands),
+  FormatStringList(char *string,const char *format,va_list operands) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0))),
   MagickFormatString(char *string,const size_t length,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,3,4))),
-  MagickFormatStringList(char *string,const size_t length,const char *format,va_list operands);
+  MagickFormatStringList(char *string,const size_t length,const char *format,va_list operands) MAGICK_ATTRIBUTE((__format__ (__printf__,3,0)));
 
 extern MagickExport magick_int64_t
   MagickSizeStrToInt64(const char *str,const unsigned int kilo);
@@ -183,6 +183,24 @@ extern MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value);
 extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value);
 extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
+
+/*
+  Compute a value which is the next kilobyte power of 2 larger than
+  the requested value or MaxTextExtent, whichever is larger.
+
+  The objective is to round up the size quickly (and in repeatable
+  steps) in order to reduce the number of memory copies due to realloc
+  for strings which grow rapidly, while producing a reasonable size
+  for smaller strings.
+*/
+#define MagickRoundUpStringLength(size) \
+{ \
+  size_t \
+    _rounded; \
+ \
+  for (_rounded=256U; _rounded < (Max(size,256)); _rounded *= 2); \
+  size=_rounded; \
+}
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 

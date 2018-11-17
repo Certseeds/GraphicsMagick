@@ -1,7 +1,7 @@
 #ifndef _LOCAL_C_H
 #define _LOCAL_C_H
 
-extern MagickExport const char *GetLocaleMessageFromID(const int);
+extern MagickExport const char *GetLocaleMessageFromID(const int) MAGICK_FUNC_CONST;
 
 #define MAX_LOCALE_MSGS 575
 

@@ -147,16 +147,19 @@ typedef enum
 static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, RedQuantum};
 
 
-static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVal, 
+/* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
+ Please note that this function expects gray image on input. Additional channel contents
+ checking is wasting of resources only. */
+static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal, 
                                   double MaxVal)
 {
   double f;
   int x;
   register PixelPacket *q;
 
-  if (MinVal == 0)
+  if(MinVal >= 0)	/* Grant MinVal to be negative */
     MinVal = -1;
-  if (MaxVal == 0)
+  if(MaxVal <= 0)	/* Grant MaxVal to be positive */
     MaxVal = 1;
 
   q = SetImagePixels(image, 0, y, image->columns, 1);
@@ -166,7 +169,8 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
   {
     if (*p > 0)
     {
-      f = (*p / MaxVal) * (MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
+      f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
+      /*if(f<0) f=0; */
       if (f + q->red >= MaxRGB)
         q->red = MaxRGB;
       else
@@ -179,7 +183,8 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
     }
     if (*p < 0)
     {
-      f = (*p / MinVal) * (MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
+      f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
+      /*if(f<0) f=0; */
       if (f + q->blue >= MaxRGB)
         q->blue = MaxRGB;
       else
@@ -202,15 +207,18 @@ static void InsertComplexDoubleRow(double *p, int y, Image * image, double MinVa
 }
 
 
-static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal, double MaxVal)
+/* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
+ Please note that this function expects gray image on input. Additional channel contents
+ checking is wasting of resources only. */
+static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, double MaxVal)
 {
   double f;
   int x;
   register PixelPacket *q;
 
-  if (MinVal == 0)
+  if(MinVal >= 0)	/* Grant MinVal to be negative */
     MinVal = -1;
-  if (MaxVal == 0)
+  if(MaxVal <= 0)	/* Grant MaxVal to be positive */
     MaxVal = 1;
 
   q = SetImagePixels(image, 0, y, image->columns, 1);
@@ -220,7 +228,8 @@ static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
   {
     if (*p > 0)
     {
-      f = (*p / MaxVal) * (MaxRGB - q->red);
+      f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
+      /*if(f<0) f=0;	//Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
         q->red += (int)f;
       else
@@ -233,7 +242,8 @@ static void InsertComplexFloatRow(float *p, int y, Image * image, double MinVal,
     }
     if (*p < 0)
     {
-      f = (*p / MinVal) * (MaxRGB - q->blue); /* f is positive only <0; inf> */
+      f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* f is positive only <0; inf> */
+      /*if(f<0)	f=0; 	//Only for Assert, should be commented out */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;
       else	/* 'else' branch is executed when NaN occurs. */
@@ -301,10 +311,11 @@ unsigned char val = 0;
 }
 
 #if defined(HasZLIB)
+static voidpf ZLIBAllocFunc(voidpf opaque, uInt items, uInt size) MAGICK_FUNC_MALLOC;
 static voidpf ZLIBAllocFunc(voidpf opaque, uInt items, uInt size)
 {
   ARG_NOT_USED(opaque);
-  return MagickMallocCleared((size_t) items*size);
+  return MagickMallocCleared(MagickArraySize(items,size));
 }
 static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 {
@@ -762,6 +773,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   int logging;
   int sample_size;
   magick_off_t filepos = 0x80;
+  magick_off_t filesize;
   BlobInfo *blob;
   ImageInfo *clone_info = NULL;
 
@@ -836,11 +848,24 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   filepos = TellBlob(image);
 
-  while(!EOFBlob(image)) /* object parser loop */
+  filesize = GetBlobSize(image);	      /* zero is returned if the size cannot be determined. */
+  if(filesize>0 && BlobIsSeekable(image))
+  { 
+    if(filesize > (magick_off_t)0xFFFFFFFF)
+        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
+  }
+  else
   {
-    Frames = 1;
-    if((filepos & ~(magick_off_t)0xFFFFFFFF) != 0 ||	/* More than 4GiB are not supported in MAT! */
-        filepos < 0)
+    filesize = (magick_off_t)0xFFFFFFFF;
+    if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          "Blob is not seekable, MAT reader could fail.");
+    ThrowMATReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
+  }
+
+  while(filepos<filesize && !EOFBlob(image)) /* object parser loop */
+  {
+    Frames = 1;    
+    if(filepos > filesize || filepos < 0)
     {
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
     }
@@ -852,14 +877,11 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     MATLAB_HDR.ObjectSize = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
 
-    if(BlobIsSeekable(image))
+    if(MATLAB_HDR.ObjectSize+filepos >= filesize)   /* Safety check for forged and or corrupted data. */
     {
-      if(MATLAB_HDR.ObjectSize+filepos > GetBlobSize(image))   /* Safety check for forged and or corrupted data. */
-      {
-        if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(GetBlobSize(image)));
-        goto MATLAB_KO;
-      }
+      if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+             "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(filesize));
+      goto MATLAB_KO;    
     }
 
     filepos += (magick_off_t) MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
@@ -970,7 +992,8 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "MATLAB_HDR.CellType: %d",CellType);
 
-    (void) ReadBlob(image2, 4, &size);     /* data size */
+    if(4 != ReadBlob(image2,4,&size))     /* data size */
+        goto MATLAB_KO;
 
 NEXT_FRAME:
       /* Image is gray when no complex flag is set and 2D Matrix */
@@ -1118,7 +1141,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
-          goto ExitLoop;
+          goto ExitLoop;	/* It would be great to be abble to read corrupted images. */
+				/* this goto will abort reading, but there remains not fully read image 
+				   in the memory. */
         }
         if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR.StructureFlag & FLAG_LOGICAL))
         {
@@ -1390,7 +1415,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
 
     DataSize = image->rows /*Y*/ * image->columns /*X*/;
     if(!is_gray) DataSize *= 3 /*Z*/;
-    padding=((unsigned char)(DataSize-1) & 0x7) ^ 0x7;
+    padding = ((unsigned char)(DataSize-1) & 0x7) ^ 0x7;
 
     (void) WriteBlobLSBLong(image, miMATRIX); /* 0x80 */
     (void) WriteBlobLSBLong(image, DataSize + padding + (is_gray?48l:56l)); /* 0x84 */

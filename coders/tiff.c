@@ -65,6 +65,9 @@
 #  if !defined(COMPRESSION_ADOBE_DEFLATE)
 #     define COMPRESSION_ADOBE_DEFLATE  8
 #  endif  /* !defined(COMPRESSION_ADOBE_DEFLATE) */
+#  if defined(COMPRESSION_ZSTD) && defined(HasZSTD)
+#    include "zstd.h"
+#  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
 /*
   JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
@@ -507,11 +510,29 @@ CompressionSupported(const CompressionType compression,
 #endif
         break;
       }
+    case WebPCompression:
+      {
+        strlcpy(compression_name,"WebP",MaxTextExtent);
+#if defined(COMPRESSION_WEBP)
+        compress_tag=COMPRESSION_WEBP;
+        status=MagickTrue;
+#endif
+        break;
+      }
     case ZipCompression:
       {
         strlcpy(compression_name,"Adobe Deflate",MaxTextExtent);
 #if defined(COMPRESSION_ADOBE_DEFLATE)
         compress_tag=COMPRESSION_ADOBE_DEFLATE;
+        status=MagickTrue;
+#endif
+        break;
+      }
+    case ZSTDCompression:
+      {
+        strlcpy(compression_name,"Zstandard",MaxTextExtent);
+#if defined(COMPRESSION_ZSTD)
+        compress_tag=COMPRESSION_ZSTD;
         status=MagickTrue;
 #endif
         break;
@@ -631,6 +652,21 @@ CompressionTagToString(unsigned int compress_tag)
 #if defined(COMPRESSION_THUNDERSCAN)
     case COMPRESSION_THUNDERSCAN:
       result="ThunderScan RLE";
+      break;
+#endif
+#if defined(COMPRESSION_LZMA)
+    case COMPRESSION_LZMA:
+      result="LZMA";
+      break;
+#endif
+#if defined(COMPRESSION_ZSTD)
+    case COMPRESSION_ZSTD:
+      result="Zstandard";
+      break;
+#endif
+#if defined(COMPRESSION_WEBP)
+    case COMPRESSION_WEBP:
+      result="WebP";
       break;
 #endif
   }
@@ -850,7 +886,10 @@ TIFFCloseBlob(thandle_t image_handle)
 }
 
 /* Report errors. */
-static unsigned int
+static void
+TIFFErrors(const char *module,const char *format,
+           va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
 TIFFErrors(const char *module,const char *format,
   va_list warning)
 {
@@ -866,7 +905,6 @@ TIFFErrors(const char *module,const char *format,
   (void) strlcat(message,".",MaxTextExtent);
   tiff_exception=(ExceptionInfo *) MagickTsdGetSpecific(tsd_key);
   ThrowException2(tiff_exception,CoderError,message,module);
-  return(True);
 }
 
 /* Memory map entire input file in read-only mode. */
@@ -988,7 +1026,9 @@ TIFFUnmapBlob(thandle_t image,
 }
 
 /* Report warnings as a coder log message. */
-static unsigned int
+static void
+TIFFWarningsLogOnly(const char *module,const char *format,va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
 TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 {
 /*   ExceptionInfo */
@@ -1006,11 +1046,12 @@ TIFFWarningsLogOnly(const char *module,const char *format,va_list warning)
 /*   ThrowException2(tiff_exception,CoderWarning,message,module); */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "TIFF Warning: %s",message);
-  return(True);
 }
 
 /* Report warnings as exception in thread-specific ExceptionInfo */
-static unsigned int
+static void
+TIFFWarningsThrowException(const char *module,const char *format,va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
 TIFFWarningsThrowException(const char *module,const char *format,va_list warning)
 {
   ExceptionInfo
@@ -1028,7 +1069,6 @@ TIFFWarningsThrowException(const char *module,const char *format,va_list warning
   ThrowException2(tiff_exception,CoderWarning,message,module);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "TIFF Warning: %s",message);
-  return(True);
 }
 
 /* Write data at current offset */
@@ -1353,22 +1393,28 @@ QuantumTransferMode(const Image *image,
           }
         case PHOTOMETRIC_LOGL:
           {
-            *quantum_type=CIEYQuantum;
-            *quantum_samples=1;
+            if (!image->matte)
+              {
+                *quantum_type=CIEYQuantum;
+                *quantum_samples=1;
+              }
             break;
           }
         case PHOTOMETRIC_LOGLUV:
           {
-            if (samples_per_pixel == 1)
+            if (!image->matte)
               {
-                /* FIXME: this might not work. */
-                *quantum_type=CIEYQuantum;
-                *quantum_samples=1;
-              }
-            else
-              {
-                *quantum_type=CIEXYZQuantum;
-                *quantum_samples=3;
+                if (samples_per_pixel == 1)
+                  {
+                    /* FIXME: this might not work. */
+                    *quantum_type=CIEYQuantum;
+                    *quantum_samples=1;
+                  }
+                else
+                  {
+                    *quantum_type=CIEXYZQuantum;
+                    *quantum_samples=3;
+                  }
               }
             break;
           }
@@ -2047,6 +2093,16 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case COMPRESSION_ADOBE_DEFLATE:
           image->compression=ZipCompression;
           break;
+#if defined(COMPRESSION_ZSTD)
+        case COMPRESSION_ZSTD:
+          image->compression=ZSTDCompression;
+          break;
+#endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case COMPRESSION_WEBP:
+          image->compression=WebPCompression;
+          break;
+#endif /* if defined(COMPRESSION_WEBP) */
         default:
           image->compression=NoCompression;
           break;
@@ -4290,6 +4346,20 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             compress_tag=COMPRESSION_ADOBE_DEFLATE;
             break;
           }
+#if defined(COMPRESSION_ZSTD)
+        case ZSTDCompression:
+          {
+            compress_tag=COMPRESSION_ZSTD;
+            break;
+          }
+#endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case WebPCompression:
+          {
+            compress_tag=COMPRESSION_WEBP;
+            break;
+          }
+#endif /* defined(COMPRESSION_WEBP) */
         default:
           {
             compress_tag=COMPRESSION_NONE;
@@ -4439,6 +4509,16 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                   " for JBIG compression.");
         }
 #endif /* defined(COMPRESSION_JBIG) */
+#if defined(COMPRESSION_WEBP)
+      else if (compress_tag == COMPRESSION_WEBP)
+        {
+          photometric=PHOTOMETRIC_RGB;
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Using RGB photometric due to request for"
+                                  " WebP compression.");
+        }
+#endif /* defined(COMPRESSION_WEBP) */
 
       /*
         Allow user to override the photometric.
@@ -4900,11 +4980,21 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               is 2,2 then RowsPerStrip must be a multiple of 16.
             */
             rows_per_strip=(((rows_per_strip < 16 ? 16 : rows_per_strip)+1)/16)*16;
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JPEG Quality: %u", (unsigned) image_info->quality);
             (void) TIFFSetField(tiff,TIFFTAG_JPEGQUALITY,image_info->quality);
             if (IsRGBColorspace(image->colorspace))
-              (void) TIFFSetField(tiff,TIFFTAG_JPEGCOLORMODE,JPEGCOLORMODE_RGB);
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_JPEGCOLORMODE: JPEGCOLORMODE_RGB");
+                (void) TIFFSetField(tiff,TIFFTAG_JPEGCOLORMODE,JPEGCOLORMODE_RGB);
+              }
             if (bits_per_sample == 12)
-              (void) TIFFSetField(tiff,TIFFTAG_JPEGTABLESMODE,JPEGTABLESMODE_QUANT);
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_JPEGTABLESMODE: JPEGTABLESMODE_QUANT");
+                (void) TIFFSetField(tiff,TIFFTAG_JPEGTABLESMODE,JPEGTABLESMODE_QUANT);
+              }
             break;
           }
         case COMPRESSION_ADOBE_DEFLATE:
@@ -4937,6 +5027,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 zip_quality=1;
               if (zip_quality > 9)
                 zip_quality=9;
+
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_ZIPQUALITY: %u", zip_quality);
               (void) TIFFSetField(tiff,TIFFTAG_ZIPQUALITY,zip_quality);
             }
             break;
@@ -5052,9 +5145,12 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                   66U  /*   9     311 MB     33 MB    */
                 };
 
-              rows_per_strip = (uint32) (((lzma_memory_mb[lzma_preset-1]*1024U*1024U))/
-                                         ((((unsigned long) bits_per_sample*samples_per_pixel)/
-                                           8U)*image->rows));
+              rows_per_strip =
+                (uint32) ceil((((double) lzma_memory_mb[lzma_preset-1]*
+                                1024.0*1024.0*8.0))/
+                              (((double) bits_per_sample*samples_per_pixel
+                                *image->columns)))/8.0;
+
               if (rows_per_strip < 1)
                 rows_per_strip=1U;
               if (rows_per_strip > image->rows)
@@ -5102,6 +5198,101 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               predictor=PREDICTOR_HORIZONTAL;
             break;
           }
+#if defined(COMPRESSION_ZSTD)
+        case COMPRESSION_ZSTD:
+          {
+            /*
+              Larger strips compress better with diminishing returns
+              (enlarge if necessary)..
+            */
+            unsigned int
+              proposed_rows_per_strip;
+
+            proposed_rows_per_strip = (uint32) (512*1024) / Max(scanline_size,1);
+            if (proposed_rows_per_strip > rows_per_strip)
+              rows_per_strip=proposed_rows_per_strip;
+            /*
+              Use horizontal differencing (type 2) for images which are
+              likely to be continuous tone.  The TIFF spec says that this
+              usually leads to better compression.
+            */
+            if (((photometric == PHOTOMETRIC_RGB) ||
+                 (photometric == PHOTOMETRIC_MINISBLACK)) &&
+                ((bits_per_sample == 8) || (bits_per_sample == 16)))
+              predictor=PREDICTOR_HORIZONTAL;
+            {
+              /*
+                Zstd level has a useful range of 1-19 (or even 22).
+
+                Libtiff uses a default level of 9.
+
+                Default for ImageInfo 'quality' is 75, which is translated to 9.
+
+                Use -define tiff:zstd-compress-level=<value> to specify a value.
+              */
+              const char *value;
+              int compress_level = (image_info->quality*9)/75;
+#if defined(HasZSTD)
+              int max_compression = ZSTD_maxCLevel();
+#else
+              int max_compression = 19;
+#endif
+              if ((value=AccessDefinition(image_info,"tiff","zstd-compress-level")))
+                compress_level=MagickAtoI(value);
+              if (compress_level < 1)
+                compress_level=1;
+              if (compress_level > max_compression)
+                compress_level=max_compression;
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFTAG_ZSTD_LEVEL: %u", compress_level);
+              (void) TIFFSetField(tiff,TIFFTAG_ZSTD_LEVEL,compress_level);
+            }
+            break;
+          }
+#endif /* defined(COMPRESSION_ZSTD) */
+#if defined(COMPRESSION_WEBP)
+        case COMPRESSION_WEBP:
+          {
+            /*
+              Larger strips compress better with diminishing returns
+              (enlarge if necessary)..
+            */
+            unsigned int
+              proposed_rows_per_strip;
+
+            proposed_rows_per_strip = (uint32) (1024*1024) / Max(scanline_size,1);
+            if (proposed_rows_per_strip > rows_per_strip)
+              rows_per_strip=proposed_rows_per_strip;
+
+            /* TIFFTAG_WEBP_LEVEL */
+            if (image_info->quality != DefaultCompressionQuality)
+              {
+                int quality = (int) image_info->quality;
+                if (quality < 1)
+                  quality=1;
+                else if (quality > 100)
+                  quality=100;
+
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_WEBP_LEVEL: %d", quality);
+                (void) TIFFSetField(tiff,TIFFTAG_WEBP_LEVEL,quality);
+              }
+
+            /* TIFFTAG_WEBP_LOSSLESS */
+            {
+              const char *value;
+              if (((value=AccessDefinition(image_info,"tiff","webp-lossless")) != NULL) ||
+                  ((value=AccessDefinition(image_info,"webp","lossless")) != NULL))
+                {
+                  int lossless=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFTAG_WEBP_LOSSLESS: %d", lossless);
+                  (void) TIFFSetField(tiff,TIFFTAG_WEBP_LOSSLESS,lossless);
+                }
+            }
+            break;
+          }
+#endif /* defined(COMPRESSION_WEBP) */
         default:
           {
             break;

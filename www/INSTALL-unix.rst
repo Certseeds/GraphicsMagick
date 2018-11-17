@@ -285,13 +285,13 @@ Optional Packages/Options
 
     enable FlashPIX support
 
---with-gslib
-
-    enable Ghostscript library support (not recommended)
-
 --without-jbig
 
     disable JBIG support
+
+--without-webp
+
+    disable WEBP support
 
 --without-jp2
 
@@ -356,6 +356,10 @@ Optional Packages/Options
 --without-zlib
 
     disable ZLIB support
+
+--without-zstd
+
+    disable Zstd support
 
 --with-x
 

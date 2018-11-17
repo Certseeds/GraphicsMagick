@@ -152,5 +152,5 @@ text x,y "some text"
 text-antialias (0|1)
 text-undercolor colorspec
 translate x,y
-viewbox x1 y1 x1 y2 (e.g. "viewbox 0 0 640 480")
+viewbox x1 y1 x2 y2 (e.g. "viewbox 0 0 640 480")
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -59,24 +59,6 @@
 #if defined(HAVE_SPAWNVP) && defined(HAVE_PROCESS_H)
 #  include <process.h>
 #endif
-
-/*
-  Compute a value which is the next kilobyte power of 2 larger than
-  the requested value or MaxTextExtent, whichever is larger.
-
-  The objective is to round up the size quickly (and in repeatable
-  steps) in order to reduce the number of memory copies due to realloc
-  for strings which grow rapidly, while producing a reasonable size
-  for smaller strings.
-*/
-#define MagickRoundUpStringLength(size) \
-{ \
-  size_t \
-    _rounded; \
- \
-  for (_rounded=256U; _rounded < (Max(size,256)); _rounded *= 2); \
-  size=_rounded; \
-}
 
 /*
   Static declarations.
@@ -3495,34 +3477,73 @@ MagickExport void LocaleUpper(char *string)
 
 MagickExport MagickPassFail MagickAtoFChk(const char *str, double *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   *value=strtod(str,&estr);
   if (str == estr)
-    *value=0.0;
-  return (str == estr ? MagickFail : MagickPass);
+    {
+      *value=0.0;
+      status=MagickFail;
+    }
+#if defined(INFINITY)
+  else if ((*value == +INFINITY) || (*value == -INFINITY))
+    {
+      *value=0.0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
+#endif
+  else if (isnan(*value))
+    {
+      *value=0.0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((int) lvalue != lvalue))
-    lvalue=0;
+  if (str == estr)
+    {
+      lvalue=0;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((int) lvalue != lvalue)
+    {
+      lvalue=0;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(int) lvalue;
-  return (str == estr ? MagickFail : MagickPass);
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
-    lvalue=0U;
+  if (str == estr)
+    {
+      lvalue=0U;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((long) ((unsigned int) lvalue) != lvalue)
+    {
+      lvalue=0U;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(unsigned int) lvalue;
-  return (((str == estr) || ((long) ((unsigned int) lvalue) != lvalue))
-          ? MagickFail : MagickPass);
+  return status;
 }
 
 MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
@@ -3536,14 +3557,24 @@ MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value)
 
 MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value)
 {
+  MagickPassFail status = MagickPass;
   char *estr=0;
   long lvalue;
   lvalue=strtol(str,&estr, 10);
-  if ((str == estr) || ((long) ((unsigned long) lvalue) != lvalue))
-    lvalue=0L;
+  if (str == estr)
+    {
+      lvalue=0L;
+      status=MagickFail;
+      errno=EINVAL;
+    }
+  else if ((long) ((unsigned long) lvalue) != lvalue)
+    {
+      lvalue=0L;
+      status=MagickFail;
+      errno=ERANGE;
+    }
   *value=(unsigned long) lvalue;
-  return (((str == estr) || ((long) ((unsigned long) lvalue) != lvalue)) ?
-          MagickFail : MagickPass);
+  return status;
 }
 
 /*
@@ -3827,7 +3858,7 @@ MagickExport size_t MagickGetToken(const char *start,char **end,char *token,
         ((r = strrchr(token,')')) != NULL))
       {
         *r='\0';
-        (void) memmove(token,token+5,r-token+1);
+        (void) memmove(token,token+5,r-token-4);
       }
   }
   if (end != (char **) NULL)
@@ -5550,6 +5581,8 @@ MagickExport int SystemCommand(const unsigned int verbose,const char *command)
 #define IN_QUOTE 2
 #define IN_OZONE 3
 
+static long sindex(char c,char *string) MAGICK_FUNC_PURE;
+
 static long sindex(char c,char *string)
 {
   register char
@@ -6308,7 +6341,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
 
         /* Extract attribute key string. */
         p++;
-        for (i=0; (i < MaxTextExtent) && (*p) && (*p != ']'); i++)
+        for (i=0; (i < MaxTextExtent-1) && (*p) && (*p != ']'); i++)
           {
           key[i]=(*p++);
           }

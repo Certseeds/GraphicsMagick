@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2015
+// Copyright Bob Friesenhahn, 1999 - 2018
 //
 // Inclusion of GraphicsMagick headers (with namespace magic)
 
@@ -330,6 +330,8 @@ namespace Magick
   using MagickLib::JPEG2000Compression;
   using MagickLib::JBIG1Compression;
   using MagickLib::JBIG2Compression;
+  using MagickLib::ZSTDCompression;
+  using MagickLib::WebPCompression;
 
   using MagickLib::DisposeType;
   using MagickLib::UndefinedDispose;

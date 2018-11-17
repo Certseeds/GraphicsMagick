@@ -189,6 +189,13 @@ const RGB_Record WPG1_Palette[256]={
 };
 
 
+static int ApproveFormatForWPG(const char *Format)
+{
+  if(!strcmp(Format,"PFB")) return 0;
+  return 1;
+}
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,27 +236,26 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
 }
 
 
-static void Rd_WP_DWORD(Image *image,unsigned long *d)
+static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
-  unsigned char
-    b;
+  unsigned char b;
 
-  b=ReadBlobByte(image);
-  *d=b;
+  b = ReadBlobByte(image);
+  *d = b;
   if (b < 0xFFU)
-    return;
-  b=ReadBlobByte(image);
-  *d=(unsigned long) b;
-  b=ReadBlobByte(image);
+    return 1;
+  b = ReadBlobByte(image);
+  *d = (unsigned long) b;
+  b = ReadBlobByte(image);
   *d+=(unsigned long) b*256l;
   if (*d < 0x8000)
-    return;
+    return 3;
   *d=(*d & 0x7FFF) << 16;
+  b = ReadBlobByte(image);
+  *d += (unsigned long) b;
   b=ReadBlobByte(image);
-  *d+=(unsigned long) b;
-  b=ReadBlobByte(image);
-  *d+=(unsigned long) b*256l;
-  return;
+  *d += (unsigned long) b*256l;
+  return 5;
 }
 
 
@@ -383,6 +389,23 @@ return RetVal;
     } \
 }
 
+
+/** Call this function to ensure that all data matrix is filled with something. This function
+ * is used only to error recovery. */
+static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
+                                int bpp, long ldblk)
+{
+  while(y < image->rows)
+  {
+    if((long) x<ldblk) memset(BImgBuff+x, 0, ldblk-(long)x);
+    if (InsertRow(BImgBuff,y,image,bpp) == MagickFail)
+      break;
+    x = 0;
+    y++;
+  }
+}
+
+
 /* WPG1 raster reader.
  * @return      0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl
                 -5 - blob read error; -6 - row insert problem  */
@@ -420,6 +443,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
       i = ReadBlobByte(image);
       if(i==EOF)
         {
+          ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
           MagickFreeMemory(BImgBuff);
           return(-5);
         }
@@ -451,28 +475,34 @@ static int UnpackWPGRaster(Image *image,int bpp)
           i = ReadBlobByte(image);
           if(i==EOF)
           {
+            ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
             MagickFreeMemory(BImgBuff);
             return -7;
           }
           RunCount = i;
           if(x!=0) {    /* attempt to duplicate row from x position: */
                         /* I do not know what to do here */
-            InsertRow(BImgBuff,y,image,bpp);   /* May be line flush can fix a situation. */
-            x=0;
-            y++;
+            if (InsertRow(BImgBuff,y,image,bpp) == MagickPass)   /* May be line flush can fix a situation. */
+              {
+                x=0;
+                y++;
+                ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+              }
             MagickFreeMemory(BImgBuff);
             return(-3);
           }
           for(i=0; i<(int)RunCount; i++)
-            {		/* Here I need to duplicate previous row RUNCOUNT* */
-			/* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
+            {           /* Here I need to duplicate previous row RUNCOUNT* */
+                        /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
                 {
+                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 {
+                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
@@ -769,7 +799,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   clone_info->length=0;
 
   /* Obtain temporary file */
-  ps_file=AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
+  ps_file = AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
   if (!ps_file)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Gannot create file stream for PS image");
@@ -810,6 +840,14 @@ BAD_SEEK:
       ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
       goto FINISH_UNL;
     }
+
+  if(!ApproveFormatForWPG(clone_info->magick))
+  {
+    (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                        "Format \"%s\" cannot be embedded inside WPG.", clone_info->magick);
+    ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+    goto FINISH_UNL;
+  }
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content...", clone_info->magick);
@@ -913,7 +951,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   typedef struct
   {
     unsigned long FileId;
-    ExtendedSignedIntegralType DataOffset;
+    ExtendedSignedIntegralType DataOffset;  /* magick_uint32_t */
     unsigned int ProductType;
     unsigned int FileType;
     unsigned char MajorVersion;
@@ -1030,6 +1068,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   unsigned char
     *BImgBuff;
   BlobInfo *TmpBlob;
+  magick_off_t FilePos, filesize;
 
   tCTM CTM;         /*current transform matrix*/
 
@@ -1072,31 +1111,52 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "File type: %d", Header.FileType);
 
+        /* Determine file size. */
+  filesize = GetBlobSize(image);              /* zero is returned if the size cannot be determined. */
+  if(filesize>0 && BlobIsSeekable(image))
+  {
+    if(filesize > (magick_off_t)0xFFFFFFFF)
+        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
+  }
+  else
+  {
+    filesize = (magick_off_t)0xFFFFFFFF;
+    if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+          "Blob is not seekable, WPG reader could fail.");
+    ThrowReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
+  }
+
   switch(Header.FileType)
     {
     case 1:     /* WPG level 1 */
       BitmapHeader2.RotAngle = 0;
-
+      FilePos = Header.DataOffset;
       while(!EOFBlob(image)) /* object parser loop */
         {
-          if(SeekBlob(image,Header.DataOffset,SEEK_SET) != Header.DataOffset)
-            break;
-          if(EOFBlob(image))
+          if(SeekBlob(image,FilePos,SEEK_SET) != FilePos)
             break;
 
-          Rec.RecType=(i=ReadBlobByte(image));
-          if(i==EOF)
-            break;
-          Rd_WP_DWORD(image,&Rec.RecordLength);
-          if ((magick_off_t) Rec.RecordLength > GetBlobSize(image))
+          Rec.RecType = (i=ReadBlobByte(image));
+          if(i==EOF) break;
+          FilePos += 1;
+
+          FilePos += Rd_WP_DWORD(image,&Rec.RecordLength);
+          if((magick_off_t)Rec.RecordLength > filesize)
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-          if(EOFBlob(image))
-            break;
+          if(EOFBlob(image)) break;
 
-          Header.DataOffset=TellBlob(image)+Rec.RecordLength;
+          FilePos += (magick_off_t)Rec.RecordLength;
+          if(FilePos>filesize || FilePos<Header.DataOffset)
+          {
+            if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                "Invalid record length: %X", (unsigned)Rec.RecType);
+            break;
+          }
+          Header.DataOffset = FilePos;
 
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec.RecType);
+          //printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType);
 
           switch(Rec.RecType)
             {
@@ -1210,14 +1270,14 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               if(bpp == 1)
                 {
                   if(image->colors<=0)
-				  {
-			        image->colormap[0].red =
+                                  {
+                                image->colormap[0].red =
                         image->colormap[0].green =
                         image->colormap[0].blue = 0;
                       image->colormap[0].opacity = OpaqueOpacity;
-				  }
-                  if(image->colors<=1 ||	/* Realloc has been enforced and value [1] remains uninitialised, or .. */
-					   (image->colormap[0].red==0 && image->colormap[0].green==0 && image->colormap[0].blue==0 &&
+                                  }
+                  if(image->colors<=1 ||        /* Realloc has been enforced and value [1] remains uninitialised, or .. */
+                                           (image->colormap[0].red==0 && image->colormap[0].green==0 && image->colormap[0].blue==0 &&
                         image->colormap[1].red==0 && image->colormap[1].green==0 && image->colormap[1].blue==0))
                     {  /* fix crippled monochrome palette */
                       image->colormap[1].red =

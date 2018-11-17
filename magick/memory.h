@@ -36,7 +36,7 @@ extern MagickExport void
   *MagickMallocArray(const size_t count,const size_t size) MAGICK_FUNC_MALLOC MAGICK_FUNC_ALLOC_SIZE_2ARG(1,2);
 
 extern MagickExport size_t
-  MagickArraySize(const size_t count,const size_t size);
+  MagickArraySize(const size_t count,const size_t size) MAGICK_FUNC_CONST;
 
 /*
   Allocate memory

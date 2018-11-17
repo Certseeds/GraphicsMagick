@@ -19,12 +19,12 @@ enum objTypes {
 typedef struct {
     int             type;
     void            *wandPtr;  /* MagickWand, DrawingWand or PixelWand
-				* pointer */
+                                * pointer */
     Tcl_Command     magickCmd; /* Token for magick command, used to
-				* delete it */
+                                * delete it */
     Tcl_Interp      *interp;   /* Tcl interpreter owing the object */
     Tcl_HashEntry   *hashPtr;  /* Hash entry for this structure, used
-				* to delete it */
+                                * to delete it */
 } TclMagickObj;
 
 #ifdef __WIN32__

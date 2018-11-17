@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2015
+// Copyright Bob Friesenhahn, 1999 - 2018
 //
 // Definition and implementation of template functions for using
 // Magick::Image with STL containers.
@@ -2025,7 +2025,7 @@ namespace Magick
           container_->push_back( coderInfo );
         }
         // Intentionally ignore missing module errors
-        catch ( Magick::ErrorModule )
+        catch ( Magick::ErrorModule & )
           {
             continue;
           }

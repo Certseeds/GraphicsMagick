@@ -57,6 +57,7 @@
 #include "magick/paint.h"
 #include "magick/pixel_cache.h"
 #include "magick/render.h"
+#include "magick/resource.h"
 #include "magick/transform.h"
 #include "magick/utility.h"
 
@@ -64,6 +65,11 @@
   Define declarations.
 */
 #define BezierQuantum  200
+
+/* Maximum amount of recursion allowed when executing MVG */
+#if !defined(MAX_DRAWIMAGE_RECURSION)
+#  define MAX_DRAWIMAGE_RECURSION 100
+#endif /* defined(MAX_DRAWIMAGE_RECURSION) */
 
 /*
   Typedef declarations.
@@ -180,8 +186,22 @@ static PrimitiveInfo  /* added Image* param so DrawInfo::stroke_width can be cla
   *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *);
 
 static MagickPassFail
-  DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *),
-  DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *);
+  DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
+                         const PolygonInfo *polygon_info) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  DrawPrimitive(Image *,const DrawInfo *,const PrimitiveInfo *) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  DrawStrokePolygon(Image *,const DrawInfo *,const PrimitiveInfo *) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceArc(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceArcPath(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo,
+               const double,const unsigned int,const unsigned int) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceBezier(PrimitiveInfoMgr *,const unsigned long) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TracePoint(PrimitiveInfo *,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double) MAGICK_FUNC_WARN_UNUSED_RESULT;
 
 static MagickBool
   /*IsDrawInfoClippingPath(const DrawInfo *),*/           /* is DrawInfo a clipping path */
@@ -199,22 +219,8 @@ static void
 #if 0
   DestroyGradientInfo(GradientInfo *),
 #endif
-  DestroyPolygonInfo(void *polygon_info_void),
-  TraceArc(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
-  TraceArcPath(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo,
-    const double,const unsigned int,const unsigned int),
-  TraceBezier(PrimitiveInfoMgr *,const unsigned long),
-  TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo),
-  TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo),
-  TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TracePoint(PrimitiveInfo *,const PointInfo),
-  TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo),
-  TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,
-    PointInfo),
-  TraceSquareLinecap(PrimitiveInfo *,const unsigned long,const double);
-
-static MagickBool
-  PrimitiveInfoRealloc(PrimitiveInfoMgr *p_PIMgr,const size_t Needed);
+  DestroyPolygonInfo(void *polygon_info_void);
+
 /*
   Ticket #515 showed how an excessively big DrawInfo::stroke_width can cause writes
   beyond the end of an array of points when computing a stroked polygon.  So we want
@@ -850,13 +856,16 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     p,  /* first point in subpath (i.e., just did a "moveto" to this point) */
     q;  /* previous point in subpath */
 
-  register long
+  register size_t
     i,
     n;
 
-  long
-    coordinates,  /* number of points in subpath */
+  size_t
+    path_info_elem, /* Number of elements in path_info */
     start;        /* index to start of subpath in path_info */
+
+  ssize_t
+    coordinates;  /* number of points in subpath */
 
   MagickBool
     IsClosedSubPath;
@@ -878,7 +887,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       break;
   }
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
-  path_info=MagickAllocateArray(PathInfo *,(2*i+3),sizeof(PathInfo));
+  path_info_elem=(2*i+6);
+  path_info=MagickAllocateArray(PathInfo *,path_info_elem,sizeof(PathInfo));
   if (path_info == (PathInfo *) NULL)
     return((PathInfo *) NULL);
   coordinates=0;
@@ -921,6 +931,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
         path_info[n].point=primitive_info[i].point;
         q=primitive_info[i].point;  /* will be "previous point" for next iteration */
         n++;
+        if (n == path_info_elem - 1)
+          break;
       }
     if (coordinates > 0)
       continue;   /* go process next point in current subpath */
@@ -938,6 +950,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
       more points (repeat of current point + subpath start point) to "virtually"
       close it (this is a "ghost line").
     */
+    if ((start >= path_info_elem - 3) || (n >= path_info_elem - 3))
+      break;
     path_info[start].code=OpenCode;
     path_info[n].code=GhostlineCode;
     path_info[n].point=primitive_info[i].point;
@@ -1353,7 +1367,7 @@ DrawAffineImage(Image *image,const Image *composite,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
   for (y=y_min; y <= y_max; y++)
@@ -1374,9 +1388,6 @@ DrawAffineImage(Image *image,const Image *composite,
       register long
         x;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawAffineImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1428,18 +1439,21 @@ DrawAffineImage(Image *image,const Image *composite,
               thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawAffineImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,y_max-y_min+1))
-          if (!MagickMonitorFormatted(row_count,y_max-y_min+1,&image->exception,
-                                      AffineDrawImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,y_max-y_min+1))
+        if (!MagickMonitorFormatted(row_count,y_max-y_min+1,&image->exception,
+                                    AffineDrawImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   return (status);
@@ -1474,7 +1488,7 @@ DrawAffineImage(Image *image,const Image *composite,
 %
 %
 */
-static void
+static MagickPassFail
 DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
                        const PolygonInfo *polygon_info)
 {
@@ -1502,9 +1516,13 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
   long
     coordinates;
 
+  MagickPassFail
+    status = MagickPass;
+
   memset(primitive_info,0,sizeof(primitive_info));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception);
+  if ((status=QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   resolution.x=72.0;
   resolution.y=72.0;
   if (clone_info->density != (char *) NULL)
@@ -1556,35 +1574,51 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
       for (i=0; i < polygon_info->number_edges; i++)
       {
         if (polygon_info->edges[i].direction)
-          (void) QueryColorDatabase("red",&clone_info->stroke,
-            &image->exception);
+          {
+          if ((status=QueryColorDatabase("red",&clone_info->stroke,
+                                         &image->exception)) == MagickFail)
+            goto draw_bounding_rectangles_end;
+          }
         else
-          (void) QueryColorDatabase("green",&clone_info->stroke,
-            &image->exception);
+          {
+            if ((status=QueryColorDatabase("green",&clone_info->stroke,
+                                           &image->exception)) == MagickFail)
+              goto draw_bounding_rectangles_end;
+          }
         start.x=polygon_info->edges[i].bounds.x1-mid;
         start.y=polygon_info->edges[i].bounds.y1-mid;
         end.x=polygon_info->edges[i].bounds.x2+mid;
         end.y=polygon_info->edges[i].bounds.y2+mid;
         primitive_info[0].primitive=RectanglePrimitive;
-        TraceRectangle(primitive_info,start,end);
+        if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+          goto draw_bounding_rectangles_end;
         primitive_info[0].method=ReplaceMethod;
         coordinates=(long) primitive_info[0].coordinates;
         primitive_info[coordinates].primitive=UndefinedPrimitive;
-        (void) DrawPrimitive(image,clone_info,primitive_info);
+        if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+          goto draw_bounding_rectangles_end;
       }
     }
-  (void) QueryColorDatabase("blue",&clone_info->stroke,&image->exception);
+  if ((status=QueryColorDatabase("blue",&clone_info->stroke,&image->exception)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   start.x=bounds.x1-mid;
   start.y=bounds.y1-mid;
   end.x=bounds.x2+mid;
   end.y=bounds.y2+mid;
   primitive_info[0].primitive=RectanglePrimitive;
-  TraceRectangle(primitive_info,start,end);
+  if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+    goto draw_bounding_rectangles_end;
   primitive_info[0].method=ReplaceMethod;
   coordinates=(long) primitive_info[0].coordinates;
   primitive_info[coordinates].primitive=UndefinedPrimitive;
-  (void) DrawPrimitive(image,clone_info,primitive_info);
+  if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+    goto draw_bounding_rectangles_end;
+
+ draw_bounding_rectangles_end:;
+
   DestroyDrawInfo(clone_info);
+
+  return status;
 }
 
 /*
@@ -1625,7 +1659,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
     *attribute;
 
   DrawInfo
-    *clone_info;
+    *clone_info = (DrawInfo *) NULL;
 
   MagickPassFail
     status=MagickPass;
@@ -1638,8 +1672,13 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   assert(draw_info != (const DrawInfo *) NULL);
   FormatString(clip_path,"[%.1024s]",name);
   attribute=GetImageAttribute(image,clip_path);
+  /*
+    FIXME: Desired error handling for missing clip-path attribute is
+    not clear (was returning MagickFail).  Maybe the caller does not
+    know.
+  */
   if (attribute == (ImageAttribute *) NULL)
-    return(MagickFail);
+    return(MagickPass);
   image_clip_mask = *ImageGetClipMask(image);
   if (image_clip_mask == (Image *) NULL)
     {
@@ -1650,8 +1689,10 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
         &image->exception);
       if (clip_mask == (Image *) NULL)
         return(MagickFail);
-      (void) SetImageClipMask(image,clip_mask);
+      status=SetImageClipMask(image,clip_mask);
       DestroyImage(clip_mask);
+      if (status == MagickFail)
+        return(MagickFail);
       image_clip_mask = *ImageGetClipMask(image);
     }
   else
@@ -1663,14 +1704,18 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       DestroyImageAttributes(image_clip_mask);
       CloneImageAttributes(image_clip_mask,image);
     }
-  (void) QueryColorDatabase("none",&image_clip_mask->background_color,
-    &image->exception);
-  (void) SetImage(image_clip_mask,TransparentOpacity);
+  if ((status=QueryColorDatabase("none",&image_clip_mask->background_color,
+                                 &image->exception)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=SetImage(image_clip_mask,TransparentOpacity)) == MagickFail)
+    goto draw_clip_path_end;
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "\nbegin clip-path %.1024s",draw_info->extra->clip_path);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) CloneString(&clone_info->primitive,attribute->value);
-  (void) QueryColorDatabase("white",&clone_info->fill,&image->exception);
+  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=QueryColorDatabase("white",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_clip_path_end;
 
   /*
     According to the SVG spec:
@@ -1688,15 +1733,31 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   if  ( IsDrawInfoSVGCompliant(clone_info) )
     {
       /* changes to fill, etc. will be ignored */
-      (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);  /* SVG default */
+      if ((status=QueryColorDatabase("none",
+                                     &clone_info->stroke,&image->exception))  /* SVG default */
+          == MagickFail)
+        {
+          goto draw_clip_path_end;
+        }
       clone_info->stroke_width = 0.0;   /* SVG default */
       clone_info->opacity = OpaqueOpacity;  /* SVG default */
     }
 
   MagickFreeMemory(clone_info->extra->clip_path);
-  status&=DrawImage(image_clip_mask,clone_info);
-  status&=NegateImage(image_clip_mask,False);
-  DestroyDrawInfo(clone_info);
+  if ((status=DrawImage(image_clip_mask,clone_info)) == MagickFail)
+    goto draw_clip_path_end;
+  if ((status=NegateImage(image_clip_mask,False)) == MagickFail)
+    goto draw_clip_path_end;
+
+ draw_clip_path_end:
+
+  if (clone_info != (DrawInfo *) NULL)
+    {
+      MagickFreeMemory(clone_info->extra->clip_path);
+      DestroyDrawInfo(clone_info);
+      clone_info = (DrawInfo *) NULL;
+    }
+
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
   return(status);
 }
@@ -1741,7 +1802,7 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
     *attribute;
 
   DrawInfo
-    *clone_info;
+    *clone_info = (DrawInfo *) NULL;
 
   MagickPassFail
     status=MagickPass;
@@ -1766,9 +1827,11 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
         &image->exception);
       if (composite_mask == (Image *) NULL)
         return(MagickFail);
-      (void) SetImageCompositeMask(image,composite_mask);
+      status=SetImageCompositeMask(image,composite_mask);
       DestroyImage(composite_mask);
       image_composite_mask = *ImageGetCompositeMask(image);
+      if (status == MagickFail)
+        return(MagickFail);
     }
   else
     {
@@ -1779,19 +1842,26 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
       DestroyImageAttributes(image_composite_mask);
       CloneImageAttributes(image_composite_mask,image);
     }
-  (void) QueryColorDatabase("none",&image_composite_mask->background_color,
-    &image->exception);
-  (void) SetImage(image_composite_mask,TransparentOpacity);
+  if ((status=QueryColorDatabase("none",&image_composite_mask->background_color,
+                                 &image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
+  if ((status=SetImage(image_composite_mask,TransparentOpacity)) == MagickFail)
+    goto draw_composite_mask_end;
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "\nbegin mask %.1024s",draw_info->extra->composite_path);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  (void) CloneString(&clone_info->primitive,attribute->value);
+  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+    goto draw_composite_mask_end;
   /* these settings are per the SVG spec */
-  (void) QueryColorDatabase("black",&clone_info->fill,&image->exception);
-  (void) QueryColorDatabase("none",&clone_info->stroke,&image->exception);
+  if ((status=QueryColorDatabase("black",&clone_info->fill,&image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
+  if ((status=QueryColorDatabase("none",&clone_info->stroke,&image->exception)) == MagickFail)
+    goto draw_composite_mask_end;
   clone_info->stroke_width = 1.0;
   clone_info->opacity = OpaqueOpacity;
-  status&=DrawImage(image_composite_mask,clone_info);
+  if ((status=DrawImage(image_composite_mask,clone_info)) == MagickFail)
+    goto draw_composite_mask_end;
+ draw_composite_mask_end:;
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end composite-path");
   return(status);
@@ -1916,7 +1986,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
         if (draw_info->dash_pattern[n] == 0.0)
           n=0;
         length=scale*draw_info->dash_pattern[n];
-      }
+      }  /* oss-fuzz 10614 maximum_length = 2120554, length = 0.5 yeilds 4,241,108 iterations*/
     for (total_length=0.0; (length >= 0.0) && (maximum_length >= (length+total_length)); )
     {
       total_length+=length;
@@ -2041,6 +2111,7 @@ static void DrawImageSetCurrentRecurseLevel(Image *image,const long recurse_leve
     recursion_str[MaxTextExtent];
 
   FormatString(recursion_str,"%ld",recurse_level);
+  /* SetImageAttribute concatenates values! Delete with NULL */
   (void) SetImageAttribute(image,recursion_key,NULL);
   (void) SetImageAttribute(image,recursion_key,recursion_str);
 }
@@ -2053,7 +2124,7 @@ static MagickPassFail DrawImageRecurseIn(Image *image)
   recurse_level++;
   DrawImageSetCurrentRecurseLevel(image,recurse_level);
 
-  if ((recurse_level < 0) || (recurse_level > 100))
+  if ((recurse_level < 0) || (recurse_level > MAX_DRAWIMAGE_RECURSION))
     {
       char
         recursion_str[MaxTextExtent];
@@ -2083,7 +2154,7 @@ static void DrawImageRecurseOut(Image *image)
   "class".
 */
 static
-char *	ExtractTokensBetweenPushPop (
+char *  ExtractTokensBetweenPushPop (
   char * q,                 /* address of pointer into primitive string */
   char * token,             /* big enough buffer for extracted string */
   size_t token_max_length,
@@ -2105,22 +2176,22 @@ char *	ExtractTokensBetweenPushPop (
 
   /* search for "pop <pop_string>" */
   for (p=q; *q != '\0'; )
-  {
-    char * qStart = q;
-    MagickGetToken(q,&q,token,token_max_length);
-    if  ( q == qStart )
-      {
-        /* infinite loop detection */
-        pAfterPopString = q;  /* need this to be valid */
-        break;
-      }
-    if (LocaleCompare(token,"pop") == 0)
-      {
-        MagickGetToken(q,&pAfterPopString,token,token_max_length);
-        if (LocaleCompare(token,pop_string) == 0)
-          break;  /* found "pop <pop_string>" */
-      }
-  }
+    {
+      char * qStart = q;
+      MagickGetToken(q,&q,token,token_max_length);
+      if  ( q == qStart )
+        {
+          /* infinite loop detection */
+          pAfterPopString = q;  /* need this to be valid */
+          break;
+        }
+      if (LocaleCompare(token,"pop") == 0)
+        {
+          MagickGetToken(q,&pAfterPopString,token,token_max_length);
+          if (LocaleCompare(token,pop_string) == 0)
+            break;  /* found "pop <pop_string>" */
+        }
+    }
 
   /* sanity check on extracted string length */
   if  ( q > (p+4U) )
@@ -2129,11 +2200,14 @@ char *	ExtractTokensBetweenPushPop (
       (void) strncpy(token,p,ExtractedLength);
     }
   token[ExtractedLength] = '\0';
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(image,name,NULL);
   (void) SetImageAttribute(image,name,token);
-  q = pAfterPopString;  /* skip ID string after "pop" */
+  if (pAfterPopString != NULL)
+    q = pAfterPopString;  /* skip ID string after "pop" */
   if  ( pExtractedLength )
     *pExtractedLength = ExtractedLength;
-	return(q);
+  return(q);
 
 }/*ExtractTokensBetweenPushPop*/
 
@@ -2221,29 +2295,52 @@ char * InsertAttributeIntoInputStream (
 }/*InsertAttributeIntoInputStream*/
 
 
-static MagickBool
-PrimitiveInfoRealloc  (
-  PrimitiveInfoMgr * p_PIMgr,
-  const size_t       Needed
-  )
+/*
+  Re-allocate PrimitiveInfo array if needed.  Return MagickFail if
+  allocation has failed.  PrimitiveInfo array pointer is set to NULL
+  if allocation has failed, and any already allocated memory is freed.
+*/
+static MagickPassFail
+PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
 {/*PrimitiveInfoRealloc*/
 
+  MagickPassFail status = MagickPass;
   /* grow the PrimitiveInfo array if Needed elements are not available; return true if reallocated */
 
-  PrimitiveInfo * primitive_info;
+  /* ANSI C says that SIZE_MAX gives maximum value of size_t */
   size_t NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100);  /* +100 for headroom */
-  if  ( NeedAllocCount <= *p_PIMgr->p_AllocCount )
-    return(MagickFalse);
+  if (NeedAllocCount > *p_PIMgr->p_AllocCount)
+    {
+      const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
+      const size_t needed_memory=MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo));
+      const magick_uint64_t added_memory=needed_memory-have_memory;
 
-  /*need to realloc*/
-  primitive_info = *p_PIMgr->pp_PrimitiveInfo;
-  MagickReallocMemory(PrimitiveInfo *,primitive_info,MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo)));
-  if  ( primitive_info == (PrimitiveInfo *) NULL )
-      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
-  *p_PIMgr->pp_PrimitiveInfo = primitive_info;
-  *p_PIMgr->p_AllocCount = NeedAllocCount;
+      /* Need to realloc */
+      if (((*p_PIMgr->p_AllocCount > 0) && (have_memory == 0)) ||
+          ((NeedAllocCount > 0) && (needed_memory == 0)) ||
+          (status=AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
+        {
+          ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+          status = MagickFail;
+        }
+      else
+        {
+          MagickReallocMemory(PrimitiveInfo *,*p_PIMgr->pp_PrimitiveInfo,needed_memory);
+          if (*p_PIMgr->pp_PrimitiveInfo == (PrimitiveInfo *) NULL)
+            {
+              ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+              status = MagickFail;
+              /* Record that the memory was unexpectedly released */
+              LiberateMagickResource(MemoryResource,(*p_PIMgr->p_AllocCount)*sizeof(PrimitiveInfo));
+            }
+          else
+            {
+              *p_PIMgr->p_AllocCount = NeedAllocCount;
+            }
+        }
+    }
 
-  return(MagickTrue);
+  return status;
 
 }/*PrimitiveInfoRealloc*/
 
@@ -2287,7 +2384,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     start_color;
 
   PrimitiveInfo
-    *primitive_info;
+    *primitive_info = (PrimitiveInfo *) NULL;
 
   PrimitiveType
     primitive_type;
@@ -2311,7 +2408,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     status;
 
   size_t
-    number_points;
+    number_points=0;
 
   MagickBool
     FillOpacityPending,
@@ -2338,7 +2435,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     xTextCurrent,
     yTextCurrent;
   MagickBool
-    UseCurrentTextPosition;	/* true=>use (possibly modified) current text position */
+    UseCurrentTextPosition;     /* true=>use (possibly modified) current text position */
 
   PrimitiveInfoMgr
     PIMgr;
@@ -2368,6 +2465,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   if (primitive == (char *) NULL)
     return(MagickFail);
   primitive_extent=strlen(primitive);
+
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(image,"[MVG]",NULL);
   (void) SetImageAttribute(image,"[MVG]",primitive);
   if (getenv("MAGICK_SKIP_RENDERING") != NULL)
     {
@@ -2385,24 +2485,21 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
         UnableToDrawOnImage)
     }
-  number_points=6553;
-  primitive_info=
-    MagickAllocateArray(PrimitiveInfo *,number_points,sizeof(PrimitiveInfo));
-  if (primitive_info == (PrimitiveInfo *) NULL)
+
+  /* Set up to manage growing the PrimitiveInfo array */
+  PIMgr.pp_PrimitiveInfo = &primitive_info;
+  PIMgr.p_AllocCount = &number_points;
+  PIMgr.StoreStartingAt = 0;
+  PIMgr.p_Exception = &image->exception;
+
+  if ((status=PrimitiveInfoRealloc(&PIMgr,6553)) == MagickFail)
     {
       MagickFreeMemory(primitive);
       for ( ; n >= 0; n--)
         DestroyDrawInfo(graphic_context[n]);
       MagickFreeMemory(graphic_context);
-      ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-        UnableToDrawOnImage)
+      return MagickFail;
     }
-
-  /* set up to manage growing the PrimitiveInfo array */
-  PIMgr.pp_PrimitiveInfo = &primitive_info;
-  PIMgr.p_AllocCount = &number_points;
-  PIMgr.StoreStartingAt = 0;
-  PIMgr.p_Exception = &image->exception;
 
   graphic_context[n]=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   /* next two lines: don't need copy of primitive, just a buffer of the same size */
@@ -2579,8 +2676,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 break;
               }
             (void) CloneString(&graphic_context[n]->extra->clip_path,token);
-            (void) DrawClipPath(image,graphic_context[n],
-              graphic_context[n]->extra->clip_path);
+            if (DrawClipPath(image,graphic_context[n],
+                             graphic_context[n]->extra->clip_path) == MagickFail)
+              status=MagickFail;
             break;
           }
         if (LocaleCompare("clip-rule",keyword) == 0)
@@ -2693,7 +2791,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to fill color */
+              break;    /* if drawing clip path, ignore changes to fill color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
@@ -2744,7 +2842,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to fill opacity */
+              break;    /* if drawing clip path, ignore changes to fill opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 (opacity < 0.0))
@@ -2945,7 +3043,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity,opacityGroupOld,opacityGroupNew;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to group/global opacity */
+              break;    /* if drawing clip path, ignore changes to group/global opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if (MagickAtoFChk(token,&opacity) != MagickPass)
               {
@@ -3083,7 +3181,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   into new function ExtractTokensBetweenPushPop().
                 */
                 size_t ExtractedLength;
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength);
+                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength); /* NULLED */
                 if  ( ExtractedLength == 0 )
                   status=MagickFail;
                 break;
@@ -3226,12 +3324,16 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 FormatString(key,"[%.1024s]",name);
+                /* SetImageAttribute concatenates values! Delete with NULL */
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
                 FormatString(key,"[%.1024s-geometry]",name);
                 FormatString(geometry,"%gx%g%+g%+g",
                   Max(AbsoluteValue(bounds.x2-bounds.x1+1),1),
                   Max(AbsoluteValue(bounds.y2-bounds.y1+1),1),
                   bounds.x1,bounds.y1);
+                /* SetImageAttribute concatenates values! Delete with NULL */
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,geometry);
                 MagickGetToken(q,&q,token,token_max_length);
                 break;
@@ -3240,7 +3342,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               {
                 if  ( defsPushCount > 0 )
                   q = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
-                else	/* extract <identifier> from "push id <identifier>" */
+                else    /* extract <identifier> from "push id <identifier>" */
                   MagickGetToken(q,&q,token,token_max_length);
                 break;
               }
@@ -3315,10 +3417,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
                 FormatString(key,"[%.1024s]",name);
+                /* SetImageAttribute concatenates values! Delete with NULL */
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
                 FormatString(key,"[%.1024s-geometry]",name);
                 FormatString(geometry,"%lux%lu%+ld%+ld",bounds.width,
                   bounds.height,bounds.x,bounds.y);
+                /* SetImageAttribute concatenates values! Delete with NULL */
+                (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,geometry);
                 MagickGetToken(q,&q,token,token_max_length);
                 break;
@@ -3438,7 +3544,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke color */
+              break;    /* if drawing clip path, ignore changes to stroke color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
@@ -3592,7 +3698,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double opacity;
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke opacity */
+              break;    /* if drawing clip path, ignore changes to stroke opacity */
             factor=strchr(token,'%') != (char *) NULL ? 0.01 : 1.0;
             if ((MagickAtoFChk(token,&opacity) != MagickPass) ||
                 opacity < 0.0)
@@ -3621,7 +3727,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
-              break;	/* if drawing clip path, ignore changes to stroke width */
+              break;    /* if drawing clip path, ignore changes to stroke width */
             if ((MagickAtoFChk(token,&graphic_context[n]->stroke_width)
                  == MagickFail) ||
                 (graphic_context[n]->stroke_width < 0.0))
@@ -3656,7 +3762,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("textc",keyword) == 0)  /* draw text at current text position */
           {
             primitive_type=TextPrimitive;
-            UseCurrentTextPosition = MagickTrue;	/* use internally tracked text location*/
+            UseCurrentTextPosition = MagickTrue;        /* use internally tracked text location*/
             break;
           }
         if (LocaleCompare("textdx",keyword) == 0)  /* update current x position for text */
@@ -3668,12 +3774,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleNCompare(q,"em",2) == 0)
               {
                 value *= graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "em" */
               }
             else if (LocaleNCompare(q,"ex",2) == 0)
               {
                 value *= 0.5 * graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "ex" */
               }
             xTextCurrent += value;
             break;
@@ -3687,12 +3793,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleNCompare(q,"em",2) == 0)
               {
                 value *= graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "em" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "em" */
               }
             else if (LocaleNCompare(q,"ex",2) == 0)
               {
                 value *= 0.5 * graphic_context[n]->pointsize;
-                MagickGetToken(q,&q,token,token_max_length);	/* skip over "ex" */
+                MagickGetToken(q,&q,token,token_max_length);    /* skip over "ex" */
               }
             yTextCurrent += value;
             break;
@@ -3887,8 +3993,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       PIMgr.StoreStartingAt = i;
       if (i < (long) number_points)
         continue;
-      PrimitiveInfoRealloc(&PIMgr,number_points);  /* array is full; double the array size */
+      /* Array is full; double the array size */
+      if ((status=PrimitiveInfoRealloc(&PIMgr,number_points)) == MagickFail)
+        break;
     }
+    if (status == MagickFail)
+      break;
     /*
       Special handling when using textc with character rotation; see comments
       above near "textr".
@@ -4047,7 +4157,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           }
 
         PIMgr.StoreStartingAt = i;  /* should already be this value; just bein' sure */
-        PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points);
+        if (PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points) == MagickFail)
+          {
+            status=MagickFail;
+            break;
+          }
       }
 
     assert(j < (long) number_points);
@@ -4058,7 +4172,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       TraceLine(), TraceRectangle(), etc.) have enough space, we make sure there are at
       least 100 elements available.
     */
-    PrimitiveInfoRealloc(&PIMgr,100);
+    if (PrimitiveInfoRealloc(&PIMgr,100) == MagickFail)
+      {
+        status=MagickFail;
+        break;
+      }
 
     /*
       Trace points
@@ -4073,7 +4191,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TracePoint(primitive_info+j,primitive_info[j].point);
+        if ((status=TracePoint(primitive_info+j,primitive_info[j].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4084,8 +4203,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceLine(primitive_info+j,primitive_info[j].point,
-                  primitive_info[j+1].point);
+        if ((status=TraceLine(primitive_info+j,primitive_info[j].point,
+                              primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4115,9 +4235,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        TraceRectangle(primitive_info+j,
-                       /*start*/primitive_info[j].point,
-                       /*end*/primitive_info[j+1].point);
+        if ((status=TraceRectangle(primitive_info+j,
+                                   /*start*/primitive_info[j].point,
+                                   /*end*/primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4156,10 +4277,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceRoundRectangle(&PIMgr,
-                            /*start*/primitive_info[j].point,
-                            /*end*/primitive_info[j+1].point,
-                            /*arc*/primitive_info[j+2].point);
+        if ((status=TraceRoundRectangle(&PIMgr,
+                                        /*start*/primitive_info[j].point,
+                                        /*end*/primitive_info[j+1].point,
+                                        /*arc*/primitive_info[j+2].point)) == MagickFail)
+          break;
          PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4171,8 +4293,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceArc(&PIMgr,primitive_info[j].point,
-          primitive_info[j+1].point,primitive_info[j+2].point);
+        if ((status=TraceArc(&PIMgr,primitive_info[j].point,
+                             primitive_info[j+1].point,primitive_info[j+2].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4193,10 +4316,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceEllipse(&PIMgr,
-                     /*start*/primitive_info[j].point, /*centerX,centerY*/
-                     /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
-                     /*degrees*/primitive_info[j+2].point); /*arcStart,arcEnd*/
+        if ((status=TraceEllipse(&PIMgr,
+                                 /*start*/primitive_info[j].point, /*centerX,centerY*/
+                                 /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
+                                 /*degrees*/primitive_info[j+2].point)) == MagickFail) /*arcStart,arcEnd*/
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4208,8 +4332,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceCircle(&PIMgr,primitive_info[j].point,
-          primitive_info[j+1].point);
+        if ((status=TraceCircle(&PIMgr,primitive_info[j].point,
+                                primitive_info[j+1].point)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4248,7 +4373,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        TraceBezier(&PIMgr,primitive_info[j].coordinates);
+        if ((status=TraceBezier(&PIMgr,primitive_info[j].coordinates)) == MagickFail)
+          break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
@@ -4299,7 +4425,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           DrawInfo * clone_info;
           TypeMetric  metrics;
           clone_info=CloneDrawInfo((ImageInfo *) NULL,graphic_context[n]);
-          MagickFreeMemory(clone_info->density);	/* density values already converted, don't do again! */
+          MagickFreeMemory(clone_info->density);        /* density values already converted, don't do again! */
           clone_info->render = 0;
           clone_info->text=AllocateString(token);
           (void) ConcatenateString(&clone_info->text," ");
@@ -4390,6 +4516,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   */
   DrawImageRecurseOut(image);
   MagickFreeMemory(token);
+  if (primitive_info != (PrimitiveInfo *) NULL)
+    LiberateMagickResource(MemoryResource,(*PIMgr.p_AllocCount)*sizeof(PrimitiveInfo));
   MagickFreeMemory(primitive_info);
   MagickFreeMemory(primitive);
   for ( ; n >= 0; n--)
@@ -4730,7 +4858,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds;
 
   ThreadViewDataSet
-    * restrict polygon_set;
+    * restrict polygon_set = (ThreadViewDataSet *) NULL;
 
   MagickPassFail
     status = MagickPass;
@@ -4756,7 +4884,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     unsigned int
       index;
 
-    polygon_set=(ThreadViewDataSet *) NULL;
     path_info=(PathInfo *) NULL;
     if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info))
         != (PathInfo *) NULL)
@@ -4803,7 +4930,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds=polygon_info->edges[0].bounds;
 
     if (0) /* DEBUG ??? */
-      DrawBoundingRectangles(image,draw_info,polygon_info);
+      if ((status=DrawBoundingRectangles(image,draw_info,polygon_info)) == MagickFail)
+        goto draw_polygon_primitive_end;
 
     for (i=1; i < polygon_info->number_edges; i++)
       {
@@ -4852,9 +4980,14 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
     bounds.y1-=(mid+1.0);
     bounds.x2+=(mid+1.0);
     bounds.y2+=(mid+1.0);
-    if  ( (bounds.x1 >= image->columns) || (bounds.y1 >= image->rows)
-      || (bounds.x2 <= 0.0) || (bounds.y2 <= 0.0) )
-      return(MagickPass);   /* object completely outside image */
+    if ( (bounds.x1 >= image->columns) || (bounds.y1 >= image->rows)
+         || (bounds.x2 <= 0.0) || (bounds.y2 <= 0.0) )
+      {
+        /* object completely outside image */
+        DestroyThreadViewDataSet(polygon_set);
+        polygon_set = (ThreadViewDataSet *) NULL;
+        return(MagickPass);
+      }
     bounds.x1=bounds.x1 <= 0.0 ? 0.0 : bounds.x1 >= image->columns-1 ?
       image->columns-1 : bounds.x1;
     bounds.y1=bounds.y1 <= 0.0 ? 0.0 : bounds.y1 >= image->rows-1 ?
@@ -4891,7 +5024,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status)
 #  else
-#    pragma omp parallel for schedule(static) shared(status)
+#    pragma omp parallel for schedule(guided) shared(status)
 #  endif
 #endif
       for (y=y_start; y <= y_stop; y++)
@@ -4905,9 +5038,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
           MagickPassFail
             thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
           thread_status=status;
           if (thread_status == MagickFail)
             continue;
@@ -4930,10 +5060,10 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
             }
           if (thread_status == MagickFail)
             {
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
               status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
             }
         }
     } /* if (primitive_info->coordinates == 1) */
@@ -4994,9 +5124,6 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
           MagickPassFail
             thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
           thread_status=status;
           if (thread_status == MagickFail)
             continue;
@@ -5094,15 +5221,18 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 
               if (thread_status == MagickFail)
                 {
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_DrawPolygonPrimitive_Status)
-#endif
                   status=thread_status;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
                 }
             }
         }
     }
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    end draw-polygon");
+
+ draw_polygon_primitive_end:;
+
   DestroyThreadViewDataSet(polygon_set);
 
   return(status);
@@ -5896,7 +6026,7 @@ Permutate(const long n,const long k)
 %
 */
 
-static void
+static MagickPassFail
 TraceArc(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
          const PointInfo end,const PointInfo arc)
 {
@@ -5908,10 +6038,10 @@ TraceArc(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   center.y=0.5*(end.y+start.y);
   radius.x=fabs(center.x-start.x);
   radius.y=fabs(center.y-start.y);
-  TraceEllipse(p_PIMgr,center,radius,arc);
+  return TraceEllipse(p_PIMgr,center,radius,arc);
 }
 
-static void
+static MagickPassFail
 TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo end,const PointInfo arc,const double angle,
              const unsigned int large_arc,const unsigned int sweep)
@@ -5953,7 +6083,7 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
   primitive_info = *pp_PrimitiveInfo + InitialStoreStartingAt;
 
-  primitive_info->coordinates = 0;	/* in case we return without doing anything */
+  primitive_info->coordinates = 0;      /* in case we return without doing anything */
   /*
     Per the SVG spec: If the endpoints (x1, y1) and (x2, y2) are identical, then
     this is equivalent to omitting the elliptical arc segment entirely.
@@ -5961,15 +6091,13 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   if  ( (fabs(start.x-end.x) < MagickEpsilon) && (fabs(start.y-end.y) < MagickEpsilon) )
     {
       /* substitute a lineto command (so zero length arc looks like a zero length segment) */
-      TracePoint(primitive_info,end);
-      return;
+      return (TracePoint(primitive_info,end));
     }
   radii.x=fabs(arc.x);
   radii.y=fabs(arc.y);
   if ((radii.x == 0.0) || (radii.y == 0.0))
     {
-      TraceLine(primitive_info,start,end);
-      return;
+      return (TraceLine(primitive_info,start,end));
     }
   cosine=cos(DegreesToRadians(fmod(angle,360.0)));
   sine=sin(DegreesToRadians(fmod(angle,360.0)));
@@ -6038,7 +6166,8 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     (p+3)->point.y=sine*radii.x*points[2].x+cosine*radii.y*points[2].y;
     if (i == (long) (arc_segments-1))
       (p+3)->point=end;
-    TraceBezier(p_PIMgr,4);
+    if (TraceBezier(p_PIMgr,4) == MagickFail)
+      return MagickFail;
     p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have changed */
     p_PIMgr->StoreStartingAt+=p->coordinates;
     p+=p->coordinates;
@@ -6052,9 +6181,10 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     p->primitive=primitive_info->primitive;
     p--;
   }
+  return MagickPass;
 }
 
-static void
+static MagickPassFail
 TraceBezier(PrimitiveInfoMgr *p_PIMgr,
             const unsigned long number_coordinates)
 {
@@ -6079,9 +6209,14 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     i,
     j;
 
+  size_t
+    control_points;
+
   unsigned long
-    control_points,
     quantum;
+
+  MagickPassFail
+    status = MagickPass;
 
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
@@ -6103,11 +6238,12 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     }
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
-  control_points=quantum*number_coordinates;
+  control_points=(size_t) quantum*number_coordinates;
 
   /* make sure we have enough space */
-  if  ( PrimitiveInfoRealloc(p_PIMgr,control_points+1) )
-    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
+    return MagickFail;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
   points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
@@ -6143,10 +6279,12 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   p=primitive_info;
   for (i=0; i < (long) control_points; i++)
   {
-    TracePoint(p,points[i]);
+    if ((status=TracePoint(p,points[i])) != MagickPass)
+      goto trace_bezier_done;
     p+=p->coordinates;
   }
-  TracePoint(p,end);
+  if ((status=TracePoint(p,end)) == MagickFail)
+    goto trace_bezier_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6155,11 +6293,13 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     p->primitive=primitive_info->primitive;
     p--;
   }
+ trace_bezier_done:;
   MagickFreeMemory(points);
   MagickFreeMemory(coefficients);
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceCircle(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
             const PointInfo end)
 {
@@ -6179,15 +6319,16 @@ TraceCircle(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   offset.y=radius;
   degrees.x=0.0;
   degrees.y=360.0;
-  TraceEllipse(p_PIMgr,start,offset,degrees);
+  return TraceEllipse(p_PIMgr,start,offset,degrees);
 }
 
-static void
+static MagickPassFail
 TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
              const PointInfo stop,const PointInfo degrees)
 {
   double
     delta,
+    points_length,
     step,
     y;
 
@@ -6202,8 +6343,8 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     *primitive_info,
     **pp_PrimitiveInfo;
 
-  size_t
-    Needed;
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Ellipses are just short segmented polys.
@@ -6212,32 +6353,48 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
   primitive_info->coordinates = 0;  /* in case we return without doing anything */
   if (stop.x == 0.0 || stop.y == 0.0)  /* actually the x and y radii of the corner ellipse */
-    return;
+    return MagickPass;
   delta=2.0/Max(stop.x,stop.y);
   step=MagickPI/8.0;
   if (delta < (MagickPI/8.0))
-    step=MagickPI/(4*ceil(MagickPI/delta/2));
+    step=(MagickPI/4.0)/ceil(MagickPI/delta/2.0);
   angle.x=DegreesToRadians(degrees.x);
   y=degrees.y;
   while (y < degrees.x)
     y+=360.0;
   angle.y=DegreesToRadians(y);
 
+  /* FIXME: The number of points could become arbitrarily large.  It
+     would be good to add an algorithm which decreases ellipse drawing
+     quality when necessary in order to limit the number of points
+     required. */
+
   /* make sure we have enough space */
-  Needed = ((size_t)1) + (size_t) ceil((angle.y - angle.x) / step);
-  if  ( PrimitiveInfoRealloc(p_PIMgr,Needed) )
-    primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
+  points_length = ceil(1.0 + ceil((angle.y - angle.x) / step));
+  if ((size_t) points_length < points_length)
+    {
+      /* points_length too big to be represented as a size_t */
+      status=MagickFail;
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,
+                     MemoryAllocationFailed,UnableToDrawOnImage);
+      goto trace_ellipse_done;
+    }
+  if ((status=PrimitiveInfoRealloc(p_PIMgr,(size_t) points_length)) == MagickFail)
+    goto trace_ellipse_done;
+  primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   for (p=primitive_info; angle.x < angle.y; angle.x+=step)
   {
     point.x=cos(fmod(angle.x,DegreesToRadians(360.0)))*stop.x+start.x;
     point.y=sin(fmod(angle.x,DegreesToRadians(360.0)))*stop.y+start.y;
-    TracePoint(p,point);
+    if ((status=TracePoint(p,point)) == MagickFail)
+      goto trace_ellipse_done;
     p+=p->coordinates;
   }
   point.x=cos(fmod(angle.y,DegreesToRadians(360.0)))*stop.x+start.x;
   point.y=sin(fmod(angle.y,DegreesToRadians(360.0)))*stop.y+start.y;
-  TracePoint(p,point);
+  if ((status=TracePoint(p,point))  == MagickFail)
+    goto trace_ellipse_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6249,24 +6406,35 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   /* NOTE: p pointing just past last traced point! */
   for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
+ trace_ellipse_done:
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
           const PointInfo end)
 {
-  TracePoint(primitive_info,start);
+  MagickPassFail
+    status = MagickPass;
+
+  if ((status=TracePoint(primitive_info,start)) == MagickFail)
+    goto trace_line_done;
   if ((AbsoluteValue(start.x-end.x) <= MagickEpsilon) &&
       (AbsoluteValue(start.y-end.y) <= MagickEpsilon))
     {
       primitive_info->primitive=PointPrimitive;
       primitive_info->coordinates=1;
-      return;
+      goto trace_line_done;
     }
-  TracePoint(primitive_info+1,end);
+  if ((status=TracePoint(primitive_info+1,end)) == MagickFail)
+    goto trace_line_done;
   (primitive_info+1)->primitive=primitive_info->primitive;
   primitive_info->coordinates=2;
   PRIMINF_CLEAR_FLAGS(primitive_info);
+
+ trace_line_done:
+
+  return status;
 }
 
 /*
@@ -6354,6 +6522,9 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
   size_t
     SubpathOffset;  /* index to start of current subpath */
 
+  MagickPassFail
+    status = MagickPass;
+
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   SubpathOffset = p_PIMgr->StoreStartingAt;
   primitive_info = *pp_PrimitiveInfo + SubpathOffset;
@@ -6423,7 +6594,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&y);
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
-          TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep);
+          if ((status=TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6463,7 +6635,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,4);
+          if ((status=TraceBezier(p_PIMgr,4)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6487,9 +6660,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&x);
           point.x=attribute == 'H' ? x: point.x+x;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
+                return 0; /* FIXME: How to return useful error? */
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6519,9 +6697,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           point.x=attribute == 'L' ? x : point.x+x;
           point.y=attribute == 'L' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
-              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+          {
+            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+              goto trace_path_done;
+            q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
+          }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6563,9 +6746,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             start=point; /*otherwise it's an implied lineto command for both 'M' and 'm'*/
           i++;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if  ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
+                return 0; /* FIXME: How to return useful error? */
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
 
@@ -6609,7 +6797,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,3);
+          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6664,7 +6853,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,4);
+          if ((TraceBezier(p_PIMgr,4)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6718,7 +6908,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          TraceBezier(p_PIMgr,3);
+          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+            goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6746,9 +6937,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           MagickTracePathAtoF(token,&y);
           point.y=attribute == 'V' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
-          if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+            {
+              if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+                goto trace_path_done;
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-          TracePoint(q,point);
+            }
+          if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
           /* consume comma if present (as in elliptical arc above) */
@@ -6767,9 +6963,14 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       {
         point=start;
         /* make sure we have at least 100 elements available */
-        if  ( ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount) && PrimitiveInfoRealloc(p_PIMgr,100) )
+        if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+          {
+            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+              goto trace_path_done;
             q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
-        TracePoint(q,point);
+          }
+        if ((status=TracePoint(q,point)) == MagickFail)
+            goto trace_path_done;
         p_PIMgr->StoreStartingAt += q->coordinates;
         q+=q->coordinates;
         primitive_info = *pp_PrimitiveInfo + SubpathOffset;
@@ -6801,18 +7002,25 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       q->method=FillToBorderMethod;
   }
   q=primitive_info;
+
+ trace_path_done:;
+
+  if (status == MagickFail)
+    number_coordinates = 0;
+
   return(number_coordinates);
 }
 
-static void
+static MagickPassFail
 TracePoint(PrimitiveInfo *primitive_info,const PointInfo point)
 {
   primitive_info->coordinates=1;
   PRIMINF_CLEAR_FLAGS(primitive_info);
   primitive_info->point=point;
+  return MagickPass;
 }
 
-static void
+static MagickPassFail
 TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   const PointInfo end)
 {
@@ -6825,29 +7033,37 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
   register long
     i;
 
+  MagickPassFail
+    status = MagickPass;
+
   /*
     Per the SVG spec, if the width and/or height are zero, rendering
     the element is disabled.
   */
-  if  ( (start.x == end.x) || (start.y == end.y) )
+  if ((start.x == end.x) || (start.y == end.y))
   {
     primitive_info->coordinates = 0;
-    return;
+    goto trace_rectangle_done;
   }
   p=primitive_info;
-  TracePoint(p,start);
+  if ((status = TracePoint(p,start)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   point.x=start.x;
   point.y=end.y;
-  TracePoint(p,point);
+  if ((status = TracePoint(p,point)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
-  TracePoint(p,end);
+  if ((status = TracePoint(p,end)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   point.x=end.x;
   point.y=start.y;
-  TracePoint(p,point);
+  if ((status = TracePoint(p,point)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
-  TracePoint(p,start);
+  if ((status = TracePoint(p,start)) == MagickFail)
+    goto trace_rectangle_done;
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
@@ -6857,9 +7073,13 @@ TraceRectangle(PrimitiveInfo *primitive_info,const PointInfo start,
     p->primitive=primitive_info->primitive;
     p--;
   }
+
+ trace_rectangle_done:
+
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
                     const PointInfo start,const PointInfo end,PointInfo arc)
 {
@@ -6878,6 +7098,9 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
     *primitive_info,
     **pp_PrimitiveInfo;
 
+  MagickPassFail
+    status = MagickPass;
+
   pp_PrimitiveInfo = p_PIMgr->pp_PrimitiveInfo;
   InitialStoreStartingAt = p_PIMgr->StoreStartingAt;
 
@@ -6887,10 +7110,10 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
     Per the SVG spec, if the width and/or height are zero, rendering
     the element is disabled.
   */
-  if  ( (offset.x == 0.0) || (offset.y == 0.0) )
+  if ((offset.x == 0.0) || (offset.y == 0.0))
   {
-	(*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
-    return;
+    (*pp_PrimitiveInfo+InitialStoreStartingAt)->coordinates = 0;
+    goto round_rectangle_done;
   }
 
   if (arc.x > (0.5*offset.x))
@@ -6902,7 +7125,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+arc.y;
   degrees.x=270.0;
   degrees.y=360.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6910,7 +7134,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+offset.y-arc.y;
   degrees.x=0.0;
   degrees.y=90.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6918,7 +7143,8 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+offset.y-arc.y;
   degrees.x=90.0;
   degrees.y=180.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
@@ -6926,15 +7152,20 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   point.y=start.y+arc.y;
   degrees.x=180.0;
   degrees.y=270.0;
-  TraceEllipse(p_PIMgr,point,arc,degrees);
+  if ((status=TraceEllipse(p_PIMgr,point,arc,degrees)) == MagickFail)
+    goto round_rectangle_done;
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base addr might have moved */
   p_PIMgr->StoreStartingAt += p->coordinates;
 
   /* need only one element, but make sure there is some headroom */
-  if  ( (p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount )
-    PrimitiveInfoRealloc(p_PIMgr,100);
+  if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+    {
+      if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+        goto round_rectangle_done;
+    }
   p = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
-  TracePoint(p,(*pp_PrimitiveInfo+InitialStoreStartingAt)->point);
+  if ((status=TracePoint(p,(*pp_PrimitiveInfo+InitialStoreStartingAt)->point))  == MagickFail)
+    goto round_rectangle_done;
   p+=p->coordinates;
   p_PIMgr->StoreStartingAt = InitialStoreStartingAt;  /* restore original value */
 
@@ -6945,9 +7176,13 @@ TraceRoundRectangle(PrimitiveInfoMgr *p_PIMgr,
   /* NOTE: p pointing just past last traced point! */
   for (p--; p > primitive_info; p--)
     p->primitive=primitive_info->primitive;
+
+ round_rectangle_done:;
+
+  return status;
 }
 
-static void
+static MagickPassFail
 TraceSquareLinecap(PrimitiveInfo *primitive_info,
                    const unsigned long number_vertices,const double offset)
 {
@@ -6992,6 +7227,8 @@ TraceSquareLinecap(PrimitiveInfo *primitive_info,
     dx*(distance+offset)/distance;
   primitive_info[number_vertices-1].point.y=primitive_info[j].point.y+
     dy*(distance+offset)/distance;
+
+  return MagickPass;
 }
 
 static PrimitiveInfo *
@@ -7033,7 +7270,7 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
 
   PrimitiveInfo
     *polygon_primitive,
-    *stroke_polygon;
+    *stroke_polygon = (PrimitiveInfo *) NULL;
 
   register long
     i;
@@ -7050,6 +7287,9 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
     n,
     p,
     q;
+
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Compute initial sizes for paths based on the number of primitive coordinates.  We
@@ -7162,7 +7402,10 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
   mid=ExpandAffine(&draw_info->affine)*stroke_width_limited/2.0;
   miterlimit=draw_info->miterlimit*draw_info->miterlimit*mid*mid;
   if ((draw_info->linecap == SquareCap) && !closed_path)
-    TraceSquareLinecap(polygon_primitive,number_vertices,mid);
+    {
+      if ((status=TraceSquareLinecap(polygon_primitive,number_vertices,mid)) == MagickFail)
+        goto trace_stroke_polygon_done;
+    }
   offset.x=sqrt(mid*mid/(inverse_slope.p*inverse_slope.p+1.0));
   offset.y=offset.x*inverse_slope.p;
   if ((dy.p*offset.x-dx.p*offset.y) > 0.0)
@@ -7504,6 +7747,9 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
       stroke_polygon[i].primitive=UndefinedPrimitive;
       stroke_polygon[0].coordinates=p+q+2*closed_path+1;
     }
+
+ trace_stroke_polygon_done:;
+
   MagickFreeMemory(path_p);
   MagickFreeMemory(path_q);
   MagickFreeMemory(polygon_primitive);

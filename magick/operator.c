@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2004 - 2014 GraphicsMagick Group
+% Copyright (C) 2004 - 2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -327,9 +327,9 @@ QuantumOperatorImageMultivalue(Image *image,
 static MagickPassFail
 QuantumAddCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -394,9 +394,9 @@ QuantumAddCB(void *mutable_data,
 static MagickPassFail
 QuantumAndCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -461,9 +461,9 @@ QuantumAndCB(void *mutable_data,
 static MagickPassFail
 QuantumAssignCB(void *mutable_data,
                 const void *immutable_data,
-                Image *image,
-                PixelPacket *pixels,
-                IndexPacket *indexes,
+                Image * restrict image,
+                PixelPacket * restrict pixels,
+                IndexPacket * restrict indexes,
                 const long npixels,
                 ExceptionInfo *exception)
 {
@@ -534,9 +534,9 @@ QuantumAssignCB(void *mutable_data,
 static MagickPassFail
 QuantumDepthCB(void *mutable_data,
                const void *immutable_data,
-               Image *image,
-               PixelPacket *pixels,
-               IndexPacket *indexes,
+               Image * restrict image,
+               PixelPacket * restrict pixels,
+               IndexPacket * restrict indexes,
                const long npixels,
                ExceptionInfo *exception)
 {
@@ -657,9 +657,9 @@ QuantumDepthCB(void *mutable_data,
 static MagickPassFail
 QuantumDivideCB(void *mutable_data,
                 const void *immutable_data,
-                Image *image,
-                PixelPacket *pixels,
-                IndexPacket *indexes,
+                Image * restrict image,
+                PixelPacket * restrict pixels,
+                IndexPacket * restrict indexes,
                 const long npixels,
                 ExceptionInfo *exception)
 {
@@ -729,9 +729,9 @@ QuantumDivideCB(void *mutable_data,
 static MagickPassFail
 QuantumGammaCB(void *mutable_data,
                const void *immutable_data,
-               Image *image,
-               PixelPacket *pixels,
-               IndexPacket *indexes,
+               Image * restrict image,
+               PixelPacket * restrict pixels,
+               IndexPacket * restrict indexes,
                const long npixels,
                ExceptionInfo *exception)
 {
@@ -828,9 +828,9 @@ QuantumGammaCB(void *mutable_data,
 static MagickPassFail
 QuantumNegateCB(void *mutable_data,
                 const void *immutable_data,
-                Image *image,
-                PixelPacket *pixels,
-                IndexPacket *indexes,
+                Image * restrict image,
+                PixelPacket * restrict pixels,
+                IndexPacket * restrict indexes,
                 const long npixels,
                 ExceptionInfo *exception)
 {
@@ -903,9 +903,9 @@ QuantumNegateCB(void *mutable_data,
 static MagickPassFail
 QuantumLogCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -1008,9 +1008,9 @@ QuantumLogCB(void *mutable_data,
 static MagickPassFail
 QuantumLShiftCB(void *mutable_data,
                 const void *immutable_data,
-                Image *image,
-                PixelPacket *pixels,
-                IndexPacket *indexes,
+                Image * restrict image,
+                PixelPacket * restrict pixels,
+                IndexPacket * restrict indexes,
                 const long npixels,
                 ExceptionInfo *exception)
 {
@@ -1075,9 +1075,9 @@ QuantumLShiftCB(void *mutable_data,
 static MagickPassFail
 QuantumMaxCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -1150,9 +1150,9 @@ QuantumMaxCB(void *mutable_data,
 static MagickPassFail
 QuantumMinCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -1225,9 +1225,9 @@ QuantumMinCB(void *mutable_data,
 static MagickPassFail
 QuantumMultiplyCB(void *mutable_data,
                   const void *immutable_data,
-                  Image *image,
-                  PixelPacket *pixels,
-                  IndexPacket *indexes,
+                  Image * restrict image,
+                  PixelPacket * restrict pixels,
+                  IndexPacket * restrict indexes,
                   const long npixels,
                   ExceptionInfo *exception)
 {
@@ -1305,9 +1305,9 @@ GenerateQuantumNoise(const Quantum quantum,const NoiseType noise_type,
 static MagickPassFail
 QuantumNoiseCB(void *mutable_data,
                const void *immutable_data,
-               Image *image,
-               PixelPacket *pixels,
-               IndexPacket *indexes,
+               Image * restrict image,
+               PixelPacket * restrict pixels,
+               IndexPacket * restrict indexes,
                const long npixels,
                ExceptionInfo *exception,
                const NoiseType noise_type
@@ -1383,9 +1383,9 @@ QuantumNoiseCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseGaussianCB(void *mutable_data,
                        const void *immutable_data,
-                       Image *image,
-                       PixelPacket *pixels,
-                       IndexPacket *indexes,
+                       Image * restrict image,
+                       PixelPacket * restrict pixels,
+                       IndexPacket * restrict indexes,
                        const long npixels,
                        ExceptionInfo *exception)
 {
@@ -1395,9 +1395,9 @@ QuantumNoiseGaussianCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseImpulseCB(void *mutable_data,
                       const void *immutable_data,
-                      Image *image,
-                      PixelPacket *pixels,
-                      IndexPacket *indexes,
+                      Image * restrict image,
+                      PixelPacket * restrict pixels,
+                      IndexPacket * restrict indexes,
                       const long npixels,
                       ExceptionInfo *exception)
 {
@@ -1407,9 +1407,9 @@ QuantumNoiseImpulseCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseLaplacianCB(void *mutable_data,
                         const void *immutable_data,
-                        Image *image,
-                        PixelPacket *pixels,
-                        IndexPacket *indexes,
+                        Image * restrict image,
+                        PixelPacket * restrict pixels,
+                        IndexPacket * restrict indexes,
                         const long npixels,
                         ExceptionInfo *exception)
 {
@@ -1419,9 +1419,9 @@ QuantumNoiseLaplacianCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseMultiplicativeCB(void *mutable_data,
                              const void *immutable_data,
-                             Image *image,
-                             PixelPacket *pixels,
-                             IndexPacket *indexes,
+                             Image * restrict image,
+                             PixelPacket * restrict pixels,
+                             IndexPacket * restrict indexes,
                              const long npixels,
                              ExceptionInfo *exception)
 {
@@ -1432,9 +1432,9 @@ QuantumNoiseMultiplicativeCB(void *mutable_data,
 static MagickPassFail
 QuantumNoisePoissonCB(void *mutable_data,
                       const void *immutable_data,
-                      Image *image,
-                      PixelPacket *pixels,
-                      IndexPacket *indexes,
+                      Image * restrict image,
+                      PixelPacket * restrict pixels,
+                      IndexPacket * restrict indexes,
                       const long npixels,
                       ExceptionInfo *exception)
 {
@@ -1446,9 +1446,9 @@ QuantumNoisePoissonCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseRandomCB(void *mutable_data,
                      const void *immutable_data,
-                      Image *image,
-                      PixelPacket *pixels,
-                      IndexPacket *indexes,
+                      Image * restrict image,
+                      PixelPacket * restrict pixels,
+                      IndexPacket * restrict indexes,
                       const long npixels,
                       ExceptionInfo *exception)
 {
@@ -1459,9 +1459,9 @@ QuantumNoiseRandomCB(void *mutable_data,
 static MagickPassFail
 QuantumNoiseUniformCB(void *mutable_data,
                       const void *immutable_data,
-                      Image *image,
-                      PixelPacket *pixels,
-                      IndexPacket *indexes,
+                      Image * restrict image,
+                      PixelPacket * restrict pixels,
+                      IndexPacket * restrict indexes,
                       const long npixels,
                       ExceptionInfo *exception)
 {
@@ -1471,9 +1471,9 @@ QuantumNoiseUniformCB(void *mutable_data,
 static MagickPassFail
 QuantumOrCB(void *mutable_data,
             const void *immutable_data,
-            Image *image,
-            PixelPacket *pixels,
-            IndexPacket *indexes,
+            Image * restrict image,
+            PixelPacket * restrict pixels,
+            IndexPacket * restrict indexes,
             const long npixels,
             ExceptionInfo *exception)
 {
@@ -1543,9 +1543,9 @@ QuantumOrCB(void *mutable_data,
 static MagickPassFail
 QuantumPowCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {
@@ -1642,9 +1642,9 @@ QuantumPowCB(void *mutable_data,
 static MagickPassFail
 QuantumRShiftCB(void *mutable_data,
                 const void *immutable_data,
-                Image *image,
-                PixelPacket *pixels,
-                IndexPacket *indexes,
+                Image * restrict image,
+                PixelPacket * restrict pixels,
+                IndexPacket * restrict indexes,
                 const long npixels,
                 ExceptionInfo *exception)
 {
@@ -1709,9 +1709,9 @@ QuantumRShiftCB(void *mutable_data,
 static MagickPassFail
 QuantumSubtractCB(void *mutable_data,
                   const void *immutable_data,
-                  Image *image,
-                  PixelPacket *pixels,
-                  IndexPacket *indexes,
+                  Image * restrict image,
+                  PixelPacket * restrict pixels,
+                  IndexPacket * restrict indexes,
                   const long npixels,
                   ExceptionInfo *exception)
 {
@@ -1790,9 +1790,9 @@ static inline Quantum ApplyThresholdOperator(const Quantum quantum,
 static MagickPassFail
 QuantumThresholdCB(void *mutable_data,
                    const void *immutable_data,
-                   Image *image,
-                   PixelPacket *pixels,
-                   IndexPacket *indexes,
+                   Image * restrict image,
+                   PixelPacket * restrict pixels,
+                   IndexPacket * restrict indexes,
                    const long npixels,
                    ExceptionInfo *exception)
 {
@@ -1863,9 +1863,9 @@ static inline Quantum ApplyThresholdBlackOperator(const Quantum quantum,
 static MagickPassFail
 QuantumThresholdBlackCB(void *mutable_data,
                         const void *immutable_data,
-                        Image *image,
-                        PixelPacket *pixels,
-                        IndexPacket *indexes,
+                        Image * restrict image,
+                        PixelPacket * restrict pixels,
+                        IndexPacket * restrict indexes,
                         const long npixels,
                         ExceptionInfo *exception)
 {
@@ -1955,9 +1955,9 @@ static inline Quantum ApplyThresholdWhiteOperator(const Quantum quantum,
 static MagickPassFail
 QuantumThresholdWhiteCB(void *mutable_data,
                         const void *immutable_data,
-                        Image *image,
-                        PixelPacket *pixels,
-                        IndexPacket *indexes,
+                        Image * restrict image,
+                        PixelPacket * restrict pixels,
+                        IndexPacket * restrict indexes,
                         const long npixels,
                         ExceptionInfo *exception)
 {
@@ -2048,9 +2048,9 @@ static inline Quantum ApplyThresholdBlackNegateOperator(const Quantum intensity,
 static MagickPassFail
 QuantumThresholdBlackNegateCB(void *mutable_data,
                               const void *immutable_data,
-                              Image *image,
-                              PixelPacket *pixels,
-                              IndexPacket *indexes,
+                              Image * restrict image,
+                              PixelPacket * restrict pixels,
+                              IndexPacket * restrict indexes,
                               const long npixels,
                               ExceptionInfo *exception)
 {
@@ -2142,9 +2142,9 @@ static inline Quantum ApplyThresholdWhiteNegateOperator(const Quantum intensity,
 static MagickPassFail
 QuantumThresholdWhiteNegateCB(void *mutable_data,
                               const void *immutable_data,
-                              Image *image,
-                              PixelPacket *pixels,
-                              IndexPacket *indexes,
+                              Image * restrict image,
+                              PixelPacket * restrict pixels,
+                              IndexPacket * restrict indexes,
                               const long npixels,
                               ExceptionInfo *exception)
 {
@@ -2222,9 +2222,9 @@ QuantumThresholdWhiteNegateCB(void *mutable_data,
 static MagickPassFail
 QuantumXorCB(void *mutable_data,
              const void *immutable_data,
-             Image *image,
-             PixelPacket *pixels,
-             IndexPacket *indexes,
+             Image * restrict image,
+             PixelPacket * restrict pixels,
+             IndexPacket * restrict indexes,
              const long npixels,
              ExceptionInfo *exception)
 {

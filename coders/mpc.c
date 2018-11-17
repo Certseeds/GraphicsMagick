@@ -128,6 +128,8 @@ static MagickBool IsMPC(const unsigned char *magick,const size_t length)
 
 #define ThrowMPCReaderException(code_,reason_,image_) \
 do { \
+  MagickFreeMemory(comment); \
+  MagickFreeMemory(values); \
   if (number_of_profiles > 0) \
     { \
       unsigned int _index; \
@@ -164,6 +166,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     *p;
 
   unsigned int
+    comment_count,
+    keyword_count,
     status;
 
   unsigned long
@@ -174,6 +178,10 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   unsigned int
     number_of_profiles=0;
+
+  char
+    *comment = NULL,
+    *values = NULL;
 
   /*
     Open image file.
@@ -215,6 +223,8 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->depth=8;
     image->compression=NoCompression;
     image->storage_class=DirectClass;
+    comment_count=0;
+    keyword_count=0;
     while (isgraph(c) && (c != ':'))
     {
       register char
@@ -222,11 +232,28 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       if (c == '{')
         {
-          char
-            *comment;
-
           size_t
             comment_length;
+
+          /*
+            Insist that format is identified prior to any comments.
+          */
+          if (id[0] == '\0')
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Comment precedes format identifier (id=MagickCache)");
+              ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+
+          /*
+            Insist that only one comment is provided
+          */
+          if (comment_count > 0)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Too many comments!");
+              ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
 
           /*
             Read comment-- any text between { }.
@@ -258,15 +285,13 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image);
           *p='\0';
           (void) SetImageAttribute(image,"comment",comment);
+          comment_count++;
           MagickFreeMemory(comment);
           c=ReadBlobByte(image);
         }
       else
         if (isalnum(c))
           {
-            char
-              *values;
-
             size_t
               values_length;
 
@@ -287,6 +312,17 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
             *p='\0';
             if (c == EOF)
               ThrowMPCReaderException(CorruptImageWarning,ImproperImageHeader,image);
+
+            /*
+              Insist that the first keyword must be 'id' (id=MagickCache)
+            */
+            if ((keyword_count == 0) && (LocaleCompare(keyword,"id") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword must be 'id' (have '%s')",
+                                      keyword);
+                ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
 
             /*
               Get values.
@@ -327,8 +363,18 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     break;
               }
             *p='\0';
+            keyword_count++;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "keyword=\"%s\" values=\"%s\"",keyword,values);
+                                  "keyword[%u]=\"%s\" values=\"%s\"",keyword_count,keyword,values);
+            /*
+              Insist that the first keyword value must be 'MagickCache' (id=MagickCache)
+            */
+            if ((keyword_count == 1) && (LocaleCompare(values,"MagickCache") != 0))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "First keyword/value must be 'id=MagickCache'");
+                ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
             /*
               Assign a value to the specified keyword.
             */

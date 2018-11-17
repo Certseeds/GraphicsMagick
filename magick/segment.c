@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -266,7 +266,7 @@ typedef struct _Cluster
 } Cluster;
 
 static MagickPassFail
-Classify(Image *image,short **extrema,
+Classify(Image * restrict image,short **extrema,
          const double cluster_threshold,
          const double weighting_exponent,
          const unsigned int verbose)
@@ -295,23 +295,23 @@ Classify(Image *image,short **extrema,
     y;
 
   PixelPacket
-    *colormap=0;
+    * restrict colormap=0;
 
   register const PixelPacket
-    *p;
+    * restrict p;
 
   register double
-    *squares;
+    * restrict squares;
 
   register IndexPacket
-    *indexes;
+    * restrict indexes;
 
   register long
     i,
     x;
 
   register PixelPacket
-    *q;
+    * restrict q;
 
   unsigned long
     number_clusters;
@@ -632,9 +632,6 @@ Classify(Image *image,short **extrema,
       int
         num_threads;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_Classify)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -761,19 +758,22 @@ Classify(Image *image,short **extrema,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_Classify)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count+image->rows,image->rows << 1,
-                                      &image->exception,
-                                      SegmentImageText,image->filename))
-            thread_status=MagickFail;
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count+image->rows,image->rows << 1,
+                                    &image->exception,
+                                    SegmentImageText,image->filename))
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
   /*
     Free memory.

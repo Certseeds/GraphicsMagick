@@ -459,10 +459,10 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
   Image
     *image;
 
-  long
+  unsigned long
     y;
 
-  register long
+  register unsigned long
     x;
 
   register PixelPacket
@@ -753,6 +753,29 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
     if (ReadBlobByte(image) == EOF)
       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
+  /*
+    Verify that remaining data is sufficient for claimed dimensions.
+  */
+  if (BlobIsSeekable(image))
+    {
+      magick_off_t file_size;
+      magick_int64_t expected_file_size;
+
+      file_size = GetBlobSize(image);
+
+      expected_file_size=pixels_offset+
+        ((((((magick_int64_t) image->rows*image->columns*number_of_channels+2UL)/3UL)
+           *sizeof(U32)*8UL)+31UL)/32UL)*sizeof(U32);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Expected file size %" MAGICK_UINT64_F "u bytes"
+                              " (have %" MAGICK_OFF_F "d bytes)",
+                              expected_file_size, file_size);
+
+      if ((file_size > 0) && ((magick_int64_t) file_size < expected_file_size))
+        ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+    }
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Reading Cineon pixels starting at offset %ld",(long) TellBlob(image));
@@ -778,7 +801,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           scanline=scandata;
           MagickBitStreamInitializeRead(&bit_stream,scanline);
-          for (y=0; y < (long) image->rows; y++)
+          for (y=0; y < image->rows; y++)
             {
               q=SetImagePixels(image,0,y,image->columns,1);
               if (q == (PixelPacket *) NULL)
@@ -788,7 +811,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
               */
               scanline=scandata;
               i=3;
-              for (x=(long) image->columns; x > 0; x--, i++)
+              for (x=0; x < image->columns; x++, i++)
                 {
                   if (i > 2)
                     {
@@ -804,6 +827,8 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
                   q->opacity=0U;
                   q++;
                 }
+              if (x < image->columns)
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -823,7 +848,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
           scandata=MagickAllocateMemory(unsigned char *,scandata_bytes);
           if (scandata == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-          for (y=0; y < (long) image->rows; y++)
+          for (y=0; y < image->rows; y++)
             {
               magick_uint32_t red;
               magick_uint32_t green;
@@ -836,7 +861,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
               if (ReadBlobZC(image,scandata_bytes,&scanline) != scandata_bytes)
                 break;
               MagickBitStreamInitializeRead(&bit_stream,scanline);
-              for (x=0 ; x < (long) image->columns; x++)
+              for (x=0 ; x < image->columns; x++)
                 {
                   /*
                     Packed 10 bit samples with 2 bit pad at end of 32-bit word.
@@ -855,6 +880,8 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
 /*                          (unsigned int)q->red, (unsigned int)q->green, (unsigned int)q->blue); */
                   q++;
                 }
+              if (x < image->columns)
+                break;
               if (!SyncImagePixels(image))
                 break;
               if (image->previous == (Image *) NULL)
@@ -871,6 +898,9 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
         ThrowReaderException(CorruptImageError,ImageTypeNotSupported,image);
       }
   }
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "EOF at offset %" MAGICK_OFF_F "d", TellBlob(image));
   image->depth=Min(image->depth,QuantumDepth);
   image->colorspace=CineonLogRGBColorspace;
 

@@ -1029,8 +1029,8 @@ static void XEditText(Display *display,MagickXWidgetInfo *text_info,
           (void) memmove(text_info->cursor,text_info->cursor+1,
                          strlen(text_info->cursor+1)+1);
           text_info->highlight=False;
-          break;
         }
+      break;
     }
     case XK_Left:
     case XK_KP_Left:
@@ -5315,6 +5315,8 @@ MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *wind
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
+
+static int FontCompare(const void *x,const void *y) MAGICK_FUNC_PURE;
 
 static int FontCompare(const void *x,const void *y)
 {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2009 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -155,12 +155,12 @@ typedef struct _ColorizeImagePixelsOptions
 static MagickPassFail
 ColorizeImagePixelsCB(void *mutable_data,                /* User provided mutable data */
                       const void *immutable_data,        /* User provided immutable data */
-                      const Image *source_image,         /* Source image */
-                      const PixelPacket *source_pixels,  /* Pixel row in source image */
-                      const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                      Image *new_image,                  /* New image */
-                      PixelPacket *new_pixels,           /* Pixel row in new image */
-                      IndexPacket *new_indexes,          /* Pixel row indexes in new image */
+                      const Image * restrict source_image,         /* Source image */
+                      const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                      const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                      Image * restrict new_image,                  /* New image */
+                      PixelPacket * restrict new_pixels,           /* Pixel row in new image */
+                      IndexPacket * restrict new_indexes,          /* Pixel row indexes in new image */
                       const long npixels,                /* Number of pixels in row */
                       ExceptionInfo *exception           /* Exception report */
                       )
@@ -318,9 +318,9 @@ typedef struct _ColorMatrixImageOptions_t
 static MagickPassFail
 ColorMatrixImagePixels(void *mutable_data,         /* User provided mutable data */
                        const void *immutable_data, /* User provided immutable data */
-                       Image *image,               /* Modify image */
-                       PixelPacket *pixels,        /* Pixel row */
-                       IndexPacket *indexes,       /* Pixel row indexes */
+                       Image * restrict image,     /* Modify image */
+                       PixelPacket * restrict pixels, /* Pixel row */
+                       IndexPacket * restrict indexes, /* Pixel row indexes */
                        const long npixels,         /* Number of pixels in row */
                        ExceptionInfo *exception)   /* Exception report */
 {
@@ -570,7 +570,7 @@ ColorMatrixImage(Image *image,const unsigned int order,const double *color_matri
 %
 %
 */
-MagickExport Image *ImplodeImage(const Image *image,const double amount,
+MagickExport Image *ImplodeImage(const Image * restrict image,const double amount,
                                  ExceptionInfo *exception)
 {
 #define ImplodeImageText "[%s] Implode..."
@@ -583,7 +583,7 @@ MagickExport Image *ImplodeImage(const Image *image,const double amount,
     y_scale;
 
   Image
-    *implode_image;
+    * restrict implode_image;
 
   long
     y;
@@ -640,7 +640,7 @@ MagickExport Image *ImplodeImage(const Image *image,const double amount,
           x;
 
         register PixelPacket
-          *q;
+          * restrict q;
 
         double
           distance,
@@ -653,9 +653,6 @@ MagickExport Image *ImplodeImage(const Image *image,const double amount,
         MagickPassFail
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ImplodeImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -704,18 +701,21 @@ MagickExport Image *ImplodeImage(const Image *image,const double amount,
                 thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_ImplodeImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        ImplodeImageText,implode_image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      ImplodeImageText,implode_image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   implode_image->is_grayscale=image->is_grayscale;
@@ -760,12 +760,12 @@ typedef struct _MorphImagePixelsOptions
 static MagickPassFail
 MorphImagePixelsCB(void *mutable_data,                /* User provided mutable data */
                    const void *immutable_data,        /* User provided immutable data */
-                   const Image *source_image,         /* Source image */
-                   const PixelPacket *source_pixels,  /* Pixel row in source image */
-                   const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                   Image *new_image,                  /* New image */
-                   PixelPacket *new_pixels,           /* Pixel row in new image */
-                   IndexPacket *new_indexes,          /* Pixel row indexes in new image */
+                   const Image * restrict source_image,         /* Source image */
+                   const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                   const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                   Image * restrict new_image,                  /* New image */
+                   PixelPacket * restrict new_pixels,           /* Pixel row in new image */
+                   IndexPacket * restrict new_indexes,          /* Pixel row indexes in new image */
                    const long npixels,                /* Number of pixels in row */
                    ExceptionInfo *exception           /* Exception report */
                    )
@@ -997,11 +997,11 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
   for (y=0; y < (long) image->rows; y++)
     {
       const PixelPacket
-        *p,
+        * restrict p,
         *r;
 
       PixelPacket
-        *q;
+        * restrict q;
 
       long
         x;
@@ -1012,9 +1012,6 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
       MagickBool
         thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_OilPaintImage)
-#endif
       thread_status=status;
       if (thread_status == MagickFail)
         continue;
@@ -1083,18 +1080,21 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
             thread_status=MagickFail;
         }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_OilPaintImage)
+#  pragma omp atomic
 #endif
-      {
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+      row_count++;
+      if (QuantumTick(row_count,image->rows))
+        if (!MagickMonitorFormatted(row_count,image->rows,exception,
                                       OilPaintImageText,image->filename))
-            thread_status=MagickFail;
+          thread_status=MagickFail;
 
-        if (thread_status == MagickFail)
+      if (thread_status == MagickFail)
+        {
           status=MagickFail;
-      }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+        }
     }
 
   paint_image->is_grayscale=image->is_grayscale;
@@ -1132,9 +1132,9 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
 static MagickPassFail
 SolarizeImagePixelsCB(void *mutable_data,         /* User provided mutable data */
                       const void *immutable_data, /* User provided immutable data */
-                      Image *image,               /* Modify image */
-                      PixelPacket *pixels,        /* Pixel row */
-                      IndexPacket *indexes,       /* Pixel row indexes */
+                      Image * restrict image,               /* Modify image */
+                      PixelPacket * restrict pixels,        /* Pixel row */
+                      IndexPacket * restrict indexes,       /* Pixel row indexes */
                       const long npixels,         /* Number of pixels in row */
                       ExceptionInfo *exception)   /* Exception report */
 {
@@ -1245,12 +1245,12 @@ MagickExport MagickPassFail SolarizeImage(Image *image,const double threshold)
 #define SetBit(a,i,set) \
   a=(Quantum) ((set) ? (a) | (1UL << (i)) : (a) & ~(1UL << (i)))
 #define SteganoImageText "[%s] Stegano..."
-MagickExport Image *SteganoImage(const Image *image,const Image *watermark,
+MagickExport Image *SteganoImage(const Image * restrict image,const Image * restrict watermark,
   ExceptionInfo *exception)
 {
 
   Image
-    *stegano_image;
+    * restrict stegano_image;
 
   long
     c,
@@ -1269,7 +1269,7 @@ MagickExport Image *SteganoImage(const Image *image,const Image *watermark,
     is_grayscale;
 
   register PixelPacket
-    *q;
+    * restrict q;
 
   /*
     Initialize steganographic image attributes.
@@ -1377,26 +1377,26 @@ MagickExport Image *SteganoImage(const Image *image,const Image *watermark,
 %
 %
 */
-MagickExport Image *StereoImage(const Image *image,const Image *offset_image,
+MagickExport Image *StereoImage(const Image * restrict image,const Image * restrict offset_image,
   ExceptionInfo *exception)
 {
 #define StereoImageText "[%s] Stereo..."
 
   Image
-    *stereo_image;
+    * restrict stereo_image;
 
   long
     y;
 
   register const PixelPacket
-    *p,
-    *q;
+    * restrict p,
+    * restrict q;
 
   register long
     x;
 
   register PixelPacket
-    *r;
+    * restrict r;
 
   assert(image != (const Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -1474,7 +1474,7 @@ MagickExport Image *StereoImage(const Image *image,const Image *offset_image,
 %
 %
 */
-MagickExport Image *SwirlImage(const Image *image,double degrees,
+MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
                                ExceptionInfo *exception)
 {
 #define SwirlImageText "[%s] Swirl..."
@@ -1490,7 +1490,7 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
     y;
 
   Image
-    *swirl_image;
+    * restrict swirl_image;
 
   /*
     Initialize swirl image attributes.
@@ -1538,7 +1538,7 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
     for (y=0; y < (long) image->rows; y++)
       {
         register PixelPacket
-          *q;
+          * restrict q;
 
         register long
           x;
@@ -1554,9 +1554,6 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
         MagickPassFail
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_SwirlImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -1606,18 +1603,21 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
                 thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_SwirlImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,image->rows))
-            if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                        SwirlImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,image->rows))
+          if (!MagickMonitorFormatted(row_count,image->rows,exception,
+                                      SwirlImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   swirl_image->is_grayscale=image->is_grayscale;
@@ -1654,7 +1654,7 @@ MagickExport Image *SwirlImage(const Image *image,double degrees,
 %
 %
 */
-MagickExport Image *WaveImage(const Image *image,const double amplitude,
+MagickExport Image *WaveImage(const Image * restrict image,const double amplitude,
                               const double wave_length,ExceptionInfo *exception)
 {
 #define WaveImageText "[%s] Wave..."
@@ -1663,10 +1663,10 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
     virtual_pixel_method;
 
   double
-    *sine_map;
+    * restrict sine_map;
 
   Image
-    *wave_image;
+    * restrict wave_image;
 
   long
     y;
@@ -1740,7 +1740,7 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
     for (y=0; y < (long) wave_image->rows; y++)
       {
         register PixelPacket
-          *q;
+          * restrict q;
 
         register long
           x;
@@ -1751,9 +1751,6 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
         MagickPassFail
           thread_status;
 
-#if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_WaveImage)
-#endif
         thread_status=status;
         if (thread_status == MagickFail)
           continue;
@@ -1779,18 +1776,21 @@ MagickExport Image *WaveImage(const Image *image,const double amplitude,
                 thread_status=MagickFail;
           }
 #if defined(HAVE_OPENMP)
-#  pragma omp critical (GM_WaveImage)
+#  pragma omp atomic
 #endif
-        {
-          row_count++;
-          if (QuantumTick(row_count,wave_image->rows))
-            if (!MagickMonitorFormatted(row_count,wave_image->rows,exception,
-                                        WaveImageText,image->filename))
-              thread_status=MagickFail;
+        row_count++;
+        if (QuantumTick(row_count,wave_image->rows))
+          if (!MagickMonitorFormatted(row_count,wave_image->rows,exception,
+                                      WaveImageText,image->filename))
+            thread_status=MagickFail;
 
-          if (thread_status == MagickFail)
+        if (thread_status == MagickFail)
+          {
             status=MagickFail;
-        }
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
+          }
       }
   }
   /*

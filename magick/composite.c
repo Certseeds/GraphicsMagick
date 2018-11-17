@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2014 GraphicsMagick Group
+% Copyright (C) 2003 - 2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -72,9 +72,9 @@ typedef struct _CompositeOptions_t
 */
 static inline void
 PrepareDestinationPacket(PixelPacket *destination,
-                         const PixelPacket *update_pixels,
-                         const Image *update_image,
-                         const IndexPacket *update_indexes,
+                         const PixelPacket * restrict update_pixels,
+                         const Image * restrict update_image,
+                         const IndexPacket * restrict update_indexes,
                          const long i)
 {
   *destination=update_pixels[i];
@@ -91,9 +91,9 @@ PrepareDestinationPacket(PixelPacket *destination,
 */
 static inline void
 PrepareSourcePacket(PixelPacket *source,
-                    const PixelPacket *source_pixels,
-                    const Image *source_image,
-                    const IndexPacket *source_indexes,
+                    const PixelPacket * restrict source_pixels,
+                    const Image * restrict source_image,
+                    const IndexPacket * restrict source_indexes,
                     const long i)
 {
   *source=source_pixels[i];
@@ -109,10 +109,10 @@ PrepareSourcePacket(PixelPacket *source,
   Apply composition updates to the canvas image.
 */
 static inline void
-ApplyPacketUpdates(PixelPacket *update_pixels,
-                   IndexPacket *update_indexes,
-                   const Image *update_image,
-                   const PixelPacket *composite,
+ApplyPacketUpdates(PixelPacket * restrict update_pixels,
+                   IndexPacket * restrict update_indexes,
+                   const Image * restrict update_image,
+                   const PixelPacket * restrict composite,
                    const long i
                    )
 {
@@ -139,12 +139,12 @@ ApplyPacketUpdates(PixelPacket *update_pixels,
 static MagickPassFail
 OverCompositePixels(void *mutable_data,                /* User provided mutable data */
                     const void *immutable_data,        /* User provided immutable data */
-                    const Image *source_image,         /* Source image */
-                    const PixelPacket *source_pixels,  /* Pixel row in source image */
-                    const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                    Image *update_image,               /* Update image */
-                    PixelPacket *update_pixels,        /* Pixel row in update image */
-                    IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                    const Image * restrict source_image,         /* Source image */
+                    const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                    const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                    Image * restrict update_image,               /* Update image */
+                    PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                    IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                     const long npixels,                /* Number of pixels in row */
                     ExceptionInfo *exception           /* Exception report */
                     )
@@ -182,12 +182,12 @@ OverCompositePixels(void *mutable_data,                /* User provided mutable 
 static MagickPassFail
 InCompositePixels(void *mutable_data,                /* User provided mutable data */
                   const void *immutable_data,        /* User provided immutable data */
-                  const Image *source_image,         /* Source image */
-                  const PixelPacket *source_pixels,  /* Pixel row in source image */
-                  const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                  Image *update_image,               /* Update image */
-                  PixelPacket *update_pixels,        /* Pixel row in update image */
-                  IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                  const Image * restrict source_image,         /* Source image */
+                  const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                  const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                  Image * restrict update_image,               /* Update image */
+                  PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                  IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                   const long npixels,                /* Number of pixels in row */
                   ExceptionInfo *exception           /* Exception report */
                   )
@@ -254,12 +254,12 @@ InCompositePixels(void *mutable_data,                /* User provided mutable da
 static MagickPassFail
 OutCompositePixels(void *mutable_data,                /* User provided mutable data */
                    const void *immutable_data,        /* User provided immutable data */
-                   const Image *source_image,         /* Source image */
-                   const PixelPacket *source_pixels,  /* Pixel row in source image */
-                   const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                   Image *update_image,               /* Update image */
-                   PixelPacket *update_pixels,        /* Pixel row in update image */
-                   IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                   const Image * restrict source_image,         /* Source image */
+                   const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                   const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                   Image * restrict update_image,               /* Update image */
+                   PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                   IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                    const long npixels,                /* Number of pixels in row */
                    ExceptionInfo *exception           /* Exception report */
                    )
@@ -324,12 +324,12 @@ OutCompositePixels(void *mutable_data,                /* User provided mutable d
 static MagickPassFail
 AtopCompositePixels(void *mutable_data,                /* User provided mutable data */
                     const void *immutable_data,        /* User provided immutable data */
-                    const Image *source_image,         /* Source image */
-                    const PixelPacket *source_pixels,  /* Pixel row in source image */
-                    const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                    Image *update_image,               /* Update image */
-                    PixelPacket *update_pixels,        /* Pixel row in update image */
-                    IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                    const Image * restrict source_image,         /* Source image */
+                    const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                    const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                    Image * restrict update_image,               /* Update image */
+                    PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                    IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                     const long npixels,                /* Number of pixels in row */
                     ExceptionInfo *exception           /* Exception report */
                     )
@@ -369,12 +369,12 @@ AtopCompositePixels(void *mutable_data,                /* User provided mutable 
 static MagickPassFail
 XorCompositePixels(void *mutable_data,                /* User provided mutable data */
                    const void *immutable_data,        /* User provided immutable data */
-                   const Image *source_image,         /* Source image */
-                   const PixelPacket *source_pixels,  /* Pixel row in source image */
-                   const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                   Image *update_image,               /* Update image */
-                   PixelPacket *update_pixels,        /* Pixel row in update image */
-                   IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                   const Image * restrict source_image,         /* Source image */
+                   const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                   const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                   Image * restrict update_image,               /* Update image */
+                   PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                   IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                    const long npixels,                /* Number of pixels in row */
                    ExceptionInfo *exception           /* Exception report */
                    )
@@ -438,12 +438,12 @@ XorCompositePixels(void *mutable_data,                /* User provided mutable d
 static MagickPassFail
 PlusCompositePixels(void *mutable_data,                /* User provided mutable data */
                     const void *immutable_data,        /* User provided immutable data */
-                    const Image *source_image,         /* Source image */
-                    const PixelPacket *source_pixels,  /* Pixel row in source image */
-                    const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                    Image *update_image,               /* Update image */
-                    PixelPacket *update_pixels,        /* Pixel row in update image */
-                    IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                    const Image * restrict source_image,         /* Source image */
+                    const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                    const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                    Image * restrict update_image,               /* Update image */
+                    PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                    IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                     const long npixels,                /* Number of pixels in row */
                     ExceptionInfo *exception           /* Exception report */
                     )
@@ -498,12 +498,12 @@ PlusCompositePixels(void *mutable_data,                /* User provided mutable 
 static MagickPassFail
 MinusCompositePixels(void *mutable_data,                /* User provided mutable data */
                      const void *immutable_data,        /* User provided immutable data */
-                     const Image *source_image,         /* Source image */
-                     const PixelPacket *source_pixels,  /* Pixel row in source image */
-                     const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                     Image *update_image,               /* Update image */
-                     PixelPacket *update_pixels,        /* Pixel row in update image */
-                     IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                     const Image * restrict source_image,         /* Source image */
+                     const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                     const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                     Image * restrict update_image,               /* Update image */
+                     PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                     IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                      const long npixels,                /* Number of pixels in row */
                      ExceptionInfo *exception           /* Exception report */
                      )
@@ -557,12 +557,12 @@ MinusCompositePixels(void *mutable_data,                /* User provided mutable
 static MagickPassFail
 AddCompositePixels(void *mutable_data,                /* User provided mutable data */
                    const void *immutable_data,        /* User provided immutable data */
-                   const Image *source_image,         /* Source image */
-                   const PixelPacket *source_pixels,  /* Pixel row in source image */
-                   const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                   Image *update_image,               /* Update image */
-                   PixelPacket *update_pixels,        /* Pixel row in update image */
-                   IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                   const Image * restrict source_image,         /* Source image */
+                   const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                   const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                   Image * restrict update_image,               /* Update image */
+                   PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                   IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                    const long npixels,                /* Number of pixels in row */
                    ExceptionInfo *exception           /* Exception report */
                    )
@@ -613,12 +613,12 @@ AddCompositePixels(void *mutable_data,                /* User provided mutable d
 static MagickPassFail
 SubtractCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -671,12 +671,12 @@ SubtractCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 DifferenceCompositePixels(void *mutable_data,                /* User provided mutable data */
                           const void *immutable_data,        /* User provided immutable data */
-                          const Image *source_image,         /* Source image */
-                          const PixelPacket *source_pixels,  /* Pixel row in source image */
-                          const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                          Image *update_image,               /* Update image */
-                          PixelPacket *update_pixels,        /* Pixel row in update image */
-                          IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                          const Image * restrict source_image,         /* Source image */
+                          const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                          const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                          Image * restrict update_image,               /* Update image */
+                          PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                          IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                           const long npixels,                /* Number of pixels in row */
                           ExceptionInfo *exception           /* Exception report */
                           )
@@ -746,12 +746,12 @@ DifferenceCompositePixels(void *mutable_data,                /* User provided mu
 static MagickPassFail
 MultiplyCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -823,12 +823,12 @@ MultiplyCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 BumpmapCompositePixels(void *mutable_data,                /* User provided mutable data */
                        const void *immutable_data,        /* User provided immutable data */
-                       const Image *source_image,         /* Source image */
-                       const PixelPacket *source_pixels,  /* Pixel row in source image */
-                       const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                       Image *update_image,               /* Update image */
-                       PixelPacket *update_pixels,        /* Pixel row in update image */
-                       IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                       const Image * restrict source_image,         /* Source image */
+                       const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                       const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                       Image * restrict update_image,               /* Update image */
+                       PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                       IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                        const long npixels,                /* Number of pixels in row */
                        ExceptionInfo *exception           /* Exception report */
                        )
@@ -881,12 +881,12 @@ BumpmapCompositePixels(void *mutable_data,                /* User provided mutab
 static MagickPassFail
 CopyCompositePixels(void *mutable_data,                /* User provided mutable data */
                     const void *immutable_data,        /* User provided immutable data */
-                    const Image *source_image,         /* Source image */
-                    const PixelPacket *source_pixels,  /* Pixel row in source image */
-                    const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                    Image *update_image,               /* Update image */
-                    PixelPacket *update_pixels,        /* Pixel row in update image */
-                    IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                    const Image * restrict source_image,         /* Source image */
+                    const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                    const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                    Image * restrict update_image,               /* Update image */
+                    PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                    IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                     const long npixels,                /* Number of pixels in row */
                     ExceptionInfo *exception           /* Exception report */
                     )
@@ -961,12 +961,12 @@ CopyRedCompositePixels(void *mutable_data,                /* User provided mutab
 static MagickPassFail
 CopyGreenCompositePixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -999,12 +999,12 @@ CopyGreenCompositePixels(void *mutable_data,                /* User provided mut
 static MagickPassFail
 CopyBlueCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1037,11 +1037,11 @@ static MagickPassFail
 CopyOpacityCompositePixels(void *mutable_data,                /* User provided mutable data */
                            const void *immutable_data,        /* User provided immutable data */
                            const Image *source_image,         /* Source image */
-                           const PixelPacket *source_pixels,  /* Pixel row in source image */
-                           const IndexPacket *source_indexes, /* Pixel row indexes in source image */
+                           const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                           const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
                            Image *update_image,               /* Update image */
-                           PixelPacket *update_pixels,        /* Pixel row in update image */
-                           IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                           PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                           IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                            const long npixels,                /* Number of pixels in row */
                            ExceptionInfo *exception           /* Exception report */
                            )
@@ -1101,12 +1101,12 @@ CopyOpacityCompositePixels(void *mutable_data,                /* User provided m
 static MagickPassFail
 ClearCompositePixels(void *mutable_data,                /* User provided mutable data */
                      const void *immutable_data,        /* User provided immutable data */
-                     const Image *source_image,         /* Source image */
-                     const PixelPacket *source_pixels,  /* Pixel row in source image */
-                     const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                     Image *update_image,               /* Update image */
-                     PixelPacket *update_pixels,        /* Pixel row in update image */
-                     IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                     const Image * restrict source_image,         /* Source image */
+                     const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                     const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                     Image * restrict update_image,               /* Update image */
+                     PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                     IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                      const long npixels,                /* Number of pixels in row */
                      ExceptionInfo *exception           /* Exception report */
                      )
@@ -1148,12 +1148,12 @@ ClearCompositePixels(void *mutable_data,                /* User provided mutable
 static MagickPassFail
 DissolveCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1195,12 +1195,12 @@ DissolveCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 ModulateCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1263,12 +1263,12 @@ ModulateCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 ThresholdCompositePixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -1336,12 +1336,12 @@ ThresholdCompositePixels(void *mutable_data,                /* User provided mut
 static MagickPassFail
 DarkenCompositePixels(void *mutable_data,                /* User provided mutable data */
                       const void *immutable_data,        /* User provided immutable data */
-                      const Image *source_image,         /* Source image */
-                      const PixelPacket *source_pixels,  /* Pixel row in source image */
-                      const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                      Image *update_image,               /* Update image */
-                      PixelPacket *update_pixels,        /* Pixel row in update image */
-                      IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                      const Image * restrict source_image,         /* Source image */
+                      const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                      const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                      Image * restrict update_image,               /* Update image */
+                      PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                      IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                       const long npixels,                /* Number of pixels in row */
                       ExceptionInfo *exception           /* Exception report */
                       )
@@ -1407,12 +1407,12 @@ DarkenCompositePixels(void *mutable_data,                /* User provided mutabl
 static MagickPassFail
 LightenCompositePixels(void *mutable_data,                /* User provided mutable data */
                        const void *immutable_data,        /* User provided immutable data */
-                       const Image *source_image,         /* Source image */
-                       const PixelPacket *source_pixels,  /* Pixel row in source image */
-                       const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                       Image *update_image,               /* Update image */
-                       PixelPacket *update_pixels,        /* Pixel row in update image */
-                       IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                       const Image * restrict source_image,         /* Source image */
+                       const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                       const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                       Image * restrict update_image,               /* Update image */
+                       PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                       IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                        const long npixels,                /* Number of pixels in row */
                        ExceptionInfo *exception           /* Exception report */
                        )
@@ -1478,12 +1478,12 @@ LightenCompositePixels(void *mutable_data,                /* User provided mutab
 static MagickPassFail
 HueCompositePixels(void *mutable_data,                /* User provided mutable data */
                    const void *immutable_data,        /* User provided immutable data */
-                   const Image *source_image,         /* Source image */
-                   const PixelPacket *source_pixels,  /* Pixel row in source image */
-                   const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                   Image *update_image,               /* Update image */
-                   PixelPacket *update_pixels,        /* Pixel row in update image */
-                   IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                   const Image * restrict source_image,         /* Source image */
+                   const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                   const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                   Image * restrict update_image,               /* Update image */
+                   PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                   IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                    const long npixels,                /* Number of pixels in row */
                    ExceptionInfo *exception           /* Exception report */
                    )
@@ -1538,12 +1538,12 @@ HueCompositePixels(void *mutable_data,                /* User provided mutable d
 static MagickPassFail
 SaturateCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1599,12 +1599,12 @@ SaturateCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 ColorizeCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1660,12 +1660,12 @@ ColorizeCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 LuminizeCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -1721,12 +1721,12 @@ LuminizeCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 ScreenCompositePixels(void *mutable_data,                /* User provided mutable data */
                       const void *immutable_data,        /* User provided immutable data */
-                      const Image *source_image,         /* Source image */
-                      const PixelPacket *source_pixels,  /* Pixel row in source image */
-                      const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                      Image *update_image,               /* Update image */
-                      PixelPacket *update_pixels,        /* Pixel row in update image */
-                      IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                      const Image * restrict source_image,         /* Source image */
+                      const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                      const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                      Image * restrict update_image,               /* Update image */
+                      PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                      IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                       const long npixels,                /* Number of pixels in row */
                       ExceptionInfo *exception           /* Exception report */
                       )
@@ -1800,12 +1800,12 @@ ScreenCompositePixels(void *mutable_data,                /* User provided mutabl
 static MagickPassFail
 OverlayCompositePixels(void *mutable_data,               /* User provided mutable data */
                        const void *immutable_data,        /* User provided immutable data */
-                       const Image *source_image,         /* Source image */
-                       const PixelPacket *source_pixels,  /* Pixel row in source image */
-                       const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                       Image *update_image,               /* Update image */
-                       PixelPacket *update_pixels,        /* Pixel row in update image */
-                       IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                       const Image * restrict source_image,         /* Source image */
+                       const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                       const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                       Image * restrict update_image,               /* Update image */
+                       PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                       IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                        const long npixels,                /* Number of pixels in row */
                        ExceptionInfo *exception           /* Exception report */
                        )
@@ -1891,12 +1891,12 @@ OverlayCompositePixels(void *mutable_data,               /* User provided mutabl
 static MagickPassFail
 CopyBlackCompositePixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -1936,12 +1936,12 @@ CopyBlackCompositePixels(void *mutable_data,                /* User provided mut
 static MagickPassFail
 DivideCompositePixels(void *mutable_data,                /* User provided mutable data */
                       const void *immutable_data,        /* User provided immutable data */
-                      const Image *source_image,         /* Source image */
-                      const PixelPacket *source_pixels,  /* Pixel row in source image */
-                      const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                      Image *update_image,               /* Update image */
-                      PixelPacket *update_pixels,        /* Pixel row in update image */
-                      IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                      const Image * restrict source_image,         /* Source image */
+                      const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                      const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                      Image * restrict update_image,               /* Update image */
+                      PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                      IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                       const long npixels,                /* Number of pixels in row */
                       ExceptionInfo *exception           /* Exception report */
                       )
@@ -1999,12 +1999,12 @@ DivideCompositePixels(void *mutable_data,                /* User provided mutabl
 static MagickPassFail
 HardLightCompositePixels(void *mutable_data,               /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -2089,12 +2089,12 @@ HardLightCompositePixels(void *mutable_data,               /* User provided muta
 static MagickPassFail
 ExclusionCompositePixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -2168,12 +2168,12 @@ ExclusionCompositePixels(void *mutable_data,                /* User provided mut
 static MagickPassFail
 ColorDodgeCompositePixels(void *mutable_data,               /* User provided mutable data */
                           const void *immutable_data,        /* User provided immutable data */
-                          const Image *source_image,         /* Source image */
-                          const PixelPacket *source_pixels,  /* Pixel row in source image */
-                          const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                          Image *update_image,               /* Update image */
-                          PixelPacket *update_pixels,        /* Pixel row in update image */
-                          IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                          const Image * restrict source_image,         /* Source image */
+                          const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                          const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                          Image * restrict update_image,               /* Update image */
+                          PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                          IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                           const long npixels,                /* Number of pixels in row */
                           ExceptionInfo *exception           /* Exception report */
                           )
@@ -2255,12 +2255,12 @@ ColorDodgeCompositePixels(void *mutable_data,               /* User provided mut
 static MagickPassFail
 ColorBurnCompositePixels(void *mutable_data,               /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -2342,12 +2342,12 @@ ColorBurnCompositePixels(void *mutable_data,               /* User provided muta
 static MagickPassFail
 SoftLightCompositePixels(void *mutable_data,               /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -2449,12 +2449,12 @@ SoftLightCompositePixels(void *mutable_data,               /* User provided muta
 static MagickPassFail
 LinearBurnCompositePixels(void *mutable_data,                /* User provided mutable data */
                           const void *immutable_data,        /* User provided immutable data */
-                          const Image *source_image,         /* Source image */
-                          const PixelPacket *source_pixels,  /* Pixel row in source image */
-                          const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                          Image *update_image,               /* Update image */
-                          PixelPacket *update_pixels,        /* Pixel row in update image */
-                          IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                          const Image * restrict source_image,         /* Source image */
+                          const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                          const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                          Image * restrict update_image,               /* Update image */
+                          PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                          IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                           const long npixels,                /* Number of pixels in row */
                           ExceptionInfo *exception           /* Exception report */
                           )
@@ -2526,12 +2526,12 @@ LinearBurnCompositePixels(void *mutable_data,                /* User provided mu
 static MagickPassFail
 LinearDodgeCompositePixels(void *mutable_data,                /* User provided mutable data */
                            const void *immutable_data,        /* User provided immutable data */
-                           const Image *source_image,         /* Source image */
-                           const PixelPacket *source_pixels,  /* Pixel row in source image */
-                           const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                           Image *update_image,               /* Update image */
-                           PixelPacket *update_pixels,        /* Pixel row in update image */
-                           IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                           const Image * restrict source_image,         /* Source image */
+                           const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                           const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                           Image * restrict update_image,               /* Update image */
+                           PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                           IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                            const long npixels,                /* Number of pixels in row */
                            ExceptionInfo *exception           /* Exception report */
                            )
@@ -2603,12 +2603,12 @@ LinearDodgeCompositePixels(void *mutable_data,                /* User provided m
 static MagickPassFail
 LinearLightCompositePixels(void *mutable_data,                /* User provided mutable data */
                            const void *immutable_data,        /* User provided immutable data */
-                           const Image *source_image,         /* Source image */
-                           const PixelPacket *source_pixels,  /* Pixel row in source image */
-                           const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                           Image *update_image,               /* Update image */
-                           PixelPacket *update_pixels,        /* Pixel row in update image */
-                           IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                           const Image * restrict source_image,         /* Source image */
+                           const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                           const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                           Image * restrict update_image,               /* Update image */
+                           PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                           IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                            const long npixels,                /* Number of pixels in row */
                            ExceptionInfo *exception           /* Exception report */
                            )
@@ -2680,12 +2680,12 @@ LinearLightCompositePixels(void *mutable_data,                /* User provided m
 static MagickPassFail
 VividLightCompositePixels(void *mutable_data,                /* User provided mutable data */
                           const void *immutable_data,        /* User provided immutable data */
-                          const Image *source_image,         /* Source image */
-                          const PixelPacket *source_pixels,  /* Pixel row in source image */
-                          const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                          Image *update_image,               /* Update image */
-                          PixelPacket *update_pixels,        /* Pixel row in update image */
-                          IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                          const Image * restrict source_image,         /* Source image */
+                          const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                          const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                          Image * restrict update_image,               /* Update image */
+                          PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                          IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                           const long npixels,                /* Number of pixels in row */
                           ExceptionInfo *exception           /* Exception report */
                           )
@@ -2778,12 +2778,12 @@ VividLightCompositePixels(void *mutable_data,                /* User provided mu
 static MagickPassFail
 PinLightCompositePixels(void *mutable_data,                /* User provided mutable data */
                         const void *immutable_data,        /* User provided immutable data */
-                        const Image *source_image,         /* Source image */
-                        const PixelPacket *source_pixels,  /* Pixel row in source image */
-                        const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                        Image *update_image,               /* Update image */
-                        PixelPacket *update_pixels,        /* Pixel row in update image */
-                        IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                        const Image * restrict source_image,         /* Source image */
+                        const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                        const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                        Image * restrict update_image,               /* Update image */
+                        PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                        IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                         const long npixels,                /* Number of pixels in row */
                         ExceptionInfo *exception           /* Exception report */
                         )
@@ -2864,12 +2864,12 @@ PinLightCompositePixels(void *mutable_data,                /* User provided muta
 static MagickPassFail
 HardMixCompositePixels(void *mutable_data,                /* User provided mutable data */
                        const void *immutable_data,        /* User provided immutable data */
-                       const Image *source_image,         /* Source image */
-                       const PixelPacket *source_pixels,  /* Pixel row in source image */
-                       const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                       Image *update_image,               /* Update image */
-                       PixelPacket *update_pixels,        /* Pixel row in update image */
-                       IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                       const Image * restrict source_image,         /* Source image */
+                       const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                       const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                       Image * restrict update_image,               /* Update image */
+                       PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                       IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                        const long npixels,                /* Number of pixels in row */
                        ExceptionInfo *exception           /* Exception report */
                        )
@@ -3762,7 +3762,7 @@ CompositeImageRegion(const CompositeOperator compose,
 static MagickPassFail
 MagickCompositeImageUnderColorPixels(void *mutable_data,             /* User provided mutable data */
                                      const void *immutable_data,     /* User provided immutable data */
-                                     Image *image,                   /* Modify image */
+                                     Image * restrict image,                   /* Modify image */
                                      PixelPacket * restrict pixels,  /* Pixel row */
                                      IndexPacket * restrict indexes, /* Pixel row indexes */
                                      const long npixels,             /* Number of pixels in row */

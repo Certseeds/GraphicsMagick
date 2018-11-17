@@ -1,3 +1,506 @@
+2018-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/index.rst: Update in preparation for 1.3.31 release.
+
+	* version.sh: Update library versioning in preparation for
+	1.3.31 release.
+
+	* NEWS.txt: Update news in preparation for 1.3.31 release.
+
+2018-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (BenchmarkUsage): Document the benchmark
+	command better.
+
+2018-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (HorizontalFilter, VerticalFilter): quantum is a
+	pointer so it's value can not be usefully flushed.  Use a local
+	variable and then update quantum pointer when done.
+
+2018-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/*: Changed row_count tallying to use 'omp atomic' and
+	status update to use 'omp flush' for progress and error
+	indication.  This replaces most use of 'omp critical' for this
+	purpose.  Changed some lumpy algorithms which were using 'static'
+	scheduling to 'guided' scheduling due to observing better results.
+	Also added prolific 'restrict' annotations where they were
+	missing.
+
+	* www/security.rst: Documented a PGP private key for file signing
+	or private correspondence.
+
+2018-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/authors.rst: Moved "Glenn Randers-Pehrson" and "Gregory J
+	Wolfe" to the "Former Contributor" category.
+
+2018-11-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Added many GCC function annotations in the libraries and coders.
+
+2018-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Use printf rather than echo to portably expand tab
+	requests in configuration summary.
+
+2018-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Use pkg-config data as the initial choice when
+	configuring for FreeType 2.0 and libxml-2.0.  Only fall back to
+	invoking an external script (and then traditional methods) if
+	pkg-config fails.
+
+	* coders/msl.c (ProcessMSLScript): Release msl_image if OpenBlob
+	fails.  Similar to ImageMagick CVE-2018-18544.  Problem was
+	reported to us via email from Petr Gajdos on Thu, 1 Nov 2018.
+
+2018-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (WriteMIFFImage): Only run
+	strlen(attribute->value) once per attribute since the length won't
+	change.  May address oss-fuzz 11158
+	"graphicsmagick/coder_MIFF_fuzzer: Timeout in
+	graphicsmagick_coder_MIFF_fuzzer". (Credit to OSS-Fuzz)
+
+	* Fix compilation warnings observed with GCC 8.2.0.
+
+2018-10-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_iterator.c (PixelIterateMonoModifyImplementation):
+	Use atomic and flush rather than critical construct for a small
+	speedup.
+
+	* magick/monitor.c (MagickMonitorFormatted): Serialize calls to
+	the progress monitor so that the caller does not need to perform
+	this serialization.
+	(MagickMonitor): Serialize calls to the progress monitor so that
+	the caller does not need to perform this serialization.  This
+	function is now marked as deprecated.
+	(InitializeMagickMonitor): New private function to initialize
+	monitor functionality.
+	(DestroyMagickMonitor): New private function to destroy monitor
+	functionality.
+
+2018-10-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/gif.c (ReadGIFImage): Improve the efficiency of storing a
+	GIF comment in order to avoid a DOS opportunity.  Fixes oss-fuzz
+	11096 "graphicsmagick/coder_GIF_fuzzer: Timeout in
+	graphicsmagick_coder_GIF_fuzzer". (Credit to OSS-Fuzz)
+
+2018-10-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/Makefile.PL.in: Use MAGICK_API_LIBS to obtain the
+	list of libraries to use when linking.
+
+	* configure.ac: OpenMP library is normally supplied due to a
+	CFLAGS option so only supply it in cases where the CFLAGS option
+	may be lost or it might not be used.  Otherwise the compiler may
+	apply the library twice when linking.
+
+2018-10-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Remove Ghostscript library support (--with-gslib)
+	from configure script.  The 'HasGS' pre-processor defines which
+	were enabled by this remain in the source code so it is still
+	possible to use this library if absolutely necessary
+	(e.g. CPPFLAGS=-DHasGS LIBS=-lgs).
+
+	* tests/rwfile.tap: Test TIFF format with all supported
+	compression options.
+
+	* tests/{rwblob.c, rwfile.c} (main): Use StringToCompressionType()
+	to parse compression option. Also consider requested compression
+	algorithm when deciding if format is lossy.
+
+	* coders/tiff.c (WriteTIFFImage): WebP compression needs
+	PHOTOMETRIC_RGB. Fix wrong rows-per-strip calculation when using
+	LZMA compression.
+
+	* tests/rwblob.tap: Added a rwblob test to verify that lower-case
+	magick works.
+
+	* magick/static.c (OpenModule): Upper case magick string before
+	searching static modules list.  Fixes Debian bug 911386
+	"libgraphicsmagick-q16-3: graphicsmagick 1.3.30 has made formats
+	case-sensitive at the API level".
+
+	* filters/analyze.c (AnalyzeImage): X and y should be unsigned
+	long to match image rows/columns type.  Calculate total pixels by
+	simple multiplication rather than counting.
+
+2018-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Support WebP compression in
+	TIFF. This requires a libtiff release after 4.0.9.
+
+	* magick/image.h ("C"): WebPCompression added to CompressionType
+	enumeration.
+
+2018-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Configure for the Zstd library.  Use
+	--without-zstd to disable searching for this library.  Libtiff may
+	require this library to successfully link so static linkage could
+	fail if searching for libzstd is disabled.
+
+	* magick/image.h ("C"): ZSTDCompression added to CompressionType
+	enumeration.
+
+	* coders/tiff.c (WriteTIFFImage): Support Zstd compression in
+	TIFF.  This requires a libtiff release after 4.0.9.
+
+2018-10-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (GMCommandSingle): Add 'compare' to the list of
+	command names that gm will support as a command if copied to or
+	linked from that name.  There was already a 'compare' link
+	installed when the '--enable-magick-compat' configure option is
+	used, but it could not possibly function without being blessed by
+	this list.  Related to Debian bug #910652
+	"graphicsmagick-imagemagick-compat: Doesn't ship a compare tool".
+
+2018-09-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/lib/Magick++/Drawable.h: Block unused-private-field
+	warnings from Clang due to _dummy members which were intentionally
+	included in some parent class definitions.
+
+	* magick/widget.c (XEditText): Fix compilation warnings about
+	cases which fall-through.
+
+	* magick/display.c (MagickXAnnotateEditImage): Fix compilation
+	warnings about cases which fall-through.
+
+	* coders/pict.c (WritePICTImage): Add more checks to memory
+	allocation calculations.
+
+	* magick/pixel_cache.c (DestroyCacheInfo): Eliminate intentional
+	fall-through logic in switch statement which results in compiler
+	warnings.  Eliminate switch statements entirely and split
+	unrelated logic.
+
+	* coders/txt.c (ReadTXTImage): Fix comparison between pointer and
+	'\0' rather than NULL as was obviously intended.
+
+	* coders/msl.c (MSLStartElement): Add missing 'break' statements
+	after ThrowException() calls.  Otherwise execution falls through
+	into unrelated switch cases and throws a redundant exception.
+
+2018-09-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (parse8BIM): Eliminate repeated use of strlen()
+	which scans the entire remaining string on each cycle.  Fixes
+	oss-fuzz 10667 "graphicsmagick/coder_IPTCTEXT_fuzzer: Timeout in
+	graphicsmagick_coder_IPTCTEXT_fuzzer". (Credit to OSS-Fuzz)
+
+2018-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (MagickGetToken): Fix possible read up to four
+	bytes beyond end of stack allocated token buffer.  Fixes oss-fuzz
+	10653 "graphicsmagick/coder_MVG_fuzzer: Stack-buffer-overflow in
+	MagickGetToken". (Credit to OSS-Fuzz)
+
+2018-09-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/coder_fuzzer.cc (LLVMFuzzerTestOneInput): Limit the
+	maximum number of JPEG progressive scans to 50.
+
+	* coders/jpeg.c (ReadJPEGImage): Apply a default limit of 100
+	progressive scans before the reader quits with an error.  This
+	limit may be adjusted using the -define mechanism like -define
+	JPEG:max-scan-number=500.  Also respond more quickly to files
+	which exceed the maximum image dimensions.  Fixes oss-fuzz 10258
+	"graphicsmagick/coder_JPEG_fuzzer: Timeout in
+	graphicsmagick_coder_JPEG_fuzzer". (Credit to OSS-Fuzz)
+
+2018-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): mng_LOOP chunk must be at least 5
+	bytes long.  Fixes oss-fuzz 10455
+	"graphicsmagick/coder_MNG_fuzzer: Use-of-uninitialized-value in
+	ReadMNGImage". (Credit to OSS-Fuzz)
+
+2018-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (TraceEllipse): Detect arithmetic overflow when
+	computing the number of points to allocate for an ellipse.  Fixes
+	oss-fuzz 10306 "graphicsmagick/coder_MVG_fuzzer:
+	Heap-buffer-overflow in TracePoint". (Credit to OSS-Fuzz)
+
+2018-09-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Eliminate undefined
+	shift.  Also right-sized involved data types.  Fixes oss-fuzz
+	10309 "graphicsmagick/coder_JPG_fuzzer: Undefined-shift in
+	Read32s". (Credit to OSS-Fuzz)
+
+2018-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawClipPath): Fix Coverity 319663 "Null
+	pointer dereferences".  Totally insignificant.
+
+	* coders/wpg.c (ReadWPGImage): Mask/fix Coverity 319664 "Error
+	handling issues".
+
+	* magick/attribute.c (FindEXIFAttribute): Change size types from
+	signed to unsigned and check for unsigned overflow.
+	(GenerateEXIFAttribute): Change size types from signed to unsigned
+	and check for unsigned overflow. Fixes oss-fuzz 10283
+	"graphicsmagick/coder_JPG_fuzzer: Integer-overflow in
+	GenerateEXIFAttribute". (Credit to OSS-Fuzz)
+
+	* coders/sfw.c (ReadSFWImage): Enforce that file is read using the
+	JPEG reader. (Credit to OSS-Fuzz)
+
+	* coders/miff.c (ReadMIFFImage): Fix leak of 'values' buffer due
+	to change made yesterday.
+
+	* coders/mpc.c (ReadMPCImage): Fix leak of 'values' buffer due to
+	change made yesterday.  Fixes oss-fuzz 10277
+	"graphicsmagick/coder_MPC_fuzzer: Direct-leak in
+	ReadMPCImage". (Credit to OSS-Fuzz)
+
+2018-09-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Support legacy keyword
+	'color-profile' for ICC color profile as was used by ImageMagick
+	4.2.9.
+
+	* coders/mpc.c (ReadMPCImage): Require that first keyword/value be
+	id=MagickCache
+
+	* coders/miff.c (ReadMIFFImage): Require that first keyword/value
+	be id=ImageMagick.
+
+2018-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c (DCM_ReadElement): Add more size checks.
+
+	* coders/jnx.c (ExtractTileJPG): Enforce that JPEG tiles are read
+	by the JPEG coder.  Fixes oss-fuzz 10147
+	"graphicsmagick/coder_JNX_fuzzer: Use-of-uninitialized-value in
+	funcDCM_PhotometricInterpretation". (Credit to OSS-Fuzz)
+
+2018-09-10  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Zero fill raster error recovery.
+
+2018-08-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPrimitiveToPath): Second attempt to
+	prevent heap write overflow of PathInfo array.  Fixes oss-fuzz
+	10096 "Heap-buffer-overflow in ConvertPrimitiveToPath". (Credit to
+	OSS-Fuzz)
+
+2018-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c ("QuantumTransferMode"): CIE Log images with an
+	alpha channel are not supported.  Fixes oss-fuzz 10013
+	"graphicsmagick/coder_TIFF_fuzzer: Use-of-uninitialized-value in
+	DisassociateAlphaRegion". (Credit to OSS-Fuzz)
+
+	* magick/render.c (DrawImage): SetImageAttribute() appends new
+	text to any existing value, leading to every increasing memory
+	consumption if the existing value is not deleted first by the
+	unwary.  Fixes oss-fuzz 9983 "graphicsmagick/coder_MVG_fuzzer:
+	Timeout in graphicsmagick_coder_MVG_fuzzer" and oss-fuzz 10016
+	"graphicsmagick/coder_MVG_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MVG_fuzzer". (Credit to OSS-Fuzz)
+
+	* magick/utility.c (TranslateTextEx): Fix off-by-one in loop
+	bounds check which allowed a one-byte stack write overflow.  Fixes
+	oss-fuzz 10055 "graphicsmagick/coder_MVG_fuzzer:
+	Stack-buffer-overflow in TranslateTextEx". (Credit to OSS-Fuzz)
+
+	* magick/render.c (DrawImage): Be more precise about error
+	detection and reporting, and return from an error more quickly.
+	Also added MAX_DRAWIMAGE_RECURSION pre-processor definition to
+	allow adjusting the drawing recursion limit.  The drawing
+	recursion limit is still 100, which seems exceptionally generous.
+
+	* magick/constitute.c (WriteImage): Produce a more useful error
+	message if an encoding delegate is not available.
+
+	* magick/nt_base.h (isnan): Try adding a MSVC replacement for
+	missing isnan() function.  Not yet tested.
+
+2018-08-25  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c This should fix intentional 64 bit file offset
+	overflow as depictedin OSS-fuzz-9936. Thanks to OSS-Fuzz.
+
+2018-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPrimitiveToPath): Need to enlarge
+	PathInfo array allocation to avoid possible heap write overflow.
+	Fixes oss-fuzz 9651 "graphicsmagick/coder_MVG_fuzzer:
+	Heap-buffer-overflow in ConvertPrimitiveToPath". (Credit to
+	OSS-Fuzz)
+
+2018-08-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mpc.c (ReadMPCImage): Insist that the format be
+	identified prior to any comment, and that there is only one
+	comment.
+
+	* coders/miff.c (ReadMIFFImage): Insist that the format be
+	identified prior to any comment, and that there is only one
+	comment.  Fixes oss-fuzz 9979 "graphicsmagick/coder_MIFF_fuzzer:
+	Timeout in graphicsmagick_coder_MIFF_fuzzer".  This is not a
+	serious issue, but the code runs slowly under UBSAN.  (Credit to
+	OSS-Fuzz)
+
+2018-08-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (MagickAtoFChk): Add additional validation
+	checks for floating point values.  NAN and +/- INFINITY values
+	also map to 0.0. Fixes oss-fuzz 9630
+	"graphicsmagick/coder_MVG_fuzzer: Integer-overflow in
+	IsNexusInCore" and oss-fuzz 9612 "graphicsmagick/coder_MVG_fuzzer:
+	Integer-overflow in SetCacheNexus". (Credit to OSS-Fuzz)
+
+	* magick/render.c (DrawImage): Add missing error-reporting logic
+	to return immediately upon memory reallocation failure.  Apply
+	memory resource limits to PrimitiveInfo array allocation.  Fixes
+	oss-fuzz 9576 "graphicsmagick/coder_MVG_fuzzer: Null-dereference
+	READ in DrawImage", oss-fuzz 9593
+	"graphicsmagick/coder_MVG_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MVG_fuzzer", oss-fuzz 9648
+	"graphicsmagick/coder_MVG_fuzzer: Unknown signal in
+	DrawImage". (Credit to OSS-Fuzz)
+
+2018-08-16  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coder/mat.c Explicitly reject non-seekable streams.
+
+2018-08-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coder/mat.c Correctly check GetBlobSize(image) even for zipstreams.
+
+2018-08-14  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c More aggresive data corruption checking.
+
+2018-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xbm.c (XBMInteger): Limit the number of hex digits parsed
+	to avoid signed integer overflow.  Fixes oss-fuzz 9746
+	"graphicsmagick/coder_XBM_fuzzer: Undefined-shift in
+	XBMInteger". (Credit to OSS-Fuzz)
+
+2018-08-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/mat.c Typecast difference to quantum.
+
+2018-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (InsertComplexFloatRow): Avoid signed
+	overflow. Fixes oss-fuzz 9667 "graphicsmagick/coder_MAT_fuzzer:
+	Integer-overflow in InsertComplexFloatRow". (Credit to OSS-Fuzz)
+
+	* coders/xbm.c (ReadXBMImage): Add validations for row and column
+	dimensions.  Fixes oss-fuzz 9736 "graphicsmagick/coder_XBM_fuzzer:
+	Out-of-memory in graphicsmagick_coder_XBM_fuzzer". (Credit to
+	OSS-Fuzz)
+
+2018-08-04  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* coders/wpg.c Add mechanism to approve embedded subformats in
+	WPG.  This should mute oss-fuzz 9559.  (Credit to OSS-Fuzz)
+
+2018-07-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mvg.c (ReadMVGImage): Fix memory leak added on
+	2018-07-21.  Fixes oss-fuzz 9548 "graphicsmagick/coder_MVG_fuzzer:
+	Direct-leak in CloneDrawInfo". (Credit to OSS-Fuzz)
+
+2018-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/cineon.c (ReadCINEONImage): Fix SourceForge issue 571
+	"Unexpected hang on a crafted Cineon image" by detecting and
+	quitting on EOF appropriately, and verifying that file size is
+	sufficient for claimed pixel dimensions when possible.
+
+	* fuzzing/oss-fuzz-build.sh, fuzzing/dictionaries/MVG.dict: Added
+	MVG fuzzing dictionary by Alex Gaynor.
+
+2018-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): For requests one pixel tall,
+	SetNexus() was wrongly using pixels in-core rather than using a
+	staging area for the case where the nexus rows extend beyond the
+	image raster boundary, leading to heap overflow.  This can happen
+	when virtual pixels outside the image bounds are accessed.  Fixes
+	oss-fuzz 9512 "graphicsmagick/graphicsmagick_coder_MVG_fuzzer:
+	Heap-buffer-overflow in AcquireCacheNexus". (Credit to OSS-Fuzz)
+
+	* magick/render.c (ExtractTokensBetweenPushPop):
+	ExtractTokensBetweenPushPop() needs to always return a valid
+	pointer into the primitive string.  Fixes oss-fuzz 9511
+	"graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Null-dereference
+	READ in DrawImage". (Credit to OSS-Fuzz)
+	(DrawPolygonPrimitive): Fix leak of polygon set when object is
+	completely outside image.  Fixes oss-fuzz 9513
+	"graphicsmagick/graphicsmagick_coder_MVG_fuzzer: Direct-leak in
+	AllocateThreadViewDataSet". (Credit to OSS-Fuzz)
+
+2018-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (FileToBlob): Use confirm access APIs to verify
+	that read access to this path is allowed by policy.  Check that
+	file is a regular file before proceeding to open and read from it.
+
+	* coders/mvg.c (ReadMVGImage): Don't allow MVG files to side-load
+	a file as the drawing primitive using '@' syntax.  Fixes oss-fuzz
+	9494 "graphicsmagick/coder_MVG_fuzzer: Sanitizer CHECK failure in
+	"((0)) != (0)" (0x0, 0x0)". (Credit to OSS-Fuzz)
+
+2018-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mvg.c (ReadMVGImage): Don't assume that in-memory MVG
+	blob is a null-terminated C string. Fixes oss-fuzz 9469
+	"graphicsmagick/coder_MVG_fuzzer: Heap-buffer-overflow in
+	AllocateString". (Credit to OSS-Fuzz)
+
+2018-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Detect EOF when reading using
+	ReadBlobZC() and avoid subsequent heap read overflow.  Fixes
+	oss-fuzz 9357 "graphicsmagick/coder_MIFF_fuzzer:
+	Heap-buffer-overflow in ImportRGBQuantumType". (Credit to
+	OSS-Fuzz)
+
+2018-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh (CFLAGS): Try disabling SIMD
+	instructions in libjpeg-turbo build.
+
+2018-07-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (WriteOnePNGImage): Free png_pixels as soon as
+	possible.  This might help with oss-fuzz 9334
+	"graphicsmagick/coder_PNG8_fuzzer: Direct-leak in
+	WriteOnePNGImage", which we have yet to reproduce.  It is not
+	clear if png_pixels is being clobbered by longjmp or if something
+	else is going on.
+
+2018-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Provide a memory resource limit
+	(of 1/5th the memory resource limit for Graphicsmagick) to libjpeg
+	to limit how much memory it might consume for itself while reading
+	a file.  Fixes oss-fuzz 9096 "graphicsmagick/coder_JPEG_fuzzer:
+	Timeout in graphicsmagick_coder_JPEG_fuzzer".  (Credit to
+	OSS-Fuzz)
+	(ReadJPEGImage): Make sure that JPEG pixels array is initialized
+	in case libjpeg fails to completely initialize it.  May fix
+	oss-fuzz 9115 "graphicsmagick/coder_JPEG_fuzzer:
+	Use-of-uninitialized-value in ReadJPEGImage".  We are not sure
+	since the problem was not reproduced.  (Credit to OSS-Fuzz)
+
 2018-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* version.sh: Update library versioning for 1.3.30 release.

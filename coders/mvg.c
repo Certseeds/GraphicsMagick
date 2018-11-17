@@ -36,6 +36,7 @@
 #include "magick/studio.h"
 #include "magick/attribute.h"
 #include "magick/blob.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/render.h"
 #include "magick/pixel_cache.h"
@@ -96,10 +97,9 @@ static unsigned int IsMVG(const unsigned char *magick,const size_t length)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method ReadMVGImage creates a gradient image and initializes it to
-%  the X server color range as specified by the filename.  It allocates the
-%  memory necessary for the new Image structure and returns a pointer to the
-%  new image.
+%  Method ReadMVGImage renders a MVG vector-graphics file into a raster
+%  image. It allocates the memory necessary for the new Image structure
+%  and returns a pointer to the new image.
 %
 %  The format of the ReadMVGImage method is:
 %
@@ -130,7 +130,10 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   size_t
     length;
 
-  unsigned int
+  magick_off_t
+    blob_size;
+
+  MagickPassFail
     status;
 
   /*
@@ -141,8 +144,13 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+  /*
+    FIXME: This implementation should be entirely re-written so that
+    it does not require seekable_stream=True and is thus able to read
+    directly from a pipe or compressed stream.
+  */
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   if ((image->columns == 0) || (image->rows == 0))
     {
@@ -169,6 +177,10 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             image->columns=(unsigned long) (bounds.x2-bounds.x1+0.5);
             image->rows=(unsigned long) (bounds.y2-bounds.y1+0.5);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "ViewBox: %g %g %g %g, Geometry: %lux%lu",
+                                  bounds.x1, bounds.y1, bounds.x2, bounds.y2,
+                                  image->columns,image->rows);
           }
         break;
       }
@@ -185,15 +197,42 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) SetImage(image,OpaqueOpacity);
   draw_info=CloneDrawInfo(image_info,(DrawInfo *) NULL);
   draw_info->fill=image_info->pen;
+  draw_info->primitive=NULL;
   if (GetBlobStreamData(image))
-    draw_info->primitive=AllocateString((char *) GetBlobStreamData(image));
+    {
+      if ((blob_size = GetBlobSize(image)) > 0)
+        {
+          length=(size_t) blob_size;
+          draw_info->primitive=MagickAllocateMemory(char *,length+1);
+          if (draw_info->primitive != (char *) NULL)
+            {
+              (void) memcpy(draw_info->primitive,GetBlobStreamData(image),length);
+              draw_info->primitive[length]=0;
+            }
+          else
+            {
+              DestroyDrawInfo(draw_info);
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            }
+        }
+    }
   else
-    draw_info->primitive=(char *) FileToBlob(image->filename,&length,exception);
+    {
+      draw_info->primitive=(char *) FileToBlob(image->filename,&length,exception);
+    }
   if (draw_info->primitive == (char *) NULL)
     {
       DestroyDrawInfo(draw_info);
       CloseBlob(image);
       return (Image *) NULL;
+    }
+  /*
+    Don't allow MVG files to side-load a file as the primitive
+  */
+  if (draw_info->primitive[0] == '@')
+    {
+      DestroyDrawInfo(draw_info);
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
   (void) DrawImage(image,draw_info);
   DestroyDrawInfo(draw_info);
@@ -276,7 +315,9 @@ ModuleExport void UnregisterMVGImage(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method WriteMVGImage writes an image to a file in MVG image format.
+%  Method WriteMVGImage writes MVG vector drawing data associated with an
+%  image structure using the attribute key "[MVG]" to a file in MVG
+%  vector-graphics format.
 %
 %  The format of the WriteMVGImage method is:
 %

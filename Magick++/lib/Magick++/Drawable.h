@@ -40,6 +40,11 @@
 namespace Magick
 {
 
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wunused-private-field"
+#endif /* if defined(__clang__) */
+
   //
   // Representation of an x,y coordinate
   //
@@ -2915,6 +2920,11 @@ public:
 private:
   CoordinateList _coordinates;
 };
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#pragma clang diagnostic pop
+#endif /* if defined(__clang__) */
 
 } // namespace Magick
 

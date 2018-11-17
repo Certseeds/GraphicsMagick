@@ -806,6 +806,7 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
             p++;
             if ((x+font_info->max_bounds.width) < (int) windows->image.width)
               break;
+            break; /* Not completely sure about this break (used to fall through) */
           }
           case XK_Return:
           case XK_KP_Enter:
@@ -3413,6 +3414,7 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
               state|=UpdateConfigurationState;
               break;
             }
+          break;
         }
         case ButtonRelease:
         {
@@ -9612,6 +9614,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
               state|=UpdateConfigurationState;
               break;
             }
+          break;
         }
         case ButtonRelease:
         {
@@ -10968,8 +10971,8 @@ static Image *MagickXTileImage(Display *display,MagickXResourceInfo *resource_in
         {
           MagickXNoticeWidget(display,windows,"Unable to delete image file:",
             filename);
-          break;
         }
+      break;
     }
     case TileUpdateCommand:
     {

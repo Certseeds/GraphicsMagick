@@ -10,7 +10,7 @@ rwblob=./rwblob
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 208
+test_plan_fn 209
 
 # ART format
 for type in ${check_types}
@@ -29,6 +29,8 @@ for type in ${check_types}
 do
   test_command_fn "BMP ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" BMP
 done
+# Special test to verify that lower-case magick works
+test_command_fn "BMP truecolor" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" bmp
 
 # BMP2 format
 for type in ${check_types}

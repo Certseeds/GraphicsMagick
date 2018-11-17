@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2014 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -107,7 +107,7 @@ extern MagickExport const char
   *GetImageMagick(const unsigned char *magick,const size_t length);
 
 extern MagickExport MagickBool
-  IsMagickConflict(const char *magick);
+  IsMagickConflict(const char *magick) MAGICK_FUNC_PURE;
 
 extern MagickExport MagickPassFail
   ListModuleMap(FILE *file,ExceptionInfo *exception),
@@ -135,7 +135,7 @@ extern MagickExport MagickInfo
     Get blocksize to use when accessing the filesystem.
   */
   extern size_t
-  MagickGetFileSystemBlockSize(void);
+  MagickGetFileSystemBlockSize(void) MAGICK_FUNC_PURE;
 
   /*
     Set blocksize to use when accessing the filesystem.

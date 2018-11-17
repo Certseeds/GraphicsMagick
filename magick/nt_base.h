@@ -245,6 +245,27 @@ extern "C" {
 #endif
 
 /*
+  The isnan() function was implemented starting in Visual Studio 2003
+  The function prototype for isnan() and _isnanf() comes from <math.h>
+  and the prototype for _isnan() comes from <float.h>.  The _isnanf()
+  function is only available in _WIN64 builds.
+
+  Some useful documentation was found at
+  https://msdn.microsoft.com/en-us/library/tzthab44.aspx.
+*/
+#if (defined(_MSC_VER) && _MSC_VER < 1700 && !defined(isnan))
+#  if defined(_WIN64)
+#    define isnan(f) _isnanf(f)
+#  else
+#    include <float.h> /* Needed for _isnan */
+#    if !defined(isnan)
+#      define isnan(f) _isnan(f)
+#    endif
+#  endif
+#endif
+
+
+/*
   Typedef declarations.
 */
 typedef UINT (CALLBACK *LPFNDLLFUNC1)(DWORD,UINT);

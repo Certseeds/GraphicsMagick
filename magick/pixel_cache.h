@@ -84,7 +84,7 @@ extern "C" {
     the image.
   */
   extern MagickExport VirtualPixelMethod
-  GetImageVirtualPixelMethod(const Image *image);
+  GetImageVirtualPixelMethod(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     GetPixels() and AccessMutablePixels() return the pixels associated
@@ -179,14 +179,14 @@ extern "C" {
     (i.e. AcquireCacheViewPixels() or GetCacheViewPixels()).
   */
   extern MagickExport PixelPacket
-  *AccessCacheViewPixels(const ViewInfo *view);
+  *AccessCacheViewPixels(const ViewInfo *view) MAGICK_FUNC_PURE;
 
   /*
     AcquireCacheViewIndexes() returns read-only indexes associated
     with a cache view.
   */
   extern MagickExport const IndexPacket
-  *AcquireCacheViewIndexes(const ViewInfo *view);
+  *AcquireCacheViewIndexes(const ViewInfo *view) MAGICK_FUNC_PURE;
 
   /*
     AcquireCacheViewPixels() obtains a pixel region from a cache view
@@ -213,19 +213,19 @@ extern "C" {
     currently consumed by the pixel cache view.
   */
   extern MagickExport magick_off_t
-  GetCacheViewArea(const ViewInfo *view);
+  GetCacheViewArea(const ViewInfo *view) MAGICK_FUNC_PURE;
 
   /*
     GetCacheViewImage() obtains the image used to allocate the cache view.
   */
   extern Image *
-  GetCacheViewImage(const ViewInfo *view);
+  GetCacheViewImage(const ViewInfo *view) MAGICK_FUNC_PURE;
 
   /*
     GetCacheViewIndexes() returns the indexes associated with a cache view.
   */
   extern MagickExport IndexPacket
-  *GetCacheViewIndexes(const ViewInfo *view);
+  *GetCacheViewIndexes(const ViewInfo *view) MAGICK_FUNC_PURE;
 
   /*
     GetCacheViewPixels() obtains a pixel region from a cache view for
@@ -240,7 +240,7 @@ extern "C" {
     Obtain the offset and size of the selected region.
   */
   extern MagickExport RectangleInfo
-  GetCacheViewRegion(const ViewInfo *view);
+  GetCacheViewRegion(const ViewInfo *view) MAGICK_FUNC_PURE;
 
 
   /*
@@ -324,14 +324,14 @@ extern "C" {
     allocated memory and therefore supports efficient random access.
   */
   extern MagickBool
-  GetPixelCacheInCore(const Image *image);
+  GetPixelCacheInCore(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     GetPixelCachePresent() tests to see the pixel cache is present
     and contains pixels.
   */
   extern MagickExport MagickBool
-  GetPixelCachePresent(const Image *image);
+  GetPixelCachePresent(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Obtain an interpolated pixel value via bi-linear interpolation.

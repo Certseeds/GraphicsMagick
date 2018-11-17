@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1367,12 +1367,12 @@ static const TagInfo
 */
 
 static const char *
-EXIFTagToDescription(int t, char *tag_description)
+EXIFTagToDescription(unsigned int t, char *tag_description)
 {
   unsigned int
     i;
 
-  for (i=0; i < sizeof(tag_table)/sizeof(tag_table[0]); i++)
+  for (i=0; i < ArraySize(tag_table); i++)
     {
       if (tag_table[i].tag == t)
         {
@@ -1403,7 +1403,7 @@ EXIFDescriptionToTag(const char *description)
 }
 
 static const char *
-EXIFFormatToDescription(int f)
+EXIFFormatToDescription(unsigned int f)
 {
   const char
     *description;
@@ -1453,7 +1453,7 @@ EXIFFormatToDescription(int f)
   return description;
 }
 
-static int
+static unsigned int
   format_bytes[] =
   {
     0,
@@ -1471,55 +1471,61 @@ static int
     8  /* DOUBLE */
   };
 
-static short
-Read16s(int morder,void *ishort)
+static magick_int16_t
+Read16s(int morder,unsigned char *ishort)
 {
-  short
+  union
+  {
+    magick_uint16_t u;
+    magick_int16_t s;
+  } value;
+
+  if (morder)
+    value.u=((magick_uint16_t) ishort[0] << 8) | ishort[1];
+  else
+    value.u=((magick_uint16_t) ishort[1] << 8) | ishort[0];
+  return(value.s);
+}
+
+static magick_uint16_t
+Read16u(int morder,unsigned char *ishort)
+{
+  magick_uint16_t
     value;
 
   if (morder)
-    value=(((unsigned char *) ishort)[0] << 8) | ((unsigned char *) ishort)[1];
+    value=((magick_uint16_t) ishort[0] << 8) | ishort[1];
   else
-    value=(((unsigned char *) ishort)[1] << 8) | ((unsigned char *) ishort)[0];
+    value=((magick_uint16_t) ishort[1] << 8) | ishort[0];
   return(value);
 }
 
-static unsigned short
-Read16u(int morder,void *ishort)
+static magick_int32_t
+Read32s(int morder,unsigned char *ilong)
 {
-  unsigned short
-    value;
+  union
+  {
+    magick_uint32_t u;
+    magick_int32_t s;
+  } value;
 
   if (morder)
-    value=(((unsigned char *) ishort)[0] << 8) | ((unsigned char *) ishort)[1];
+    value.u=((magick_uint32_t) ilong[0] << 24) | (ilong[1] << 16) |
+      (ilong[2] << 8) | (ilong[3]);
   else
-    value=(((unsigned char *) ishort)[1] << 8) | ((unsigned char *) ishort)[0];
-  return(value);
+    value.u=((magick_uint32_t) ilong[3] << 24) | (ilong[2] << 16) |
+      (ilong[1] << 8 ) | (ilong[0]);
+  return(value.s);
 }
 
-static long
-Read32s(int morder,void *ilong)
+static magick_uint32_t
+Read32u(int morder, unsigned char *ilong)
 {
-  long
-    value;
-
-  if (morder)
-    value=(((char *) ilong)[0] << 24) | (((unsigned char *) ilong)[1] << 16) |
-      (((unsigned char *) ilong)[2] << 8) | (((unsigned char *) ilong)[3]);
-  else
-    value=(((char *) ilong)[3] << 24) | (((unsigned char *) ilong)[2] << 16) |
-      (((unsigned char *) ilong)[1] << 8 ) | (((unsigned char *) ilong)[0]);
-  return(value);
-}
-
-static unsigned long
-Read32u(int morder, void *ilong)
-{
-  return(Read32s(morder,ilong) & 0xffffffffUL);
+  return(Read32s(morder,ilong) & 0xffffffff);
 }
 
 static void
-Write16u(int morder, void *location, unsigned short value)
+Write16u(int morder, void *location, magick_uint16_t value)
 {
   char
     *pval;
@@ -1527,13 +1533,13 @@ Write16u(int morder, void *location, unsigned short value)
   pval = (char *)location;
   if (morder)
     {
-      *pval++ = (char)((value >> 8) & 0xffL);
-      *pval++ = (char)(value & 0xffL);
+      *pval++ = (char)((value >> 8) & 0xff);
+      *pval++ = (char)(value & 0xff);
     }
   else
     {
-      *pval++ = (char)(value & 0xffL);
-      *pval++ = (char)((value >> 8) & 0xffL);
+      *pval++ = (char)(value & 0xff);
+      *pval++ = (char)((value >> 8) & 0xff);
     }
 }
 
@@ -1592,7 +1598,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   MagickBool
     debug=MagickFalse;
 
-  assert((sizeof(format_bytes)/sizeof(format_bytes[0])-1) == EXIF_NUM_FORMATS);
+  assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
 
   {
     const char *
@@ -1771,13 +1777,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
         nde=MAX_TAGS_PER_IFD;
       for (; de < nde; de++)
         {
-          unsigned int
+          size_t
             n;
 
-          int
-            t,
+          unsigned int
+            c,
             f,
-            c;
+            t;
 
           unsigned char
             *pde,
@@ -1792,11 +1798,16 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             }
           t=Read16u(morder,pde); /* get tag value */
           f=Read16u(morder,pde+2); /* get the format */
-          if ((f < 0) ||
-              ((size_t) f >= sizeof(format_bytes)/sizeof(format_bytes[0])))
+          if ((size_t) f >= ArraySize(format_bytes))
             break;
-          c=(long) Read32u(morder,pde+4); /* get number of components */
-          n=c*format_bytes[f];
+          c=Read32u(morder,pde+4); /* get number of components */
+          n=MagickArraySize(c,format_bytes[f]);
+          if ((n == 0) && (c != 0) && (format_bytes[f] != 0))
+            {
+              if (debug)
+                fprintf(stderr, "EXIF: Invalid Exif, too many components (%u).\n",c);
+              goto generate_attribute_failure;
+            }
           if (n <= 4)
             pval=(unsigned char *) pde+8;
           else
@@ -1817,7 +1828,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             {
               fprintf(stderr,
                       "EXIF: TagVal=%d  TagDescr=\"%s\" Format=%d  "
-                      "FormatDescr=\"%s\"  Components=%d\n",t,
+                      "FormatDescr=\"%s\"  Components=%u\n",t,
                       EXIFTagToDescription(t,tag_description),f,
                       EXIFFormatToDescription(f),c);
             }
@@ -1853,7 +1864,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             it was not requested, then we don't return a string value
             for it.
           */
-          if (all || (tag == t) || (GPS_OFFSET == t))
+          if (all || (tag == (int) t) || (GPS_OFFSET == t))
             {
               char
                 s[MaxTextExtent];
@@ -1912,7 +1923,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                     /*
                       Only report value if this tag was requested.
                     */
-                    if (all || (tag == t))
+                    if (all || (tag == (int) t))
                       {
                         FormatString(s,"%lu",offset);
                         value=AllocateString(s);
@@ -1923,7 +1934,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SLONG:
                   {
-                    FormatString(s,"%ld",Read32s(morder,pval));
+                    FormatString(s,"%d",(int) Read32s(morder,pval));
                     value=AllocateString(s);
                     break;
                   }
@@ -1934,20 +1945,20 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                          t == GPS_LONGITUDE ||
                          t == GPS_TIMESTAMP))
                       {
-                        FormatString(s,"%ld/%ld,%ld/%ld,%ld/%ld"
-                                     ,Read32u(morder,pval),
-                                     Read32u(morder,4+(char *) pval)
-                                     ,Read32u(morder,8+(char *)pval),
-                                     Read32u(morder,12+(char *) pval)
-                                     ,Read32u(morder,16+(char *)pval),
-                                     Read32u(morder,20+(char *) pval)
+                        FormatString(s,"%u/%u,%u/%u,%u/%u"
+                                     ,(unsigned) Read32u(morder,pval),
+                                     (unsigned) Read32u(morder,4+pval)
+                                     ,(unsigned) Read32u(morder,8+pval),
+                                     (unsigned) Read32u(morder,12+pval)
+                                     ,(unsigned) Read32u(morder,16+pval),
+                                     (unsigned) Read32u(morder,20+pval)
                                      );
                       }
                     else
                       {
-                        FormatString(s,"%ld/%ld"
-                                     ,Read32u(morder,pval),
-                                     Read32u(morder,4+(char *) pval)
+                        FormatString(s,"%u/%u"
+                                     ,(unsigned) Read32u(morder,pval),
+                                     (unsigned) Read32u(morder,4+pval)
                                      );
                       }
                     value=AllocateString(s);
@@ -1955,8 +1966,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SRATIONAL:
                   {
-                    FormatString(s,"%ld/%ld",Read32s(morder,pval),
-                                 Read32s(morder,4+(char *) pval));
+                    FormatString(s,"%d/%d",(int) Read32s(morder,pval),
+                                 (int) Read32s(morder,4+pval));
                     value=AllocateString(s);
                     break;
                   }
@@ -2592,7 +2603,7 @@ FindEXIFAttribute(const unsigned char *profile_info,
 
   attribp = (unsigned char *)NULL;
 
-  assert((sizeof(format_bytes)/sizeof(format_bytes[0])-1) == EXIF_NUM_FORMATS);
+  assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
 
   {
     const char *
@@ -2678,13 +2689,13 @@ FindEXIFAttribute(const unsigned char *profile_info,
         nde=MAX_TAGS_PER_IFD;
       for (; de < nde; de++)
         {
-          unsigned int
+          size_t
             n;
 
-          int
-            t,
+          unsigned int
+            c,
             f,
-            c;
+            t;
 
           unsigned char
             *pde,
@@ -2700,11 +2711,16 @@ FindEXIFAttribute(const unsigned char *profile_info,
             }
           t=Read16u(morder,pde); /* get tag value */
           f=Read16u(morder,pde+2); /* get the format */
-          if ((f < 0) ||
-              ((size_t) f >= sizeof(format_bytes)/sizeof(format_bytes[0])))
+          if ((size_t) f >= ArraySize(format_bytes))
             break;
-          c=(long) Read32u(morder,pde+4); /* get number of components */
-          n=c*format_bytes[f];
+          c=Read32u(morder,pde+4); /* get number of components */
+          n=MagickArraySize(c,format_bytes[f]);
+          if ((n == 0) && (c != 0) && (format_bytes[f] != 0))
+            {
+              if (debug)
+                fprintf(stderr, "EXIF: Invalid Exif, too many components (%u).\n",c);
+              goto find_attribute_failure;
+            }
           if (n <= 4)
             pval=(unsigned char *) pde+8;
           else
@@ -2725,7 +2741,7 @@ FindEXIFAttribute(const unsigned char *profile_info,
             {
               fprintf(stderr,
                   "EXIF: TagVal=%d  TagDescr=\"%s\" Format=%d  "
-                  "FormatDescr=\"%s\"  Components=%d\n",t,
+                  "FormatDescr=\"%s\"  Components=%u\n",t,
                   EXIFTagToDescription(t,tag_description),f,
                   EXIFFormatToDescription(f),c);
             }

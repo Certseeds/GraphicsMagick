@@ -3619,6 +3619,9 @@ SVGComment(void *context,const xmlChar *value)
 }
 
 static void
+SVGWarning(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
+
+static void
 SVGWarning(void *context,const char *format,...)
 {
   char
@@ -3646,6 +3649,9 @@ SVGWarning(void *context,const char *format,...)
   ThrowException2(svg_info->exception,CoderWarning,reason,(char *) NULL);
   va_end(operands);
 }
+
+static void
+SVGError(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
 
 static void
 SVGError(void *context,const char *format,...)

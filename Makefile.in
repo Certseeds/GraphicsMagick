@@ -34,7 +34,7 @@
 #
 #
 
-# Copyright (C) 2004-2016 GraphicsMagick Group
+# Copyright (C) 2004-2018 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -225,7 +225,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -436,8 +437,7 @@ coders_emf_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(coders_emf_la_LDFLAGS) $(LDFLAGS) -o $@
 @HasWINGDI32_TRUE@@WITH_MODULES_TRUE@am_coders_emf_la_rpath = -rpath \
 @HasWINGDI32_TRUE@@WITH_MODULES_TRUE@	$(codersdir)
-coders_ept_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+coders_ept_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1)
 am_coders_ept_la_OBJECTS = coders/ept.lo
 coders_ept_la_OBJECTS = $(am_coders_ept_la_OBJECTS)
 coders_ept_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -748,8 +748,7 @@ coders_pdb_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_pdb_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_pdb_la_rpath = -rpath $(codersdir)
-coders_pdf_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+coders_pdf_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1)
 am_coders_pdf_la_OBJECTS = coders/coders_pdf_la-pdf.lo
 coders_pdf_la_OBJECTS = $(am_coders_pdf_la_OBJECTS)
 coders_pdf_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -804,8 +803,7 @@ coders_preview_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_CFLAGS) $(CFLAGS) $(coders_preview_la_LDFLAGS) $(LDFLAGS) \
 	-o $@
 @WITH_MODULES_TRUE@am_coders_preview_la_rpath = -rpath $(codersdir)
-coders_ps_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+coders_ps_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1)
 am_coders_ps_la_OBJECTS = coders/coders_ps_la-ps.lo
 coders_ps_la_OBJECTS = $(am_coders_ps_la_OBJECTS)
 coders_ps_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -813,6 +811,7 @@ coders_ps_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(coders_ps_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_ps_la_rpath = -rpath $(codersdir)
 coders_ps2_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -823,6 +822,7 @@ coders_ps2_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(coders_ps2_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_ps2_la_rpath = -rpath $(codersdir)
 coders_ps3_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -921,6 +921,7 @@ coders_tga_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(coders_tga_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_tga_la_rpath = -rpath $(codersdir)
 coders_tiff_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -2090,6 +2091,8 @@ EXEEXT = @EXEEXT@
 EditorDelegate = @EditorDelegate@
 FGREP = @FGREP@
 FIGDecodeDelegate = @FIGDecodeDelegate@
+FT_CFLAGS = @FT_CFLAGS@
+FT_LIBS = @FT_LIBS@
 GMDelegate = @GMDelegate@
 GREP = @GREP@
 GSCMYKDevice = @GSCMYKDevice@
@@ -2139,7 +2142,6 @@ LIB_DL = @LIB_DL@
 LIB_DPS = @LIB_DPS@
 LIB_FPX = @LIB_FPX@
 LIB_GDI32 = @LIB_GDI32@
-LIB_GS = @LIB_GS@
 LIB_JBIG = @LIB_JBIG@
 LIB_JP2 = @LIB_JP2@
 LIB_JPEG = @LIB_JPEG@
@@ -2161,6 +2163,7 @@ LIB_XEXT = @LIB_XEXT@
 LIB_XML = @LIB_XML@
 LIB_XML_DEPS = @LIB_XML_DEPS@
 LIB_ZLIB = @LIB_ZLIB@
+LIB_ZSTD = @LIB_ZSTD@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LOCALSTATE_DIR = @LOCALSTATE_DIR@
@@ -2180,6 +2183,7 @@ MAGICK_CODER_MODULE_PATH = @MAGICK_CODER_MODULE_PATH@
 MAGICK_CONFIGURE_BUILD_PATH = @MAGICK_CONFIGURE_BUILD_PATH@
 MAGICK_CONFIGURE_SRC_PATH = @MAGICK_CONFIGURE_SRC_PATH@
 MAGICK_DEP_LIBS = @MAGICK_DEP_LIBS@
+MAGICK_EXTRA_DEP_LIBS = @MAGICK_EXTRA_DEP_LIBS@
 MAGICK_FEATURES = @MAGICK_FEATURES@
 MAGICK_FILTER_MODULE_PATH = @MAGICK_FILTER_MODULE_PATH@
 MAGICK_LIBRARY_AGE = @MAGICK_LIBRARY_AGE@
@@ -2245,6 +2249,9 @@ PERL = @PERL@
 PERLMAINCC = @PERLMAINCC@
 PERL_MAKE_OPTIONS = @PERL_MAKE_OPTIONS@
 PERL_SUPPORTS_DESTDIR = @PERL_SUPPORTS_DESTDIR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PREFIX_DIR = @PREFIX_DIR@
 PSDelegate = @PSDelegate@
 PTHREAD_CC = @PTHREAD_CC@
@@ -2279,6 +2286,8 @@ UINTPTR_T = @UINTPTR_T@
 VERSION = @VERSION@
 WinPathScript = @WinPathScript@
 XMKMF = @XMKMF@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -2791,7 +2800,7 @@ coders_dps_la_LIBADD = $(LIBMAGICK) $(LIB_DPS) $(LIB_XEXT) $(LIB_X11)
 coders_dpx_la_SOURCES = coders/dpx.c
 coders_dpx_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_dpx_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_dpx_la_LIBADD = $(LIBMAGICK) 
+coders_dpx_la_LIBADD = $(LIBMAGICK)
 
 # EMF coder module
 coders_emf_la_SOURCES = coders/emf.c
@@ -2803,7 +2812,7 @@ coders_emf_la_LIBADD = $(LIBMAGICK) $(LIB_GDI32)
 coders_ept_la_SOURCES = coders/ept.c
 coders_epd_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_ept_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_ept_la_LIBADD = $(LIBMAGICK) $(LIB_GS) $(LIB_MATH)
+coders_ept_la_LIBADD = $(LIBMAGICK) $(LIB_MATH)
 
 # FAX coder module
 coders_fax_la_SOURCES = coders/fax.c
@@ -3043,7 +3052,7 @@ coders_pdb_la_LIBADD = $(LIBMAGICK)
 coders_pdf_la_SOURCES = coders/pdf.c
 coders_pdf_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_pdf_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_pdf_la_LIBADD = $(LIBMAGICK) $(LIB_ZLIB) $(LIB_GS)
+coders_pdf_la_LIBADD = $(LIBMAGICK) $(LIB_ZLIB)
 
 # PICT coder module
 coders_pict_la_SOURCES = coders/pict.c
@@ -3085,19 +3094,19 @@ coders_preview_la_LIBADD = $(LIBMAGICK)
 coders_ps_la_SOURCES = coders/ps.c
 coders_ps_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_ps_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_ps_la_LIBADD = $(LIBMAGICK) $(LIB_GS) $(LIB_MATH)
+coders_ps_la_LIBADD = $(LIBMAGICK) $(LIB_MATH)
 
 # PS2 coder module
 coders_ps2_la_SOURCES = coders/ps2.c
 coders_ps2_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_ps2_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_ps2_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_ps2_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PS3 coder module
 coders_ps3_la_SOURCES = coders/ps3.c
 coders_ps3_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_ps3_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_ps3_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_ps3_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # PSD coder module
 coders_psd_la_SOURCES = coders/psd.c
@@ -3175,7 +3184,7 @@ coders_tga_la_LIBADD = $(LIBMAGICK)
 coders_tiff_la_SOURCES = coders/tiff.c
 coders_tiff_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_tiff_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_tiff_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_ZLIB) $(LIB_MATH)
+coders_tiff_la_LIBADD = $(LIBMAGICK) $(LIB_TIFF) $(LIB_JBIG) $(LIB_JPEG) $(LIB_LZMA) $(LIB_WEBP) $(LIB_ZLIB) $(LIB_ZSTD) $(LIB_MATH)
 
 # TILE coder module
 coders_tile_la_SOURCES = coders/tile.c

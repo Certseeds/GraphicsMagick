@@ -872,9 +872,10 @@ space, then the change-image pixel intensities are used.
 <abs>the type of image compression</abs>
 <pp>
 Choices are: <i>None</i>, <i>BZip</i>, <i>Fax</i>,
-<i>Group4</i>,
+<i>Group3</i>, <i>Group4</i>,
 <i>JPEG</i>, <i>Lossless</i>,
-<i>LZW</i>, <i>RLE</i>, <i>Zip</i>, or <i>LZMA</i>.
+<i>LZW</i>, <i>RLE</i>, <i>Zip</i>, <i>LZMA</i>, <i>JPEG2000</i>,
+<i>JPEG2000</i>, <i>JBIG</i>, <i>JBIG2</i>, <i>WebP</i>, or <i>ZSTD</i>.
 </pp>
 
 <pp>
@@ -887,10 +888,11 @@ the JPEG library has been patched to support it. Use of lossless JPEG is
 generally not recommended.</pp>
 
 <pp>
-Use the <s>-quality</s> option to set the compression level to be used by
-JPEG, PNG, MIFF, and MPEG encoders. Use the <s>-sampling-factor</s>
-option to set the sampling factor to be used by the DPX, JPEG, MPEG, and
-YUV encoders for downsampling the chroma channels.</pp>
+Use the <s>-quality</s> option to set the compression level to be used
+by the JPEG, JPEG-2000, PNG, MIFF, MPEG, and TIFF encoders. Use the
+<s>-sampling-factor</s> option to set the sampling factor to be used
+by the DPX, JPEG, MPEG, and YUV encoders for downsampling the chroma
+channels.</pp>
 
 </utils>
 
@@ -1127,7 +1129,7 @@ type implied by the DPX header (if any).
 <dt>dpx:packing-method={packed|a|b|lsbpad|msbpad}</dt>
 <dd>DPX samples are output within 32-bit words. They may be tightly
 packed end-to-end within the words ("packed"), padded with null bits to
-the right of the sample ("a" or "lsbpad), or padded with null bits to the
+the right of the sample ("a" or "lsbpad"), or padded with null bits to the
 left of the sample ("b" or "msbpad"). This option only has an effect for
 sample sizes of 10 or 12 bits. If samples are not packed, the DPX
 standard recommends type A padding. Many DPX readers demand a sample size
@@ -1182,6 +1184,14 @@ behaves.
 (default enabled).
 </dd>
 
+<dt>jpeg:max-scan-number=<value></dt>
+
+<dd>Specifies an integer value for the maximum number of progressive
+scans allowed in a JPEG file.  The default maximum is 100 scans.  This
+limit is imposed due to a weakness in the JPEG standard which allows
+small JPEG files to take many minutes or hours to be read.
+</dd>
+
 <dt>jpeg:max-warnings=<value></dt>
 
 <dd>Specifies an integer value for how many warnings are allowed for
@@ -1190,8 +1200,7 @@ files producing excessive warnings indicate a problem with the file.
 </dd>
 
 <dt>jpeg:optimize-coding={true|false}</dt>
-<dd>
-Selects if huffman encoding should be used. Huffman encoding is enabled
+<dd>Selects if huffman encoding should be used. Huffman encoding is enabled
 by default, but may be disabled for very large images since it encoding
 requires that the entire image be buffered in memory. Huffman encoding
 produces smaller JPEG files at the expense of added compression time and
@@ -1384,6 +1393,22 @@ Enables tiled TIFF if it has not already been enabled.
 is then defaulted to an appropriate size. Height should be a multiple of
 16. If the value is not a multiple of 16, then it will be rounded down.
 Enables tiled TIFF if it has not already been enabled.
+</dd>
+
+<dt>tiff:webp-lossless={TRUE|FALSE}</dt>
+<dd>Specify a value of <s>TRUE</s> to enable lossless mode while
+writing WebP-compressed TIFF files. The WebP <s>webp:lossless</s>
+option may also be used.  The quality factor set by the
+<s>-quality</s> option may be used to influence the level of effort
+expended while compressing.
+</dd>
+
+<dt>tiff:zstd-compress-level=<value></dt>
+<dd>Specify the compression level to use while writing Zstd-compressed
+TIFF files. The valid range is 1 to 22. If this define is not
+specified, then the 'quality' value is used such that the default
+quality setting of 75 is translated to a compress level of 9 such that
+'quality' has a useful range of 10-184 if used for this purpose.
 </dd>
 
 <dt>webp:lossless={true|false}</dt>
@@ -4537,7 +4562,7 @@ When writing a JNG image with transparency, two quality values are required,
 one for the main image and one for the grayscale image that conveys the
 opacity channel.  These are written as a single integer equal to the main
 image quality plus 1000 times the opacity quality.  For example, if you
-want to use quality 75 for the main image and quality 90 to compress 
+want to use quality 75 for the main image and quality 90 to compress
 the opacity data, use <tt>-quality 90075</tt>.</pp>
 
 <pp>
@@ -4546,6 +4571,15 @@ factor of zero in order to obtain the ASCII variant of the format. Note
 that -compress <i>none</i> used to be used to trigger ASCII output but
 provided the opposite result of what was expected as compared with other
 formats.</pp>
+
+<pp>
+For the TIFF format, the JPEG, WebP, Zip, and Zstd compression
+algorithms are influenced by the quality value.  JPEG and WebP provide
+lossy compression so higher quality produces a larger file with less
+degradation.  The Zip and Zstd compression algorithms (and WebP in
+lossless mode) are lossless and for these algorithms a higher
+'quality' means to work harder to produce a smaller file, but with no
+difference in image quality.</pp>
 
 </utils>
 

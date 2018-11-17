@@ -1746,7 +1746,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   source_rectangle=size_rectangle;
   destination_rectangle=size_rectangle;
   base_address=0xff;
-  row_bytes=image->columns;
+  row_bytes=(size_t) image->columns;
   bounds.top=0;
   bounds.left=0;
   bounds.bottom=(short) image->rows;
@@ -1774,18 +1774,21 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       pixmap.bits_per_pixel=32;
       pixmap.pack_type=0x04;
       transfer_mode=0x40;
-      row_bytes=4*image->columns;
+      row_bytes=MagickArraySize(4,(size_t) image->columns);
+      if (row_bytes == 0)
+        ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   /*
     Allocate memory.
   */
-  bytes_per_line=image->columns;
+  bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
-    bytes_per_line*=image->matte ? 4 : 3;
+    bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);
   packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount);
   scanline=MagickAllocateMemory(unsigned char *,row_bytes);
-  if ((buffer == (unsigned char *) NULL) ||
+  if ((bytes_per_line == 0) ||
+      (buffer == (unsigned char *) NULL) ||
       (packed_scanline == (unsigned char *) NULL) ||
       (scanline == (unsigned char *) NULL))
     ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);

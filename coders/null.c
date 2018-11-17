@@ -48,7 +48,7 @@
   Forward declarations.
 */
 static unsigned int
-  WriteNULLImage(const ImageInfo *,Image *);
+  WriteNULLImage(const ImageInfo *,Image *) MAGICK_FUNC_PURE;
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

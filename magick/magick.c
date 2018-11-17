@@ -169,6 +169,7 @@ DestroyMagick(void)
                         "Destroy Magick");
 
   MagickDestroyCommandInfo();   /* Command parser */
+  DestroyMagickMonitor();       /* Progress monitor */
 #if defined(HasX11)
   MagickXDestroyX11Resources();
 #endif
@@ -1178,6 +1179,7 @@ InitializeMagick(const char *path)
   InitializeTypeInfo();             /* Font information */
   InitializeDelegateInfo();         /* External delegate information */
   InitializeColorInfo();            /* Color database */
+  InitializeMagickMonitor();        /* Progress monitor */
   MagickInitializeCommandInfo();    /* Command parser */
 
   /* Let's log the three important setting as we exit this routine */

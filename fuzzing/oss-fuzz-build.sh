@@ -31,7 +31,7 @@ popd
 # build libjpeg
 echo "=== Building libjpeg..."
 pushd "$SRC/libjpeg-turbo"
-CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on
+CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on -DWITH_JPEG8=1 -DWITH_SIMD=0
 make -j$(nproc)
 make install
 popd
@@ -112,4 +112,8 @@ for item in $("$WORK/coder_list"); do
         fuzzing/coder_fuzzer.cc -o "${OUT}/coder_${coder}_fuzzer" \
         $coder_flags -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
         "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
+
+    if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
+        cp "fuzzing/dictionaries/${coder}.dict" "${OUT}/coder_${coder}_fuzzer.dict"
+    fi
 done

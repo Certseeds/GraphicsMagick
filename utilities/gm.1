@@ -1,4 +1,4 @@
-.TH gm 1 "2018/06/17" "GraphicsMagick"
+.TH gm 1 "2018/10/14" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1040,9 +1040,10 @@ space, then the change-image pixel intensities are used.
 \fRthe type of image compression
 
 Choices are: \fINone\fP, \fIBZip\fP, \fIFax\fP,
-\fIGroup4\fP,
+\fIGroup3\fP, \fIGroup4\fP,
 \fIJPEG\fP, \fILossless\fP,
-\fILZW\fP, \fIRLE\fP, \fIZip\fP, or \fILZMA\fP.
+\fILZW\fP, \fIRLE\fP, \fIZip\fP, \fILZMA\fP, \fIJPEG2000\fP,
+\fIJPEG2000\fP, \fIJBIG\fP, \fIJBIG2\fP, \fIWebP\fP, or \fIZSTD\fP.
 
 
 Specify \fB+compress\fP to store the binary image in an uncompressed format.
@@ -1052,10 +1053,11 @@ The default is the compression type of the specified image file.
 the JPEG library has been patched to support it. Use of lossless JPEG is
 generally not recommended.
 
-Use the \fB-quality\fP option to set the compression level to be used by
-JPEG, PNG, MIFF, and MPEG encoders. Use the \fB-sampling-factor\fP
-option to set the sampling factor to be used by the DPX, JPEG, MPEG, and
-YUV encoders for downsampling the chroma channels.
+Use the \fB-quality\fP option to set the compression level to be used
+by the JPEG, JPEG-2000, PNG, MIFF, MPEG, and TIFF encoders. Use the
+\fB-sampling-factor\fP option to set the sampling factor to be used
+by the DPX, JPEG, MPEG, and YUV encoders for downsampling the chroma
+channels.
 .TP
 .B "-contrast"
 \fRenhance or reduce the image contrast
@@ -1220,7 +1222,7 @@ type implied by the DPX header (if any).
 .in 20
 DPX samples are output within 32-bit words. They may be tightly
 packed end-to-end within the words ("packed"), padded with null bits to
-the right of the sample ("a" or "lsbpad), or padded with null bits to the
+the right of the sample ("a" or "lsbpad"), or padded with null bits to the
 left of the sample ("b" or "msbpad"). This option only has an effect for
 sample sizes of 10 or 12 bits. If samples are not packed, the DPX
 standard recommends type A padding. Many DPX readers demand a sample size
@@ -1297,6 +1299,17 @@ Enables or disables fancy upsampling when reading a JPEG file
 
 .in 15
 .in 15
+.B "jpeg:max-scan-number=<value>"
+.in 20
+ \fR
+.in 20
+Specifies an integer value for the maximum number of progressive
+scans allowed in a JPEG file.  The default maximum is 100 scans.  This
+limit is imposed due to a weakness in the JPEG standard which allows
+small JPEG files to take many minutes or hours to be read.
+
+.in 15
+.in 15
 .B "jpeg:max-warnings=<value>"
 .in 20
  \fR
@@ -1311,7 +1324,6 @@ files producing excessive warnings indicate a problem with the file.
 .in 20
  \fR
 .in 20
-
 Selects if huffman encoding should be used. Huffman encoding is enabled
 by default, but may be disabled for very large images since it encoding
 requires that the entire image be buffered in memory. Huffman encoding
@@ -1597,6 +1609,30 @@ Specify the tile height to use while writing tiled TIFF. The tile width
 is then defaulted to an appropriate size. Height should be a multiple of
 16. If the value is not a multiple of 16, then it will be rounded down.
 Enables tiled TIFF if it has not already been enabled.
+
+.in 15
+.in 15
+.B "tiff:webp-lossless={TRUE|FALSE}"
+.in 20
+ \fR
+.in 20
+Specify a value of \fBTRUE\fP to enable lossless mode while
+writing WebP-compressed TIFF files. The WebP \fBwebp:lossless\fP
+option may also be used.  The quality factor set by the
+\fB-quality\fP option may be used to influence the level of effort
+expended while compressing.
+
+.in 15
+.in 15
+.B "tiff:zstd-compress-level=<value>"
+.in 20
+ \fR
+.in 20
+Specify the compression level to use while writing Zstd-compressed
+TIFF files. The valid range is 1 to 22. If this define is not
+specified, then the 'quality' value is used such that the default
+quality setting of 75 is translated to a compress level of 9 such that
+\'quality' has a useful range of 10-184 if used for this purpose.
 
 .in 15
 .in 15
@@ -3860,7 +3896,7 @@ When writing a JNG image with transparency, two quality values are required,
 one for the main image and one for the grayscale image that conveys the
 opacity channel.  These are written as a single integer equal to the main
 image quality plus 1000 times the opacity quality.  For example, if you
-want to use quality 75 for the main image and quality 90 to compress 
+want to use quality 75 for the main image and quality 90 to compress
 the opacity data, use -quality 90075.
 
 For the PNM family of formats (PNM, PGM, and PPM) specify a quality
@@ -3868,6 +3904,14 @@ factor of zero in order to obtain the ASCII variant of the format. Note
 that -compress \fInone\fP used to be used to trigger ASCII output but
 provided the opposite result of what was expected as compared with other
 formats.
+
+For the TIFF format, the JPEG, WebP, Zip, and Zstd compression
+algorithms are influenced by the quality value.  JPEG and WebP provide
+lossy compression so higher quality produces a larger file with less
+degradation.  The Zip and Zstd compression algorithms (and WebP in
+lossless mode) are lossless and for these algorithms a higher
+\'quality' means to work harder to produce a smaller file, but with no
+difference in image quality.
 .TP
 .B "-raise \fI<width>x<height>"\fP
 \fRlighten or darken image edges

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2004 - 2016 GraphicsMagick Group
+% Copyright (C) 2004 - 2018 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -117,7 +117,7 @@ static MagickPassFail ValidateChannelRequest(const ColorspaceType image_colorspa
 static MagickPassFail
 ChannelImagePixels(void *mutable_data,            /* User provided mutable data */
                    const void *immutable_data,    /* User provided immutable data */
-                   Image *image,                  /* Modify image */
+                   Image * restrict image,        /* Modify image */
                    PixelPacket * restrict pixels, /* Pixel row */
                    IndexPacket * restrict indexes,/* Pixel row indexes */
                    const long npixels,            /* Number of pixels in row */
@@ -324,12 +324,12 @@ MagickExport MagickPassFail ChannelImage(Image *image,const ChannelType channel)
 static MagickPassFail
 ExportImageChannelPixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *new_image,                  /* New image */
-                         PixelPacket *new_pixels,           /* Pixel row in new image */
-                         IndexPacket *new_indexes,          /* Pixel row indexes in new image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict new_image,                  /* New image */
+                         PixelPacket * restrict new_pixels,           /* Pixel row in new image */
+                         IndexPacket * restrict new_indexes,          /* Pixel row indexes in new image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -506,9 +506,9 @@ MagickExport Image *ExportImageChannel(const Image *source_image,
 static MagickPassFail
 GetImageChannelDepthPixels(void *mutable_data,          /* User provided mutable data */
                            const void *immutable_data,  /* User provided immutable data */
-                           const Image *image,          /* Input image */
-                           const PixelPacket *pixels,   /* Pixel row */
-                           const IndexPacket *indexes,  /* Pixel indexes */
+                           const Image * restrict image,          /* Input image */
+                           const PixelPacket * restrict pixels,   /* Pixel row */
+                           const IndexPacket * restrict indexes,  /* Pixel indexes */
                            const long npixels,          /* Number of pixels in row */
                            ExceptionInfo *exception     /* Exception report */
                            )
@@ -669,12 +669,12 @@ GetImageChannelDepth(const Image *image,
 static MagickPassFail
 ImportImageChannelPixels(void *mutable_data,                /* User provided mutable data */
                          const void *immutable_data,        /* User provided immutable data */
-                         const Image *source_image,         /* Source image */
-                         const PixelPacket *source_pixels,  /* Pixel row in source image */
-                         const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                         Image *update_image,               /* Update image */
-                         PixelPacket *update_pixels,        /* Pixel row in update image */
-                         IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                         const Image * restrict source_image,         /* Source image */
+                         const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                         const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                         Image * restrict update_image,               /* Update image */
+                         PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                         IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                          const long npixels,                /* Number of pixels in row */
                          ExceptionInfo *exception           /* Exception report */
                          )
@@ -800,12 +800,12 @@ MagickPassFail ImportImageChannel(const Image *source_image,
 static MagickPassFail
 ImportImageChannelsMaskedPixels(void *mutable_data,                /* User provided mutable data */
                                 const void *immutable_data,        /* User provided immutable data */
-                                const Image *source_image,         /* Source image */
-                                const PixelPacket *source_pixels,  /* Pixel row in source image */
-                                const IndexPacket *source_indexes, /* Pixel row indexes in source image */
-                                Image *update_image,               /* Update image */
-                                PixelPacket *update_pixels,        /* Pixel row in update image */
-                                IndexPacket *update_indexes,       /* Pixel row indexes in update image */
+                                const Image * restrict source_image,         /* Source image */
+                                const PixelPacket * restrict source_pixels,  /* Pixel row in source image */
+                                const IndexPacket * restrict source_indexes, /* Pixel row indexes in source image */
+                                Image * restrict update_image,               /* Update image */
+                                PixelPacket * restrict update_pixels,        /* Pixel row in update image */
+                                IndexPacket * restrict update_indexes,       /* Pixel row indexes in update image */
                                 const long npixels,                /* Number of pixels in row */
                                 ExceptionInfo *exception           /* Exception report */
                                 )

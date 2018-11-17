@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2018 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -38,6 +38,7 @@
 */
 #include "magick/studio.h"
 #include "magick/monitor.h"
+#include "magick/semaphore.h"
 #include "magick/utility.h"
 
 /*
@@ -45,6 +46,61 @@
 */
 static MonitorHandler
   monitor_handler = (MonitorHandler) NULL;
+
+static SemaphoreInfo
+  *monitor_semaphore = 0;
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   D e s t r o y M a g i c k M o n i t o r                                   %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  DestroyMagickMonitor() destroys the monitor environment.
+%
+%  The format of the DestroyMagickMonitor() method is:
+%
+%      DestroyMagickMonitor(void)
+%
+%
+*/
+void
+DestroyMagickMonitor(void)
+{
+  DestroySemaphoreInfo(&monitor_semaphore);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   I n i t i a l i z e M a g i c k M o n i t o r                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  InitializeMagickMonitor() initializes the module loader.
+%
+%  The format of the InitializeMagickMonitor() method is:
+%
+%      MagickPassFail InitializeMagickMonitor(void)
+%
+%
+*/
+MagickPassFail
+InitializeMagickMonitor(void)
+{
+  assert(monitor_semaphore == (SemaphoreInfo *) NULL);
+  monitor_semaphore=AllocateSemaphoreInfo();
+  return MagickPass;
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,6 +117,8 @@ static MonitorHandler
 %  describes the task and a measure of completion.  The method returns True
 %  on success otherwise False if an error is encountered, e.g. if there was a
 %  user interrupt.
+%
+%  This function is deprecated.  Please use MagickMonitorFormatted() instead.
 %
 %  The format of the MagickMonitor method is:
 %
@@ -87,13 +145,16 @@ MagickMonitor(const char *text,
               ExceptionInfo *exception)
 {
   MagickPassFail
-    status;
+    status = MagickPass;
 
   assert(text != (const char *) NULL);
   ProcessPendingEvents(text);
-  status=MagickPass;
   if (monitor_handler != (MonitorHandler) NULL)
-    status=(*monitor_handler)(text,quantum,span,exception);
+    {
+      LockSemaphoreInfo(monitor_semaphore);
+      status=(*monitor_handler)(text,quantum,span,exception);
+      UnlockSemaphoreInfo(monitor_semaphore);
+    }
   return(status);
 }
 
@@ -111,8 +172,16 @@ MagickMonitor(const char *text,
 %  MagickMonitorFormatted() calls the monitor handler method with a
 %  printf type format specification and variable argument list.  Also
 %  passed are quantum and span values which provide a measure of
-%  completion.  The method returns True on success otherwise False if
-%  an error is encountered, e.g. if there was a user interrupt.
+%  completion.  The method returns MagickPass on success otherwise
+%  MagickFail if an error is encountered, e.g. if there was a user
+%  interrupt.  If MagickFail is returned, the calling code is expected
+%  to terminate whatever is being monitored as soon as possible.
+%
+%  Most callers of this function will use the QuantumTick() macro to
+%  decide when it should be called.  The QuantumTick() macro is designed
+%  to deliver no more than 100 events in a span (representing 1-100%)
+%  and to distribute events as evenly as possible over the span so that
+%  events are reported for every 1% of progress when possible.
 %
 %  The format of the MagickMonitorFormatted method is:
 %
@@ -140,10 +209,8 @@ MagickMonitorFormatted(const magick_int64_t quantum,
                        const char *format,...)
 {
   MagickPassFail
-    status;
+    status = MagickPass;
 
-
-  status=MagickPass;
   if (monitor_handler != (MonitorHandler) NULL)
     {
       va_list
@@ -155,7 +222,28 @@ MagickMonitorFormatted(const magick_int64_t quantum,
       va_start(operands,format);
       FormatStringList(text,format,operands);
       va_end(operands);
-      status=MagickMonitor(text,quantum,span,exception);
+      /*
+        Serialize calls to the handler so that it will
+        never be invoked by more than one thread at a time.
+
+        When OpenMP is used, many different threads may invoke the
+        handler, but the implementation of the handler might not be
+        prepared for that.
+
+        It is theoretically possible for events to be delivered out of
+        order if the handler takes so much time to complete that
+        another thread is already delivering an event.  If the OS does
+        not provide any lock ordering sematics (first come, first
+        served) then behavior is indeterminate.  FIXME: if the
+        progress monitor is called by a thread while the lock is still
+        held, maybe just cache the latest progress and deliver it once
+        the monitor hander returns so the most recent progress is
+        delivered. The current semaphore design does not provide "try
+        lock" behavior.
+      */
+      LockSemaphoreInfo(monitor_semaphore);
+      status=(*monitor_handler)(text,quantum,span,exception);
+      UnlockSemaphoreInfo(monitor_semaphore);
     }
   return status;
 }

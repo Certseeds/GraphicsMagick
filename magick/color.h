@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2010 GraphicsMagick Group
+  Copyright (C) 2003 - 2018 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -72,7 +72,7 @@ extern MagickExport MagickBool
    ((p)->blue != (q)->blue))
 
 extern MagickExport unsigned int
-  FuzzyColorMatch(const PixelPacket *p,const PixelPacket *q,const double fuzz);
+  FuzzyColorMatch(const PixelPacket *p,const PixelPacket *q,const double fuzz) MAGICK_FUNC_PURE;
 
 /*
   Compare two pixels (including opacity)
