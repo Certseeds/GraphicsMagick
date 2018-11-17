@@ -22,6 +22,11 @@ extern "C" {
 extern MagickExport MagickPassFail
   ListModuleInfo(FILE *file,ExceptionInfo *exception);
 
+extern MagickExport MagickPassFail
+  ExecuteModuleProcess(const char *tag,Image **image,
+                       const int argc,char **argv);
+
+
 #if defined(MAGICK_IMPLEMENTATION)
 
 /*
@@ -52,8 +57,6 @@ extern const ModuleInfo
   *GetModuleInfo(const char *,ExceptionInfo *);
 
 extern MagickPassFail
-  ExecuteModuleProcess(const char *tag,Image **image,
-                       const int argc,char **argv),
   ExecuteStaticModuleProcess(const char *,Image **,const int,char **),
   ListModuleInfo(FILE *file,ExceptionInfo *exception),
   OpenModule(const char *module,ExceptionInfo *exception),
