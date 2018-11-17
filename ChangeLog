@@ -1,3 +1,7 @@
+2018-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update news in preparation for release.
+
 2018-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (BenchmarkUsage): Document the benchmark
