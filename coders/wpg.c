@@ -1236,7 +1236,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->rows=BitmapHeader2.Heigth;
               bpp=BitmapHeader2.Depth;
 
-            UnpackRaster:
+UnpackRaster:
               if(bpp>24)
                 {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
 

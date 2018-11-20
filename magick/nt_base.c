@@ -985,9 +985,9 @@ MagickExport double NTElapsedTime(void)
 
   if (pFrequency.QuadPart == 0)
     if (QueryPerformanceFrequency(&pFrequency) == 0)
-      pFrequency.QuadPart = 1;
+      pFrequency.QuadPart = 1;	/* Mark that the Performance counter is NOT supported. */
 
-  if (pFrequency.QuadPart)
+  if (pFrequency.QuadPart > 1)
     {
       QueryPerformanceCounter(&CurrentTime);
       return (double) CurrentTime.QuadPart / pFrequency.QuadPart;
