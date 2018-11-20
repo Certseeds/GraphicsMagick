@@ -1,3 +1,9 @@
+2018-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/nt_base.c (NTElapsedTime): Use
+	QueryPerformanceFrequency() and QueryPerformanceCounter() to
+	measure elapsed time for Windows.
+
 2018-11-19  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* tiff/port/snprintf.c Fix for older Microsoft Visual Studio

@@ -975,21 +975,41 @@ MagickExport int NTmunmap(void *map,size_t length)
 */
 MagickExport double NTElapsedTime(void)
 {
-  union
-  {
-    FILETIME
-      filetime;
+  /*
+    See
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms644905%28v=vs.85%29.aspx
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms644904%28v=vs.85%29.aspx
+  */
+  static LARGE_INTEGER pFrequency = {0};
+  LARGE_INTEGER CurrentTime;
 
-    __int64
-      filetime64;
-  } elapsed_time;
+  if (pFrequency.QuadPart == 0)
+    if (QueryPerformanceFrequency(&pFrequency) == 0)
+      pFrequency.QuadPart = 1;
 
-  SYSTEMTIME
-    system_time;
+  if (pFrequency.QuadPart)
+    {
+      QueryPerformanceCounter(&CurrentTime);
+      return (double) CurrentTime.QuadPart / pFrequency.QuadPart;
+    }
+  else
+    {
+      union
+      {
+        FILETIME
+        filetime;
 
-  GetSystemTime(&system_time);
-  SystemTimeToFileTime(&system_time,&elapsed_time.filetime);
-  return((double) 1.0e-7*elapsed_time.filetime64);
+        __int64
+        filetime64;
+      } elapsed_time;
+
+      SYSTEMTIME
+        system_time;
+
+      GetSystemTime(&system_time);
+      SystemTimeToFileTime(&system_time,&elapsed_time.filetime);
+      return((double) 1.0e-7*elapsed_time.filetime64);
+    }
 }
 
 /*
