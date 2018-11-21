@@ -2,7 +2,6 @@
 
 	* magick/nt_base.c Fix a bug when OS does not support performance counter.
 
-
 2018-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/nt_base.c (NTElapsedTime): Use

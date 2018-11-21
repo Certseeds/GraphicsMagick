@@ -2109,7 +2109,7 @@ BenchmarkImageCommand(ImageInfo *image_info,
         if (raw_csv)
           {
             /* RAW CSV value output */
-            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.3f\"",
+            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.3g\"",
                            threads_limit,iteration,user_time,elapsed_time);
           }
         else
