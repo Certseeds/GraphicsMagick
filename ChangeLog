@@ -1,3 +1,9 @@
+2018-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/wand_api.h ("C"): magick/api.h should be included prior to
+	wand/wand_symbols.h.  Change made due to report by yzh杨振宏 on
+	Wed, 21 Nov 2018 via the graphicsmagick-bugs mailing list.
+
 2018-11-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* magick/nt_base.c Fix a bug when OS does not support performance counter.

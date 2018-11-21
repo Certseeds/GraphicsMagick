@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2009 GraphicsMagick Group
+  Copyright (C) 2003-2018 GraphicsMagick Group
 
   GraphicsMagick Wand API Methods
 */
@@ -10,8 +10,8 @@
 extern "C" {
 #endif
 
-#include <wand/wand_symbols.h>
 #include <magick/api.h>
+#include <wand/wand_symbols.h>
 
 #if defined(_VISUALC_)
 
