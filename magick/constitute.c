@@ -2293,11 +2293,12 @@ WriteImage(const ImageInfo *image_info,Image *image)
       if ((magick_info == (MagickInfo *) NULL) ||
           (magick_info->encoder == NULL))
         {
+          ThrowException(&image->exception,MissingDelegateError,
+                         NoEncodeDelegateForThisImageFormat,
+                         clone_info->magick);
           DestroyImageInfo(clone_info);
-          ThrowBinaryException(MissingDelegateError,
-                               NoEncodeDelegateForThisImageFormat,
-                               clone_info->magick)
-            }
+          return(MagickFail);
+        }
       if (!magick_info->thread_support)
         LockSemaphoreInfo(constitute_semaphore);
       status=(magick_info->encoder)(clone_info,image);

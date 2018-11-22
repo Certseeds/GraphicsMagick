@@ -1,5 +1,10 @@
 2018-11-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/constitute.c (WriteImage): Eliminate use of just-freed
+	memory in clone_info->magick when throwing exception due to no
+	support for format.  Fixes SourceForge issue #576 "heap
+	use-after-freee when convert one format into another format".
+
 	* magick/command.c (BenchmarkImageCommand): Benchmark command now
 	shows 6 digits of elapsed time indication since this precision is
 	often now available and it is useful to see.

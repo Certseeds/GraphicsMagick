@@ -38,6 +38,10 @@
 <p>2018-11-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/constitute.c (WriteImage): Eliminate use of just-freed
+memory in clone_info-&gt;magick when throwing exception due to no
+support for format.  Fixes SourceForge issue #576 &quot;heap
+use-after-freee when convert one format into another format&quot;.</li>
 <li>magick/command.c (BenchmarkImageCommand): Benchmark command now
 shows 6 digits of elapsed time indication since this precision is
 often now available and it is useful to see.</li>
