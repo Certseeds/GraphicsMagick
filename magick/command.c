@@ -2109,14 +2109,14 @@ BenchmarkImageCommand(ImageInfo *image_info,
         if (raw_csv)
           {
             /* RAW CSV value output */
-            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.5g\"",
+            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.6g\"",
                            threads_limit,iteration,user_time,elapsed_time);
           }
         else
           {
             /* Formatted and summarized output */
             (void) fprintf(stderr,
-                           "Results: %ld threads %ld iter %.2fs user %.5fs total %.3f iter/s "
+                           "Results: %ld threads %ld iter %.2fs user %.6fs total %.3f iter/s "
                            "%.3f iter/cpu",
                            threads_limit,iteration,user_time,elapsed_time,rate_total,rate_cpu);
             if (thread_bench)
