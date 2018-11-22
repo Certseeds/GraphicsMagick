@@ -1,3 +1,9 @@
+2018-11-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (BenchmarkImageCommand): Benchmark command now
+	shows 5 digits of elapsed time indication since this precision is
+	often now available and it is useful to see.
+
 2018-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* wand/wand_api.h ("C"): magick/api.h should be included prior to
