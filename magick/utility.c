@@ -2183,6 +2183,7 @@ MagickExport int GetMagickGeometry(const char *geometry,long *x,long *y,
 */
 MagickExport char *GetPageGeometry(const char *page_geometry)
 {
+#undef PAGE_SIZE
 #define PAGE_SIZE(name, geometry) { name, sizeof(name)-1, geometry }
   static const struct
   {

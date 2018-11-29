@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2002
+// Copyright Bob Friesenhahn, 1999 - 2018
 //
 // Definition of Drawable (Graphic objects)
 //
@@ -41,6 +41,7 @@ namespace Magick
 {
 
 #if defined(__clang__)
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wunused-private-field"
 #endif /* if defined(__clang__) */
@@ -2922,7 +2923,6 @@ private:
 };
 
 #if defined(__clang__)
-#pragma clang diagnostic pop
 #pragma clang diagnostic pop
 #endif /* if defined(__clang__) */
 
