@@ -16841,7 +16841,7 @@ TimeImageCommand(ImageInfo *image_info,
         }
     }
   (void) fprintf(stderr,
-                 "%s%.2fs user %.2fs system %.0f%% cpu %.3f total\n",
+                 "%s%.2fs user %.2fs system %.0f%% cpu %.6f total\n",
                  pad,user_time,0.0,100.0*user_time/elapsed_time,elapsed_time);
   (void) fflush(stderr);
 

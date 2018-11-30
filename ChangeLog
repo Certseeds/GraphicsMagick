@@ -1,3 +1,9 @@
+2018-11-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (TimeImageCommand): Time command now shows 6
+	digits of elapsed time indication since this precision is often
+	now available and it is useful to see.
+
 2018-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Magick++/Drawable.h: Fix use of clang diagnostic
