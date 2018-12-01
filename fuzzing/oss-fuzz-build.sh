@@ -36,6 +36,15 @@ make -j$(nproc)
 make install
 popd
 
+# Build webp
+echo "=== Building webp..."
+pushd "$SRC/libwebp"
+./autogen.sh
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
+make -j$(nproc)
+make install
+popd
+
 # Build libtiff
 echo "=== Building libtiff..."
 pushd "$SRC/libtiff"
@@ -59,15 +68,6 @@ echo "=== Building freetype2..."
 pushd "$SRC/freetype2"
 ./autogen.sh
 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --enable-freetype-config
-make -j$(nproc)
-make install
-popd
-
-# Build webp
-echo "=== Building webp..."
-pushd "$SRC/libwebp"
-./autogen.sh
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
 make -j$(nproc)
 make install
 popd
