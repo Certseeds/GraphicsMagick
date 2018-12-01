@@ -1,5 +1,9 @@
 2018-12-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac (DcrawExtraOptions): For QuantumDepth > 8 pass -6
+	option to dcraw.  Fixes SourceForge issue #568 "dcraw not
+	returning 16 bit image even though quantum depth is set to 16".
+
 	* fuzzing/oss-fuzz-build.sh (PKG_CONFIG_PATH): Build WebP prior to
 	libtiff so that libtiff has a chance to find it.
 

@@ -705,6 +705,7 @@ DOTDecodeDelegate
 DCRAWDecodeDelegate
 CGMDecodeDelegate
 BrowseDelegate
+DcrawExtraOptions
 MagickShareConfigPath
 MagickSharePath
 MagickFilterModulesPath
@@ -28275,6 +28276,15 @@ cat >>confdefs.h <<_ACEOF
 #define MagickShareConfigPath "$MagickShareConfigPathDefine"
 _ACEOF
 
+
+
+# Extra options to pass to dcraw via delegates.mgk.  This substition
+# is done directly on delegates.mgk and has no effect on the compiled
+# binaries.
+DcrawExtraOptions=''
+if test QuantumDepth -gt 8 ; then
+   DcrawExtraOptions='-6'
+fi
 
 
 #

@@ -2781,6 +2781,15 @@ esac
 AC_DEFINE_UNQUOTED(MagickShareConfigPath,"$MagickShareConfigPathDefine",Directory where architecture-independent configuration files live.)
 AC_SUBST(MagickShareConfigPath)
 
+# Extra options to pass to dcraw via delegates.mgk.  This substition
+# is done directly on delegates.mgk and has no effect on the compiled
+# binaries.
+DcrawExtraOptions=''
+if test QuantumDepth -gt 8 ; then
+   DcrawExtraOptions='-6'
+fi
+AC_SUBST(DcrawExtraOptions)
+
 #
 # program_transform_name is formed for use in a Makefile, so create a
 # modified version for use in a shell script.
