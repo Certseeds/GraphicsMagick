@@ -90,7 +90,7 @@ building under Microsoft Windows:
   to read the Computer Graphics Metafile (CGM) image format. You also
   need Ghostscript and Ghostscript Fonts (see below).
 
-* GraphicsMagick requires 'dcraw' from
+* GraphicsMagick requires 'dcraw' (version 8.95 or later) from
 
     http://www.cybercom.net/~dcoffin/dcraw/
 
