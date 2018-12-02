@@ -20,6 +20,13 @@ make -j$(nproc)
 make install
 popd
 
+# build zstd
+echo "==== Building zstd..."
+pushd "$SRC/zstd"
+make -j$(nproc) lib-release
+make install PREFIX="$WORK"
+popd
+
 echo "=== Building libpng..."
 pushd "$SRC/libpng"
 autoreconf -fiv

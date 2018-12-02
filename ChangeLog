@@ -1,3 +1,8 @@
+2018-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Apply patch from Alex Gaynor to add
+	Zstd to the oss-fuzz build.
+
 2018-12-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac (DcrawExtraOptions): For QuantumDepth > 8 pass -6
