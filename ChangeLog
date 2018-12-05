@@ -1,5 +1,10 @@
 2018-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c (WriteXPMImage): Assure that added colormap entry
+	for transparent XPM is initialized. Fixes oss-fuzz 11617
+	"graphicsmagick/coder_XPM_fuzzer: Use-of-uninitialized-value in
+	QueryColorname". (Credit to OSS-Fuzz)
+
 	* coders/miff.c (ReadMIFFImage): Fix memory leak of profiles
 	'name' when claimed length is zero.  Fixes oss-fuzz 11710
 	"graphicsmagick/coder_MIFF_fuzzer: Direct-leak in AllocateString".

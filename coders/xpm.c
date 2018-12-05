@@ -799,6 +799,10 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
     {
       colors++;
       MagickReallocMemory(PixelPacket *,picon->colormap,colors*sizeof(PixelPacket));
+      if (picon->colormap == (PixelPacket *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,picon);
+      picon->colormap[colors-1].red=picon->colormap[colors-1].green=picon->colormap[colors-1].blue=0;
+      picon->colormap[colors-1].opacity=TransparentOpacity;
       for (y=0; y < (long) picon->rows; y++)
       {
         register IndexPacket
@@ -1029,6 +1033,10 @@ static unsigned int WriteXPMImage(const ImageInfo *image_info,Image *image)
     {
       colors++;
       MagickReallocMemory(PixelPacket *,image->colormap,colors*sizeof(PixelPacket));
+      if (image->colormap == (PixelPacket *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      image->colormap[colors-1].red=image->colormap[colors-1].green=image->colormap[colors-1].blue=0;
+      image->colormap[colors-1].opacity=TransparentOpacity;
       for (y=0; y < (long) image->rows; y++)
       {
         register IndexPacket
