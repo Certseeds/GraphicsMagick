@@ -1,3 +1,10 @@
+2018-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Fix memory leak of profiles
+	'name' when claimed length is zero.  Fixes oss-fuzz 11710
+	"graphicsmagick/coder_MIFF_fuzzer: Direct-leak in AllocateString".
+	(Credit to OSS-Fuzz)
+
 2018-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Apply patch from Alex Gaynor to add

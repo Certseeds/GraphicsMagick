@@ -1037,6 +1037,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 /* Legacy ImageMagick 4.2.9 used keyword "color-profile" for ICC profile */
                 if (LocaleCompare(keyword,"color-profile") == 0)
                   {
+                    if (MagickAtoL(values) <= 0)
+                      ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
                     MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
                     if (profiles == (ProfileInfo *) NULL)
@@ -1217,6 +1219,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if ((LocaleNCompare(keyword,"profile-",8) == 0) ||
                     (LocaleNCompare(keyword,"profile:",8) == 0))
                   {
+                    if (MagickAtoL(values) <= 0)
+                      ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
                     MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
                     if (profiles == (ProfileInfo *) NULL)
@@ -1432,14 +1436,15 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
       {
         for (i=0; i < (long) number_of_profiles; i++)
         {
-          if (profiles[i].length == 0)
-            continue;
-          profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
-          if (profiles[i].info == (unsigned char *) NULL)
-            ThrowMIFFReaderException(CorruptImageError,UnableToReadGenericProfile,
-              image);
-          (void) ReadBlob(image,profiles[i].length,profiles[i].info);
-          (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+          if (profiles[i].length > 0)
+            {
+              profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
+              if (profiles[i].info == (unsigned char *) NULL)
+                ThrowMIFFReaderException(CorruptImageError,UnableToReadGenericProfile,
+                                         image);
+              (void) ReadBlob(image,profiles[i].length,profiles[i].info);
+              (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+            }
           MagickFreeMemory(profiles[i].name);
           MagickFreeMemory(profiles[i].info);
         }
