@@ -1,3 +1,9 @@
+2018-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Fix non-terminal MNG looping.
+	Fixes oss-fuzz 11596 "graphicsmagick/coder_MNG_fuzzer: Timeout in
+	graphicsmagick_coder_MNG_fuzzer". (Credit to OSS-Fuzz)
+
 2018-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c (WriteXPMImage): Assure that added colormap entry

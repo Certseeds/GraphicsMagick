@@ -5080,6 +5080,18 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   continue;
                 }
               loop_level=chunk[0];
+#if 0
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "ENDL: loop_level = %d,"
+                                      " loop_active[%d]=%d,"
+                                      " mng_info->loop_count[%d]=%ld,"
+                                      " loop_iteration[%d]=%ld",
+                                      (int) loop_level,
+                                      (int) loop_level, (int) mng_info->loop_active[loop_level],
+                                      (int) loop_level, mng_info->loop_count[loop_level],
+                                      (int) loop_level, mng_info->loop_iteration[loop_level]);
+#endif
               if (skipping_loop > 0)
                 {
                   if (skipping_loop == loop_level)
@@ -5098,7 +5110,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     {
                       mng_info->loop_count[loop_level]--;
                       mng_info->loop_iteration[loop_level]++;
-                      if (mng_info->loop_count[loop_level] != 0)
+                      if (mng_info->loop_count[loop_level] > 0)
                         (void) SeekBlob(image,mng_info->loop_jump[loop_level],
                                         SEEK_SET);
                       else
