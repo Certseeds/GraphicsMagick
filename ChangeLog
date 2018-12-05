@@ -3,7 +3,9 @@
 	* coders/miff.c (ReadMIFFImage): Fix memory leak of profiles
 	'name' when claimed length is zero.  Fixes oss-fuzz 11710
 	"graphicsmagick/coder_MIFF_fuzzer: Direct-leak in AllocateString".
-	(Credit to OSS-Fuzz)
+	and oss-fuzz 11688 "graphicsmagick/coder_MIFF_fuzzer:
+	Out-of-memory in graphicsmagick_coder_MIFF_fuzzer". (Credit to
+	OSS-Fuzz)
 
 2018-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
