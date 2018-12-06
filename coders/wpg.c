@@ -1156,7 +1156,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec.RecType);
-          //printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType);
+          /* printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType); */
 
           switch(Rec.RecType)
             {
