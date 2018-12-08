@@ -1,3 +1,10 @@
+2018-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Sanitize claimed profile size
+	before allocating memory for it.  Fixes oss-fuzz 11781
+	"graphicsmagick/coder_MIFF_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MIFF_fuzzer". (Credit to OSS-Fuzz)
+
 2018-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Fix non-terminal MNG looping.
