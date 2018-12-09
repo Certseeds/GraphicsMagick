@@ -1,4 +1,14 @@
 <?xml version="1.0"?>
+<!--
+Mapping for URW Standard postscript fonts (cyrillicized)
+
+These used to be distributed with Ghostscript.
+
+Download from https://src.fedoraproject.org/repo/pkgs/urw-fonts/
+(https://src.fedoraproject.org/repo/pkgs/urw-fonts/urw-fonts-2.0.tar.bz2/c5cc8237e4289fc6ebeaa296174fa504/urw-fonts-2.0.tar.bz2)
+
+NetBSD's pkgsrc (http://pkgsrc.se/fonts/urw-fonts) calls these "urw-fonts-2.0nb1".
+-->
 <typemap>
   <type
     name="AvantGarde-Book"

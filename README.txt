@@ -123,7 +123,8 @@ building under Microsoft Windows:
 
   to read the Postscript or the Portable Document Format (PDF).
 
-  Ghostscript Fonts are available from
+  Ghostscript Fonts (also known as "URW Standard postscript fonts
+  (cyrillicized)") are available from
 
     https://sourceforge.net/projects/gs-fonts/
 

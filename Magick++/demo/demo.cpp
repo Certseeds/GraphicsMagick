@@ -32,7 +32,9 @@ int main( int /*argc*/, char ** argv)
       srcdir = getenv("SRCDIR");
 
     // Common font to use.
-    string font = "Helvetica";
+    string font("Helvetica");
+    if (getenv("MAGICK_FONT") != 0)
+      font = string(getenv("MAGICK_FONT"));
 
     list<Image> montage;
 

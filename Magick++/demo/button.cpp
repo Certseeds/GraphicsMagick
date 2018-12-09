@@ -46,7 +46,10 @@ int main( int /*argc*/, char ** argv)
     string textColor = "red";
 
     // Font to use for text
+
     string font = "Helvetica";
+    if (getenv("MAGICK_FONT") != 0)
+      font = string(getenv("MAGICK_FONT"));
 
     // Font point size
     int fontPointSize = 16;
@@ -56,6 +59,7 @@ int main( int /*argc*/, char ** argv)
     //
 
     Image button;
+
 
     // Set button size
     button.size( buttonSize );
@@ -70,6 +74,7 @@ int main( int /*argc*/, char ** argv)
     // Add some text
     button.fillColor( textColor );
     button.fontPointsize( fontPointSize );
+
     button.font( font );
     button.annotate( text, CenterGravity );
 

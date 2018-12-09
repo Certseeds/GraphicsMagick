@@ -202,6 +202,8 @@ int main(int argc,char **argv)
   drawing_wand=NewDrawingWand();
   (void) DrawPushGraphicContext(drawing_wand);
   (void) DrawRotate(drawing_wand,45);
+  if (getenv("MAGICK_FONT") != 0)
+    (void) DrawSetFont(drawing_wand,getenv("MAGICK_FONT"));
   (void) DrawSetFontSize(drawing_wand,18);
   fill=NewPixelWand();
   PixelSetColor(fill,"green");

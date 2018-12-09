@@ -28,6 +28,8 @@ int main( int /*argc*/, char ** argv)
 
     // Common font to use.
     string font = "Helvetica";
+    if (getenv("MAGICK_FONT") != 0)
+      font = string(getenv("MAGICK_FONT"));
 
     //
     // Create a 300x300 white canvas.

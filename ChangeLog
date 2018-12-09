@@ -1,3 +1,8 @@
+2018-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* common.shi.in (MAGICK_FONT): The test suite must pass even on
+	systems where we don't find any fonts.
+
 2018-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ReadMIFFImage): Sanitize claimed profile size
