@@ -1,3 +1,10 @@
+2018-12-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Fix heap overflow in 32-bit build
+	due to arithmetic overflow.  Only happens if limits are changed
+	from defaults. Fixes SourceForge #582 "heap-buffer-overflow in
+	ReadBMPImage of bmp.c".
+
 2018-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* common.shi.in (MAGICK_FONT): The test suite must pass even on

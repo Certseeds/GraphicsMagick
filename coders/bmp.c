@@ -1105,7 +1105,11 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
 
     pixels_size=MagickArraySize(Max(bytes_per_line,image->columns+1),
-                                image->rows);
+                                image->rows+1);
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "  Pixels size %" MAGICK_SIZE_T_F "u",
+                            (MAGICK_SIZE_T) pixels_size);
     pixels=MagickAllocateMemory(unsigned char *, pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
