@@ -29263,6 +29263,14 @@ then
      windows_font_dir='/usr/X11R6/lib/X11/fonts/truetype/'
   fi
 fi
+# Cygwin puts Windows fonts under /usr/share/fonts/microsoft
+if test -n "$windows_font_dir"
+then
+  if test -f '/usr/share/fonts/microsoft/arial.ttf'
+  then
+     windows_font_dir='/usr/share/fonts/microsoft/'
+  fi
+fi
 if test -n "$windows_font_dir"
 then
   type_include_files="$type_include_files "'<include file="type-windows.mgk" />'

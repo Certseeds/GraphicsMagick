@@ -1,3 +1,9 @@
+2018-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tga.c (WriteTGAImage): Image rows/columns must not be
+	larger than 65535. Fixes SourceForge #583 "heap-buffer-overflow in
+	WriteTGAImage of tga.c".
+
 2018-12-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix heap overflow in 32-bit build
