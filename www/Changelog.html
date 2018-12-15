@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2018-12-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/tiff.c (QuantumTransferMode): Be more strict about the
+requirements for CIE Log2(L) and LOGLUV images.
+(ReadTIFFImage): Apply memory resource limits to strip and tile
+allocations.
+(ReadTIFFImage): Rationalize tile width/height to reject large
+tile sizes which are much larger than the image dimensions.  Fixes
+oss-fuzz 11824 &quot;graphicsmagick/coder_BIGTIFF_fuzzer: Out-of-memory
+in graphicsmagick_coder_BIGTIFF_fuzzer&quot;. (Credit to OSS-Fuzz)
+(ReadTIFFImage): Return with error if TIFFClientOpen() reports
+errors yet still returns a TIFF handle.</li>
+</ul>
+</blockquote>
 <p>2018-12-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

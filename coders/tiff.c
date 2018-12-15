@@ -52,6 +52,7 @@
 #include "magick/profile.h"
 #include "magick/quantize.h"
 #include "magick/resize.h"
+#include "magick/resource.h"
 #include "magick/tempfile.h"
 #include "magick/tsd.h"
 #include "magick/utility.h"
@@ -887,10 +888,31 @@ TIFFCloseBlob(thandle_t image_handle)
 
 /* Report errors. */
 static void
-TIFFErrors(const char *module,const char *format,
-           va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+TIFFReadErrors(const char *module,const char *format,
+               va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
 static void
-TIFFErrors(const char *module,const char *format,
+TIFFWriteErrors(const char *module,const char *format,
+                va_list warning) MAGICK_ATTRIBUTE((__format__ (__printf__,2,0)));
+static void
+TIFFReadErrors(const char *module,const char *format,
+  va_list warning)
+{
+  ExceptionInfo
+    *tiff_exception;
+
+  char
+    message[MaxTextExtent];
+
+  errno=0;
+  (void) vsnprintf(message,MaxTextExtent-2,format,warning);
+  message[MaxTextExtent-2]='\0';
+  (void) strlcat(message,".",MaxTextExtent);
+  tiff_exception=(ExceptionInfo *) MagickTsdGetSpecific(tsd_key);
+  ThrowException2(tiff_exception,CorruptImageError,message,module);
+}
+
+static void
+TIFFWriteErrors(const char *module,const char *format,
   va_list warning)
 {
   ExceptionInfo
@@ -1393,7 +1415,11 @@ QuantumTransferMode(const Image *image,
           }
         case PHOTOMETRIC_LOGL:
           {
-            if (!image->matte)
+            if (((compress_tag == COMPRESSION_SGILOG) ||
+                 (compress_tag == COMPRESSION_SGILOG24)) &&
+                (planar_config == PLANARCONFIG_CONTIG) &&
+                (samples_per_pixel == 1) &&
+                (!image->matte))
               {
                 *quantum_type=CIEYQuantum;
                 *quantum_samples=1;
@@ -1402,7 +1428,10 @@ QuantumTransferMode(const Image *image,
           }
         case PHOTOMETRIC_LOGLUV:
           {
-            if (!image->matte)
+            if (((compress_tag == COMPRESSION_SGILOG) ||
+                 (compress_tag == COMPRESSION_SGILOG24)) &&
+                (planar_config == PLANARCONFIG_CONTIG) &&
+                (!image->matte))
               {
                 if (samples_per_pixel == 1)
                   {
@@ -1410,7 +1439,7 @@ QuantumTransferMode(const Image *image,
                     *quantum_type=CIEYQuantum;
                     *quantum_samples=1;
                   }
-                else
+                else if (samples_per_pixel == 3)
                   {
                     *quantum_type=CIEXYZQuantum;
                     *quantum_samples=3;
@@ -1845,7 +1874,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   file_size = GetBlobSize(image);
   (void) MagickTsdSetSpecific(tsd_key,(void *) exception);
-  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFErrors);
+  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFReadErrors);
   (void) TIFFSetWarningHandler((TIFFErrorHandler) (CheckThrowWarnings(image_info) ?
                                                    TIFFWarningsThrowException :
                                                    TIFFWarningsLogOnly));
@@ -1856,6 +1885,17 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       TIFFGetBlobSize,TIFFMapBlob,TIFFUnmapBlob);
   if (tiff == (TIFF *) NULL)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+
+  /*
+    Report error if error was reported via TIFFReadErrors() while in
+    TIFFClientOpen().
+  */
+  if (exception->severity > ErrorException)
+    {
+      TIFFClose(tiff);
+      DestroyImageList(image);
+      return (Image *) NULL;
+    }
 
   if (image_info->subrange != 0)
     while (image->scene < image_info->subimage)
@@ -2422,7 +2462,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read TIFF image as scanlines.
             */
             unsigned char
-              *scanline;
+              *scanline = (unsigned char *) NULL;
 
             int
               max_sample,
@@ -2430,7 +2470,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               sample;
 
             tsize_t
-              scanline_size;
+              scanline_size = 0;
 
             QuantumType
               quantum_type;
@@ -2488,9 +2528,14 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                          image);
               }
 
+            if (!AcquireMagickResource(MemoryResource,scanline_size))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
+
             scanline=MagickAllocateMemory(unsigned char *,(size_t) scanline_size);
             if (scanline == (unsigned char *) NULL)
               {
+                LiberateMagickResource(MemoryResource,scanline_size);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
@@ -2574,6 +2619,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           break;
                   }
               }
+            LiberateMagickResource(MemoryResource,scanline_size);
             MagickFreeMemory(scanline);
             break;
           }
@@ -2584,7 +2630,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             unsigned char
               *p,
-              *strip;
+              *strip = (unsigned char *) NULL;
 
             long
               /* pixels_per_strip, */
@@ -2598,7 +2644,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             tsize_t
               strip_size,
-              strip_size_max;
+              strip_size_max = 0;
 
             tstrip_t
               strip_id;
@@ -2670,9 +2716,14 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                          image);
               }
 
-           strip=MagickAllocateMemory(unsigned char *,(size_t) strip_size_max);
+            if (!AcquireMagickResource(MemoryResource,strip_size_max))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
+
+            strip=MagickAllocateMemory(unsigned char *,(size_t) strip_size_max);
             if (strip == (unsigned char *) NULL)
               {
+                LiberateMagickResource(MemoryResource,strip_size_max);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
@@ -2785,6 +2836,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (status == MagickFail)
                   break;
               }
+            LiberateMagickResource(MemoryResource,strip_size_max);
             MagickFreeMemory(strip);
             break;
           }
@@ -2794,7 +2846,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read TIFF using tiled storage.
             */
             unsigned char
-              *tile;
+              *tile = (unsigned char *) tile;
 
             uint32
               tile_columns,
@@ -2803,7 +2855,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             tsize_t
               stride,
               tile_size,
-              tile_size_max;
+              tile_size_max = 0;
 
             int
               max_sample,
@@ -2891,12 +2943,35 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                          image);
               }
 
+            if ((tile_columns > 1024) && (tile_columns > image->columns*10))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable tile columns %u",
+                                      (unsigned) tile_columns);
+                ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,
+                                         image);
+              }
+
+            if ((tile_rows > 1024) && (tile_rows > image->rows*10))
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable tile rows %u",
+                                      (unsigned) tile_rows);
+                ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,
+                                         image);
+              }
+
             /*
               Allocate tile buffer
             */
+            if (!AcquireMagickResource(MemoryResource,tile_size_max))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
+
             tile=MagickAllocateMemory(unsigned char *, (size_t) tile_size_max);
             if (tile == (unsigned char *) NULL)
               {
+                LiberateMagickResource(MemoryResource,tile_size_max);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
@@ -3034,13 +3109,15 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
               }
 
+            LiberateMagickResource(MemoryResource,tile_size_max);
             MagickFreeMemory(tile);
             break;
           }
         case RGBAStrippedMethod:
           {
             size_t
-              number_pixels;
+              number_pixels,
+              strip_pixels_size;
 
             uint32
               *strip_pixels;
@@ -3074,9 +3151,16 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(CorruptImageError,InsufficientImageDataInFile,
                                          image);
               }
-            strip_pixels=MagickAllocateArray(uint32 *,number_pixels,sizeof(uint32));
+            strip_pixels_size=MagickArraySize(number_pixels,sizeof(uint32));
+            if ((strip_pixels_size == 0) ||
+                (!AcquireMagickResource(MemoryResource,strip_pixels_size)))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                         image);
+
+            strip_pixels=MagickAllocateMemory(uint32 *,strip_pixels_size);
             if (strip_pixels == (uint32 *) NULL)
               {
+                LiberateMagickResource(MemoryResource,strip_pixels_size);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
@@ -3139,6 +3223,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         break;
                       }
               }
+            LiberateMagickResource(MemoryResource,strip_pixels_size);
             MagickFreeMemory(strip_pixels);
             break;
           }
@@ -3159,6 +3244,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               tile_size_max;
 
             size_t
+              tile_pixels_size,
               tile_total_pixels;
 
             if (logging)
@@ -3207,10 +3293,16 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Allocate tile buffer
             */
-            tile_pixels=MagickAllocateArray(uint32*,MagickArraySize(tile_columns,tile_rows),
-                                                                    sizeof (uint32));
+            tile_pixels_size=MagickArraySize(MagickArraySize(tile_columns,tile_rows),
+                                             sizeof (uint32));
+            if ((tile_pixels_size == 0) ||
+                (!AcquireMagickResource(MemoryResource,tile_pixels_size)))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
+            tile_pixels=MagickAllocateMemory(uint32*,tile_pixels_size);
             if (tile_pixels == (uint32 *) NULL)
               {
+                LiberateMagickResource(MemoryResource,tile_pixels_size);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
@@ -3317,6 +3409,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         break;
                       }
               }
+            LiberateMagickResource(MemoryResource,tile_pixels_size);
             MagickFreeMemory(tile_pixels);
             break;
           }
@@ -3330,7 +3423,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               *pixels;
 
             size_t
-              number_pixels;
+              number_pixels,
+              pixels_size;
 
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3341,12 +3435,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             number_pixels=MagickArraySize(image->columns,image->rows);
             if (number_pixels == 0)
-              {
-                ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
-                               image->filename);
-                status=MagickFail;
-                break;
-              }
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
+
 
             /*
               TIFFReadRGBAImage reads a strip- or tile-based image
@@ -3367,19 +3458,24 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (number_pixels+6*image->columns)*sizeof(uint32) for
               unknown reasons.
             */
-            pixels=MagickAllocateArray(uint32 *,number_pixels,sizeof(uint32));
+            pixels_size=MagickArraySize(number_pixels,sizeof(uint32));
+            if ((pixels_size == 0) ||
+                (!AcquireMagickResource(MemoryResource,pixels_size)))
+              ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
+
+            pixels=MagickAllocateMemory(uint32 *,pixels_size);
             if (pixels == (uint32 *) NULL)
               {
-                ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
-                               image->filename);
-                status=MagickFail;
-                break;
-
+                LiberateMagickResource(MemoryResource,pixels_size);
+                ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
               }
             if (!TIFFReadRGBAImage(tiff,(uint32) image->columns,
                                    (uint32) image->rows,
                                    pixels,0))
               {
+                LiberateMagickResource(MemoryResource,pixels_size);
                 MagickFreeMemory(pixels);
                 status=MagickFail;
                 break;
@@ -3438,6 +3534,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (status == MagickFail)
                   break;
               }
+            LiberateMagickResource(MemoryResource,pixels_size);
             MagickFreeMemory(pixels);
             break;
           }
@@ -3775,7 +3872,7 @@ WriteGROUP4RAWImage(const ImageInfo *image_info,Image *image)
     }
 
   (void) MagickTsdSetSpecific(tsd_key,(void *) (&image->exception));
-  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFErrors);
+  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFWriteErrors);
   (void) TIFFSetWarningHandler((TIFFErrorHandler) (CheckThrowWarnings(image_info) ?
                                                    TIFFWarningsThrowException :
                                                    TIFFWarningsLogOnly));
@@ -4165,7 +4262,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   (void) MagickTsdSetSpecific(tsd_key,(void *) (&image->exception));
-  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFErrors);
+  (void) TIFFSetErrorHandler((TIFFErrorHandler) TIFFWriteErrors);
   (void) TIFFSetWarningHandler((TIFFErrorHandler) (CheckThrowWarnings(image_info) ?
                                                    TIFFWarningsThrowException :
                                                    TIFFWarningsLogOnly));
