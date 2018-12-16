@@ -1,3 +1,9 @@
+2018-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Improve search for true Microsoft Windows fonts
+	and provide better indication of results.  Fix a typo which caused
+	DcrawExtraOptions not to be evaluated correctly.
+
 2018-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (QuantumTransferMode): Be more strict about the

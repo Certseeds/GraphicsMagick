@@ -2785,7 +2785,7 @@ AC_SUBST(MagickShareConfigPath)
 # is done directly on delegates.mgk and has no effect on the compiled
 # binaries.
 DcrawExtraOptions=''
-if test QuantumDepth -gt 8 ; then
+if test $QuantumDepth -gt 8 ; then
    DcrawExtraOptions='-6'
 fi
 AC_SUBST(DcrawExtraOptions)
@@ -2914,47 +2914,63 @@ AM_CONDITIONAL(HasTXT2HTML, test "$TXT2HTML" != 'x')
 #
 type_include_files=''
 
-# Windows
+# Windows fonts.
+#
+# Windows fonts must be in one directory, unlike typical fontconfig intallation.
+# Windows font package for Ubuntu is 'ttf-mscorefonts-installer'
+#
+AC_MSG_CHECKING([for Windows fonts directory (location of arial.ttf)])
 windows_font_dir=''
 if test "$with_windows_font_dir" != "yes" && test -n "$with_windows_font_dir"
 then
    windows_font_dir="${with_windows_font_dir}/"
 fi
-# Sometimes Windows fonts are found under /usr/X11R6/lib/X11/fonts/truetype
-if test -n "$windows_font_dir"
+if test -z "$windows_font_dir"
 then
-  if test -f '/usr/X11R6/lib/X11/fonts/truetype/arial.ttf'
-  then
-     windows_font_dir='/usr/X11R6/lib/X11/fonts/truetype/'
-  fi
-fi
-# Cygwin puts Windows fonts under /usr/share/fonts/microsoft
-if test -n "$windows_font_dir"
-then
-  if test -f '/usr/share/fonts/microsoft/arial.ttf'
-  then
-     windows_font_dir='/usr/share/fonts/microsoft/'
-  fi
+  for dir in \
+    '/usr/X11R6/lib/X11/fonts/truetype/' \
+    '/usr/share/fonts/microsoft/' \
+    '/usr/share/fonts/truetype/msttcorefonts/' \
+    '/usr/share/fonts/msttcore/'
+  do
+    if test -f "${dir}arial.ttf"
+    then
+      windows_font_dir=${dir}
+      break 1
+    fi
+  done
 fi
 if test -n "$windows_font_dir"
 then
   type_include_files="$type_include_files "'<include file="type-windows.mgk" />'
+  AC_MSG_RESULT($windows_font_dir)
+else
+  AC_MSG_RESULT(not found!);
 fi
 AC_SUBST(windows_font_dir)
 
 # Adobe Postscript fonts on various systems
+AC_MSG_CHECKING([for Solaris OpenWindows Type 1 fonts (location of Helvetica.afm)])
+openwin_fonts=''
 case $host_os in
   solaris*)
     # Check for OpenWindows Type 1 fonts.  Not available under OpenSolaris
     if test -f /usr/openwin/lib/X11/fonts/Type1/afm/Helvetica.afm
     then
+      openwin_fonts='/usr/openwin/lib/X11/fonts/Type1/afm/'
       type_include_files="$type_include_files "'<include file="type-solaris.mgk" />'
     fi
     ;;
 esac
+if test -n "$openwin_fonts"
+then
+  AC_MSG_RESULT($openwin_fonts)
+else
+  AC_MSG_RESULT(not found!);
+fi
 
 # Ghostscript
-AC_MSG_CHECKING(for Ghostscript fonts directory)
+AC_MSG_CHECKING([for Ghostscript fonts directory (location of a010013l.pfb)])
 ghostscript_font_dir=''
 if test "${with_gs_font_dir}" != 'default'
 then

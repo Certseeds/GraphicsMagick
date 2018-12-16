@@ -770,7 +770,6 @@
 #define ReacquireMemory GmReacquireMemory
 #define ReadBlob GmReadBlob
 #define ReadBlobByte GmReadBlobByte
-#define ReadBlobByteFromBuffer GmReadBlobByteFromBuffer
 #define ReadBlobLSBDouble GmReadBlobLSBDouble
 #define ReadBlobLSBDoubles GmReadBlobLSBDoubles
 #define ReadBlobLSBFloat GmReadBlobLSBFloat
@@ -778,7 +777,6 @@
 #define ReadBlobLSBLong GmReadBlobLSBLong
 #define ReadBlobLSBLongs GmReadBlobLSBLongs
 #define ReadBlobLSBShort GmReadBlobLSBShort
-#define ReadBlobLSBShortFromBuffer GmReadBlobLSBShortFromBuffer
 #define ReadBlobLSBShorts GmReadBlobLSBShorts
 #define ReadBlobLSBSignedLong GmReadBlobLSBSignedLong
 #define ReadBlobLSBSignedShort GmReadBlobLSBSignedShort

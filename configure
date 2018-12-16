@@ -28282,7 +28282,7 @@ _ACEOF
 # is done directly on delegates.mgk and has no effect on the compiled
 # binaries.
 DcrawExtraOptions=''
-if test QuantumDepth -gt 8 ; then
+if test $QuantumDepth -gt 8 ; then
    DcrawExtraOptions='-6'
 fi
 
@@ -29249,48 +29249,70 @@ fi
 #
 type_include_files=''
 
-# Windows
+# Windows fonts.
+#
+# Windows fonts must be in one directory, unlike typical fontconfig intallation.
+# Windows font package for Ubuntu is 'ttf-mscorefonts-installer'
+#
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Windows fonts directory (location of arial.ttf)" >&5
+$as_echo_n "checking for Windows fonts directory (location of arial.ttf)... " >&6; }
 windows_font_dir=''
 if test "$with_windows_font_dir" != "yes" && test -n "$with_windows_font_dir"
 then
    windows_font_dir="${with_windows_font_dir}/"
 fi
-# Sometimes Windows fonts are found under /usr/X11R6/lib/X11/fonts/truetype
-if test -n "$windows_font_dir"
+if test -z "$windows_font_dir"
 then
-  if test -f '/usr/X11R6/lib/X11/fonts/truetype/arial.ttf'
-  then
-     windows_font_dir='/usr/X11R6/lib/X11/fonts/truetype/'
-  fi
-fi
-# Cygwin puts Windows fonts under /usr/share/fonts/microsoft
-if test -n "$windows_font_dir"
-then
-  if test -f '/usr/share/fonts/microsoft/arial.ttf'
-  then
-     windows_font_dir='/usr/share/fonts/microsoft/'
-  fi
+  for dir in \
+    '/usr/X11R6/lib/X11/fonts/truetype/' \
+    '/usr/share/fonts/microsoft/' \
+    '/usr/share/fonts/truetype/msttcorefonts/' \
+    '/usr/share/fonts/msttcore/'
+  do
+    if test -f "${dir}arial.ttf"
+    then
+      windows_font_dir=${dir}
+      break 1
+    fi
+  done
 fi
 if test -n "$windows_font_dir"
 then
   type_include_files="$type_include_files "'<include file="type-windows.mgk" />'
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $windows_font_dir" >&5
+$as_echo "$windows_font_dir" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found!" >&5
+$as_echo "not found!" >&6; };
 fi
 
 
 # Adobe Postscript fonts on various systems
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Solaris OpenWindows Type 1 fonts (location of Helvetica.afm)" >&5
+$as_echo_n "checking for Solaris OpenWindows Type 1 fonts (location of Helvetica.afm)... " >&6; }
+openwin_fonts=''
 case $host_os in
   solaris*)
     # Check for OpenWindows Type 1 fonts.  Not available under OpenSolaris
     if test -f /usr/openwin/lib/X11/fonts/Type1/afm/Helvetica.afm
     then
+      openwin_fonts='/usr/openwin/lib/X11/fonts/Type1/afm/'
       type_include_files="$type_include_files "'<include file="type-solaris.mgk" />'
     fi
     ;;
 esac
+if test -n "$openwin_fonts"
+then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $openwin_fonts" >&5
+$as_echo "$openwin_fonts" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found!" >&5
+$as_echo "not found!" >&6; };
+fi
 
 # Ghostscript
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Ghostscript fonts directory" >&5
-$as_echo_n "checking for Ghostscript fonts directory... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Ghostscript fonts directory (location of a010013l.pfb)" >&5
+$as_echo_n "checking for Ghostscript fonts directory (location of a010013l.pfb)... " >&6; }
 ghostscript_font_dir=''
 if test "${with_gs_font_dir}" != 'default'
 then
