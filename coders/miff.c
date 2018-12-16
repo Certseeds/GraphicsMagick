@@ -1671,6 +1671,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                             }
                         }
                     }
+                  if (zip_info.avail_in <= 0)
+                    {
+                      (void) inflateEnd(&zip_info);
+                      ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                               image);
+                    }
                   zip_status=inflate(&zip_info,Z_NO_FLUSH);
                   if (zip_status == Z_STREAM_END)
                     break;

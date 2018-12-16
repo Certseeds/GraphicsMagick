@@ -1,5 +1,10 @@
 2018-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (ReadMIFFImage): Detect and reject zero-length
+	deflate-encoded row in MIFF version 0.  Fixes oss-fuzz 11876
+	"graphicsmagick/coder_MIFF_fuzzer: Use-of-uninitialized-value in
+	deflate_slow". (Credit to OSS-Fuzz)
+
 	* configure.ac: Improve search for true Microsoft Windows fonts
 	and provide better indication of results.  Fix a typo which caused
 	DcrawExtraOptions not to be evaluated correctly.
