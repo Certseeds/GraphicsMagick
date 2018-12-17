@@ -646,9 +646,11 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (dib_info.colors_important > 256)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if ((dib_info.number_colors != 0) && (dib_info.bits_per_pixel > 8))
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if ((dib_info.image_size != 0U) && (dib_info.image_size > file_size))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-  if ((dib_info.number_colors != 0) || (dib_info.bits_per_pixel < 16))
+  if ((dib_info.number_colors != 0) || (dib_info.bits_per_pixel <= 8))
     {
       image->storage_class=PseudoClass;
       image->colors=dib_info.number_colors;
@@ -945,7 +947,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         word;
 
       /*
-        Convert PseudoColor scanline.
+        Convert DirectColor (555 or 565) scanline.
       */
       image->storage_class=DirectClass;
       if (dib_info.compression == 1)

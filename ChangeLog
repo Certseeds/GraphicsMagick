@@ -1,5 +1,10 @@
 2018-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (ReadDIBImage): DIB images claiming more than
+	8-bits per pixel are not colormapped.  Reject such files.  Fixes
+	SourceForge issue #585 "Assertion Failure in coders/png.c:7503".
+	The problem is in the DIB reader rather than PNG.
+
 	* coders/miff.c (ReadMIFFImage): Detect and reject zero-length
 	deflate-encoded row in MIFF version 0.  Fixes oss-fuzz 11876
 	"graphicsmagick/coder_MIFF_fuzzer: Use-of-uninitialized-value in
