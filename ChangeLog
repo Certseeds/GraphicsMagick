@@ -1,5 +1,10 @@
 2018-12-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/gif.c (ReadGIFImage): Don't throw an error if opacity is
+	outside of the range of the image colors.  Fix suggested by 莫红波
+	<hongbo.mo@upai.com> on the graphicsmagick-bugs mailinb list on
+	Fri, 9 Oct 2015.
+
 	* magick/memory.h (MagickAllocateClearedArray): New macro for
 	allocating a cleared array.
 

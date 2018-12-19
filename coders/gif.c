@@ -1064,7 +1064,7 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->interlace=BitSet(flag,0x40) ? LineInterlace : NoInterlace;
     image->colors=!BitSet(flag,0x80) ? global_colors : 0x01U << ((flag & 0x07)+1);
     if (opacity >= (long) image->colors)
-      image->colors=opacity+1;
+      opacity=(-1);
     image->page.width=page.width;
     image->page.height=page.height;
     image->page.y=page.y;
