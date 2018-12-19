@@ -1,3 +1,35 @@
+2018-12-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/memory.h (MagickAllocateClearedArray): New macro for
+	allocating a cleared array.
+
+	* magick/resize.c (ScaleImage): Patch by Troy Patteson which
+	resolves SourceForge issue #381 "Artifacts when scaling a PNG with
+	semi-transparent pixels".
+
+	ScaleImage() suffers from two problems related to the blending of
+	fully transparent pixels with non-fully transparent pixels during
+	the scaling operation.
+
+	The first is that the colour values for fully transparent pixels
+	are contributing to the colour values of the blended pixels when
+	they should not.
+
+	The second is that the colour values of pixels blended with fully
+	and non-fully transparent pixels are scaled as though the fully
+	transparent pixels contribute to the blended pixels' colour values
+	when they should not. For example, if blending 10% of a fully
+	opaque white pixel with 90% of a fully transparent black pixel one
+	would expect the blended pixel RGBA values to be 255,255,255,25.5
+	assuming 8 bit colour but they are in fact 25.5,25.5,25.5,25.5.
+
+	The provided patch solves the first issue by treating the colour
+	values of fully transparent pixels as zero and the second issue by
+	recording the volume of each blended pixel made up of pxiels that
+	are not fully transparent (0.1 in the above example) and then
+	scaling the blended pixel RGB values by dividing by that
+	amount. In the above example, 25.5/0.1 = 255.
+
 2018-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage): DIB images claiming more than
