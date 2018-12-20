@@ -1392,13 +1392,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             (jpeg_info.do_block_smoothing ? "true" : "false"));
     }
 
-  if (image_info->ping)
-    {
-      jpeg_destroy_decompress(&jpeg_info);
-      CloseBlob(image);
-      return(image);
-    }
-
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
@@ -1445,6 +1438,12 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_destroy_decompress(&jpeg_info);
         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
+  if (image_info->ping)
+    {
+      jpeg_destroy_decompress(&jpeg_info);
+      CloseBlob(image);
+      return(image);
+    }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
