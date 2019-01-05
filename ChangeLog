@@ -1,3 +1,13 @@
+2019-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac (DcrawExtraOptions): Request TIFF output from dcraw
+	if build supports TIFF format in order to obtain more metadata.
+	This allows obtaining some metadata from standard TIFF tags
+	(e.g. camera make, model, and dcraw version), and any attached ICC
+	profile, but not specifically EXIF data since we don't support
+	extracting EXIF data from TIFF yet. Inspired by SourceForge issue
+	589 "Identify lack of data (no Exif) in RAW formats".
+
 2018-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (ReadJPEGImage): Move return point for 'ping' mode

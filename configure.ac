@@ -2785,9 +2785,15 @@ AC_SUBST(MagickShareConfigPath)
 # is done directly on delegates.mgk and has no effect on the compiled
 # binaries.
 DcrawExtraOptions=''
+# Request 16-bit output from dcraw if QuantumDepth is > 8
 if test $QuantumDepth -gt 8 ; then
    DcrawExtraOptions='-6'
 fi
+# Request TIFF output (including metadata) from dcraw if we can read TIFF
+if test "$have_tiff" = 'yes' ; then
+   DcrawExtraOptions="$DcrawExtraOptions -T"
+fi
+DcrawExtraOptions=`echo $DcrawExtraOptions | sed -e 's/  */ /g'`
 AC_SUBST(DcrawExtraOptions)
 
 #
