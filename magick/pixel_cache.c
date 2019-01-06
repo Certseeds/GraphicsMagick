@@ -516,65 +516,6 @@ static inline ViewInfo
 #if !defined(AccessDefaultCacheView)
 #  define AccessDefaultCacheView(image) AccessDefaultCacheViewInlined(image)
 #endif
-
-
-/*
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                             %
-%                                                                             %
-%                                                                             %
-+   I s N e x u s I n C o r e                                                 %
-%                                                                             %
-%                                                                             %
-%                                                                             %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  IsNexusInCore() returns true if the pixels associated with the specified
-%  cache nexus is non-strided and in core.
-%
-%  The format of the IsNexusInCore() method is:
-%
-%      MagickPassFail IsNexusInCore(const Cache cache,
-%                                   const NexusInfo *nexus_info)
-%
-%  A description of each parameter follows:
-%
-%    o status: IsNexusInCore() returns MagickPass if the pixels are
-%      non-strided and in core, otherwise MagickFail.
-%
-%    o cache: Specifies the pixel cache to use.
-%
-%    o nexus_info: specifies cache nexus to test.
-%
-%
-*/
-static inline MagickPassFail
-IsNexusInCore(const CacheInfo *cache_info,const NexusInfo *nexus_info)
-{
-  MagickPassFail
-    status=MagickFail;
-
-  if (cache_info->type == PingCache)
-    {
-      /*
-        Some coders *do* read the pixels in 'ping' mode.  Skip sync on
-        such pixels.
-      */
-      status=MagickPass;
-    }
-  else
-    {
-      magick_off_t
-        offset;
-
-      offset=nexus_info->region.y*
-        (magick_off_t) cache_info->columns+nexus_info->region.x;
-      if (nexus_info->pixels == (cache_info->pixels+offset))
-        status=MagickPass;
-    }
-
-  return(status);
-}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4488,7 +4429,30 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
   else
     {
       nexus_info->region=*region;
-      nexus_info->in_core=IsNexusInCore(cache_info,nexus_info);
+      /*
+        Determine if pixels associated with the cache nexus are
+        non-strided and in core.  If not, then the nexus pixels
+        require a sync.
+      */
+      nexus_info->in_core=MagickFalse;
+      if (cache_info->type == PingCache)
+        {
+          /*
+            Some coders *do* read the pixels in 'ping' mode.  Skip sync on
+            such pixels.
+          */
+          nexus_info->in_core=MagickTrue;
+        }
+      else if (cache_info->pixels != NULL)
+        {
+          magick_off_t
+            offset;
+
+          offset=nexus_info->region.y*
+            (magick_off_t) cache_info->columns+nexus_info->region.x;
+          if (nexus_info->pixels == (cache_info->pixels+offset))
+            nexus_info->in_core=MagickTrue;
+        }
     }
 
   /* fprintf(stderr,"Pixels in staging (%p)\n",nexus_info->pixels); */

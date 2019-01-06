@@ -1,5 +1,10 @@
 2019-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (SetNexus): Merge IsNexusInCore()
+	implementation code into SetNexus() and add check for if
+	cache_info->pixels is null.  Fixes SourceForge issue #588 "Bug in
+	IsNexusInCore()".
+
 	* configure.ac (DcrawExtraOptions): Request TIFF output from dcraw
 	if build supports TIFF format in order to obtain more metadata.
 	This allows obtaining some metadata from standard TIFF tags
