@@ -1,3 +1,9 @@
+2019-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/webp.c (WriteWEBPImage): Patch by Przemysław Sobala to
+	support WebP 'use_sharp_yuv' option ("if needed, use sharp (and
+	slow) RGB->YUV conversion") via `-define webp:use-sharp-yuv=true`.
+
 2019-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (SetNexus): Merge IsNexusInCore()
