@@ -195,7 +195,7 @@ Mike Edmonds
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-| Copyright |copy| GraphicsMagick Group 2002 - 2018
+| Copyright |copy| GraphicsMagick Group 2002 - 2019
 
 This program is covered by multiple licenses, which are described in
 Copyright.txt. You should have received a copy of Copyright.txt with this
