@@ -25,10 +25,8 @@ GraphicsMagick Mercurial
 
 .. contents::
 
-The GraphicsMagick source code is now available via Mercurial_.
-Previously GraphicsMagick source control was via CVS, but now the
-repository has been migrated to Mercurial_.  Mercurial_ is a
-convenient way for developers from around the country or world to
+The GraphicsMagick source code is available via Mercurial_. Mercurial_
+is a convenient way for developers from around the country or world to
 download the GraphicsMagick source, fix bugs, or add new features.
 Due to the way Mercurial_ works, it may also be used to manage local
 changes to GraphicsMagick.
@@ -64,7 +62,8 @@ Selecting a version of the code
 ========================================
 
 By default the cloned directory is populated with files from the
-`default` (i.e. head) branch of the code.
+`default` (i.e. head) branch of the code, which is where active
+development happens.
 
 If you require a specific release of GraphicsMagick (e.g. 1.3.23), you may select it like::
 
@@ -111,7 +110,7 @@ Mercurial Software
 
 The best place to look for the latest version of Mercurial (`Hg`) is
 at the Mercurial_ web site.  Most free operating systems (e.g. Linux,
-OpenSolaris, and \*BSD) will offer a version of Mercurial as an
+OpenIndiana, and \*BSD) will offer a version of Mercurial as an
 installable package and it may already be installed on your system.
 We recommend use of TortoiseHg_ on Microsoft Windows systems since it
 provides a very nice graphical interface.  TortoiseHg_ is also
@@ -193,17 +192,13 @@ but ssh also provides its own way to enable compression on a
 site-by-site basis (e.g. via .ssh/config).  For example an entry in
 .ssh/config will enable use of compression::
 
-  Host hg.code.sf.net
+  Host hg.GraphicsMagick.org
     Compression yes
 
 SSH Public Keys For hg.GraphicsMagick.org
 =========================================
 
-In December, 2015, the services provided by hg.GraphicsMagick.org
-(more formally known as src.GraphicsMagick.org) where moved to a new
-server (using OpenSSH 7.1.2 at the time), with new server keys.
-Developers accessing this server via ssh may be notified about a ssh
-key change.  For reference, these are the server's ssh public keys:
+For reference, these are the ssh public keys for the server at hg.GraphicsMagick.org:
 
 DSS (DSA)::
 
@@ -232,27 +227,6 @@ list at SourceForge whenever a change is submitted to the development
 (unstable) repository.  Subscribe to this list if you would like to be
 notified by email of changes when they occur.
 
-Rsync The Repository
-====================
-
-.. _rsync : http://rsync.samba.org/
-
-It is possible to use the rsync_ program to make a copy of the
-GraphicsMagick Mercurial repository.  Using rsync_ might be faster for
-the initial repository checkout, but the copied repository might not
-be coherent if it was updated while the rsync_ was in progress.  If
-there is any problem, just execute the same rsync_ command again
-without deleting any files and the remaining changes (updated files)
-will be transferred.  To use rsync_ to copy the repository do::
-
-  mkdir -p GM
-  rsync -avPSz hg.code.sf.net::p/graphicsmagick/code/ GM/
-
-Rsync will not checkout a working set of files.  To accomplish that
-do::
-
-  cd GM
-  hg update
 
 Mercurial Topics
 ====================

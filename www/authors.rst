@@ -34,6 +34,12 @@ Jaroslav Fojtik
                 build testing/fixes for many versions of Microsoft
                 Visual Studio.
 
+Troy Patteson
+                Contributed a several significant patches to fix image
+                rotation bugs and improve image rotation performance,
+                as well as an improved bi-linear interpolation
+                implementation.
+
 Former GraphicsMagick Contributors
 ==================================
 
@@ -55,12 +61,6 @@ Gregory J Wolfe
 Kenneth Xu
                 Contributed the implementation of 'gm batch', a simple
                 batch mode for GraphicsMagick.
-
-Troy Patteson
-                Contributed a several significant patches to fix image
-                rotation bugs and improve image rotation performance,
-                as well as an improved bi-linear interpolation
-                implementation.
 
 Sara Shafaei
                 Contributed a number of Wand API functions as well as

@@ -1,3 +1,10 @@
+2019-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Hg.rst: Updates to reflect current usage and availability.
+
+	* www/authors.rst: Promote Troy Patteson to the active contributor
+	category.
+
 2019-02-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/version.h.in: Rotate ChangeLog and update copyright
