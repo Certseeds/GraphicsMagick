@@ -730,11 +730,10 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
      bytes_per_line=4*((image->columns*dib_info.packet_size+31)/32);
   */
   bytes_per_line=MagickArraySize(image->columns,packet_size);
-  if (bytes_per_line)
-    bytes_per_line += 31;
-  bytes_per_line /= 32;
-  bytes_per_line=MagickArraySize(4,bytes_per_line);
-
+  if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+    bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+  if (bytes_per_line == 0)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "%" MAGICK_SIZE_T_F "u bytes per line",
                         (MAGICK_SIZE_T) bytes_per_line);
@@ -760,8 +759,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   length=MagickArraySize(bytes_per_line,image->rows);
   if (length == 0)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,image->columns+1));
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
+  if (~((size_t) 0) - image->columns < 1)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
+  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,(size_t) image->columns+1));
+  if (pixels_size == 0)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
   pixels=MagickAllocateMemory(unsigned char *,pixels_size);
   if (pixels == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1312,7 +1315,15 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         dib_info.bits_per_pixel=1;
       dib_info.number_colors=1 << dib_info.bits_per_pixel;
     }
-  bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+  /*
+     Below emulates:
+     bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+  */
+  bytes_per_line=MagickArraySize(image->columns,dib_info.bits_per_pixel);
+  if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+    bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+  if (bytes_per_line == 0)
+    ThrowWriterException(CoderError,ArithmeticOverflow,image);
   dib_info.header_size=40;
   dib_info.width=(long) image->columns;
   dib_info.height=(long) image->rows;

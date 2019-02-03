@@ -1065,7 +1065,20 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     if (bmp_info.compression == BI_RLE4)
       bmp_info.bits_per_pixel<<=1;
-    bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
+    if (logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "image->columns: %lu, bmp_info.bits_per_pixel %u",
+                            image->columns, bmp_info.bits_per_pixel);
+    /*
+      Below emulates:
+      bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
+    */
+    bytes_per_line=MagickArraySize(image->columns,bmp_info.bits_per_pixel);
+    if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+      bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+    if (bytes_per_line == 0)
+      ThrowBMPReaderException(CoderError,ArithmeticOverflow,image);
+
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "  Bytes per line: %" MAGICK_SIZE_T_F "u",
@@ -1076,8 +1089,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "  Expected total raster length: %" MAGICK_SIZE_T_F "u",
                             (MAGICK_SIZE_T) length);
-    if (length/image->rows != bytes_per_line)
-      ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    if (length == 0)
+      ThrowBMPReaderException(CoderError,ArithmeticOverflow,image);
 
     /*
       Check that file data is reasonable given claims by file header.
@@ -1104,12 +1117,16 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                   image);
       }
 
-    pixels_size=MagickArraySize(Max(bytes_per_line,image->columns+1),
-                                image->rows+1);
+    if (~((size_t) 0) - image->columns < 1)
+      ThrowBMPReaderException(CoderError,ArithmeticOverflow,image);
+    pixels_size=MagickArraySize(Max(bytes_per_line,(size_t) image->columns+1),
+                                image->rows);
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "  Pixels size %" MAGICK_SIZE_T_F "u",
                             (MAGICK_SIZE_T) pixels_size);
+    if (pixels_size == 0)
+      ThrowBMPReaderException(CoderError,ArithmeticOverflow,image);
     pixels=MagickAllocateMemory(unsigned char *, pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1760,7 +1777,15 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         bmp_info.compression=
           (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
       }
-    bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
+    /*
+      Below emulates:
+      bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
+    */
+    bytes_per_line=MagickArraySize(image->columns,bmp_info.bits_per_pixel);
+    if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+      bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+    if (bytes_per_line == 0)
+      ThrowWriterException(CoderError,ArithmeticOverflow,image);
     bmp_info.ba_offset=0;
     have_color_info=(int) ((image->rendering_intent != UndefinedIntent) ||
       (color_profile_length != 0) || (image->gamma != 0.0));

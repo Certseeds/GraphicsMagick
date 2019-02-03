@@ -1,5 +1,16 @@
 2019-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (ReadDIBImage, WriteDIBImage): Improve buffer-size
+	calculations to guard against buffer overflows.  The reader
+	version was not as complete as it should have been, whereas the
+	writer version did not guard against arithmetic overflow at all.
+
+	* coders/bmp.c (ReadBMPImage, WriteBMPImage): Improve buffer-size
+	calculations to guard against buffer overflows.  This is a
+	follow-on fix to the previous fix submitted for SourceForge issue
+	#582 "heap-buffer-overflow in ReadBMPImage of bmp.c" which is now
+	also identified as CVE-2018-20185.
+
 	* www/Hg.rst: Updates to reflect current usage and availability.
 
 	* www/authors.rst: Promote Troy Patteson to the active contributor
