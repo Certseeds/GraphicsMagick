@@ -4891,7 +4891,22 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   image->background_color=mng_background_color;
                   image->matte=MagickFalse;
                   image->delay=0;
-                  (void) SetImage(image,OpaqueOpacity);
+                  if (SetImage(image,OpaqueOpacity) != MagickPass)
+                    {
+                      if (logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "  Failed to insert background layer,"
+                                              " L=%ld, R=%ld, T=%ld, B=%ld",
+                                              mng_info->clip.left,
+                                              mng_info->clip.right,
+                                              mng_info->clip.top,
+                                              mng_info->clip.bottom);
+                      CopyException(exception,&image->exception);
+                      MagickFreeMemory(chunk);
+                      DestroyImageList(image);
+                      MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      return((Image *) NULL);
+                    }
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "  Inserted background layer,"

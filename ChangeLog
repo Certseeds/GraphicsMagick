@@ -1,3 +1,10 @@
+2019-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Quit processing and report error
+	upon failure to insert MNG background layer.  Fixes oss-fuzz 12738
+	"graphicsmagick/enhance_fuzzer: Out-of-memory in
+	graphicsmagick_enhance_fuzzer". (Credit to OSS-Fuzz)
+
 2019-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage, WriteDIBImage): Improve buffer-size
