@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3132,6 +3132,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert stripped TIFF image to DirectClass MIFF image.
             */
+            image->storage_class=DirectClass;
             number_pixels=MagickArraySize(image->columns,rows_per_strip);
             if (0 == number_pixels)
               {
@@ -3251,6 +3252,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Using RGB tiled read method with %u bits per sample",
                                     bits_per_sample);
+            image->storage_class=DirectClass;
             /*
               Obtain tile geometry
             */
@@ -3433,6 +3435,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert TIFF image to DirectClass MIFF image.
             */
+            image->storage_class=DirectClass;
             number_pixels=MagickArraySize(image->columns,image->rows);
             if (number_pixels == 0)
               ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
