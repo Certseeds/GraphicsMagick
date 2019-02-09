@@ -1459,8 +1459,13 @@ UnpackRaster:
                 {
                   if(bpp < 24)
                     if( image->colors<(1UL<<bpp) && bpp!=24 )
-                      MagickReallocMemory(PixelPacket *,image->colormap,
-                                          (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                      if (!AllocateImageColormap(image,1U<<bpp))
+                        goto NoMemory;
+                  /*
+                    Above was formerly this, but causes use of uninitialized memory:
+                        MagickReallocMemory(PixelPacket *,image->colormap,
+                                            (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                  */
                 }
 
 

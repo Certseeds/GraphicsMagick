@@ -1,5 +1,10 @@
 2019-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Assure that all colormap entries
+	are initialized.  Fixes oss-fuzz 12614
+	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
+	EnhanceImage". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (ReadTIFFImage): Make sure that image is in
 	DirectClass mode and ignore any claimed colormap when the image is
 	read using the RGBAStrippedMethod, RGBATiledMethod, or
