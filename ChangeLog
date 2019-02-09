@@ -1,3 +1,12 @@
+2019-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Improve pixel buffer calculations
+	to defend against overflow.  Assure that zlib and bzlib decode the
+	expected number of bytes for a pixel row.  Fixes oss-fuzz issue
+	12448 "graphicsmagick/coder_MIFF_fuzzer:
+	Use-of-uninitialized-value in RGBTransformPackets". (Credit to
+	OSS-Fuzz)
+
 2019-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Quit processing and report error

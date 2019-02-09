@@ -755,8 +755,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     c;
 
   size_t
+    compressed_length,
     length,
-    compressed_length;
+    pixels_size;
 
   long
     y;
@@ -1370,7 +1371,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         (image->compression == UndefinedCompression) ||
         (image->colorspace == UndefinedColorspace) ||
         (image->columns == 0) ||
-        (image->rows == 0))
+        (image->rows == 0) ||
+        (image->depth == 0) || (image->depth > 32))
       {
         if (image->previous)
           {
@@ -1600,12 +1602,19 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
       packet_size+=quantum_size/8;
     if (image->compression == RLECompression)
       packet_size++;
-    pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+    pixels_size=MagickArraySize(packet_size,image->columns);
+    if (pixels_size == 0)
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
+    pixels=MagickAllocateMemory(unsigned char *,pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    length=(size_t) (1.01*MagickArraySize(packet_size,image->columns));
-    if (length)
+    length=(size_t) (1.01*pixels_size);
+    if (length < pixels_size)
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
+    if (~((size_t) 0) - length > 600)
       length += 600;
+    else
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
     compressed_length = length;
     compress_pixels=MagickAllocateMemory(unsigned char *,compressed_length);
     if (compress_pixels == (unsigned char *) NULL)
@@ -1648,7 +1657,10 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       zip_info.next_in=compress_pixels;
                       if (version == 0)
                         {
-                          length=(int) (1.01*packet_size*image->columns+12);
+                          length=(int) (1.01*pixels_size+12);
+                          if (image->logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "length = %zu", length);
                           zip_info.avail_in=(uInt) ReadBlob(image,length,zip_info.next_in);
                         }
                       else
@@ -1679,7 +1691,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     }
                   zip_status=inflate(&zip_info,Z_NO_FLUSH);
                   if (zip_status == Z_STREAM_END)
+                    {
+                      if (image->logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "zip_status == Z_STREAM_END");
                     break;
+                    }
                   else if (zip_status != Z_OK)
                     {
                       (void) inflateEnd(&zip_info);
@@ -1694,6 +1711,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                                             zip_info.avail_in),SEEK_CUR);
                   code=inflateEnd(&zip_info);
                   status|=code >= 0;
+                }
+              if ((size_t) (zip_info.next_out-pixels) < pixels_size)
+                {
+                  (void) inflateEnd(&zip_info);
+                  ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                           image);
                 }
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
                 break;
@@ -1730,7 +1753,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   bzip_info.avail_in=0;
                 }
               bzip_info.next_out=(char *) pixels;
-              bzip_info.avail_out=(unsigned int) (packet_size*image->columns);
+              bzip_info.avail_out=(unsigned int) (pixels_size);
               do
                 {
                   int
@@ -1741,7 +1764,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       bzip_info.next_in=(char *) compress_pixels;
                       if (version == 0)
                         {
-                          length=(int) (1.01*packet_size*image->columns+600);
+                          length=(int) (1.01*pixels_size+600);
                           bzip_info.avail_in=(unsigned int) ReadBlob(image,length,bzip_info.next_in);
                         }
                       else
@@ -1772,6 +1795,13 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                                             bzip_info.avail_in),SEEK_CUR);
                   code=BZ2_bzDecompressEnd(&bzip_info);
                   status|=code >= 0;
+                }
+              if ((size_t) (((magick_uint64_t) bzip_info.total_out_hi32 << 32) |
+                            bzip_info.total_out_lo32) < pixels_size)
+                {
+                  (void) BZ2_bzDecompressEnd(&bzip_info);
+                  ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                           image);
                 }
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
                 break;
