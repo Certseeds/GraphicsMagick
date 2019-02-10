@@ -1,5 +1,11 @@
 2019-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Bound maximum loop iterations by
+	subrange as a primitive means of limiting resource consumption.
+	This should finally resolve oss-fuzz 12738
+	"graphicsmagick/enhance_fuzzer: Out-of-memory in
+	graphicsmagick_enhance_fuzzer". (Credit to OSS-Fuzz)
+
 	* coders/tiff.c (ReadTIFFImage): Assure that opacity channel is
 	initialized in the RGBAStrippedMethod case.  Convert
 	'CorruptImageError' encountered while testing for more frames to

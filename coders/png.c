@@ -5038,6 +5038,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               long loop_iters=1;
 
+              if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Handling LOOP chunk");
               if (length >= 5) /* To do: check spec, if empty LOOP is allowed */
                 {
                   loop_level=chunk[0]; /* 1 byte */
@@ -5047,6 +5050,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Record starting point.
                   */
                   loop_iters=mng_get_long(&chunk[1]); /* 4 bytes */
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Loop iterations requested: %ld", loop_iters);
                   if (loop_iters <= 0)
                     skipping_loop=loop_level;
                   else
@@ -5057,6 +5063,24 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       const char
                         *definition_value;
 
+                      if (image_info->subrange != 0)
+                        {
+                          /*
+                            FIXME: This is a quick hack to adjust the
+                            maximum loop iterations based on the
+                            subrange specification.  A proper solution
+                            would be to handle scene/subimage/subrange
+                            for MNG as it should have been in the
+                            first place.
+                          */
+                          if (logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "Adjusting loop ierations based on subrange:"
+                                                  " scene: %lu: subimage: %lu, subrange: %lu",
+                                                  image->scene, image_info->subimage,
+                                                  image_info->subrange);
+                          loop_iters=Min(image_info->subrange,(unsigned long) loop_iters);
+                        }
                       if ((definition_value=AccessDefinition(image_info,"mng","maximum-loops")))
                         loop_iters_max=atol(definition_value);
                       if (loop_iters > loop_iters_max)
@@ -5069,6 +5093,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         loop_iters=2147483647L;
                       else if (loop_iters < 0)
                         loop_iters=1;
+
+                      if (logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "Loop iterations allowed: %ld", loop_iters);
 
                       mng_info->loop_jump[loop_level]=TellBlob(image);
                       mng_info->loop_count[loop_level]=loop_iters;
