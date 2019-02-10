@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2018 GraphicsMagick Group
+% Copyright (C) 2005-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -3548,7 +3548,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(U8) strtol(definition_value_, (char **) NULL, 10); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     member=(U8) strtol(attribute_->value, (char **) NULL, 10); \
@@ -3564,7 +3564,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(U16) strtol(definition_value_, (char **) NULL, 10); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     member=(U16) strtol(attribute_->value, (char **) NULL, 10); \
@@ -3580,7 +3580,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(U32) strtol(definition_value_, (char **) NULL, 10); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     member=(U32) strtol(attribute_->value, (char **) NULL, 10); \
@@ -3596,7 +3596,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=SMPTEStringToBits(definition_value_); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     member=SMPTEStringToBits(attribute_->value); \
@@ -3612,7 +3612,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     member.f=strtod(definition_value_, (char **) NULL); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     member.f=strtod(attribute_->value, (char **) NULL); \
@@ -3634,7 +3634,7 @@ STATIC void WriteRowSamples(const sample_t *samples,
   const char \
     *definition_value_; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
     (void) strncpy(member,definition_value_,sizeof(member)); \
   else if ((attribute_=GetImageAttribute(image,key))) \
     (void) strncpy(member,attribute_->value,sizeof(member)); \

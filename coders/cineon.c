@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -1029,7 +1029,7 @@ ModuleExport void UnregisterCINEONImage(void)
   const char \
     *definition_value; \
 \
-  if ((definition_value=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(U8) strtol(definition_value, (char **) NULL, 10); \
   else if ((attribute=GetImageAttribute(image,key))) \
     member=(U8) strtol(attribute->value, (char **) NULL, 10); \
@@ -1045,7 +1045,7 @@ ModuleExport void UnregisterCINEONImage(void)
   const char \
     *definition_value; \
 \
-  if ((definition_value=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(U32) strtol(definition_value, (char **) NULL, 10); \
   else if ((attribute=GetImageAttribute(image,key))) \
     member=(U32) strtol(attribute->value, (char **) NULL, 10); \
@@ -1061,7 +1061,7 @@ ModuleExport void UnregisterCINEONImage(void)
   const char \
     *definition_value; \
 \
-  if ((definition_value=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
     member=(S32) strtol(definition_value, (char **) NULL, 10); \
   else if ((attribute=GetImageAttribute(image,key))) \
     member=(S32) strtol(attribute->value, (char **) NULL, 10); \
@@ -1077,7 +1077,7 @@ ModuleExport void UnregisterCINEONImage(void)
   const char \
     *definition_value; \
 \
-  if ((definition_value=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
     member.f=strtod(definition_value, (char **) NULL); \
   else if ((attribute=GetImageAttribute(image,key))) \
     member.f=strtod(attribute->value, (char **) NULL); \
@@ -1098,7 +1098,7 @@ ModuleExport void UnregisterCINEONImage(void)
     *definition_value; \
 \
   SET_UNDEFINED_ASCII(member); \
-  if ((definition_value=AccessDefinition(image_info,"dpx",key+4))) \
+  if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
     (void) memcpy(member,definition_value,Min(sizeof(member),strlen(definition_value))); \
   else if ((attribute=GetImageAttribute(image,key)) && (attribute->value)) \
     (void) memcpy(member,attribute->value,Min(sizeof(member),strlen(attribute->value))); \

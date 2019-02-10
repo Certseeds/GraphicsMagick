@@ -1,3 +1,11 @@
+2019-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (AttributeToString): Eliminate clang
+	"-Wstring-plus-int" warning observed in oss-fuzz build.
+
+	* coders/cineon.c (AttributeToString): Eliminate clang
+	"-Wstring-plus-int" warning observed in oss-fuzz build.
+
 2019-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (DecodeImage): Avoide a one-byte over-read of
