@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -235,6 +235,23 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
+
+static MagickPassFail ReallocColormap(Image *image,size_t colors)
+{
+  PixelPacket *colormap;
+
+  colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
+  if (colormap != (PixelPacket *) NULL)
+    {
+      (void) memcpy(colormap,image->colormap,image->colors*sizeof(PixelPacket));
+      MagickFreeMemory(image->colormap);
+      image->colormap = colormap;
+      image->colors = colors;
+      return MagickPass;
+    }
+
+  return MagickFail;
+}
 
 static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
@@ -1106,6 +1123,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
     ThrowReaderException(CoderError,EncryptedWPGImageFileNotSupported,image);
 
   image->colors = 0;
+  image->storage_class = DirectClass;
   bpp=0;
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1263,8 +1281,10 @@ UnpackRaster:
                 {
                   if (bpp < 24)
                     if ( (image->colors < (1UL<<bpp)) && (bpp != 24) )
-                      MagickReallocMemory(PixelPacket *,image->colormap,
-                                          (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                      if (!ReallocColormap(image,1U<<bpp))
+                        goto NoMemory;
+                      /* MagickReallocMemory(PixelPacket *,image->colormap, */
+                      /*                     (size_t) (1U<<bpp)*sizeof(PixelPacket)); */
                 }
 
               if(bpp == 1)
@@ -1459,7 +1479,7 @@ UnpackRaster:
                 {
                   if(bpp < 24)
                     if( image->colors<(1UL<<bpp) && bpp!=24 )
-                      if (!AllocateImageColormap(image,1U<<bpp))
+                      if (!ReallocColormap(image,1U<<bpp))
                         goto NoMemory;
                   /*
                     Above was formerly this, but causes use of uninitialized memory:

@@ -1,5 +1,10 @@
 2019-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Use a different way to reallocate
+	the colormap which preserves existing content, but also updates
+	image->colors and assures that added palette entries are
+	initialized.
+
 	* coders/png.c (ReadMNGImage): Bound maximum loop iterations by
 	subrange as a primitive means of limiting resource consumption.
 	This should finally resolve oss-fuzz 12738
