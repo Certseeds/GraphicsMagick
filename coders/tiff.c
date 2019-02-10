@@ -1616,7 +1616,7 @@ QuantumTransferMode(const Image *image,
 
   if ((image->logging) && (*quantum_samples == 0))
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Reporting failure");
+                          "QuantumTransferMode reports failure");
 
   return (*quantum_samples != 0 ? MagickPass : MagickFail);
 }
@@ -3187,6 +3187,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   {
                     if (!TIFFReadRGBAStrip(tiff,y,strip_pixels))
                       {
+                        if (logging)
+                          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                "TIFFReadRGBAStrip reports failure");
                         status=MagickFail;
                         break;
                       }
@@ -3201,6 +3204,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     q->blue=ScaleCharToQuantum(TIFFGetB(*p));
                     if (image->matte)
                       q->opacity=(Quantum) ScaleCharToQuantum(TIFFGetA(*p));
+                    else
+                      q->opacity=OpaqueOpacity;
                     p++;
                     q++;
                   }
@@ -3380,6 +3385,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               q->red=ScaleCharToQuantum(TIFFGetR(*p));
                               q->green=ScaleCharToQuantum(TIFFGetG(*p));
                               q->blue=ScaleCharToQuantum(TIFFGetB(*p));
+                              q->opacity=OpaqueOpacity;
                               q++;
                               p++;
                             }
@@ -3512,6 +3518,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       q->red=ScaleCharToQuantum(TIFFGetR(*p));
                       q->green=ScaleCharToQuantum(TIFFGetG(*p));
                       q->blue=ScaleCharToQuantum(TIFFGetB(*p));
+                      q->opacity=OpaqueOpacity;
                       p--;
                       q--;
                     }
@@ -3561,6 +3568,18 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (image->scene >= (image_info->subimage+image_info->subrange-1))
               break;
           more_frames=TIFFReadDirectory(tiff);
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "TIFFReadDirectory() returned %d",more_frames);
+          if ((more_frames == 0) && (exception->severity == CorruptImageError))
+            {
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Re-casting 'CorruptImageError' to"
+                                      " 'CorruptImageWarning' due to"
+                                      " TIFFReadDirectory() error");
+              exception->severity=CorruptImageWarning;
+            }
           if (more_frames)
             {
               /*
@@ -3586,7 +3605,13 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     } while ((status == MagickPass) && (more_frames));
   TIFFClose(tiff);
   if (status == MagickFail)
+    {
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Delete image %ld from list due to error",
+                              image->scene);
       DeleteImageFromList(&image);
+    }
   return GetFirstImageInList(image);
 }
 #endif

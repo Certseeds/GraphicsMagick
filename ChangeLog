@@ -1,5 +1,13 @@
 2019-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Assure that opacity channel is
+	initialized in the RGBAStrippedMethod case.  Convert
+	'CorruptImageError' encountered while testing for more frames to
+	'CorruptImageWarning' so we return the frames already read.
+	Second try at fixing oss-fuzz 11896
+	"graphicsmagick/coder_PTIF_fuzzer: Use-of-uninitialized-value in
+	VerticalFilter".
+
 	* coders/dpx.c (AttributeToString): Eliminate clang
 	"-Wstring-plus-int" warning observed in oss-fuzz build.
 
