@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -364,14 +364,16 @@ static unsigned int
 %
 */
 
-static unsigned char *ExpandBuffer(unsigned char *pixels,
-  unsigned long *bytes_per_line,const unsigned int bits_per_pixel)
+static const unsigned char *ExpandBuffer(const unsigned char * restrict pixels,
+  unsigned long * restrict bytes_per_line,const unsigned int bits_per_pixel)
 {
-  register long
+  register unsigned long
     i;
 
+  register const unsigned char
+    *p;
+
   register unsigned char
-    *p,
     *q;
 
   static unsigned char
@@ -387,31 +389,29 @@ static unsigned char *ExpandBuffer(unsigned char *pixels,
       return(pixels);
     case 4:
     {
-      for (i=0; i < (long) *bytes_per_line; i++)
+      for (i=0; i < *bytes_per_line; i++, p++)
       {
         *q++=(*p >> 4U) & 0xffU;
         *q++=(*p & 15U);
-        p++;
       }
       *bytes_per_line*=2;
       break;
     }
     case 2:
     {
-      for (i=0; i < (long) *bytes_per_line; i++)
+      for (i=0; i < *bytes_per_line; i++, p++)
       {
         *q++=(*p >> 6U) & 0x03U;
         *q++=(*p >> 4U) & 0x03U;
         *q++=(*p >> 2U) & 0x03U;
         *q++=(*p & 3U);
-        p++;
       }
       *bytes_per_line*=4;
       break;
     }
     case 1:
     {
-      for (i=0; i < (long) *bytes_per_line; i++)
+      for (i=0; i < *bytes_per_line; i++, p++)
       {
         *q++=(*p >> 7) & 0x01;
         *q++=(*p >> 6) & 0x01;
@@ -421,7 +421,6 @@ static unsigned char *ExpandBuffer(unsigned char *pixels,
         *q++=(*p >> 2) & 0x01;
         *q++=(*p >> 1) & 0x01;
         *q++=(*p & 0x01);
-        p++;
       }
       *bytes_per_line*=8;
       break;
@@ -437,15 +436,17 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                                   unsigned long bytes_per_line,
                                   const unsigned int bits_per_pixel)
 {
-  long
+  unsigned long
     j,
     y;
 
-  register long
+  register unsigned long
     i;
 
+  register const unsigned char
+    *p;
+
   register unsigned char
-    *p,
     *q;
 
   size_t
@@ -553,7 +554,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     }
   allocated_pixels=image->rows*row_bytes;
   (void) memset(pixels,0,allocated_pixels);
-  scanline=MagickAllocateMemory(unsigned char *,row_bytes);
+  scanline=MagickAllocateMemory(unsigned char *,row_bytes+1);
   if (scanline == (unsigned char *) NULL)
     {
       ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
@@ -565,7 +566,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
       /*
         Pixels are already uncompressed.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
         {
           q=pixels+y*width;
           number_pixels=bytes_per_line;
@@ -584,7 +585,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
   /*
     Uncompress RLE pixels into uncompressed pixel buffer.
   */
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
     {
       q=pixels+y*width;
       if (bytes_per_line > 200)
@@ -604,7 +605,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
           goto decode_error_exit;
         }
       (void) memset(scanline+scanline_length,0,row_bytes-scanline_length); /* Zero */
-      for (j=0; j < (long) scanline_length; )
+      for (j=0; j < scanline_length; )
         if ((scanline[j] & 0x80) == 0)
           {
             length=(scanline[j] & 0xff)+1;
@@ -633,7 +634,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
             length=((scanline[j]^0xff) & 0xff)+2;
             number_pixels=bytes_per_pixel;
             p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
-            for (i=0; i < (long) length; i++)
+            for (i=0; i < length; i++)
               {
                 if ((q+number_pixels > pixels+allocated_pixels))
                   {
@@ -648,7 +649,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
           }
     }
   MagickFreeMemory(scanline);
-  return(pixels);
+  return (pixels);
 
  decode_error_exit:
 

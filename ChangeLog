@@ -1,5 +1,11 @@
 2019-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (DecodeImage): Avoide a one-byte over-read of
+	pixels heap allocation.  The cause of the over-read is not yet
+	understood.  Fixes oss-fuzz 12019
+	"graphicsmagick/coder_PICT_fuzzer: Heap-buffer-overflow in
+	ExpandBuffer". (Credit to OSS-Fuzz)
+
 	* coders/wpg.c (ReadWPGImage): Assure that all colormap entries
 	are initialized.  Fixes oss-fuzz 12614
 	"graphicsmagick/enhance_fuzzer: Use-of-uninitialized-value in
