@@ -554,6 +554,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     }
   allocated_pixels=image->rows*row_bytes;
   (void) memset(pixels,0,allocated_pixels);
+  /* FIXME: Extra +1 avoids heap read overflow (oss-fuzz 12019) */
   scanline=MagickAllocateMemory(unsigned char *,row_bytes+1);
   if (scanline == (unsigned char *) NULL)
     {
