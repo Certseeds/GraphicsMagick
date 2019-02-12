@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2019-02-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/pdf.c (WritePDFImage): Make sure to free 'xref' before
+returning.  Similar to ImageMagick CVE-2019-7397 &quot;In ImageMagick
+before 7.0.8-25, several memory leaks exist in WritePDFImage in
+coders/pdf.c.&quot;.  Thanks to Petr Gajdos for bringing this issue to
+our attention.</li>
+</ul>
+</blockquote>
 <p>2019-02-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1375,6 +1375,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 if (!status)
                   {
                     CloseBlob(image);
+                    MagickFreeMemory(xref);
                     return(False);
                   }
                 break;
@@ -1478,6 +1479,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                   if (!status)
                     {
                       CloseBlob(image);
+                      MagickFreeMemory(xref);
                       return(False);
                     }
                   break;
