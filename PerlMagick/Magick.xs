@@ -5066,9 +5066,6 @@ Mogrify(ref,...)
           if (attribute_flag[24])
             (void) CloneString(&draw_info->encoding,
               argument_list[24].string_reference);
-          if (attribute_flag[26])
-            (void) QueryColorDatabase(argument_list[26].string_reference,
-              &draw_info->undercolor,&exception);
           AnnotateImage(image,draw_info);
           DestroyDrawInfo(draw_info);
           break;
