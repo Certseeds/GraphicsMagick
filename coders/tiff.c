@@ -2553,6 +2553,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         status=MagickFail;
                         break;
                       }
+                    if ((sample == 0) && (max_sample > 1))
+                      (void) memset(q,0,image->columns*sizeof(PixelPacket));
                     /*
                       Obtain a scanline
                     */
@@ -2765,6 +2767,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         status=MagickFail;
                         break;
                       }
+                    if ((sample == 0) && (max_sample > 1))
+                      (void) memset(q,0,image->columns*sizeof(PixelPacket));
                     if (rows_remaining == 0)
                       {
                         /*
@@ -3051,6 +3055,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                 status=MagickFail;
                                 break;
                               }
+                            if ((sample == 0) && (max_sample > 1))
+                              (void) memset(q,0,tile_set_columns*sizeof(PixelPacket));
                             /*
                               Compact tile row to only contain raster data.
                             */
