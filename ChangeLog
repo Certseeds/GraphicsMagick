@@ -1,5 +1,7 @@
 2019-02-13  Troy Patteson  <troyp@ieee.org>
 
+	* PerlMagick/Magick.xs (Mogrify): Add decorate argument to Annotate.
+
 	* PerlMagick/Magick.xs (Mogrify): Remove reference to undefined
 	Annotate argument.
 

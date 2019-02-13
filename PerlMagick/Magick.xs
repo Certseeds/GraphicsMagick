@@ -213,6 +213,11 @@ static char
     "WebP",
     (char *) NULL
   },
+  *DecorationTypes[] =
+  {
+    "None", "Underline", "Overline", "LineThrough",
+    (char *) NULL
+  },
   *DisposeTypes[] =
   {
     "Undefined", "None", "Background", "Previous", (char *) NULL
@@ -377,7 +382,8 @@ static struct
       {"antialias", BooleanTypes}, {"family", StringReference},
       {"style", StyleTypes}, {"stretch", StretchTypes},
       {"weight", IntegerReference}, {"align", AlignTypes},
-      {"encoding", StringReference}, {"affine", ArrayReference} } },
+      {"encoding", StringReference}, {"affine", ArrayReference},
+      {"decorate", DecorationTypes}} },
     { "ColorFloodfill", { {"geometry", StringReference},
       {"x", IntegerReference}, {"y", IntegerReference},
       {"fill", StringReference}, {"bordercolor", StringReference},
@@ -5066,6 +5072,8 @@ Mogrify(ref,...)
           if (attribute_flag[24])
             (void) CloneString(&draw_info->encoding,
               argument_list[24].string_reference);
+          if (attribute_flag[26])
+            draw_info->decorate=(DecorationType) argument_list[26].int_reference;
           AnnotateImage(image,draw_info);
           DestroyDrawInfo(draw_info);
           break;
