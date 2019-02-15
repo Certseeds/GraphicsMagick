@@ -1,3 +1,10 @@
+2019-02-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Base test for "Unreasonable
+	dimensions" on original JPEG dimensions and not the scaled
+	dimensions.  Fixes SourceForge issue 593 "gm convert: Insufficient
+	image data in file when hinting input image".
+
 2019-02-13  Troy Patteson  <troyp@ieee.org>
 
 	* PerlMagick/Magick.xs (Mogrify): Add decorate argument to Annotate.

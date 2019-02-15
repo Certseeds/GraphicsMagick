@@ -1265,8 +1265,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_calc_output_dimensions(&jpeg_info);
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Scale_factor: %ld (scale_num=%d, "
-                              "scale_denom=%d)",
+                              "Original Geometry: %lux%lu,"
+                              " Scale_factor: %ld (scale_num=%d,"
+                              " scale_denom=%d)",
+                              image->magick_columns, image->magick_rows,
                               (long) scale_factor,
                               jpeg_info.scale_num,jpeg_info.scale_denom);
     }
@@ -1470,14 +1472,14 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 
       blob_size = GetBlobSize(image);
       if ((blob_size == 0) ||
-          (((double) image->columns*image->rows*
+          (((double) image->magick_columns*image->magick_rows*
             jpeg_info.output_components/blob_size) > 512.0))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Unreasonable dimensions: "
                                 "geometry=%lux%lu, components=%d, "
                                 "blob size=%" MAGICK_OFF_F "d bytes",
-                                image->columns, image->rows,
+                                image->magick_columns, image->magick_rows,
                                 jpeg_info.output_components, blob_size);
 
           jpeg_destroy_decompress(&jpeg_info);
