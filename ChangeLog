@@ -1,5 +1,10 @@
 2019-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawDashPolygon): Avoid reading one beyond
+	length of dash pattern array, which is terminated by value 0.0.
+	Fixes SourceForge issue #591 "Heap buffer overflow in
+	DrawDashPolygon when parsing SVG images".
+
 	* coders/jpeg.c (ReadJPEGImage): JPEG files are observed to
 	provide compression ratios as high as 2500 so allow for that.
 	Also, the test for "Unreasonable dimensions" delivered yesterday
