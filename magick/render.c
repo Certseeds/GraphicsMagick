@@ -5378,6 +5378,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   MonitorHandler
     handler;
 
+  double
+    dvalue;
+
   register long
     i,
     x;
@@ -5399,8 +5402,24 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       (void) LogMagickEvent(RenderEvent,GetMagickModule(),"  end draw-primitive");
       return status;
     }
-  x=(long) ceil(primitive_info->point.x-0.5);
-  y=(long) ceil(primitive_info->point.y-0.5);
+  dvalue=ceil(primitive_info->point.x-0.5);
+  if (((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+    {
+      char double_str[18];
+      FormatString(double_str,"%g",dvalue);
+      ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
+      return MagickFail;
+    }
+  x=(long) dvalue;
+  dvalue=ceil(primitive_info->point.y-0.5);
+  if (((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+    {
+      char double_str[18];
+      FormatString(double_str,"%g",dvalue);
+      ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
+      return MagickFail;
+    }
+  y=(long) dvalue;
   switch (primitive_info->primitive)
   {
     case PointPrimitive:
