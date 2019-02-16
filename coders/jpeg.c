@@ -1258,6 +1258,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_calc_output_dimensions(&jpeg_info);
       image->magick_columns=jpeg_info.output_width;
       image->magick_rows=jpeg_info.output_height;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "magick_geometry=%lux%lu",
+                              image->magick_columns, image->magick_rows);
       scale_factor=(double) jpeg_info.output_width/image->columns;
       if (scale_factor > ((double) jpeg_info.output_height/image->rows))
         scale_factor=(double) jpeg_info.output_height/image->rows;
@@ -1470,17 +1474,36 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       magick_off_t
         blob_size;
 
+      double
+        ratio = 0;
+
       blob_size = GetBlobSize(image);
-      if ((blob_size == 0) ||
-          (((double) image->magick_columns*image->magick_rows*
-            jpeg_info.output_components/blob_size) > 512.0))
+
+      if (blob_size != 0)
+        {
+          /* magick columns/rows are only set if size was specified! */
+          if (image->magick_columns && image->magick_rows)
+            ratio = ((double) image->magick_columns*image->magick_rows*
+                     jpeg_info.output_components/blob_size);
+          else
+            ratio = ((double) image->columns*image->rows*
+                     jpeg_info.output_components/blob_size);
+        }
+
+      /* All-black JPEG can produce tremendous compression ratios.
+         Allow for it. */
+      if ((blob_size == 0) || (ratio > 2500.0))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Unreasonable dimensions: "
-                                "geometry=%lux%lu, components=%d, "
-                                "blob size=%" MAGICK_OFF_F "d bytes",
+                                "geometry=%lux%lu,"
+                                " magick_geometry=%lux%lu,"
+                                " components=%d, "
+                                "blob size=%" MAGICK_OFF_F "d bytes, "
+                                "compression ratio %g",
+                                image->columns, image->rows,
                                 image->magick_columns, image->magick_rows,
-                                jpeg_info.output_components, blob_size);
+                                jpeg_info.output_components, blob_size, ratio);
 
           jpeg_destroy_decompress(&jpeg_info);
           ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
