@@ -995,7 +995,8 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
 MagickExport void
 DestroyDrawInfo(DrawInfo *draw_info)
 {
-  assert(draw_info != (DrawInfo *) NULL);
+  if (draw_info == (DrawInfo *) NULL)
+    return;
   assert(draw_info->signature == MagickSignature);
   MagickFreeMemory(draw_info->primitive);
   MagickFreeMemory(draw_info->text);
@@ -2496,8 +2497,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   if ((status=PrimitiveInfoRealloc(&PIMgr,6553)) == MagickFail)
     {
       MagickFreeMemory(primitive);
-      for ( ; n >= 0; n--)
-        DestroyDrawInfo(graphic_context[n]);
       MagickFreeMemory(graphic_context);
       return MagickFail;
     }

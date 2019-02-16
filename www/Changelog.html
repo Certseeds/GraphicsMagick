@@ -43,7 +43,10 @@ length of dash pattern array, which is terminated by value 0.0.
 Fixes SourceForge issue #591 &quot;Heap buffer overflow in
 DrawDashPolygon when parsing SVG images&quot;.
 (DrawPrimitive): Add arithmetic overflow checks when converting
-computed coordinates from 'double' to 'long'.</li>
+computed coordinates from 'double' to 'long'.
+(DrawImage): Don't destroy draw_info in graphic_context when
+draw_info has not been allocated yet.  Problem reported via email
+by Sami Supperi on Thu, 14 Feb 2019.</li>
 <li>coders/jpeg.c (ReadJPEGImage): JPEG files are observed to
 provide compression ratios as high as 2500 so allow for that.
 Also, the test for &quot;Unreasonable dimensions&quot; delivered yesterday
