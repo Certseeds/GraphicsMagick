@@ -2601,7 +2601,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     /*
                       Disassociate alpha from pixels if necessary.
                     */
-                    if ((image->matte) && (alpha_type == AssociatedAlpha) &&
+                    if ((PHOTOMETRIC_RGB == photometric) &&
+                        (image->matte) && (alpha_type == AssociatedAlpha) &&
                         (sample == (max_sample-1)))
                       DisassociateAlphaRegion(image);
                     /*
@@ -2810,7 +2811,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     /*
                       Disassociate alpha from pixels if necessary.
                     */
-                    if ((image->matte) && (alpha_type == AssociatedAlpha)
+                    if ((PHOTOMETRIC_RGB == photometric) &&
+                        (image->matte) && (alpha_type == AssociatedAlpha)
                         && (sample == (max_sample-1)))
                       DisassociateAlphaRegion(image);
                     /*
@@ -3079,7 +3081,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             /*
                               Disassociate alpha from pixels if necessary.
                             */
-                            if ((image->matte) && (alpha_type == AssociatedAlpha)
+                            if ((PHOTOMETRIC_RGB == photometric) &&
+                                (image->matte) && (alpha_type == AssociatedAlpha)
                                 && (sample == (max_sample-1)))
                               DisassociateAlphaRegion(image);
                             /*
@@ -3218,7 +3221,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 /*
                   Disassociate alpha from pixels if necessary.
                 */
-                if ((image->matte) && (alpha_type == AssociatedAlpha))
+                if ((PHOTOMETRIC_RGB == photometric) &&
+                    (image->matte) && (alpha_type == AssociatedAlpha))
                   DisassociateAlphaRegion(image);
                 if (!SyncImagePixelsEx(image,exception))
                   {
@@ -3406,7 +3410,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 /*
                   Disassociate alpha from pixels if necessary.
                 */
-                if ((image->matte) && (alpha_type == AssociatedAlpha))
+                if ((PHOTOMETRIC_RGB == photometric) &&
+                    (image->matte) && (alpha_type == AssociatedAlpha))
                   DisassociateAlphaRegion(image);
                 if (!SyncImagePixelsEx(image,exception))
                   {
@@ -3531,7 +3536,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 /*
                   Disassociate alpha from pixels if necessary.
                 */
-                if ((image->matte) && (alpha_type == AssociatedAlpha))
+                if ((PHOTOMETRIC_RGB == photometric) &&
+                    (image->matte) && (alpha_type == AssociatedAlpha))
                   DisassociateAlphaRegion(image);
                 if (!SyncImagePixelsEx(image,exception))
                   {

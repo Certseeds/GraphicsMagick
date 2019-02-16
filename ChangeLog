@@ -1,3 +1,11 @@
+2019-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Only disassociate alpha channel
+	for images where photometic is PHOTOMETRIC_RGB. Fixes oss-fuzz
+	13115 "graphicsmagick/coder_PTIF_fuzzer:
+	Use-of-uninitialized-value in DisassociateAlphaRegion". (Credit to
+	OSS-Fuzz)
+
 2019-02-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (ReadJPEGImage): Base test for "Unreasonable
