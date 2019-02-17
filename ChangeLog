@@ -1,11 +1,5 @@
 2019-02-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* magick/render.c (DrawDashPolygon): Don't read beyond end of dash
-	pattern array.  This is a second instance of issue identified by
-	SourceForge issue #591.  Fixes oss-fuzz 13160
-	"graphicsmagick/coder_MVG_fuzzer: Heap-buffer-overflow in
-	DrawDashPolygon". (Credit to OSS-Fuzz)
-
 	* magick/annotate.c (RenderFreetype): Eliminate memory leak of
 	GlyphInfo.image (type FT_Glyph) while rendering some FreeType
 	fonts such as the one we use now in the Magick++ test suite.
