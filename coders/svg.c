@@ -3921,7 +3921,6 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SVGEndDocument(&svg_info);
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
-  xmlCleanupParser();
   (void) fclose(file);
   CloseBlob(image);
   DestroyImage(image);
@@ -4032,6 +4031,11 @@ RegisterSVGImage(void)
     entry->version=version;
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
+
+  /*
+    Libxml initialization. Should be called at program start-up.
+  */
+  /* xmlInitParser(); */
 }
 
 /*
@@ -4056,6 +4060,10 @@ RegisterSVGImage(void)
 ModuleExport void
 UnregisterSVGImage(void)
 {
+  /*
+    Libxml clean-up. Should only be called just before exit().
+  */
+  /* xmlCleanupParser(); */
   (void) UnregisterMagickInfo("SVG");
   (void) UnregisterMagickInfo("SVGZ");
 }

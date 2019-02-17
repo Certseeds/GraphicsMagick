@@ -4654,7 +4654,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 
 
   xmlFreeDoc(msl_info.document);
-  xmlCleanupParser();
+  /* xmlCleanupParser(); */
 
 /*   printf("ProcessMSLScript(msl_info->n=%ld\n",msl_info.n); */
 
