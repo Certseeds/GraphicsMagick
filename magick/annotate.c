@@ -1549,8 +1549,11 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
     origin.x+=face->glyph->advance.x;
     if (origin.x > metrics->width)
       metrics->width=origin.x;
-    if (last_glyph.id != 0)
-      FT_Done_Glyph(last_glyph.image);
+    if (last_glyph.image != 0)
+      {
+        FT_Done_Glyph(last_glyph.image);
+        last_glyph.image=0;
+      }
     last_glyph=glyph;
   }
   metrics->width/=64.0;
@@ -1570,8 +1573,11 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
         (void) ConcatenateString(&clone_info->primitive,"'");
         (void) DrawImage(image,clone_info);
       }
-  if (glyph.id != 0)
-    FT_Done_Glyph(glyph.image);
+  if (glyph.image != 0)
+    {
+      FT_Done_Glyph(glyph.image);
+      glyph.image=0;
+    }
   /*
     Free resources.
   */

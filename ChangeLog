@@ -1,3 +1,9 @@
+2019-02-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/annotate.c (RenderFreetype): Eliminate memory leak of
+	GlyphInfo.image (type FT_Glyph) while rendering some FreeType
+	fonts such as the one we use now in the Magick++ test suite.
+
 2019-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawDashPolygon): Avoid reading one beyond
