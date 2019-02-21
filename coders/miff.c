@@ -1402,6 +1402,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         register char
           *p;
 
+        size_t
+          directory_length;
+
         /*
           Image directory.
         */
@@ -1409,25 +1412,27 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         if (image->directory == (char *) NULL)
           ThrowMIFFReaderException(CorruptImageError,UnableToReadImageData,image);
         p=image->directory;
+        directory_length=0;
         do
         {
           *p='\0';
-          if (((strlen(image->directory)+1) % MaxTextExtent) == 0)
+          if (((directory_length+1) % MaxTextExtent) == 0)
             {
               /*
                 Allocate more memory for the image directory.
               */
               MagickReallocMemory(char *,image->directory,
-                (strlen(image->directory)+MaxTextExtent+1));
+                (directory_length+MaxTextExtent+1));
               if (image->directory == (char *) NULL)
                 ThrowMIFFReaderException(CorruptImageError,UnableToReadImageData,
                   image);
-              p=image->directory+strlen(image->directory);
+              p=image->directory+directory_length;
             }
           c=ReadBlobByte(image);
           if (c == EOF)
             break;
           *p++=c;
+          ++directory_length;
         } while (c != '\0');
       }
 

@@ -35,9 +35,22 @@
 <div class="document">
 
 
+<p>2019-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/miff.c (ReadMIFFImage): Tally directory length to avoid
+death by strlen().  Fixes oss-fuzz 13190
+&quot;graphicsmagick/coder_MIFF_fuzzer: Timeout in
+graphicsmagick_coder_MIFF_fuzzer&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2019-02-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/svg.c (ReadSVGImage): Don't call xmlCleanupParser()
+in module code since this may cause other libxml users to fail.</li>
+<li>coders/msl.c (ProcessMSLScript): Don't call xmlCleanupParser()
+in module code since this may cause other libxml users to fail.</li>
 <li>magick/render.c (DrawDashPolygon): (DrawDashPolygon): Don't read
 beyond end of dash pattern array.  This is a second instance of
 issue identified by SourceForge issue #591.  Fixes oss-fuzz 13160

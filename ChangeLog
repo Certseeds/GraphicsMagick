@@ -1,3 +1,10 @@
+2019-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Tally directory length to avoid
+	death by strlen().  Fixes oss-fuzz 13190
+	"graphicsmagick/coder_MIFF_fuzzer: Timeout in
+	graphicsmagick_coder_MIFF_fuzzer". (Credit to OSS-Fuzz)
+
 2019-02-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (ReadSVGImage): Don't call xmlCleanupParser()
