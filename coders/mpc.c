@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -782,32 +782,37 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
         register char
           *p;
 
+        size_t
+          directory_length;
+
         /*
           Image directory.
         */
-        image->directory=AllocateString((char *) NULL);
+        image->directory=MagickAllocateMemory(char *,MaxTextExtent);
         if (image->directory == (char *) NULL)
           ThrowMPCReaderException(CorruptImageError,UnableToReadImageData,image);
         p=image->directory;
+        directory_length=0;
         do
         {
           *p='\0';
-          if (((strlen(image->directory)+1) % MaxTextExtent) == 0)
+          if (((directory_length+1) % MaxTextExtent) == 0)
             {
               /*
                 Allocate more memory for the image directory.
               */
               MagickReallocMemory(char *,image->directory,
-                (strlen(image->directory)+MaxTextExtent+1));
+                (directory_length+MaxTextExtent+1));
               if (image->directory == (char *) NULL)
                 ThrowMPCReaderException(CorruptImageError,UnableToReadImageData,
                   image);
-              p=image->directory+strlen(image->directory);
+              p=image->directory+directory_length;
             }
           c=ReadBlobByte(image);
           if (c == EOF)
             break;
           *p++=c;
+          ++directory_length;
         } while (c != '\0');
       }
 

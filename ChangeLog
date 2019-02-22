@@ -1,5 +1,8 @@
 2019-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mpc.c (ReadMPCImage): Tally directory length to avoid
+	death by strlen().
+
 	* coders/miff.c (ReadMIFFImage): Tally directory length to avoid
 	death by strlen().  Fixes oss-fuzz 13190
 	"graphicsmagick/coder_MIFF_fuzzer: Timeout in
