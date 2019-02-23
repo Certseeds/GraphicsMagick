@@ -586,6 +586,7 @@
 #define MagickMapIterateToFront GmMagickMapIterateToFront
 #define MagickMapRemoveEntry GmMagickMapRemoveEntry
 #define MagickMonitor GmMagickMonitor
+#define MagickMonitorActive GmMagickMonitorActive
 #define MagickMonitorFormatted GmMagickMonitorFormatted
 #define MagickRandNewSeed GmMagickRandNewSeed
 #define MagickRandReentrant GmMagickRandReentrant

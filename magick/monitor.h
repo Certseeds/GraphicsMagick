@@ -49,7 +49,7 @@ extern "C" {
     InitializeMagickMonitor(void);
 
   extern MagickBool
-  MagickMonitorActive(void);
+  MagickMonitorActive(void) MAGICK_FUNC_PURE;
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
