@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -499,6 +499,9 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
     unsigned long
       row_count=0;
 
+    MagickBool
+      monitor_active;
+
     DoublePixelPacket
       zero;
 
@@ -506,6 +509,9 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
       status=MagickPass;
 
     (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+    monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -569,22 +575,33 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
             if (!SyncImagePixelsEx(minify_image,exception))
               thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                    MinifyImageText,image->filename))
-          thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          MinifyImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
-      if (thread_status == MagickFail)
-        {
-          status=MagickFail;
+        if (thread_status == MagickFail)
+          {
+            status=MagickFail;
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (status)
 #endif
-        }
+          }
       }
   }
   minify_image->is_grayscale=image->is_grayscale;
@@ -829,6 +846,9 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
   unsigned long
     quantum;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -853,6 +873,9 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
     }
   scale=1.0/scale;
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status, quantum)
@@ -1011,18 +1034,26 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
           if (!SyncImagePixelsEx(destination,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_quantum;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(quantum,span))
-        if (!MagickMonitorFormatted(quantum,span,exception,
-                                    ResizeImageText,source->filename))
-          thread_status=MagickFail;
+          thread_quantum=quantum;
+          if (QuantumTick(thread_quantum,span))
+            if (!MagickMonitorFormatted(thread_quantum,span,exception,
+                                        ResizeImageText,source->filename))
+              thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      quantum++;
+          quantum++;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1063,6 +1094,9 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
   unsigned long
     quantum;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -1090,6 +1124,9 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
     }
   scale=1.0/scale;
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status, quantum)
@@ -1248,18 +1285,27 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
           if (!SyncImagePixelsEx(destination,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_quantum;
+
+
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(quantum,span))
-        if (!MagickMonitorFormatted(quantum,span,exception,
-                                    ResizeImageText,source->filename))
-          thread_status=MagickFail;
+          thread_quantum=quantum;
+          if (QuantumTick(thread_quantum,span))
+            if (!MagickMonitorFormatted(thread_quantum,span,exception,
+                                        ResizeImageText,source->filename))
+              thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      quantum++;
+          quantum++;
+        }
 
       if (thread_status == MagickFail)
         {

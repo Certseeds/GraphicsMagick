@@ -1,3 +1,12 @@
+2019-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/monitor.c (MagickMonitorActive): Add new private function
+	to test if a progress monitor is active.  Update all progress
+	monitor code in loops to use this information, while also updating
+	code to hopefully address concerns expressed by Hongxu Chen about
+	data races on the graphicsmagick-bugs mailing list starting on
+	February 6, 2019.
+
 2019-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mpc.c (ReadMPCImage): Tally directory length to avoid

@@ -1290,6 +1290,9 @@ DrawAffineImage(Image *image,const Image *composite,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   AffineMatrix
     inverse_affine;
 
@@ -1364,6 +1367,9 @@ DrawAffineImage(Image *image,const Image *composite,
     edge.y2=image->rows-1;
   y_min=(long) ceil(edge.y1-0.5);
   y_max=(long) floor(edge.y2+0.5);
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -1439,14 +1445,25 @@ DrawAffineImage(Image *image,const Image *composite,
             if (!SyncImagePixelsEx(image,&image->exception))
               thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,y_max-y_min+1))
-        if (!MagickMonitorFormatted(row_count,y_max-y_min+1,&image->exception,
-                                    AffineDrawImageText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,y_max-y_min+1))
+            if (!MagickMonitorFormatted(thread_row_count,y_max-y_min+1,&image->exception,
+                                        AffineDrawImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {

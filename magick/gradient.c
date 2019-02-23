@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -69,6 +69,9 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -79,6 +82,8 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   assert(image->signature == MagickSignature);
   assert(start_color != (const PixelPacket *) NULL);
   assert(stop_color != (const PixelPacket *) NULL);
+
+  monitor_active=MagickMonitorActive();
 
   /*
     Generate gradient pixels.
@@ -117,14 +122,24 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
             thread_status=MagickFail;
         }
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
-                                    GradientImageText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,&image->exception,
+                                        GradientImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {

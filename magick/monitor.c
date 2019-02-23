@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -156,6 +156,31 @@ MagickMonitor(const char *text,
       UnlockSemaphoreInfo(monitor_semaphore);
     }
   return(status);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k M o n i t o r  A c t i v e                                    %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickMonitorAtive() returns MagickTrue if a progress monitor callback
+%  has been registered, or MagickFalse if no progress monitor is active.
+%
+%  The format of the MagickMonitorActive method is:
+%
+%      MagickBool MagickMonitor(void)
+%
+*/
+MagickBool
+MagickMonitorActive(void)
+{
+  return monitor_handler != (MonitorHandler) NULL ? MagickTrue : MagickFalse;
 }
 
 /*

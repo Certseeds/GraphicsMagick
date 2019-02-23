@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2019 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -47,6 +47,9 @@ extern "C" {
 
   extern MagickPassFail
     InitializeMagickMonitor(void);
+
+  extern MagickBool
+  MagickMonitorActive(void);
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -627,6 +627,11 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
     unsigned long
       row_count=0;
 
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -700,14 +705,25 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
               if (!SyncImagePixelsEx(implode_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      ImplodeImageText,implode_image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          ImplodeImageText,implode_image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {
@@ -963,6 +979,9 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -983,6 +1002,8 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
     return((Image *) NULL);
 
   (void) SetImageType(paint_image,TrueColorType);
+
+  monitor_active=MagickMonitorActive();
 
   /*
     Paint each row of the image.
@@ -1079,14 +1100,25 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
           if (!SyncImagePixelsEx(paint_image,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      OilPaintImageText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                        OilPaintImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1528,6 +1560,11 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
     unsigned long
       row_count=0;
 
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -1602,14 +1639,25 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
               if (!SyncImagePixelsEx(swirl_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      SwirlImageText,image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          SwirlImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {
@@ -1730,6 +1778,11 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
     unsigned long
       row_count=0;
 
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -1775,14 +1828,25 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
               if (!SyncImagePixelsEx(wave_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,wave_image->rows))
-          if (!MagickMonitorFormatted(row_count,wave_image->rows,exception,
-                                      WaveImageText,image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,wave_image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,wave_image->rows,exception,
+                                          WaveImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {

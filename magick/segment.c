@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -286,337 +286,342 @@ Classify(Image * restrict image,short **extrema,
   ExtentPacket
     blue = { 0.0, 0, 0, 0},
     green = { 0.0, 0, 0, 0},
-    red = { 0.0, 0, 0, 0};
+      red = { 0.0, 0, 0, 0};
 
-  unsigned long
-    count;
+      unsigned long
+        count;
 
-  long
-    y;
+      long
+        y;
 
-  PixelPacket
-    * restrict colormap=0;
+      PixelPacket
+        * restrict colormap=0;
 
-  register const PixelPacket
-    * restrict p;
+      register const PixelPacket
+        * restrict p;
 
-  register double
-    * restrict squares;
+      register double
+        * restrict squares;
 
-  register IndexPacket
-    * restrict indexes;
+      register IndexPacket
+        * restrict indexes;
 
-  register long
-    i,
-    x;
+      register long
+        i,
+        x;
 
-  register PixelPacket
-    * restrict q;
+      register PixelPacket
+        * restrict q;
 
-  unsigned long
-    number_clusters;
+      unsigned long
+        number_clusters;
 
-  unsigned long
-    row_count=0;
+      unsigned long
+        row_count=0;
 
-  MagickPassFail
-    status=MagickPass;
+      MagickBool
+        monitor_active;
 
-  /*
-    Form clusters.
-  */
-  cluster=(Cluster *) NULL;
-  head=(Cluster *) NULL;
-  red.index=0;
-  while (DefineRegion(extrema[Red],&red))
-    {
-      green.index=0;
-      while (DefineRegion(extrema[Green],&green))
+      MagickPassFail
+        status=MagickPass;
+
+      monitor_active=MagickMonitorActive();
+
+      /*
+        Form clusters.
+      */
+      cluster=(Cluster *) NULL;
+      head=(Cluster *) NULL;
+      red.index=0;
+      while (DefineRegion(extrema[Red],&red))
         {
-          blue.index=0;
-          while (DefineRegion(extrema[Blue],&blue))
+          green.index=0;
+          while (DefineRegion(extrema[Green],&green))
             {
-              /*
-                Allocate a new class.
-              */
-              if (head != (Cluster *) NULL)
+              blue.index=0;
+              while (DefineRegion(extrema[Blue],&blue))
                 {
-                  cluster->next=MagickAllocateMemory(Cluster *,sizeof(Cluster));
-                  cluster=cluster->next;
+                  /*
+                    Allocate a new class.
+                  */
+                  if (head != (Cluster *) NULL)
+                    {
+                      cluster->next=MagickAllocateMemory(Cluster *,sizeof(Cluster));
+                      cluster=cluster->next;
+                    }
+                  else
+                    {
+                      cluster=MagickAllocateMemory(Cluster *,sizeof(Cluster));
+                      head=cluster;
+                    }
+                  if (cluster == (Cluster *) NULL)
+                    {
+                      ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                                     image->filename);
+                      goto classify_error_exit;
+                    }
+                  /*
+                    Initialize a new class.
+                  */
+                  (void) memset(cluster,0,sizeof(Cluster));
+                  cluster->count=0;
+                  cluster->red=red;
+                  cluster->green=green;
+                  cluster->blue=blue;
+                  cluster->next=(Cluster *) NULL;
                 }
-              else
-                {
-                  cluster=MagickAllocateMemory(Cluster *,sizeof(Cluster));
-                  head=cluster;
-                }
-              if (cluster == (Cluster *) NULL)
-                {
-                  ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
-                                 image->filename);
-                  goto classify_error_exit;
-                }
-              /*
-                Initialize a new class.
-              */
-              (void) memset(cluster,0,sizeof(Cluster));
-              cluster->count=0;
-              cluster->red=red;
-              cluster->green=green;
-              cluster->blue=blue;
-              cluster->next=(Cluster *) NULL;
             }
         }
-    }
-  if (head == (Cluster *) NULL)
-    {
-      /*
-        No classes were identified-- create one.
-      */
-      cluster=MagickAllocateMemory(Cluster *,sizeof(Cluster));
-      if (cluster == (Cluster *) NULL)
+      if (head == (Cluster *) NULL)
         {
-          ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
-                         image->filename);
+          /*
+            No classes were identified-- create one.
+          */
+          cluster=MagickAllocateMemory(Cluster *,sizeof(Cluster));
+          if (cluster == (Cluster *) NULL)
+            {
+              ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                             image->filename);
+              goto classify_error_exit;
+            }
+          /*
+            Initialize a new class.
+          */
+          (void) memset(cluster,0,sizeof(Cluster));
+          cluster->count=0;
+          cluster->red=red;
+          cluster->green=green;
+          cluster->blue=blue;
+          cluster->next=(Cluster *) NULL;
+          head=cluster;
+        }
+      /*
+        Build an array representation of the clusters.
+      */
+      number_clusters=0;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+        number_clusters++;
+      cluster_array=MagickAllocateArray(Cluster **,number_clusters,sizeof(Cluster *));
+      number_clusters=0;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+        cluster_array[number_clusters++]=cluster;
+      /*
+        Count the pixels for each cluster.
+      */
+      for (y=0; y < (long) image->rows; y++)
+        {
+          p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+          if (p == (const PixelPacket *) NULL)
+            {
+              status=MagickFail;
+              break;
+            }
+          for (x=(long) image->columns; x != 0; x--)
+            {
+              double
+                r,
+                g,
+                b;
+
+              r=(double) ScaleQuantumToChar(p->red);
+              g=(double) ScaleQuantumToChar(p->green);
+              b=(double) ScaleQuantumToChar(p->blue);
+
+              for (count=0 ; count < number_clusters; count++)
+                {
+                  if ((r >= (cluster_array[count]->red.left-SafeMargin)) &&
+                      (r <= (cluster_array[count]->red.right+SafeMargin)) &&
+                      (g >= (cluster_array[count]->green.left-SafeMargin)) &&
+                      (g <= (cluster_array[count]->green.right+SafeMargin)) &&
+                      (b >= (cluster_array[count]->blue.left-SafeMargin)) &&
+                      (b <= (cluster_array[count]->blue.right+SafeMargin)))
+                    {
+                      /*
+                        Count this pixel.
+                      */
+                      cluster_array[count]->count++;
+                      cluster_array[count]->red.center+=r;
+                      cluster_array[count]->green.center+=g;
+                      cluster_array[count]->blue.center+=b;
+
+                      if ((count > 0) &&
+                          (cluster_array[count]->count > cluster_array[count-1]->count))
+                        {
+                          Cluster
+                            *tmp_cluster;
+
+                          tmp_cluster=cluster_array[count-1];
+                          cluster_array[count-1]=cluster_array[count];
+                          cluster_array[count]=tmp_cluster;
+                        }
+                      break;
+                    }
+                }
+              p++;
+            }
+          if (QuantumTick(y,image->rows))
+            if (!MagickMonitorFormatted(y,image->rows << 1,&image->exception,
+                                        SegmentImageText,image->filename))
+              {
+                status=MagickFail;
+                break;
+              }
+        }
+      if (status == MagickFail)
+        goto classify_error_exit;
+
+      /*
+        Remove clusters that do not meet minimum cluster threshold.
+      */
+      total_vectors=0.0;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+        total_vectors+=(double) cluster->count;
+      threshold=cluster_threshold*0.01*total_vectors;
+      count=0;
+      last_cluster=head;
+      next_cluster=head;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=next_cluster)
+        {
+          next_cluster=cluster->next;
+          if ((cluster->count > 0) &&
+              ((double) cluster->count >= threshold))
+            {
+              /*
+                Initialize cluster.
+              */
+              cluster->id=count;
+              cluster->red.center=(cluster->red.center/((double) cluster->count));
+              cluster->green.center=(cluster->green.center/((double) cluster->count));
+              cluster->blue.center=(cluster->blue.center/((double) cluster->count));
+              count++;
+              last_cluster=cluster;
+            }
+          else
+            {
+              /*
+                Delete cluster.
+              */
+              if (cluster == head)
+                head=next_cluster;
+              else
+                last_cluster->next=next_cluster;
+
+              if (image->logging)
+                (void) LogMagickEvent
+                  (TransformEvent,GetMagickModule(),
+                   "Removing Cluster (usage count %lu, %.5f%%) %d-%d  %d-%d  %d-%d",
+                   (unsigned long) cluster->count,
+                   (((double) cluster->count/total_vectors) * 100.0),
+                   cluster->red.left,cluster->red.right,
+                   cluster->green.left,cluster->green.right,
+                   cluster->blue.left,cluster->blue.right);
+              MagickFreeMemory(cluster);
+            }
+        }
+      number_clusters=count;
+      if (verbose && (head != (Cluster *) NULL))
+        {
+          /*
+            Print cluster statistics.
+          */
+          (void) fprintf(stdout,"===============================================\n");
+          (void) fprintf(stdout,"           Fuzzy c-Means Statistics\n");
+          (void) fprintf(stdout,"===============================================\n");
+          (void) fprintf(stdout,"Cluster Threshold        = %g%%\n", cluster_threshold);
+          (void) fprintf(stdout,"Weighting Exponent       = %g\n", weighting_exponent);
+          (void) fprintf(stdout,"Total Number of Clusters = %lu\n",
+                         number_clusters);
+          (void) fprintf(stdout,"Total Number of Vectors  = %g\n",
+                         total_vectors);
+          (void) fprintf(stdout,"Cluster Threshold        = %g vectors\n\n",
+                         threshold);
+          /*
+            Print the total number of points per cluster.
+          */
+          (void) fprintf(stdout,"Cluster          Usage                 Extents                  Center\n");
+          (void) fprintf(stdout,"=======  ====================  =======================  =====================\n");
+          for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+            {
+              PixelPacket
+                color;
+
+              char
+                tuple[MaxTextExtent];
+
+              color.red=ScaleCharToQuantum((unsigned int) (cluster->red.center + 0.5));
+              color.green=ScaleCharToQuantum((unsigned int) (cluster->green.center + 0.5));
+              color.blue=ScaleCharToQuantum((unsigned int) (cluster->blue.center + 0.5));
+              color.opacity=OpaqueOpacity;
+              /* (void) QueryColorname(image,&color,X11Compliance,colorname,&image->exception); */
+              GetColorTuple(&color,8,MagickFalse,MagickTrue,tuple);
+              (void) fprintf(stdout,"  %3d    %10lu (%6.3f%%)  %03d-%03d %03d-%03d %03d-%03d  %03.0f %03.0f %03.0f (%s)\n",
+                             cluster->id,
+                             (unsigned long) cluster->count,
+                             (((double) cluster->count/total_vectors) * 100.0),
+                             cluster->red.left,cluster->red.right,
+                             cluster->green.left,cluster->green.right,
+                             cluster->blue.left,cluster->blue.right,
+                             cluster->red.center,
+                             cluster->green.center,
+                             cluster->blue.center,
+                             tuple);
+            }
+        }
+      if ((number_clusters > 256) || (number_clusters == 0))
+        {
+          ThrowException3(&image->exception,ImageError,UnableToSegmentImage,TooManyClusters);
           goto classify_error_exit;
         }
       /*
-        Initialize a new class.
+        Speed up distance calculations.
       */
-      (void) memset(cluster,0,sizeof(Cluster));
-      cluster->count=0;
-      cluster->red=red;
-      cluster->green=green;
-      cluster->blue=blue;
-      cluster->next=(Cluster *) NULL;
-      head=cluster;
-    }
-  /*
-    Build an array representation of the clusters.
-  */
-  number_clusters=0;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-    number_clusters++;
-  cluster_array=MagickAllocateArray(Cluster **,number_clusters,sizeof(Cluster *));
-  number_clusters=0;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-    cluster_array[number_clusters++]=cluster;
-  /*
-    Count the pixels for each cluster.
-  */
-  for (y=0; y < (long) image->rows; y++)
-    {
-      p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-      if (p == (const PixelPacket *) NULL)
+      squares_array=MagickAllocateMemory(double *,513*sizeof(double));
+      if (squares_array == (double *) NULL)
         {
-          status=MagickFail;
-          break;
+          ThrowException(&image->exception,ResourceLimitError,
+                         MemoryAllocationFailed,image->filename);
+          goto classify_error_exit;
         }
-      for (x=(long) image->columns; x != 0; x--)
-        {
-          double
-            r,
-            g,
-            b;
-
-          r=(double) ScaleQuantumToChar(p->red);
-          g=(double) ScaleQuantumToChar(p->green);
-          b=(double) ScaleQuantumToChar(p->blue);
-
-          for (count=0 ; count < number_clusters; count++)
-            {
-              if ((r >= (cluster_array[count]->red.left-SafeMargin)) &&
-                  (r <= (cluster_array[count]->red.right+SafeMargin)) &&
-                  (g >= (cluster_array[count]->green.left-SafeMargin)) &&
-                  (g <= (cluster_array[count]->green.right+SafeMargin)) &&
-                  (b >= (cluster_array[count]->blue.left-SafeMargin)) &&
-                  (b <= (cluster_array[count]->blue.right+SafeMargin)))
-                {
-                  /*
-                    Count this pixel.
-                  */
-                  cluster_array[count]->count++;
-                  cluster_array[count]->red.center+=r;
-                  cluster_array[count]->green.center+=g;
-                  cluster_array[count]->blue.center+=b;
-
-                  if ((count > 0) &&
-                      (cluster_array[count]->count > cluster_array[count-1]->count))
-                    {
-                      Cluster
-                        *tmp_cluster;
-
-                      tmp_cluster=cluster_array[count-1];
-                      cluster_array[count-1]=cluster_array[count];
-                      cluster_array[count]=tmp_cluster;
-                    }
-                  break;
-                }
-            }
-          p++;
-        }
-      if (QuantumTick(y,image->rows))
-        if (!MagickMonitorFormatted(y,image->rows << 1,&image->exception,
-                                    SegmentImageText,image->filename))
-          {
-            status=MagickFail;
-            break;
-          }
-    }
-  if (status == MagickFail)
-    goto classify_error_exit;
-
-  /*
-    Remove clusters that do not meet minimum cluster threshold.
-  */
-  total_vectors=0.0;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-    total_vectors+=(double) cluster->count;
-  threshold=cluster_threshold*0.01*total_vectors;
-  count=0;
-  last_cluster=head;
-  next_cluster=head;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=next_cluster)
-    {
-      next_cluster=cluster->next;
-      if ((cluster->count > 0) &&
-          ((double) cluster->count >= threshold))
-        {
-          /*
-            Initialize cluster.
-          */
-          cluster->id=count;
-          cluster->red.center=(cluster->red.center/((double) cluster->count));
-          cluster->green.center=(cluster->green.center/((double) cluster->count));
-          cluster->blue.center=(cluster->blue.center/((double) cluster->count));
-          count++;
-          last_cluster=cluster;
-        }
-      else
-        {
-          /*
-            Delete cluster.
-          */
-          if (cluster == head)
-            head=next_cluster;
-          else
-            last_cluster->next=next_cluster;
-
-          if (image->logging)
-            (void) LogMagickEvent
-              (TransformEvent,GetMagickModule(),
-               "Removing Cluster (usage count %lu, %.5f%%) %d-%d  %d-%d  %d-%d",
-               (unsigned long) cluster->count,
-               (((double) cluster->count/total_vectors) * 100.0),
-               cluster->red.left,cluster->red.right,
-               cluster->green.left,cluster->green.right,
-               cluster->blue.left,cluster->blue.right);
-          MagickFreeMemory(cluster);
-        }
-    }
-  number_clusters=count;
-  if (verbose && (head != (Cluster *) NULL))
-    {
-      /*
-        Print cluster statistics.
-      */
-      (void) fprintf(stdout,"===============================================\n");
-      (void) fprintf(stdout,"           Fuzzy c-Means Statistics\n");
-      (void) fprintf(stdout,"===============================================\n");
-      (void) fprintf(stdout,"Cluster Threshold        = %g%%\n", cluster_threshold);
-      (void) fprintf(stdout,"Weighting Exponent       = %g\n", weighting_exponent);
-      (void) fprintf(stdout,"Total Number of Clusters = %lu\n",
-                     number_clusters);
-      (void) fprintf(stdout,"Total Number of Vectors  = %g\n",
-                     total_vectors);
-      (void) fprintf(stdout,"Cluster Threshold        = %g vectors\n\n",
-                     threshold);
-      /*
-        Print the total number of points per cluster.
-      */
-      (void) fprintf(stdout,"Cluster          Usage                 Extents                  Center\n");
-      (void) fprintf(stdout,"=======  ====================  =======================  =====================\n");
-      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-        {
-          PixelPacket
-            color;
-
-          char
-            tuple[MaxTextExtent];
-
-          color.red=ScaleCharToQuantum((unsigned int) (cluster->red.center + 0.5));
-          color.green=ScaleCharToQuantum((unsigned int) (cluster->green.center + 0.5));
-          color.blue=ScaleCharToQuantum((unsigned int) (cluster->blue.center + 0.5));
-          color.opacity=OpaqueOpacity;
-          /* (void) QueryColorname(image,&color,X11Compliance,colorname,&image->exception); */
-          GetColorTuple(&color,8,MagickFalse,MagickTrue,tuple);
-          (void) fprintf(stdout,"  %3d    %10lu (%6.3f%%)  %03d-%03d %03d-%03d %03d-%03d  %03.0f %03.0f %03.0f (%s)\n",
-                         cluster->id,
-                         (unsigned long) cluster->count,
-                         (((double) cluster->count/total_vectors) * 100.0),
-                         cluster->red.left,cluster->red.right,
-                         cluster->green.left,cluster->green.right,
-                         cluster->blue.left,cluster->blue.right,
-                         cluster->red.center,
-                         cluster->green.center,
-                         cluster->blue.center,
-                         tuple);
-        }
-    }
-  if ((number_clusters > 256) || (number_clusters == 0))
-    {
-      ThrowException3(&image->exception,ImageError,UnableToSegmentImage,TooManyClusters);
-      goto classify_error_exit;
-    }
-  /*
-    Speed up distance calculations.
-  */
-  squares_array=MagickAllocateMemory(double *,513*sizeof(double));
-  if (squares_array == (double *) NULL)
-    {
-      ThrowException(&image->exception,ResourceLimitError,
-                     MemoryAllocationFailed,image->filename);
-      goto classify_error_exit;
-    }
-  squares=squares_array+255;
+      squares=squares_array+255;
 #if defined(HAVE_OPENMP)
 #  pragma omp parallel for
 #endif
-  for (i=(-255); i <= 255; i++)
-    squares[i]=i*i;
-  /*
-    Allocate image colormap.
-  */
-  colormap=MagickAllocateMemory(PixelPacket *,number_clusters*sizeof(PixelPacket));
-  if (colormap == (PixelPacket *) NULL)
-    {
-      ThrowException(&image->exception,ResourceLimitError,
-                     MemoryAllocationFailed,image->filename);
-      goto classify_error_exit;
-    }
-  image->matte=False;
-  image->storage_class=PseudoClass;
-  MagickFreeMemory(image->colormap);
-  image->colormap=colormap;
-  image->colors=number_clusters;
-  i=0;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-    {
-      image->colormap[i].red=ScaleCharToQuantum((unsigned int) (cluster->red.center + 0.5));
-      image->colormap[i].green=ScaleCharToQuantum((unsigned int) (cluster->green.center + 0.5));
-      image->colormap[i].blue=ScaleCharToQuantum((unsigned int) (cluster->blue.center + 0.5));
-      image->colormap[i].opacity=OpaqueOpacity;
-      i++;
-    }
-  /*
-    Rebuild cluster array.
-  */
-  number_clusters=0;
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
-    cluster_array[number_clusters++]=cluster;
-  /*
-    Do course grain storage_class.
-  */
-  row_count=0;
+      for (i=(-255); i <= 255; i++)
+        squares[i]=i*i;
+      /*
+        Allocate image colormap.
+      */
+      colormap=MagickAllocateMemory(PixelPacket *,number_clusters*sizeof(PixelPacket));
+      if (colormap == (PixelPacket *) NULL)
+        {
+          ThrowException(&image->exception,ResourceLimitError,
+                         MemoryAllocationFailed,image->filename);
+          goto classify_error_exit;
+        }
+      image->matte=False;
+      image->storage_class=PseudoClass;
+      MagickFreeMemory(image->colormap);
+      image->colormap=colormap;
+      image->colors=number_clusters;
+      i=0;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+        {
+          image->colormap[i].red=ScaleCharToQuantum((unsigned int) (cluster->red.center + 0.5));
+          image->colormap[i].green=ScaleCharToQuantum((unsigned int) (cluster->green.center + 0.5));
+          image->colormap[i].blue=ScaleCharToQuantum((unsigned int) (cluster->blue.center + 0.5));
+          image->colormap[i].opacity=OpaqueOpacity;
+          i++;
+        }
+      /*
+        Rebuild cluster array.
+      */
+      number_clusters=0;
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
+        cluster_array[number_clusters++]=cluster;
+      /*
+        Do course grain storage_class.
+      */
+      row_count=0;
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status) private(count,indexes,p,q,x)
@@ -624,170 +629,181 @@ Classify(Image * restrict image,short **extrema,
 #    pragma omp parallel for schedule(static,8) shared(row_count, status) private(count,indexes,p,q,x)
 #  endif
 #endif
-  for (y=0; y < (long) image->rows; y++)
-    {
-      MagickBool
-        thread_status;
-
-      int
-        num_threads;
-
-      thread_status=status;
-      if (thread_status == MagickFail)
-        continue;
-
-      num_threads=omp_get_num_threads();
-      q=GetImagePixelsEx(image,0,y,image->columns,1,&image->exception);
-      if (q == (PixelPacket *) NULL)
-        thread_status=MagickFail;
-
-      if (thread_status != MagickFail)
+      for (y=0; y < (long) image->rows; y++)
         {
-          indexes=AccessMutableIndexes(image);
-          for (x=0; x < (long) image->columns; x++)
+          MagickBool
+            thread_status;
+
+          int
+            num_threads;
+
+          thread_status=status;
+          if (thread_status == MagickFail)
+            continue;
+
+          num_threads=omp_get_num_threads();
+          q=GetImagePixelsEx(image,0,y,image->columns,1,&image->exception);
+          if (q == (PixelPacket *) NULL)
+            thread_status=MagickFail;
+
+          if (thread_status != MagickFail)
             {
-              MagickBool
-                classified=MagickFalse;
-
-              long
-                r,
-                g,
-                b;
-
-              r=(long) ScaleQuantumToChar(q[x].red);
-              g=(long) ScaleQuantumToChar(q[x].green);
-              b=(long) ScaleQuantumToChar(q[x].blue);
-
-              for (count=0; count < number_clusters; count++)
-                if ((r >= (cluster_array[count]->red.left-SafeMargin)) &&
-                    (r <= (cluster_array[count]->red.right+SafeMargin)) &&
-                    (g >= (cluster_array[count]->green.left-SafeMargin)) &&
-                    (g <= (cluster_array[count]->green.right+SafeMargin)) &&
-                    (b >= (cluster_array[count]->blue.left-SafeMargin)) &&
-                    (b <= (cluster_array[count]->blue.right+SafeMargin)))
-                  {
-                    /*
-                      Classify this pixel.
-                    */
-                    indexes[x]=(IndexPacket) cluster_array[count]->id;
-                    q[x]=image->colormap[indexes[x]];
-                    classified=MagickTrue;
-
-                    /*
-                      Re-sort array so that most frequent occurs first.
-
-                      Updating cluster_array causes a multithread race
-                      condition so this chunk is only enabled in the
-                      case of one thread.
-                    */
-                    if ((num_threads == 1) && (count > 0) &&
-                        (cluster_array[count]->count > cluster_array[count-1]->count))
-                      {
-                        Cluster
-                          *tmp_cluster;
-
-                        tmp_cluster=cluster_array[count-1];
-                        cluster_array[count-1]=cluster_array[count];
-                        cluster_array[count]=tmp_cluster;
-                      }
-
-                    break;
-                  }
-              if (classified == MagickFalse)
+              indexes=AccessMutableIndexes(image);
+              for (x=0; x < (long) image->columns; x++)
                 {
-                  double
-                    local_minima,
-                    sum;
+                  MagickBool
+                    classified=MagickFalse;
 
                   long
-                    j,
-                    k;
+                    r,
+                    g,
+                    b;
 
-                  /*
-                    Compute fuzzy membership.
-                  */
-                  local_minima=0.0;
-                  for (j=0; j < (long) image->colors; j++)
+                  r=(long) ScaleQuantumToChar(q[x].red);
+                  g=(long) ScaleQuantumToChar(q[x].green);
+                  b=(long) ScaleQuantumToChar(q[x].blue);
+
+                  for (count=0; count < number_clusters; count++)
+                    if ((r >= (cluster_array[count]->red.left-SafeMargin)) &&
+                        (r <= (cluster_array[count]->red.right+SafeMargin)) &&
+                        (g >= (cluster_array[count]->green.left-SafeMargin)) &&
+                        (g <= (cluster_array[count]->green.right+SafeMargin)) &&
+                        (b >= (cluster_array[count]->blue.left-SafeMargin)) &&
+                        (b <= (cluster_array[count]->blue.right+SafeMargin)))
+                      {
+                        /*
+                          Classify this pixel.
+                        */
+                        indexes[x]=(IndexPacket) cluster_array[count]->id;
+                        q[x]=image->colormap[indexes[x]];
+                        classified=MagickTrue;
+
+                        /*
+                          Re-sort array so that most frequent occurs first.
+
+                          Updating cluster_array causes a multithread race
+                          condition so this chunk is only enabled in the
+                          case of one thread.
+                        */
+                        if ((num_threads == 1) && (count > 0) &&
+                            (cluster_array[count]->count > cluster_array[count-1]->count))
+                          {
+                            Cluster
+                              *tmp_cluster;
+
+                            tmp_cluster=cluster_array[count-1];
+                            cluster_array[count-1]=cluster_array[count];
+                            cluster_array[count]=tmp_cluster;
+                          }
+
+                        break;
+                      }
+                  if (classified == MagickFalse)
                     {
                       double
-                        distance_squared,
-                        numerator,
-                        ratio_squared;
+                        local_minima,
+                        sum;
 
-                      sum=0.0;
-                      p=image->colormap+j;
-                      distance_squared=
-                        squares[r-(long) ScaleQuantumToChar(p->red)]+
-                        squares[g-(long) ScaleQuantumToChar(p->green)]+
-                        squares[b-(long) ScaleQuantumToChar(p->blue)];
-                      numerator=distance_squared;
-                      for (k=0; k < (long) image->colors; k++)
+                      long
+                        j,
+                        k;
+
+                      /*
+                        Compute fuzzy membership.
+                      */
+                      local_minima=0.0;
+                      for (j=0; j < (long) image->colors; j++)
                         {
-                          p=image->colormap+k;
+                          double
+                            distance_squared,
+                            numerator,
+                            ratio_squared;
+
+                          sum=0.0;
+                          p=image->colormap+j;
                           distance_squared=
                             squares[r-(long) ScaleQuantumToChar(p->red)]+
                             squares[g-(long) ScaleQuantumToChar(p->green)]+
                             squares[b-(long) ScaleQuantumToChar(p->blue)];
-                          ratio_squared=numerator/distance_squared;;
+                          numerator=distance_squared;
+                          for (k=0; k < (long) image->colors; k++)
+                            {
+                              p=image->colormap+k;
+                              distance_squared=
+                                squares[r-(long) ScaleQuantumToChar(p->red)]+
+                                squares[g-(long) ScaleQuantumToChar(p->green)]+
+                                squares[b-(long) ScaleQuantumToChar(p->blue)];
+                              ratio_squared=numerator/distance_squared;;
 #if SquaredClassify
-                          /*
-                            Since SquaredClassify (using a weighting
-                            exponent of 2.0) is normally defined to be
-                            true, this is the normally active code.
-                            Otherwise execution is even slower since
-                            pow() is excruciatingly slow.
-                          */
-                          sum+=ratio_squared;
+                              /*
+                                Since SquaredClassify (using a weighting
+                                exponent of 2.0) is normally defined to be
+                                true, this is the normally active code.
+                                Otherwise execution is even slower since
+                                pow() is excruciatingly slow.
+                              */
+                              sum+=ratio_squared;
 #else
-                          sum+=pow(ratio_squared,((double) (1.0/(weighting_exponent-1.0))));
+                              sum+=pow(ratio_squared,((double) (1.0/(weighting_exponent-1.0))));
 #endif
-                        }
-                      if ((sum != 0.0) && ((1.0/sum) > local_minima))
-                        {
-                          /*
-                            Classify this pixel.
-                          */
-                          local_minima=1.0/sum;
-                          indexes[x]=(IndexPacket) j;
-                          q[x]=image->colormap[indexes[x]];
+                            }
+                          if ((sum != 0.0) && ((1.0/sum) > local_minima))
+                            {
+                              /*
+                                Classify this pixel.
+                              */
+                              local_minima=1.0/sum;
+                              indexes[x]=(IndexPacket) j;
+                              q[x]=image->colormap[indexes[x]];
+                            }
                         }
                     }
                 }
+              if (!SyncImagePixelsEx(image,&image->exception))
+                thread_status=MagickFail;
             }
-          if (!SyncImagePixelsEx(image,&image->exception))
-            thread_status=MagickFail;
-        }
+
+          if (monitor_active)
+            {
+              unsigned long
+                thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count+image->rows,image->rows << 1,
-                                    &image->exception,
-                                    SegmentImageText,image->filename))
-          thread_status=MagickFail;
+              row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+              thread_row_count=row_count;
+              if (QuantumTick(thread_row_count,image->rows))
+                if (!MagickMonitorFormatted(thread_row_count+image->rows,image->rows << 1,
+                                            &image->exception,
+                                            SegmentImageText,image->filename))
+                  thread_status=MagickFail;
+            }
 
-      if (thread_status == MagickFail)
-        {
-          status=MagickFail;
+          if (thread_status == MagickFail)
+            {
+              status=MagickFail;
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (status)
 #endif
+            }
         }
-    }
-  /*
-    Free memory.
-  */
+      /*
+        Free memory.
+      */
  classify_error_exit:
-  for (cluster=head; cluster != (Cluster *) NULL; cluster=next_cluster)
-    {
-      next_cluster=cluster->next;
-      MagickFreeMemory(cluster);
-      head=(Cluster *) NULL;
-    }
-  MagickFreeMemory(cluster_array);
-  MagickFreeMemory(squares_array);
-  return(status);
+      for (cluster=head; cluster != (Cluster *) NULL; cluster=next_cluster)
+        {
+          next_cluster=cluster->next;
+          MagickFreeMemory(cluster);
+          head=(Cluster *) NULL;
+        }
+      MagickFreeMemory(cluster_array);
+      MagickFreeMemory(squares_array);
+      return(status);
 }
 
 /*

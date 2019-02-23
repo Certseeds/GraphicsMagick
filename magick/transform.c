@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -88,6 +88,9 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   long
     y;
 
@@ -137,6 +140,8 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
   /*
     Extract chop image.
   */
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)  && !defined(DisableSlowOpenMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -192,14 +197,26 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
           if (!SyncImagePixelsEx(chop_image,exception))
             thread_status=MagickFail;
         }
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp atomic
 #endif
       row_count++;
-      if (QuantumTick(row_count,chop_image->rows))
-        if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
-                                    ChopImageText,image->filename))
-          thread_status=MagickFail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,chop_image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,chop_image->rows,exception,
+                                        ChopImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -267,14 +284,26 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
           if (!SyncImagePixelsEx(chop_image,exception))
             thread_status=MagickFail;
         }
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp atomic
 #endif
       row_count++;
-      if (QuantumTick(row_count,chop_image->rows))
-        if (!MagickMonitorFormatted(row_count,chop_image->rows,exception,
-                                    ChopImageText,image->filename))
-          thread_status=MagickFail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,chop_image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,chop_image->rows,exception,
+                                        ChopImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -455,6 +484,9 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   long
     y;
 
@@ -536,6 +568,9 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
   crop_image->page=page;
   if ((geometry->width == 0) || (geometry->height == 0))
     (void) memset(&crop_image->page,0,sizeof(RectangleInfo));
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -581,17 +616,29 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
           if (!SyncImagePixelsEx(crop_image,exception))
             thread_status=MagickFail;
         }
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  pragma omp atomic
 #endif
       row_count++;
-      if (QuantumTick(row_count,crop_image->rows))
-        if (!MagickMonitorFormatted(row_count,crop_image->rows,exception,
-                                    "[%s] Crop: %lux%lu+%ld+%ld...",
-                                    crop_image->filename,
-                                    crop_image->columns,crop_image->rows,
-                                    page.x,page.y))
-          thread_status=MagickFail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,crop_image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,crop_image->rows,exception,
+                                        "[%s] Crop: %lux%lu+%ld+%ld...",
+                                        crop_image->filename,
+                                        crop_image->columns,crop_image->rows,
+                                        page.x,page.y))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -984,6 +1031,9 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   long
     y;
 
@@ -1003,8 +1053,8 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
                         MagickMsg(OptionError,NonzeroWidthAndHeightRequired));
 
   if (((((size_t) Max(sizeof(PixelPacket),sizeof(IndexPacket)))*image->columns)/
-        image->columns) != Max(sizeof(PixelPacket),sizeof(IndexPacket)))
-      ThrowImageException(ImageError,WidthOrHeightExceedsLimit,image->filename);
+       image->columns) != Max(sizeof(PixelPacket),sizeof(IndexPacket)))
+    ThrowImageException(ImageError,WidthOrHeightExceedsLimit,image->filename);
 
   flip_image=CloneImage(image,image->columns,image->rows,True,exception);
   if (flip_image == (Image *) NULL)
@@ -1012,6 +1062,9 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
   /*
     Flip each row.
   */
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -1061,10 +1114,21 @@ MagickExport Image *FlipImage(const Image *image,ExceptionInfo *exception)
 #  pragma omp atomic
 #endif
       row_count++;
-      if (QuantumTick(row_count,flip_image->rows))
-        if (!MagickMonitorFormatted(row_count,flip_image->rows,exception,
-                                    FlipImageText,image->filename))
-          thread_status=MagickFail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,flip_image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,flip_image->rows,exception,
+                                        FlipImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1119,6 +1183,9 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   long
     y;
 
@@ -1138,6 +1205,9 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
   /*
     Flop each row.
   */
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -1195,10 +1265,21 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
 #  pragma omp atomic
 #endif
       row_count++;
-      if (QuantumTick(row_count,flop_image->rows))
-        if (!MagickMonitorFormatted(row_count,flop_image->rows,exception,
-                                    FlopImageText,image->filename))
-          thread_status=MagickFail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,flop_image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,flop_image->rows,exception,
+                                        FlopImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {

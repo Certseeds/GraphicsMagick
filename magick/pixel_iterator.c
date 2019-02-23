@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2004-2018 GraphicsMagick Group
+  Copyright (C) 2004-2019 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -192,11 +192,16 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,GetPixelCacheInCore(image),columns,rows);
 #else
   (void) options;
 #endif /* defined(HAVE_OPENMP) */
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
@@ -228,14 +233,24 @@ PixelIterateMonoRead(PixelIteratorMonoReadCallback call_back,
       if (thread_status != MagickFail)
         thread_status=(call_back)(mutable_data,immutable_data,image,pixels,indexes,columns,exception);
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,rows))
-        if (!MagickMonitorFormatted(row_count,rows,exception,
-                                    description,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,rows))
+            if (!MagickMonitorFormatted(thread_row_count,rows,exception,
+                                        description,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -332,6 +347,9 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,GetPixelCacheInCore(image),columns,rows);
 #else
@@ -340,6 +358,8 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
 
   if (ModifyCache(image,exception) == MagickFail)
     return MagickFail;
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
@@ -371,14 +391,25 @@ PixelIterateMonoModifyImplementation(PixelIteratorMonoModifyCallback call_back,
         goto mono_modify_fail;
       if (!SyncImagePixelsEx(image,exception))
         goto mono_modify_fail;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,rows))
-        if (!MagickMonitorFormatted(row_count,rows,exception,
-                                    description,image->filename))
-          goto mono_modify_fail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,rows))
+            if (!MagickMonitorFormatted(thread_row_count,rows,exception,
+                                        description,image->filename))
+              goto mono_modify_fail;
+        }
 
       /* Continue loop processing */
       continue;
@@ -596,6 +627,9 @@ PixelIterateDualRead(PixelIteratorDualReadCallback call_back,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
                                    (GetPixelCacheInCore(first_image) &&
@@ -604,6 +638,8 @@ PixelIterateDualRead(PixelIteratorDualReadCallback call_back,
 #else
   (void) options;
 #endif /* defined(HAVE_OPENMP) */
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
@@ -654,15 +690,25 @@ PixelIterateDualRead(PixelIteratorDualReadCallback call_back,
                                   second_image,second_pixels,second_indexes,
                                   columns, exception);
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,rows))
-        if (!MagickMonitorFormatted(row_count,rows,exception,
-                                    description,first_image->filename,
-                                    second_image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,rows))
+            if (!MagickMonitorFormatted(thread_row_count,rows,exception,
+                                        description,first_image->filename,
+                                        second_image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -768,6 +814,9 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
                                    (GetPixelCacheInCore(source_image) &&
@@ -779,6 +828,8 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
 
   if (ModifyCache(update_image,exception) == MagickFail)
     return MagickFail;
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
@@ -841,15 +892,25 @@ PixelIterateDualImplementation(PixelIteratorDualModifyCallback call_back,
         if (!SyncImagePixelsEx(update_image,exception))
           thread_status=MagickFail;
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,rows))
-        if (!MagickMonitorFormatted(row_count,rows,exception,
-                                    description,source_image->filename,
-                                    update_image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,rows))
+            if (!MagickMonitorFormatted(thread_row_count,rows,exception,
+                                        description,source_image->filename,
+                                        update_image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1075,6 +1136,9 @@ PixelIterateTripleImplementation(PixelIteratorTripleModifyCallback call_back,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
 #if defined(HAVE_OPENMP)
   int num_threads=GetRegionThreads(options,
                                    (GetPixelCacheInCore(source1_image) &&
@@ -1087,6 +1151,8 @@ PixelIterateTripleImplementation(PixelIteratorTripleModifyCallback call_back,
 
   if (ModifyCache(update_image,exception) == MagickFail)
     return MagickFail;
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
@@ -1170,16 +1236,26 @@ PixelIterateTripleImplementation(PixelIteratorTripleModifyCallback call_back,
         if (!SyncImagePixelsEx(update_image,exception))
           thread_status=MagickFail;
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,rows))
-        if (!MagickMonitorFormatted(row_count,rows,exception,description,
-                                    source1_image->filename,
-                                    source2_image->filename,
-                                    update_image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,rows))
+            if (!MagickMonitorFormatted(thread_row_count,rows,exception,description,
+                                        source1_image->filename,
+                                        source2_image->filename,
+                                        update_image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
