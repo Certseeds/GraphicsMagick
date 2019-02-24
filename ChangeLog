@@ -1,3 +1,9 @@
+2019-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReallocColormap): Make sure that there is not a
+	heap overwrite if the number of colors has been reduced.  Thanks
+	to Jaroslav Fojtik for giving me a heads up about this.
+
 2019-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/monitor.c (MagickMonitorActive): Add new private function

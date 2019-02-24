@@ -243,7 +243,7 @@ static MagickPassFail ReallocColormap(Image *image,size_t colors)
   colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
   if (colormap != (PixelPacket *) NULL)
     {
-      (void) memcpy(colormap,image->colormap,image->colors*sizeof(PixelPacket));
+      (void) memcpy(colormap,image->colormap,Min(image->colors,colors)*sizeof(PixelPacket));
       MagickFreeMemory(image->colormap);
       image->colormap = colormap;
       image->colors = colors;
