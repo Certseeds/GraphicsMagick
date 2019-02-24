@@ -1,5 +1,10 @@
 2019-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image-private.h (_ImageExtra): Put ImageExtra definition
+	in a private header file so that its definition may be accessed
+	directly by library internals.  Add some accessor macros to
+	provide access and update code to use them.
+
 	* coders/wpg.c (ReallocColormap): Make sure that there is not a
 	heap overwrite if the number of colors has been reduced.  Thanks
 	to Jaroslav Fojtik for giving me a heads up about this.

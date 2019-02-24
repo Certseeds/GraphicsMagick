@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2019 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -1105,6 +1105,8 @@ extern MagickExport Image
 #  define SETMAGICK_WRITE    0x00004 /* Filespec will be written */
 #  define SETMAGICK_RECTIFY  0x00008 /* Look for adjoin in filespec */
 #endif /* defined(MAGICK_IMPLEMENTATION) */
+
+#include "image-private.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

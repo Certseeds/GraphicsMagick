@@ -97,31 +97,18 @@ MagickParseSubImageSpecification(const char *subimage_spec,
                                  unsigned long *subrange_ptr,
                                  MagickBool allow_geometry);
 
-/*
-  ImageExtra allows for expansion of Image without increasing its
-  size.  The internals are defined only in this source file.  Clients
-  outside of this source file can access the internals via the provided
-  access functions (see below).
-*/
-typedef struct _ImageExtra
-{
-  Image
-    *clip_mask,       /* Private, clipping mask to apply when updating pixels */
-    *composite_mask;  /* Private, compositing mask to apply when updating pixels */
-} ImageExtra;
-
 /* provide public access to the clip_mask member of Image */
 MagickExport Image **
 ImageGetClipMask(const Image * image)
 {
-  return(&image->extra->clip_mask);
+  return ImageGetClipMaskInlined(image);
 }
 
 /* provide public access to the composite_mask member of Image */
 MagickExport Image **
 ImageGetCompositeMask(const Image * image)
 {
-  return(&image->extra->composite_mask);
+  return ImageGetCompositeMaskInlined(image);
 }
 
 /* Round floating value to an integer */

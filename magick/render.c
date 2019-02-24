@@ -1697,7 +1697,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   */
   if (attribute == (ImageAttribute *) NULL)
     return(MagickPass);
-  image_clip_mask = *ImageGetClipMask(image);
+  image_clip_mask = *ImageGetClipMaskInlined(image);
   if (image_clip_mask == (Image *) NULL)
     {
       Image
@@ -1711,7 +1711,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       DestroyImage(clip_mask);
       if (status == MagickFail)
         return(MagickFail);
-      image_clip_mask = *ImageGetClipMask(image);
+      image_clip_mask = *ImageGetClipMaskInlined(image);
     }
   else
     {
@@ -1835,7 +1835,7 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
   attribute=GetImageAttribute(image,composite_path);
   if (attribute == (ImageAttribute *) NULL)
     return(MagickFail);
-  image_composite_mask = *ImageGetCompositeMask(image);
+  image_composite_mask = *ImageGetCompositeMaskInlined(image);
   if (image_composite_mask == (Image *) NULL)
     {
       Image
@@ -1847,7 +1847,7 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
         return(MagickFail);
       status=SetImageCompositeMask(image,composite_mask);
       DestroyImage(composite_mask);
-      image_composite_mask = *ImageGetCompositeMask(image);
+      image_composite_mask = *ImageGetCompositeMaskInlined(image);
       if (status == MagickFail)
         return(MagickFail);
     }

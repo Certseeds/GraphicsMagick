@@ -38,6 +38,10 @@
 <p>2019-02-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/image-private.h (_ImageExtra): Put ImageExtra definition
+in a private header file so that its definition may be accessed
+directly by library internals.  Add some accessor macros to
+provide access and update code to use them.</li>
 <li>coders/wpg.c (ReallocColormap): Make sure that there is not a
 heap overwrite if the number of colors has been reduced.  Thanks
 to Jaroslav Fojtik for giving me a heads up about this.</li>

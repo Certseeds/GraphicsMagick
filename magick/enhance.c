@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1258,7 +1258,7 @@ MagickExport MagickPassFail NegateImage(Image *image,const unsigned int grayscal
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   is_grayscale=image->is_grayscale;
-  if (*ImageGetClipMask(image))
+  if (*ImageGetClipMaskInlined(image))
     image->storage_class=DirectClass;
 
   if (image->storage_class == PseudoClass)

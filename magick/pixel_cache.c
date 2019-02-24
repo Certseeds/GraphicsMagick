@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1408,7 +1408,7 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
                   nexus_info->region.width,nexus_info->region.height,
                   image_nexus,&image->exception);
   q=nexus_info->pixels;
-  clip_mask = *ImageGetClipMask(image);
+  clip_mask = *ImageGetClipMaskInlined(image);
   r=AcquireCacheNexus(clip_mask,nexus_info->region.x,nexus_info->region.y,
                       nexus_info->region.width,nexus_info->region.height,mask_nexus,
                       &image->exception);
@@ -1510,7 +1510,7 @@ CompositeCacheNexus(Image *image,const NexusInfo *nexus_info)
   /* get foreground pixels */
   q=nexus_info->pixels;
   /* get composite mask */
-  composite_mask = *ImageGetCompositeMask(image);
+  composite_mask = *ImageGetCompositeMaskInlined(image);
   r=AcquireCacheNexus(composite_mask,nexus_info->region.x,nexus_info->region.y,
                       nexus_info->region.width,nexus_info->region.height,mask_nexus,
                       &image->exception);
@@ -1677,10 +1677,10 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
         Unoptimized pixel cache clone.
       */
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),"unoptimized clone");
-      ppclone_clip_mask = ImageGetClipMask(clone_image);
+      ppclone_clip_mask = ImageGetClipMaskInlined(clone_image);
       clip_mask=*ppclone_clip_mask;
       *ppclone_clip_mask=(Image *) NULL;
-      ppclone_composite_mask = ImageGetCompositeMask(clone_image);
+      ppclone_composite_mask = ImageGetCompositeMaskInlined(clone_image);
       composite_mask=*ppclone_composite_mask;
       *ppclone_composite_mask=(Image *) NULL;
       length=Min(image->columns,clone_image->columns);
@@ -1709,8 +1709,8 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
                 break;
             }
         }
-      *ImageGetClipMask(clone_image)=clip_mask;
-      *ImageGetCompositeMask(clone_image)=composite_mask;
+      *ImageGetClipMaskInlined(clone_image)=clip_mask;
+      *ImageGetCompositeMaskInlined(clone_image)=composite_mask;
       CloseCacheView(image_view);
       CloseCacheView(clone_view);
       return(y == (long) image->rows);
@@ -4357,8 +4357,8 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
         (region->x == 0) &&
         (region->width == cache_info->columns)
         )) &&
-      (*ImageGetClipMask(image) == (const Image *) NULL) &&
-      (*ImageGetCompositeMask(image) == (const Image *) NULL))
+      (*ImageGetClipMaskInlined(image) == (const Image *) NULL) &&
+      (*ImageGetCompositeMaskInlined(image) == (const Image *) NULL))
     {
       /*
         Pixels are accessed directly from memory.
@@ -4519,13 +4519,13 @@ SyncCacheNexus(Image *image,const NexusInfo *nexus_info,
     }
   else
     {
-      if (*ImageGetClipMask(image) != (Image *) NULL)
+      if (*ImageGetClipMaskInlined(image) != (Image *) NULL)
         if (!ClipCacheNexus(image,nexus_info))
           status=MagickFail;
     /* added mask */
     if  ( status != MagickFail )
       {
-        if (*ImageGetCompositeMask(image) != (Image *) NULL)
+        if (*ImageGetCompositeMaskInlined(image) != (Image *) NULL)
           {
             if (!CompositeCacheNexus(image,nexus_info))
               status=MagickFail;
