@@ -2,6 +2,9 @@
 
 	* magick/image.h ("C"): Include as "magick/image-private.h" as the
 	other headers are.
+	("C"): Include "magick/image-private.h" inside the protective
+	MAGICK_IMPLEMENTATION guard, as it should have been.  This error
+	broke the oss-fuzz build.
 
 2019-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

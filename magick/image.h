@@ -1104,9 +1104,10 @@ extern MagickExport Image
 #  define SETMAGICK_READ     0x00002 /* Filespec will be read */
 #  define SETMAGICK_WRITE    0x00004 /* Filespec will be written */
 #  define SETMAGICK_RECTIFY  0x00008 /* Look for adjoin in filespec */
-#endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #include "magick/image-private.h"
+
+#endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
