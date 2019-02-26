@@ -1106,7 +1106,7 @@ extern MagickExport Image
 #  define SETMAGICK_RECTIFY  0x00008 /* Look for adjoin in filespec */
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
-#include "image-private.h"
+#include "magick/image-private.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
