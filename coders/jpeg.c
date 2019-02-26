@@ -131,7 +131,7 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
   indications, which may be confusing for the user.  However, the
   libjpeg method provides more detailed progress.
 */
-#define USE_LIBJPEG_PROGRESS 0 // Use libjpeg callback for progress
+#define USE_LIBJPEG_PROGRESS 0 /* Use libjpeg callback for progress */
 
 static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
 
