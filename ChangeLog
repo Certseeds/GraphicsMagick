@@ -1,5 +1,11 @@
 2019-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/topol.c (ReadTOPOLImage): Report a corrupt image
+	exception "Unexpected end-of-file" if reader encounters end of
+	file while reading header rows.  Addresses oss-fuzz 7981
+	"graphicsmagick/coder_TOPOL_fuzzer: Use-of-uninitialized-value in
+	InsertRow". (Credit to OSS-Fuzz)
+
 	* coders/mat.c (ReadMATImage): Report a corrupt image exception
 	"Unexpected end-of-file" if reader encounters end of file while
 	reading scanlines.  Also added some helpful traces.  Hopefully
