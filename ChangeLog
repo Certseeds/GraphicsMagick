@@ -1,3 +1,11 @@
+2019-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (ReadMATImage): Report a corrupt image exception
+	"Unexpected end-of-file" if reader encounters end of file while
+	reading scanlines.  Also added some helpful traces.  Hopefully
+	addresses oss-fuzz 13445 "graphicsmagick/coder_MAT_fuzzer:
+	Use-of-uninitialized-value in IsGrayImage". (Credit to OSS-Fuzz)
+
 2019-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/image.h ("C"): Include as "magick/image-private.h" as the
