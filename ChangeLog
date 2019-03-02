@@ -1,5 +1,9 @@
 2019-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (OpenCache): Use unsigned 64-bit value to
+	store CacheInfo offset and length as well as for the total pixels
+	calculation.  Add some more arithmetic overflow detections.
+
 	* coders/topol.c (ReadTOPOLImage): Report a corrupt image
 	exception "Unexpected end-of-file" if reader encounters end of
 	file while reading header rows.  Addresses oss-fuzz 7981

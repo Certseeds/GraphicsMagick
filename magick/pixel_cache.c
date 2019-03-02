@@ -93,7 +93,7 @@
 extern "C" {
 #endif
 
-  typedef magick_off_t pixel_off_t;
+  typedef magick_uint64_t pixel_off_t;
 
   /*
     Read only access to a linear pixel region.
@@ -147,11 +147,11 @@ typedef struct _CacheInfo
   /* Image height */
   unsigned long rows;
 
-  /* Offset to pixels in cache file */
-  magick_off_t offset;
+  /* Offset to pixels in cache file (constrained to positive range of magick_off_t) */
+  magick_uint64_t offset;
 
-  /* Length of pixels region */
-  magick_off_t length;
+  /* Length of pixels region (constrained to positive range of magick_off_t) */
+  magick_uint64_t length;
 
   /* Image pixels if memory resident */
   PixelPacket *pixels;
@@ -1635,7 +1635,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
     cache_file,
     clone_file;
 
-  register magick_off_t
+  register magick_uint64_t
     offset;
 
   size_t
@@ -1855,7 +1855,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
   for (offset=0, length=0; (count=read(cache_file,buffer,MaxBufferSize)) > 0; )
     {
       length=(size_t) count;
-      for (offset=0; offset < (magick_off_t) length; offset+=count)
+      for (offset=0; offset < length; offset+=count)
         {
           size_t
             requested_io_size;
@@ -1873,7 +1873,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
           if (count <= 0)
             break;
         }
-      if (offset < (magick_off_t) length)
+      if (offset < length)
         break;
     }
   if (cache_info->file == -1)
@@ -1882,7 +1882,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
     (void) close(clone_file);
 
   MagickFreeMemory(buffer);
-  if (offset < (magick_off_t) length)
+  if (offset < length)
     {
       status=MagickFail;
       ThrowException(exception,CacheError,UnableToCloneCache,image->filename);
@@ -3164,9 +3164,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
     *cache_info;
 
   magick_uint64_t
-    number_pixels;
-
-  magick_off_t
+    number_pixels,
     offset;
 
   int
@@ -3193,9 +3191,15 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   assert(cache_info->signature == MagickSignature);
   FormatString(cache_info->filename,"%.1024s[%ld]",image->filename,
                image->scene /*GetImageIndexInList(image)*/);
+  number_pixels=(magick_uint64_t) image->columns*image->rows;
+  if (number_pixels/image->columns != image->rows)
+    {
+      ThrowException(exception,ResourceLimitError,PixelCacheAllocationFailed,
+                     image->filename);
+      return MagickFail;
+    }
   cache_info->rows=image->rows;
   cache_info->columns=image->columns;
-  number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
   if (cache_info->storage_class != UndefinedClass)
     {
       /*
@@ -3272,7 +3276,8 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   if (cache_info->indexes_valid)
     packet_size+=sizeof(IndexPacket);
   offset=number_pixels*packet_size;
-  if (cache_info->columns != (offset/cache_info->rows/packet_size))
+  if ((cache_info->columns != (offset/cache_info->rows/packet_size)) ||
+      ((magick_uint64_t) ((magick_off_t) offset) != offset))
     {
       ThrowException(exception,ResourceLimitError,PixelCacheAllocationFailed,
                      image->filename);
@@ -3282,8 +3287,9 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   /*
     Attempt to create pixel cache in memory
   */
-  offset=number_pixels*(sizeof(PixelPacket)+sizeof(IndexPacket)); /* FIXME */
-  if ((offset == (magick_off_t) ((size_t) offset)) &&
+  offset=number_pixels*(sizeof(PixelPacket)+sizeof(IndexPacket));
+  if ((offset/number_pixels == (sizeof(PixelPacket)+sizeof(IndexPacket))) &&
+      (offset == (magick_uint64_t) ((size_t) offset)) &&
       ((cache_info->type == UndefinedCache) ||
        (cache_info->type == MemoryCache)) &&
       (AcquireMagickResource(MemoryResource,offset)))
@@ -3368,13 +3374,13 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
       ThrowException(exception,CacheError,UnableToOpenCache,image->filename);
       return MagickFail;
     }
-  if (!ExtendCache(file,cache_info->offset+cache_info->length))
+  if (!ExtendCache(file,(magick_off_t) cache_info->length+cache_info->offset))
     {
       (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                             "Unable to extend pixel cache from %"
-                            MAGICK_OFF_F "d bytes "
-                            "by %" MAGICK_OFF_F "d bytes "
-                            "to %" MAGICK_OFF_F "d bytes",
+                            MAGICK_UINT64_F "u bytes "
+                            "by %" MAGICK_UINT64_F "u bytes "
+                            "to %" MAGICK_UINT64_F "u bytes",
                             cache_info->length,
                             cache_info->offset,
                             cache_info->offset+cache_info->length);
@@ -3391,7 +3397,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   cache_info->colorspace=image->colorspace;
   cache_info->type=DiskCache;
   if ((cache_info->length > MinBlobExtent) &&
-      (cache_info->length == (magick_off_t) ((size_t) cache_info->length)) &&
+      (cache_info->length == ((size_t) cache_info->length)) &&
       AcquireMagickResource(MapResource,cache_info->length))
     {
       pixels=(PixelPacket *) MapBlob(file,mode,(off_t) cache_info->offset,
@@ -4448,7 +4454,7 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
           magick_off_t
             offset;
 
-          offset=nexus_info->region.y*
+          offset=nexus_info->region.y* /* FIXME: oss-fuzz 13210 signed integer overflow */
             (magick_off_t) cache_info->columns+nexus_info->region.x;
           if (nexus_info->pixels == (cache_info->pixels+offset))
             nexus_info->in_core=MagickTrue;
