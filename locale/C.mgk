@@ -1339,6 +1339,15 @@
         <Message name="ImagePixelHeightLimitExceeded">
           Image pixel height limit exceeded (see -limit Height)
         </Message>
+        <Message name="NexusPixelLimitExceeded">
+          Pixel nexus limit exceeded (see -limit Pixels)
+        </Message>
+        <Message name="NexusPixelWidthLimitExceeded">
+          Pixel nexus width limit exceeded (see -limit Width)
+        </Message>
+        <Message name="NexusPixelHeightLimitExceeded">
+          Pixel nexus height limit exceeded (see -limit Height)
+        </Message>
         <Message name="MemoryAllocationFailed">
           Memory allocation failed
         </Message>

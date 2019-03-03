@@ -1,3 +1,15 @@
+2019-03-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): Apply resource limits to pixel
+	nexus allocations using the same limits (total pixels, width,
+	height, memory) as applied to the whole image since some requests
+	are directly influenced by the input file.  Add yet more tests for
+	arithmetic overflow.  Whole source module is re-arranged so that
+	static functions are in order of dependency so that forward
+	prototype declarations are no longer needed.  Fixes oss-fuzz 13210
+	"graphicsmagick/coder_MVG_fuzzer: Integer-overflow in
+	SetNexus". (Credit to OSS-Fuzz)
+
 2019-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (OpenCache): Use unsigned 64-bit value to

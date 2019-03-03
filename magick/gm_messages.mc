@@ -2435,6 +2435,24 @@ Memory allocation failed
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelHeightLimitExceeded
+Language        = English
+Pixel nexus height limit exceeded (see -limit Height)
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelLimitExceeded
+Language        = English
+Pixel nexus limit exceeded (see -limit Pixels)
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelWidthLimitExceeded
+Language        = English
+Pixel nexus width limit exceeded (see -limit Width)
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorNoPixelsDefinedInCache
 Language        = English
 No pixels defined in cache

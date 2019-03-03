@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2019-03-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/pixel_cache.c (SetNexus): Apply resource limits to pixel
+nexus allocations using the same limits (total pixels, width,
+height, memory) as applied to the whole image since some requests
+are directly influenced by the input file.  Add yet more tests for
+arithmetic overflow.  Whole source module is re-arranged so that
+static functions are in order of dependency so that forward
+prototype declarations are no longer needed.  Fixes oss-fuzz 13210
+&quot;graphicsmagick/coder_MVG_fuzzer: Integer-overflow in
+SetNexus&quot;. (Credit to OSS-Fuzz)</li>
+</ul>
+</blockquote>
 <p>2019-03-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
