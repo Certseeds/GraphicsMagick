@@ -1,5 +1,8 @@
 2019-03-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* design/pixel-cache.dot: Update design dot diagram to remove
+	IsNexusInCore and add CompositeCacheNexus.
+
 	* magick/pixel_cache.c (SetNexus): Apply resource limits to pixel
 	nexus allocations using the same limits (total pixels, width,
 	height, memory) as applied to the whole image since some requests

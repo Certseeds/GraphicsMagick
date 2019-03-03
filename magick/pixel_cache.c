@@ -2013,7 +2013,7 @@ CompositeCacheNexus(Image *image,const NexusInfo *nexus_info)
     x;
 
   register PixelPacket
-    *p,	/* the background pixels */
+    *p, /* the background pixels */
     *q; /* the foreground pixels, also output */
 
   NexusInfo
