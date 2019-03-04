@@ -550,6 +550,13 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
           region->width, region->height, region->x,region->y,
           cache_info->type);
 #endif
+  if ((region->width == 0) || (region->height == 0))
+    {
+      ThrowException(exception,CacheError,EmptyCacheNexus,
+                     image->filename);
+      return (PixelPacket *) NULL;
+    }
+
   if ((cache_info->type != PingCache) &&
       (cache_info->type != DiskCache) &&
       (/* Region must entirely be in bounds of image raster */

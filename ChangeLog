@@ -1,3 +1,11 @@
+2019-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): Report error for empty region
+	rather than crashing due to divide by zero exception. This is a
+	new bug due to yesterday's changes.  Fixes oss-fuzz 13521
+	"graphicsmagick/coder_TEXT_fuzzer: Floating-point-exception in
+	SetNexus". (Credit to OSS-Fuzz)
+
 2019-03-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* design/pixel-cache.dot: Update design dot diagram to remove

@@ -71,6 +71,12 @@ default warning
 .
 
 MessageId       = +1
+SymbolicName    = CacheErrorEmptyCacheNexus
+Language        = English
+Cache nexus contains no pixels
+.
+
+MessageId       = +1
 SymbolicName    = CacheErrorInconsistentPersistentCacheDepth
 Language        = English
 Inconsistent persistent cache depth
