@@ -442,8 +442,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if (!strncmp(p,"# ImageMagick pixel enumeration:",32))
           {
-            if (sscanf(p+32,"%u,%u,%u",&x_min,&y_curr,&x_max) == 3)
+            if (sscanf(p+32,"%u,%u,%u",&x_min,&y_curr,&x_max) == 3) /* x_max-x_min+1 x_max=0 x_min=1 */
               {
+                if ((x_max == 0) || (x_max < x_min))
+                  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
                 if (strstr(p+32,",rgb")!=NULL)
                   {
                     x = x_min-1;
@@ -759,7 +761,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
 
             /* A new line has been detected */
-            if (y != y_curr)
+            if ((y != y_curr) && (x_max >= x_min))
               {
                 q = SetImagePixels(image,x_min,y_curr,x_max-x_min+1,1);
                 if (q == (PixelPacket *)NULL)

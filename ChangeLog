@@ -1,5 +1,10 @@
 2019-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/txt.c (ReadTXTImage): Don't start new line if x_max <
+	x_min.  Avoids calling SetImagePixels() with a width of zero.
+	Related to oss-fuzz 13521 "graphicsmagick/coder_TEXT_fuzzer:
+	Floating-point-exception in SetNexus". (Credit to OSS-Fuzz)
+
 	* magick/pixel_cache.c (SetNexus): Report error for empty region
 	rather than crashing due to divide by zero exception. This is a
 	new bug due to yesterday's changes.  Fixes oss-fuzz 13521
