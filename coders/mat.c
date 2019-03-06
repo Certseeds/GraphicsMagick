@@ -1188,6 +1188,9 @@ ExitLoop:
         if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "Failed to read all scanlines (failed at row %d of %u rows, z=%d)",
                                           i+1, (unsigned) MATLAB_HDR.SizeY, z);
+        /* Avoid returning partially read image, which contains uninitialized data */
+        /* goto skip_reading_current; */
+        goto END_OF_READING;
       }
 
 
@@ -1214,14 +1217,16 @@ ExitLoop:
       if (CellType==miDOUBLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff);
+          if ((long) ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff) != ldblk)
+            ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
 
       if (CellType==miSINGLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff);
+          if ((long) ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff) != ldblk)
+            ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
     }
@@ -1293,8 +1298,8 @@ skip_reading_current:
 
   }
 
-  MagickFreeMemory(BImgBuff);
 END_OF_READING:
+  MagickFreeMemory(BImgBuff);
   CloseBlob(image);
 
   {

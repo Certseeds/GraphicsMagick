@@ -1,3 +1,10 @@
+2019-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (ReadMATImage): Quit if image scanlines are not
+	fully populated due to exception.  Fixes oss-fuzz 13530
+	"graphicsmagick/coder_MAT_fuzzer: Use-of-uninitialized-value in
+	InsertComplexFloatRow". (Credit to OSS-Fuzz)
+
 2019-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/txt.c (ReadTXTImage): Don't start new line if x_max <
