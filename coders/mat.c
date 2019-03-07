@@ -455,6 +455,7 @@ UnlinkFile:
   } \
   if(clone_info) \
     DestroyImageInfo(clone_info);    \
+  MagickFreeMemory(BImgBuff); \
   ThrowReaderException(code_,reason_,image_); \
 }
 

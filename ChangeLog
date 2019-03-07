@@ -1,3 +1,9 @@
+2019-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (ReadMATImage): Fix memory leak on unexpected end
+	of file.  Fixes oss-fuzz 13556 "graphicsmagick/coder_MAT_fuzzer:
+	Direct-leak in ReadMATImage". (Credit to OSS-Fuzz)
+
 2019-03-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c (ReadMATImage): Quit if image scanlines are not
