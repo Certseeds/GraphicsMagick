@@ -1,5 +1,9 @@
 2019-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/import.c (ImportViewPixelArea): If range between max and
+	min is less than MagickEpsilon, produce a black image rather than
+	throwing an exception.
+
 	* coders/mat.c (ReadMATImage): Fix memory leak on unexpected end
 	of file.  Fixes oss-fuzz 13556 "graphicsmagick/coder_MAT_fuzzer:
 	Direct-leak in ReadMATImage". (Credit to OSS-Fuzz)
