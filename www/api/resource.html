@@ -99,16 +99,17 @@ magick_uint64_t GetMagickResource( const <a class="reference external" href="../
 <div class="section" id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-magick_uint64_t GetMagickResourceLimit( const <a class="reference external" href="../api/types.html#resourcetype">ResourceType</a> type );
+magick_int64_t GetMagickResourceLimit( const <a class="reference external" href="../api/types.html#resourcetype">ResourceType</a> type );
 </pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
 <p>GetMagickResourceLimit() returns the current maximum limit for the
-specified resource type.</p>
+specified resource type.  Returns a maximum 64-bit integer value if
+the resource has not been limited.</p>
 <p>The format of the GetMagickResourceLimit() method is:</p>
 <pre class="literal-block">
-magick_uint64_t GetMagickResourceLimit( const <a class="reference external" href="../api/types.html#resourcetype">ResourceType</a> type );
+magick_int64_t GetMagickResourceLimit( const <a class="reference external" href="../api/types.html#resourcetype">ResourceType</a> type );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">

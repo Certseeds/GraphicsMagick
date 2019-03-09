@@ -165,6 +165,15 @@ typedef struct _CacheInfo
   /* Image indexes are valid */
   MagickBool indexes_valid;
 
+  /* Total pixels limit */
+  magick_uint64_t limit_pixels;
+
+  /* Maximum width */
+  magick_uint64_t limit_width;
+
+  /* Maximum height */
+  magick_uint64_t limit_height;
+
   /* The number of Image structures referencing this cache */
   long reference_count;
 
@@ -615,62 +624,56 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
     pixels, and memory requirements as imposed on images.
   */
   /* total pixels */
-  if (((nexus_info->region.width != region->width) || (nexus_info->region.height != region->height))
-      && (AcquireMagickResource(PixelsResource,length) != MagickPass))
+  if (region_pixels > cache_info->limit_pixels)
     {
       errno=0;
       FormatString(message,
-                   "Total pixels %" MAGICK_SIZE_T_F "u > %" MAGICK_INT64_F "u \"%.1024s\"",
+                   "Total pixels %" MAGICK_SIZE_T_F "u > %" MAGICK_UINT64_F "u \"%.1024s\"",
                    (MAGICK_SIZE_T) region_pixels,
-                   GetMagickResourceLimit(PixelsResource),image->filename);
+                   cache_info->limit_pixels,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-
   /* width */
-  if ((nexus_info->region.width != region->width) &&
-      (AcquireMagickResource(WidthResource,region->width) != MagickPass))
+  if (!(region->width <= cache_info->limit_width))
     {
       errno=0;
       FormatString(message,"Width %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
                    region->width,
-                   GetMagickResourceLimit(WidthResource),image->filename);
+                   cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if ((nexus_info->region.x != region->x) &&
-      (AcquireMagickResource(WidthResource,AbsoluteValue(region->x)) != MagickPass))
+  if (!((magick_uint64_t) AbsoluteValue(region->x) <= cache_info->limit_width))
     {
       errno=0;
       FormatString(message,"Xoffset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
                    region->x,
-                   GetMagickResourceLimit(WidthResource),image->filename);
+                   cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
 
   /* height */
-  if ((nexus_info->region.height != region->height) &&
-      (AcquireMagickResource(HeightResource,region->height) != MagickPass))
+  if (!(region->height <= cache_info->limit_height))
     {
       errno=0;
       FormatString(message,"Height %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
                    region->height,
-                   GetMagickResourceLimit(HeightResource),image->filename);
+                   cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if ((nexus_info->region.y != region->y) &&
-      (AcquireMagickResource(HeightResource,AbsoluteValue(region->y)) != MagickPass))
+  if (!((magick_uint64_t) AbsoluteValue(region->y) <= cache_info->limit_height))
     {
       errno=0;
       FormatString(message,"Y offset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
                    region->y,
-                   GetMagickResourceLimit(HeightResource),image->filename);
+                   cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
@@ -3649,6 +3652,13 @@ GetCacheInfo(Cache *cache)
   if (cache_info->file_semaphore == (SemaphoreInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheInfo);
+  /*
+    Cache limits to apply later when allocating cache nexus
+  */
+  cache_info->limit_pixels=GetMagickResourceLimit(PixelsResource);
+  cache_info->limit_width=GetMagickResourceLimit(WidthResource);
+  cache_info->limit_height=GetMagickResourceLimit(HeightResource);
+
   cache_info->signature=MagickSignature;
   *cache=cache_info;
 }

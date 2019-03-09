@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2019-03-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/pixel_cache.c (SetNexus): Cache resource limits in
+CacheInfo rather than repeatedly calling into the resource code in
+order to lessen the overhead of performing resource limit checks
+on the pixel cache views.</li>
+<li>magick/resource.c (AcquireMagickResource): Use a lock for each
+resource in order to lessen contention.  Return a maximum 64-bit
+integer value if the resource has not been limited.  Previously
+returned -1 in this case but this was not documented.</li>
+</ul>
+</blockquote>
 <p>2019-03-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
