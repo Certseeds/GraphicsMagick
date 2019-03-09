@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -47,7 +47,7 @@
 /*
   Define  declarations.
 */
-#define ResourceInfinity  (-1)
+#define ResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0)) >> 1)
 #define ResourceInfoMaxIndex ((unsigned int) (sizeof(resource_info)/sizeof(resource_info[0])-1))
 
 /*
@@ -80,13 +80,14 @@ typedef struct _ResourceInfo
   LimitType
     limit_type;
 
+  SemaphoreInfo
+    *semaphore;
+
 } ResourceInfo;
 
 /*
   Global declarations.
 */
-static SemaphoreInfo
-  *resource_semaphore = (SemaphoreInfo *) NULL;
 
 /*
   Array must be in same order as ResourceType enum
@@ -95,15 +96,15 @@ static SemaphoreInfo
 static ResourceInfo
   resource_info[] =
   {
-    { "",       "",  "",                    0, 0,  ResourceInfinity, SummationLimit },
-    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,  ResourceInfinity, SummationLimit },
-    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32, 256,              SummationLimit },
-    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,  ResourceInfinity, SummationLimit },
-    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,  ResourceInfinity, SummationLimit },
-    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,  ResourceInfinity, AbsoluteLimit  },
-    { "threads", "", "OMP_NUM_THREADS",     1, 1,  ResourceInfinity, AbsoluteLimit  },
-    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,  PIXEL_LIMIT,      AbsoluteLimit  },
-    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,  PIXEL_LIMIT,      AbsoluteLimit  }
+    { "",       "",  "",                    0, 0,  ResourceInfinity, AbsoluteLimit, 0 },
+    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,  ResourceInfinity, SummationLimit, 0 },
+    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32, 256,              SummationLimit, 0 },
+    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,  ResourceInfinity, SummationLimit, 0 },
+    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,  ResourceInfinity, SummationLimit, 0 },
+    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,  ResourceInfinity, AbsoluteLimit, 0  },
+    { "threads", "", "OMP_NUM_THREADS",     1, 1,  ResourceInfinity, AbsoluteLimit, 0  },
+    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,  PIXEL_LIMIT,      AbsoluteLimit, 0  },
+    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,  PIXEL_LIMIT,      AbsoluteLimit, 0  }
   };
 
 /*
@@ -143,7 +144,7 @@ static ResourceInfo *GetResourceInfo(const ResourceType type)
 
   info = (ResourceInfo *) NULL;
   index = type;
-  if (index <= ResourceInfoMaxIndex)
+  if ((index != 0) && (index <= ResourceInfoMaxIndex))
     info = &resource_info[index];
 
   return info;
@@ -153,9 +154,6 @@ MagickExport MagickPassFail
 AcquireMagickResource(const ResourceType type,
                       const magick_uint64_t size)
 {
-  magick_uint64_t
-    value;
-
   ResourceInfo
     *info;
 
@@ -164,10 +162,11 @@ AcquireMagickResource(const ResourceType type,
 
   status=MagickPass;
 
-  LockSemaphoreInfo(resource_semaphore);
-
   if ((info=GetResourceInfo(type)))
     {
+      magick_uint64_t
+        value=0;
+
       switch(info->limit_type)
         {
         case AbsoluteLimit:
@@ -175,6 +174,7 @@ AcquireMagickResource(const ResourceType type,
             /*
               Limit depends only on the currently requested size.
             */
+            value=info->value;
             if ((info->maximum != ResourceInfinity) &&
                 (size > (magick_uint64_t) info->maximum))
               status=MagickFail;
@@ -186,17 +186,22 @@ AcquireMagickResource(const ResourceType type,
               Limit depends on sum of previous allocations as well as
               the currently requested size.
             */
+            LockSemaphoreInfo(info->semaphore);
             value=info->value+size;
             if ((info->maximum != ResourceInfinity) &&
                 (value > (magick_uint64_t) info->maximum))
-              status=MagickFail;
+              {
+                value=info->value;
+                status=MagickFail;
+              }
             else
-              info->value=value;
-
+              {
+                info->value=value;
+              }
+            UnlockSemaphoreInfo(info->semaphore);
             break;
           }
         }
-
       if (IsEventLogging())
         {
           char
@@ -223,7 +228,7 @@ AcquireMagickResource(const ResourceType type,
             }
           else
             {
-              FormatSize(info->value, f_value);
+              FormatSize(value, f_value);
               strlcat(f_value,info->units,sizeof(f_value));
             }
 
@@ -237,7 +242,6 @@ AcquireMagickResource(const ResourceType type,
         }
     }
 
-  UnlockSemaphoreInfo(resource_semaphore);
   return(status);
 }
 
@@ -262,7 +266,11 @@ AcquireMagickResource(const ResourceType type,
 */
 MagickExport void DestroyMagickResources(void)
 {
-  DestroySemaphoreInfo(&resource_semaphore);
+  size_t
+    index;
+
+  for (index = 1; index < ArraySize(resource_info); index++)
+    DestroySemaphoreInfo(&resource_info[index].semaphore);
 }
 
 /*
@@ -298,12 +306,14 @@ MagickExport magick_int64_t GetMagickResource(const ResourceType type)
     resource;
 
   resource=0;
-  LockSemaphoreInfo(resource_semaphore);
 
   if ((info=GetResourceInfo(type)))
-    resource=info->value;
+    {
+      LockSemaphoreInfo(info->semaphore);
+      resource=info->value;
+      UnlockSemaphoreInfo(info->semaphore);
+    }
 
-  UnlockSemaphoreInfo(resource_semaphore);
   return(resource);
 }
 
@@ -319,11 +329,12 @@ MagickExport magick_int64_t GetMagickResource(const ResourceType type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  GetMagickResourceLimit() returns the current maximum limit for the
-%  specified resource type.
+%  specified resource type.  Returns a maximum 64-bit integer value if
+%  the resource has not been limited.
 %
 %  The format of the GetMagickResourceLimit() method is:
 %
-%      magick_uint64_t GetMagickResourceLimit(const ResourceType type)
+%      magick_int64_t GetMagickResourceLimit(const ResourceType type)
 %
 %  A description of each parameter follows:
 %
@@ -340,12 +351,14 @@ MagickExport magick_int64_t GetMagickResourceLimit(const ResourceType type)
     resource;
 
   resource=0;
-  LockSemaphoreInfo(resource_semaphore);
 
   if ((info=GetResourceInfo(type)))
-    resource=info->maximum;
+    {
+      LockSemaphoreInfo(info->semaphore);
+      resource=info->maximum;
+      UnlockSemaphoreInfo(info->semaphore);
+    }
 
-  UnlockSemaphoreInfo(resource_semaphore);
   return(resource);
 }
 
@@ -380,11 +393,14 @@ MagickExport void InitializeMagickResources(void)
     max_width=-1,
     max_height=-1;
 
+  size_t
+    index;
+
   /*
-    Allocate semaphore.
+    Allocate semaphores.
   */
-  assert(resource_semaphore == (SemaphoreInfo *) NULL);
-  resource_semaphore=AllocateSemaphoreInfo();
+  for (index = 1; index < ArraySize(resource_info); index++)
+    resource_info[index].semaphore=AllocateSemaphoreInfo();
 
   /*
     Set Magick resource limits.
@@ -711,10 +727,11 @@ MagickExport void LiberateMagickResource(const ResourceType type,
   ResourceInfo
     *info;
 
-  LockSemaphoreInfo(resource_semaphore);
-
   if ((info=GetResourceInfo(type)))
     {
+      magick_uint64_t
+        value=0;
+
       switch(info->limit_type)
         {
         case AbsoluteLimit:
@@ -722,7 +739,6 @@ MagickExport void LiberateMagickResource(const ResourceType type,
             /*
               Limit depends only on the currently requested size.
             */
-            info->value=0;
             break;
           }
         case SummationLimit:
@@ -731,11 +747,13 @@ MagickExport void LiberateMagickResource(const ResourceType type,
               Limit depends on sum of previous allocations as well as
               the currently requested size.
             */
+            LockSemaphoreInfo(info->semaphore);
             info->value-=size;
+            value=info->value;
+            UnlockSemaphoreInfo(info->semaphore);
             break;
           }
         }
-
 
       if (IsEventLogging())
         {
@@ -763,7 +781,7 @@ MagickExport void LiberateMagickResource(const ResourceType type,
             }
           else
             {
-              FormatSize(info->value, f_value);
+              FormatSize(value, f_value);
               strlcat(f_value,info->units,sizeof(f_value));
             }
 
@@ -776,8 +794,6 @@ MagickExport void LiberateMagickResource(const ResourceType type,
                                 f_limit);
         }
     }
-
-  UnlockSemaphoreInfo(resource_semaphore);
 }
 
 /*
@@ -813,7 +829,6 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
 
   ARG_NOT_USED(exception);
 
-  LockSemaphoreInfo(resource_semaphore);
   if (file == (const FILE *) NULL)
     file=stdout;
 
@@ -828,6 +843,7 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
         heading[MaxTextExtent],
         limit[MaxTextExtent];
 
+      LockSemaphoreInfo(resource_info[index].semaphore);
       if (resource_info[index].maximum == ResourceInfinity)
         {
           strlcpy(limit,"Unlimited",sizeof(limit));
@@ -843,6 +859,7 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
       (void) strlcpy(environment,resource_info[index].env,sizeof(environment));
 
       fprintf(file,"%8s: %10s (%s)\n", heading, limit, environment);
+      UnlockSemaphoreInfo(resource_info[index].semaphore);
     }
   fprintf(file,
           "\n"
@@ -857,7 +874,6 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
 
   (void) fflush(file);
 
-  UnlockSemaphoreInfo(resource_semaphore);
   return(MagickPass);
 }
 /*
@@ -907,9 +923,9 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
 
   status=MagickFail;
 
-  LockSemaphoreInfo(resource_semaphore);
   if ((info=GetResourceInfo(type)))
     {
+      LockSemaphoreInfo(info->semaphore);
       if (limit >= info->minimum)
         {
           char
@@ -933,8 +949,8 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
                                 "Ignored bogus request to set %s resource limit to %ld%s",
                                 info->name,(long) limit,info->units);
         }
+      UnlockSemaphoreInfo(info->semaphore);
     }
-  UnlockSemaphoreInfo(resource_semaphore);
 
   return(status);
 }
