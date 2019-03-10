@@ -1,7 +1,10 @@
-2019-03-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+2019-03-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* magick/texture.c (ConstituteTextureImage): Acquire exclusive use
-	of canvas image cache before entering OpenMP loop.
+	* magick/pixel_cache.c (SetNexus): Pass x, y, columns, and rows
+	rather than a pointer to RectangleInfo.  This should be easier to
+	inline on modern CPUs.
+
+2019-03-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (SetNexus): Cache resource limits in
 	CacheInfo rather than repeatedly calling into the resource code in

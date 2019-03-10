@@ -511,8 +511,9 @@ static inline ViewInfo
 %
 %  The format of the SetNexus() method is:
 %
-%      PixelPacket *SetNexus(const Image *image,const RectangleInfo *region,
-%                            NexusInfo *nexus_info,ExceptionInfo *exception)
+%      PixelPacket *SetNexus(const Image *image,const long x,const long y,
+%        const unsigned long columns, const unsigned long rows,
+%        NexusInfo *nexus_info, MagickBool set, ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
 %
@@ -521,18 +522,21 @@ static inline ViewInfo
 %
 %    o image: The image.
 %
+%    o x,y,columns,rows:  These values define the perimeter of a region of
+%      pixels.
+%
 %    o nexus_info: specifies which cache nexus to set.
 %
-%    o region: A pointer to the RectangleInfo structure that defines the
-%      region of this particular cache nexus.
+%    o set: Set to one if pixels are being updated/set rather than read.
 %
 %    o exception: any error is reported here.
 %
 %
 */
 static PixelPacket *
-SetNexus(const Image *image,const RectangleInfo * restrict region,
-         NexusInfo *nexus_info,MagickBool set, ExceptionInfo *exception)
+SetNexus(const Image *image,const long x,const long y,
+         const unsigned long columns, const unsigned long rows,
+         NexusInfo *nexus_info, MagickBool set, ExceptionInfo *exception)
 {
   const CacheInfo
     * restrict cache_info;
@@ -556,10 +560,9 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
   fprintf(stderr,"SetNexus(): cache_info: %lux%lu,"
           " region: %lux%lu%+ld%+ld, cache_info->type: %u\n",
           cache_info->columns, cache_info->rows,
-          region->width, region->height, region->x,region->y,
-          cache_info->type);
+          columns, rows, x,y, cache_info->type);
 #endif
-  if ((region->width == 0) || (region->height == 0))
+  if ((columns == 0) || (rows == 0))
     {
       ThrowException(exception,CacheError,EmptyCacheNexus,
                      image->filename);
@@ -569,17 +572,14 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
   if ((cache_info->type != PingCache) &&
       (cache_info->type != DiskCache) &&
       (/* Region must entirely be in bounds of image raster */
-       (region->x >= 0) &&
-       (region->y >= 0) &&
-       ((region->y+region->height) <= cache_info->rows)) &&
+       (x >= 0) && (y >= 0) && ((y+rows) <= cache_info->rows)
+       ) &&
       ((/* All/part of one row */
-        (region->height == 1) &&
-        ((region->x+region->width) <= cache_info->columns)
+        (rows == 1) && ((x+columns) <= cache_info->columns)
         )
        ||
        (/* One or more full rows */
-        (region->x == 0) &&
-        (region->width == cache_info->columns)
+        (x == 0) && (columns == cache_info->columns)
         )) &&
       (*ImageGetClipMaskInlined(image) == (const Image *) NULL) &&
       (*ImageGetCompositeMaskInlined(image) == (const Image *) NULL))
@@ -590,14 +590,17 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
       size_t
         offset;
 
-      offset=((size_t) region->y)*cache_info->columns+((size_t) region->x);
+      offset=((size_t) y)*cache_info->columns+((size_t) x);
 
       nexus_info->pixels=cache_info->pixels+offset;
       nexus_info->indexes=(IndexPacket *) NULL;
       if (cache_info->indexes_valid)
         nexus_info->indexes=cache_info->indexes+offset;
       nexus_info->in_core=MagickTrue;
-      nexus_info->region=*region;
+      nexus_info->region.x=x;
+      nexus_info->region.y=y;
+      nexus_info->region.width=columns;
+      nexus_info->region.height=rows;
       /* fprintf(stderr,"Pixels in core (%p)\n",nexus_info->pixels); */
       return(nexus_info->pixels);
     }
@@ -605,12 +608,12 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
   /*
     Pixels are stored in a staging area until they are synced to the cache.
   */
-  region_pixels=(size_t) region->width*region->height;
+  region_pixels=(size_t) columns*rows;
   packet_size=sizeof(PixelPacket);
   if (cache_info->indexes_valid)
     packet_size+=sizeof(IndexPacket);
   length=region_pixels*packet_size;
-  if ((region_pixels/region->width != region->height) ||
+  if ((region_pixels/columns != rows) ||
       (length/packet_size != region_pixels) ||
       (length != (size_t) ((magick_off_t) length)))
     {
@@ -636,44 +639,40 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
       return (PixelPacket *) NULL;
     }
   /* width */
-  if (!(region->width <= cache_info->limit_width))
+  if (!(columns <= cache_info->limit_width))
     {
       errno=0;
       FormatString(message,"Width %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   region->width,
-                   cache_info->limit_width,image->filename);
+                   columns,cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if (!((magick_uint64_t) AbsoluteValue(region->x) <= cache_info->limit_width))
+  if (!((magick_uint64_t) AbsoluteValue(x) <= cache_info->limit_width))
     {
       errno=0;
       FormatString(message,"Xoffset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   region->x,
-                   cache_info->limit_width,image->filename);
+                   x,cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
 
   /* height */
-  if (!(region->height <= cache_info->limit_height))
+  if (!(rows <= cache_info->limit_height))
     {
       errno=0;
       FormatString(message,"Height %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   region->height,
-                   cache_info->limit_height,image->filename);
+                   rows,cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if (!((magick_uint64_t) AbsoluteValue(region->y) <= cache_info->limit_height))
+  if (!((magick_uint64_t) AbsoluteValue(y) <= cache_info->limit_height))
     {
       errno=0;
       FormatString(message,"Y offset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   region->y,
-                   cache_info->limit_height,image->filename);
+                   y,cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
@@ -691,11 +690,11 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
        magick_off_t
         offset;
 
-       offset=region->y*(magick_off_t) cache_info->columns+region->x;
+       offset=y*(magick_off_t) cache_info->columns+x;
        if (offset >= 0)
          {
            number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
-           offset+=(region->height-1)*(magick_off_t) cache_info->columns+region->width-1;
+           offset+=(rows-1)*(magick_off_t) cache_info->columns+columns-1;
          }
        if ((offset < 0) || ((magick_uint64_t) offset >= number_pixels))
            return (PixelPacket *) NULL;
@@ -738,8 +737,8 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
                             "cache columns=%lu)!",
                             (MAGICK_SIZE_T) length,
                             (MAGICK_SIZE_T) region_pixels,
-                            region->width,
-                            region->height,
+                            columns,
+                            rows,
                             cache_info->columns);
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
                      image->filename);
@@ -751,7 +750,10 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
     }
   else
     {
-      nexus_info->region=*region;
+      nexus_info->region.x=x;
+      nexus_info->region.y=y;
+      nexus_info->region.width=columns;
+      nexus_info->region.height=rows;
       /*
         Determine if pixels associated with the cache nexus are
         non-strided and in core.  If not, then the nexus pixels
@@ -771,11 +773,7 @@ SetNexus(const Image *image,const RectangleInfo * restrict region,
           magick_off_t
             offset;
 
-          /* runtime error: signed integer overflow:
-             6100242896499999744 * 3 cannot be represented in type
-             'long' */
-          offset=nexus_info->region.y* /* FIXME: oss-fuzz 13210 signed integer overflow */
-            (magick_off_t) cache_info->columns+nexus_info->region.x;
+          offset=y*(magick_off_t) cache_info->columns+x;
           if (nexus_info->pixels == (cache_info->pixels+offset))
             nexus_info->in_core=MagickTrue;
         }
@@ -834,20 +832,26 @@ SetCacheNexus(Image *image,const long x,const long y,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   pixels=(PixelPacket *) NULL;
+#if 0
+  {
+    const CacheInfo
+      * restrict cache_info = (const CacheInfo * restrict) image->cache;
+
+    if ((cache_info->reference_count != 1) || (cache_info->read_only))
+      fprintf(stderr,"ModifyCache: Thread %d enters (cache_info = %p, reference_count=%lu, read_only=%u)\n",
+              omp_get_thread_num(),image->cache, cache_info->reference_count, cache_info->read_only);
+  }
+#endif
+
+
   if (ModifyCache(image,exception) != MagickFail)
     {
-      RectangleInfo
-        region;
-
       /*
         Return pixel cache.
       */
-      region.x=x;
-      region.y=y;
-      region.width=columns;
-      region.height=rows;
-      pixels=SetNexus(image,&region,nexus_info,MagickTrue,exception);
+      pixels=SetNexus(image,x,y,columns,rows,nexus_info,MagickTrue,exception);
     }
+
   return pixels;
 }
 
@@ -1710,9 +1714,6 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
     * restrict pixels,
     virtual_pixel;
 
-  RectangleInfo
-    region;
-
   register const PixelPacket
     *p;
 
@@ -1759,16 +1760,12 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                      image->filename);
       return((const PixelPacket *) NULL);
     }
-  region.x=x;
-  region.y=y;
-  region.width=columns;
-  region.height=rows;
   /* Define the region of the cache for the cache nexus */
-  pixels=SetNexus(image,&region,nexus_info,MagickFalse,exception);
+  pixels=SetNexus(image,x,y,columns,rows,nexus_info,MagickFalse,exception);
   if (pixels == (PixelPacket *) NULL)
     return((const PixelPacket *) NULL);
-  offset=region.y*(magick_off_t) cache_info->columns+region.x;
-  length=(region.height-1)*cache_info->columns+region.width-1;
+  offset=y*(magick_off_t) cache_info->columns+x;
+  length=(rows-1)*cache_info->columns+columns-1;
   number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
   if ((offset >= 0) && (((magick_uint64_t) offset+length) < number_pixels))
     if ((x >= 0) && ((x+columns) <= cache_info->columns) &&
@@ -4399,7 +4396,7 @@ MagickPassFail
 ModifyCache(Image *image, ExceptionInfo *exception)
 {
   CacheInfo
-    *cache_info;
+    * restrict cache_info;
 
   MagickPassFail
     status;
@@ -4420,7 +4417,6 @@ ModifyCache(Image *image, ExceptionInfo *exception)
 
     assert(image->cache != (Cache) NULL);
     cache_info=(CacheInfo *) image->cache;
-
     LockSemaphoreInfo(cache_info->reference_semaphore);
     {
       if ((cache_info->reference_count > 1) || (cache_info->read_only))
@@ -4430,8 +4426,10 @@ ModifyCache(Image *image, ExceptionInfo *exception)
 
           (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                                 "modify+clone %.1024s",cache_info->filename);
-          /* fprintf(stderr,"ModifyCache: Thread %d enters (cache_info = %p)\n",
-             omp_get_thread_num(),image->cache); */
+#if 0
+          fprintf(stderr,"ModifyCache: Thread %d enters (cache_info = %p, reference_count=%lu, read_only=%u)\n",
+                  omp_get_thread_num(),image->cache, cache_info->reference_count, cache_info->read_only);
+#endif
           clone_image=(*image);
           /*
             Semaphore and reference count need to be initialized for the temporary
