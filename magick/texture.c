@@ -81,6 +81,12 @@ MagickExport Image *ConstituteTextureImage(const unsigned long columns,
   if (canvas_image == (Image *) NULL)
     return canvas_image;
 
+  if (ModifyCache(canvas_image,exception) == MagickFail)
+    {
+      DestroyImage(canvas_image);
+      return (Image *) NULL;
+    }
+
   monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
