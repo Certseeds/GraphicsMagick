@@ -190,6 +190,7 @@ DestroyMagick(void)
     Destroy logging last since some components log their destruction.
   */
   DestroyLogInfo();             /* Logging configuration */
+  DestroyMagickExceptionHandling(); /* Exception handling */
   DestroySemaphore();           /* Semaphores framework */
 
   /* Now uninitialized */
@@ -1100,6 +1101,9 @@ InitializeMagick(const char *path)
 
   /* Initialize semaphores */
   InitializeSemaphore();
+
+  /* Initialize exception handling */
+  InitializeMagickExceptionHandling();
 
   /* Initialize logging */
   InitializeLogInfo();

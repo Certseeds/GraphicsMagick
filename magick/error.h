@@ -277,6 +277,13 @@ extern MagickExport WarningHandler
 #include <magick/log.h>
 
 #if defined(MAGICK_IMPLEMENTATION)
+
+extern MagickPassFail
+  InitializeMagickExceptionHandling(void);
+
+extern void
+  DestroyMagickExceptionHandling(void);
+
 #  if defined(MAGICK_IDBASED_MESSAGES)
 
 #    define MagickMsg(severity_,msg_) GetLocaleMessageFromID(MGK_##severity_##msg_)
