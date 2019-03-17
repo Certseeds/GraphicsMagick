@@ -220,6 +220,7 @@ static LogEventType ParseEvents(const char *event_string)
 
   return events;
 }
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %

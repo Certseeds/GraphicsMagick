@@ -1,3 +1,19 @@
+2019-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): Smallest staging-area
+	allocation is cache line size so declare it as such.
+
+	* magick/fx.c: Functions in the fx module which return a new Image
+	should return a null Image if an exception was thrown.  Also,
+	assure that user has an opportunity to see the exception which was
+	thrown.
+
+	* magick/error.c (ThrowLoggedException): Throwing an exception is
+	now thread-safe.
+
+	* magick/pixel_cache-private.h: Moved pixel cache private
+	definitions to private header.
+
 2019-03-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (SetNexus): Pass x, y, columns, and rows

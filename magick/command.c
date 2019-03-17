@@ -9111,7 +9111,8 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             DestroyImage(*image);
             *image=orient_image;
             continue;
-          }        break;
+          }
+        break;
       }
       case 'b':
       {

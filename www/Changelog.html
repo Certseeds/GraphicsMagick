@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2019-03-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/pixel_cache.c (SetNexus): Smallest staging-area
+allocation is cache line size so declare it as such.</li>
+<li>magick/fx.c: Functions in the fx module which return a new Image
+should return a null Image if an exception was thrown.  Also,
+assure that user has an opportunity to see the exception which was
+thrown.</li>
+<li>magick/error.c (ThrowLoggedException): Throwing an exception is
+now thread-safe.</li>
+<li>magick/pixel_cache-private.h: Moved pixel cache private
+definitions to private header.</li>
+</ul>
+</blockquote>
 <p>2019-03-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
