@@ -534,9 +534,9 @@ static inline ViewInfo
 %
 */
 static PixelPacket *
-SetNexus(const Image *image,const long x,const long y,
+SetNexus(const Image * restrict image,const long x,const long y,
          const unsigned long columns, const unsigned long rows,
-         NexusInfo *nexus_info, MagickBool set, ExceptionInfo *exception)
+         NexusInfo * restrict nexus_info, MagickBool set, ExceptionInfo *exception)
 {
   const CacheInfo
     * restrict cache_info;
@@ -621,6 +621,8 @@ SetNexus(const Image *image,const long x,const long y,
                      image->filename);
       return (PixelPacket *) NULL;
     }
+  if (length < MAGICK_CACHE_LINE_SIZE)
+    length=MAGICK_CACHE_LINE_SIZE;
 
   /*
     Require that nexus tile observe same width, height, total
@@ -687,23 +689,26 @@ SetNexus(const Image *image,const long x,const long y,
   */
   if (set)
     {
-       magick_off_t
+      magick_off_t
         offset;
 
-       offset=y*(magick_off_t) cache_info->columns+x;
-       if (offset >= 0)
-         {
-           number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
-           offset+=(rows-1)*(magick_off_t) cache_info->columns+columns-1;
-         }
-       if ((offset < 0) || ((magick_uint64_t) offset >= number_pixels))
-           return (PixelPacket *) NULL;
+      offset=y*(magick_off_t) cache_info->columns+x;
+      if (offset >= 0)
+        {
+          number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
+          offset+=(rows-1)*(magick_off_t) cache_info->columns+columns-1;
+        }
+      if ((offset < 0) || ((magick_uint64_t) offset >= number_pixels))
+        return (PixelPacket *) NULL;
     }
 
   if ((nexus_info->staging == (PixelPacket *) NULL) ||
       (nexus_info->staging_length < length))
     {
-      /* fprintf(stderr,"Allocating %zu bytes for nexus_info region\n", length); */
+#if 0
+      fprintf(stderr,"%s: Allocating %zu bytes for nexus_info region %lux%lu%+ld%+ld\n",
+              __func__, length, columns, rows, x, y);
+#endif
 
       /* memory */
       if (nexus_info->staging_length > 0)
@@ -838,8 +843,13 @@ SetCacheNexus(Image *image,const long x,const long y,
       * restrict cache_info = (const CacheInfo * restrict) image->cache;
 
     if ((cache_info->reference_count != 1) || (cache_info->read_only))
-      fprintf(stderr,"ModifyCache: Thread %d enters (cache_info = %p, reference_count=%lu, read_only=%u)\n",
+      fprintf(stderr,"SetCacheNexus: Thread %d enters (cache_info = %p, reference_count=%lu, read_only=%u)\n",
               omp_get_thread_num(),image->cache, cache_info->reference_count, cache_info->read_only);
+    if (cache_info->type == UndefinedCache)
+      fprintf(stderr,"SetCacheNexus: Pixel cache is not open!\n");
+    if ((image->storage_class != cache_info->storage_class) ||
+        (image->colorspace != cache_info->colorspace))
+      fprintf(stderr,"SetCacheNexus: Pixel cache storage class or colorspace mis-match!\n");
   }
 #endif
 
@@ -850,6 +860,11 @@ SetCacheNexus(Image *image,const long x,const long y,
         Return pixel cache.
       */
       pixels=SetNexus(image,x,y,columns,rows,nexus_info,MagickTrue,exception);
+#if 0
+      if (!pixels)
+        fprintf(stderr,"%s: SetNexus returns null (%lux%lu%+ld%+ld)\n",
+                __func__,columns,rows,x,y);
+#endif
     }
 
   return pixels;
@@ -1763,7 +1778,13 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
   /* Define the region of the cache for the cache nexus */
   pixels=SetNexus(image,x,y,columns,rows,nexus_info,MagickFalse,exception);
   if (pixels == (PixelPacket *) NULL)
-    return((const PixelPacket *) NULL);
+    {
+#if 0
+      fprintf(stderr,"%s: SetNexus returns null (%lux%lu%+ld%+ld)\n",
+              __func__,columns,rows,x,y);
+#endif
+      return((const PixelPacket *) NULL);
+    }
   offset=y*(magick_off_t) cache_info->columns+x;
   length=(rows-1)*cache_info->columns+columns-1;
   number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
@@ -1821,9 +1842,10 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                 {
                 case ConstantVirtualPixelMethod:
                   {
-                    (void) AcquireCacheNexus(image,EdgeX(x+u),EdgeY(y+v),1,1,
-                                             image_nexus,exception);
-                    p=(&virtual_pixel);
+                    if (AcquireCacheNexus(image,EdgeX(x+u),EdgeY(y+v),1,1,
+                                          image_nexus,exception) !=
+                        (PixelPacket *) NULL)
+                      p=(&virtual_pixel);
                     break;
                   }
                 case EdgeVirtualPixelMethod:
@@ -4285,10 +4307,10 @@ InterpolateViewColor(const ViewInfo *view,
                      ExceptionInfo *exception)
 {
   register const PixelPacket
-    *p;
+    * restrict p;
 
   const Image
-    *image = ((const View *) view)->image;
+    * restrict image = ((const View *) view)->image;
 
   register MagickBool
     matte;
