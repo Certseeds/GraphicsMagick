@@ -3,6 +3,8 @@
 	* configure.ac: Add support for using the Solaris mtmalloc
 	library.  This is primarily for testing or as an alternative to
 	Solaris umem.
+	Stop using posix_memalign() until it is uniformly more mature and
+	reliably quick.
 
 2019-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

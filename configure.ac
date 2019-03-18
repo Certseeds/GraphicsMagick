@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2018 GraphicsMagick Group
+# Copyright (C) 2003-2019 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -1201,7 +1201,7 @@ AC_CHECK_FUNCS([atoll CryptGenRandom \
   clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
   getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
-  posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
+  posix_fallocate posix_madvise posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
   setrlimit sigemptyset sigaction spawnvp strerror strerror_r strlcat strlcpy \
   strtoll sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
