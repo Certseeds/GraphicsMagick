@@ -329,9 +329,13 @@ Optional Packages/Options
 
     disable TrueType support
 
+--with-mtmalloc
+
+    enable Solaris mtmalloc memory allocation library support
+
 --with-umem
 
-    enable libumem memory allocation library support
+    enable Solaris libumem memory allocation library support
 
 --without-wmf
 

@@ -402,6 +402,9 @@
 /* Define if you have lzma compression library */
 #undef HasLZMA
 
+/* Define if you have Solaris mtmalloc library */
+#undef HasMTMALLOC
+
 /* Define if you have PNG library */
 #undef HasPNG
 

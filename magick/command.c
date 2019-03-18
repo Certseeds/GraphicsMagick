@@ -17017,6 +17017,13 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 #endif /* defined(SupportMagickModules) */
   PrintFeature("Loadable Modules", supported);
 
+  /* Solaris libmtmalloc */
+  supported=MagickFalse;
+#if defined(HasMTMALLOC)
+  supported=MagickTrue;
+#endif /* defined(HasMTMALLOC) */
+  PrintFeature("Solaris mtmalloc", supported);
+
   /* OpenMP */
   supported=MagickFalse;
   text[0]='\0';
@@ -17052,7 +17059,7 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 #if defined(HasUMEM)
   supported=MagickTrue;
 #endif /* defined(HasUMEM) */
-  PrintFeature("UMEM", supported);
+  PrintFeature("Solaris umem", supported);
 
   /* WebP */
   supported=MagickFalse;
