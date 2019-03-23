@@ -1,3 +1,7 @@
+2019-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dcm.c: dicom_info array is now fully in the data segment.
+
 2019-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Add support for using the Solaris mtmalloc
