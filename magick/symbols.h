@@ -161,6 +161,7 @@
 #define DestroyLogInfo GmDestroyLogInfo
 #define DestroyMagicInfo GmDestroyMagicInfo
 #define DestroyMagick GmDestroyMagick
+#define DestroyMagickExceptionHandling GmDestroyMagickExceptionHandling
 #define DestroyMagickModules GmDestroyMagickModules
 #define DestroyMagickMonitor GmDestroyMagickMonitor
 #define DestroyMagickRandomGenerator GmDestroyMagickRandomGenerator
@@ -473,6 +474,7 @@
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
 #define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
+#define InitializeMagickExceptionHandling GmInitializeMagickExceptionHandling
 #define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickMonitor GmInitializeMagickMonitor
 #define InitializeMagickRandomGenerator GmInitializeMagickRandomGenerator
