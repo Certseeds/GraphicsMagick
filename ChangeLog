@@ -1,5 +1,7 @@
 2019-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (WPG1_Palette): Change to a static declaration.
+
 	* coders/dcm.c: dicom_info array is now fully in the data segment.
 
 2019-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
