@@ -84,7 +84,7 @@ const char
 %
 %  The format of the AcquireCacheView method is:
 %
-%      const PixelPacket *AcquireCacheView(const ViewInfo *view,const long x,
+%      const PixelPacket *AcquireCacheView(ViewInfo *view,const long x,
 %        const long y,const unsigned long columns,const unsigned long rows,
 %        ExceptionInfo *exception)
 %
@@ -103,7 +103,7 @@ const char
 %
 */
 MagickExport const PixelPacket *
-AcquireCacheView(const ViewInfo *view,
+AcquireCacheView(ViewInfo *view,
                  const long x,const long y,const unsigned long columns,
                  const unsigned long rows,ExceptionInfo *exception)
 {

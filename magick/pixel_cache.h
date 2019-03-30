@@ -193,7 +193,7 @@ extern "C" {
     for read-only access.
   */
   extern MagickExport const PixelPacket
-  *AcquireCacheViewPixels(const ViewInfo *view,
+  *AcquireCacheViewPixels(ViewInfo *view,
                           const long x,const long y,
                           const unsigned long columns,
                           const unsigned long rows,
@@ -205,7 +205,7 @@ extern "C" {
     is not reliably influenced by this function.
   */
   extern MagickExport MagickPassFail
-  AcquireOneCacheViewPixel(const ViewInfo *view,PixelPacket *pixel,
+  AcquireOneCacheViewPixel(ViewInfo *view,PixelPacket *pixel,
                            const long x,const long y,ExceptionInfo *exception);
 
   /*
@@ -232,7 +232,7 @@ extern "C" {
     read/write access.
   */
   extern MagickExport PixelPacket
-  *GetCacheViewPixels(const ViewInfo *view,const long x,const long y,
+  *GetCacheViewPixels(ViewInfo *view,const long x,const long y,
                       const unsigned long columns,const unsigned long rows,
                       ExceptionInfo *exception);
 
@@ -248,7 +248,7 @@ extern "C" {
     cache view.
   */
   extern MagickExport PixelPacket
-  *SetCacheViewPixels(const ViewInfo *view,const long x,const long y,
+  *SetCacheViewPixels(ViewInfo *view,const long x,const long y,
                       const unsigned long columns,const unsigned long rows,
                       ExceptionInfo *exception);
 

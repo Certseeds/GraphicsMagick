@@ -24,13 +24,13 @@
   /*
     Destroy a thread view set.
   */
-  extern MagickExport void
+  extern void
   DestroyThreadViewSet(_ThreadViewSetPtr_ view_set);
 
   /*
     Allocate a thread view set.
   */
-  extern MagickExport _ThreadViewSetPtr_
+  extern _ThreadViewSetPtr_
   AllocateThreadViewSet(Image *image,ExceptionInfo *exception);
 
   /*
@@ -91,7 +91,7 @@
       MAGICK_FUNC_DEPRECATED;
 
   extern MagickExport MagickPassFail
-    InterpolateViewColor(const ViewInfo *view,PixelPacket *color,
+    InterpolateViewColor(ViewInfo *view,PixelPacket *color,
        const double x_offset,const double y_offset,
        ExceptionInfo *exception);
 

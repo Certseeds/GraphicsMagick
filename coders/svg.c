@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -3805,13 +3805,26 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   xmlSAXHandlerPtr
     SAXHandler;
 
-  /*
-    Open image file.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
+  /*
+    Libxml initialization.  We call it here since initialization can
+    be expensive and we don't know when/if libxml will be
+    needed. Should normally be called at program start-up but may be
+    called several times since libxml uses a flag to know if it has
+    already been initialized.  When libxml2 is built to support
+    threads, it tests if it is already initialized under a lock and
+    holds a lock while it is being initialized so calling this
+    function from multiple threads is ok.
+  */
+  xmlInitParser();
+
+  /*
+    Open image file.
+  */
   image=AllocateImage(image_info);
   /*
     If there is a geometry string in image_info->size (e.g., gm convert
@@ -4031,11 +4044,6 @@ RegisterSVGImage(void)
     entry->version=version;
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
-
-  /*
-    Libxml initialization. Should be called at program start-up.
-  */
-  /* xmlInitParser(); */
 }
 
 /*

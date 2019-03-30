@@ -1,3 +1,10 @@
+2019-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (AllocateThreadViewSet): Simplify the image
+	view model by adding NexusInfo to the View structure (rather than
+	referencing it via a pointer) to lessen the number of required
+	per-thread allocations and to improve locality of reference.
+
 2019-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (WPG1_Palette): Change to a static declaration.

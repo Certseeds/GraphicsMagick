@@ -245,6 +245,9 @@ typedef struct _NexusInfo
   MagickBool direct_flag;
 #endif
 
+  /* Working NexusInfo for temporary/recursive use */
+  struct _NexusInfo *image_nexus;
+
   /* Unique number for structure validation */
   unsigned long signature;
 } NexusInfo;
@@ -259,7 +262,7 @@ typedef struct _View
   Image *image;
 
   /* View data */
-  NexusInfo *nexus_info;
+  NexusInfo nexus_info;
 
   /* Validation signature */
   unsigned long signature;
@@ -267,14 +270,26 @@ typedef struct _View
 
 /*
   A vector of thread views.
+
+  FIXME: Make default views into array allocation
+
+  Relevant functions:
+
+  exported: AllocateThreadViewSet() / DestroyThreadViewSet()
+  exported: OpenCacheView() / CloseCacheView()
+  static: InitializeCacheView() / DeinitializeCacheView()
+  exported: AccessDefaultCacheView()
+  static: AccessDefaultCacheViewInlined()
+
 */
 typedef struct _ThreadViewSet
 {
-  ViewInfo
-  *views;
+  size_t
+    nviews;
 
-  unsigned int
-  nviews;
+  ViewInfo
+    *views;
+
 } ThreadViewSet;
 
 /*
@@ -402,8 +417,52 @@ FilePositionWrite(int file, const void *buffer,size_t length,magick_off_t offset
     return (ssize_t)-1;
   return (ssize_t) total_count;
 }
-
-MagickExport void
+
+static NexusInfo *InitializeCacheNexus(NexusInfo * restrict nexus_info)
+{
+  if (nexus_info != ((NexusInfo *) NULL))
+    {
+      (void) memset(nexus_info,0,sizeof(NexusInfo));
+      nexus_info->signature=MagickSignature;
+    }
+  return nexus_info;
+}
+
+static void DeinitializeCacheNexus(NexusInfo *nexus_info)
+{
+  if (nexus_info != (NexusInfo *) NULL)
+    {
+      if (nexus_info->staging_length > 0)
+        {
+          LiberateMagickResource(MemoryResource,nexus_info->staging_length);
+          nexus_info->staging_length=0;
+        }
+      MagickFreeAlignedMemory(nexus_info->staging);
+      if (nexus_info->image_nexus != (NexusInfo *) NULL)
+        {
+          DeinitializeCacheNexus(nexus_info->image_nexus);
+          MagickFreeAlignedMemory(nexus_info->image_nexus);
+          nexus_info->image_nexus=(NexusInfo *) NULL;
+        }
+    }
+}
+
+static void InitializeCacheView(Image * restrict image,
+                                View * restrict view)
+{
+  view->image=image;
+  (void) InitializeCacheNexus(&view->nexus_info);
+  view->signature=MagickSignature;
+}
+
+static void DeinitializeCacheView(View *view_info)
+{
+  assert(view_info->signature == MagickSignature);
+  assert(view_info->nexus_info.signature == MagickSignature);
+  DeinitializeCacheNexus(&view_info->nexus_info);
+}
+
+void
 DestroyThreadViewSet(ThreadViewSet *view_set)
 {
   unsigned int
@@ -411,42 +470,44 @@ DestroyThreadViewSet(ThreadViewSet *view_set)
 
   if (view_set != (ThreadViewSet *) NULL)
     {
-      if (view_set->views != (ViewInfo *) NULL)
+      for (i=0; i < view_set->nviews; i++)
         {
-          for (i=0; i < view_set->nviews; i++)
-            {
-              if (view_set->views[i] != (ViewInfo *) NULL)
-                {
-                  CloseCacheView(view_set->views[i]);
-                  view_set->views[i]=(ViewInfo *) NULL;
-                }
-            }
+          CloseCacheView(view_set->views[i]);
+          view_set->views[i]=(ViewInfo *) NULL;
         }
-      view_set->nviews=0;
-      MagickFreeAlignedMemory(view_set->views);
-      MagickFreeAlignedMemory(view_set);
+      MagickFreeMemory(view_set->views);
+      MagickFreeMemory(view_set);
     }
 }
-MagickExport ThreadViewSet *
+
+ThreadViewSet *
 AllocateThreadViewSet(Image *image,ExceptionInfo *exception)
 {
   ThreadViewSet
     *view_set;
 
-  unsigned int
+  size_t
+    nviews;
+
+  size_t
     i;
 
   MagickPassFail
     status=MagickPass;
 
-  view_set=MagickAllocateAlignedMemory(ThreadViewSet *,MAGICK_CACHE_LINE_SIZE,
-                                       sizeof(ThreadViewSet));
+  ARG_NOT_USED(exception);
+
+  nviews=omp_get_max_threads();
+
+  view_set=MagickAllocateMemory(ThreadViewSet *,
+                                sizeof(ThreadViewSet));
+
   if (view_set == (ThreadViewSet *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheView);
-  view_set->nviews=omp_get_max_threads();
-  view_set->views=MagickAllocateAlignedMemory(ViewInfo *,MAGICK_CACHE_LINE_SIZE,
-                                              view_set->nviews*sizeof(ViewInfo *));
+  view_set->nviews=nviews;
+  view_set->views=MagickAllocateMemory(ViewInfo *,
+                                       view_set->nviews*sizeof(ViewInfo *));
   if (view_set->views == (ViewInfo *) NULL)
     {
       ThrowException(exception,CacheError,UnableToAllocateCacheView,
@@ -482,15 +543,17 @@ AllocateThreadViewSet(Image *image,ExceptionInfo *exception)
   also provide a static inlined version along with a macro to remap
   code from this module to use the inline version.
 */
+
 MagickExport ViewInfo
 *AccessDefaultCacheView(const Image *image)
 {
-  return image->default_views->views[omp_get_thread_num()];
+  return (ViewInfo *) image->default_views->views[omp_get_thread_num()];
 }
+
 static inline ViewInfo
 *AccessDefaultCacheViewInlined(const Image *image)
 {
-  return image->default_views->views[omp_get_thread_num()];
+  return (ViewInfo *) image->default_views->views[omp_get_thread_num()];
 }
 #if !defined(AccessDefaultCacheView)
 #  define AccessDefaultCacheView(image) AccessDefaultCacheViewInlined(image)
@@ -1610,12 +1673,7 @@ AllocateCacheNexus(void)
 
   nexus_info=MagickAllocateAlignedMemory(NexusInfo *,MAGICK_CACHE_LINE_SIZE,
                                          sizeof(NexusInfo));
-  if (nexus_info != ((NexusInfo *) NULL))
-    {
-      (void) memset(nexus_info,0,sizeof(NexusInfo));
-      nexus_info->signature=MagickSignature;
-    }
-  return nexus_info;
+  return InitializeCacheNexus(nexus_info);
 }
 
 /*
@@ -1647,12 +1705,7 @@ DestroyCacheNexus(NexusInfo *nexus_info)
 {
   if (nexus_info != (NexusInfo *) NULL)
     {
-      if (nexus_info->staging_length > 0)
-        {
-          LiberateMagickResource(MemoryResource,nexus_info->staging_length);
-          nexus_info->staging_length=0;
-        }
-      MagickFreeAlignedMemory(nexus_info->staging);
+      DeinitializeCacheNexus(nexus_info);
       MagickFreeAlignedMemory(nexus_info);
     }
 }
@@ -1742,9 +1795,6 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
   size_t
     length;
 
-  NexusInfo
-    * restrict image_nexus;
-
   /*
     Acquire pixels.
   */
@@ -1816,12 +1866,15 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
     Pixel request is outside cache extents.
   */
   indexes=nexus_info->indexes;
-  image_nexus=AllocateCacheNexus();
-  if (image_nexus == (NexusInfo *) NULL)
+  if (nexus_info->image_nexus == (NexusInfo *) NULL)
     {
-      ThrowException(exception,CacheError,UnableToGetCacheNexus,
-                     image->filename);
-      return((const PixelPacket *) NULL);
+      nexus_info->image_nexus=AllocateCacheNexus();
+      if (nexus_info->image_nexus == (NexusInfo *) NULL)
+        {
+          ThrowException(exception,CacheError,UnableToGetCacheNexus,
+                         image->filename);
+          return((const PixelPacket *) NULL);
+        }
     }
   virtual_pixel=image->background_color;
   q=pixels;
@@ -1843,7 +1896,7 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                 case ConstantVirtualPixelMethod:
                   {
                     if (AcquireCacheNexus(image,EdgeX(x+u),EdgeY(y+v),1,1,
-                                          image_nexus,exception) !=
+                                          nexus_info->image_nexus,exception) !=
                         (PixelPacket *) NULL)
                       p=(&virtual_pixel);
                     break;
@@ -1852,19 +1905,19 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
                 default:
                   {
                     p=AcquireCacheNexus(image,EdgeX(x+u),EdgeY(y+v),1,1,
-                                        image_nexus,exception);
+                                        nexus_info->image_nexus,exception);
                     break;
                   }
                 case MirrorVirtualPixelMethod:
                   {
                     p=AcquireCacheNexus(image,MirrorX(x+u),MirrorY(y+v),1,1,
-                                        image_nexus,exception);
+                                        nexus_info->image_nexus,exception);
                     break;
                   }
                 case TileVirtualPixelMethod:
                   {
                     p=AcquireCacheNexus(image,TileX(x+u),TileY(y+v),1,1,
-                                        image_nexus,exception);
+                                        nexus_info->image_nexus,exception);
                     break;
                   }
                 }
@@ -1873,7 +1926,7 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
               *q++=(*p);
               if (indexes == (IndexPacket *) NULL)
                 continue;
-              nexus_indexes=image_nexus->indexes;
+              nexus_indexes=nexus_info->image_nexus->indexes;
               if (nexus_indexes == (IndexPacket *) NULL)
                 continue;
               *indexes++=(*nexus_indexes);
@@ -1882,21 +1935,21 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
           /*
             Transfer a run of pixels.
           */
-          p=AcquireCacheNexus(image,x+u,y+v,(const unsigned long) length,1,image_nexus,exception);
+          p=AcquireCacheNexus(image,x+u,y+v,(const unsigned long) length,1,nexus_info->image_nexus,exception);
           if (p == (const PixelPacket *) NULL)
             break;
           (void) memcpy(q,p,length*sizeof(PixelPacket));
           q+=length;
           if (indexes == (IndexPacket *) NULL)
             continue;
-          nexus_indexes=image_nexus->indexes;
+          nexus_indexes=nexus_info->image_nexus->indexes;
           if (nexus_indexes == (IndexPacket *) NULL)
             continue;
           (void) memcpy(indexes,nexus_indexes,length*sizeof(IndexPacket));
           indexes+=length;
         }
     }
-  DestroyCacheNexus(image_nexus);
+  /* DestroyCacheNexus(image_nexus); */
   return(pixels);
 }
 
@@ -2621,7 +2674,7 @@ AccessCacheViewPixels(const ViewInfo *view)
 
   assert(view_info != (View *) NULL);
   assert(view_info->signature == MagickSignature);
-  return view_info->nexus_info->pixels;
+  return view_info->nexus_info.pixels;
 }
 
 /*
@@ -2750,7 +2803,7 @@ AccessMutablePixels(Image *image)
 %
 %  The format of the AcquireCacheViewPixels method is:
 %
-%      const PixelPacket *AcquireCacheViewPixels(const ViewInfo *view,
+%      const PixelPacket *AcquireCacheViewPixels(ViewInfo *view,
 %        const long x,const long y,const unsigned long columns,
 %        const unsigned long rows,ExceptionInfo *exception)
 %
@@ -2769,17 +2822,17 @@ AccessMutablePixels(Image *image)
 %
 */
 MagickExport const PixelPacket *
-AcquireCacheViewPixels(const ViewInfo *view,
+AcquireCacheViewPixels(ViewInfo *view,
                        const long x,const long y,const unsigned long columns,
                        const unsigned long rows,ExceptionInfo *exception)
 {
-  const View
-    * restrict view_info = (const View *) view;
+  View
+    * restrict view_info = (View *) view;
 
-  assert(view_info != (const View *) NULL);
+  assert(view_info != (View *) NULL);
   assert(view_info->signature == MagickSignature);
   return AcquireCacheNexus(view_info->image,x,y,columns,rows,
-                           view_info->nexus_info,exception);
+                           &view_info->nexus_info,exception);
 }
 
 /*
@@ -2817,7 +2870,7 @@ AcquireCacheViewIndexes(const ViewInfo *view)
 
   assert(view_info != (const View *) NULL);
   assert(view_info->signature == MagickSignature);
-  return view_info->nexus_info->indexes;
+  return view_info->nexus_info.indexes;
 }
 
 /*
@@ -2913,7 +2966,7 @@ AcquireImagePixels(const Image *image,
 %
 */
 static inline MagickPassFail
-AcquireOneCacheViewPixelInlined(const View *view_info,
+AcquireOneCacheViewPixelInlined(View *view_info,
                                 PixelPacket *pixel,
                                 const long x,const long y,
                                 ExceptionInfo *exception)
@@ -2948,7 +3001,7 @@ AcquireOneCacheViewPixelInlined(const View *view_info,
       const PixelPacket
         *pixels;
 
-      if ((pixels=AcquireCacheNexus(image,x,y,1,1,view_info->nexus_info,
+      if ((pixels=AcquireCacheNexus(image,x,y,1,1,&view_info->nexus_info,
                                     exception)) != (const PixelPacket *) NULL)
         {
           *pixel=pixels[0];
@@ -2964,11 +3017,11 @@ AcquireOneCacheViewPixelInlined(const View *view_info,
 }
 
 MagickExport MagickPassFail
-AcquireOneCacheViewPixel(const ViewInfo *view,PixelPacket *pixel,
+AcquireOneCacheViewPixel(ViewInfo *view,PixelPacket *pixel,
                          const long x,const long y,
                          ExceptionInfo *exception)
 {
-  return AcquireOneCacheViewPixelInlined((const View *) view,pixel,x,y,
+  return AcquireOneCacheViewPixelInlined((View *) view,pixel,x,y,
                                          exception);
 }
 
@@ -3064,7 +3117,7 @@ AcquireOnePixelByReference(const Image *image,PixelPacket *pixel,
                            ExceptionInfo *exception)
 {
   return
-    AcquireOneCacheViewPixelInlined((const View *) AccessDefaultCacheView(image),
+    AcquireOneCacheViewPixelInlined((View *) AccessDefaultCacheView(image),
                                     pixel,x,y,
                                     exception);
 }
@@ -3498,10 +3551,7 @@ CloseCacheView(ViewInfo *view)
       View
         *view_info = (View *) view;
 
-      assert(view_info->signature == MagickSignature);
-      assert(view_info->nexus_info->signature == MagickSignature);
-      DestroyCacheNexus(view_info->nexus_info);
-      view_info->nexus_info=(NexusInfo *) NULL;
+      DeinitializeCacheView(view_info);
       MagickFreeAlignedMemory(view_info);
     }
 }
@@ -3712,12 +3762,12 @@ GetCacheViewArea(const ViewInfo *view)
   const View
     * restrict view_info = (const View *) view;
 
-  register NexusInfo
+  register const NexusInfo
     * restrict nexus_info;
 
   assert(view_info != (const View *) NULL);
   assert(view_info->signature == MagickSignature);
-  nexus_info=view_info->nexus_info;
+  nexus_info=&view_info->nexus_info;
   return((magick_off_t) nexus_info->region.width*nexus_info->region.height);
 }
 
@@ -3756,19 +3806,19 @@ GetCacheViewArea(const ViewInfo *view)
 %
 */
 MagickExport PixelPacket *
-GetCacheViewPixels(const ViewInfo *view,const long x,const long y,
+GetCacheViewPixels(ViewInfo *view,const long x,const long y,
                    const unsigned long columns,const unsigned long rows,
                    ExceptionInfo *exception)
 {
-  const View
-    *view_info = (const View *) view;
+  View
+    *view_info = (View *) view;
 
   PixelPacket
     *pixels;
 
   assert(view_info != (const View *) NULL);
   assert(view_info->signature == MagickSignature);
-  pixels=GetCacheNexus(view_info->image,x,y,columns,rows,view_info->nexus_info,
+  pixels=GetCacheNexus(view_info->image,x,y,columns,rows,&view_info->nexus_info,
                        exception);
   return pixels;
 }
@@ -3845,7 +3895,7 @@ GetCacheViewIndexes(const ViewInfo *view)
 
   assert(view_info != (View *) NULL);
   assert(view_info->signature == MagickSignature);
-  return view_info->nexus_info->indexes;
+  return view_info->nexus_info.indexes;
 }
 
 /*
@@ -3877,12 +3927,12 @@ GetCacheViewRegion(const ViewInfo *view)
   const View
     *view_info = (const View *) view;
 
-  NexusInfo
+  const NexusInfo
     *nexus_info;
 
   assert(view_info != (View *) NULL);
   assert(view_info->signature == MagickSignature);
-  nexus_info=view_info->nexus_info;
+  nexus_info=&view_info->nexus_info;
   assert(nexus_info != (NexusInfo *) NULL);
   assert(nexus_info->signature == MagickSignature);
   return nexus_info->region;
@@ -4300,7 +4350,7 @@ GetPixelCachePresent(const Image *image)
 %
 */
 MagickExport MagickPassFail
-InterpolateViewColor(const ViewInfo *view,
+InterpolateViewColor(ViewInfo *view,
                      PixelPacket *color,
                      const double x_offset,
                      const double y_offset,
@@ -4556,15 +4606,8 @@ OpenCacheView(Image *image)
   if (view == (View *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheView);
-  (void) memset(view,0,sizeof(View));
-  view->nexus_info=AllocateCacheNexus();
-  if (view->nexus_info == ((NexusInfo *) NULL))
-    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-                      UnableToAllocateCacheView);
-  view->image=image;
-  view->signature=MagickSignature;
-
-  return ((ViewInfo *) view);
+  InitializeCacheView(image,view);
+  return (ViewInfo *) view;
 }
 
 /*
@@ -4792,7 +4835,7 @@ ReferenceCache(Cache cache_info)
 %
 %  The format of the SetCacheViewPixels method is:
 %
-%      PixelPacket *SetCacheViewPixels(const ViewInfo *view,const long x,
+%      PixelPacket *SetCacheViewPixels(ViewInfo *view,const long x,
 %        const long y,const unsigned long columns,const unsigned long rows)
 %
 %  A description of each parameter follows:
@@ -4806,17 +4849,17 @@ ReferenceCache(Cache cache_info)
 %
 */
 MagickExport PixelPacket *
-SetCacheViewPixels(const ViewInfo *view,const long x,const long y,
+SetCacheViewPixels(ViewInfo *view,const long x,const long y,
                    const unsigned long columns,const unsigned long rows,
                    ExceptionInfo *exception)
 {
-  const View
-    *view_info = (const View *) view;
+  View
+    *view_info = (View *) view;
 
   assert(view_info != (const View *) NULL);
   assert(view_info->signature == MagickSignature);
   return SetCacheNexus(view_info->image,x,y,columns,rows,
-                       view_info->nexus_info,exception);
+                       &view_info->nexus_info,exception);
 }
 
 /*
@@ -5025,7 +5068,7 @@ SyncCacheViewPixels(const ViewInfo *view,ExceptionInfo *exception)
 
   assert(view_info != (View *) NULL);
   assert(view_info->signature == MagickSignature);
-  status=SyncCacheNexus(view_info->image,view_info->nexus_info,exception);
+  status=SyncCacheNexus(view_info->image,&view_info->nexus_info,exception);
   return status;
 }
 
