@@ -823,15 +823,34 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
       {
         for (i=0; i < (long) number_of_profiles; i++)
         {
-          if (profiles[i].length == 0)
-            continue;
-          profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
-          if (profiles[i].info == (unsigned char *) NULL)
-            ThrowMPCReaderException(CorruptImageError,UnableToReadGenericProfile,
-              image);
-          (void) ReadBlob(image,profiles[i].length,profiles[i].info);
-          (void) SetImageProfile(image,profiles[i].name,profiles[i].info,
-                                 profiles[i].length);
+          if (profiles[i].length > 0)
+            {
+              if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
+                  ((BlobIsSeekable(image)
+                    && (GetBlobSize(image) - TellBlob(image)) >
+                    (magick_off_t) profiles[i].length) ||
+                   (profiles[i].length < 15*1024*1024)))
+                {
+                  profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
+                  if (profiles[i].info == (unsigned char *) NULL)
+                    ThrowMPCReaderException(CorruptImageError,UnableToReadGenericProfile,
+                                             image);
+                  if (ReadBlob(image,profiles[i].length,profiles[i].info)
+                      != profiles[i].length)
+                    ThrowMPCReaderException(CorruptImageError,
+                                             UnexpectedEndOfFile,
+                                             image);
+                  (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+                }
+              else
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Profile size %" MAGICK_SIZE_T_F "u is excessively large",
+                                        (MAGICK_SIZE_T ) profiles[i].length);
+                  ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,
+                                           image);
+                }
+            }
           MagickFreeMemory(profiles[i].name);
           MagickFreeMemory(profiles[i].info);
         }

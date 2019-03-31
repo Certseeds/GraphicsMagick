@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1446,7 +1446,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
           if (profiles[i].length > 0)
             {
               if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
-                  ((BlobIsSeekable(image) && (GetBlobSize(image) - TellBlob(image)) > (magick_off_t) profiles[i].length) ||
+                  ((BlobIsSeekable(image)
+                    && (GetBlobSize(image) - TellBlob(image)) >
+                    (magick_off_t) profiles[i].length) ||
                    (profiles[i].length < 15*1024*1024)))
                 {
                   profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
