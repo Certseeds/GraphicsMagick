@@ -1,3 +1,17 @@
+2019-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/xwindow.c (MagickXGetWindowInfo): Deal with the unlikely
+	case that the memory allocation for window->segment_info
+	fails. Fixes SourceForge #595 "use allocate memory before null
+	check" as pertains to magick/xwindow.c.
+
+	* magick/segment.c (Classify): Add check for memory allocation failure when allocating cluster array. Fixes SourceForge #595 "use allocate memory before
+	null check" as pertains to magick/segment.c.
+
+	* coders/pdb.c (ReadPDBImage): Fix use of allocated memory before
+	null check.  Fixes SourceForge #595 "use allocate memory before
+	null check" as pertains to coders/pdb.c.
+
 2019-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (AllocateThreadViewSet): Simplify the image

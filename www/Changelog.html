@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2019-03-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/xwindow.c (MagickXGetWindowInfo): Deal with the unlikely
+case that the memory allocation for window-&gt;segment_info
+fails. Fixes SourceForge #595 &quot;use allocate memory before null
+check&quot; as pertains to magick/xwindow.c.</li>
+<li>magick/segment.c (Classify): Add check for memory allocation failure when allocating cluster array. Fixes SourceForge #595 &quot;use allocate memory before
+null check&quot; as pertains to magick/segment.c.</li>
+<li>coders/pdb.c (ReadPDBImage): Fix use of allocated memory before
+null check.  Fixes SourceForge #595 &quot;use allocate memory before
+null check&quot; as pertains to coders/pdb.c.</li>
+</ul>
+</blockquote>
 <p>2019-03-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

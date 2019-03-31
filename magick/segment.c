@@ -402,6 +402,12 @@ Classify(Image * restrict image,short **extrema,
       for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
         number_clusters++;
       cluster_array=MagickAllocateArray(Cluster **,number_clusters,sizeof(Cluster *));
+      if (cluster_array == (Cluster **) NULL)
+        {
+          ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                         image->filename);
+          goto classify_error_exit;
+        }
       number_clusters=0;
       for (cluster=head; cluster != (Cluster *) NULL; cluster=cluster->next)
         cluster_array[number_clusters++]=cluster;

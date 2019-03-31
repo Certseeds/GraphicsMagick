@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -659,9 +659,6 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       int
         c;
 
-      register char
-        *p;
-
       size_t
         length;
 
@@ -671,23 +668,27 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       c=ReadBlobByte(image);
       length=MaxTextExtent;
       comment=MagickAllocateMemory(char *,length+1);
-      p=comment;
-      p[0]='\0';
       if (comment != (char *) NULL)
-        for ( ; c != EOF; p++)
         {
-          if ((size_t) (p-comment) >= length)
+          register char
+            *p=comment;
+
+          p[0]='\0';
+          for ( ; c != EOF; p++)
             {
-              length<<=1;
-              length+=MaxTextExtent;
-              MagickReallocMemory(char *,comment,length+1);
-              if (comment == (char *) NULL)
-                break;
-              p=comment+strlen(comment);
+              if ((size_t) (p-comment) >= length)
+                {
+                  length<<=1;
+                  length+=MaxTextExtent;
+                  MagickReallocMemory(char *,comment,length+1);
+                  if (comment == (char *) NULL)
+                    break;
+                  p=comment+strlen(comment);
+                }
+              *p=c;
+              *(p+1)='\0';
+              c=ReadBlobByte(image);
             }
-          *p=c;
-          *(p+1)='\0';
-          c=ReadBlobByte(image);
         }
       if (comment == (char *) NULL)
         ThrowPDBReaderException(ResourceLimitError,MemoryAllocationFailed,image);
