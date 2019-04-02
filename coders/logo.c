@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
 % Parts Copyright (c) 1989-2000 by Brian V. Smith
 % Parts Copyright (c) 1991 by Paul King
@@ -4986,15 +4986,13 @@ static const unsigned char
   };
 
 
-typedef struct _EmbeddedImage
+static const struct
 {
-  char          name[MaxTextExtent];    /* image name */
-  char          magick[MaxTextExtent];  /* blob format */
-  const void   *blob;                   /* blob data */
-  size_t        extent;                 /* blob size */
-} EmbeddedImage;
-
-static const EmbeddedImage EmbeddedImageList[]=
+  char                  name[20];       /* image name */
+  char                  magick[4];      /* blob format */
+  const void           *blob;           /* blob data */
+  unsigned short        extent;         /* blob size */
+} EmbeddedImageList[]=
   {
     { "BRICKS", "PBM", BricksImage, BricksImageExtent },
     { "CIRCLES", "PBM", CirclesImage, CirclesImageExtent },

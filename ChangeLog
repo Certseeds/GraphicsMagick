@@ -1,3 +1,11 @@
+2019-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/logo.c: Make more static data const.
+
+	* magick/module_aliases.h: Make more static data const.
+
+	* magick/static.c: Make more static data const.
+
 2019-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (LogMagickEventList): Log elapsed time with
