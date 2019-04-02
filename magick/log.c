@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -659,8 +659,8 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
       (void) fprintf(log_info.file,"  <timestamp>%.1024s</timestamp>\n",
         timestamp);
       (void) fprintf(log_info.file,
-        "  <elapsed-time>%ld:%02ld</elapsed-time>\n",
-        (long) (elapsed_time/60.0),(long) ceil(fmod(elapsed_time,60.0)));
+        "  <elapsed-time>%ld:%-9.6f</elapsed-time>\n",
+        (long) (elapsed_time/60.0),fmod(elapsed_time,60.0));
       (void) fprintf(log_info.file,"  <user-time>%0.3f</user-time>\n",
         user_time);
       (void) fprintf(log_info.file,"  <pid>%ld</pid>\n",(long) getpid());
@@ -706,10 +706,10 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
             log_info.generation=0;
         }
         (void) fprintf(log_info.file,
-                       "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu"
+                       "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu"
                        " %.1024s %.1024s %.1024s\n",
                        timestamp, (long) (elapsed_time/60.0),
-                       (long) ceil(fmod(elapsed_time,60.0)),
+                       fmod(elapsed_time,60.0),
                        user_time, (long) getpid(), srcname, function, line, domain,
                        severity, event);
       (void) fflush(log_info.file);
@@ -723,10 +723,10 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         buffer[MaxTextExtent];
 
       FormatString(buffer,
-                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
                    " %.1024s %.1024s\n",
                    timestamp, (long) (elapsed_time/60.0),
-                   (long) ceil(fmod(elapsed_time,60.0)),
+                   fmod(elapsed_time,60.0),
                    user_time, (long) getpid(), srcname, function, line,
                    domain, severity, event);
       OutputDebugString(buffer);
@@ -744,10 +744,10 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         hSource;
 
       FormatString(buffer,
-                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
                    " %.1024s %.1024s\n",
                    timestamp, (long) (elapsed_time/60.0),
-                   (long) ceil(fmod(elapsed_time,60.0)),
+                   fmod(elapsed_time,60.0),
                    user_time, (long) getpid(), srcname, function, line,
                    domain, severity, event);
       hSource = RegisterEventSource(NULL, MagickPackageName);
@@ -836,8 +836,8 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
           }
           case 'r':
           {
-            (void) fprintf(file,"%ld:%02ld",(long) (elapsed_time/60.0),
-              (long) ceil(fmod(elapsed_time,60.0)));
+            (void) fprintf(file,"%ld:%-9.6f",(long) (elapsed_time/60.0),
+              fmod(elapsed_time,60.0));
             break;
           }
           case 's':
@@ -874,10 +874,10 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         buffer[MaxTextExtent];
 
       FormatString(buffer,
-                   "%.1024s %ld:%02ld %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
                    " %.1024s %.1024s\n",
                    timestamp, (long) (elapsed_time/60.0),
-                   (long) ceil(fmod(elapsed_time,60.0)),
+                   fmod(elapsed_time,60.0),
                    user_time, (long) getpid(), srcname, function, line,
                    domain, severity, event);
       log_info.method(type,buffer);
