@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2203,7 +2203,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
             palette;
 
           (void) png_get_PLTE(ping,ping_info,&palette,&number_colors);
-          image->colors=number_colors;
+          image->colors=number_colors; /* FIXME: bug 596 */
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "    Reading PNG PLTE chunk:"
@@ -2653,7 +2653,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       png_destroy_read_struct(&ping,&ping_info,&end_info);
       MagickFreeMemory(mng_info->quantum_scanline);
       MagickFreeMemory(mng_info->png_pixels);
-      image->colors=2;
+      if (ReallocateImageColormap(image,2) == MagickFail)
+        {
+          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                               image);
+        }
       (void) SetImage(image,TransparentOpacity);
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
       UnlockSemaphoreInfo(png_semaphore);
@@ -6102,7 +6106,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   image->columns=1;
                   image->rows=1;
-                  image->colors=2;
+                  if (ReallocateImageColormap(image,2) == MagickFail)
+                    {
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                           image);
+                    }
                   (void) SetImage(image,TransparentOpacity);
                   image->page.width=1;
                   image->page.height=1;

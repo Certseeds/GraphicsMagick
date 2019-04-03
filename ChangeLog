@@ -1,5 +1,12 @@
 2019-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadMNGImage): Fix small buffer overflow (one
+	PixelPacket) of image colormap.  Fixes SourceForge issue #596
+	"heap-buffer-overflow in function CloneImage of magick/image.c".
+
+	* magick/colormap.c (ReallocateImageColormap): New function to
+	reallocate an image colormap.
+
 	* coders/logo.c: Make more static data const.
 
 	* magick/module_aliases.h: Make more static data const.
