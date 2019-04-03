@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -35,11 +35,11 @@
 %  AllocateImageColormap() allocates an image colormap and initializes
 %  it to a linear gray colorspace with increasing intensity.  If the image
 %  already has a colormap, it is replaced.  AllocateImageColormap() returns
-%  True if successful, otherwise False if there is not enough memory.
+%  MagickPass if successful, otherwise MagickFail if there is not enough memory.
 %
 %  The format of the AllocateImageColormap method is:
 %
-%      unsigned int AllocateImageColormap(Image *image,
+%      MagickPassFail AllocateImageColormap(Image *image,
 %        const unsigned long colors)
 %
 %  A description of each parameter follows:
@@ -109,7 +109,7 @@ MagickExport MagickPassFail AllocateImageColormap(Image *image,
 %
 %  The format of the CycleColormapImage method is:
 %
-%      CycleColormapImage(Image *image,const int amount)
+%      MagickPassFail CycleColormapImage(Image *image,const int amount)
 %
 %  A description of each parameter follows:
 %
@@ -243,6 +243,76 @@ MagickConstrainColormapIndex(Image *image, unsigned int index)
                      InvalidColormapIndex,colormapIndexBuffer);
     }
   return 0U;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   R e a l l o c a t e I m a g e C o l o r m a p                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  ReallocateImageColormap() reallocates an image colormap (or allocates it
+%  if is not already allocated) and clears any added colormap entries
+%  while preserving existing entries. ReallocateImageColormap() returns
+%  MagickPass if successful, otherwise MagickFail if there is not enough
+%  memory or the number of colormap entries is not supported.
+%
+%  The image storage class is not modified by this function.
+%
+%  The format of the ReallocateImageColormap method is:
+%
+%      MagickPassFail ReallocateImageColormap(Image *image,
+%        const unsigned int colors)
+%
+%  A description of each parameter follows:
+%
+%    o image: The image.
+%
+%    o colors: The number of colors in the image colormap.
+%
+%
+*/
+MagickExport MagickPassFail ReallocateImageColormap(Image *image,
+  const unsigned int colors)
+{
+  register unsigned int
+    i;
+
+  unsigned int
+    prev_colors;
+
+  size_t
+    length;
+
+  /*
+    Allocate image colormap.
+  */
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  if (colors > MaxColormapSize)
+    return (MagickFail);
+  prev_colors=image->colors;
+  length=MagickArraySize((size_t) colors,sizeof(PixelPacket));
+  MagickReallocMemory(PixelPacket *,image->colormap,length);
+  if (image->colormap == (PixelPacket *) NULL)
+    {
+      image->colors=0;
+      return(MagickFail);
+    }
+  image->colors=colors;
+  for (i=prev_colors; i < image->colors; i++)
+  {
+    image->colormap[i].red=0;
+    image->colormap[i].green=0;
+    image->colormap[i].blue=0;
+    image->colormap[i].opacity=OpaqueOpacity;
+  }
+  return(MagickPass);
 }
 
 /*
@@ -438,7 +508,7 @@ ReplaceImageColormap(Image *image,
 %
 %  The format of the SortColormapByIntensity method is:
 %
-%      unsigned int SortColormapByIntensity(Image *image)
+%      MagickPassFail SortColormapByIntensity(Image *image)
 %
 %  A description of each parameter follows:
 %
