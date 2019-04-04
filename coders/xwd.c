@@ -390,8 +390,8 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else
     {
       image->storage_class=PseudoClass;
+      image->colors=header.ncolors;
     }
-  image->colors=header.ncolors;
   if (!image_info->ping)
     {
       /*
@@ -507,7 +507,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert X image to DirectClass packets.
             */
-            if (image->colors != 0)
+            if (header.ncolors != 0)
               {
                 for (y=0; y < (long) image->rows; y++)
                   {
@@ -519,12 +519,15 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         pixel=XGetPixel(ximage,(int) x,(int) y);
                         index_val=(unsigned short)
                           ((pixel >> red_shift) & red_mask);
+                        VerifyColormapIndexWithColors(image,index_val,header.ncolors);
                         q->red=ScaleShortToQuantum(colors[index_val].red);
                         index_val=(unsigned short)
                           ((pixel >> green_shift) & green_mask);
+                        VerifyColormapIndexWithColors(image,index_val,header.ncolors);
                         q->green=ScaleShortToQuantum(colors[index_val].green);
                         index_val=(unsigned short)
                           ((pixel >> blue_shift) & blue_mask);
+                        VerifyColormapIndexWithColors(image,index_val,header.ncolors);
                         q->blue=ScaleShortToQuantum(colors[index_val].blue);
                         q++;
                       }

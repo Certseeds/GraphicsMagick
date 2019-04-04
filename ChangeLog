@@ -1,3 +1,9 @@
+2019-04-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xwd.c (ReadXWDImage): Fix heap buffer overflow while
+	reading DirectClass XWD file.  Fixes SourceForge issue #597
+	"heap-buffer-overflow in function ReadXWDImage of coders/xwd.c".
+
 2019-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Fix small buffer overflow (one
