@@ -1837,8 +1837,14 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               p=pixels;
               for (length=0; length < image->columns; )
                 {
-                  p+=ReadBlob(image,packet_size,p);
-                  length+=*(p-1)+1;
+                  size_t
+                    bytes_read;
+
+                  if ((bytes_read=ReadBlob(image,packet_size,p)) != packet_size)
+                    ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                             image);
+                  p+=bytes_read;
+                    length+=*(p-1)+1;
                 }
 
               if (!ImportRLEPixels(image,quantum_type,quantum_size,pixels))
@@ -1865,7 +1871,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               pixels_p=pixels;
               if (ReadBlobZC(image,packet_size*image->columns,&pixels_p)
                   != (size_t) packet_size*image->columns)
-                break;
+                ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                         image);
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,
                                         (const unsigned char*) pixels_p,0,0))
                 break;
