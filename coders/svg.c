@@ -1745,12 +1745,12 @@ SVGStartElement(void *context,const xmlChar *name,
                     font-family.  Maybe we need a generalized solution for
                     this.
                   */
-                  if ((value[0] == '\'') && (value[strlen(value)-1] == '\''))
+                  int value_length;
+                  if ((value[0] == '\'') && ((value_length=(int) strlen(value)) > 2)
+                      && (value[value_length-1] == '\''))
                     {
-                      char nvalue[MaxTextExtent];
-                      (void) strlcpy(nvalue,value+1,sizeof(nvalue));
-                      nvalue[strlen(nvalue)-1]='\0';
-                      MVGPrintf(svg_info->file,"font-family '%s'\n",nvalue);
+                      MVGPrintf(svg_info->file,"font-family '%.*s'\n",
+                                (int)(value_length-2),value+1);
                     }
                   else
                     {

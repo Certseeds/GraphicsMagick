@@ -1,5 +1,10 @@
 2019-04-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/svg.c (SVGStartElement): Fix stack buffer overflow while
+	parsing quoted font family value.  Fixes SourceForge issue #600
+	"stack-buffer-overflow in function SVGStartElement of
+	coders/svg.c".
+
 	* coders/miff.c (ReadMIFFImage): Detect end of file while reading
 	RLE packets.  Fixes SourceForge issue #598 "heap-buffer-overflow
 	in function ReadMIFFImage of coders/miff.c".

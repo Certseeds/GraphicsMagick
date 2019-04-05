@@ -38,6 +38,10 @@
 <p>2019-04-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/svg.c (SVGStartElement): Fix stack buffer overflow while
+parsing quoted font family value.  Fixes SourceForge issue #600
+&quot;stack-buffer-overflow in function SVGStartElement of
+coders/svg.c&quot;.</li>
 <li>coders/miff.c (ReadMIFFImage): Detect end of file while reading
 RLE packets.  Fixes SourceForge issue #598 &quot;heap-buffer-overflow
 in function ReadMIFFImage of coders/miff.c&quot;.</li>
