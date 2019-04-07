@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -985,7 +985,7 @@ MagickExport double NTElapsedTime(void)
 
   if (pFrequency.QuadPart == 0)
     if (QueryPerformanceFrequency(&pFrequency) == 0)
-      pFrequency.QuadPart = 1;	/* Mark that the Performance counter is NOT supported. */
+      pFrequency.QuadPart = 1;  /* Mark that the Performance counter is NOT supported. */
 
   if (pFrequency.QuadPart > 1)
     {
@@ -1653,10 +1653,10 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
     Ghostscript 7.0X does not include the Resource entry.
 
     Search path used by GPL Ghostscript 9.10 (2013-08-30):
-      C:\Program Files\gs\gs9.10\bin ; C:\Program Files\gs\gs9.10\lib ;
-      C:\Program Files\gs\gs9.10\fonts ; %rom%Resource/Init/ ; %rom%lib/ ;
-      c:/gs/gs9.10/Resource/Init ; c:/gs/gs9.10/lib ;
-      c:/gs/gs9.10/Resource/Font ; c:/gs/fonts
+    C:\Program Files\gs\gs9.10\bin ; C:\Program Files\gs\gs9.10\lib ;
+    C:\Program Files\gs\gs9.10\fonts ; %rom%Resource/Init/ ; %rom%lib/ ;
+    c:/gs/gs9.10/Resource/Init ; c:/gs/gs9.10/lib ;
+    c:/gs/gs9.10/Resource/Font ; c:/gs/fonts
 
   */
   {
@@ -1667,7 +1667,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
     end = start+strlen(start);
     while ( start < end )
       {
-        char          
+        char
           font_dir_file[MaxTextExtent];
 
         const char
@@ -1698,12 +1698,12 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
       }
 
 
-	// Second scan will try to get common fonts for all gs versions.
-      start = gs_lib_path;
-      end = start + strlen(start);
-      while ( start < end )
+    // Second scan will try to get common fonts for all gs versions.
+    start = gs_lib_path;
+    end = start + strlen(start);
+    while ( start < end )
       {
-        char          
+        char
           font_dir_file[MaxTextExtent];
 
         const char
@@ -1714,27 +1714,27 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
         separator = strchr(start,DirectoryListSeparator);
         gsdir = strstr(start,"/gs/gs");
-	if(gsdir==NULL) gsdir = strstr(start,"\\gs\\gs");
-        if(gsdir!=NULL && (separator==NULL || gsdir<separator))
-        {          
-          length = Min((gsdir-start)+5,MaxTextExtent);
-          (void) strlcpy(font_dir_file,start,length);          
-          (void) strlcat(font_dir_file,"fonts",MaxTextExtent);
-          (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-          (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
-          if (IsAccessible(font_dir_file))
-            {
-              (void) strlcpy(path,font_dir_file,Min(length+5,path_length));  // str size "fonts" is 5.
-              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-                                  "Ghostscript common fonts in directory \"%s\"",
-                                  path);
-              return TRUE;
-            }
-        }
+        if (gsdir==NULL) gsdir = strstr(start,"\\gs\\gs");
+        if (gsdir!=NULL && (separator==NULL || gsdir<separator))
+          {
+            length = Min((gsdir-start)+5,MaxTextExtent);
+            (void) strlcpy(font_dir_file,start,length);
+            (void) strlcat(font_dir_file,"fonts",MaxTextExtent);
+            (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
+            (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+            if (IsAccessible(font_dir_file))
+              {
+                (void) strlcpy(path,font_dir_file,Min(length+5,path_length));  // str size "fonts" is 5.
+                (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                      "Ghostscript common fonts in directory \"%s\"",
+                                      path);
+                return TRUE;
+              }
+          }
 
-        if(separator==NULL) break;
+        if (separator==NULL) break;
         start = separator + 1;
-      }     
+      }
   }
 
   {
@@ -1749,7 +1749,8 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
       different GS_LIB_DEFAULT (which includes AROOTDIR) definition.
     */
 
-    const char gs_font_dir[] = "c:\\gs\\fonts";
+    const char
+      gs_font_dir[] = "c:\\gs\\fonts";
 
     char
       font_dir_file[MaxTextExtent];
