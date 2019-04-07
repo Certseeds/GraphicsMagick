@@ -1664,7 +1664,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
       *end = NULL,
       *start = gs_lib_path;
 
-    end=start+strlen(start);
+    end = start+strlen(start);
     while ( start < end )
       {
         char
@@ -1696,7 +1696,47 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
           }
         start += length+1;
       }
+
+
+	// Second scan will try to get common fonts for all gs versions.
+      start = gs_lib_path;
+      end = start + strlen(start);
+      while ( start < end )
+      {
+        char
+          font_dir[MaxTextExtent],
+          font_dir_file[MaxTextExtent];
+
+        const char
+          *separator, *gsdir;
+
+        int
+          length;
+
+        separator = strchr(start,DirectoryListSeparator);
+        gsdir = strstr(start,"/gs/gs");
+	if(gsdir==NULL) gsdir = strstr(start,"\\gs\\gs");
+        if(gsdir!=NULL && (separator==NULL || gsdir<separator))
+        {          
+          length = gsdir - start;
+          (void) strlcpy(font_dir,start,Min(length+5,MaxTextExtent));
+          (void) strlcpy(font_dir_file,font_dir,MaxTextExtent);
+          (void) strlcat(font_dir_file,"fonts",MaxTextExtent);
+          (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
+          (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+          if (IsAccessible(font_dir_file))
+            {
+              (void) strlcpy(path,font_dir,path_length);
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                  "Ghostscript fonts in directory \"%s\"",
+                                  path);
+              return TRUE;
+            }
+        }
+        start += length+1;      
+      }     
   }
+
   {
     /*
       Check "c:/gs/fonts" since Ghostscript also looks there.  This

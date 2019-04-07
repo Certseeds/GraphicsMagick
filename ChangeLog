@@ -1,3 +1,8 @@
+2019-04-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* magick/nt_base.c Fix a problem of finding ghostscript fonts.
+
+
 2019-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xwd.c (ReadXWDImage): Perform more header validations and
