@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -96,6 +96,102 @@ static unsigned int IsXWD(const unsigned char *magick,const size_t length)
 
 #if defined(HasX11)
 #include "magick/xwindow.h"
+
+static void TraceXWDHeader(const XWDFileHeader *header)
+{
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "XWDFileHeader:\n"
+                        "    header_size      : %u\n"
+                        "    file_version     : %u\n"
+                        "    pixmap_format    : %s\n"
+                        "    pixmap_depth     : %u\n"
+                        "    pixmap_width     : %u\n"
+                        "    pixmap_height    : %u\n"
+                        "    xoffset          : %u\n"
+                        "    byte_order       : %s\n"
+                        "    bitmap_unit      : %u\n"
+                        "    bitmap_bit_order : %s\n"
+                        "    bitmap_pad       : %u\n"
+                        "    bits_per_pixel   : %u\n"
+                        "    bytes_per_line   : %u\n"
+                        "    visual_class     : %s\n"
+                        "    red_mask         : 0x%06X\n"
+                        "    green_mask       : 0x%06X\n"
+                        "    blue_mask        : 0x%06X\n"
+                        "    bits_per_rgb     : %u\n"
+                        "    colormap_entries : %u\n"
+                        "    ncolors          : %u\n"
+                        "    window_width     : %u\n"
+                        "    window_height    : %u\n"
+                        "    window_x         : %u\n"
+                        "    window_y         : %u\n"
+                        "    window_bdrwidth  : %u",
+                        (unsigned int) header->header_size,
+                        (unsigned int) header->file_version,
+                        /* (unsigned int) header->pixmap_format, */
+                        (header->pixmap_format == XYBitmap ? "XYBitmap" :
+                         (header->pixmap_format == XYPixmap ? "XYPixmap" :
+                          (header->pixmap_format == ZPixmap ? "ZPixmap" : "?"))),
+                        (unsigned int) header->pixmap_depth,
+                        (unsigned int) header->pixmap_width,
+                        (unsigned int) header->pixmap_height,
+                        (unsigned int) header->xoffset,
+                        (header->byte_order == MSBFirst? "MSBFirst" :
+                         (header->byte_order == LSBFirst ? "LSBFirst" : "?")),
+                        (unsigned int) header->bitmap_unit,
+                        (header->bitmap_bit_order == MSBFirst? "MSBFirst" :
+                         (header->bitmap_bit_order == LSBFirst ? "LSBFirst" :
+                          "?")),
+                        (unsigned int) header->bitmap_pad,
+                        (unsigned int) header->bits_per_pixel,
+                        (unsigned int) header->bytes_per_line,
+                        (header->visual_class == StaticGray ? "StaticGray" :
+                         (header->visual_class == GrayScale ? "GrayScale" :
+                          (header->visual_class == StaticColor ? "StaticColor" :
+                           (header->visual_class == PseudoColor ? "PseudoColor" :
+                            (header->visual_class == TrueColor ? "TrueColor" :
+                             (header->visual_class == DirectColor ?
+                              "DirectColor" : "?")))))),
+                        (unsigned int) header->red_mask,
+                        (unsigned int) header->green_mask,
+                        (unsigned int) header->blue_mask,
+                        (unsigned int) header->bits_per_rgb,
+                        (unsigned int) header->colormap_entries,
+                        (unsigned int) header->ncolors,
+                        (unsigned int) header->window_width,
+                        (unsigned int) header->window_height,
+                        (unsigned int) header->window_x,
+                        (unsigned int) header->window_y,
+                        (unsigned int) header->window_bdrwidth
+                        );
+}
+
+/*
+  Compute required allocation sizes
+
+  FIXME: This is still a work in progress.
+
+  BitmapUnit (pixmap_depth) is the size of each data unit in each
+  scan line.  This value may be 8, 16, or 32.
+
+  BitmapPad (bitmap_pad) is the number of bits of padding added to
+  each scan line.  This value may be 8, 16, or 32.
+*/
+static MagickPassFail BytesPerLine(size_t *bytes_per_line,
+                                   size_t *scanline_bits,
+                                   const size_t pixmap_width,
+                                   const size_t pixmap_depth,
+                                   const size_t bitmap_pad)
+{
+  *bytes_per_line=0;
+  *scanline_bits=MagickArraySize(pixmap_width,pixmap_depth);
+  if ((*scanline_bits > 0) && (((~(size_t)0) - *scanline_bits > (bitmap_pad)-1)))
+    *bytes_per_line=((((*scanline_bits)+((bitmap_pad)-1))/
+                      (bitmap_pad))*((bitmap_pad) >> 3));
+
+  return (*bytes_per_line !=0 && *scanline_bits != 0) ? MagickPass : MagickFail;
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -211,71 +307,11 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (*(char *) &lsb_first)
     MSBOrderLong((unsigned char *) &header,sz_XWDheader);
 
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "XWDFileHeader:\n"
-                        "    header_size      : %u\n"
-                        "    file_version     : %u\n"
-                        "    pixmap_format    : %s\n"
-                        "    pixmap_depth     : %u\n"
-                        "    pixmap_width     : %u\n"
-                        "    pixmap_height    : %u\n"
-                        "    xoffset          : %u\n"
-                        "    byte_order       : %s\n"
-                        "    bitmap_unit      : %u\n"
-                        "    bitmap_bit_order : %s\n"
-                        "    bitmap_pad       : %u\n"
-                        "    bits_per_pixel   : %u\n"
-                        "    bytes_per_line   : %u\n"
-                        "    visual_class     : %s\n"
-                        "    red_mask         : 0x%06X\n"
-                        "    green_mask       : 0x%06X\n"
-                        "    blue_mask        : 0x%06X\n"
-                        "    bits_per_rgb     : %u\n"
-                        "    colormap_entries : %u\n"
-                        "    ncolors          : %u\n"
-                        "    window_width     : %u\n"
-                        "    window_height    : %u\n"
-                        "    window_x         : %u\n"
-                        "    window_y         : %u\n"
-                        "    window_bdrwidth  : %u",
-                        (unsigned int) header.header_size,
-                        (unsigned int) header.file_version,
-                        /* (unsigned int) header.pixmap_format, */
-                        (header.pixmap_format == XYBitmap ? "XYBitmap" :
-                         (header.pixmap_format == XYPixmap ? "XYPixmap" :
-                          (header.pixmap_format == ZPixmap ? "ZPixmap" : "?"))),
-                        (unsigned int) header.pixmap_depth,
-                        (unsigned int) header.pixmap_width,
-                        (unsigned int) header.pixmap_height,
-                        (unsigned int) header.xoffset,
-                        (header.byte_order == MSBFirst? "MSBFirst" :
-                         (header.byte_order == LSBFirst ? "LSBFirst" : "?")),
-                        (unsigned int) header.bitmap_unit,
-                        (header.bitmap_bit_order == MSBFirst? "MSBFirst" :
-                         (header.bitmap_bit_order == LSBFirst ? "LSBFirst" :
-                          "?")),
-                        (unsigned int) header.bitmap_pad,
-                        (unsigned int) header.bits_per_pixel,
-                        (unsigned int) header.bytes_per_line,
-                        (header.visual_class == StaticGray ? "StaticGray" :
-                         (header.visual_class == GrayScale ? "GrayScale" :
-                          (header.visual_class == StaticColor ? "StaticColor" :
-                           (header.visual_class == PseudoColor ? "PseudoColor" :
-                            (header.visual_class == TrueColor ? "TrueColor" :
-                             (header.visual_class == DirectColor ?
-                              "DirectColor" : "?")))))),
-                        (unsigned int) header.red_mask,
-                        (unsigned int) header.green_mask,
-                        (unsigned int) header.blue_mask,
-                        (unsigned int) header.bits_per_rgb,
-                        (unsigned int) header.colormap_entries,
-                        (unsigned int) header.ncolors,
-                        (unsigned int) header.window_width,
-                        (unsigned int) header.window_height,
-                        (unsigned int) header.window_x,
-                        (unsigned int) header.window_y,
-                        (unsigned int) header.window_bdrwidth
-                        );
+  /*
+    Trace XWD header
+  */
+  if (image->logging)
+    TraceXWDHeader(&header);
 
   /*
     Check to see if the dump file is in the proper format.
@@ -283,7 +319,8 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (header.file_version != XWD_FILE_VERSION)
     ThrowXWDReaderException(CorruptImageError,InvalidFileFormatVersion,image);
   if (header.header_size < sz_XWDheader)
-    ThrowXWDReaderException(CorruptImageError,CorruptImage,image);
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+
   switch (header.visual_class)
     {
     case StaticGray:
@@ -295,7 +332,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       break;
     default:
       {
-        ThrowXWDReaderException(CorruptImageError,CorruptImage,image);
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     }
   switch (header.pixmap_format)
@@ -306,9 +343,35 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       break;
     default:
       {
-        ThrowXWDReaderException(CorruptImageError,CorruptImage,image);
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     }
+
+  if ((header.bits_per_pixel == 0) || (header.bits_per_pixel > 32))
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+  if ((header.bitmap_pad % 8 != 0) || (header.bitmap_pad > 32))
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+
+  {
+    size_t
+      bytes_per_line=0,
+      scanline_bits;
+
+    if (BytesPerLine(&bytes_per_line,&scanline_bits,
+                     header.pixmap_width,header.pixmap_depth,header.bitmap_pad)
+        == MagickFail)
+      ThrowReaderException(CoderError,ArithmeticOverflow,image);
+
+    if (header.bytes_per_line < bytes_per_line)
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Header bytes_per_line = %" MAGICK_SIZE_T_F "u,"
+                              " expected %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) header.bytes_per_line,
+                              (MAGICK_SIZE_T) bytes_per_line);
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      }
+  }
 
   /*
     Retrieve comment (if any)
@@ -366,6 +429,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /* Guard against buffer overflow in libX11. */
   if (ximage->bits_per_pixel > 32 || ximage->bitmap_unit > 32)
     ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+
   status=XInitImage(ximage);
   if (status == False)
     ThrowXWDReaderException(CorruptImageError,UnrecognizedXWDHeader,image);
@@ -456,6 +520,22 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
         }
+      {
+
+        magick_off_t
+          file_size;
+
+        file_size=GetBlobSize(image);
+
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "File size %" MAGICK_OFF_F "d,"
+                              "Pixels allocation size %" MAGICK_SIZE_T_F "u",
+                              file_size, (MAGICK_SIZE_T) length);
+
+        if ((file_size != 0) && ((size_t) file_size < length))
+          ThrowXWDReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+      }
+
       ximage->data=MagickAllocateMemory(char *,length);
       if (ximage->data == (char *) NULL)
         ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -725,16 +805,16 @@ ModuleExport void UnregisterXWDImage(void)
 */
 static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
 {
-  long
+  unsigned long
     y;
 
   register const PixelPacket
     *p;
 
-  register long
+  register unsigned long
     x;
 
-  register long
+  register unsigned int
     i;
 
   register unsigned char
@@ -743,17 +823,22 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   unsigned char
     *pixels;
 
+  unsigned int
+    bits_per_pixel;
+
   size_t
-    pixels_size;
+    bytes_per_line=0,
+    scanline_bits,
+    scanline_pad=0;
 
   unsigned int
+    bitmap_pad;
+
+  MagickPassFail
     status;
 
   unsigned long
-    bits_per_pixel,
-    bytes_per_line,
-    lsb_first,
-    scanline_pad;
+    lsb_first;
 
   XWDFileHeader
     xwd_info;
@@ -766,7 +851,7 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   (void) TransformColorspace(image,RGBColorspace);
   /*
@@ -774,6 +859,40 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   */
   if ((image->storage_class == PseudoClass) && (image->colors > 256))
     SetImageType(image,TrueColorType);
+
+  /*
+    Compute required allocation sizes
+
+    BitmapUnit is the size of each data unit in each scan line.  This
+    value may be 8, 16, or 32.
+
+    BitmapPad is the number of bits of padding added to each scan
+    line.  This value may be 8, 16, or 32.
+  */
+  bits_per_pixel=(image->storage_class == DirectClass ? 24 : 8);
+  bitmap_pad=(image->storage_class == DirectClass ? 32 : 8);
+
+  if (BytesPerLine(&bytes_per_line,&scanline_bits,image->columns,
+                   bits_per_pixel,bitmap_pad) != MagickFail)
+    scanline_pad=(bytes_per_line-(scanline_bits >> 3));
+
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          " image->columns=%lu,"
+                          " bits_per_pixel=%u,"
+                          " bytes_per_line=%" MAGICK_SIZE_T_F "u,"
+                          " bitmap_pad=%u",
+                          image->columns,
+                          bits_per_pixel,
+                          (MAGICK_SIZE_T) bytes_per_line,
+                          bitmap_pad);
+  if ((scanline_bits == 0) || (bytes_per_line < (scanline_bits >> 3)))
+    ThrowWriterException(CoderError,ArithmeticOverflow,image);
+
+  if (((bytes_per_line & 0x7fffffff) != bytes_per_line) ||
+      ((image->rows & 0x7fffffff) != image->rows))
+    ThrowWriterException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+
   /*
     Initialize XWD file header.
   */
@@ -788,19 +907,14 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   xwd_info.byte_order=(CARD32) MSBFirst;
   xwd_info.bitmap_unit=(CARD32) (image->storage_class == DirectClass ? 32 : 8);
   xwd_info.bitmap_bit_order=(CARD32) MSBFirst;
-  xwd_info.bitmap_pad=(CARD32) (image->storage_class == DirectClass ? 32 : 8);
-  bits_per_pixel=(image->storage_class == DirectClass ? 24 : 8);
+  xwd_info.bitmap_pad=(CARD32) bitmap_pad;
   xwd_info.bits_per_pixel=(CARD32) bits_per_pixel;
-  bytes_per_line=(CARD32) ((((xwd_info.bits_per_pixel*
-    xwd_info.pixmap_width)+((xwd_info.bitmap_pad)-1))/
-    (xwd_info.bitmap_pad))*((xwd_info.bitmap_pad) >> 3));
   xwd_info.bytes_per_line=(CARD32) bytes_per_line;
   xwd_info.visual_class=(CARD32)
     (image->storage_class == DirectClass ? DirectColor : PseudoColor);
   xwd_info.red_mask=(CARD32)
     (image->storage_class == DirectClass ? 0xff0000 : 0);
-  xwd_info.green_mask=(CARD32)
-    (image->storage_class == DirectClass ? 0xff00 : 0);
+  xwd_info.green_mask=(CARD32)(image->storage_class == DirectClass ? 0xff00 : 0);
   xwd_info.blue_mask=(CARD32) (image->storage_class == DirectClass ? 0xff : 0);
   xwd_info.bits_per_rgb=(CARD32) (image->storage_class == DirectClass ? 24 : 8);
   xwd_info.colormap_entries=(CARD32)
@@ -812,6 +926,20 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   xwd_info.window_x=0;
   xwd_info.window_y=0;
   xwd_info.window_bdrwidth=(CARD32) 0;
+
+  /*
+    Trace XWD header
+  */
+  if (image->logging)
+    TraceXWDHeader(&xwd_info);
+
+  /*
+    Allocate memory for pixels.
+  */
+  pixels=MagickAllocateMemory(unsigned char *,bytes_per_line);
+  if (pixels == (unsigned char *) NULL)
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
   /*
     Write XWD header.
   */
@@ -835,7 +963,7 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
       colors=MagickAllocateArray(XColor *,image->colors,sizeof(XColor));
       if (colors == (XColor *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for (i=0; i < (long) image->colors; i++)
+      for (i=0; i < image->colors; i++)
       {
         colors[i].pixel=i;
         colors[i].red=ScaleQuantumToShort(image->colormap[i].red);
@@ -849,30 +977,22 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
             MSBOrderShort((unsigned char *) &colors[i].red,3*sizeof(short));
           }
       }
-      for (i=0; i < (long) image->colors; i++)
+      for (i=0; i < image->colors; i++)
       {
         color.pixel=(CARD32) colors[i].pixel;
         color.red=colors[i].red;
         color.green=colors[i].green;
         color.blue=colors[i].blue;
         color.flags=colors[i].flags;
-        (void) WriteBlob(image,sz_XWDColor,(char *) &color);
+        if (WriteBlob(image,sz_XWDColor,(char *) &color) != sz_XWDColor)
+          break;
       }
       MagickFreeMemory(colors);
     }
   /*
-    Allocate memory for pixels.
-  */
-  scanline_pad=(bytes_per_line-((image->columns*bits_per_pixel) >> 3));
-  pixels_size=image->columns*(image->storage_class == PseudoClass ? 1 : 3)+scanline_pad;
-  pixels=MagickAllocateMemory(unsigned char *,pixels_size);
-  if (pixels == (unsigned char *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  (void) memset(pixels,0,pixels_size);
-  /*
     Convert MIFF to XWD raster pixels.
   */
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
     p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
     if (p == (const PixelPacket *) NULL)
@@ -885,12 +1005,12 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
           *indexes;
 
         indexes=AccessImmutableIndexes(image);
-        for (x=0; x < (long) image->columns; x++)
+        for (x=0; x < image->columns; x++)
           *q++=(unsigned char) indexes[x];
       }
     else
       {
-        for (x=(long) image->columns; x > 0; x--)
+        for (x=0; x < image->columns; x++)
           {
 
             *q++=ScaleQuantumToChar(p->red);
@@ -901,7 +1021,8 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
       }
     for (x=(long) scanline_pad; x > 0; x--)
       *q++=0;
-    (void) WriteBlob(image,(size_t) (q-pixels),(char *) pixels);
+    if (WriteBlob(image,(size_t) (q-pixels),(char *) pixels) != (size_t) (q-pixels))
+      break;
     if (image->previous == (Image *) NULL)
       if (QuantumTick(y,image->rows))
         if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -911,6 +1032,6 @@ static unsigned int WriteXWDImage(const ImageInfo *image_info,Image *image)
   }
   MagickFreeMemory(pixels);
   CloseBlob(image);
-  return(True);
+  return (y < image->rows ? MagickFail :  MagickPass);
 }
 #endif

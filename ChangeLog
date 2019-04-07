@@ -1,3 +1,12 @@
+2019-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xwd.c (ReadXWDImage): Perform more header validations and
+	a file size validation in order to reject files with bogus
+	headers.
+	(WriteXWDImage): Fix SourceForge issue #599
+	"heap_buffer_overflow_WRITE in function WriteXWDImage of
+	coders/xwd.c".
+
 2019-04-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (SVGStartElement): Fix stack buffer overflow while
