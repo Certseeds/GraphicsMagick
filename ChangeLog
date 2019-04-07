@@ -1,7 +1,9 @@
 2019-04-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* magick/nt_base.c Fix a problem of finding ghostscript fonts.
-
+        Variable "font_dir" was useless and thus removed. No need to copy
+        text multiple times.
+        Use const char gs_font_dir[] instead of pointer.
 
 2019-04-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
