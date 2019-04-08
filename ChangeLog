@@ -1,3 +1,9 @@
+2019-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wmf.c (ReadWMFImage): Reject WMF files with an empty
+	bounding box.  Fixes SourceForge issue #606 "Division by Zero in
+	coders/wmf.c".
+
 2019-04-07  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* magick/nt_base.c Fix a problem of finding ghostscript fonts.

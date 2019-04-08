@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2522,7 +2522,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
     }
 
   /* Obtain (or guess) metafile units */
-  if ((API)->File->placeable)
+  if ((API)->File->placeable && (API)->File->pmh->Inch)
     units_per_inch = (API)->File->pmh->Inch;
   else if( (wmf_width*wmf_height) < 1024*1024)
     units_per_inch = POINTS_PER_INCH;  /* MM_TEXT */
@@ -2547,6 +2547,21 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
 
   bounding_width  = bbox.BR.x - bbox.TL.x;
   bounding_height = bbox.BR.y - bbox.TL.y;
+
+  if ((bounding_width == 0) || (bounding_height == 0))
+    {
+      /*
+        It is not clear what we can do if the reported bounding box is
+        empty or if this could be a valid case.  Reject such files
+        until evidence is found to the contrary.
+       */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Empty Bounding Box! %.4g,%.4g %.4g,%.4g",
+                            bbox.TL.x, bbox.TL.y, bbox.BR.x, bbox.BR.y);
+      ipa_device_close(API);
+      (void) wmf_api_destroy(API);
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    }
 
   ddata->scale_x = image_width/bounding_width;
   ddata->translate_x = 0-bbox.TL.x;
