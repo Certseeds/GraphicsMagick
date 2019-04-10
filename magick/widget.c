@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1523,7 +1523,7 @@ static void XSetTextColor(Display *display,const MagickXWindowInfo *window_info,
 %
 %
 */
-MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -2697,15 +2697,15 @@ MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *win
 %
 %
 */
-MagickExport int MagickXCommandWidget(Display *display,MagickXWindows *windows,
-  const char **selections,XEvent *event)
+int MagickXCommandWidget(Display *display,MagickXWindows *windows,
+  const char * const *selections,XEvent *event)
 {
   /*
     GraphicsMagick monochrome logo for top of command bar.
   */
 #define tile_width 112
 #define tile_height 64
-static unsigned char tile_bits[] = {
+static const unsigned char tile_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x78, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,
@@ -3121,7 +3121,7 @@ static unsigned char tile_bits[] = {
 %
 %
 */
-MagickExport int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
+int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
   const char *reason,const char *description)
 {
 #define CancelButtonText  "Cancel"
@@ -3523,7 +3523,7 @@ MagickExport int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport int MagickXDialogWidget(Display *display,MagickXWindows *windows,
+int MagickXDialogWidget(Display *display,MagickXWindows *windows,
   const char *action,const char *query,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -4094,7 +4094,7 @@ MagickExport int MagickXDialogWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -5338,7 +5338,7 @@ static int FontCompare(const void *x,const void *y)
 }
 #endif
 
-MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define BackButtonText  "Back"
@@ -6506,7 +6506,7 @@ MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *wind
 %
 %
 */
-MagickExport void MagickXInfoWidget(Display *display,MagickXWindows *windows,
+void MagickXInfoWidget(Display *display,MagickXWindows *windows,
   const char *activity)
 {
   int
@@ -6611,8 +6611,8 @@ MagickExport void MagickXInfoWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
-  MagickXWindowInfo *window_info,const char **list,const char *action,
+void MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
+  MagickXWindowInfo *window_info,const char * const *list,const char *action,
   const char *query,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -7518,8 +7518,8 @@ MagickExport void MagickXListBrowserWidget(Display *display,MagickXWindows *wind
 %
 %
 */
-MagickExport int MagickXMenuWidget(Display *display,MagickXWindows *windows,
-  const char *title,const char **selections,char *item)
+int MagickXMenuWidget(Display *display,MagickXWindows *windows,
+  const char *title,const char * const *selections,char *item)
 {
   Cursor
     cursor;
@@ -7950,7 +7950,7 @@ MagickExport int MagickXMenuWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
+void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
   const char *task,const magick_int64_t quantum,
   const magick_uint64_t span)
 {
@@ -8026,7 +8026,7 @@ MagickExport void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
+void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
   const char *reason,const char *description)
 {
 #define DismissButtonText  "Dismiss"
@@ -8349,24 +8349,23 @@ MagickExport void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport unsigned int MagickXPreferencesWidget(Display *display,
+unsigned int MagickXPreferencesWidget(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows)
 {
 #define ApplyButtonText  "Apply"
 #define CacheButtonText  "%lu mega-bytes of memory in the undo edit cache   "
 #define CancelButtonText  "Cancel"
 #define NumberPreferences  7
-
-  static char
-    *Preferences[] =
+  static const char
+    Preferences[NumberPreferences][47] =
     {
-      (char *) "display image centered on a backdrop",
-      (char *) "confirm on program exit",
-      (char *) "correct image for display gamma",
-      (char *) "display warning messages",
-      (char *) "apply Floyd/Steinberg error diffusion to image",
-      (char *) "use a shared colormap for colormapped X visuals",
-      (char *) "display images as an X server pixmap"
+      "display image centered on a backdrop",
+      "confirm on program exit",
+      "correct image for display gamma",
+      "display warning messages",
+      "apply Floyd/Steinberg error diffusion to image",
+      "use a shared colormap for colormapped X visuals",
+      "display images as an X server pixmap"
     };
 
   char
@@ -8778,9 +8777,9 @@ MagickExport unsigned int MagickXPreferencesWidget(Display *display,
 %
 %
 */
-MagickExport void MagickXTextViewWidget(Display *display,
+void MagickXTextViewWidget(Display *display,
   const MagickXResourceInfo *resource_info,MagickXWindows *windows,const unsigned int mono,
-  const char *title,const char **textlist)
+  const char *title,const char * const *textlist)
 {
 #define DismissButtonText  "Dismiss"
 

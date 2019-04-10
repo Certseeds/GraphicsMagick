@@ -1,3 +1,13 @@
+2019-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/widget.c: Add many const declarations.
+
+	* magick/display.c: Incorporate and eliminate display.h. Add many
+	const declarations.
+
+	* magick/animate.c: Incorporate and eliminate animate.h. Add many
+	const declarations.
+
 2019-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wmf.c (ReadWMFImage): Reject WMF files with an empty

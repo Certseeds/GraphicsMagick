@@ -42,9 +42,7 @@ magick_libGraphicsMagick_la_LDFLAGS = \
 if HasX11
 MAGICK_X11_BASE_SRCS = \
 	magick/animate.c \
-	magick/animate.h \
 	magick/display.c \
-	magick/display.h \
 	magick/PreRvIcccm.c \
 	magick/PreRvIcccm.h \
 	magick/widget.c \
@@ -291,9 +289,7 @@ MAGICK_INCLUDE_HDRS = \
 
 MAGICK_NOINST_HDRS = \
 	magick/alpha_composite.h \
-	magick/animate.h \
 	magick/bit_stream.h \
-	magick/display.h \
 	magick/floats.h \
 	magick/image-private.h \
 	magick/locale_c.h \
