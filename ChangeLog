@@ -1,5 +1,8 @@
 2019-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (WritePDBImage): Fix SourceForge issue #605
+	"heap-buffer-overflow in function WritePDBImage of coders/pdb.c".
+
 	* magick/widget.c: Add many const declarations.
 
 	* magick/display.c: Incorporate and eliminate display.h. Add many
