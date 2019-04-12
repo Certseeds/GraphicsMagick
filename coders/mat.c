@@ -1376,11 +1376,11 @@ END_OF_READING:
 %    o image:  A pointer to an Image structure.
 %
 */
-static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WriteMATLABImage(const ImageInfo *image_info,Image *image)
 {
   long y;
   unsigned z;
-  unsigned int status;
+  MagickPassFail status;
   int logging;
   unsigned long DataSize;
   char padding;
@@ -1403,7 +1403,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
   assert(image->signature == MagickSignature);
   logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter MAT");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   /*
@@ -1477,26 +1477,32 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
         for (y=0; y<(long)image->columns; y++)
         {
           progress_quantum++;
-          (void) AcquireImagePixels(image,y,0,1,image->rows,&image->exception);
-          (void) ExportImagePixelArea(image,z2qtype[z],8,pixels,0,0);
-          (void) WriteBlob(image,image->rows,pixels);
+          if (AcquireImagePixels(image,y,0,1,image->rows,&image->exception) == (PixelPacket *) NULL)
+            break;
+          if (ExportImagePixelArea(image,z2qtype[z],8,pixels,0,0) == MagickFail)
+            break;
+          if (WriteBlob(image,image->rows,pixels) != image->rows)
+            break;
           if (QuantumTick(progress_quantum,progress_span))
             if (!MagickMonitorFormatted(progress_quantum,progress_span,&image->exception,
                                         SaveImageText,image->filename,
                                         image->columns,image->rows))
-              goto BreakAll;
+              break;
         }
+        if (y != (long)image->columns)
+          {
+            status=MagickFail;
+            goto BreakAll;
+          }
+
       } while(z-- >= 2);
     }
 BreakAll:
 
     while(padding-->0) (void) WriteBlobByte(image,0);
 
-    status=True;
-
-    if(pixels)
-     {MagickFreeMemory(pixels);pixels=NULL;}
-    if(image->next==NULL) break;
+    MagickFreeMemory(pixels);
+    if(status == MagickFail || image->next==NULL) break;
     image=SyncNextImageInList(image);
   }
 

@@ -1,3 +1,9 @@
+2019-04-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c (WriteMATLABImage): Add completely missing error
+	handling.  Fixes SourceForge issue #604 "heap-buffer-overflow in
+	function WriteMATLABImage of coders/mat.c".
+
 2019-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pdb.c (WritePDBImage): Fix SourceForge issue #605
