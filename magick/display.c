@@ -332,7 +332,7 @@ static const unsigned char
 static const int
   RoiDelta = 8;
 
-static unsigned char
+static unsigned const char
   HighlightBitmap[8] =
   {
     0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55
@@ -2780,7 +2780,7 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
               command[MaxTextExtent];
 
             static const char
-              *Directions[]=
+              * const Directions[]=
               {
                 "horizontal",
                 "vertical",
@@ -3239,7 +3239,7 @@ static unsigned int MagickXColorEditImage(Display *display,
           }
           case ColorEditColorCommand:
           {
-            char
+            const char
               *ColorMenu[MaxNumberPens];
 
             int
@@ -3250,8 +3250,8 @@ static unsigned int MagickXColorEditImage(Display *display,
             */
             for (i=0; i < (int) (MaxNumberPens-2); i++)
               ColorMenu[i]=resource_info->pen_colors[i];
-            ColorMenu[MaxNumberPens-2]=(char *) "Browser...";
-            ColorMenu[MaxNumberPens-1]=(char *) NULL;
+            ColorMenu[MaxNumberPens-2]="Browser...";
+            ColorMenu[MaxNumberPens-1]=NULL;
             /*
               Select a pen color from the pop-up menu.
             */
@@ -3285,7 +3285,7 @@ static unsigned int MagickXColorEditImage(Display *display,
           }
           case ColorEditBorderCommand:
           {
-            char
+            const char
               *ColorMenu[MaxNumberPens];
 
             int
@@ -3296,8 +3296,8 @@ static unsigned int MagickXColorEditImage(Display *display,
             */
             for (i=0; i < (int) (MaxNumberPens-2); i++)
               ColorMenu[i]=resource_info->pen_colors[i];
-            ColorMenu[MaxNumberPens-2]=(char *) "Browser...";
-            ColorMenu[MaxNumberPens-1]=(char *) NULL;
+            ColorMenu[MaxNumberPens-2]="Browser...";
+            ColorMenu[MaxNumberPens-1]=NULL;
             /*
               Select a pen color from the pop-up menu.
             */
@@ -5316,7 +5316,7 @@ static unsigned int MagickXDrawEditImage(Display *display,
             case DrawElementCommand:
             {
               static const char
-                *Elements[]=
+                * const Elements[]=
                 {
                   "point",
                   "line",
@@ -5410,7 +5410,7 @@ static unsigned int MagickXDrawEditImage(Display *display,
                 filename[MaxTextExtent] = "\0";
 
               static const char
-                *StipplesMenu[]=
+                * const StipplesMenu[]=
                 {
                   "Brick",
                   "Diagonal",
@@ -5419,14 +5419,13 @@ static unsigned int MagickXDrawEditImage(Display *display,
                   "Wavy",
                   "Translucent",
                   "Opaque",
-                  (char *) NULL,
+                  "Open...",
                   (char *) NULL,
                 };
 
               /*
                 Select a command from the pop-up menu.
               */
-              StipplesMenu[7]=(char *) "Open...";
               entry=MagickXMenuWidget(display,windows,DrawMenu[id],StipplesMenu,
                 command);
               if (entry < 0)
@@ -11461,7 +11460,7 @@ static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *res
               case RotateDirectionCommand:
               {
                 static const char
-                  *Directions[]=
+                  * const Directions[]=
                   {
                     "horizontal",
                     "vertical",

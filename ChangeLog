@@ -1,5 +1,7 @@
 2019-04-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/display.c: Add even more const declarations.
+
 	* coders/mat.c (WriteMATLABImage): Add completely missing error
 	handling.  Fixes SourceForge issue #604 "heap-buffer-overflow in
 	function WriteMATLABImage of coders/mat.c".
