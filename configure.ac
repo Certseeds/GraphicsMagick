@@ -912,6 +912,14 @@ AC_HEADER_DIRENT
 AC_CHECK_HEADERS([machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
 AC_CHECK_HEADERS([wincrypt.h],[],[],[#include <windows.h>])
 
+case "${host_os}" in
+  linux* )
+  AC_CHECK_FUNCS([mallopt])
+  # Linux mallopt() needs <malloc.h>
+  AC_CHECK_HEADERS([malloc.h])
+  ;;
+esac
+
 
 ########
 #
