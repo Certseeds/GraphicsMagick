@@ -1,5 +1,8 @@
 2019-04-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawPrimitive): Check primitive point x/y
+	values for NaN.
+
 	* magick/pixel_cache.c (SetNexus): Fix oss-fuzz issue 14208
 	"graphicsmagick/coder_MVG_fuzzer: Integer-overflow in SetNexus".
 

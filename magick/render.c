@@ -5420,7 +5420,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       return status;
     }
   dvalue=ceil(primitive_info->point.x-0.5);
-  if (((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+  if (MAGICK_ISNAN(dvalue) || ((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
     {
       char double_str[18];
       FormatString(double_str,"%g",dvalue);
@@ -5429,7 +5429,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
     }
   x=(long) dvalue;
   dvalue=ceil(primitive_info->point.y-0.5);
-  if (((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+  if (MAGICK_ISNAN(dvalue) || ((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
     {
       char double_str[18];
       FormatString(double_str,"%g",dvalue);
