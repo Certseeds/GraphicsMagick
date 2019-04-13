@@ -168,11 +168,11 @@ typedef struct _CacheInfo
   /* Total pixels limit */
   magick_uint64_t limit_pixels;
 
-  /* Maximum width */
-  magick_uint64_t limit_width;
+  /* Maximum width (limited to LONG_MAX) */
+  unsigned long limit_width;
 
-  /* Maximum height */
-  magick_uint64_t limit_height;
+  /* Maximum height (limited to LONG_MAX) */
+  unsigned long limit_height;
 
   /* The number of Image structures referencing this cache */
   long reference_count;
@@ -707,16 +707,17 @@ SetNexus(const Image * restrict image,const long x,const long y,
   if (!(columns <= cache_info->limit_width))
     {
       errno=0;
-      FormatString(message,"Width %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
+      FormatString(message,"Width %lu > %lu \"%.1024s\"",
                    columns,cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if (!((magick_uint64_t) AbsoluteValue(x) <= cache_info->limit_width))
+  if (x >= 0 ? ((unsigned long) x >= cache_info->limit_width) :
+      (x <= -(long) cache_info->limit_width))
     {
       errno=0;
-      FormatString(message,"Xoffset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
+      FormatString(message,"Xoffset abs(%ld) > %lu \"%.1024s\"",
                    x,cache_info->limit_width,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelWidthLimitExceeded,
                      message);
@@ -727,16 +728,17 @@ SetNexus(const Image * restrict image,const long x,const long y,
   if (!(rows <= cache_info->limit_height))
     {
       errno=0;
-      FormatString(message,"Height %lu > %" MAGICK_INT64_F "u \"%.1024s\"",
+      FormatString(message,"Height %lu > %lu \"%.1024s\"",
                    rows,cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
       return (PixelPacket *) NULL;
     }
-  if (!((magick_uint64_t) AbsoluteValue(y) <= cache_info->limit_height))
+  if (y >= 0 ? ((unsigned long) y >= cache_info->limit_height) :
+      (y <= -(long) cache_info->limit_height))
     {
       errno=0;
-      FormatString(message,"Y offset abs(%ld) > %" MAGICK_INT64_F "u \"%.1024s\"",
+      FormatString(message,"Y offset abs(%ld) > %lu \"%.1024s\"",
                    y,cache_info->limit_height,image->filename);
       ThrowException(exception,ResourceLimitError,NexusPixelHeightLimitExceeded,
                      message);
@@ -3161,32 +3163,44 @@ MagickExport MagickPassFail
 CheckImagePixelLimits(const Image *image, ExceptionInfo *exception)
 {
   if ((image->columns == 0) ||
+      (image->columns > LONG_MAX) ||
       (AcquireMagickResource(WidthResource,image->columns)
        != MagickPass))
     {
       char
         message[MaxTextExtent];
 
+      magick_int64_t
+        limit;
+
       errno=0;
+      limit=GetMagickResourceLimit(WidthResource);
+      if (limit > LONG_MAX)
+        limit = LONG_MAX;
       FormatString(message,"%lu > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   image->columns,
-                   GetMagickResourceLimit(WidthResource),image->filename);
+                   image->columns,limit,image->filename);
       ThrowException(exception,ResourceLimitError,ImagePixelWidthLimitExceeded,
                      message);
       return MagickFail;
     }
 
   if ((image->rows == 0) ||
+      (image->rows > LONG_MAX) ||
       (AcquireMagickResource(HeightResource,image->rows)
        != MagickPass))
     {
       char
         message[MaxTextExtent];
 
+      magick_int64_t
+        limit;
+
       errno=0;
+      limit=GetMagickResourceLimit(HeightResource);
+      if (limit > LONG_MAX)
+        limit = LONG_MAX;
       FormatString(message,"%lu > %" MAGICK_INT64_F "u \"%.1024s\"",
-                   image->rows,
-                   GetMagickResourceLimit(HeightResource),image->filename);
+                   image->rows,limit,image->filename);
       ThrowException(exception,ResourceLimitError,ImagePixelHeightLimitExceeded,
                      message);
       return MagickFail;
@@ -3700,6 +3714,9 @@ GetCacheInfo(Cache *cache)
   CacheInfo
     *cache_info;
 
+  magick_int64_t
+    limit;
+
   assert(cache != (Cache*) NULL);
   cache_info=MagickAllocateAlignedMemory(CacheInfo *,
                                          MAGICK_CACHE_LINE_SIZE,
@@ -3724,9 +3741,12 @@ GetCacheInfo(Cache *cache)
   /*
     Cache limits to apply later when allocating cache nexus
   */
-  cache_info->limit_pixels=GetMagickResourceLimit(PixelsResource);
-  cache_info->limit_width=GetMagickResourceLimit(WidthResource);
-  cache_info->limit_height=GetMagickResourceLimit(HeightResource);
+  limit=GetMagickResourceLimit(PixelsResource);
+  cache_info->limit_pixels=limit;
+  limit=GetMagickResourceLimit(WidthResource);
+  cache_info->limit_width=Min(LONG_MAX,limit);
+  limit=GetMagickResourceLimit(HeightResource);
+  cache_info->limit_height=Min(LONG_MAX,limit);
 
   cache_info->signature=MagickSignature;
   *cache=cache_info;
