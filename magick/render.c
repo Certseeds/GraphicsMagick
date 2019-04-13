@@ -3214,7 +3214,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 SegmentInfo
                   segment;
 
-                magick_int64_t
+                double
                   gradient_width,
                   gradient_height;
 
@@ -3293,14 +3293,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 /*
                   Validate gradient image size
                 */
-                gradient_width=(magick_int64_t) Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
-                gradient_height=(magick_int64_t) Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
+                gradient_width=Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
+                gradient_height=Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
                 {
                   char resource_str[MaxTextExtent];
                   const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
                   const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
                   const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
-                  if ((width_resource_limit > 0) && (gradient_width > width_resource_limit))
+                  if (gradient_width > width_resource_limit)
                     {
                       FormatString(resource_str,"%" MAGICK_INT64_F "d", width_resource_limit);
                       ThrowException(&image->exception,ResourceLimitError,
@@ -3308,7 +3308,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                       status=MagickFail;
                       break;
                     }
-                  if ((hight_resource_limit > 0) && (gradient_height > hight_resource_limit))
+                  if (gradient_height > hight_resource_limit)
                     {
                       FormatString(resource_str,"%" MAGICK_INT64_F "d", hight_resource_limit);
                       ThrowException(&image->exception,ResourceLimitError,
@@ -3316,7 +3316,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                       status=MagickFail;
                       break;
                     }
-                  if ((pixels_resource_limit > 0) && (gradient_width*gradient_height > pixels_resource_limit))
+                  if (gradient_width*gradient_height > pixels_resource_limit)
                     {
                       FormatString(resource_str,"%" MAGICK_INT64_F "d", pixels_resource_limit);
                       ThrowException(&image->exception,ResourceLimitError,
@@ -3334,7 +3334,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 if (gradient_width*gradient_height > 5000*5000 /*10000*10000*/)
                   {
                     char gradient_size_str[MaxTextExtent];
-                    FormatString(gradient_size_str,"%" MAGICK_INT64_F "dx%" MAGICK_INT64_F "d",
+                    FormatString(gradient_size_str,"%gx%g",
                                  gradient_width,gradient_height);
                     ThrowException(&image->exception,DrawError,
                                    UnreasonableGradientSize,gradient_size_str);
