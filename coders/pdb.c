@@ -965,6 +965,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;
+    (void) memset(scanline,0,image->columns*packet_size); /* FIXME: remove */
     (void) ExportImagePixelArea(image,GrayQuantum,bits_per_pixel,scanline,0,0);
     for (x=0; x < pdb_image.width; x++)
     {

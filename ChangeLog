@@ -1,5 +1,10 @@
 2019-04-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (WritePDBImage): Assure that input scanline is
+	cleared in order to cover up some decoder bug.  May fix 14215
+	"graphicsmagick/coder_PDB_fuzzer: Use-of-uninitialized-value in
+	WritePDBImage", which I have not been able to reproduce.
+
 	* magick/render.c (DrawPrimitive): Check primitive point x/y
 	values for NaN.
 	(DrawImage): Fix oss-fuzz issue 14173
