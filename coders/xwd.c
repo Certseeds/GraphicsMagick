@@ -321,6 +321,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (header.header_size < sz_XWDheader)
     ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
 
+  /* Display classes  used in opening the connection */
   switch (header.visual_class)
     {
     case StaticGray:
@@ -335,11 +336,18 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     }
+
+  /* XYBitmap, XYPixmap, ZPixmap */
   switch (header.pixmap_format)
     {
-    case XYBitmap:
-    case XYPixmap:
-    case ZPixmap:
+    case XYBitmap: /* 1 bit bitmap format */
+      if (header.pixmap_depth != 1)
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      break;
+    case XYPixmap: /* Single plane bitmap. */
+    case ZPixmap:  /* Bitmap with 2 or more planes */
+      if ((header.pixmap_depth < 1) || (header.pixmap_depth > 32))
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       break;
     default:
       {
@@ -347,8 +355,84 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
     }
 
-  if ((header.bits_per_pixel == 0) || (header.bits_per_pixel > 32))
-    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+  /* Data byte order, LSBFirst, MSBFirst */
+  switch (header.byte_order)
+    {
+    case LSBFirst:
+    case MSBFirst:
+      break;
+    default:
+      {
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      }
+    }
+
+  /* Quant. of scanline 8, 16, 32 */
+  switch (header.bitmap_unit)
+    {
+    case 8:
+    case 16:
+    case 32:
+      break;
+    default:
+      {
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      }
+    }
+
+  /* LSBFirst, MSBFirst */
+  switch (header.bitmap_bit_order)
+    {
+    case LSBFirst:
+    case MSBFirst:
+      break;
+    default:
+      {
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      }
+    }
+
+  /* 8, 16, 32 either XY or ZPixmap */
+  if ((header.pixmap_format == XYPixmap) || (header.pixmap_format == ZPixmap))
+    switch (header.bitmap_pad)
+      {
+      case 8:
+      case 16:
+      case 32:
+        break;
+      default:
+        {
+          ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      }
+
+  /* Bits per pixel (ZPixmap) */
+  switch (header.visual_class)
+    {
+    case StaticGray:
+    case GrayScale:
+      /* Gray-scale image */
+      if (header.bits_per_pixel != 1)
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      break;
+    case StaticColor:
+    case PseudoColor:
+      /* Color-mapped image */
+      if ((header.bits_per_pixel < 1) || (header.bits_per_pixel > 15) ||
+          (header.colormap_entries == 0))
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      break;
+    case TrueColor:
+    case DirectColor:
+      /* True-color image */
+      if ((header.bits_per_pixel != 16) && (header.bits_per_pixel != 24) &&
+          (header.bits_per_pixel != 32))
+        ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+      break;
+    }
+
+
+  /* 8, 16, 32 either XY or ZPixmap */
   if ((header.bitmap_pad % 8 != 0) || (header.bitmap_pad > 32))
     ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
 
@@ -417,6 +501,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   if (ximage->width < 0 ||
       ximage->height < 0 ||
+      ximage->xoffset < 0 ||
       ximage->format < 0 ||
       ximage->byte_order < 0 ||
       ximage->bitmap_unit < 0 ||
@@ -439,10 +524,15 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowXWDReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
   image->depth=8;
-  if ((header.ncolors == 0U) ||
-      ((ximage->red_mask != 0) ||
-       (ximage->green_mask != 0) ||
-       (ximage->blue_mask != 0)))
+
+  /*
+    FIXME: This block of logic should be re-worked.
+  */
+  if ((header.visual_class != StaticGray) &&
+      ((header.ncolors == 0U) ||
+       ((ximage->red_mask != 0) ||
+        (ximage->green_mask != 0) ||
+        (ximage->blue_mask != 0))))
     {
       image->storage_class=DirectClass;
       if (!image_info->ping)
@@ -454,7 +544,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else
     {
       image->storage_class=PseudoClass;
-      image->colors=header.ncolors;
+      image->colors=header.visual_class == StaticGray ? 2 : header.ncolors;
     }
   if (!image_info->ping)
     {
@@ -664,11 +754,14 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if (!AllocateImageColormap(image,image->colors))
               ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                       image);
-            for (i=0; i < (long) image->colors; i++)
+            if (colors != (XColor *) NULL)
               {
-                image->colormap[i].red=ScaleShortToQuantum(colors[i].red);
-                image->colormap[i].green=ScaleShortToQuantum(colors[i].green);
-                image->colormap[i].blue=ScaleShortToQuantum(colors[i].blue);
+                for (i=0; i < (long) image->colors; i++)
+                  {
+                    image->colormap[i].red=ScaleShortToQuantum(colors[i].red);
+                    image->colormap[i].green=ScaleShortToQuantum(colors[i].green);
+                    image->colormap[i].blue=ScaleShortToQuantum(colors[i].blue);
+                  }
               }
             for (y=0; y < (long) image->rows; y++)
               {
