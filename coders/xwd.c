@@ -225,7 +225,6 @@ static MagickPassFail BytesPerLine(size_t *bytes_per_line,
 */
 #define ThrowXWDReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(comment); \
   if (ximage) \
     MagickFreeMemory(ximage->data); \
   MagickFreeMemory(ximage); \
@@ -236,7 +235,7 @@ do { \
 static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   char
-    *comment = (char *) NULL;
+    comment[MaxTextExtent];
 
   Image
     *image;
@@ -419,7 +418,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
     case PseudoColor:
       /* Color-mapped image */
       if ((header.bits_per_pixel < 1) || (header.bits_per_pixel > 15) ||
-          (header.colormap_entries == 0))
+          (header.ncolors == 0))
         ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       break;
     case TrueColor:
@@ -430,6 +429,10 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
       break;
     }
+
+  /* Place an arbitrary limit on colormap size */
+  if (header.ncolors > 4096)
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
 
 
   /* 8, 16, 32 either XY or ZPixmap */
@@ -457,22 +460,19 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
   }
 
+
   /*
     Retrieve comment (if any)
   */
   length=header.header_size-sz_XWDheader;
-  if (length > ((~0UL)/sizeof(*comment)))
+  if (length >= MaxTextExtent)
     ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
-  comment=MagickAllocateMemory(char *,length+1);
-  if (comment == (char *) NULL)
-    ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   count=ReadBlob(image,length,comment);
   if (count != length)
     ThrowXWDReaderException(CorruptImageError,UnableToReadWindowNameFromDumpFile,
                             image);
   comment[length]='\0';
   (void) SetImageAttribute(image,"comment",comment);
-  MagickFreeMemory(comment);
 
   /*
     Initialize the X image.
@@ -544,7 +544,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   else
     {
       image->storage_class=PseudoClass;
-      image->colors=header.visual_class == StaticGray ? 2 : header.ncolors;
+      image->colors=header.visual_class == StaticGray ? 2 : header.ncolors; /* FIXME! */
     }
   if (!image_info->ping)
     {
@@ -557,17 +557,14 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           XWDColor
             color;
 
-          register long
+          register unsigned int
             i;
 
-          length=(size_t) header.ncolors;
-          if (length > ((~0UL)/sizeof(*colors)))
-            ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
-          colors=MagickAllocateArray(XColor *,length,sizeof(XColor));
+          colors=MagickAllocateArray(XColor *,header.ncolors,sizeof(XColor));
           if (colors == (XColor *) NULL)
             ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
-          for (i=0; i < (long) header.ncolors; i++)
+          for (i=0; i < header.ncolors; i++)
             {
               count=ReadBlob(image,sz_XWDColor,(char *) &color);
               if (count != sz_XWDColor)
@@ -584,7 +581,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           */
           lsb_first=1;
           if (*(char *) &lsb_first)
-            for (i=0; i < (long) header.ncolors; i++)
+            for (i=0; i < header.ncolors; i++)
               {
                 MSBOrderLong((unsigned char *) &colors[i].pixel,
                              sizeof(unsigned long));
@@ -598,15 +595,14 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Allocate the pixel buffer.
       */
-#define XWD_OVERFLOW(c,a,b) ((b) != 0 && ((c)/((size_t) b) != ((size_t) a)))
+      length=MagickArraySize(ximage->bytes_per_line,ximage->height);
       length=ximage->bytes_per_line*ximage->height;
-      if (XWD_OVERFLOW(length,ximage->bytes_per_line,ximage->height))
+      if (0 == length)
         ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       if (ximage->format != ZPixmap)
         {
-          size_t tmp=length;
-          length*=ximage->depth;
-          if (XWD_OVERFLOW(length,tmp,ximage->depth))
+          length=MagickArraySize(length,ximage->depth);
+          if (0 == length)
             ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,
                                     image);
         }
@@ -748,7 +744,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert X image to PseudoClass packets.
             */
-            register long
+            register unsigned int
               i;
 
             if (!AllocateImageColormap(image,image->colors))
@@ -756,7 +752,8 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       image);
             if (colors != (XColor *) NULL)
               {
-                for (i=0; i < (long) image->colors; i++)
+                const unsigned int min_colors = Min(image->colors,header.ncolors);
+                for (i=0; i < min_colors; i++)
                   {
                     image->colormap[i].red=ScaleShortToQuantum(colors[i].red);
                     image->colormap[i].green=ScaleShortToQuantum(colors[i].green);
