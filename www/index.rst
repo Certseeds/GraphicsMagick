@@ -59,7 +59,8 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`benchmarks` : benchmarks.html
 .. _`manual page` : GraphicsMagick.html
 .. _`valgrind` : http://www.valgrind.org/
-.. _'ASan' : https://github.com/google/sanitizers/wiki/AddressSanitizer
+.. _`ASan` : https://github.com/google/sanitizers/wiki/AddressSanitizer
+.. _`UBSan` : https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
 of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
@@ -115,6 +116,8 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
   * GM `valgrind`_'s 100% clean (memcheck and helgrind).
 
   * GM passes rigorous memory error testing using `ASan_`.
+
+  * GM passes undefined behavior testing using `UBSan_`.
 
   * GM comes with a comprehensive `manual page`_.
 
