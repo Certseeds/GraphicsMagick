@@ -1,5 +1,14 @@
 2019-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/animate.c: Use MagickXTextViewWidgetNDL() to display help
+	text.
+
+	* magick/display.c: Use MagickXTextViewWidgetNDL() to display help
+	text.
+
+	* magick/widget.c (MagickXTextViewWidgetNDL): New private function
+	to display multi-line null-delimited text in an X11 widget.
+
 	* coders/xwd.c (ReadXWDImage): Added even more XWD header
 	validation logic.  Addresses problems noted by email from Hongxu
 	Chen to the graphicsmagick-security mail alias on Fri, 19 Apr 2019

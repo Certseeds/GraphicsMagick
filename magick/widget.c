@@ -9467,4 +9467,77 @@ void MagickXTextViewWidget(Display *display,
   (void) XWithdrawWindow(display,windows->widget.id,windows->widget.screen);
   MagickXCheckRefreshWindows(display,windows);
 }
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   X T e x t V i e w W i d g e t N D L                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickXTextViewWidgetNDL displays null-delimited text in a
+%  Text View widget.  The implementation of this function is intentionally
+%  limited to a maximum number of lines since it is primarily used to
+%  display help text.
+%
+%  The format of the MagickXTextViewWidgetNDL method is:
+%
+%      void MagickXTextViewWidgetNDL(Display *display,
+%        const MagickXResourceInfo *resource_info,
+%        MagickXWindows *windows,const unsigned int mono,const char *title,
+%        const char *text_ndl, size_t text_ndl_size)
+%
+%  A description of each parameter follows:
+%
+%    o display: Specifies a connection to an X server;  returned from
+%      XOpenDisplay.
+%
+%    o resource_info: Specifies a pointer to a X11 MagickXResourceInfo structure.
+%
+%    o window: Specifies a pointer to a MagickXWindows structure.
+%
+%    o mono:  Use mono-spaced font when displaying text.
+%
+%    o title: This character string is displayed at the top of the widget
+%      window.
+%
+%    o text_ndl: A character buffer using null characters to mark a list of
+%      strings to be displayed within the Text View widget.
+%
+%    o text_ndl_size: The size of the text_ndl buffer
+%
+%
+*/
+void MagickXTextViewWidgetNDL(Display *display,
+                              const MagickXResourceInfo *resource_info,
+                              MagickXWindows *windows,
+                              const unsigned int mono,
+                              const char *title,
+                              const char *text_ndl,
+                              const size_t text_ndl_size)
+{
+  const char *textlist[400];
+  size_t i;
+  const char *p;
+
+  for (i=0, textlist[0]=text_ndl, p=text_ndl+1;
+       (i < (size_t) (ArraySize(textlist)-2)) &&
+         ((size_t) (p-text_ndl) < text_ndl_size-1);
+       p++)
+    {
+      if (*p == '\0')
+        {
+          i++;
+          textlist[i]=p+1;
+        }
+    }
+  i++;
+  textlist[i]=(char *) NULL;
+
+  MagickXTextViewWidget(display, resource_info, windows, mono, title,textlist);
+}
 #endif

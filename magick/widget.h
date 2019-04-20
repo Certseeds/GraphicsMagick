@@ -97,7 +97,10 @@ extern void
     const char *reason,const char *description),
   MagickXTextViewWidget(Display *display,
     const MagickXResourceInfo *resource_info,MagickXWindows *windows,
-    const unsigned int mono,const char *title,const char * const *textlist);
+    const unsigned int mono,const char *title,const char * const *textlist),
+  MagickXTextViewWidgetNDL(Display *display,const MagickXResourceInfo *resource_info,
+    MagickXWindows *windows,const unsigned int mono,const char *title,
+    const char *text_ndl,const size_t text_ndl_size);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
