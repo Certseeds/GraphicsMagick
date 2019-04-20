@@ -1,3 +1,11 @@
+2019-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xwd.c (ReadXWDImage): Added even more XWD header
+	validation logic.  Addresses problems noted by email from Hongxu
+	Chen to the graphicsmagick-security mail alias on Fri, 19 Apr 2019
+	and Sat, 20 Apr 2019 and entitled "Multiple crashes (FPE and
+	invalid read) when processing XWD files".
+
 2019-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xwd.c (ReadXWDImage): Added even more XWD header

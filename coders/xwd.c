@@ -166,6 +166,47 @@ static void TraceXWDHeader(const XWDFileHeader *header)
                         );
 }
 
+static void TraceXImage(const XImage *ximage)
+{
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "XImage:\n"
+                        "  width: %d\n"
+                        "  height: %d\n"
+                        "  xoffset: %d\n"
+                        "  format: %s\n"
+                        "  data: %p\n"
+                        "  byte_order: %s\n"
+                        "  bitmap_unit: %d\n"
+                        "  bitmap_bit_order: %s\n"
+                        "  bitmap_pad: %d\n"
+                        "  depth: %d\n"
+                        "  bytes_per_line: %d\n"
+                        "  bits_per_pixel: %d\n"
+                        "  red_mask: %06lX\n"
+                        "  green_mask: %06lX\n"
+                        "  blue_mask: %06lX\n",
+                        ximage->width,
+                        ximage->height,
+                        ximage->xoffset,
+                        (ximage->format == XYBitmap ? "XYBitmap" :
+                         (ximage->format == XYPixmap ? "XYPixmap" :
+                          (ximage->format == ZPixmap ? "ZPixmap" : "?"))),
+                        ximage->data,
+                        (ximage->byte_order == MSBFirst? "MSBFirst" :
+                         (ximage->byte_order == LSBFirst ? "LSBFirst" : "?")),
+                        ximage->bitmap_unit,
+                        (ximage->bitmap_bit_order == MSBFirst? "MSBFirst" :
+                         (ximage->bitmap_bit_order == LSBFirst ? "LSBFirst" :
+                          "?")),
+                        ximage->bitmap_pad,
+                        ximage->depth,
+                        ximage->bytes_per_line,
+                        ximage->bits_per_pixel,
+                        ximage->red_mask,
+                        ximage->green_mask,
+                        ximage->blue_mask);
+}
+
 /*
   Compute required allocation sizes
 
@@ -320,6 +361,16 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (header.header_size < sz_XWDheader)
     ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
 
+  /*
+    Detect signed integer overflow
+  */
+  if (((magick_uint32_t) header.pixmap_depth | header.pixmap_format |
+       header.xoffset | header.pixmap_width | header.pixmap_height |
+       header.bitmap_pad | header.bytes_per_line | header.byte_order |
+       header.bitmap_unit | header.bitmap_bit_order |
+       header.bits_per_pixel) >> 31)
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+
   /* Display classes  used in opening the connection */
   switch (header.visual_class)
     {
@@ -405,6 +456,10 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       }
 
+  /* xoffset should be in the bounds of pixmap_width */
+  if (header.xoffset >= header.pixmap_width)
+    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
+
   /* Bits per pixel (ZPixmap) */
   switch (header.visual_class)
     {
@@ -474,6 +529,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   comment[length]='\0';
   (void) SetImageAttribute(image,"comment",comment);
 
+
   /*
     Initialize the X image.
   */
@@ -495,31 +551,16 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   ximage->red_mask=header.red_mask;
   ximage->green_mask=header.green_mask;
   ximage->blue_mask=header.blue_mask;
-  /*
-    XImage uses signed integers rather than unsigned.  Check for
-    overflow due to assignment.
-  */
-  if (ximage->width < 0 ||
-      ximage->height < 0 ||
-      ximage->xoffset < 0 ||
-      ximage->format < 0 ||
-      ximage->byte_order < 0 ||
-      ximage->bitmap_unit < 0 ||
-      ximage->bitmap_bit_order < 0 ||
-      ximage->bitmap_pad < 0 ||
-      ximage->depth < 0 ||
-      ximage->bytes_per_line < 0 ||
-      ximage->bits_per_pixel < 0)
-    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
-  /* Guard against buffer overflow in libX11. */
-  if (ximage->bits_per_pixel > 32 || ximage->bitmap_unit > 32)
-    ThrowXWDReaderException(CorruptImageError,ImproperImageHeader,image);
 
   status=XInitImage(ximage);
   if (status == False)
     ThrowXWDReaderException(CorruptImageError,UnrecognizedXWDHeader,image);
-  image->columns=ximage->width;
-  image->rows=ximage->height;
+
+  if (image->logging)
+    TraceXImage(ximage);
+
+  image->columns=(unsigned long) ximage->width;
+  image->rows=(unsigned long) ximage->height;
   if (!image_info->ping)
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowXWDReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
@@ -596,7 +637,6 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
         Allocate the pixel buffer.
       */
       length=MagickArraySize(ximage->bytes_per_line,ximage->height);
-      length=ximage->bytes_per_line*ximage->height;
       if (0 == length)
         ThrowXWDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       if (ximage->format != ZPixmap)
