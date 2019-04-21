@@ -64,16 +64,16 @@ typedef struct _ColorInfo
     *next;
 } ColorInfo;
 
-extern MagickExport const ColorInfo
+extern const ColorInfo
   *GetColorInfo(const char *name, ExceptionInfo *exception);
 
-extern MagickExport ColorInfo
+extern ColorInfo
   **GetColorInfoArray(ExceptionInfo *exception);
 
-extern MagickExport void
+extern void
   DestroyColorInfo(void);
 
-extern MagickExport unsigned int
+extern unsigned int
   ListColorInfo(FILE *file,ExceptionInfo *exception);
 
 extern MagickPassFail

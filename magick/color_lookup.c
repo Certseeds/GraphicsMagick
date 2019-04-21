@@ -32,12 +32,12 @@
 */
 
 static const char
-  *BuiltInPath="[Built In]";
+  BuiltInPath[]="[Built In]";
 
 static const struct
 {
   char
-    *name;
+    name[21];
 
   unsigned short
     compliance;
@@ -725,7 +725,7 @@ DestroyColorInfo(void)
 %
 %
 */
-MagickExport const ColorInfo *
+const ColorInfo *
 GetColorInfo(const char *name,ExceptionInfo *exception)
 {
   char
@@ -796,7 +796,7 @@ GetColorInfo(const char *name,ExceptionInfo *exception)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%   G e t C o l o r I n f o A r r a y                                         %
++   G e t C o l o r I n f o A r r a y                                         %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -832,7 +832,7 @@ ColorInfoCompare(const void *x, const void *y)
 
   return strcmp(xx->name, yy->name);
 }
-MagickExport ColorInfo **
+ColorInfo **
 GetColorInfoArray(ExceptionInfo *exception)
 {
   ColorInfo
@@ -1325,7 +1325,7 @@ QueryColorDatabase(const char *name,PixelPacket *color,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  QueryColorname() returns a named color for the given color intensity.  If
-%  an exact match is not found, a hex value is return instead.  For example
+%  an exact match is not found, a hex value is returned instead.  For example
 %  an intensity of rgb:(0,0,0) returns black whereas rgb:(223,223,223)
 %  returns #dfdfdf.
 %
