@@ -35,6 +35,22 @@
 <div class="document">
 
 
+<p>2019-04-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/magic.c (struct): Ajust StaticMagic definition to be more
+const-friendly.</li>
+<li>magick/color_lookup.c (struct): Adjust StaticColors definition
+to be more const-friendly.</li>
+<li>magick/attribute.c: Ajust tag_table definition to be more
+const-friendly.</li>
+<li>magick/log.c: Allocate LogInfo from heap as we used to do.</li>
+<li>magick/locale.c (GetLocaleMessageFromTag): Adaptations to locale
+coder output changes.</li>
+<li>coders/locale.c (WriteLOCALEImage): Adjust locale coder output
+to be more const.</li>
+</ul>
+</blockquote>
 <p>2019-04-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
