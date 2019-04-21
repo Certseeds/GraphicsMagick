@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1489,6 +1489,11 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   int ac;
   char *av[MAX_PARAM+1];
 
+#if defined(MSWINDOWS)
+  InitializeMagick((char *) NULL);
+#else
+  InitializeMagick(argv[0]);
+#endif
   {
     char client_name[MaxTextExtent];
     FormatString(client_name,"%.1024s %s", argv[0], argv[1]);
@@ -1501,6 +1506,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     if (result < 0 )
       {
         BatchUsage();
+        DestroyMagick();
         return result == OptionHelp;
       }
   }
@@ -1510,6 +1516,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     {
       (void) fprintf(stderr, "Error: unexpected parameter: %s\n", argv[result+1]);
       BatchUsage();
+      DestroyMagick();
       return MagickFail;
     }
 
@@ -1517,6 +1524,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     if (freopen(argv[result], "r", stdin) == (FILE *)NULL)
       {
         perror(argv[result]);
+        DestroyMagick();
         exit(1);
       }
 
@@ -1524,11 +1532,6 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   result = ProcessBatchOptions(argc-1, argv+1, &batch_options);
 
   run_mode = BatchMode;
-#if defined(MSWINDOWS)
-  InitializeMagick((char *) NULL);
-#else
-  InitializeMagick(argv[0]);
-#endif
 
   av[0] = argv[0];
   av[MAX_PARAM] = (char *)NULL;

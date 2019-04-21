@@ -36,7 +36,7 @@ static const char
 
 static const struct
 {
-  char
+  const char
     name[21];
 
   unsigned short

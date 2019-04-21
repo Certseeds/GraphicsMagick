@@ -104,7 +104,6 @@ coders/xtrn.c
 coders/xwd.c
 coders/yuv.c
 filters/analyze.c
-locale/locale_c.h
 magick/PreRvIcccm.c
 magick/PreRvIcccm.h
 magick/alpha_composite.h

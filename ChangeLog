@@ -1,3 +1,22 @@
+2019-04-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magic.c (struct): Ajust StaticMagic definition to be more
+	const-friendly.
+
+	* magick/color_lookup.c (struct): Adjust StaticColors definition
+	to be more const-friendly.
+
+	* magick/attribute.c: Ajust tag_table definition to be more
+	const-friendly.
+
+	* magick/log.c: Allocate LogInfo from heap as we used to do.
+
+	* magick/locale.c (GetLocaleMessageFromTag): Adaptations to locale
+	coder output changes.
+
+	* coders/locale.c (WriteLOCALEImage): Adjust locale coder output
+	to be more const.
+
 2019-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/color_lookup.c: Make built-in color tables fully const.

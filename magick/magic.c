@@ -46,13 +46,13 @@
 */
 static const struct
 {
-  char
-    *name;
+  const char
+    name[10];
 
-  unsigned char
-    *magic;
+  const unsigned char
+    * const magic;
 
-  unsigned int
+  unsigned short
     length,
     offset;
 }

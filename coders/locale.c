@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -875,6 +875,9 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
         index,
         severityindex;
 
+      unsigned int
+        offset;
+
       register char
         *p;
 
@@ -920,8 +923,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
       WriteBlobStringEOL(image);
       WriteBlobStringWithEOL(image,"#if defined(_INCLUDE_CATEGORYMAP_TABLE_)");
       WriteBlobStringWithEOL(image,"typedef struct _CategoryInfo{");
-      WriteBlobStringWithEOL(image,"  const char *name;");
-      WriteBlobStringWithEOL(image,"  int offset;");
+      WriteBlobStringWithEOL(image,"  const char name[17];");
+      WriteBlobStringWithEOL(image,"  unsigned int offset;");
       WriteBlobStringWithEOL(image,"} CategoryInfo;");
       WriteBlobStringEOL(image);
       WriteBlobStringWithEOL(image,"static const CategoryInfo category_map[] =");
@@ -963,7 +966,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
               }
           }
       }
-      FormatString(text, "    { 0, %d }",severityindex-1);
+      FormatString(text, "    { \"\", %d }",severityindex-1);
       WriteBlobStringWithEOL(image,text);
       WriteBlobStringWithEOL(image,"  };");
       WriteBlobStringWithEOL(image,"#endif");
@@ -973,8 +976,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
       WriteBlobStringEOL(image);
       WriteBlobStringWithEOL(image,"#if defined(_INCLUDE_SEVERITYMAP_TABLE_)");
       WriteBlobStringWithEOL(image,"typedef struct _SeverityInfo{");
-      WriteBlobStringWithEOL(image,"  const char *name;");
-      WriteBlobStringWithEOL(image,"  int offset;");
+      WriteBlobStringWithEOL(image,"  const char name[28];");
+      WriteBlobStringWithEOL(image,"  unsigned int offset;");
       WriteBlobStringWithEOL(image,"  ExceptionType severityid;");
       WriteBlobStringWithEOL(image,"} SeverityInfo;");
       WriteBlobStringEOL(image);
@@ -1004,13 +1007,13 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
               {
                 FormatString(text, "    { \"%s%s%s/%s\", %d, %s },", fields[0],
                   strlen(fields[0]) ? "/" : "", fields[1], fields[2], i,
-                  severity);
+                             severity);
                 WriteBlobStringWithEOL(image,text);
                 (void) strlcpy(last,severity,MaxTextExtent);
               }
           }
       }
-      FormatString(text, "    { 0, %d, UndefinedException }",count);
+      FormatString(text, "    { \"\", %d, UndefinedException }",count);
       WriteBlobStringWithEOL(image,text);
       WriteBlobStringWithEOL(image,"  };");
       WriteBlobStringWithEOL(image,"#endif");
@@ -1021,8 +1024,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
       WriteBlobStringWithEOL(image,"#if defined(_INCLUDE_TAGMAP_TABLE_)");
       WriteBlobStringWithEOL(image,"typedef struct _MessageInfo");
       WriteBlobStringWithEOL(image,"{");
-      WriteBlobStringWithEOL(image,"  const char *name;");
-      WriteBlobStringWithEOL(image,"  int messageid;");
+      WriteBlobStringWithEOL(image,"  const char name[40];"); /* String must fit! */
+      WriteBlobStringWithEOL(image,"  unsigned int messageid;");
       WriteBlobStringWithEOL(image,"} MessageInfo;");
       WriteBlobStringEOL(image);
       WriteBlobStringWithEOL(image,"static const MessageInfo message_map[] =");
@@ -1045,22 +1048,23 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
                   index++;
                 }
             }
-            FormatString(text, "    { \"%s\", %d },", fields[3], i+1);
+            FormatString(text, "    { \"%s\", MGK_%s%s%s%s },", fields[3],
+                         fields[0],fields[1],fields[2],fields[3]);
             WriteBlobStringWithEOL(image,text);
           }
       }
-      WriteBlobStringWithEOL(image,"    { 0, 0 }");
+      WriteBlobStringWithEOL(image,"    { \"\", 0 }");
       WriteBlobStringWithEOL(image,"  };");
-      WriteBlobStringWithEOL(image,"#endif");
+      WriteBlobStringWithEOL(image,"#endif /* if defined(_INCLUDE_TAGMAP_TABLE_) */");
       /*
         Write a table of all the messages indexed by the message id.
       */
       WriteBlobStringEOL(image);
       WriteBlobStringWithEOL(image,"#if defined(_INCLUDE_MESSAGE_TABLE_)");
-      WriteBlobStringWithEOL(image,"static const char *message_dat[] =");
-      WriteBlobStringWithEOL(image,"  {");
+      WriteBlobStringWithEOL(image,"static const char message_dat[] =");
+      /* WriteBlobStringWithEOL(image,"  {"); */
       /* message 0 is reserved as the generic windows event message */
-      WriteBlobStringWithEOL(image,"    \"%1\",");
+      WriteBlobStringWithEOL(image,"    \"%1\\0\"");
       for (i=0; i < count; i++)
       {
         (void) strlcpy(path,locale[i],sizeof(path));
@@ -1079,13 +1083,52 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
                   index++;
                 }
             }
-            FormatString(text, "    \"%s\",",fields[4]);
+            FormatString(text, "    \"%s\\0\"",fields[4]);
+            WriteBlobStringWithEOL(image,text);
+          }
+      }
+      /* WriteBlobStringWithEOL(image,"    0"); */
+      /* WriteBlobStringWithEOL(image,"  };"); */
+      WriteBlobStringWithEOL(image,"  ;");
+      WriteBlobStringEOL(image);
+      /* WriteBlobStringWithEOL(image,"#if defined(_INCLUDE_MESSAGE_TABLE_)"); */
+      WriteBlobStringWithEOL(image,"static const unsigned short message_dat_offsets[] =");
+      WriteBlobStringWithEOL(image,"  {");
+      offset=0;
+      FormatString(text, "    %u,",offset);
+      WriteBlobStringWithEOL(image,text);
+      /* message 0 is reserved as the generic windows event message */
+      /* WriteBlobStringWithEOL(image,"    \"%1\","); */
+      offset += strlen("%1")+1;
+      FormatString(text, "    %u,",offset);
+      WriteBlobStringWithEOL(image,text);
+      for (i=0; i < count; i++)
+      {
+        (void) strlcpy(path,locale[i],sizeof(path));
+        if (*path != '\0')
+          {
+            p=path+strlen(path)-1;
+            if (*p == '/')
+              *p='\0';
+            fields[0]=""; /* this one may not exist */
+            for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
+            {
+              if (*p == '/')
+                {
+                  *p='\0';
+                  fields[4-index]=p+1;
+                  index++;
+                }
+            }
+            /* FormatString(text, "    \"%s\",",fields[4]); */
+            offset += strlen(fields[4])+1;
+            FormatString(text, "    %u,",offset);
             WriteBlobStringWithEOL(image,text);
           }
       }
       WriteBlobStringWithEOL(image,"    0");
       WriteBlobStringWithEOL(image,"  };");
-      WriteBlobStringWithEOL(image,"#endif");
+      WriteBlobStringWithEOL(image,"#endif /* if defined(_INCLUDE_MESSAGE_TABLE_) */");
    }
   else if ((LocaleCompare(image_info->magick,"LOCALE") == 0) ||
       (LocaleCompare(image_info->magick,"LOCALEC") == 0))
