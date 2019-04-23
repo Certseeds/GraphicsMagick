@@ -316,6 +316,7 @@ InitializeLogInfo(void)
   log_info->output_type=StderrOutput;
 #endif
   log_info->method=0;
+  log_info->log_configured=MagickFalse;
 
   (void) strlcpy(log_info->path,"(default)",sizeof(log_info->path));
   (void) strlcpy(log_info->filename,"Magick-%d.log",sizeof(log_info->filename));

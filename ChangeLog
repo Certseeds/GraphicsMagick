@@ -1,3 +1,10 @@
+2019-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/locale.c (GetLocaleMessageFromTag): Eliminate clang
+	warning about comparison with a constant value.
+
+	* magick/log.c (InitializeLogInfo): Initialize LogInfo log_configured.
+
 2019-04-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magic.c (struct): Ajust StaticMagic definition to be more

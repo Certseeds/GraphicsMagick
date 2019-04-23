@@ -198,7 +198,7 @@ GetLocaleMessageFromTag(const char *tag)
 
   (void) strlcpy(category,tag,MaxTextExtent);
   ChopLocaleComponents(category,2);
-  for (k=0; (k < ArraySize(category_map)) && (category_map[k].name != 0); k++)
+  for (k=0; k < ArraySize(category_map); k++)
     {
       if (LocaleCompare(category,category_map[k].name) == 0)
         {
