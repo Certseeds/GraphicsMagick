@@ -17031,8 +17031,23 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
   supported=MagickFalse;
   text[0]='\0';
 #if defined(HAVE_OPENMP)
-  supported=MagickTrue;
-  FormatString(text,"%u",(unsigned int) _OPENMP);
+  {
+    const char *omp_ver;
+    switch((unsigned int) _OPENMP)
+      {
+      case 199810: omp_ver = "1.0"; break; /* 1.0 October 1998 */
+      case 200203: omp_ver = "2.0"; break; /* 2.0 March 2002 */
+      case 200505: omp_ver = "2.5"; break; /* 2.5 May 2005 */
+      case 200805: omp_ver = "3.0"; break; /* 3.0 May, 2008 */
+      case 201107: omp_ver = "3.1"; break; /* 3.1 July 2011 */
+      case 201307: omp_ver = "4.0"; break; /* 4.0 July 2013 */
+      case 201511: omp_ver = "4.5"; break; /* 4.5 Nov 2015 */
+      case 201811: omp_ver = "5.0"; break; /* 5.0 Nov 2018 */
+      default: omp_ver = "?"; break;
+      }
+    supported=MagickTrue;
+    FormatString(text,"%u \"%s\"",(unsigned int) _OPENMP, omp_ver);
+  }
 #endif /* defined(HAVE_OPENMP) */
   PrintFeatureTextual("OpenMP", supported, text);
 

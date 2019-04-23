@@ -1,5 +1,8 @@
 2019-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (VersionCommand): Show OpenMP specification
+	version corresponding to version enumeration.
+
 	* magick/locale.c (GetLocaleMessageFromTag): Eliminate clang
 	warning about comparison with a constant value.
 
