@@ -484,6 +484,28 @@ Several configure options require special note:
   copying a module into place) but GraphicsMagick itself is not built
   using modules.
 
+  Use of the modules build is recommended where it is possible to use
+  it.  Using modules defers the overhead due to library dependencies
+  (searching the filesystem for libraries, shared library relocations,
+  initialized data, and constructors) until the point the libraries
+  are required to be used to support the file format requested.
+  Traditionally it has been thought that a 'static' program will be
+  more performant than one built with shared libraries, and perhaps
+  this may be true, but building a 'static' GraphicsMagick does not
+  account for the many shared libraries it uses on a typical
+  Unix/Linux system.  These shared libraries may impose unexpected
+  overhead.  For example, it was recently noted that libxml2 is now
+  often linked with the ICU (international character sets) libraries
+  which are huge C++ libraries consuming almost 30MB of disk space and
+  that simply linking with these libraries causes GraphicsMagick to
+  start up much more slowly. By using the modules build, libxml2 (and
+  therefore the huge ICU C++ libraries) are only loaded in the few
+  cases (e.g. SVG format) where it is needed.
+
+  When applications depend on the GraphicsMagick libraries, using the
+  modules build lessens the linkage overhead due to using
+  GraphicsMagick.
+
 --enable-symbol-prefix
 
   The GraphicsMagick libraries may contain symbols which conflict with
@@ -698,6 +720,27 @@ Several configure options require special note:
 
   Specify the directory containing MS-Windows-compatible fonts. This is
   not necessary when GraphicsMagick is running under MS-Windows.
+
+--with-umem
+
+  The default Solaris memory allocator exhibits poor concurrency in
+  multi-threaded programs and this can impact OpenMP speedup under
+  Solaris (and systems derived from it such as Illumos).  Use this
+  convenience option to enable use of the umem memory allocation
+  library, which is observed to be more performant in multi-threaded
+  programs.  There is a port of umem available for Linux so this
+  option is not specific to Solaris.
+
+--with-mtmalloc
+
+  The default Solaris memory allocator exhibits poor concurrency in
+  multi-threaded programs and this can impact OpenMP speedup under
+  Solaris (and systems derived from it such as Illumos).  Use this
+  convenience option to enable use of the mtmalloc memory allocation
+  library, which is more performant in multi-threaded programs than
+  the default libc memory allocator, and more performant in
+  multi-threaded programs than umem, but is less memory efficient.
+
 
 Building under Cygwin
 ---------------------

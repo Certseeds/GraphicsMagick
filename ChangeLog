@@ -1,3 +1,10 @@
+2019-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Expanded configure documentation for
+	--with-modules.  Added specific configure documentation for
+	--with-umem and --with-mtmalloc, which may be useful on
+	Solaris-derived systems.
+
 2019-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (VersionCommand): Show OpenMP specification
