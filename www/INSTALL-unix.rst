@@ -634,6 +634,10 @@ Several configure options require special note:
   4.2. OpenMP is a well-established standard and was implemented in
   some other compilers in the late '90s, long before its appearance in
   GCC. OpenMP adds additional build and linkage requirements.
+  GraphicsMagick supports OpenMP version 2.5 and later, primarily
+  using features defined by version 2.5, but will be optionally using
+  features from version 3.1 in the future since it is commonly
+  available.
 
   By default, GraphicsMagick enables as many threads as there are CPU
   cores (or CPU threads).  According to the OpenMP standard, the
