@@ -120,9 +120,9 @@ other popular software:
 
   * GM `valgrind`_'s 100% clean (memcheck and helgrind).
 
-  * GM passes rigorous memory error testing using `ASan_`.
+  * GM passes rigorous memory error testing using `ASan`_.
 
-  * GM passes undefined behavior testing using `UBSan_`.
+  * GM passes undefined behavior testing using `UBSan`_.
 
   * GM comes with a comprehensive `manual page`_.
 
