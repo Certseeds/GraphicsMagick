@@ -383,6 +383,13 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #    define COSF(d) cos(d)
 #  endif
 #endif /* !defined(COSF) */
+#if !defined(FABSF)
+#  if defined(HAVE_FABSF)
+#    define FABSF(f) fabsf(f)
+#  else
+#    define FABSF(d) fabs(d)
+#  endif
+#endif /* !defined(FABSF) */
 #if !defined(LOGF)
 #  if defined(HAVE_LOGF)
 #    define LOGF(f) logf(f)

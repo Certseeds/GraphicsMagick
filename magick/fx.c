@@ -1773,7 +1773,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
   VirtualPixelMethod
     virtual_pixel_method;
 
-  double
+  float
     * restrict sine_map;
 
   Image
@@ -1793,7 +1793,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   wave_image=CloneImage(image,image->columns,(long)
-                        (image->rows+2.0*fabs(amplitude)),MagickTrue,exception);
+                        (image->rows+2.0*FABSF(amplitude)),MagickTrue,exception);
   if (wave_image == (Image *) NULL)
     return((Image *) NULL);
   wave_image->storage_class=DirectClass;
@@ -1812,8 +1812,8 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
     register long
       x;
 
-    sine_map=MagickAllocateArray(double *,wave_image->columns,sizeof(double));
-    if (sine_map == (double *) NULL)
+    sine_map=MagickAllocateArray(float *,wave_image->columns,sizeof(float));
+    if (sine_map == (float *) NULL)
       {
         DestroyImage(wave_image);
         ThrowImageException(ResourceLimitError,MemoryAllocationFailed,
@@ -1824,7 +1824,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
 #  pragma omp parallel for schedule(static,256)
 #endif
     for (x=0; x < (long) wave_image->columns; x++)
-      sine_map[x]=fabs(amplitude)+amplitude*sin((2*MagickPI*x)/wave_length);
+      sine_map[x]=(float) (FABSF(amplitude)+amplitude*SINF((2.0*MagickPI*x)/wave_length));
   }
   /*
     Set virtual pixel method.
@@ -1857,7 +1857,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
         register PixelPacket
           * restrict q;
 
-        register long
+        register unsigned long
           x;
 
         ViewInfo
@@ -1876,7 +1876,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
           thread_status=MagickFail;
         if (thread_status != MagickFail)
           {
-            for (x=0; x < (long) wave_image->columns; x++)
+            for (x=0; x < wave_image->columns; x++)
               {
                 if (InterpolateViewColor(image_view,&q[x],(double) x,
                                          (double) y-sine_map[x],

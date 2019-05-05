@@ -104,6 +104,9 @@
 /* define if the compiler supports the explicit keyword */
 #undef HAVE_EXPLICIT
 
+/* Define to 1 if you have the `fabsf' function. */
+#undef HAVE_FABSF
+
 /* Define to 1 if you have the `fcntl' function. */
 #undef HAVE_FCNTL
 

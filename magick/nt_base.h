@@ -127,6 +127,9 @@ extern "C" {
 /* Define to 1 if you have the `cosf' function. */
 #define HAVE_COSF 1
 
+/* Define to 1 if you have the `fabsf' function. */
+#define HAVE_FABSF 1
+
 /* Define to 1 if you have the `logf' function. */
 #define HAVE_LOGF 1
 

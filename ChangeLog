@@ -1,5 +1,7 @@
 2019-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/fx.c (WaveImage): Use float for sin map.
+
 	* configure.ac: Test for float versions of math functions.
 
 	* magick/gem.c (GenerateDifferentialNoise): Use float versions of
