@@ -60,6 +60,9 @@
 /* define if the compiler supports const_cast<> */
 #undef HAVE_CONST_CAST
 
+/* Define to 1 if you have the `cosf' function. */
+#undef HAVE_COSF
+
 /* Define to 1 if you have the `CryptGenRandom' function. */
 #undef HAVE_CRYPTGENRANDOM
 
@@ -145,6 +148,9 @@
 
 /* Define to 1 if you have the `localtime_r' function. */
 #undef HAVE_LOCALTIME_R
+
+/* Define to 1 if you have the `logf' function. */
+#undef HAVE_LOGF
 
 /* Define to 1 if the type `long double' works and has more range or precision
    than `double'. */
@@ -256,8 +262,14 @@
 /* Define to 1 if you have the `sigemptyset' function. */
 #undef HAVE_SIGEMPTYSET
 
+/* Define to 1 if you have the `sinf' function. */
+#undef HAVE_SINF
+
 /* Define to 1 if you have the `spawnvp' function. */
 #undef HAVE_SPAWNVP
+
+/* Define to 1 if you have the `sqrtf' function. */
+#undef HAVE_SQRTF
 
 /* define if the compiler supports static_cast<> */
 #undef HAVE_STATIC_CAST

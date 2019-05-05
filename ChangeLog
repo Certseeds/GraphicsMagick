@@ -1,3 +1,10 @@
+2019-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Test for float versions of math functions.
+
+	* magick/gem.c (GenerateDifferentialNoise): Use float versions of
+	math functions when available.
+
 2019-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/INSTALL-unix.rst: Expanded configure documentation for

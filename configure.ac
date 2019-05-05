@@ -1201,21 +1201,6 @@ AC_SUBST(MAGICK_SSIZE_T_F)
 
 ########
 #
-# Check for functions
-#
-########
-GM_FUNC_MMAP_FILEIO
-AC_CHECK_FUNCS([atoll CryptGenRandom \
-  clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
-  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
-  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
-  posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
-  putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
-  setrlimit sigemptyset sigaction spawnvp strerror strerror_r strlcat strlcpy \
-  strtoll sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
-
-########
-#
 # Check for function prototypes
 #
 ########
@@ -2731,6 +2716,21 @@ fi
 AM_CONDITIONAL([HasWMF], [test "$have_wmf" = 'yes'])
 AC_SUBST([LIB_WMF])
 AC_SUBST([LIB_WMF_DEPS])
+
+########
+#
+# Check for functions
+#
+########
+GM_FUNC_MMAP_FILEIO
+AC_CHECK_FUNCS([atoll CryptGenRandom \
+  clock_getres clock_gettime ctime_r cosf _exit fcntl fstatvfs ftime getexecname \
+  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r logf madvise \
+  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
+  posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
+  putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
+  setrlimit sigemptyset sigaction sinf spawnvp strerror strerror_r strlcat strlcpy \
+  strtoll sqrtf sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
 
 #
 # Substitute compiler name to build/link PerlMagick

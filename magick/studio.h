@@ -376,6 +376,35 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #define DefineNameToString(value) #value
 #define DefineValueToString(define) DefineNameToString(define)
 
+#if !defined(COSF)
+#  if defined(HAVE_COSF)
+#    define COSF(f) cosf(f)
+#  else
+#    define COSF(d) cos(d)
+#  endif
+#endif /* !defined(COSF) */
+#if !defined(LOGF)
+#  if defined(HAVE_LOGF)
+#    define LOGF(f) logf(f)
+#  else
+#    define LOGF(d) log(d)
+#  endif
+#endif /* !defined(LOGF) */
+#if !defined(SINF)
+#  if defined(HAVE_SINF)
+#    define SINF(f) sinf(f)
+#  else
+#    define SINF(d) sin(d)
+#  endif
+#endif /* !defined(SINF) */
+#if !defined(SQRTF)
+#  if defined(HAVE_SQRTF)
+#    define SQRTF(f) sqrtf(f)
+#  else
+#    define SQRTF(d) sqrt(d)
+#  endif
+#endif /* !defined(SQRTF) */
+
 /*
   atof(), atoi(), and atol() are legacy functions which might not be
   thread safe, might not enforce reasonable limits, and should not be
