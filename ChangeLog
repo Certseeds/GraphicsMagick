@@ -1,5 +1,8 @@
 2019-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/colorspace.c: Reorder initialization of colorspace tables
+	for a possible performance improvement.
+
 	* magick/fx.c (WaveImage): Use float for sin map.
 
 	* configure.ac: Test for float versions of math functions.
