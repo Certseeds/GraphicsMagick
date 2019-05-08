@@ -1035,11 +1035,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         MagickFreeMemory(bmp_colormap);
       }
 
-    if (image_info->ping)
-      if ((image_info->subrange == 0) ||
-          ((image_info->subrange != 0) &&
-           (image->scene >= (image_info->subimage+image_info->subrange-1))))
-        break;
+    if (image_info->ping && (image_info->subrange != 0))
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
+          break;
 
     if (CheckImagePixelLimits(image, exception) != MagickPass)
         ThrowBMPReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);

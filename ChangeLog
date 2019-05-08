@@ -1,3 +1,9 @@
+2019-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Fix subrange/scene handling in
+	'ping' mode so it is like the other formats.  Only the first frame
+	was being enumerated while in 'ping' mode.
+
 2019-05-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update news.
