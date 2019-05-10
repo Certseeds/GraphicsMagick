@@ -378,35 +378,35 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 
 #if !defined(COSF)
 #  if defined(HAVE_COSF)
-#    define COSF(f) cosf(f)
+#    define COSF(f) cosf((float) (f))
 #  else
 #    define COSF(d) cos(d)
 #  endif
 #endif /* !defined(COSF) */
 #if !defined(FABSF)
 #  if defined(HAVE_FABSF)
-#    define FABSF(f) fabsf(f)
+#    define FABSF(f) fabsf((float) (f))
 #  else
 #    define FABSF(d) fabs(d)
 #  endif
 #endif /* !defined(FABSF) */
 #if !defined(LOGF)
 #  if defined(HAVE_LOGF)
-#    define LOGF(f) logf(f)
+#    define LOGF(f) logf((float) (f))
 #  else
 #    define LOGF(d) log(d)
 #  endif
 #endif /* !defined(LOGF) */
 #if !defined(SINF)
 #  if defined(HAVE_SINF)
-#    define SINF(f) sinf(f)
+#    define SINF(f) sinf((float) (f))
 #  else
 #    define SINF(d) sin(d)
 #  endif
 #endif /* !defined(SINF) */
 #if !defined(SQRTF)
 #  if defined(HAVE_SQRTF)
-#    define SQRTF(f) sqrtf(f)
+#    define SQRTF(f) sqrtf((float) (f))
 #  else
 #    define SQRTF(d) sqrt(d)
 #  endif
