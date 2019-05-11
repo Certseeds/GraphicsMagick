@@ -50,6 +50,7 @@
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
 #include "magick/utility.h"
+#include "magick/version.h"
 #if defined(HasZLIB)
 #  include "zlib.h"
 #endif
@@ -1980,31 +1981,27 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 */
 ModuleExport void RegisterMIFFImage(void)
 {
-  static char
-    version[MaxTextExtent];
+  /* GraphicsMagick 1.4, Zlib 1.2.3, BZlib */
+  static const char
+    version[]= MagickPackageName " " MagickLibVersionText
+#if defined(ZLIB_VERSION)
+    ", Zlib " ZLIB_VERSION
+#endif
+#if defined(HasBZLIB)
+    ", BZlib"
+#endif
+    ;
 
   MagickInfo
     *entry;
 
-  *version='\0';
-#if defined(MagickLibVersionText)
-  (void) strlcpy(version,MagickLibVersionText,MaxTextExtent);
-#if defined(ZLIB_VERSION)
-  (void) strlcat(version," with Zlib ",MaxTextExtent);
-  (void) strlcat(version,ZLIB_VERSION,MaxTextExtent);
-#endif
-#if defined(HasBZLIB)
-  (void) strlcat(version," and BZlib",MaxTextExtent);
-#endif
-#endif
   entry=SetMagickInfo("MIFF");
   entry->decoder=(DecoderHandler) ReadMIFFImage;
   entry->encoder=(EncoderHandler) WriteMIFFImage;
   entry->magick=(MagickHandler) IsMIFF;
   entry->description="Magick Image File Format";
   entry->seekable_stream=MagickTrue;
-  if (*version != '\0')
-    entry->version=version;
+  entry->version=version;
   entry->module="MIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

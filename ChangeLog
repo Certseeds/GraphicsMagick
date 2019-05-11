@@ -1,5 +1,16 @@
 2019-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/webp.c (RegisterWEBPImage): Make more data const.
+
+	* coders/svg.c (RegisterSVGImage): Reduce BSS size.
+
+	* coders/miff.c (RegisterMIFFImage): Fix version reporting.
+
+	* coders/ttf.c (RegisterTTFImage): Fixed reporting of FreeType
+	version.
+
+	* coders/tiff.c (RegisterTIFFImage): Reduce BSS size.
+
 	* coders/sfw.c (ReadSFWImage): Make SFW static data completely
 	const.
 

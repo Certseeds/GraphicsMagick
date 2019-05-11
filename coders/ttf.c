@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -42,6 +42,29 @@
 #include "magick/magick.h"
 #include "magick/render.h"
 #include "magick/utility.h"
+#if defined(HasTTF)
+
+#  if defined(__MINGW32__)
+#    undef interface  /* Remove interface define */
+#  endif
+
+#  if defined(HAVE_FT2BUILD_H)
+     /*
+       Modern FreeType2 installs require that <ft2build.h> be included
+       before including other FreeType2 headers.  Including
+       <ft2build.h> establishes definitions used by other FreeType2
+       headers.
+     */
+#    include <ft2build.h>
+#    include FT_FREETYPE_H
+#  else
+     /*
+       Very old way to include FreeType2
+     */
+#    include <freetype/freetype.h>
+#  endif /* defined(HAVE_FT2BUILD_H) */
+
+#endif /* defined(HasTTF) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,8 +153,8 @@ static Image *ReadTTFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   char
     buffer[MaxTextExtent];
 
-  const char
-    *Text =
+  static const char
+    Text[] =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz\n0123456789 "
       "\342\352\356\373\364\344\353\357\366\374\377\340\371\351\350\347\n"
       "&#~\\\"\'(-`_^@)=+\260 $\243^\250*\265\371%!\247:/;.,?<>";
@@ -255,16 +278,21 @@ static Image *ReadTTFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 */
 ModuleExport void RegisterTTFImage(void)
 {
-  static char
-    version[MaxTextExtent];
+#if defined(FREETYPE_MAJOR) && defined(FREETYPE_MINOR) && defined(FREETYPE_PATCH)
+
+  static const char
+    version[] = "FreeType " DefineValueToString(FREETYPE_MAJOR) "."
+    DefineValueToString(FREETYPE_MINOR) "." DefineValueToString(FREETYPE_PATCH);
+#define HAVE_TTF_VERSION 1
+#endif
 
   MagickInfo
     *entry;
 
-  *version='\0';
-#if defined(FREETYPE_MAJOR) && defined(FREETYPE_MINOR)
-  FormatString(version,"%d.%d",FREETYPE_MAJOR,FREETYPE_MINOR);
-#endif
+  /*   *version='\0'; */
+  /* #if defined(FREETYPE_MAJOR) && defined(FREETYPE_MINOR) && defined(FREETYPE_PATCH) */
+  /*   FormatString(version,"FreeType %d.%d.%d",FREETYPE_MAJOR,FREETYPE_MINOR,FREETYPE_PATCH); */
+  /* #endif */
 
   entry=SetMagickInfo("TTF");
 #if defined(HasTTF)
@@ -273,8 +301,9 @@ ModuleExport void RegisterTTFImage(void)
   entry->magick=(MagickHandler) IsTTF;
   entry->adjoin=False;
   entry->description="TrueType font";
-  if (*version != '\0')
-    entry->version=version;
+#if defined(HAVE_TTF_VERSION)
+  entry->version=version;
+#endif
   entry->module="TTF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -286,8 +315,9 @@ ModuleExport void RegisterTTFImage(void)
   entry->magick=(MagickHandler) IsPFA;
   entry->adjoin=False;
   entry->description="Postscript Type 1 font (ASCII)";
-  if (*version != '\0')
-    entry->version=version;
+#if defined(HAVE_TTF_VERSION)
+  entry->version=version;
+#endif
   entry->module="TTF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -299,8 +329,9 @@ ModuleExport void RegisterTTFImage(void)
   entry->magick=(MagickHandler) IsPFA;
   entry->adjoin=False;
   entry->description="Postscript Type 1 font (binary)";
-  if (*version != '\0')
-    entry->version=version;
+#if defined(HAVE_TTF_VERSION)
+  entry->version=version;
+#endif
   entry->module="TTF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

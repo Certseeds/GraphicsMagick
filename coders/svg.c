@@ -4008,16 +4008,14 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 ModuleExport void
 RegisterSVGImage(void)
 {
-  static char
-    version[MaxTextExtent];
+#if defined(LIBXML_DOTTED_VERSION)
+  static const char
+    version[] = "XML " LIBXML_DOTTED_VERSION;
+#define HAS_VERSION 1
+#endif
 
   MagickInfo
     *entry;
-
-  *version='\0';
-#if defined(LIBXML_DOTTED_VERSION)
-  (void) strlcpy(version,"XML " LIBXML_DOTTED_VERSION,MaxTextExtent);
-#endif /* defined(LIBXML_DOTTED_VERSION) */
 
   entry=SetMagickInfo("SVG");
 #if defined(HasXML)
@@ -4027,8 +4025,9 @@ RegisterSVGImage(void)
   entry->encoder=(EncoderHandler) WriteSVGImage;
 #endif /* if ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics";
-  if (*version != '\0')
+#if defined(HAS_VERSION)
     entry->version=version;
+#endif
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
 
@@ -4040,8 +4039,9 @@ RegisterSVGImage(void)
   entry->encoder=(EncoderHandler) WriteSVGImage;
 #endif /* if ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics (ZIP compressed)";
-  if (*version != '\0')
+#if defined(HAS_VERSION)
     entry->version=version;
+#endif
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
 }

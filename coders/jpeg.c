@@ -133,7 +133,7 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
 */
 #define USE_LIBJPEG_PROGRESS 0 /* Use libjpeg callback for progress */
 
-static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
+static const char xmp_std_header[]="http://ns.adobe.com/xap/1.0/";
 
 
 typedef struct _DestinationManager
@@ -1734,10 +1734,13 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 ModuleExport void RegisterJPEGImage(void)
 {
   static const char
-    *description="Joint Photographic Experts Group JFIF format";
+    description[]="Joint Photographic Experts Group JFIF format";
 
-  static char
-    version[MaxTextExtent];
+#if defined(HasJPEG) && defined(JPEG_LIB_VERSION)
+  static const char
+    version[] = "IJG JPEG " DefineValueToString(JPEG_LIB_VERSION);
+#define HAVE_JPEG_VERSION
+#endif
 
   MagickInfo
     *entry;
@@ -1751,11 +1754,6 @@ ModuleExport void RegisterJPEGImage(void)
   thread_support=MagickFalse; /* libjpeg is not thread safe */
 #endif
 
-  version[0]='\0';
-#if defined(HasJPEG)
-  FormatString(version,"IJG JPEG %d",JPEG_LIB_VERSION);
-#endif
-
   entry=SetMagickInfo("JPEG");
   entry->thread_support=thread_support;
 #if defined(HasJPEG)
@@ -1765,8 +1763,9 @@ ModuleExport void RegisterJPEGImage(void)
   entry->magick=(MagickHandler) IsJPEG;
   entry->adjoin=False;
   entry->description=description;
-  if (version[0] != '\0')
+#if defined(HAVE_JPEG_VERSION)
     entry->version=version;
+#endif
   entry->module="JPEG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -1779,8 +1778,9 @@ ModuleExport void RegisterJPEGImage(void)
 #endif
   entry->adjoin=False;
   entry->description=description;
-  if (version[0] != '\0')
+#if defined(HAVE_JPEG_VERSION)
     entry->version=version;
+#endif
   entry->module="JPEG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

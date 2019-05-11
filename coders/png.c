@@ -6402,7 +6402,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 ModuleExport void RegisterPNGImage(void)
 {
   static char
-    version[MaxTextExtent];
+    version[32];
 
   MagickInfo
     *entry;

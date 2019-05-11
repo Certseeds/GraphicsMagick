@@ -382,10 +382,10 @@ static
 void ExtensionTagsInitialize(void)
 {
   static int
-    first_time=1;
+    not_first_time=0;
 
-  if (! first_time) return; /* Been there. Done that. */
-  first_time = 0;
+  if (not_first_time) return; /* Been there. Done that. */
+  not_first_time = 1;
 
   /* Grab the inherited method and install */
   _ParentExtender = TIFFSetTagExtender(ExtensionTagsDefaultDirectory);
@@ -3661,7 +3661,7 @@ RegisterTIFFImage(void)
 #if defined(HasTIFF)
 
   static char
-    version[MaxTextExtent];
+    version[32];
 
   MagickInfo
     *entry;
@@ -3674,7 +3674,7 @@ RegisterTIFFImage(void)
 
   version[0]='\0';
   {
-    int
+    unsigned int
       i;
 
     const char
@@ -3682,7 +3682,7 @@ RegisterTIFFImage(void)
 
     /* TIFFGetVersion() is in libtiff 3.5.3 and later */
     for (p=TIFFGetVersion(), i=0;
-          (i < MaxTextExtent-1) && (*p != 0) && (*p != '\n');
+         (i < sizeof(version)-1) && (*p != 0) && (*p != '\n');
           p++, i++)
       version[i] = *p;
     version[i]=0;

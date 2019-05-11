@@ -364,7 +364,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
 ModuleExport void RegisterWEBPImage(void)
 {
   static const char
-    *description = "WebP Image Format";
+    description[] = "WebP Image Format";
 
   static char
     version[MaxTextExtent];

@@ -709,6 +709,7 @@ static const unsigned char *ExpandBuffer(const unsigned char * restrict pixels,
   register unsigned char
     *q;
 
+  /* FIXME: This is not thread safe! */
   static unsigned char
     scanline[8*256];
 
