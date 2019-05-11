@@ -163,28 +163,32 @@ MagickExport void CatchException(const ExceptionInfo *exception)
 {
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if (exception->severity == UndefinedException)
-    return;
-  errno=exception->error_number; /* Shabby work-around for parameter limits */
-  if ((exception->severity >= WarningException) &&
-      (exception->severity < ErrorException))
+
+  do
     {
-      MagickWarning2(exception->severity,exception->reason,
-        exception->description);
-      return;
-    }
-  if ((exception->severity >= ErrorException) &&
-      (exception->severity < FatalErrorException))
-    {
-      MagickError2(exception->severity,exception->reason,exception->description);
-      return;
-    }
-  if (exception->severity >= FatalErrorException)
-    {
-      MagickFatalError2(exception->severity,exception->reason,
-        exception->description);
-      return;
-    }
+      if (exception->severity == UndefinedException)
+        break;
+      errno=exception->error_number; /* Shabby work-around for parameter limits */
+      if ((exception->severity >= WarningException) &&
+          (exception->severity < ErrorException))
+        {
+          MagickWarning2(exception->severity,exception->reason,
+                         exception->description);
+          break;
+        }
+      if ((exception->severity >= ErrorException) &&
+          (exception->severity < FatalErrorException))
+        {
+          MagickError2(exception->severity,exception->reason,exception->description);
+          break;
+        }
+      if (exception->severity >= FatalErrorException)
+        {
+          MagickFatalError2(exception->severity,exception->reason,
+                            exception->description);
+          break;
+        }
+    } while(0);
 }
 
 /*
@@ -217,6 +221,7 @@ MagickExport void CopyException(ExceptionInfo *copy, const ExceptionInfo *origin
   assert(copy != (ExceptionInfo *) NULL);
   assert(copy->signature == MagickSignature);
   assert(original != (ExceptionInfo *) NULL);
+  assert(copy != original);
   assert(original->signature == MagickSignature);
   copy->severity=original->severity;
   MagickFreeMemory(copy->reason);
@@ -932,14 +937,21 @@ MagickExport void ThrowException(ExceptionInfo *exception,
   assert(exception->signature == MagickSignature);
   LockSemaphoreInfo(error_semaphore);
   exception->severity=(ExceptionType) severity;
-  MagickFreeMemory(exception->reason);
-  if (reason)
-    exception->reason=
-      AcquireString(GetLocaleExceptionMessage(severity,reason));
-  MagickFreeMemory(exception->description);
-  if (description)
-    exception->description=
-      AcquireString(GetLocaleExceptionMessage(severity,description));
+  {
+    char *new_reason=NULL;
+    if (reason)
+      new_reason=AcquireString(GetLocaleExceptionMessage(severity,reason));
+    MagickFreeMemory(exception->reason);
+    exception->reason=new_reason;
+  }
+  {
+    char *new_description=NULL;
+    if (description)
+      new_description=
+        AcquireString(GetLocaleExceptionMessage(severity,description));
+    MagickFreeMemory(exception->description);
+    exception->description=new_description;
+  }
   exception->error_number=errno;
   MagickFreeMemory(exception->module);
   MagickFreeMemory(exception->function);
@@ -1028,22 +1040,42 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
   if (!ignore)
     {
       exception->severity=(ExceptionType) severity;
-      MagickFreeMemory(exception->reason);
-      if (reason)
-        exception->reason=
-          AcquireString(GetLocaleExceptionMessage(severity,reason));
-      MagickFreeMemory(exception->description);
-      if (description)
-        exception->description=
-          AcquireString(GetLocaleExceptionMessage(severity,description));
+
+      {
+        char *new_reason = NULL;
+        if (reason)
+          new_reason=AcquireString(GetLocaleExceptionMessage(severity,reason));
+        MagickFreeMemory(exception->reason);
+        exception->reason=new_reason;
+      }
+
+      {
+        char *new_description = NULL;
+        if (description)
+          new_description=AcquireString(GetLocaleExceptionMessage(severity,description));
+        MagickFreeMemory(exception->description);
+        exception->description=new_description;
+      }
+
       exception->error_number=errno;
-      MagickFreeMemory(exception->module);
-      if (module)
-        exception->module=AcquireString(module);
-      MagickFreeMemory(exception->function);
-      if (function)
-        exception->function=AcquireString(function);
+      {
+        char *new_module = NULL;
+        if (module)
+          new_module=AcquireString(module);
+        MagickFreeMemory(exception->module);
+        exception->module=new_module;
+      }
+
+      {
+        char *new_function = NULL;
+        if (function)
+          new_function=AcquireString(function);
+        MagickFreeMemory(exception->function);
+        exception->function=new_function;
+      }
+
       exception->line=line;
+
       if (exception->reason)
         {
           if (exception->description)

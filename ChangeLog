@@ -1,5 +1,12 @@
 2019-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/error.c (ThrowException, ThrowLoggedException): Handle
+	the case where some passed character strings refer to existing
+	exception character strings.  Fixes SourceForge issue #603
+	"heap-use-after-free in function ThrowLoggedException of
+	magick/error.c".
+	(CatchException): Restructure so there is one return point.
+
 	* coders/miff.c (ImportRLEPixels): Fix heap overflow caused by a
 	typo in the code.  Also fix undefined behavior caused by large
 	left shifts of an unsigned char.  Fixes SourceForge issue #608
