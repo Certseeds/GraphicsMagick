@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -958,12 +958,12 @@ static MagickPassFail WritePS3MaskImage(const ImageInfo *image_info,Image *image
 %
 %  The format of the WritePS3Image method is:
 %
-%      unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
+%      MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
 %
 %  A description of each parameter follows:
 %
-%    o status: Method WritePS3Image return True if the image is printed.
-%      False is returned if the image file cannot be opened for printing.
+%    o status: Method WritePS3Image return MagickPass if the image is printed.
+%      MagickFail is returned if the image file cannot be opened for printing.
 %
 %    o image_info: Specifies a pointer to a ImageInfo structure.
 %
@@ -972,220 +972,214 @@ static MagickPassFail WritePS3MaskImage(const ImageInfo *image_info,Image *image
 %
 %
 */
-static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
+static MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
 {
-  static const char
-    * const PostscriptProlog[]=
-    {
-      "/ByteStreamDecodeFilter",
-      "{",
-      "  /z exch def",
-      "  /r exch def",
-      "  /c exch def",
-      "  /ASCII85Decode filter",
-      "  z "PS3_FaxCompression" eq",
-      "  {",
-      "    <<",
-      "      /K "CCITTParam,
-      "      /Columns c",
-      "      /Rows r",
-      "    >>",
-      "    /CCITTFaxDecode filter",
-      "  } if",
-      "  z "PS3_RLECompression" eq {/RunLengthDecode filter} if",
-      "  z "PS3_LZWCompression" eq {/LZWDecode filter} if",
-      "  z "PS3_ZipCompression" eq {/FlateDecode filter} if",
-      "  z "PS3_JPEGCompression" eq {/DCTDecode filter} if",
-      "} bind def",
-      "",
-      "/DirectClassImageDict",
-      "{",
-      "  colorspace "PS3_RGBColorspace" eq",
-      "  {",
-      "    /DeviceRGB setcolorspace",
-      "    <<",
-      "      /ImageType 1",
-      "      /Width columns",
-      "      /Height rows",
-      "      /BitsPerComponent 8",
-      "      /DataSource pixel_stream",
-      "      /MultipleDataSources false",
-      "      /ImageMatrix [columns 0 0 rows neg 0 rows]",
-      "      /Decode [0 1 0 1 0 1]",
-      "    >>",
-      "  }",
-      "  {",
-      "    /DeviceCMYK setcolorspace",
-      "    <<",
-      "      /ImageType 1",
-      "      /Width columns",
-      "      /Height rows",
-      "      /BitsPerComponent 8",
-      "      /DataSource pixel_stream",
-      "      /MultipleDataSources false",
-      "      /ImageMatrix [columns 0 0 rows neg 0 rows]",
-      "      /Decode",
-      /*
-        JPEG coder is used for JPEG compression. It compensates
-        for inverted CMYK, so use an inverted decode matrix for
-        JPEG compressed CMYK images.
-      */
-      "        compression "PS3_JPEGCompression" eq",
-      "        {[1 0 1 0 1 0 1 0]}",
-      "        {[0 1 0 1 0 1 0 1]}",
-      "        ifelse",
-      "    >>",
-      "  }",
-      "  ifelse",
-      "} bind def",
-      "",
-      "/PseudoClassImageDict",
-      "{",
-      "  % COLORS IN PSEUDO CLASS IMAGE",
-      "  currentfile buffer readline pop",
-      "  token pop /colors exch def pop",
-      "  colors 0 eq",
-      "  {",
-      "    % DEPTH OF GRAYSCALE",
-      "    currentfile buffer readline pop",
-      "    token pop /bits exch def pop",
-      "    /DeviceGray setcolorspace",
-      "    <<",
-      "      /ImageType 1",
-      "      /Width columns",
-      "      /Height rows",
-      "      /BitsPerComponent bits",
-      "      /Decode [0 1]",
-      "      /ImageMatrix [columns 0 0 rows neg 0 rows]",
-      "      /DataSource pixel_stream",
-      "    >>",
-      "  }",
-      "  {",
-      "    % RGB COLORMAP",
-      "    /colormap colors 3 mul string def",
-      "    % INDEXES",
-      "    currentfile /ASCII85Decode filter colormap readstring pop pop",
-      "    [ /Indexed /DeviceRGB colors 1 sub colormap ] setcolorspace",
-      "    <<",
-      "      /ImageType 1",
-      "      /Width columns",
-      "      /Height rows",
-      "      /BitsPerComponent 8",
-      "      /Decode [0 255]",
-      "      /ImageMatrix [columns 0 0 rows neg 0 rows]",
-      "      /DataSource pixel_stream",
-      "    >>",
-      "  }",
-      "  ifelse",
-      "} bind def",
-      "",
-      "/NonMaskedImageDict",
-      "{",
-      "  class "PS3_PseudoClass" eq",
-      "  { PseudoClassImageDict }",
-      "  { DirectClassImageDict }",
-      "  ifelse",
-      "} bind def",
-      "",
-      "/MaskedImageDict",
-      "{",
-      "  <<",
-      "    /ImageType 3",
-      "    /InterleaveType 3",
-      "    /DataDict NonMaskedImageDict",
-      "    /MaskDict",
-      "    <<",
-      "      /ImageType 1",
-      "      /Width columns",
-      "      /Height rows",
-      "      /BitsPerComponent 1",
-      "      /DataSource mask_stream",
-      "      /MultipleDataSources false",
-      "      /ImageMatrix [ columns 0 0 rows neg 0 rows]",
-      "      /Decode [ 0 1 ]",
-      "    >>",
-      "  >>",
-      "} bind def",
-      "",
-      /*
-        Default procedure for image clipping does nothing. Image
-        will provide overriding ClipPath procdure if relevant.
-      */
-      "/ClipImage",
-      "{} def",
-      "",
-      "/DisplayImage",
-      "{",
-      "  /buffer 512 string def",
-      "",
-      "  % TRANSLATION",
-      "  currentfile buffer readline pop",
-      "  token pop /x exch def",
-      "  token pop /y exch def pop",
-      "  x y translate",
-      "",
-      "  % IMAGE SIZE AND FONT SIZE",
-      "  currentfile buffer readline pop",
-      "  token pop /x exch def",
-      "  token pop /y exch def pop",
-      "  currentfile buffer readline pop",
-      "  token pop /pointsize exch def pop",
-      (const char *) NULL
-    },
+  static const char PostscriptProlog[]=
+    "/ByteStreamDecodeFilter\n"
+    "{\n"
+    "  /z exch def\n"
+    "  /r exch def\n"
+    "  /c exch def\n"
+    "  /ASCII85Decode filter\n"
+    "  z "PS3_FaxCompression" eq\n"
+    "  {\n"
+    "    <<\n"
+    "      /K "CCITTParam"\n"
+    "      /Columns c\n"
+    "      /Rows r\n"
+    "    >>\n"
+    "    /CCITTFaxDecode filter\n"
+    "  } if\n"
+    "  z "PS3_RLECompression" eq {/RunLengthDecode filter} if\n"
+    "  z "PS3_LZWCompression" eq {/LZWDecode filter} if\n"
+    "  z "PS3_ZipCompression" eq {/FlateDecode filter} if\n"
+    "  z "PS3_JPEGCompression" eq {/DCTDecode filter} if\n"
+    "} bind def\n"
+    "\n"
+    "/DirectClassImageDict\n"
+    "{\n"
+    "  colorspace "PS3_RGBColorspace" eq\n"
+    "  {\n"
+    "    /DeviceRGB setcolorspace\n"
+    "    <<\n"
+    "      /ImageType 1\n"
+    "      /Width columns\n"
+    "      /Height rows\n"
+    "      /BitsPerComponent 8\n"
+    "      /DataSource pixel_stream\n"
+    "      /MultipleDataSources false\n"
+    "      /ImageMatrix [columns 0 0 rows neg 0 rows]\n"
+    "      /Decode [0 1 0 1 0 1]\n"
+    "    >>\n"
+    "  }\n"
+    "  {\n"
+    "    /DeviceCMYK setcolorspace\n"
+    "    <<\n"
+    "      /ImageType 1\n"
+    "      /Width columns\n"
+    "      /Height rows\n"
+    "      /BitsPerComponent 8\n"
+    "      /DataSource pixel_stream\n"
+    "      /MultipleDataSources false\n"
+    "      /ImageMatrix [columns 0 0 rows neg 0 rows]\n"
+    "      /Decode\n"
     /*
-      This hole in the PS prolog is for labels.
+      JPEG coder is used for JPEG compression. It compensates
+      for inverted CMYK, so use an inverted decode matrix for
+      JPEG compressed CMYK images.
     */
-    *PostscriptEpilog[]=
-    {
-      "  x y scale",
-      "",
-      "  % CLIPPING PATH",
-      "  currentfile buffer readline pop",
-      "  token pop /clipped exch def pop",
-      "",
-      "  % EPS",
-      "  currentfile buffer readline pop",
-      "  token pop /sp exch def pop",
-      "",
-      "  % IMAGE PIXEL SIZE",
-      "  currentfile buffer readline pop",
-      "  token pop /columns exch def",
-      "  token pop /rows exch def pop",
-      "",
-      "  % COLORSPACE (RGB/CMYK)",
-      "  currentfile buffer readline pop",
-      "  token pop /colorspace exch def pop",
-      "",
-      "  % TRANSPARENCY",
-      "  currentfile buffer readline pop",
-      "  token pop /alpha exch def pop",
-      "",
-      "  % STENCIL MASK?",
-      "  currentfile buffer readline pop",
-      "  token pop /stencil exch def pop",
-      "",
-      "  % IMAGE CLASS (DIRECT/PSEUDO)",
-      "  currentfile buffer readline pop",
-      "  token pop /class exch def pop",
-      "",
-      "  % COMPRESSION",
-      "  currentfile buffer readline pop",
-      "  token pop /compression exch def pop",
-      "",
-      "  % CLIP AND RENDER",
-      "  /pixel_stream currentfile columns rows compression",
-      "    ByteStreamDecodeFilter def",
-      "  clipped {ClipImage} if",
-      "  alpha stencil not and",
-      "  { MaskedImageDict mask_stream resetfile }",
-      "  { NonMaskedImageDict }",
-      "  ifelse",
-      "  stencil {0 setgray imagemask} {image} ifelse",
-      "  grestore",
-      "  sp {showpage} if",
-      "} bind def",
-      (const char *) NULL
-    };
+    "        compression "PS3_JPEGCompression" eq\n"
+    "        {[1 0 1 0 1 0 1 0]}\n"
+    "        {[0 1 0 1 0 1 0 1]}\n"
+    "        ifelse\n"
+    "    >>\n"
+    "  }\n"
+    "  ifelse\n"
+    "} bind def\n"
+    "\n"
+    "/PseudoClassImageDict\n"
+    "{\n"
+    "  % COLORS IN PSEUDO CLASS IMAGE\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /colors exch def pop\n"
+    "  colors 0 eq\n"
+    "  {\n"
+    "    % DEPTH OF GRAYSCALE\n"
+    "    currentfile buffer readline pop\n"
+    "    token pop /bits exch def pop\n"
+    "    /DeviceGray setcolorspace\n"
+    "    <<\n"
+    "      /ImageType 1\n"
+    "      /Width columns\n"
+    "      /Height rows\n"
+    "      /BitsPerComponent bits\n"
+    "      /Decode [0 1]\n"
+    "      /ImageMatrix [columns 0 0 rows neg 0 rows]\n"
+    "      /DataSource pixel_stream\n"
+    "    >>\n"
+    "  }\n"
+    "  {\n"
+    "    % RGB COLORMAP\n"
+    "    /colormap colors 3 mul string def\n"
+    "    % INDEXES\n"
+    "    currentfile /ASCII85Decode filter colormap readstring pop pop\n"
+    "    [ /Indexed /DeviceRGB colors 1 sub colormap ] setcolorspace\n"
+    "    <<\n"
+    "      /ImageType 1\n"
+    "      /Width columns\n"
+    "      /Height rows\n"
+    "      /BitsPerComponent 8\n"
+    "      /Decode [0 255]\n"
+    "      /ImageMatrix [columns 0 0 rows neg 0 rows]\n"
+    "      /DataSource pixel_stream\n"
+    "    >>\n"
+    "  }\n"
+    "  ifelse\n"
+    "} bind def\n"
+    "\n"
+    "/NonMaskedImageDict\n"
+    "{\n"
+    "  class "PS3_PseudoClass" eq\n"
+    "  { PseudoClassImageDict }\n"
+    "  { DirectClassImageDict }\n"
+    "  ifelse\n"
+    "} bind def\n"
+    "\n"
+    "/MaskedImageDict\n"
+    "{\n"
+    "  <<\n"
+    "    /ImageType 3\n"
+    "    /InterleaveType 3\n"
+    "    /DataDict NonMaskedImageDict\n"
+    "    /MaskDict\n"
+    "    <<\n"
+    "      /ImageType 1\n"
+    "      /Width columns\n"
+    "      /Height rows\n"
+    "      /BitsPerComponent 1\n"
+    "      /DataSource mask_stream\n"
+    "      /MultipleDataSources false\n"
+    "      /ImageMatrix [ columns 0 0 rows neg 0 rows]\n"
+    "      /Decode [ 0 1 ]\n"
+    "    >>\n"
+    "  >>\n"
+    "} bind def\n"
+    "\n"
+    /*
+      Default procedure for image clipping does nothing. Image
+      will provide overriding ClipPath procdure if relevant.
+    */
+    "/ClipImage\n"
+    "{} def\n"
+    "\n"
+    "/DisplayImage\n"
+    "{\n"
+    "  /buffer 512 string def\n"
+    "\n"
+    "  % TRANSLATION\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /x exch def\n"
+    "  token pop /y exch def pop\n"
+    "  x y translate\n"
+    "\n"
+    "  % IMAGE SIZE AND FONT SIZE\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /x exch def\n"
+    "  token pop /y exch def pop\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /pointsize exch def pop\n";
+
+  /*
+    This hole in the PS prolog is for labels.
+  */
+  static const char PostscriptEpilog[]=
+    "  x y scale\n"
+    "\n"
+    "  % CLIPPING PATH\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /clipped exch def pop\n"
+    "\n"
+    "  % EPS\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /sp exch def pop\n"
+    "\n"
+    "  % IMAGE PIXEL SIZE\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /columns exch def\n"
+    "  token pop /rows exch def pop\n"
+    "\n"
+    "  % COLORSPACE (RGB/CMYK)\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /colorspace exch def pop\n"
+    "\n"
+    "  % TRANSPARENCY\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /alpha exch def pop\n"
+    "\n"
+    "  % STENCIL MASK?\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /stencil exch def pop\n"
+    "\n"
+    "  % IMAGE CLASS (DIRECT/PSEUDO)\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /class exch def pop\n"
+    "\n"
+    "  % COMPRESSION\n"
+    "  currentfile buffer readline pop\n"
+    "  token pop /compression exch def pop\n"
+    "\n"
+    "  % CLIP AND RENDER\n"
+    "  /pixel_stream currentfile columns rows compression\n"
+    "    ByteStreamDecodeFilter def\n"
+    "  clipped {ClipImage} if\n"
+    "  alpha stencil not and\n"
+    "  { MaskedImageDict mask_stream resetfile }\n"
+    "  { NonMaskedImageDict }\n"
+    "  ifelse\n"
+    "  stencil {0 setgray imagemask} {image} ifelse\n"
+    "  grestore\n"
+    "  sp {showpage} if\n"
+    "} bind def\n";
 
   char
     buffer[MaxTextExtent],
@@ -1193,9 +1187,6 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
     density[MaxTextExtent],
     page_geometry[MaxTextExtent],
     **labels;
-
-  const char
-    * const *q;
 
   CompressionType
     compression;
@@ -1463,11 +1454,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
 
         /* The static postscript procedures prolog. */
         (void)WriteBlobString(image,"%%BeginProlog\n");
-        for (q=PostscriptProlog; *q; q++)
-          {
-            (void) WriteBlobString(image,*q);
-            (void) WriteBlobByte(image,'\n');
-          }
+        (void) WriteBlob(image,sizeof(PostscriptProlog)-1,PostscriptProlog);
 
         /* One label line for each line in label string */
         attribute=GetImageAttribute(image,"label");
@@ -1489,11 +1476,7 @@ static unsigned int WritePS3Image(const ImageInfo *image_info,Image *image)
           }
 
         /* The static postscript procedures epilog. */
-        for (q=PostscriptEpilog; *q; q++)
-          {
-            (void) WriteBlobString(image,*q);
-            (void) WriteBlobByte(image,'\n');
-          }
+        (void) WriteBlob(image,sizeof(PostscriptEpilog)-1,PostscriptEpilog);
         (void)WriteBlobString(image,"%%EndProlog\n");
       }
 
