@@ -1,5 +1,8 @@
 2019-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sfw.c (ReadSFWImage): Make SFW static data completely
+	const.
+
 	* coders/ps3.c: Make PS3 static data completely const.
 
 	* coders/pict.c: Make PICT static data completely const.
