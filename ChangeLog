@@ -1,5 +1,7 @@
 2019-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c: Make PICT static data completely const.
+
 	* magick/error.c (ThrowException, ThrowLoggedException): Handle
 	the case where some passed character strings refer to existing
 	exception character strings.  Fixes SourceForge issue #603

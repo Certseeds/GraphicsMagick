@@ -110,19 +110,6 @@
                               (int) frame.right);               \
     } while(0)
 
-
-typedef struct _PICTCode
-{
-  char
-    *name;
-
-  long
-    length;
-
-  char
-    *description;
-} PICTCode;
-
 typedef struct _PICTPixmap
 {
   short
@@ -155,178 +142,524 @@ typedef struct _PICTRectangle
     right;
 } PICTRectangle;
 
-static const PICTCode
-  codes[] =
+
+/* Code Lengths */
+static const magick_int8_t code_lengths[]=
   {
-    /* 0x00 */ { (char *) "NOP", 0, (char *) "nop" },
-    /* 0x01 */ { (char *) "Clip", 0, (char *) "clip" },
-    /* 0x02 */ { (char *) "BkPat", 8, (char *) "background pattern" },
-    /* 0x03 */ { (char *) "TxFont", 2, (char *) "text font (word)" },
-    /* 0x04 */ { (char *) "TxFace", 1, (char *) "text face (byte)" },
-    /* 0x05 */ { (char *) "TxMode", 2, (char *) "text mode (word)" },
-    /* 0x06 */ { (char *) "SpExtra", 4, (char *) "space extra (fixed point)" },
-    /* 0x07 */ { (char *) "PnSize", 4, (char *) "pen size (point)" },
-    /* 0x08 */ { (char *) "PnMode", 2, (char *) "pen mode (word)" },
-    /* 0x09 */ { (char *) "PnPat", 8, (char *) "pen pattern" },
-    /* 0x0a */ { (char *) "FillPat", 8, (char *) "fill pattern" },
-    /* 0x0b */ { (char *) "OvSize", 4, (char *) "oval size (point)" },
-    /* 0x0c */ { (char *) "Origin", 4, (char *) "dh, dv (word)" },
-    /* 0x0d */ { (char *) "TxSize", 2, (char *) "text size (word)" },
-    /* 0x0e */ { (char *) "FgColor", 4, (char *) "foreground color (longword)" },
-    /* 0x0f */ { (char *) "BkColor", 4, (char *) "background color (longword)" },
-    /* 0x10 */ { (char *) "TxRatio", 8, (char *) "numerator (point), denominator (point)" },
-    /* 0x11 */ { (char *) "Version", 1, (char *) "version (byte)" },
-    /* 0x12 */ { (char *) "BkPixPat", 0, (char *) "color background pattern" },
-    /* 0x13 */ { (char *) "PnPixPat", 0, (char *) "color pen pattern" },
-    /* 0x14 */ { (char *) "FillPixPat", 0, (char *) "color fill pattern" },
-    /* 0x15 */ { (char *) "PnLocHFrac", 2, (char *) "fractional pen position" },
-    /* 0x16 */ { (char *) "ChExtra", 2, (char *) "extra for each character" },
-    /* 0x17 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x18 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x19 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x1a */ { (char *) "RGBFgCol", 6, (char *) "RGB foreColor" },
-    /* 0x1b */ { (char *) "RGBBkCol", 6, (char *) "RGB backColor" },
-    /* 0x1c */ { (char *) "HiliteMode", 0, (char *) "hilite mode flag" },
-    /* 0x1d */ { (char *) "HiliteColor", 6, (char *) "RGB hilite color" },
-    /* 0x1e */ { (char *) "DefHilite", 0, (char *) "Use default hilite color" },
-    /* 0x1f */ { (char *) "OpColor", 6, (char *) "RGB OpColor for arithmetic modes" },
-    /* 0x20 */ { (char *) "Line", 8, (char *) "pnLoc (point), newPt (point)" },
-    /* 0x21 */ { (char *) "LineFrom", 4, (char *) "newPt (point)" },
-    /* 0x22 */ { (char *) "ShortLine", 6, (char *) "pnLoc (point, dh, dv (-128 .. 127))" },
-    /* 0x23 */ { (char *) "ShortLineFrom", 2, (char *) "dh, dv (-128 .. 127)" },
-    /* 0x24 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x25 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x26 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x27 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x28 */ { (char *) "LongText", 0, (char *) "txLoc (point), count (0..255), text" },
-    /* 0x29 */ { (char *) "DHText", 0, (char *) "dh (0..255), count (0..255), text" },
-    /* 0x2a */ { (char *) "DVText", 0, (char *) "dv (0..255), count (0..255), text" },
-    /* 0x2b */ { (char *) "DHDVText", 0, (char *) "dh, dv (0..255), count (0..255), text" },
-    /* 0x2c */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x2d */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x2e */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x2f */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x30 */ { (char *) "frameRect", 8, (char *) "rect" },
-    /* 0x31 */ { (char *) "paintRect", 8, (char *) "rect" },
-    /* 0x32 */ { (char *) "eraseRect", 8, (char *) "rect" },
-    /* 0x33 */ { (char *) "invertRect", 8, (char *) "rect" },
-    /* 0x34 */ { (char *) "fillRect", 8, (char *) "rect" },
-    /* 0x35 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x36 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x37 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x38 */ { (char *) "frameSameRect", 0, (char *) "rect" },
-    /* 0x39 */ { (char *) "paintSameRect", 0, (char *) "rect" },
-    /* 0x3a */ { (char *) "eraseSameRect", 0, (char *) "rect" },
-    /* 0x3b */ { (char *) "invertSameRect", 0, (char *) "rect" },
-    /* 0x3c */ { (char *) "fillSameRect", 0, (char *) "rect" },
-    /* 0x3d */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x3e */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x3f */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x40 */ { (char *) "frameRRect", 8, (char *) "rect" },
-    /* 0x41 */ { (char *) "paintRRect", 8, (char *) "rect" },
-    /* 0x42 */ { (char *) "eraseRRect", 8, (char *) "rect" },
-    /* 0x43 */ { (char *) "invertRRect", 8, (char *) "rect" },
-    /* 0x44 */ { (char *) "fillRRrect", 8, (char *) "rect" },
-    /* 0x45 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x46 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x47 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x48 */ { (char *) "frameSameRRect", 0, (char *) "rect" },
-    /* 0x49 */ { (char *) "paintSameRRect", 0, (char *) "rect" },
-    /* 0x4a */ { (char *) "eraseSameRRect", 0, (char *) "rect" },
-    /* 0x4b */ { (char *) "invertSameRRect", 0, (char *) "rect" },
-    /* 0x4c */ { (char *) "fillSameRRect", 0, (char *) "rect" },
-    /* 0x4d */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x4e */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x4f */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x50 */ { (char *) "frameOval", 8, (char *) "rect" },
-    /* 0x51 */ { (char *) "paintOval", 8, (char *) "rect" },
-    /* 0x52 */ { (char *) "eraseOval", 8, (char *) "rect" },
-    /* 0x53 */ { (char *) "invertOval", 8, (char *) "rect" },
-    /* 0x54 */ { (char *) "fillOval", 8, (char *) "rect" },
-    /* 0x55 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x56 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x57 */ { (char *) "reserved", 8, (char *) "reserved for Apple use" },
-    /* 0x58 */ { (char *) "frameSameOval", 0, (char *) "rect" },
-    /* 0x59 */ { (char *) "paintSameOval", 0, (char *) "rect" },
-    /* 0x5a */ { (char *) "eraseSameOval", 0, (char *) "rect" },
-    /* 0x5b */ { (char *) "invertSameOval", 0, (char *) "rect" },
-    /* 0x5c */ { (char *) "fillSameOval", 0, (char *) "rect" },
-    /* 0x5d */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x5e */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x5f */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x60 */ { (char *) "frameArc", 12, (char *) "rect, startAngle, arcAngle" },
-    /* 0x61 */ { (char *) "paintArc", 12, (char *) "rect, startAngle, arcAngle" },
-    /* 0x62 */ { (char *) "eraseArc", 12, (char *) "rect, startAngle, arcAngle" },
-    /* 0x63 */ { (char *) "invertArc", 12, (char *) "rect, startAngle, arcAngle" },
-    /* 0x64 */ { (char *) "fillArc", 12, (char *) "rect, startAngle, arcAngle" },
-    /* 0x65 */ { (char *) "reserved", 12, (char *) "reserved for Apple use" },
-    /* 0x66 */ { (char *) "reserved", 12, (char *) "reserved for Apple use" },
-    /* 0x67 */ { (char *) "reserved", 12, (char *) "reserved for Apple use" },
-    /* 0x68 */ { (char *) "frameSameArc", 4, (char *) "rect, startAngle, arcAngle" },
-    /* 0x69 */ { (char *) "paintSameArc", 4, (char *) "rect, startAngle, arcAngle" },
-    /* 0x6a */ { (char *) "eraseSameArc", 4, (char *) "rect, startAngle, arcAngle" },
-    /* 0x6b */ { (char *) "invertSameArc", 4, (char *) "rect, startAngle, arcAngle" },
-    /* 0x6c */ { (char *) "fillSameArc", 4, (char *) "rect, startAngle, arcAngle" },
-    /* 0x6d */ { (char *) "reserved", 4, (char *) "reserved for Apple use" },
-    /* 0x6e */ { (char *) "reserved", 4, (char *) "reserved for Apple use" },
-    /* 0x6f */ { (char *) "reserved", 4, (char *) "reserved for Apple use" },
-    /* 0x70 */ { (char *) "framePoly", 0, (char *) "poly" },
-    /* 0x71 */ { (char *) "paintPoly", 0, (char *) "poly" },
-    /* 0x72 */ { (char *) "erasePoly", 0, (char *) "poly" },
-    /* 0x73 */ { (char *) "invertPoly", 0, (char *) "poly" },
-    /* 0x74 */ { (char *) "fillPoly", 0, (char *) "poly" },
-    /* 0x75 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x76 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x77 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x78 */ { (char *) "frameSamePoly", 0, (char *) "poly (NYI)" },
-    /* 0x79 */ { (char *) "paintSamePoly", 0, (char *) "poly (NYI)" },
-    /* 0x7a */ { (char *) "eraseSamePoly", 0, (char *) "poly (NYI)" },
-    /* 0x7b */ { (char *) "invertSamePoly", 0, (char *) "poly (NYI)" },
-    /* 0x7c */ { (char *) "fillSamePoly", 0, (char *) "poly (NYI)" },
-    /* 0x7d */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x7e */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x7f */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x80 */ { (char *) "frameRgn", 0, (char *) "region" },
-    /* 0x81 */ { (char *) "paintRgn", 0, (char *) "region" },
-    /* 0x82 */ { (char *) "eraseRgn", 0, (char *) "region" },
-    /* 0x83 */ { (char *) "invertRgn", 0, (char *) "region" },
-    /* 0x84 */ { (char *) "fillRgn", 0, (char *) "region" },
-    /* 0x85 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x86 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x87 */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x88 */ { (char *) "frameSameRgn", 0, (char *) "region (NYI)" },
-    /* 0x89 */ { (char *) "paintSameRgn", 0, (char *) "region (NYI)" },
-    /* 0x8a */ { (char *) "eraseSameRgn", 0, (char *) "region (NYI)" },
-    /* 0x8b */ { (char *) "invertSameRgn", 0, (char *) "region (NYI)" },
-    /* 0x8c */ { (char *) "fillSameRgn", 0, (char *) "region (NYI)" },
-    /* 0x8d */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x8e */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x8f */ { (char *) "reserved", 0, (char *) "reserved for Apple use" },
-    /* 0x90 */ { (char *) "BitsRect", 0, (char *) "copybits, rect clipped" },
-    /* 0x91 */ { (char *) "BitsRgn", 0, (char *) "copybits, rgn clipped" },
-    /* 0x92 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x93 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x94 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x95 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x96 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x97 */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x98 */ { (char *) "PackBitsRect", 0, (char *) "packed copybits, rect clipped" },
-    /* 0x99 */ { (char *) "PackBitsRgn", 0, (char *) "packed copybits, rgn clipped" },
-    /* 0x9a */ { (char *) "DirectBitsRect", 0, (char *) "PixMap, srcRect, dstRect, mode, PixData" },
-    /* 0x9b */ { (char *) "DirectBitsRgn", 0, (char *) "PixMap, srcRect, dstRect, mode, maskRgn, PixData" },
-    /* 0x9c */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x9d */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x9e */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0x9f */ { (char *) "reserved", -1, (char *) "reserved for Apple use" },
-    /* 0xa0 */ { (char *) "ShortComment", 2, (char *) "kind (word)" },
-    /* 0xa1 */ { (char *) "LongComment", 0, (char *) "kind (word), size (word), data" }
+    /* 0x00 */ 0,
+    /* 0x01 */ 0,
+    /* 0x02 */ 8,
+    /* 0x03 */ 2,
+    /* 0x04 */ 1,
+    /* 0x05 */ 2,
+    /* 0x06 */ 4,
+    /* 0x07 */ 4,
+    /* 0x08 */ 2,
+    /* 0x09 */ 8,
+    /* 0x0A */ 8,
+    /* 0x0B */ 4,
+    /* 0x0C */ 4,
+    /* 0x0D */ 2,
+    /* 0x0E */ 4,
+    /* 0x0F */ 4,
+    /* 0x10 */ 8,
+    /* 0x11 */ 1,
+    /* 0x12 */ 0,
+    /* 0x13 */ 0,
+    /* 0x14 */ 0,
+    /* 0x15 */ 2,
+    /* 0x16 */ 2,
+    /* 0x17 */ 0,
+    /* 0x18 */ 0,
+    /* 0x19 */ 0,
+    /* 0x1A */ 6,
+    /* 0x1B */ 6,
+    /* 0x1C */ 0,
+    /* 0x1D */ 6,
+    /* 0x1E */ 0,
+    /* 0x1F */ 6,
+    /* 0x20 */ 8,
+    /* 0x21 */ 4,
+    /* 0x22 */ 6,
+    /* 0x23 */ 2,
+    /* 0x24 */ -1,
+    /* 0x25 */ -1,
+    /* 0x26 */ -1,
+    /* 0x27 */ -1,
+    /* 0x28 */ 0,
+    /* 0x29 */ 0,
+    /* 0x2A */ 0,
+    /* 0x2B */ 0,
+    /* 0x2C */ -1,
+    /* 0x2D */ -1,
+    /* 0x2E */ -1,
+    /* 0x2F */ -1,
+    /* 0x30 */ 8,
+    /* 0x31 */ 8,
+    /* 0x32 */ 8,
+    /* 0x33 */ 8,
+    /* 0x34 */ 8,
+    /* 0x35 */ 8,
+    /* 0x36 */ 8,
+    /* 0x37 */ 8,
+    /* 0x38 */ 0,
+    /* 0x39 */ 0,
+    /* 0x3A */ 0,
+    /* 0x3B */ 0,
+    /* 0x3C */ 0,
+    /* 0x3D */ 0,
+    /* 0x3E */ 0,
+    /* 0x3F */ 0,
+    /* 0x40 */ 8,
+    /* 0x41 */ 8,
+    /* 0x42 */ 8,
+    /* 0x43 */ 8,
+    /* 0x44 */ 8,
+    /* 0x45 */ 8,
+    /* 0x46 */ 8,
+    /* 0x47 */ 8,
+    /* 0x48 */ 0,
+    /* 0x49 */ 0,
+    /* 0x4A */ 0,
+    /* 0x4B */ 0,
+    /* 0x4C */ 0,
+    /* 0x4D */ 0,
+    /* 0x4E */ 0,
+    /* 0x4F */ 0,
+    /* 0x50 */ 8,
+    /* 0x51 */ 8,
+    /* 0x52 */ 8,
+    /* 0x53 */ 8,
+    /* 0x54 */ 8,
+    /* 0x55 */ 8,
+    /* 0x56 */ 8,
+    /* 0x57 */ 8,
+    /* 0x58 */ 0,
+    /* 0x59 */ 0,
+    /* 0x5A */ 0,
+    /* 0x5B */ 0,
+    /* 0x5C */ 0,
+    /* 0x5D */ 0,
+    /* 0x5E */ 0,
+    /* 0x5F */ 0,
+    /* 0x60 */ 12,
+    /* 0x61 */ 12,
+    /* 0x62 */ 12,
+    /* 0x63 */ 12,
+    /* 0x64 */ 12,
+    /* 0x65 */ 12,
+    /* 0x66 */ 12,
+    /* 0x67 */ 12,
+    /* 0x68 */ 4,
+    /* 0x69 */ 4,
+    /* 0x6A */ 4,
+    /* 0x6B */ 4,
+    /* 0x6C */ 4,
+    /* 0x6D */ 4,
+    /* 0x6E */ 4,
+    /* 0x6F */ 4,
+    /* 0x70 */ 0,
+    /* 0x71 */ 0,
+    /* 0x72 */ 0,
+    /* 0x73 */ 0,
+    /* 0x74 */ 0,
+    /* 0x75 */ 0,
+    /* 0x76 */ 0,
+    /* 0x77 */ 0,
+    /* 0x78 */ 0,
+    /* 0x79 */ 0,
+    /* 0x7A */ 0,
+    /* 0x7B */ 0,
+    /* 0x7C */ 0,
+    /* 0x7D */ 0,
+    /* 0x7E */ 0,
+    /* 0x7F */ 0,
+    /* 0x80 */ 0,
+    /* 0x81 */ 0,
+    /* 0x82 */ 0,
+    /* 0x83 */ 0,
+    /* 0x84 */ 0,
+    /* 0x85 */ 0,
+    /* 0x86 */ 0,
+    /* 0x87 */ 0,
+    /* 0x88 */ 0,
+    /* 0x89 */ 0,
+    /* 0x8A */ 0,
+    /* 0x8B */ 0,
+    /* 0x8C */ 0,
+    /* 0x8D */ 0,
+    /* 0x8E */ 0,
+    /* 0x8F */ 0,
+    /* 0x90 */ 0,
+    /* 0x91 */ 0,
+    /* 0x92 */ -1,
+    /* 0x93 */ -1,
+    /* 0x94 */ -1,
+    /* 0x95 */ -1,
+    /* 0x96 */ -1,
+    /* 0x97 */ -1,
+    /* 0x98 */ 0,
+    /* 0x99 */ 0,
+    /* 0x9A */ 0,
+    /* 0x9B */ 0,
+    /* 0x9C */ -1,
+    /* 0x9D */ -1,
+    /* 0x9E */ -1,
+    /* 0x9F */ -1,
+    /* 0xA0 */ 2,
+    /* 0xA1 */ 0
   };
+
+/* Code names */
+static const char code_names[] =
+  /* 0x00 */ "NOP\0"
+  /* 0x01 */ "Clip\0"
+  /* 0x02 */ "BkPat\0"
+  /* 0x03 */ "TxFont\0"
+  /* 0x04 */ "TxFace\0"
+  /* 0x05 */ "TxMode\0"
+  /* 0x06 */ "SpExtra\0"
+  /* 0x07 */ "PnSize\0"
+  /* 0x08 */ "PnMode\0"
+  /* 0x09 */ "PnPat\0"
+  /* 0x0A */ "FillPat\0"
+  /* 0x0B */ "OvSize\0"
+  /* 0x0C */ "Origin\0"
+  /* 0x0D */ "TxSize\0"
+  /* 0x0E */ "FgColor\0"
+  /* 0x0F */ "BkColor\0"
+  /* 0x10 */ "TxRatio\0"
+  /* 0x11 */ "Version\0"
+  /* 0x12 */ "BkPixPat\0"
+  /* 0x13 */ "PnPixPat\0"
+  /* 0x14 */ "FillPixPat\0"
+  /* 0x15 */ "PnLocHFrac\0"
+  /* 0x16 */ "ChExtra\0"
+  /* 0x17 */ "reserved\0"
+  /* 0x18 */ "reserved\0"
+  /* 0x19 */ "reserved\0"
+  /* 0x1A */ "RGBFgCol\0"
+  /* 0x1B */ "RGBBkCol\0"
+  /* 0x1C */ "HiliteMode\0"
+  /* 0x1D */ "HiliteColor\0"
+  /* 0x1E */ "DefHilite\0"
+  /* 0x1F */ "OpColor\0"
+  /* 0x20 */ "Line\0"
+  /* 0x21 */ "LineFrom\0"
+  /* 0x22 */ "ShortLine\0"
+  /* 0x23 */ "ShortLineFrom\0"
+  /* 0x24 */ "reserved\0"
+  /* 0x25 */ "reserved\0"
+  /* 0x26 */ "reserved\0"
+  /* 0x27 */ "reserved\0"
+  /* 0x28 */ "LongText\0"
+  /* 0x29 */ "DHText\0"
+  /* 0x2A */ "DVText\0"
+  /* 0x2B */ "DHDVText\0"
+  /* 0x2C */ "reserved\0"
+  /* 0x2D */ "reserved\0"
+  /* 0x2E */ "reserved\0"
+  /* 0x2F */ "reserved\0"
+  /* 0x30 */ "frameRect\0"
+  /* 0x31 */ "paintRect\0"
+  /* 0x32 */ "eraseRect\0"
+  /* 0x33 */ "invertRect\0"
+  /* 0x34 */ "fillRect\0"
+  /* 0x35 */ "reserved\0"
+  /* 0x36 */ "reserved\0"
+  /* 0x37 */ "reserved\0"
+  /* 0x38 */ "frameSameRect\0"
+  /* 0x39 */ "paintSameRect\0"
+  /* 0x3A */ "eraseSameRect\0"
+  /* 0x3B */ "invertSameRect\0"
+  /* 0x3C */ "fillSameRect\0"
+  /* 0x3D */ "reserved\0"
+  /* 0x3E */ "reserved\0"
+  /* 0x3F */ "reserved\0"
+  /* 0x40 */ "frameRRect\0"
+  /* 0x41 */ "paintRRect\0"
+  /* 0x42 */ "eraseRRect\0"
+  /* 0x43 */ "invertRRect\0"
+  /* 0x44 */ "fillRRrect\0"
+  /* 0x45 */ "reserved\0"
+  /* 0x46 */ "reserved\0"
+  /* 0x47 */ "reserved\0"
+  /* 0x48 */ "frameSameRRect\0"
+  /* 0x49 */ "paintSameRRect\0"
+  /* 0x4A */ "eraseSameRRect\0"
+  /* 0x4B */ "invertSameRRect\0"
+  /* 0x4C */ "fillSameRRect\0"
+  /* 0x4D */ "reserved\0"
+  /* 0x4E */ "reserved\0"
+  /* 0x4F */ "reserved\0"
+  /* 0x50 */ "frameOval\0"
+  /* 0x51 */ "paintOval\0"
+  /* 0x52 */ "eraseOval\0"
+  /* 0x53 */ "invertOval\0"
+  /* 0x54 */ "fillOval\0"
+  /* 0x55 */ "reserved\0"
+  /* 0x56 */ "reserved\0"
+  /* 0x57 */ "reserved\0"
+  /* 0x58 */ "frameSameOval\0"
+  /* 0x59 */ "paintSameOval\0"
+  /* 0x5A */ "eraseSameOval\0"
+  /* 0x5B */ "invertSameOval\0"
+  /* 0x5C */ "fillSameOval\0"
+  /* 0x5D */ "reserved\0"
+  /* 0x5E */ "reserved\0"
+  /* 0x5F */ "reserved\0"
+  /* 0x60 */ "frameArc\0"
+  /* 0x61 */ "paintArc\0"
+  /* 0x62 */ "eraseArc\0"
+  /* 0x63 */ "invertArc\0"
+  /* 0x64 */ "fillArc\0"
+  /* 0x65 */ "reserved\0"
+  /* 0x66 */ "reserved\0"
+  /* 0x67 */ "reserved\0"
+  /* 0x68 */ "frameSameArc\0"
+  /* 0x69 */ "paintSameArc\0"
+  /* 0x6A */ "eraseSameArc\0"
+  /* 0x6B */ "invertSameArc\0"
+  /* 0x6C */ "fillSameArc\0"
+  /* 0x6D */ "reserved\0"
+  /* 0x6E */ "reserved\0"
+  /* 0x6F */ "reserved\0"
+  /* 0x70 */ "framePoly\0"
+  /* 0x71 */ "paintPoly\0"
+  /* 0x72 */ "erasePoly\0"
+  /* 0x73 */ "invertPoly\0"
+  /* 0x74 */ "fillPoly\0"
+  /* 0x75 */ "reserved\0"
+  /* 0x76 */ "reserved\0"
+  /* 0x77 */ "reserved\0"
+  /* 0x78 */ "frameSamePoly\0"
+  /* 0x79 */ "paintSamePoly\0"
+  /* 0x7A */ "eraseSamePoly\0"
+  /* 0x7B */ "invertSamePoly\0"
+  /* 0x7C */ "fillSamePoly\0"
+  /* 0x7D */ "reserved\0"
+  /* 0x7E */ "reserved\0"
+  /* 0x7F */ "reserved\0"
+  /* 0x80 */ "frameRgn\0"
+  /* 0x81 */ "paintRgn\0"
+  /* 0x82 */ "eraseRgn\0"
+  /* 0x83 */ "invertRgn\0"
+  /* 0x84 */ "fillRgn\0"
+  /* 0x85 */ "reserved\0"
+  /* 0x86 */ "reserved\0"
+  /* 0x87 */ "reserved\0"
+  /* 0x88 */ "frameSameRgn\0"
+  /* 0x89 */ "paintSameRgn\0"
+  /* 0x8A */ "eraseSameRgn\0"
+  /* 0x8B */ "invertSameRgn\0"
+  /* 0x8C */ "fillSameRgn\0"
+  /* 0x8D */ "reserved\0"
+  /* 0x8E */ "reserved\0"
+  /* 0x8F */ "reserved\0"
+  /* 0x90 */ "BitsRect\0"
+  /* 0x91 */ "BitsRgn\0"
+  /* 0x92 */ "reserved\0"
+  /* 0x93 */ "reserved\0"
+  /* 0x94 */ "reserved\0"
+  /* 0x95 */ "reserved\0"
+  /* 0x96 */ "reserved\0"
+  /* 0x97 */ "reserved\0"
+  /* 0x98 */ "PackBitsRect\0"
+  /* 0x99 */ "PackBitsRgn\0"
+  /* 0x9A */ "DirectBitsRect\0"
+  /* 0x9B */ "DirectBitsRgn\0"
+  /* 0x9C */ "reserved\0"
+  /* 0x9D */ "reserved\0"
+  /* 0x9E */ "reserved\0"
+  /* 0x9F */ "reserved\0"
+  /* 0xA0 */ "ShortComment\0"
+  /* 0xA1 */ "LongComment\0";
+
+/* Code Descriptions */
+static const char code_descriptions[] =
+  /* 0x00 */ "nop\0"
+  /* 0x01 */ "clip\0"
+  /* 0x02 */ "background pattern\0"
+  /* 0x03 */ "text font (word)\0"
+  /* 0x04 */ "text face (byte)\0"
+  /* 0x05 */ "text mode (word)\0"
+  /* 0x06 */ "space extra (fixed point)\0"
+  /* 0x07 */ "pen size (point)\0"
+  /* 0x08 */ "pen mode (word)\0"
+  /* 0x09 */ "pen pattern\0"
+  /* 0x0A */ "fill pattern\0"
+  /* 0x0B */ "oval size (point)\0"
+  /* 0x0C */ "dh, dv (word)\0"
+  /* 0x0D */ "text size (word)\0"
+  /* 0x0E */ "foreground color (longword)\0"
+  /* 0x0F */ "background color (longword)\0"
+  /* 0x10 */ "numerator (point), denominator (point)\0"
+  /* 0x11 */ "version (byte)\0"
+  /* 0x12 */ "color background pattern\0"
+  /* 0x13 */ "color pen pattern\0"
+  /* 0x14 */ "color fill pattern\0"
+  /* 0x15 */ "fractional pen position\0"
+  /* 0x16 */ "extra for each character\0"
+  /* 0x17 */ "reserved for Apple use\0"
+  /* 0x18 */ "reserved for Apple use\0"
+  /* 0x19 */ "reserved for Apple use\0"
+  /* 0x1A */ "RGB foreColor\0"
+  /* 0x1B */ "RGB backColor\0"
+  /* 0x1C */ "hilite mode flag\0"
+  /* 0x1D */ "RGB hilite color\0"
+  /* 0x1E */ "Use default hilite color\0"
+  /* 0x1F */ "RGB OpColor for arithmetic modes\0"
+  /* 0x20 */ "pnLoc (point), newPt (point)\0"
+  /* 0x21 */ "newPt (point)\0"
+  /* 0x22 */ "pnLoc (point, dh, dv (-128 .. 127))\0"
+  /* 0x23 */ "dh, dv (-128 .. 127)\0"
+  /* 0x24 */ "reserved for Apple use\0"
+  /* 0x25 */ "reserved for Apple use\0"
+  /* 0x26 */ "reserved for Apple use\0"
+  /* 0x27 */ "reserved for Apple use\0"
+  /* 0x28 */ "txLoc (point), count (0..255), text\0"
+  /* 0x29 */ "dh (0..255), count (0..255), text\0"
+  /* 0x2A */ "dv (0..255), count (0..255), text\0"
+  /* 0x2B */ "dh, dv (0..255), count (0..255), text\0"
+  /* 0x2C */ "reserved for Apple use\0"
+  /* 0x2D */ "reserved for Apple use\0"
+  /* 0x2E */ "reserved for Apple use\0"
+  /* 0x2F */ "reserved for Apple use\0"
+  /* 0x30 */ "rect\0"
+  /* 0x31 */ "rect\0"
+  /* 0x32 */ "rect\0"
+  /* 0x33 */ "rect\0"
+  /* 0x34 */ "rect\0"
+  /* 0x35 */ "reserved for Apple use\0"
+  /* 0x36 */ "reserved for Apple use\0"
+  /* 0x37 */ "reserved for Apple use\0"
+  /* 0x38 */ "rect\0"
+  /* 0x39 */ "rect\0"
+  /* 0x3A */ "rect\0"
+  /* 0x3B */ "rect\0"
+  /* 0x3C */ "rect\0"
+  /* 0x3D */ "reserved for Apple use\0"
+  /* 0x3E */ "reserved for Apple use\0"
+  /* 0x3F */ "reserved for Apple use\0"
+  /* 0x40 */ "rect\0"
+  /* 0x41 */ "rect\0"
+  /* 0x42 */ "rect\0"
+  /* 0x43 */ "rect\0"
+  /* 0x44 */ "rect\0"
+  /* 0x45 */ "reserved for Apple use\0"
+  /* 0x46 */ "reserved for Apple use\0"
+  /* 0x47 */ "reserved for Apple use\0"
+  /* 0x48 */ "rect\0"
+  /* 0x49 */ "rect\0"
+  /* 0x4A */ "rect\0"
+  /* 0x4B */ "rect\0"
+  /* 0x4C */ "rect\0"
+  /* 0x4D */ "reserved for Apple use\0"
+  /* 0x4E */ "reserved for Apple use\0"
+  /* 0x4F */ "reserved for Apple use\0"
+  /* 0x50 */ "rect\0"
+  /* 0x51 */ "rect\0"
+  /* 0x52 */ "rect\0"
+  /* 0x53 */ "rect\0"
+  /* 0x54 */ "rect\0"
+  /* 0x55 */ "reserved for Apple use\0"
+  /* 0x56 */ "reserved for Apple use\0"
+  /* 0x57 */ "reserved for Apple use\0"
+  /* 0x58 */ "rect\0"
+  /* 0x59 */ "rect\0"
+  /* 0x5A */ "rect\0"
+  /* 0x5B */ "rect\0"
+  /* 0x5C */ "rect\0"
+  /* 0x5D */ "reserved for Apple use\0"
+  /* 0x5E */ "reserved for Apple use\0"
+  /* 0x5F */ "reserved for Apple use\0"
+  /* 0x60 */ "rect, startAngle, arcAngle\0"
+  /* 0x61 */ "rect, startAngle, arcAngle\0"
+  /* 0x62 */ "rect, startAngle, arcAngle\0"
+  /* 0x63 */ "rect, startAngle, arcAngle\0"
+  /* 0x64 */ "rect, startAngle, arcAngle\0"
+  /* 0x65 */ "reserved for Apple use\0"
+  /* 0x66 */ "reserved for Apple use\0"
+  /* 0x67 */ "reserved for Apple use\0"
+  /* 0x68 */ "rect, startAngle, arcAngle\0"
+  /* 0x69 */ "rect, startAngle, arcAngle\0"
+  /* 0x6A */ "rect, startAngle, arcAngle\0"
+  /* 0x6B */ "rect, startAngle, arcAngle\0"
+  /* 0x6C */ "rect, startAngle, arcAngle\0"
+  /* 0x6D */ "reserved for Apple use\0"
+  /* 0x6E */ "reserved for Apple use\0"
+  /* 0x6F */ "reserved for Apple use\0"
+  /* 0x70 */ "poly\0"
+  /* 0x71 */ "poly\0"
+  /* 0x72 */ "poly\0"
+  /* 0x73 */ "poly\0"
+  /* 0x74 */ "poly\0"
+  /* 0x75 */ "reserved for Apple use\0"
+  /* 0x76 */ "reserved for Apple use\0"
+  /* 0x77 */ "reserved for Apple use\0"
+  /* 0x78 */ "poly (NYI)\0"
+  /* 0x79 */ "poly (NYI)\0"
+  /* 0x7A */ "poly (NYI)\0"
+  /* 0x7B */ "poly (NYI)\0"
+  /* 0x7C */ "poly (NYI)\0"
+  /* 0x7D */ "reserved for Apple use\0"
+  /* 0x7E */ "reserved for Apple use\0"
+  /* 0x7F */ "reserved for Apple use\0"
+  /* 0x80 */ "region\0"
+  /* 0x81 */ "region\0"
+  /* 0x82 */ "region\0"
+  /* 0x83 */ "region\0"
+  /* 0x84 */ "region\0"
+  /* 0x85 */ "reserved for Apple use\0"
+  /* 0x86 */ "reserved for Apple use\0"
+  /* 0x87 */ "reserved for Apple use\0"
+  /* 0x88 */ "region (NYI)\0"
+  /* 0x89 */ "region (NYI)\0"
+  /* 0x8A */ "region (NYI)\0"
+  /* 0x8B */ "region (NYI)\0"
+  /* 0x8C */ "region (NYI)\0"
+  /* 0x8D */ "reserved for Apple use\0"
+  /* 0x8E */ "reserved for Apple use\0"
+  /* 0x8F */ "reserved for Apple use\0"
+  /* 0x90 */ "copybits, rect clipped\0"
+  /* 0x91 */ "copybits, rgn clipped\0"
+  /* 0x92 */ "reserved for Apple use\0"
+  /* 0x93 */ "reserved for Apple use\0"
+  /* 0x94 */ "reserved for Apple use\0"
+  /* 0x95 */ "reserved for Apple use\0"
+  /* 0x96 */ "reserved for Apple use\0"
+  /* 0x97 */ "reserved for Apple use\0"
+  /* 0x98 */ "packed copybits, rect clipped\0"
+  /* 0x99 */ "packed copybits, rgn clipped\0"
+  /* 0x9A */ "PixMap, srcRect, dstRect, mode, PixData\0"
+  /* 0x9B */ "PixMap, srcRect, dstRect, mode, maskRgn, PixData\0"
+  /* 0x9C */ "reserved for Apple use\0"
+  /* 0x9D */ "reserved for Apple use\0"
+  /* 0x9E */ "reserved for Apple use\0"
+  /* 0x9F */ "reserved for Apple use\0"
+  /* 0xA0 */ "kind (word)\0"
+  /* 0xA1 */ "kind (word), size (word), data\0";
 
 /*
   Forward declarations.
 */
 static unsigned int
   WritePICTImage(const ImageInfo *,Image *);
+
+static const char *lookup_string(const char *table, const size_t table_size, const unsigned int index)
+{
+    size_t count;
+    const char *p = table;
+    for (count = 0;
+         (count < index) && (p < table+table_size-1);
+         p++)
+    {
+        if (*p == '\0')
+          count++;
+    }
+    return p;
+}
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1006,7 +1339,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
       {
         if (IsEventLogging())
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code  %04X %.1024s: %.1024s",code,
-            codes[code].name,codes[code].description);
+                                lookup_string(code_names,sizeof(code_names),code),
+                                lookup_string(code_descriptions,sizeof(code_descriptions),code));
         switch (code)
         {
           case 0x01:
@@ -1424,10 +1758,10 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             /*
               Skip to next op code.
             */
-            if (codes[code].length == -1)
+            if (code_lengths[code] == -1)
               (void) ReadBlobMSBShort(image);
             else
-              for (i=0; i < (long) codes[code].length; i++)
+              for (i=0; i < (long) code_lengths[code]; i++)
                 if (ReadBlobByte(image) == EOF)
                   break;
           }
