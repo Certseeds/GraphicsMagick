@@ -148,13 +148,13 @@ ImportRLEPixels(Image *image,
     *p;
 
   register unsigned int
+    index,
     quantum;
 
   register int
     length;
 
   register IndexPacket
-    index,
     *indexes;
 
   register long
@@ -203,10 +203,10 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++);
+                      index=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -220,11 +220,11 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -241,13 +241,13 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 24);
-                      index|=(*p++ << 16);
-                      index|=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 24);
+                      index|=((unsigned int) *p++ << 16);
+                      index|=((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -271,12 +271,12 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++);
+                      index=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++);
+                      quantum=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleCharToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -290,14 +290,14 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -314,18 +314,18 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 24);
-                      index|=(*p++ << 16);
-                      index|=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 24);
+                      index|=((unsigned int) *p++ << 16);
+                      index|=((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -354,7 +354,7 @@ ImportRLEPixels(Image *image,
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=ScaleCharToQuantum(*p++);
                       index=(IndexPacket) MaxRGB-ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -368,22 +368,22 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum= ((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
+                      quantum= ((unsigned int) *p++ << 8);
                       quantum|=(*p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       index=(IndexPacket) MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -397,35 +397,35 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       index=(IndexPacket) MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
-                  indexes[x]=index;
+                  *indexes++=index;
                   *q++=pixel;
                 }
               break;
@@ -450,7 +450,7 @@ ImportRLEPixels(Image *image,
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -463,19 +463,19 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -488,27 +488,27 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -535,7 +535,7 @@ ImportRLEPixels(Image *image,
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=MaxRGB-ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -548,19 +548,19 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -573,27 +573,27 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -619,7 +619,7 @@ ImportRLEPixels(Image *image,
                       pixel.red=ScaleCharToQuantum(*p++);
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -632,16 +632,16 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -654,22 +654,22 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -1521,13 +1521,13 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 {
                   for (i=0; i < (long) image->colors; i++)
                     {
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].red=ScaleShortToQuantum(pixel);
                       p+=2;
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].green=ScaleShortToQuantum(pixel);
                       p+=2;
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].blue=ScaleShortToQuantum(pixel);
                       p+=2;
                     }
@@ -1537,13 +1537,22 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 {
                   for (i=0; i < (long) image->colors; i++)
                     {
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].red=ScaleLongToQuantum(pixel);
                       p+=4;
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].green=ScaleLongToQuantum(pixel);
                       p+=4;
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].blue=ScaleLongToQuantum(pixel);
                       p+=4;
                     }
@@ -1844,7 +1853,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
                                              image);
                   p+=bytes_read;
-                    length+=*(p-1)+1;
+                  length+=(size_t) *(p-1)+1;
                 }
 
               if (!ImportRLEPixels(image,quantum_type,quantum_size,pixels))

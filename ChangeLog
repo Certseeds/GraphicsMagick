@@ -1,3 +1,10 @@
+2019-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ImportRLEPixels): Fix heap overflow caused by a
+	typo in the code.  Also fix undefined behavior caused by large
+	left shifts of an unsigned char.  Fixes SourceForge issue #608
+	"heap-buffer-overflow in ImportRLEPixels of coders/miff.c.
+
 2019-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Fix subrange/scene handling in
