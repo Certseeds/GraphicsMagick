@@ -144,16 +144,6 @@ typedef MagickPassFail (*CommandVectorHandler)(ImageInfo *image_info,
 
 typedef void (*UsageVectorHandler)(void);
 
-typedef struct _CommandInfo
-{
-  const char           *command;
-  const char           *description;
-  CommandVectorHandler  command_vector;
-  UsageVectorHandler    usage_vector;
-  int                   pass_metadata;
-  RunMode               support_mode;
-} CommandInfo;
-
 static void InitializeBatchOptions(MagickBool);
 static MagickBool GMCommandSingle(int argc, char **argv);
 static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options);
@@ -196,52 +186,60 @@ static MagickPassFail
   VersionCommand(ImageInfo *image_info,int argc,char **argv,
                  char **metadata,ExceptionInfo *exception);
 
-static const CommandInfo commands[] =
-  {
+static const struct
+{
+  const char            command[10];
+  const char * const    description;
+  CommandVectorHandler  command_vector;
+  UsageVectorHandler    usage_vector;
+  int                   pass_metadata;
+  RunMode               support_mode;
+}
+  commands[] =
+    {
 #if defined(HasX11)
-    { "animate", "animate a sequence of images",
-      AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
+      { "animate", "animate a sequence of images",
+        AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode }
 #endif
-    { "batch", "issue multiple commands in interactive or batch mode",
-      0, BatchUsage, 1, SingleMode },
-    { "benchmark", "benchmark one of the other commands",
-      BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
-    { "compare", "compare two images",
-      CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
-    { "composite", "composite images together",
-      CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
-    { "conjure", "execute a Magick Scripting Language (MSL) XML script",
-      ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
-    { "convert", "convert an image or sequence of images",
-      ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
+      ,{ "batch", "issue multiple commands in interactive or batch mode",
+         0, BatchUsage, 1, SingleMode }
+      ,{ "benchmark", "benchmark one of the other commands",
+         BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode }
+      ,{ "compare", "compare two images",
+         CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode }
+      ,{ "composite", "composite images together",
+         CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode }
+      ,{ "conjure", "execute a Magick Scripting Language (MSL) XML script",
+         ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode }
+      ,{ "convert", "convert an image or sequence of images",
+         ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode }
 #if defined(HasX11)
-    { "display", "display an image on a workstation running X",
-      DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
+      ,{ "display", "display an image on a workstation running X",
+         DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode }
 #endif
-    { "help", "obtain usage message for named command",
-      HelpCommand, GMUsage, 0, SingleMode | BatchMode },
-    { "identify", "describe an image or image sequence",
-      IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
+      ,{ "help", "obtain usage message for named command",
+         HelpCommand, GMUsage, 0, SingleMode | BatchMode }
+      ,{ "identify", "describe an image or image sequence",
+         IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode }
 #if defined(HasX11)
-    { "import", "capture an application or X server screen",
-      ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
+      ,{ "import", "capture an application or X server screen",
+         ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode }
 #endif
-    { "mogrify", "transform an image or sequence of images",
-      MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
-    { "montage", "create a composite image (in a grid) from separate images",
-      MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
-    { "set", "change batch mode option",
-      SetCommand, SetUsage, 1, BatchMode },
-    { "time", "time one of the other commands",
-      TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
-    { "version", "obtain release version",
-      VersionCommand, 0, 0, SingleMode | BatchMode },
+      ,{ "mogrify", "transform an image or sequence of images",
+         MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode }
+      ,{ "montage", "create a composite image (in a grid) from separate images",
+         MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode }
+      ,{ "set", "change batch mode option",
+         SetCommand, SetUsage, 1, BatchMode }
+      ,{ "time", "time one of the other commands",
+         TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode }
+      ,{ "version", "obtain release version",
+         VersionCommand, 0, 0, SingleMode | BatchMode }
 #if defined(MSWINDOWS)
-    { "register", "register this application as the source of messages",
-      RegisterCommand, 0, 0, SingleMode | BatchMode },
+      ,{ "register", "register this application as the source of messages",
+         RegisterCommand, 0, 0, SingleMode | BatchMode }
 #endif
-    { 0, 0, 0, 0, 0, 0}
-  };
+    };
 
 static SemaphoreInfo
   *command_semaphore = (SemaphoreInfo *) NULL;
@@ -461,86 +459,65 @@ static void NormalizeSamplingFactor(ImageInfo *image_info)
 #if defined(HasX11)
 static void AnimateUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *buttons[]=
-    {
-      "Press any button to map or unmap the Command widget",
-      (char *) NULL
-    },
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-backdrop            display image centered on a backdrop",
-      "-colormap type       Shared or Private",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      display image to this X server",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred size and location of the Image window",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-map type            display image using this Standard Colormap",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-noop                do not apply options to image",
-      "-pause               seconds to pause before reanimating",
-      "-remote command      execute a command in a remote display process",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-size geometry       width and height of image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-visual type         display image using this visual type",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           display image to background of this window",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -name,\n");
-  (void) printf("-mattecolor, -shared-memory, or -title.\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
-  (void) printf("\nButtons: \n");
-  for (p=buttons; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n"
+           "\nWhere options include: \n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -backdrop            display image centered on a backdrop\n"
+           "  -colormap type       Shared or Private\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -delay value         display the next image after pausing\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -display server      display image to this X server\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -gamma value         level of gamma correction\n"
+           "  -geometry geometry   preferred size and location of the Image window\n"
+           "  -help                print program options\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -map type            display image using this Standard Colormap\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -noop                do not apply options to image\n"
+           "  -pause               seconds to pause before reanimating\n"
+           "  -remote command      execute a command in a remote display process\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scenes range        image scene range\n"
+           "  -size geometry       width and height of image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -visual type         display image using this visual type\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -window id           display image to background of this window\n"
+           "\n"
+           "In addition to those listed above, you can specify these standard X\n"
+           "resources as command line options:  -background, -bordercolor,\n"
+           "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -name,\n"
+           "-mattecolor, -shared-memory, or -title.\n"
+           "\nBy default, the image format of `file' is determined by its magic\n"
+           "number.  To specify a particular image format, precede the filename\n"
+           "with an image format name and a colon (i.e. ps:image) or specify the\n"
+           "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n"
+           "'-' for standard input or output.\n"
+           "\n"
+           "Buttons:\n"
+           "  Press any button to map or unmap the Command widget\n",
+           GetClientName());
 }
 #endif /* HasX11 */
 MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
@@ -1625,42 +1602,33 @@ static MagickPassFail BatchCommand(int argc, char **argv)
 */
 static void BatchOptionUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-echo on|off         echo command back to standard out, default is off",
-      "-escape unix|windows force use Unix or Windows escape format for command line",
-      "                     argument parsing, default is platform dependent",
-      "-fail text           when feedback is on, output the designated text if the",
-      "                     command returns error, default is 'FAIL'",
-      "-feedback on|off     print text (see -pass and -fail options) feedback after",
-      "                     each command to indicate the result, default is off",
-      "-help                print program options",
-      "-pass text           when feedback is on, output the designated text if the",
-      "                     command executed successfully, default is 'PASS'",
-      "-prompt text         use the given text as command prompt. use text 'off' or",
-      "                     empty string to turn off prompt. default to 'GM> ' if",
-      "                     and only if batch mode was entered with no file argument",
-      "-stop-on-error on|off",
-      "                     when turned on, batch execution quits prematurely when",
-      "                     any command returns error",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) puts("\nUnix escape allows the use backslash(\\), single quote(') and double quote(\") in");
-  (void) puts("the command line. Windows escape only uses double quote(\").  For example,");
-
-  (void) puts("\n    Orignal             Unix escape              Windows escape");
-  (void) puts("    [a\\b\\c\\d]           [a\\\\b\\\\c\\\\d]             [a\\b\\c\\d]");
-  (void) puts("    [Text with space]   [Text\\ with\\ space]      [\"Text with space\"]");
-  (void) puts("    [Text with (\")]     ['Text with (\")']        [\"Text with (\"\")\"]");
-  (void) puts("    [Mix: \"It's a (\\)\"] [\"Mix: \\\"It's a (\\\\)\\\"\"] [\"Mix: \"\"It's a (\\)\"\"\"]");
+  (void)
+    puts("\nWhere options include:\n"
+         "  -echo on|off         echo command back to standard out, default is off\n"
+         "  -escape unix|windows force use Unix or Windows escape format for command line\n"
+         "                       argument parsing, default is platform dependent\n"
+         "  -fail text           when feedback is on, output the designated text if the\n"
+         "                       command returns error, default is 'FAIL'\n"
+         "  -feedback on|off     print text (see -pass and -fail options) feedback after\n"
+         "                       each command to indicate the result, default is off\n"
+         "  -help                print program options\n"
+         "  -pass text           when feedback is on, output the designated text if the\n"
+         "                       command executed successfully, default is 'PASS'\n"
+         "  -prompt text         use the given text as command prompt. use text 'off' or\n"
+         "                       empty string to turn off prompt. default to 'GM> ' if\n"
+         "                       and only if batch mode was entered with no file argument\n"
+         "  -stop-on-error on|off\n"
+         "                       when turned on, batch execution quits prematurely when\n"
+         "                       any command returns error\n"
+         "\n"
+         "Unix escape allows the use backslash(\\), single quote(') and double quote(\") in\n"
+         "the command line. Windows escape only uses double quote(\").  For example,\n"
+         "\n"
+         "    Orignal             Unix escape              Windows escape\n"
+         "    [a\\b\\c\\d]           [a\\\\b\\\\c\\\\d]             [a\\b\\c\\d]\n"
+         "    [Text with space]   [Text\\ with\\ space]      [\"Text with space\"]\n"
+         "    [Text with (\")]     ['Text with (\")']        [\"Text with (\"\")\"]\n"
+         "    [Mix: \"It's a (\\)\"] [\"Mix: \\\"It's a (\\\\)\\\"\"] [\"Mix: \"\"It's a (\\)\"\"\"]");
 }
 
 
@@ -1714,31 +1682,20 @@ static void BatchUsage(void)
 */
 static void BenchmarkUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-concurrent         run multiple commands in parallel",
-      "-duration duration  duration to run benchmark (in seconds)",
-      "-iterations loops   number of command iterations per benchmark",
-      "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)",
-      "-stepthreads step   step benchmark with increasing number of threads",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s options command ... ",GetClientName());
-  (void) printf("\nWhere options include one of:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf("Followed by some other arbitrary GraphicsMagick command.\n\n"
-                "The -concurrent option requires use of -iterations or -duration.\n\n"
-                "Example usages:\n"
-                "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
-                "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
-                "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:\n");
+  (void) printf("Usage: %.1024s options command ...\n",GetClientName());
+  puts("Where options include one of:\n"
+       "-concurrent         run multiple commands in parallel\n"
+      "-duration duration  duration to run benchmark (in seconds)\n"
+      "-iterations loops   number of command iterations per benchmark\n"
+      "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)\n"
+      "-stepthreads step   step benchmark with increasing number of threads\n"
+       "Followed by some other arbitrary GraphicsMagick command.\n\n"
+       "The -concurrent option requires use of -iterations or -duration.\n\n"
+       "Example usages:\n"
+       "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
+       "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
+       "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:");
 }
 
 /*
@@ -2831,49 +2788,39 @@ CompareImageCommand(ImageInfo *image_info,
 */
 static void CompareUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-colorspace type     alternate image colorspace",
-      "-debug events        display copious debugging information",
-      "-define values       coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      get image or font from this X server",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-file filename       write difference image to this file",
-      "-help                print program options",
-      "-highlight-color color",
-      "                     color to use when annotating difference pixels",
-      "-highlight-style style",
-      "                     pixel highlight style (assign, threshold, tint, xor)",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-maximum-error       maximum total difference before returning error",
-      "-metric              comparison metric (MAE, MSE, PAE, PSNR, RMSE)",
-      "-monitor             show progress indication",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-size geometry       width and height of image",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] reference [options ...] compare"
-    " [options ...]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void)
+    printf("Usage: %.1024s [options ...] reference [options ...] compare [options ...]\n"
+           "\nWhere options include:\n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       coder/decoder specific options\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -display server      get image or font from this X server\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -file filename       write difference image to this file\n"
+           "  -help                print program options\n"
+           "  -highlight-color color\n"
+           "                       color to use when annotating difference pixels\n"
+           "  -highlight-style style\n"
+           "                       pixel highlight style (assign, threshold, tint, xor)\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -maximum-error       maximum total difference before returning error\n"
+           "  -metric              comparison metric (MAE, MSE, PAE, PSNR, RMSE)\n"
+           "  -monitor             show progress indication\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -size geometry       width and height of image\n"
+           "  -type type           image type\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n",
+           GetClientName());
 }
 
 /*
@@ -4098,89 +4045,81 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
 */
 static void CompositeUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-affine matrix       affine transform matrix",
-      "-authenticate value  decrypt image with this password",
-      "-blue-primary point  chomaticity blue primary point",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-displace geometry   shift image pixels defined by a displacement map",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dissolve value      dissolve the two images a given percent",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-filter type         use this filter when resizing an image",
-      "-font name           render text with this font",
-      "-geometry geometry   location of the composite image",
-      "-gravity type        which direction to gravitate towards",
-      "-green-primary point chomaticity green primary point",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          ssign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color ",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scene value         image scene number",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-stegano offset      hide watermark within an image",
-      "-stereo              combine two image to create a stereo anaglyph",
-      "-strip               strip all profiles and text attributes from image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile                repeat composite operation across image",
-      "-transform           affine transform image",
-      "-treedepth value     color tree depth",
-      "-type type           image type",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-watermark geometry  percent brightness and saturation of a watermark",
-      "-white-point point   chomaticity white point",
-      "-write filename      write image to this file",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] image [options ...] composite\n"
-    "  [ [options ...] mask ] [options ...] composite\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void)
+    printf("Usage: %.1024s [options ...] image [options ...] composite\n"
+           "  [ [options ...] mask ] [options ...] composite\n"
+           "\n"
+           "Where options include:\n"
+           "  -affine matrix       affine transform matrix\n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -blue-primary point  chomaticity blue primary point\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compose operator    composite operator\n"
+           "  -compress type       image compression type\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -displace geometry   shift image pixels defined by a displacement map\n"
+           "  -display server      get image or font from this X server\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dissolve value      dissolve the two images a given percent\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -encoding type       text encoding type\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -filter type         use this filter when resizing an image\n"
+           "  -font name           render text with this font\n"
+           "  -geometry geometry   location of the composite image\n"
+           "  -gravity type        which direction to gravitate towards\n"
+           "  -green-primary point chomaticity green primary point\n"
+           "  -help                print program options\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -label name          ssign a label to an image\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -negate              replace every pixel with its complementary color \n"
+           "  +page                reset current page offsets to default\n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  -profile filename    add ICM or IPTC information profile to image\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -recolor matrix      apply a color translation matrix to image channels\n"
+           "  -red-primary point   chomaticity red primary point\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  +repage              reset current page offsets to default\n"
+           "  -repage geometry     adjust current page offsets by geometry\n"
+           "  -resize geometry     resize the image\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scene value         image scene number\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -sharpen geometry    sharpen the image\n"
+           "  -size geometry       width and height of image\n"
+           "  -stegano offset      hide watermark within an image\n"
+           "  -stereo              combine two image to create a stereo anaglyph\n"
+           "  -strip               strip all profiles and text attributes from image\n"
+           "  -thumbnail geometry  resize the image (optimized for thumbnails)\n"
+           "  -tile                repeat composite operation across image\n"
+           "  -transform           affine transform image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -type type           image type\n"
+           "  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined\n"
+           "  -unsharp geometry    sharpen the image\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -watermark geometry  percent brightness and saturation of a watermark\n"
+           "  -white-point point   chomaticity white point\n"
+           "  -write filename      write image to this file\n",
+           GetClientName());
 }
 
 /*
@@ -6147,196 +6086,184 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
 */
 static void ConvertUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-affine matrix       affine transform matrix",
-      "-antialias           remove pixel-aliasing",
-      "-append              append an image sequence",
-      "-asc-cdl spec        apply ASC CDL transform",
-      "-authenticate value  decrypt image with this password",
-      "-auto-orient         orient (rotate) image so it is upright",
-      "-average             average an image sequence",
-      "-background color    background color",
-      "-black-threshold value",
-      "                     pixels below the threshold become black",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur geometry       blur the image",
-      "-border geometry     surround image with a border of color",
-      "-bordercolor color   border color",
-      "-box color           set the color of the annotation bounding box",
-      "-channel type        extract a particular color channel from image",
-      "-charcoal radius     simulate a charcoal drawing",
-      "-chop geometry       remove pixels from the image interior",
-      "-clip                apply first clipping path if the image has one",
-      "-clippath            apply named clipping path if the image has one",
-      "-coalesce            merge a sequence of images",
-      "-colorize value      colorize the image with the fill color",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-convolve kernel     convolve image with the specified convolution kernel",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-cycle amount        cycle the image colormap",
-      "-debug events        display copious debugging information",
-      "-deconstruct         break down an image sequence into constituent parts",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-edge radius         apply a filter to detect edges in the image",
-      "-emboss radius       emboss an image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-equalize            perform histogram equalization to an image",
-      "-extent              composite image on background color canvas image",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flatten             flatten a sequence of images",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           render text with this font",
-      "-frame geometry      surround image with an ornamental border",
-      "-fuzz distance       colors within this distance are considered equal",
-      "-gamma value         level of gamma correction",
-      "-gaussian geometry   gaussian blur an image",
-      "-geometry geometry   perferred size or location of the image",
-      "-green-primary point chomaticity green primary point",
-      "-gravity type        horizontal and vertical text/object placement",
-      "-hald-clut clut      apply a Hald CLUT to the image",
-      "-help                print program options",
-      "-implode amount      implode image pixels about the center",
-      "-intent type         Absolute, Perceptual, Relative, or Saturation",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-lat geometry        local adaptive thresholding",
-      "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-linewidth width     the line width for subsequent draw operations",
-      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
-      "                     or Type",
-      "-log format          format of debugging information",
-      "-loop iterations     add Netscape loop extension to your GIF animation",
-      "-magnify             interpolate image to double size",
-      "-map filename        transform image colors to match this set of colors",
-      "-mask filename       set the image clip mask",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    specify the color to be used with the -frame option",
-      "-median radius       apply a median filter to the image",
-      "-minify              interpolate the image to half size",
-      "-modulate value      vary the brightness, saturation, and hue",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-morph value         morph an image sequence",
-      "-mosaic              create a mosaic from an image sequence",
-      "-motion-blur radiusxsigma+angle",
-      "                     simulate motion blur",
-      "-negate              replace every pixel with its complementary color ",
-      "-noop                do not apply options to image",
-      "-noise radius        add or reduce noise in an image",
-      "-normalize           transform image to span the full range of colors",
-      "-opaque color        change this color to the fill color",
-      "-operator channel operator rvalue",
-      "                     apply a mathematical or bitwise operator to channel",
-      "-ordered-dither channeltype NxN",
-      "                     ordered dither the image",
-      "-orient orientation  set image orientation attribute",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-paint radius        simulate an oil painting",
-      "-ping                efficiently determine image attributes",
-      "-pointsize value     font point size",
-      "-preview type        image preview type",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-random-threshold channeltype LOWxHIGH",
-      "                     random threshold the image",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-region geometry     apply options to a portion of the image",
-      "-render              render vector graphics",
-      "+render              disable rendering vector graphics",
-      "-resample geometry   resample to horizontal and vertical resolution",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scale geometry      scale the image",
-      "-scene value         image scene number",
-      "-seed value          pseudo-random number generator seed value",
-      "-segment values      segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shade degrees       shade the image using a distant light source",
-      "-sharpen geometry    sharpen the image",
-      "-shave geometry      shave pixels from the image edges",
-      "-shear geometry      slide one edge of the image along the X or Y axis",
-      "-size geometry       width and height of image",
-      "-solarize threshold  negate all pixels above the threshold level",
-      "-spread amount       displace image pixels by a random amount",
-      "-stroke color        graphic primitive stroke color",
-      "-strokewidth value   graphic primitive stroke width",
-      "-strip               strip all profiles and text attributes from image",
-      "-swirl degrees       swirl image pixels about the center",
-      "-texture filename    name of texture to tile onto the image background",
-      "-threshold value     threshold the image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile filename       tile image when filling a graphic primitive",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-undercolor color    annotation bounding box color",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-view                FlashPix viewing transforms",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-wave geometry       alter an image along a sine wave",
-      "-white-point point   chomaticity white point",
-      "-white-threshold value",
-      "                     pixels above the threshold become white",
-      "-write filename      write image to this file",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] "
-    "file ...] [options ...] file\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...] [options ...] file\n"
+           "\n"
+           "Where options include:\n"
+           "  -adjoin              join images into a single multi-image file\n"
+           "  -affine matrix       affine transform matrix\n"
+           "  -antialias           remove pixel-aliasing\n"
+           "  -append              append an image sequence\n"
+           "  -asc-cdl spec        apply ASC CDL transform\n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -auto-orient         orient (rotate) image so it is upright\n"
+           "  -average             average an image sequence\n"
+           "  -background color    background color\n"
+           "  -black-threshold value\n"
+           "                       pixels below the threshold become black\n"
+           "  -blue-primary point  chomaticity blue primary point\n"
+           "  -blur geometry       blur the image\n"
+           "  -border geometry     surround image with a border of color\n"
+           "  -bordercolor color   border color\n"
+           "  -box color           set the color of the annotation bounding box\n"
+           "  -channel type        extract a particular color channel from image\n"
+           "  -charcoal radius     simulate a charcoal drawing\n"
+           "  -chop geometry       remove pixels from the image interior\n"
+           "  -clip                apply first clipping path if the image has one\n"
+           "  -clippath            apply named clipping path if the image has one\n"
+           "  -coalesce            merge a sequence of images\n"
+           "  -colorize value      colorize the image with the fill color\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compose operator    composite operator\n"
+           "  -compress type       image compression type\n"
+           "  -contrast            enhance or reduce the image contrast\n"
+           "  -convolve kernel     convolve image with the specified convolution kernel\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -cycle amount        cycle the image colormap\n"
+           "  -debug events        display copious debugging information\n"
+           "  -deconstruct         break down an image sequence into constituent parts\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -delay value         display the next image after pausing\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -despeckle           reduce the speckles within an image\n"
+           "  -display server      get image or font from this X server\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -draw string         annotate the image with a graphic primitive\n"
+           "  -edge radius         apply a filter to detect edges in the image\n"
+           "  -emboss radius       emboss an image\n"
+           "  -encoding type       text encoding type\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -enhance             apply a digital filter to enhance a noisy image\n"
+           "  -equalize            perform histogram equalization to an image\n"
+           "  -extent              composite image on background color canvas image\n"
+           "  -fill color          color to use when filling a graphic primitive\n"
+           "  -filter type         use this filter when resizing an image\n"
+           "  -flatten             flatten a sequence of images\n"
+           "  -flip                flip image in the vertical direction\n"
+           "  -flop                flop image in the horizontal direction\n"
+           "  -font name           render text with this font\n"
+           "  -frame geometry      surround image with an ornamental border\n"
+           "  -fuzz distance       colors within this distance are considered equal\n"
+           "  -gamma value         level of gamma correction\n"
+           "  -gaussian geometry   gaussian blur an image\n"
+           "  -geometry geometry   perferred size or location of the image\n"
+           "  -green-primary point chomaticity green primary point\n"
+           "  -gravity type        horizontal and vertical text/object placement\n"
+           "  -hald-clut clut      apply a Hald CLUT to the image\n"
+           "  -help                print program options\n"
+           "  -implode amount      implode image pixels about the center\n"
+           "  -intent type         Absolute, Perceptual, Relative, or Saturation\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -label name          assign a label to an image\n"
+           "  -lat geometry        local adaptive thresholding\n"
+           "  -level value         adjust the level of image contrast\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -linewidth width     the line width for subsequent draw operations\n"
+           "  -list type           Color, Delegate, Format, Magic, Module, Resource,\n"
+           "                       or Type\n"
+           "  -log format          format of debugging information\n"
+           "  -loop iterations     add Netscape loop extension to your GIF animation\n"
+           "  -magnify             interpolate image to double size\n"
+           "  -map filename        transform image colors to match this set of colors\n"
+           "  -mask filename       set the image clip mask\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -mattecolor color    specify the color to be used with the -frame option\n"
+           "  -median radius       apply a median filter to the image\n"
+           "  -minify              interpolate the image to half size\n"
+           "  -modulate value      vary the brightness, saturation, and hue\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -morph value         morph an image sequence\n"
+           "  -mosaic              create a mosaic from an image sequence\n"
+           "  -motion-blur radiusxsigma+angle\n"
+           "                       simulate motion blur\n"
+           "  -negate              replace every pixel with its complementary color \n"
+           "  -noop                do not apply options to image\n"
+           "  -noise radius        add or reduce noise in an image\n"
+           "  -normalize           transform image to span the full range of colors\n"
+           "  -opaque color        change this color to the fill color\n"
+           "  -operator channel operator rvalue\n"
+           "                       apply a mathematical or bitwise operator to channel\n"
+           "  -ordered-dither channeltype NxN\n"
+           "                       ordered dither the image\n"
+           "  -orient orientation  set image orientation attribute\n"
+           "  +page                reset current page offsets to default\n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  -paint radius        simulate an oil painting\n"
+           "  -ping                efficiently determine image attributes\n"
+           "  -pointsize value     font point size\n"
+           "  -preview type        image preview type\n"
+           "  -profile filename    add ICM or IPTC information profile to image\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -raise value         lighten/darken image edges to create a 3-D effect\n"
+           "  -random-threshold channeltype LOWxHIGH\n"
+           "                       random threshold the image\n"
+           "  -recolor matrix      apply a color translation matrix to image channels\n"
+           "  -red-primary point   chomaticity red primary point\n"
+           "  -region geometry     apply options to a portion of the image\n"
+           "  -render              render vector graphics\n"
+           "  +render              disable rendering vector graphics\n"
+           "  -resample geometry   resample to horizontal and vertical resolution\n"
+           "  +repage              reset current page offsets to default\n"
+           "  -repage geometry     adjust current page offsets by geometry\n"
+           "  -resize geometry     resize the image\n"
+           "  -roll geometry       roll an image vertically or horizontally\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sample geometry     scale image with pixel sampling\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scale geometry      scale the image\n"
+           "  -scene value         image scene number\n"
+           "  -seed value          pseudo-random number generator seed value\n"
+           "  -segment values      segment an image\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -shade degrees       shade the image using a distant light source\n"
+           "  -sharpen geometry    sharpen the image\n"
+           "  -shave geometry      shave pixels from the image edges\n"
+           "  -shear geometry      slide one edge of the image along the X or Y axis\n"
+           "  -size geometry       width and height of image\n"
+           "  -solarize threshold  negate all pixels above the threshold level\n"
+           "  -spread amount       displace image pixels by a random amount\n"
+           "  -stroke color        graphic primitive stroke color\n"
+           "  -strokewidth value   graphic primitive stroke width\n"
+           "  -strip               strip all profiles and text attributes from image\n"
+           "  -swirl degrees       swirl image pixels about the center\n"
+           "  -texture filename    name of texture to tile onto the image background\n"
+           "  -threshold value     threshold the image\n"
+           "  -thumbnail geometry  resize the image (optimized for thumbnails)\n"
+           "  -tile filename       tile image when filling a graphic primitive\n"
+           "  -transform           affine transform image\n"
+           "  -transparent color   make this color transparent within the image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -undercolor color    annotation bounding box color\n"
+           "  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined\n"
+           "  -unsharp geometry    sharpen the image\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -view                FlashPix viewing transforms\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -wave geometry       alter an image along a sine wave\n"
+           "  -white-point point   chomaticity white point\n"
+           "  -white-threshold value\n"
+           "                       pixels above the threshold become white\n"
+           "  -write filename      write image to this file\n"
+           "\n"
+           "By default, the image format of `file' is determined by its magic\n"
+           "number.  To specify a particular image format, precede the filename\n"
+           "with an image format name and a colon (i.e. ps:image) or specify the\n"
+           "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n"
+           "'-' for standard input or output.\n",
+           GetClientName());
 }
 
 /*
@@ -6359,29 +6286,21 @@ static void ConvertUsage(void)
 */
 static void ConjureUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-debug events        display copious debugging information",
-      "-help                print program options",
-      "-log format          format of debugging information",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf("\nIn additiion, define any key value pairs required by "
-    "your script.  For\nexample,\n\n");
-  (void) printf("    conjure -size 100x100 -color blue -foo bar script.msl\n");
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n"
+           "\n"
+           "Where options include:\n"
+           "  -debug events        display copious debugging information\n"
+           "  -help                print program options\n"
+           "  -log format          format of debugging information\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "\n"
+           "In additiion, define any key value pairs required by "
+           "your script.  For\nexample,\n\n"
+           "    conjure -size 100x100 -color blue -foo bar script.msl\n",
+           GetClientName());
 }
 
 MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
@@ -6533,117 +6452,97 @@ MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
 #if defined(HasX11)
 static void DisplayUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *buttons[]=
-    {
-      "1    press to map or unmap the Command widget",
-      "2    press and drag to magnify a region of an image",
-      "3    press to load an image from a visual image directory",
-      (char *) NULL
-    },
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-backdrop            display image centered on a backdrop",
-      "-border geometry     surround image with a border of color",
-      "-colormap type       Shared or Private",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      display image to this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-edge factor         apply a filter to detect edges in the image",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-frame geometry      surround image with an ornamental border",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred size and location of the Image window",
-      "-help                print program options",
-      "-immutable           displayed image cannot be modified",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-map type            display image using this Standard Colormap",
-      "-matte               store matte channel if the image has one",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color",
-      "-noop                do not apply options to image",
-      "-page geometry       size and location of an image canvas",
-      "+progress            disable progress monitor and busy cursor",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-remote command      execute a command in an remote display process",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-segment value       segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-texture filename    name of texture to tile onto the image background",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-update seconds      detect when image file is modified and redisplay",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-visual type         display image using this visual type",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           display image to background of this window",
-      "-window_group id     exit program when this window id is destroyed",
-      "-write filename      write image to a file",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -mattecolor,\n");
-  (void) printf("-name, -shared-memory, -usePixmap, or -title.\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
-  (void) printf("\nButtons: \n");
-  for (p=buttons; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n"
+           "\n"
+           "Where options include: \n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -backdrop            display image centered on a backdrop\n"
+           "  -border geometry     surround image with a border of color\n"
+           "  -colormap type       Shared or Private\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compress type       image compression type\n"
+           "  -contrast            enhance or reduce the image contrast\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -delay value         display the next image after pausing\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -despeckle           reduce the speckles within an image\n"
+           "  -display server      display image to this X server\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -edge factor         apply a filter to detect edges in the image\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -enhance             apply a digital filter to enhance a noisy image\n"
+           "  -filter type         use this filter when resizing an image\n"
+           "  -flip                flip image in the vertical direction\n"
+           "  -flop                flop image in the horizontal direction\n"
+           "  -frame geometry      surround image with an ornamental border\n"
+           "  -gamma value         level of gamma correction\n"
+           "  -geometry geometry   preferred size and location of the Image window\n"
+           "  -help                print program options\n"
+           "  -immutable           displayed image cannot be modified\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -label name          assign a label to an image\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -map type            display image using this Standard Colormap\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -negate              replace every pixel with its complementary color\n"
+           "  -noop                do not apply options to image\n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  +progress            disable progress monitor and busy cursor\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -raise value         lighten/darken image edges to create a 3-D effect\n"
+           "  -remote command      execute a command in an remote display process\n"
+           "  -roll geometry       roll an image vertically or horizontally\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sample geometry     scale image with pixel sampling\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scenes range        image scene range\n"
+           "  -segment value       segment an image\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -sharpen geometry    sharpen the image\n"
+           "  -size geometry       width and height of image\n"
+           "  -texture filename    name of texture to tile onto the image background\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -update seconds      detect when image file is modified and redisplay\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -visual type         display image using this visual type\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -window id           display image to background of this window\n"
+           "  -window_group id     exit program when this window id is destroyed\n"
+           "  -write filename      write image to a file\n"
+           "\n"
+           "In addition to those listed above, you can specify these standard X\n"
+           "resources as command line options:  -background, -bordercolor,\n"
+           "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -mattecolor,\n"
+           "-name, -shared-memory, -usePixmap, or -title.\n"
+           "\n"
+           "By default, the image format of `file' is determined by its magic\n"
+           "number.  To specify a particular image format, precede the filename\n"
+           "with an image format name and a colon (i.e. ps:image) or specify the\n"
+           "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n"
+           "'-' for standard input or output.\n"
+           "\nButtons:\n"
+           "  1    press to map or unmap the Command widget\n"
+           "  2    press and drag to magnify a region of an image\n"
+           "  3    press to load an image from a visual image directory\n",
+           GetClientName());
 }
 #endif /* HasX11 */
 
@@ -8151,14 +8050,15 @@ static OptionStatus GetOnOffOptionValue(const char *option, const char *value,
 */
 static void GMUsage(void)
 {
-  int
+  unsigned int
     i;
 
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s command [options ...]\n",GetClientName());
-  (void) printf("\nWhere commands include: \n");
+  (void) printf("Usage: %.1024s command [options ...]\n"
+                "\n"
+                "Where commands include:\n",GetClientName());
 
-  for (i=0; commands[i].command != 0; i++)
+  for (i=0; i < ArraySize(commands); i++)
     {
       if (commands[i].support_mode & run_mode)
         (void) printf("%11s - %s\n",commands[i].command,
@@ -8209,10 +8109,10 @@ static MagickPassFail HelpCommand(ImageInfo *image_info,
   ARG_NOT_USED(exception);
   if (argc > 1)
     {
-      int
+      unsigned int
         i;
 
-      for (i=0; commands[i].command != 0; i++)
+      for (i=0; i < ArraySize(commands); i++)
         {
           if (!(commands[i].support_mode & run_mode))
             continue;
@@ -8689,40 +8589,32 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
 */
 static void IdentifyUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-format \"string\"   output formatted image characteristics",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-monitor             show progress indication",
-      "-ping                efficiently determine image attributes",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-size geometry       width and height of image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] "
-    "file ... ]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] "
+           "file ... ]\n"
+           "\n"
+           "Where options include:\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -format \"string\"   output formatted image characteristics\n"
+           "  -help                print program options\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -monitor             show progress indication\n"
+           "  -ping                efficiently determine image attributes\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -size geometry       width and height of image\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n",
+           GetClientName());
 }
 
 
@@ -8842,14 +8734,14 @@ MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
   MagickPassFail
     status=MagickFail;
 
-  int
+  unsigned int
     i;
 
   option=argv[0];
   if (option[0] == '-')
     option++;
 
-  for (i=0; commands[i].command != 0; i++)
+  for (i=0; i < ArraySize(commands); i++)
     {
       if (!(commands[i].support_mode & run_mode))
         continue;
@@ -13732,188 +13624,176 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
 */
 static void MogrifyUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-affine matrix       affine transform matrix",
-      "-antialias           remove pixel-aliasing",
-      "-asc-cdl spec        apply ASC CDL transform",
-      "-authenticate value  decrypt image with this password",
-      "-auto-orient         orient (rotate) image so it is upright",
-      "-background color    background color",
-      "-black-threshold value",
-      "                     pixels below the threshold become black",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur radius         blur the image",
-      "-border geometry     surround image with a border of color",
-      "-bordercolor color   border color",
-      "-box color           set the color of the annotation bounding box",
-      "-channel type        extract a particular color channel from image",
-      "-charcoal radius     simulate a charcoal drawing",
-      "-chop geometry       remove pixels from the image interior",
-      "-colorize value      colorize the image with the fill color",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-convolve kernel     convolve image with the specified convolution kernel",
-      "-create-directories  create output directories if required",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-cycle amount        cycle the image colormap",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-edge radius         apply a filter to detect edges in the image",
-      "-emboss radius       emboss an image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-equalize            perform histogram equalization to an image",
-      "-extent              composite image on background color canvas image",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           render text with this font",
-      "-format type         image format type",
-      "-frame geometry      surround image with an ornamental border",
-      "-fuzz distance       colors within this distance are considered equal",
-      "-gamma value         level of gamma correction",
-      "-gaussian geometry   gaussian blur an image",
-      "-geometry geometry   perferred size or location of the image",
-      "-gravity type        horizontal and vertical text/object placement",
-      "-green-primary point chomaticity green primary point",
-      "-implode amount      implode image pixels about the center",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-hald-clut clut      apply a Hald CLUT to the image",
-      "-help                print program options",
-      "-label name          assign a label to an image",
-      "-lat geometry        local adaptive thresholding",
-      "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-linewidth width     the line width for subsequent draw operations",
-      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
-      "                     or Type",
-      "-log format          format of debugging information",
-      "-loop iterations     add Netscape loop extension to your GIF animation",
-      "-magnify             interpolate image to double size",
-      "-map filename        transform image colors to match this set of colors",
-      "-mask filename       set the image clip mask",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    specify the color to be used with the -frame option",
-      "-median radius       apply a median filter to the image",
-      "-minify              interpolate the image to half size",
-      "-modulate value      vary the brightness, saturation, and hue",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-motion-blur radiusxsigma+angle",
-      "                     simulate motion blur",
-      "-negate              replace every pixel with its complementary color ",
-      "-noop                do not apply options to image",
-      "-noise radius        add or reduce noise in an image",
-      "-normalize           transform image to span the full range of colors",
-      "-opaque color        change this color to the fill color",
-      "-operator channel operator rvalue",
-      "                     apply a mathematical or bitwise operator to channel",
-      "-ordered-dither channeltype NxN",
-      "                     ordered dither the image",
-      "-orient orientation  set image orientation attribute",
-      "-output-directory directory",
-      "                     write output files to directory",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-paint radius        simulate an oil painting",
-      "-fill color           color for annotating or changing opaque color",
-      "-pointsize value     font point size",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-preserve-timestamp  preserve original timestamps of the file",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-random-threshold channeltype LOWxHIGH",
-      "                     random threshold the image",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-region geometry     apply options to a portion of the image",
-      "-render              render vector graphics",
-      "+render              disable rendering vector graphics",
-      "-resample geometry   resample to horizontal and vertical resolution",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     perferred size or location of the image",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scale geometry      scale the image",
-      "-scene number        image scene number",
-      "-seed value          pseudo-random number generator seed value",
-      "-segment values      segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shade degrees       shade the image using a distant light source",
-      "-sharpen radius      sharpen the image",
-      "-shave geometry      shave pixels from the image edges",
-      "-shear geometry      slide one edge of the image along the X or Y axis",
-      "-size geometry       width and height of image",
-      "-solarize threshold  negate all pixels above the threshold level",
-      "-spread amount       displace image pixels by a random amount",
-      "-strip               strip all profiles and text attributes from image",
-      "-stroke color        graphic primitive stroke color",
-      "-strokewidth value   graphic primitive stroke width",
-      "-swirl degrees       swirl image pixels about the center",
-      "-texture filename    name of texture to tile onto the image background",
-      "-threshold value     threshold the image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile filename       tile image when filling a graphic primitive",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-undercolor color    annotation bounding box color",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-view                FlashPix viewing transforms",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-wave geometry       alter an image along a sine wave",
-      "-white-point point   chomaticity white point",
-      "-white-threshold value",
-      "                     pixels above the threshold become white",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n"
+           "\n"
+           "Where options include:\n"
+           "  -affine matrix       affine transform matrix\n"
+           "  -antialias           remove pixel-aliasing\n"
+           "  -asc-cdl spec        apply ASC CDL transform\n"
+                "  -authenticate value  decrypt image with this password\n"
+           "  -auto-orient         orient (rotate) image so it is upright\n"
+           "  -background color    background color\n"
+           "  -black-threshold value\n"
+           "                       pixels below the threshold become black\n"
+           "  -blue-primary point  chomaticity blue primary point\n"
+           "  -blur radius         blur the image\n"
+           "  -border geometry     surround image with a border of color\n"
+           "  -bordercolor color   border color\n"
+           "  -box color           set the color of the annotation bounding box\n"
+           "  -channel type        extract a particular color channel from image\n"
+           "  -charcoal radius     simulate a charcoal drawing\n"
+           "  -chop geometry       remove pixels from the image interior\n"
+           "  -colorize value      colorize the image with the fill color\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compose operator    composite operator\n"
+           "  -compress type       image compression type\n"
+           "  -contrast            enhance or reduce the image contrast\n"
+           "  -convolve kernel     convolve image with the specified convolution kernel\n"
+           "  -create-directories  create output directories if required\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -cycle amount        cycle the image colormap\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -delay value         display the next image after pausing\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -despeckle           reduce the speckles within an image\n"
+           "  -display server      get image or font from this X server\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -draw string         annotate the image with a graphic primitive\n"
+           "  -edge radius         apply a filter to detect edges in the image\n"
+           "  -emboss radius       emboss an image\n"
+           "  -encoding type       text encoding type\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -enhance             apply a digital filter to enhance a noisy image\n"
+           "  -equalize            perform histogram equalization to an image\n"
+           "  -extent              composite image on background color canvas image\n"
+           "  -fill color          color to use when filling a graphic primitive\n"
+           "  -filter type         use this filter when resizing an image\n"
+           "  -flip                flip image in the vertical direction\n"
+           "  -flop                flop image in the horizontal direction\n"
+           "  -font name           render text with this font\n"
+           "  -format type         image format type\n"
+           "  -frame geometry      surround image with an ornamental border\n"
+           "  -fuzz distance       colors within this distance are considered equal\n"
+           "  -gamma value         level of gamma correction\n"
+           "  -gaussian geometry   gaussian blur an image\n"
+           "  -geometry geometry   perferred size or location of the image\n"
+           "  -gravity type        horizontal and vertical text/object placement\n"
+           "  -green-primary point chomaticity green primary point\n"
+           "  -implode amount      implode image pixels about the center\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -hald-clut clut      apply a Hald CLUT to the image\n"
+           "  -help                print program options\n"
+           "  -label name          assign a label to an image\n"
+           "  -lat geometry        local adaptive thresholding\n"
+           "  -level value         adjust the level of image contrast\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -linewidth width     the line width for subsequent draw operations\n"
+           "  -list type           Color, Delegate, Format, Magic, Module, Resource,\n"
+           "                       or Type\n"
+           "  -log format          format of debugging information\n"
+           "  -loop iterations     add Netscape loop extension to your GIF animation\n"
+           "  -magnify             interpolate image to double size\n"
+           "  -map filename        transform image colors to match this set of colors\n"
+           "  -mask filename       set the image clip mask\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -mattecolor color    specify the color to be used with the -frame option\n"
+           "  -median radius       apply a median filter to the image\n"
+           "  -minify              interpolate the image to half size\n"
+           "  -modulate value      vary the brightness, saturation, and hue\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -motion-blur radiusxsigma+angle\n"
+           "                       simulate motion blur\n"
+           "  -negate              replace every pixel with its complementary color \n"
+           "  -noop                do not apply options to image\n"
+           "  -noise radius        add or reduce noise in an image\n"
+           "  -normalize           transform image to span the full range of colors\n"
+           "  -opaque color        change this color to the fill color\n"
+           "  -operator channel operator rvalue\n"
+           "                       apply a mathematical or bitwise operator to channel\n"
+           "  -ordered-dither channeltype NxN\n"
+           "                       ordered dither the image\n"
+           "  -orient orientation  set image orientation attribute\n"
+           "  -output-directory directory\n"
+           "                       write output files to directory\n"
+           "  +page                reset current page offsets to default\n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  -paint radius        simulate an oil painting\n"
+           "  -fill color           color for annotating or changing opaque color\n"
+           "  -pointsize value     font point size\n"
+           "  -profile filename    add ICM or IPTC information profile to image\n"
+           "  -preserve-timestamp  preserve original timestamps of the file\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -raise value         lighten/darken image edges to create a 3-D effect\n"
+           "  -random-threshold channeltype LOWxHIGH\n"
+           "                       random threshold the image\n"
+           "  -recolor matrix      apply a color translation matrix to image channels\n"
+           "  -red-primary point   chomaticity red primary point\n"
+           "  -region geometry     apply options to a portion of the image\n"
+           "  -render              render vector graphics\n"
+           "  +render              disable rendering vector graphics\n"
+           "  -resample geometry   resample to horizontal and vertical resolution\n"
+           "  +repage              reset current page offsets to default\n"
+           "  -repage geometry     adjust current page offsets by geometry\n"
+           "  -resize geometry     perferred size or location of the image\n"
+           "  -roll geometry       roll an image vertically or horizontally\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sample geometry     scale image with pixel sampling\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scale geometry      scale the image\n"
+           "  -scene number        image scene number\n"
+           "  -seed value          pseudo-random number generator seed value\n"
+           "  -segment values      segment an image\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -shade degrees       shade the image using a distant light source\n"
+           "  -sharpen radius      sharpen the image\n"
+           "  -shave geometry      shave pixels from the image edges\n"
+           "  -shear geometry      slide one edge of the image along the X or Y axis\n"
+           "  -size geometry       width and height of image\n"
+           "  -solarize threshold  negate all pixels above the threshold level\n"
+           "  -spread amount       displace image pixels by a random amount\n"
+           "  -strip               strip all profiles and text attributes from image\n"
+           "  -stroke color        graphic primitive stroke color\n"
+           "  -strokewidth value   graphic primitive stroke width\n"
+           "  -swirl degrees       swirl image pixels about the center\n"
+           "  -texture filename    name of texture to tile onto the image background\n"
+           "  -threshold value     threshold the image\n"
+           "  -thumbnail geometry  resize the image (optimized for thumbnails)\n"
+           "  -tile filename       tile image when filling a graphic primitive\n"
+           "  -transform           affine transform image\n"
+           "  -transparent color   make this color transparent within the image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -undercolor color    annotation bounding box color\n"
+           "  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined\n"
+           "  -unsharp geometry    sharpen the image\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -view                FlashPix viewing transforms\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -wave geometry       alter an image along a sine wave\n"
+           "  -white-point point   chomaticity white point\n"
+           "  -white-threshold value\n"
+           "                       pixels above the threshold become white\n"
+           "\n"
+           "By default, the image format of `file' is determined by its magic\n"
+           "number.  To specify a particular image format, precede the filename\n"
+           "with an image format name and a colon (i.e. ps:image) or specify the\n"
+           "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n"
+           "'-' for standard input or output.\n",
+           GetClientName());
 }
 
 /*
@@ -15129,118 +15009,103 @@ montage_cleanup_and_return:
 */
 static void MontageUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-affine matrix       affine transform matrix",
-      "-authenticate value  decrypt image with this password",
-      "-background color    background color",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur factor         apply a filter to blur the image",
-      "-bordercolor color   border color",
-      "-borderwidth geometry",
-      "                     border width",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorsapce",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      query font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           font to use when annotating with text",
-      "-format string       output formatted image characteristics",
-      "-frame geometry      surround image with an ornamental border",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred tile and border sizes",
-      "-gravity direction   which direction to gravitate towards",
-      "-green-primary point chomaticity green primary point",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    color to be used with the -frame option",
-      "-mode type           Frame, Unframe, or Concatenate",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-noop                do not apply options to image",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-pointsize value     font point size",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-red-primary point   chomaticity red primary point",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shadow              add a shadow beneath a tile to simulate depth",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-strip               strip all profiles and text attributes from image",
-      "-stroke color        color to use when stroking a graphic primitive",
-      "-strokewidth value   stroke (line) width",
-      "-texture filename    name of texture to tile onto the image background",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile geometry       number of tiles per row and column",
-      "-title string        thumbnail title",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-white-point point   chomaticity white point",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -mattecolor, or -title\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+  (void)
+    printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n"
+           "\n"
+           "Where options include: \n"
+           "  -adjoin              join images into a single multi-image file\n"
+           "  -affine matrix       affine transform matrix\n"
+           "  -authenticate value  decrypt image with this password\n"
+           "  -background color    background color\n"
+           "  -blue-primary point  chomaticity blue primary point\n"
+           "  -blur factor         apply a filter to blur the image\n"
+           "  -bordercolor color   border color\n"
+           "  -borderwidth geometry\n"
+           "                       border width\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorsapce\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compose operator    composite operator\n"
+           "  -compress type       image compression type\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -display server      query font from this X server\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -draw string         annotate the image with a graphic primitive\n"
+           "  -encoding type       text encoding type\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -fill color          color to use when filling a graphic primitive\n"
+           "  -filter type         use this filter when resizing an image\n"
+           "  -flip                flip image in the vertical direction\n"
+           "  -flop                flop image in the horizontal direction\n"
+           "  -font name           font to use when annotating with text\n"
+           "  -format string       output formatted image characteristics\n"
+           "  -frame geometry      surround image with an ornamental border\n"
+           "  -gamma value         level of gamma correction\n"
+           "  -geometry geometry   preferred tile and border sizes\n"
+           "  -gravity direction   which direction to gravitate towards\n"
+           "  -green-primary point chomaticity green primary point\n"
+           "  -help                print program options\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -label name          assign a label to an image\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -matte               store matte channel if the image has one\n"
+           "  -mattecolor color    color to be used with the -frame option\n"
+           "  -mode type           Frame, Unframe, or Concatenate\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -noop                do not apply options to image\n"
+           "  +page                reset current page offsets to default\n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  -pointsize value     font point size\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -red-primary point   chomaticity red primary point\n"
+           "  +repage              reset current page offsets to default\n"
+           "  -repage geometry     adjust current page offsets by geometry\n"
+           "  -resize geometry     resize the image\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scenes range        image scene range\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -shadow              add a shadow beneath a tile to simulate depth\n"
+           "  -sharpen geometry    sharpen the image\n"
+           "  -size geometry       width and height of image\n"
+           "  -strip               strip all profiles and text attributes from image\n"
+           "  -stroke color        color to use when stroking a graphic primitive\n"
+           "  -strokewidth value   stroke (line) width\n"
+           "  -texture filename    name of texture to tile onto the image background\n"
+           "  -thumbnail geometry  resize the image (optimized for thumbnails)\n"
+           "  -tile geometry       number of tiles per row and column\n"
+           "  -title string        thumbnail title\n"
+           "  -transform           affine transform image\n"
+           "  -transparent color   make this color transparent within the image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -white-point point   chomaticity white point\n"
+           "\n"
+           "In addition to those listed above, you can specify these standard X\n"
+           "resources as command line options:  -background, -bordercolor,\n"
+           "-borderwidth, -font, -mattecolor, or -title\n"
+           "\nBy default, the image format of `file' is determined by its magic\n"
+           "number.  To specify a particular image format, precede the filename\n"
+           "with an image format name and a colon (i.e. ps:image) or specify the\n"
+           "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n"
+           "'-' for standard input or output.\n",
+           GetClientName());
 }
 
 /*
@@ -16151,82 +16016,71 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
 #if defined(HasX11)
 static void ImportUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-border              include image borders in the output image",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compress type       image compression type",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-descend             obtain image by descending window hierarchy",
-      "-display server      X server to contact",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-frame               include window manager frame",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-geometry geometry   perferred size or location of the image",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-help                print program options",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color ",
-      "-page geometry       size and location of an image canvas",
-      "-pause value         seconds delay between snapshots",
-      "-pointsize value     font point size",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-resize geometry     resize the image",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scene value         image scene number",
-      "-screen              select image from root window",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-silent              operate silently, i.e. don't ring any bells ",
-      "-snaps value         number of screen snapshots",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           select window with this id or name",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] [ file ]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-  "\nBy default, 'file' is written in the MIFF image format.  To\n");
-  (void) printf(
-    "specify a particular image format, precede the filename with an image\n");
-  (void) printf(
-    "format name and a colon (i.e. ps:image) or specify the image type as\n");
-  (void) printf(
-    "the filename suffix (i.e. image.ps).  Specify 'file' as '-' for\n");
-  (void) printf("standard input or output.\n");
+  (void)
+    printf("Usage: %.1024s [options ...] [ file ]\n"
+           "\n"
+           "Where options include:\n"
+           "  -adjoin              join images into a single multi-image file\n"
+           "  -border              include image borders in the output image\n"
+           "  -colors value        preferred number of colors in the image\n"
+           "  -colorspace type     alternate image colorspace\n"
+           "  -comment string      annotate image with comment\n"
+           "  -compress type       image compression type\n"
+           "  -crop geometry       preferred size and location of the cropped image\n"
+           "  -debug events        display copious debugging information\n"
+           "  -define values       Coder/decoder specific options\n"
+           "  -delay value         display the next image after pausing\n"
+           "  -density geometry    horizontal and vertical density of the image\n"
+           "  -depth value         image depth\n"
+           "  -descend             obtain image by descending window hierarchy\n"
+           "  -display server      X server to contact\n"
+           "  -dispose method      Undefined, None, Background, Previous\n"
+           "  -dither              apply Floyd/Steinberg error diffusion to image\n"
+           "  -frame               include window manager frame\n"
+           "  -encoding type       text encoding type\n"
+           "  -endian type         multibyte word order (LSB, MSB, or Native)\n"
+           "  -geometry geometry   perferred size or location of the image\n"
+           "  -interlace type      None, Line, Plane, or Partition\n"
+           "  -help                print program options\n"
+           "  -label name          assign a label to an image\n"
+           "  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or\n"
+           "                       Threads resource limit\n"
+           "  -log format          format of debugging information\n"
+           "  -monitor             show progress indication\n"
+           "  -monochrome          transform image to black and white\n"
+           "  -negate              replace every pixel with its complementary color \n"
+           "  -page geometry       size and location of an image canvas\n"
+           "  -pause value         seconds delay between snapshots\n"
+           "  -pointsize value     font point size\n"
+           "  -quality value       JPEG/MIFF/PNG compression level\n"
+           "  -resize geometry     resize the image\n"
+           "  -rotate degrees      apply Paeth rotation to the image\n"
+           "  -sampling-factor HxV[,...]\n"
+           "                       horizontal and vertical sampling factors\n"
+           "  -scene value         image scene number\n"
+           "  -screen              select image from root window\n"
+           "  -set attribute value set image attribute\n"
+           "  +set attribute       unset image attribute\n"
+           "  -silent              operate silently, i.e. don't ring any bells \n"
+           "  -snaps value         number of screen snapshots\n"
+           "  -thumbnail geometry  resize the image (optimized for thumbnails)\n"
+           "  -transparent color   make this color transparent within the image\n"
+           "  -treedepth value     color tree depth\n"
+           "  -trim                trim image edges\n"
+           "  -type type           image type\n"
+           "  -verbose             print detailed information about the image\n"
+           "  -version             print version information\n"
+           "  -virtual-pixel method\n"
+           "                       Constant, Edge, Mirror, or Tile\n"
+           "  -window id           select window with this id or name\n"
+           "\n"
+           "By default, 'file' is written in the MIFF image format.  To\n"
+           "specify a particular image format, precede the filename with an image\n"
+           "format name and a colon (i.e. ps:image) or specify the image type as\n"
+           "the filename suffix (i.e. image.ps).  Specify 'file' as '-' for\n"
+           "standard input or output.\n",
+           GetClientName());
 }
 #endif /* HasX11 */
 
@@ -16722,8 +16576,9 @@ static void SetUsage(void)
 static void TimeUsage(void)
 {
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s command ... \n",GetClientName());
-  (void) printf("where 'command' is some other GraphicsMagick command\n");
+  (void) printf("Usage: %.1024s command ... \n"
+                "where 'command' is some other GraphicsMagick command\n",
+                GetClientName());
 }
 
 /*
@@ -17380,7 +17235,7 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
     /*
       Support traditional alternate names for GraphicsMagick subcommands.
     */
-    static const char *command_names [] =
+    static const char command_names[][10] =
       {
         "animate",
         "compare",
@@ -17391,19 +17246,18 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
         "identify",
         "import",
         "mogrify",
-        "montage",
-        NULL
+        "montage"
       };
 
     unsigned int
       i;
 
     GetPathComponent(argv[0],BasePath,command);
-    for (i=0; command_names[i]; i++)
+    for (i=0; i < ArraySize(command_names); i++)
       if (LocaleCompare(command,command_names[i]) == 0)
         break;
 
-    if (command_names[i])
+    if (i < ArraySize(command_names))
       {
         /*
           Set command name to alternate name.
