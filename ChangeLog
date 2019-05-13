@@ -1,3 +1,8 @@
+2019-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c: Fix compilation problem when HasX11 is not
+	defined.
+
 2019-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c: Make more data const.

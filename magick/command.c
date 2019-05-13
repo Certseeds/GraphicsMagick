@@ -199,41 +199,41 @@ static const struct
     {
 #if defined(HasX11)
       { "animate", "animate a sequence of images",
-        AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode }
+        AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
 #endif
-      ,{ "batch", "issue multiple commands in interactive or batch mode",
-         0, BatchUsage, 1, SingleMode }
-      ,{ "benchmark", "benchmark one of the other commands",
-         BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode }
-      ,{ "compare", "compare two images",
-         CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode }
-      ,{ "composite", "composite images together",
-         CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode }
-      ,{ "conjure", "execute a Magick Scripting Language (MSL) XML script",
-         ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode }
-      ,{ "convert", "convert an image or sequence of images",
-         ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode }
+      { "batch", "issue multiple commands in interactive or batch mode",
+         0, BatchUsage, 1, SingleMode },
+      { "benchmark", "benchmark one of the other commands",
+         BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
+      { "compare", "compare two images",
+         CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
+      { "composite", "composite images together",
+         CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
+      { "conjure", "execute a Magick Scripting Language (MSL) XML script",
+         ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
+      { "convert", "convert an image or sequence of images",
+         ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
 #if defined(HasX11)
-      ,{ "display", "display an image on a workstation running X",
-         DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode }
+      { "display", "display an image on a workstation running X",
+         DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
 #endif
-      ,{ "help", "obtain usage message for named command",
-         HelpCommand, GMUsage, 0, SingleMode | BatchMode }
-      ,{ "identify", "describe an image or image sequence",
-         IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode }
+      { "help", "obtain usage message for named command",
+         HelpCommand, GMUsage, 0, SingleMode | BatchMode },
+      { "identify", "describe an image or image sequence",
+         IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
 #if defined(HasX11)
-      ,{ "import", "capture an application or X server screen",
-         ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode }
+      { "import", "capture an application or X server screen",
+         ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
 #endif
-      ,{ "mogrify", "transform an image or sequence of images",
-         MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode }
-      ,{ "montage", "create a composite image (in a grid) from separate images",
-         MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode }
-      ,{ "set", "change batch mode option",
-         SetCommand, SetUsage, 1, BatchMode }
-      ,{ "time", "time one of the other commands",
-         TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode }
-      ,{ "version", "obtain release version",
+      { "mogrify", "transform an image or sequence of images",
+         MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
+      { "montage", "create a composite image (in a grid) from separate images",
+         MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
+      { "set", "change batch mode option",
+         SetCommand, SetUsage, 1, BatchMode },
+      { "time", "time one of the other commands",
+         TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
+      { "version", "obtain release version",
          VersionCommand, 0, 0, SingleMode | BatchMode }
 #if defined(MSWINDOWS)
       ,{ "register", "register this application as the source of messages",
