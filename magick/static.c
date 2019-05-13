@@ -47,11 +47,12 @@
 
 /*
   This list must be ordered by 'name' in an ascending order based on
-  strcmp().
+  strcmp(). This list will always be initialized data due to function
+  address resolution.
 */
 static const struct
 {
-  const char name[10];
+  const char *name;
   void (*register_fn)(void);
   void (*unregister_fn)(void);
   const unsigned char name_length;

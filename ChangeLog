@@ -1,5 +1,18 @@
 2019-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/static.c: Revert to previous 'name' storage. Callback
+	functions in structure block being properly const.
+
+	* coders/xpm.c: Make more data const.
+
+	* coders/pnm.c: Make more data const.
+
+	* coders/palm.c: Make more data const.
+
+	* coders/meta.c: Make more data const.
+
+	* coders/dcraw.c: Make more data const.
+
 	* magick/command.c: Fix compilation problem when HasX11 is not
 	defined.
 

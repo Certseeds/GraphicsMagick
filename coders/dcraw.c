@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2008 - 2012 GraphicsMagick Group
+% Copyright (C) 2008-2019 GraphicsMagick Group
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -120,8 +120,8 @@ static Image *ReadDCRAWImage(const ImageInfo *image_info,
 */
 static const struct
 {
-  const char *id;
-  const char *description;
+  const char id[4];
+  const char description[31];
 } dcraw_formats[] =
   {
     { "3FR", "Hasselblad Photo RAW" }, /* Hasselblad CFV/H3D39II */
@@ -141,9 +141,9 @@ static const struct
     { "RAF", "Fuji Photo RAW" }, /* Fuji FinePix * */
     { "SR2", "Sony Photo RAW" }, /* Sony R1 */
     { "SRF", "Sony Photo RAW" }, /* Sony DSC-F828, Sony DSC-R1 */
-    { "X3F", "Foveon X3 (Sigma/Polaroid) RAW" }, /* Sigma SD9/SD10/SD14 / Polaroid X530 */
-    { NULL, NULL }
+    { "X3F", "Foveon X3 (Sigma/Polaroid) RAW" } /* Sigma SD9/SD10/SD14 / Polaroid X530 */
   };
+
 ModuleExport void RegisterDCRAWImage(void)
 {
   unsigned int
@@ -152,7 +152,7 @@ ModuleExport void RegisterDCRAWImage(void)
   MagickInfo
     *entry;
 
-  for (i=0; dcraw_formats[i].id != NULL; i++)
+  for (i=0; i < ArraySize(dcraw_formats); i++)
     {
       entry=SetMagickInfo(dcraw_formats[i].id);
       entry->decoder=(DecoderHandler) ReadDCRAWImage;
@@ -187,6 +187,6 @@ ModuleExport void UnregisterDCRAWImage(void)
   unsigned int
     i;
 
-  for (i=0; dcraw_formats[i].id != NULL; i++)
+  for (i=0; i < ArraySize(dcraw_formats); i++)
     (void) UnregisterMagickInfo(dcraw_formats[i].id);
 }
