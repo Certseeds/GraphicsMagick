@@ -577,7 +577,7 @@ ModuleExport void UnregisterPSImage(void)
   bp=AppendHexVal(bp,Min(length,0xff)); \
 }
 
-static char* const hexvals[] =
+static char const hexvals[][3] =
   {
     "00","01","02","03","04","05","06","07","08","09","0A","0B",
     "0C","0D","0E","0F","10","11","12","13","14","15","16","17",
@@ -600,7 +600,7 @@ static char* const hexvals[] =
     "D8","D9","DA","DB","DC","DD","DE","DF","E0","E1","E2","E3",
     "E4","E5","E6","E7","E8","E9","EA","EB","EC","ED","EE","EF",
     "F0","F1","F2","F3","F4","F5","F6","F7","F8","F9","FA","FB",
-    "FC","FD","FE","FF",NULL
+    "FC","FD","FE","FF"
   };
 static inline char *AppendHexVal(char *q,unsigned char val)
 {
