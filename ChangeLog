@@ -1,5 +1,9 @@
 2019-05-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c: Make more data const.
+
+	* coders/wmf.c: Make more data const.
+
 	* coders/ps.c (WritePSImage): Make more data const.
 
 	* coders/ps2.c (WritePS2Image): Make more data const.

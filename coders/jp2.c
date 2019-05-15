@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -87,7 +87,7 @@ static unsigned int
 #endif
 
 static MagickBool jasper_initialized=MagickFalse;
-static const char * const jasper_options[] =
+static const char jasper_options[][11] =
   {
     "imgareatlx",
     "imgareatly",
@@ -113,8 +113,7 @@ static const char * const jasper_options[] =
     "vcausal",
     "pterm",
     "resetprob",
-    "numgbits",
-    NULL
+    "numgbits"
   };
 
 
@@ -1133,17 +1132,17 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     Support passing Jasper options.
   */
   {
-    const char
-      * const * option_name;
+    unsigned int
+      i;
 
-    for (option_name = jasper_options; *option_name != NULL; option_name++)
+    for (i=0; i < ArraySize(jasper_options); i++)
       {
         const char
           *value;
 
-        if ((value=AccessDefinition(image_info,"jp2",*option_name)) != NULL)
+        if ((value=AccessDefinition(image_info,"jp2",jasper_options[i])) != NULL)
           {
-            if(LocaleCompare(*option_name,"rate") == 0)
+            if(LocaleCompare(jasper_options[i],"rate") == 0)
               rate_specified=True;
             /*
               It is documented that a rate specification of 1.0 should
@@ -1158,7 +1157,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
               rate=atof(value);
               if (rate < 1.0-MagickEpsilon)
                 {
-                  FormatString(option_keyval,"%s=%.1024s ",*option_name,value);
+                  FormatString(option_keyval,"%s=%.1024s ",jasper_options[i],value);
                   ConcatenateString(&options,option_keyval);
                 }
             }
