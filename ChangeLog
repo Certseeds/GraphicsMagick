@@ -1,3 +1,7 @@
+2019-05-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/ps2.c (WritePS2Image): Make more data const.
+
 2019-05-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c: Revert to previous 'name' storage. Callback
