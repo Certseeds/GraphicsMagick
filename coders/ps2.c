@@ -571,15 +571,14 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
             case FaxCompression: ps_compress="ASCII85Decode"; break;
             default: ps_compress="RunLengthDecode"; break;
           }
-          FormatString(buffer,
-                       "%%%%BeginProlog\n"
-                       "%%\n"
-                       "%% Display a color image.  The image is displayed in color on\n"
-                       "%% Postscript viewers or printers that support color, otherwise\n"
-                       "%% it is displayed as grayscale.\n"
-                       "%%\n"
+          (void) WriteBlobString(image,
+                       "%%BeginProlog\n"
+                       "%\n"
+                       "% Display a color image.  The image is displayed in color on\n"
+                       "% Postscript viewers or printers that support color, otherwise\n"
+                       "% it is displayed as grayscale.\n"
+                       "%\n"
                        "/DirectClassImage\n");
-          (void) WriteBlobString(image,buffer);
           FormatString(buffer,
                        "{\n"
                        "  %%\n"
@@ -687,23 +686,23 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
                        "\n",
                        ps_compress, ps_compress);
           (void) WriteBlobString(image,buffer);
-          FormatString(buffer,
+          (void) WriteBlobString(image,
                        "/DisplayImage\n"
                        "{\n"
-                       "  %%\n"
-                       "  %% Display a DirectClass or PseudoClass image.\n"
-                       "  %%\n"
-                       "  %% Parameters:\n"
-                       "  %%   x & y translation.\n"
-                       "  %%   x & y scale.\n"
-                       "  %%   label pointsize.\n"
-                       "  %%   image label.\n"
-                       "  %%   image columns & rows.\n"
-                       "  %%   class: 0-DirectClass or 1-PseudoClass.\n"
-                       "  %%   colorspace: 0-RGB or 1-CMYK.\n"
-                       "  %%   compression: 0-RLECompression or 1-NoCompression.\n"
-                       "  %%   hex color packets.\n"
-                       "  %%\n"
+                       "  %\n"
+                       "  % Display a DirectClass or PseudoClass image.\n"
+                       "  %\n"
+                       "  % Parameters:\n"
+                       "  %   x & y translation.\n"
+                       "  %   x & y scale.\n"
+                       "  %   label pointsize.\n"
+                       "  %   image label.\n"
+                       "  %   image columns & rows.\n"
+                       "  %   class: 0-DirectClass or 1-PseudoClass.\n"
+                       "  %   colorspace: 0-RGB or 1-CMYK.\n"
+                       "  %   compression: 0-RLECompression or 1-NoCompression.\n"
+                       "  %   hex color packets.\n"
+                       "  %\n"
                        "  gsave\n"
                        "  /buffer 512 string def\n"
                        "  /pixel_stream currentfile def\n"
@@ -719,7 +718,6 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
                        "  token pop /pointsize exch def pop\n"
                        "  /Helvetica findfont pointsize scalefont setfont\n"
                );
-          (void) WriteBlobString(image,buffer);
         }
         attribute=GetImageAttribute(image,"label");
         if (attribute != (const ImageAttribute *) NULL)
