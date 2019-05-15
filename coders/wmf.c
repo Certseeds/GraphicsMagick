@@ -2116,7 +2116,15 @@ static float lite_font_stringwidth( wmfAPI* API, wmfFont* font, char* str)
 /* Map font (similar to wmf_ipa_font_map) */
 
 /* Mappings to Postscript fonts: family, normal, italic, bold, bolditalic */
-static const wmfFontMap WMFFontMap[] = {
+static const struct
+{
+  char name[17];       /* wmf font name */
+
+  char normal[12];     /* postscript font names */
+  char italic[18];
+  char bold[15];
+  char bolditalic[22];
+} WMFFontMap[] = {
   { "Courier",            "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
   { "Helvetica",          "Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
   { "Modern",             "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
@@ -2124,22 +2132,24 @@ static const wmfFontMap WMFFontMap[] = {
   { "News Gothic",        "Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
   { "Symbol",             "Symbol",      "Symbol",            "Symbol",         "Symbol"                },
   { "System",             "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
-  { "Times",              "Times-Roman", "Times-Italic",      "Times-Bold",     "Times-BoldItalic"      },
-  {  NULL,                NULL,           NULL,               NULL,              NULL                   }
+  { "Times",              "Times-Roman", "Times-Italic",      "Times-Bold",     "Times-BoldItalic"      }
 };
 
 /* Mapping between base name and Ghostscript family name */
-static const wmfMapping SubFontMap[] = {
-  { "Arial",      "Helvetica",  (FT_Encoding) 0 },
-  { "Courier",    "Courier",    (FT_Encoding) 0 },
-  { "Fixed",      "Courier",    (FT_Encoding) 0 },
-  { "Helvetica",  "Helvetica",  (FT_Encoding) 0 },
-  { "Sans",       "Helvetica",  (FT_Encoding) 0 },
-  { "Sym",        "Symbol",     (FT_Encoding) 0 },
-  { "Terminal",   "Courier",    (FT_Encoding) 0 },
-  { "Times",      "Times",      (FT_Encoding) 0 },
-  { "Wingdings",  "Symbol",     (FT_Encoding) 0 },
-  {  NULL,        NULL,         (FT_Encoding) 0 }
+static const struct
+{
+  char name[10];
+  char mapping[10];
+} SubFontMap[] = {
+  { "Arial",      "Helvetica" },
+  { "Courier",    "Courier" },
+  { "Fixed",      "Courier" },
+  { "Helvetica",  "Helvetica" },
+  { "Sans",       "Helvetica" },
+  { "Sym",        "Symbol" },
+  { "Terminal",   "Courier" },
+  { "Times",      "Times" },
+  { "Wingdings",  "Symbol" }
 };
 
 static void lite_font_map( wmfAPI* API, wmfFont* font)
@@ -2242,14 +2252,16 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
   /* Now let's try simple substitution mappings from WMFFontMap */
   if(!magick_font->ps_name)
     {
-      char
-        target[MaxTextExtent];
+      unsigned int
+        i;
 
       int
         target_weight = 400,
         want_italic = False,
-        want_bold = False,
-        i;
+        want_bold = False;
+
+      char
+        target[MaxTextExtent];
 
       if( WMF_FONT_WEIGHT(font) != 0 )
         target_weight = WMF_FONT_WEIGHT(font);
@@ -2264,7 +2276,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
         want_italic = True;
 
       (void) strcpy(target,"Times");
-      for( i=0; SubFontMap[i].name != NULL; i++ )
+      for( i=0; i < ArraySize(SubFontMap); i++ )
         {
           if(LocaleCompare(wmf_font_name, SubFontMap[i].name) == 0)
             {
@@ -2273,7 +2285,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
             }
         }
 
-      for( i=0; WMFFontMap[i].name != NULL; i++ )
+      for( i=0; i < ArraySize(WMFFontMap); i++ )
         {
           if(LocaleNCompare(WMFFontMap[i].name,target,strlen(WMFFontMap[i].name)) == 0)
             {
