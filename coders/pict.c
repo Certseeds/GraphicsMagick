@@ -697,8 +697,10 @@ static const char *lookup_string(const char *table, const size_t table_size, con
 %
 */
 
-static const unsigned char *ExpandBuffer(const unsigned char * restrict pixels,
-  unsigned long * restrict bytes_per_line,const unsigned int bits_per_pixel)
+static const unsigned char *ExpandBuffer(unsigned char *expand_buffer,
+                                         const unsigned char * restrict pixels,
+                                         unsigned long * restrict bytes_per_line,
+                                         const unsigned int bits_per_pixel)
 {
   register unsigned long
     i;
@@ -709,12 +711,8 @@ static const unsigned char *ExpandBuffer(const unsigned char * restrict pixels,
   register unsigned char
     *q;
 
-  /* FIXME: This is not thread safe! */
-  static unsigned char
-    scanline[8*256];
-
   p=pixels;
-  q=scanline;
+  q=expand_buffer;
   switch (bits_per_pixel)
   {
     case 8:
@@ -762,7 +760,7 @@ static const unsigned char *ExpandBuffer(const unsigned char * restrict pixels,
     default:
       break;
   }
-  return(scanline);
+  return(expand_buffer);
 }
 
 static unsigned char *DecodeImage(const ImageInfo *image_info,
@@ -788,6 +786,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     row_bytes;
 
   unsigned char
+    expand_buffer[8*256],
     *pixels = NULL,
     *scanline = NULL;
 
@@ -896,6 +895,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                      image->filename);
       goto decode_error_exit;
     }
+  (void) memset(expand_buffer,0,sizeof(expand_buffer));
   if (bytes_per_line < 8)
     {
       /*
@@ -911,7 +911,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                              image->filename);
               goto decode_error_exit;
             }
-          p=ExpandBuffer(scanline,&number_pixels,bits_per_pixel);
+          p=ExpandBuffer(expand_buffer,scanline,&number_pixels,bits_per_pixel);
           (void) memcpy(q,p,number_pixels);
         }
       MagickFreeMemory(scanline);
@@ -945,7 +945,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
           {
             length=(scanline[j] & 0xff)+1;
             number_pixels=length*bytes_per_pixel;
-            p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
+            p=ExpandBuffer(expand_buffer,scanline+j+1,&number_pixels,bits_per_pixel);
             if (j+number_pixels >= scanline_length)
               {
                 errno=0;
@@ -968,7 +968,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
           {
             length=((scanline[j]^0xff) & 0xff)+2;
             number_pixels=bytes_per_pixel;
-            p=ExpandBuffer(scanline+j+1,&number_pixels,bits_per_pixel);
+            p=ExpandBuffer(expand_buffer,scanline+j+1,&number_pixels,bits_per_pixel);
             for (i=0; i < length; i++)
               {
                 if ((q+number_pixels > pixels+allocated_pixels))
