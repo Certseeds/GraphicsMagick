@@ -602,10 +602,10 @@ static char const hexvals[][3] =
     "F0","F1","F2","F3","F4","F5","F6","F7","F8","F9","FA","FB",
     "FC","FD","FE","FF"
   };
-static inline char *AppendHexVal(char *q,unsigned char val)
+static inline char *AppendHexVal(char *q,const unsigned char val)
 {
-  *q++=*(hexvals[val]);
-  *q++=*(hexvals[val]+1);
+  *q++=*(hexvals[0xff & val]);
+  *q++=*(hexvals[0xff & val]+1);
   return q;
 }
 static inline char* AppendHexTriplet(char *q,
