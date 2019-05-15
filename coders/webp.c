@@ -367,7 +367,7 @@ ModuleExport void RegisterWEBPImage(void)
     description[] = "WebP Image Format";
 
   static char
-    version[MaxTextExtent];
+    version[36];
 
   MagickInfo
     *entry;
@@ -401,8 +401,9 @@ ModuleExport void RegisterWEBPImage(void)
   webp_major=(web_encoder_version >> 16) & 0xff;
   webp_minor=(web_encoder_version >> 8) & 0xff;
   webp_revision=web_encoder_version & 0xff;
-  FormatString(version, "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
-               webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
+  (void) snprintf(version, sizeof(version),
+                  "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
+                  webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
 
   entry=SetMagickInfo("WEBP");
 #if defined(HasWEBP)
