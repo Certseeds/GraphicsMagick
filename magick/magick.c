@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -688,7 +688,7 @@ MagickSignalHandlerMessage(const int signo, const char *subtext)
   */
   static const struct {
     const int signo;
-    const char *name;
+    const char name[8];
     const char *descr;
   } signal_descr[] = {
 #if defined(SIGHUP)
@@ -1450,21 +1450,19 @@ ListModuleMap(FILE *file,ExceptionInfo *exception)
 MagickExport char *
 MagickToMime(const char *magick)
 {
-  typedef struct _MediaType
+   char
+     media[MaxTextExtent];
+
+  unsigned int
+    i;
+
+  static const struct
   {
     const char
-      *magick,
+      magick[6],
       *media;
-  } MediaType;
-
-  char
-    media[MaxTextExtent];
-
-  MediaType
-    *entry;
-
-  static MediaType
-    MediaTypes[] =
+  }
+  MediaTypes[] =
     {
       { "avi",   "video/avi" },
       { "cgm",   "image/cgm;Version=4;ProfileId=WebCGM" }, /* W3 WebCGM */
@@ -1492,13 +1490,12 @@ MagickToMime(const char *magick)
       { "svg",   "image/svg+xml" },
       { "tif",   "image/tiff" },
       { "tiff",  "image/tiff" },
-      { "wbmp",  "image/vnd.wap.wbmp" },
-      { (char *) NULL, (char *) NULL }
+      { "wbmp",  "image/vnd.wap.wbmp" }
     };
 
-  for (entry=MediaTypes; entry->magick != (char *) NULL; entry++)
-    if (LocaleCompare(entry->magick,magick) == 0)
-      return(AllocateString(entry->media));
+  for (i=0; i < ArraySize(MediaTypes); i++)
+    if (LocaleCompare(MediaTypes[i].magick,magick) == 0)
+      return(AllocateString(MediaTypes[i].media));
   FormatString(media,"image/x-%.1024s",magick);
   LocaleLower(media+8);
   return(AllocateString(media));

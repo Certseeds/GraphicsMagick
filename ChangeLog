@@ -1,5 +1,9 @@
 2019-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/magick.c: Make more data const.
+
+	* magick/type.c (GetTypeInfoByFamily): Make more data const.
+
 	* magick/unix_port.c (MagickGetMMUPageSize): Decrease initialized
 	data.
 

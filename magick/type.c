@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -54,8 +54,8 @@
 /*
   Declare type map.
 */
-static char
-  *TypeMap = (char *)
+static const char
+  TypeMap[] =
     "<?xml version=\"1.0\"?>"
     "<typemap>"
     "  <type stealth=\"True\" />"
@@ -268,39 +268,36 @@ MagickExport const TypeInfo *GetTypeInfoByFamily(const char *family,
   const StyleType style,const StretchType stretch,const unsigned long weight,
   ExceptionInfo *exception)
 {
-  typedef struct _Fontmap
-  {
-    char
-      *name,
-      *substitute;
-  } Fontmap;
-
   const TypeInfo
     *type_info;
 
-  long
+  int
     range;
 
   register const TypeInfo
     *p;
 
-  register long
+  register unsigned int
     i;
 
-  static Fontmap
-    fontmap[] =
+  static const struct
+  {
+    char
+      name[17],
+      substitute[10];
+  }
+  fontmap[] =
     {
-      { (char *) "fixed", (char *) "courier" },
-      { (char *) "modern",(char *) "courier" },
-      { (char *) "monotype corsiva", (char *) "courier" },
-      { (char *) "news gothic", (char *) "helvetica" },
-      { (char *) "system", (char *) "courier" },
-      { (char *) "terminal", (char *) "courier" },
-      { (char *) "wingdings", (char *) "symbol" },
-      { (char *) NULL, (char *) NULL }
+      { "fixed", "courier" },
+      { "modern","courier" },
+      { "monotype corsiva", "courier" },
+      { "news gothic", "helvetica" },
+      { "system", "courier" },
+      { "terminal", "courier" },
+      { "wingdings", "symbol" }
     };
 
-  unsigned long
+  unsigned int
     max_score,
     score;
 
@@ -359,15 +356,15 @@ MagickExport const TypeInfo *GetTypeInfoByFamily(const char *family,
     if (weight == 0)
       score+=16;
     else
-      score+=(16*(800-((long) Max(Min(weight,900),p->weight)-
-        (long) Min(Min(weight,900),p->weight))))/800;
+      score+=(16*(800-((int) Max(Min(weight,900),p->weight)-
+        (int) Min(Min(weight,900),p->weight))))/800;
     if (stretch == AnyStretch)
       score+=8;
     else
       {
-        range=(long) UltraExpandedStretch-(long) NormalStretch;
-        score+=(8*(range-((long) Max(stretch,p->stretch)-
-          (long) Min(stretch,p->stretch))))/range;
+        range=(int) UltraExpandedStretch-(int) NormalStretch;
+        score+=(8*(range-((int) Max(stretch,p->stretch)-
+          (int) Min(stretch,p->stretch))))/range;
       }
     if (score > max_score)
       {
@@ -380,7 +377,7 @@ MagickExport const TypeInfo *GetTypeInfoByFamily(const char *family,
   /*
     Check for table-based substitution match.
   */
-  for (i=0; fontmap[i].name != (char *) NULL; i++)
+  for (i=0; i < ArraySize(fontmap); i++)
   {
     if (family == (const char *) NULL)
       {
