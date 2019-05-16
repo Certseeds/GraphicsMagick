@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -2188,13 +2188,13 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
   static const struct
   {
     char
-      *name;
+      name[11];
 
-    size_t
+    unsigned char
        name_length;
 
     char
-       *geometry;
+       geometry[10];
   }
   PageSizes[] =
     {
@@ -2265,7 +2265,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
       PAGE_SIZE("LETTERSMALL",  "612x792"),
       PAGE_SIZE("QUARTO",  "610x780"),
       PAGE_SIZE("STATEMENT",  "396x612"),
-      PAGE_SIZE("TABLOID",  "792x1224"),
+      PAGE_SIZE("TABLOID",  "792x1224")
     };
 
   char
@@ -2276,7 +2276,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
 
   assert(page_geometry != (char *) NULL);
   strlcpy(page,page_geometry,MaxTextExtent);
-  for (i=0; i < sizeof(PageSizes)/sizeof(PageSizes[0]); i++)
+  for (i=0; i < ArraySize(PageSizes); i++)
     if (LocaleNCompare(PageSizes[i].name,page_geometry,
                        PageSizes[i].name_length) == 0)
       {

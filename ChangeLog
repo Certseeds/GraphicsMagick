@@ -1,5 +1,7 @@
 2019-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/utility.c (GetPageGeometry): Make more data const.
+
 	* coders/pdf.c (WritePDFImage): Allocate working buffer on stack
 	and pass as argument to EscapeParenthesis() to eliminate a thread
 	safety problem and also reduce BSS size.
