@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2008 - 2018 GraphicsMagick Group
+% Copyright (C) 2008-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -435,7 +435,7 @@ MagickExport CompositeOperator StringToCompositeOperator(const char *option)
   static const struct
   {
     const CompositeOperator op;
-    const char *str;
+    const char str[12];
   } composite_operators[] =
       {
         { UndefinedCompositeOp, "Undefined" },
