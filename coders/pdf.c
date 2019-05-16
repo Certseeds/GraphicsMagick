@@ -566,7 +566,7 @@ ModuleExport void UnregisterPDFImage(void)
 %
 */
 
-static char *EscapeParenthesis(const char *text)
+static char *EscapeParenthesis(const char *text, char *paren_buffer)
 {
   register char
     *p;
@@ -574,15 +574,11 @@ static char *EscapeParenthesis(const char *text)
   register long
     i;
 
-  /* FIXME: use of a static buffer here makes this function not thread safe! */
-  static char
-    buffer[MaxTextExtent];
-
   unsigned long
     escapes;
 
   escapes=0;
-  p=buffer;
+  p=paren_buffer;
   for (i=0; i < (long) Min(strlen(text),(MaxTextExtent-escapes-1)); i++)
   {
     if ((text[i] == '(') || (text[i] == ')'))
@@ -593,7 +589,7 @@ static char *EscapeParenthesis(const char *text)
     *p++=text[i];
   }
   *p='\0';
-  return(buffer);
+  return(paren_buffer);
 }
 
 #define ThrowPDFWriterException(code_,reason_,image_) \
@@ -619,7 +615,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
     date[MaxTextExtent],
     density[MaxTextExtent],
     **labels,
-    page_geometry[MaxTextExtent];
+    page_geometry[MaxTextExtent],
+    paren_buffer[MaxTextExtent];
 
   unsigned char
     *fax_blob=(unsigned char *) NULL;
@@ -727,14 +724,16 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                time_meridian->tm_min,time_meridian->tm_sec);
   GetPathComponent(image->filename,BasePath,basename);
 
-  FormatString(buffer,"/Title (%.1024s)\n",EscapeParenthesis(basename));
+  FormatString(buffer,"/Title (%.1024s)\n",
+               EscapeParenthesis(basename,paren_buffer));
   (void) WriteBlobString(image,buffer);
   FormatString(buffer,"/CreationDate (%.1024s)\n",date);
   (void) WriteBlobString(image,buffer);
   FormatString(buffer,"/ModDate (%.1024s)\n",date);
   (void) WriteBlobString(image,buffer);
   FormatString(buffer,"/Producer (%.1024s)\n",
-               EscapeParenthesis(GetMagickVersion((unsigned long *) NULL)));
+               EscapeParenthesis(GetMagickVersion((unsigned long *) NULL),
+                                 paren_buffer));
   (void) WriteBlobString(image,buffer);
   (void) WriteBlobString(image,">>\n");
   (void) WriteBlobString(image,"endobj\n");

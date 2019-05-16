@@ -1,5 +1,9 @@
 2019-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdf.c (WritePDFImage): Allocate working buffer on stack
+	and pass as argument to EscapeParenthesis() to eliminate a thread
+	safety problem and also reduce BSS size.
+
 	* coders/webp.c (RegisterWEBPImage): Fix compiler warning.
 
 	* coders/jbig.c (RegisterJBIGImage): Make more data const.
