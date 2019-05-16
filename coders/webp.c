@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013 - 2019 GraphicsMagick Group
+% Copyright (C) 2013-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -367,7 +367,7 @@ ModuleExport void RegisterWEBPImage(void)
     description[] = "WebP Image Format";
 
   static char
-    version[36];
+    version[41];
 
   MagickInfo
     *entry;

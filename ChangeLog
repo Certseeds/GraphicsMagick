@@ -1,5 +1,9 @@
 2019-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/webp.c (RegisterWEBPImage): Fix compiler warning.
+
+	* coders/jbig.c (RegisterJBIGImage): Make more data const.
+
 	* coders/pict.c (DecodeImage): Allocate output buffer used by
 	ExpandBuffer() on the stack rather than as static data private to
 	ExpandBuffer().  Eliminates a thread safety problem and also
