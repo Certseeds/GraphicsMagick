@@ -2822,7 +2822,7 @@ static const DicomInfo
   };
 
 #if DESCRIPION_STR
-const char dicom_descriptions[] =
+static const char dicom_descriptions[] =
     "Group Length\0" /* 0, 0x0000, 0x0000 */
     "Command Length to End\0" /* 1, 0x0000, 0x0001 */
     "Affected SOP Class UID\0" /* 2, 0x0000, 0x0002 */

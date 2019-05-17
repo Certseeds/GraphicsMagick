@@ -57,9 +57,9 @@
 /*
   Static variables.
 */
-MagickFreeFunc    FreeFunc    = free;
-MagickMallocFunc  MallocFunc  = malloc;
-MagickReallocFunc ReallocFunc = realloc;
+static MagickFreeFunc    FreeFunc    = free;
+static MagickMallocFunc  MallocFunc  = malloc;
+static MagickReallocFunc ReallocFunc = realloc;
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
