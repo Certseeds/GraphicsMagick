@@ -2788,7 +2788,7 @@ ModuleExport void RegisterWMFImage(void)
     *entry;
 
   static const char
-    *WMFNote =
+    WMFNote[] =
     {
       "Use density to adjust scale (default 72DPI). Use background or\n"
       "texture to apply a background color or texture under the image."

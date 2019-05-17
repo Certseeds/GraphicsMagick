@@ -1,3 +1,21 @@
+2019-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/tempfile.c: Make more data const.
+
+	* magick/signature.c: Make more data const.
+
+	* magick/quantize.c: Make more data const.
+
+	* magick/attribute.c: Make more data const.
+
+	* coders/png.c: Make more data const.
+
+	* coders/mpeg.c: Make more data const.
+
+	* coders/wmf.c: Make more data const.
+
+	* coders/tile.c: Make more data const.
+
 2019-05-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/enum_strings.c: Make more data const.

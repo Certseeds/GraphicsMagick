@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -321,7 +321,7 @@ MagickExport void TransformSignature(SignatureInfo *signature_info)
 #define Suma0(x)  (Rot32(x,2)^Rot32(x,13)^Rot32(x,22))
 #define Suma1(x)  (Rot32(x,6)^Rot32(x,11)^Rot32(x,25))
 
-  static unsigned long
+  static const unsigned long
     K[64] =
     {
       0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL, 0x3956c25bUL,

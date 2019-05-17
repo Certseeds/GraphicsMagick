@@ -1453,7 +1453,7 @@ EXIFFormatToDescription(unsigned int f)
   return description;
 }
 
-static unsigned int
+static const unsigned int
   format_bytes[] =
   {
     0,

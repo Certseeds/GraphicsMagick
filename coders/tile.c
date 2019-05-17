@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -152,7 +152,7 @@ ModuleExport void RegisterTILEImage(void)
     *entry;
 
   static const char
-    *TILENote=
+    TILENote[]=
     {
       "Use the syntax \"-size WIDTHxHEIGHT TILE:imagename\" to tile the\n"
       "specified tile image over a canvas image of size WIDTHxHEIGHT."

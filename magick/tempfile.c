@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -238,26 +238,18 @@ MagickExport MagickPassFail AcquireTemporaryFileName(char *filename)
 */
 MagickExport int AcquireTemporaryFileDescriptor(char *filename)
 {
-  static const char *env_strings[] =
+  static const char env_strings[][14] =
     {
-      "MAGICK_TMPDIR",
+      "MAGICK_TMPDIR"
 #if defined(POSIX)
-      "TMPDIR",
+      ,"TMPDIR",
 #endif /* defined(POSIX) */
 #if defined(MSWINDOWS) || defined(__CYGWIN__)
-      "TMP",
-      "TEMP",
+      ,"TMP"
+      ,"TEMP"
 #endif
-      NULL
     };
 
-  static const char *fixed_strings[] =
-    {
-#if defined(P_tmpdir)
-      P_tmpdir,
-#endif
-      NULL
-    };
 
   char
     tempdir[MaxTextExtent];
@@ -272,16 +264,16 @@ MagickExport int AcquireTemporaryFileDescriptor(char *filename)
   filename[0]='\0';
   tempdir[0]='\0';
 
-  for (i=0; i < sizeof(env_strings)/sizeof(env_strings[0]); i++)
+  for (i=0; i < ArraySize(env_strings); i++)
     {
       const char
         *env;
 
-      if (env_strings[i] == NULL)
-        break;
       if ((env=getenv(env_strings[i])) != NULL)
         {
           const size_t copy_len = sizeof(tempdir)-16;
+          if (env_strings[i][0] == '\0')
+            break;
           if (strlcpy(tempdir,env,copy_len) >= copy_len)
             tempdir[0]='\0';
           if ((tempdir[0] != '\0') &&
@@ -292,21 +284,17 @@ MagickExport int AcquireTemporaryFileDescriptor(char *filename)
         }
     }
 
+#if defined(P_tmpdir)
   if (tempdir[0] == '\0')
-    for (i=0; i < sizeof(fixed_strings)/sizeof(fixed_strings[0]); i++)
-      {
-        const size_t copy_len = sizeof(tempdir)-16;
-
-        if (fixed_strings[i] == NULL)
-          break;
-        if (strlcpy(tempdir,fixed_strings[i],copy_len) >= copy_len)
-          tempdir[0]='\0';
-        if ((tempdir[0] != '\0') &&
-            !ValidateTemporaryFileDirectory(tempdir))
-          tempdir[0]='\0';
-        if (tempdir[0] != '\0')
-          break;
-      }
+    {
+      const size_t copy_len = sizeof(tempdir)-16;
+      if (strlcpy(tempdir,P_tmpdir,copy_len) >= copy_len)
+        tempdir[0]='\0';
+      if ((tempdir[0] != '\0') &&
+          !ValidateTemporaryFileDirectory(tempdir))
+        tempdir[0]='\0';
+    }
+#endif
 
   if (tempdir[0] != '\0')
     {

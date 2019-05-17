@@ -6408,19 +6408,19 @@ ModuleExport void RegisterPNGImage(void)
     *entry;
 
   static const char
-    *PNGNote=
+    PNGNote[]=
     {
       "See http://www.libpng.org/ for information on PNG.."
     };
 
   static const char
-    *JNGNote=
+    JNGNote[]=
     {
       "See http://www.libpng.org/pub/mng/ for information on JNG."
     };
 
   static const char
-    *MNGNote=
+    MNGNote[]=
     {
       "See http://www.libpng.org/pub/mng/ for information on MNG."
     };
