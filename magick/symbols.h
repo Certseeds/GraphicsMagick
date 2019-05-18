@@ -326,7 +326,6 @@
 #define FormatString GmFormatString
 #define FormatStringList GmFormatStringList
 #define FrameImage GmFrameImage
-#define FreeFunc GmFreeFunc
 #define FuzzyColorMatch GmFuzzyColorMatch
 #define GammaImage GmGammaImage
 #define GaussianBlurImage GmGaussianBlurImage
@@ -692,13 +691,13 @@
 #define MagickXSetWindows GmMagickXSetWindows
 #define MagickXSignalHandler GmMagickXSignalHandler
 #define MagickXTextViewWidget GmMagickXTextViewWidget
+#define MagickXTextViewWidgetNDL GmMagickXTextViewWidgetNDL
 #define MagickXUserPreferences GmMagickXUserPreferences
 #define MagickXWarning GmMagickXWarning
 #define MagickXWindowByID GmMagickXWindowByID
 #define MagickXWindowByName GmMagickXWindowByName
 #define MagickXWindowByProperty GmMagickXWindowByProperty
 #define MagnifyImage GmMagnifyImage
-#define MallocFunc GmMallocFunc
 #define MapBlob GmMapBlob
 #define MapImage GmMapImage
 #define MapImages GmMapImages
@@ -797,7 +796,7 @@
 #define ReadBlobZC GmReadBlobZC
 #define ReadImage GmReadImage
 #define ReadInlineImage GmReadInlineImage
-#define ReallocFunc GmReallocFunc
+#define ReallocateImageColormap GmReallocateImageColormap
 #define ReduceNoiseImage GmReduceNoiseImage
 #define ReferenceBlob GmReferenceBlob
 #define ReferenceCache GmReferenceCache
