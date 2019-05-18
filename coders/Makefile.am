@@ -75,6 +75,7 @@ MAGICK_CODER_SRCS = \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \
+	coders/braille.c \
 	coders/cals.c \
 	coders/caption.c \
 	coders/cineon.c \
@@ -173,6 +174,7 @@ coders_LTLIBRARIES = \
 	coders/art.la \
 	coders/avs.la \
 	coders/bmp.la \
+	coders/braille.la \
 	coders/cals.la \
 	coders/caption.la \
 	coders/cineon.la \
@@ -281,6 +283,12 @@ coders_bmp_la_SOURCES      = coders/bmp.c
 coders_bmp_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_bmp_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_bmp_la_LIBADD       = $(LIBMAGICK)
+
+# Braille coder module
+coders_braille_la_SOURCES  = coders/braille.c
+coders_braille_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
+coders_braille_la_LDFLAGS  = $(MODULECOMMONFLAGS)
+coders_braille_la_LIBADD   = $(LIBMAGICK)
 
 # CALS coder module
 coders_cals_la_SOURCES     = coders/cals.c

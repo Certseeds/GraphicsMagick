@@ -1,3 +1,12 @@
+2019-05-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/authors.rst: Add authorship attribution to Samuel Thibault
+	for contributing support for the Braille image format.
+
+	* coders/braille.c: Add support for Braille image format by Samuel
+	Thibault.  Patch submitted via SourceForge patch #59 "Add braille
+	image format support.
+
 2019-05-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/tempfile.c: Make more data const.

@@ -805,6 +805,7 @@
 #define RegisterARTImage GmRegisterARTImage
 #define RegisterAVSImage GmRegisterAVSImage
 #define RegisterBMPImage GmRegisterBMPImage
+#define RegisterBRAILLEImage GmRegisterBRAILLEImage
 #define RegisterCALSImage GmRegisterCALSImage
 #define RegisterCAPTIONImage GmRegisterCAPTIONImage
 #define RegisterCINEONImage GmRegisterCINEONImage
@@ -1019,6 +1020,7 @@
 #define UnregisterARTImage GmUnregisterARTImage
 #define UnregisterAVSImage GmUnregisterAVSImage
 #define UnregisterBMPImage GmUnregisterBMPImage
+#define UnregisterBRAILLEImage GmUnregisterBRAILLEImage
 #define UnregisterCALSImage GmUnregisterCALSImage
 #define UnregisterCAPTIONImage GmUnregisterCAPTIONImage
 #define UnregisterCINEONImage GmUnregisterCINEONImage

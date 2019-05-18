@@ -141,6 +141,9 @@ Roberto de Deus Barbosa Murta
                 (-lat), which executes in linear rather than quadratic
                 time.
 
+Samuel Thibault
+                Contributed support for the Braille image format.
+
 
 Other Contributors (via ImageMagick)
 ====================================

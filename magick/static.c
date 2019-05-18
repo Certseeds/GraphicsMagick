@@ -63,6 +63,7 @@ static const struct
   STATICM("ART",RegisterARTImage,UnregisterARTImage),
   STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
+  STATICM("BRAILLE",RegisterBRAILLEImage,UnregisterBRAILLEImage),
   STATICM("CALS",RegisterCALSImage,UnregisterCALSImage),
   STATICM("CAPTION",RegisterCAPTIONImage,UnregisterCAPTIONImage),
   STATICM("CINEON",RegisterCINEONImage,UnregisterCINEONImage),
