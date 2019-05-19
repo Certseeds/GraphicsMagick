@@ -61,6 +61,7 @@
 
 #if defined(HasWMF) || defined(HasWMFlite)
 
+#undef ERR
 #define ERR(API)  ((API)->err != wmf_E_None)
 #define XC(x) ((double)x)
 #define YC(y) ((double)y)
