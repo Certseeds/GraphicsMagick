@@ -1,3 +1,8 @@
+2019-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Add documentation for how to install URW
+	fonts from various package management systems.
+
 2019-05-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/authors.rst: Add authorship attribution to Samuel Thibault

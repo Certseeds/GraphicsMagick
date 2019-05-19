@@ -713,12 +713,39 @@ Several configure options require special note:
 
   Specify the directory containing the Ghostscript Postscript Type 1
   font files (e.g. "n022003l.pfb") so that they can be rendered using
-  the FreeType library. If the font files are installed using the
+  the FreeType library.  These fonts emulate the standard 35 fonts
+  commonly available on printers supporting Adobe Postscript so they
+  are very useful to have. If the font files are installed using the
   default Ghostscript installation paths
   (${prefix}/share/ghostscript/fonts), they should be discovered
   automatically by configure and specifying this option is not
   necessary. Specify this option if the Ghostscript fonts fail to be
   located automatically, or the location needs to be overridden.
+
+  The "Ghostscript" fonts (also known as "URW Standard postscript
+  fonts (cyrillicized)") are available from
+
+    https://sourceforge.net/projects/gs-fonts/
+
+  These fonts may are often available as a package installed by a
+  package manager and installing from a package manager is easier than
+  installing from source:
+
+  .. table:: URW Font Packages
+
+    ==============  =====================  =============================
+    Distribution    Package Name           Fonts Installation Path
+    ==============  =====================  =============================
+    Cygwin          urw-base35-fonts       /usr/share/ghostscript/fonts
+    Debian Linux    fonts-urw-base35       /usr/share/fonts/type1/gsfonts
+    Gentoo Linux    media-fonts/urw-fonts  /usr/share/fonts/ghostscript
+    Illumos/pkgsrc  urw-fonts-2.0nb1       /opt/local/share/fonts/urw
+    NetBSD/pkgsrc   urw-fonts-2.0nb1       /share/fonts/urw
+    OpenIndiana     gnu-gs-fonts-std       /usr/share/ghostscript/fonts
+    OS X/Homebrew   font-urw-base35        [ TBD ]
+    Red Hat Linux   urw-fonts-2.0          /usr/share/fonts/default/Type1
+    Ubuntu Linux    fonts-urw-base35       /usr/share/fonts/type1/gsfonts
+    ==============  =====================  =============================
 
 --with-windows-font-dir
 

@@ -762,14 +762,76 @@ to X11 fonts (consider using Postscript or TrueType fonts instead).</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-gs-font-dir</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Specify the directory containing the Ghostscript Postscript Type 1
+<tr><td>&nbsp;</td><td><p class="first">Specify the directory containing the Ghostscript Postscript Type 1
 font files (e.g. &quot;n022003l.pfb&quot;) so that they can be rendered using
-the FreeType library. If the font files are installed using the
+the FreeType library.  These fonts emulate the standard 35 fonts
+commonly available on printers supporting Adobe Postscript so they
+are very useful to have. If the font files are installed using the
 default Ghostscript installation paths
 (${prefix}/share/ghostscript/fonts), they should be discovered
 automatically by configure and specifying this option is not
 necessary. Specify this option if the Ghostscript fonts fail to be
-located automatically, or the location needs to be overridden.</td></tr>
+located automatically, or the location needs to be overridden.</p>
+<p>The &quot;Ghostscript&quot; fonts (also known as &quot;URW Standard postscript
+fonts (cyrillicized)&quot;) are available from</p>
+<blockquote>
+<a class="reference external" href="https://sourceforge.net/projects/gs-fonts/">https://sourceforge.net/projects/gs-fonts/</a></blockquote>
+<p>These fonts may are often available as a package installed by a
+package manager and installing from a package manager is easier than
+installing from source:</p>
+<table border="1" class="last docutils">
+<caption>URW Font Packages</caption>
+<colgroup>
+<col width="22%" />
+<col width="32%" />
+<col width="46%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Distribution</th>
+<th class="head">Package Name</th>
+<th class="head">Fonts Installation Path</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Cygwin</td>
+<td>urw-base35-fonts</td>
+<td>/usr/share/ghostscript/fonts</td>
+</tr>
+<tr><td>Debian Linux</td>
+<td>fonts-urw-base35</td>
+<td>/usr/share/fonts/type1/gsfonts</td>
+</tr>
+<tr><td>Gentoo Linux</td>
+<td>media-fonts/urw-fonts</td>
+<td>/usr/share/fonts/ghostscript</td>
+</tr>
+<tr><td>Illumos/pkgsrc</td>
+<td>urw-fonts-2.0nb1</td>
+<td>/opt/local/share/fonts/urw</td>
+</tr>
+<tr><td>NetBSD/pkgsrc</td>
+<td>urw-fonts-2.0nb1</td>
+<td>/share/fonts/urw</td>
+</tr>
+<tr><td>OpenIndiana</td>
+<td>gnu-gs-fonts-std</td>
+<td>/usr/share/ghostscript/fonts</td>
+</tr>
+<tr><td>OS X/Homebrew</td>
+<td>font-urw-base35</td>
+<td>[ TBD ]</td>
+</tr>
+<tr><td>Red Hat Linux</td>
+<td>urw-fonts-2.0</td>
+<td>/usr/share/fonts/default/Type1</td>
+</tr>
+<tr><td>Ubuntu Linux</td>
+<td>fonts-urw-base35</td>
+<td>/usr/share/fonts/type1/gsfonts</td>
+</tr>
+</tbody>
+</table>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-windows-font-dir</span></kbd></td>
 </tr>
