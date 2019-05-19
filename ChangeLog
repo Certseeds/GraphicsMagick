@@ -1,5 +1,7 @@
 2019-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dcm.c: Make more data const.
+
 	* www/INSTALL-unix.rst: Add documentation for how to install URW
 	fonts from various package management systems.
 
