@@ -1,3 +1,8 @@
+2019-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/webp.c (RegisterWEBPImage): Use sprintf to format version
+	since snprintf is not available in old Visual Studio.
+
 2019-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dcm.c: Make more data const.

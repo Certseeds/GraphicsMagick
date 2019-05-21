@@ -401,7 +401,7 @@ ModuleExport void RegisterWEBPImage(void)
   webp_major=(web_encoder_version >> 16) & 0xff;
   webp_minor=(web_encoder_version >> 8) & 0xff;
   webp_revision=web_encoder_version & 0xff;
-  (void) snprintf(version, sizeof(version),
+  (void) sprintf(version,
                   "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
                   webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
 
