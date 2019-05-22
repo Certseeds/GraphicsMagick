@@ -343,16 +343,6 @@ static unsigned const char
   };
 
 static const char
-  * const NoiseTypes[] =
-  {
-    "Uniform",
-    "Gaussian",
-    "Multiplicative",
-    "Impulse",
-    "Lapacian",
-    "Poisson",
-    (char *) NULL
-  },
   * const PageSizes[]=
   {
     "Letter",
@@ -369,39 +359,6 @@ static const char
     "Folio",
     "Quarto",
     "10x14",
-    (char *) NULL
-  },
-  * const PreviewTypes[] =
-  {
-    "Rotate",
-    "Shear",
-    "Roll",
-    "Hue",
-    "Saturation",
-    "Brightness",
-    "Gamma",
-    "Spiff",
-    "Dull",
-    "Grayscale",
-    "Quantize",
-    "Despeckle",
-    "Reduce Noise",
-    "Add Noise",
-    "Sharpen",
-    "Blur",
-    "Threshold",
-    "Edge Detect",
-    "Spread",
-    "Solarize",
-    "Shade",
-    "Raise",
-    "Segment",
-    "Swirl",
-    "Implode",
-    "Wave",
-    "Oil Paint",
-    "Charcoal Drawing",
-    "JPEG",
     (char *) NULL
   };
 
@@ -1586,7 +1543,7 @@ static const char ImageAnnotateHelp[]=
 static unsigned int MagickXAnnotateEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image *image)
 {
-  static const char
+  const char
     * const AnnotateMenu[]=
     {
       "Font Name",
@@ -1867,7 +1824,7 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
             static char
               angle[MaxTextExtent] = "30.0";
 
-            static const char
+            const char
               * const RotateMenu[]=
               {
                 "-90",
@@ -2641,7 +2598,7 @@ static unsigned int MagickXBackgroundImage(Display *display,
 static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image **image)
 {
-  static const char
+  const char
     * const ChopMenu[]=
     {
       "Direction",
@@ -2742,7 +2699,7 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
             char
               command[MaxTextExtent];
 
-            static const char
+            const char
               * const Directions[]=
               {
                 "horizontal",
@@ -3065,7 +3022,7 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
 static unsigned int MagickXColorEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image **image)
 {
-  static const char
+  const char
     * const ColorEditMenu[]=
     {
       "Method",
@@ -3184,7 +3141,7 @@ static unsigned int MagickXColorEditImage(Display *display,
         {
           case ColorEditMethodCommand:
           {
-            static const char
+            const char
               * const MethodMenu[]=
               {
                 "point",
@@ -3297,7 +3254,7 @@ static unsigned int MagickXColorEditImage(Display *display,
             static char
               fuzz[MaxTextExtent];
 
-            static const char
+            const char
               * const FuzzMenu[]=
               {
                 "0%",
@@ -3673,7 +3630,7 @@ static unsigned int MagickXCompositeImage(Display *display,
     displacement_geometry[MaxTextExtent] = "30x30",
     filename[MaxTextExtent] = "\0";
 
-  static const char
+  const char
     * const CompositeMenu[]=
     {
       "Operators",
@@ -3850,7 +3807,7 @@ static unsigned int MagickXCompositeImage(Display *display,
             char
               command[MaxTextExtent];
 
-            static const char
+            const char
               * const OperatorMenu[]=
               {
                 "Over",
@@ -4390,7 +4347,7 @@ static unsigned int MagickXConfigureImage(Display *display,
 static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image,const ClipboardMode mode)
 {
-  static const char
+  const char
     * const CropModeMenu[]=
     {
       "Help",
@@ -5171,7 +5128,7 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
 static unsigned int MagickXDrawEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image **image)
 {
-  static const char
+  const char
     * const DrawMenu[]=
     {
       "Element",
@@ -5314,7 +5271,7 @@ static unsigned int MagickXDrawEditImage(Display *display,
           {
             case DrawElementCommand:
             {
-              static const char
+              const char
                 * const Elements[]=
                 {
                   "point",
@@ -5408,7 +5365,7 @@ static unsigned int MagickXDrawEditImage(Display *display,
               static char
                 filename[MaxTextExtent] = "\0";
 
-              static const char
+              const char
                 * const StipplesMenu[]=
                 {
                   "Brick",
@@ -5519,7 +5476,7 @@ static unsigned int MagickXDrawEditImage(Display *display,
               static char
                 width[MaxTextExtent] = "0";
 
-              static const char
+              const char
                 * const WidthsMenu[]=
                 {
                   "1",
@@ -7742,6 +7699,18 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       static char
         option[MaxTextExtent] = "Gaussian";
 
+      const char
+        * const NoiseTypes[] =
+        {
+          "Uniform",
+          "Gaussian",
+          "Multiplicative",
+          "Impulse",
+          "Lapacian",
+          "Poisson",
+          (char *) NULL
+        };
+
       NoiseType
         noise_type;
 
@@ -8457,6 +8426,41 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       static char
         preview_type[MaxTextExtent] = "Gamma";
 
+      const char
+        * const PreviewTypes[] =
+        {
+          "Rotate",
+          "Shear",
+          "Roll",
+          "Hue",
+          "Saturation",
+          "Brightness",
+          "Gamma",
+          "Spiff",
+          "Dull",
+          "Grayscale",
+          "Quantize",
+          "Despeckle",
+          "Reduce Noise",
+          "Add Noise",
+          "Sharpen",
+          "Blur",
+          "Threshold",
+          "Edge Detect",
+          "Spread",
+          "Solarize",
+          "Shade",
+          "Raise",
+          "Segment",
+          "Swirl",
+          "Implode",
+          "Wave",
+          "Oil Paint",
+          "Charcoal Drawing",
+          "JPEG",
+          (char *) NULL
+        };
+
       register int
         i;
 
@@ -9024,7 +9028,7 @@ static unsigned int MagickXMatteEditImage(Display *display,
   static char
     matte[MaxTextExtent] = "0";
 
-  static const char
+  const char
     * const MatteEditMenu[]=
     {
       "Method",
@@ -9137,7 +9141,7 @@ static unsigned int MagickXMatteEditImage(Display *display,
         {
           case MatteEditMethod:
           {
-            static const char
+            const char
               * const MethodMenu[]=
               {
                 "point",
@@ -9204,7 +9208,7 @@ static unsigned int MagickXMatteEditImage(Display *display,
             static char
               fuzz[MaxTextExtent];
 
-            static const char
+            const char
               * const FuzzMenu[]=
               {
                 "0%",
@@ -9242,7 +9246,7 @@ static unsigned int MagickXMatteEditImage(Display *display,
             static char
               message[MaxTextExtent];
 
-            static const char
+            const char
               * const MatteMenu[]=
               {
                 "Opaque",
@@ -9953,7 +9957,7 @@ static void MagickXPanImage(Display *display,MagickXWindows *windows,XEvent *eve
 static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image)
 {
-  static const char
+  const char
     * const PasteMenu[]=
     {
       "Operator",
@@ -10069,7 +10073,7 @@ static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *reso
             char
               command[MaxTextExtent];
 
-            static const char
+            const char
               * const OperatorMenu[]=
               {
                 "Over",
@@ -10448,7 +10452,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
 {
 #define ApplyMenus  7
 
-  static const char
+  const char
     * const ROIMenu[]=
     {
       "Help",
@@ -10540,7 +10544,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       (char *) NULL
     };
 
-  static const char
+  const char
     * const *Menus[ApplyMenus]=
     {
       FileMenu,
@@ -10634,7 +10638,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       ROIDismissCommand
     };
 
-  static const CommandType
+  const CommandType
     *Commands[ApplyMenus]=
     {
       FileCommands,
@@ -11321,7 +11325,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
 static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,double degrees,Image **image)
 {
-  static const char
+  const char
     * const RotateMenu[]=
     {
       "Pixel Color",
@@ -11480,7 +11484,7 @@ static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *res
               }
               case RotateDirectionCommand:
               {
-                static const char
+                const char
                   * const Directions[]=
                   {
                     "horizontal",
@@ -12349,7 +12353,7 @@ static void MagickXSetCropGeometry(Display *display,MagickXWindows *windows,
 static Image *MagickXTileImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image,XEvent *event)
 {
-  static const char
+  const char
     * const VerbMenu[]=
     {
       "Load",
@@ -13382,7 +13386,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
                     char *argv[],int argc,Image **image,unsigned long *state)
 {
 
-  static const char
+  const char
     * const CommandMenu[]=
     {
       "File",
@@ -13542,7 +13546,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       (char *) NULL
     };
 
-  static const char
+  const char
     * const *Menus[MagickMenus]=
     {
       FileMenu,
@@ -13557,7 +13561,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       HelpMenu
     };
 
-  static CommandType
+  static const CommandType
     CommandMenus[]=
     {
       NullCommand,
@@ -13704,8 +13708,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       QuitCommand
     };
 
-  static CommandType
-    *Commands[MagickMenus]=
+  static const CommandType
+    * const Commands[MagickMenus]=
     {
       FileCommands,
       EditCommands,
@@ -14600,7 +14604,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
             int
               factor;
 
-            static const char
+            const char
               * const MagnifyMenu[]=
               {
                 "2",
@@ -14614,7 +14618,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
                 (char *) NULL,
               };
 
-            static KeySym
+            static const KeySym
               MagnifyCommands[]=
               {
                 XK_2,

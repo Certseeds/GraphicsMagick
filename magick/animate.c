@@ -1056,7 +1056,7 @@ MagickXAnimateImages(Display *display,
 #define MaxWindows  8
 #define MagickTitle  "Commands"
 
-  static const char
+  const char
     * const CommandMenu[]=
     {
       "Animate",
@@ -1097,7 +1097,7 @@ MagickXAnimateImages(Display *display,
     };
 
 
-  static const char
+  const char
     * const *Menus[MagickMenus]=
     {
       AnimateMenu,

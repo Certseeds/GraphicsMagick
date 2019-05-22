@@ -1,3 +1,12 @@
+2019-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/animate.c: Reduce initialized static allocations.
+
+	* magick/display.c: Reduce initialized static allocations.
+
+	* magick/widget.c (MagickSplitNDLTextToList): Add static
+	implementation function.
+
 2019-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/webp.c (RegisterWEBPImage): Use sprintf to format version

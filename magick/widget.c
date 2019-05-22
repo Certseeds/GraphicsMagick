@@ -100,6 +100,75 @@ static void
   XSetMatteColor(Display *,const MagickXWindowInfo *,const unsigned int),
   XSetTextColor(Display *,const MagickXWindowInfo *,const unsigned int);
 
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k S p l i t N D L T e x t T o L i s t                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickSplitNDLTextToList splits a hunk of null-delimited text
+%  into an array of null-terminated text strings, storing pointers to the
+%  null-terminated text strings in a fixed-size buffer provided by the user.
+%  The array of null-terminated text strings is itself terminated by a NULL
+%  pointer.  This method is most useful if the maximum number of lines is
+%  known in advance since no memory allocations are performed.  The list
+%  is truncated if there are more lines than can be stored in the text
+%  list buffer.
+%
+%  The format of the MagickSplitNDLTextToList function is:
+%
+%      size_t MagickSplitNDLTextToList(const char * restrict text_ndl,
+%                                      const size_t text_ndl_size,
+%                                      const char * restrict *textlist,
+%                                      const size_t textlist_size)
+%
+%  A description of each parameter follows:
+%
+%    o text_ndl: Constant input text to split on embedded null terminations.
+%
+%    o text_ndl_size: Size (in bytes) of text provided via text_ndl.
+%
+%    o textlist: Buffer in which to write a pointer to each null-terminated
+%      string found in text_ndl.
+%
+%    o textlist_size: The size (in bytes) in bytes of the provided
+%      textlist buffer.  Splitting stops once the textlist buffer is
+%      full.
+%
+%    o returns: The number of pointers stored in textlist is returned,
+%      including the terminating NULL pointer.
+%
+*/
+static size_t MagickSplitNDLTextToList(const char * restrict text_ndl,
+                                       const size_t text_ndl_size,
+                                       const char * restrict *textlist,
+                                       const size_t textlist_size)
+{
+  size_t i;
+  const char *p;
+
+  for (i=0, textlist[0]=text_ndl, p=text_ndl+1;
+       (i < (size_t) ((textlist_size/sizeof(*textlist))-2)) &&
+         ((size_t) (p-text_ndl) < text_ndl_size-1);
+       p++)
+    {
+      if (*p == '\0')
+        {
+          i++;
+          textlist[i]=p+1;
+        }
+    }
+  i++;
+  textlist[i]=(char *) NULL;
+  return i;
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -9521,6 +9590,11 @@ void MagickXTextViewWidgetNDL(Display *display,
                               const size_t text_ndl_size)
 {
   const char *textlist[400];
+
+  /* Split null-delimited text into array of string pointers */
+  (void) MagickSplitNDLTextToList(text_ndl,text_ndl_size,textlist,
+                                   sizeof(textlist));
+  #if 0
   size_t i;
   const char *p;
 
@@ -9537,6 +9611,7 @@ void MagickXTextViewWidgetNDL(Display *display,
     }
   i++;
   textlist[i]=(char *) NULL;
+  #endif
 
   MagickXTextViewWidget(display, resource_info, windows, mono, title,textlist);
 }
