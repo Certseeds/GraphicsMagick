@@ -342,25 +342,22 @@ static unsigned const char
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
   };
 
-static const char
-  * const PageSizes[]=
-  {
-    "Letter",
-    "Tabloid",
-    "Ledger",
-    "Legal",
-    "Statement",
-    "Executive",
-    "A3",
-    "A4",
-    "A5",
-    "B4",
-    "B5",
-    "Folio",
-    "Quarto",
-    "10x14",
+#define PAGE_SIZES \
+    "Letter",      \
+    "Tabloid", \
+    "Ledger", \
+    "Legal", \
+    "Statement", \
+    "Executive", \
+    "A3", \
+    "A4", \
+    "A5", \
+    "B4", \
+    "B5", \
+    "Folio", \
+    "Quarto", \
+    "10x14", \
     (char *) NULL
-  };
 
 /*
   Help widget declarations.
@@ -10359,6 +10356,12 @@ static unsigned int MagickXPrintImage(Display *display,MagickXResourceInfo *reso
   unsigned int
     status=True;
 
+  const char
+  * const PageSizes[]=
+  {
+    PAGE_SIZES
+  };
+
   /*
     Request Postscript page geometry from user.
   */
@@ -11906,6 +11909,12 @@ static unsigned int MagickXSaveImage(Display *display,MagickXResourceInfo *resou
       (LocaleCompare(image_info->magick,"PS") == 0) ||
       (LocaleCompare(image_info->magick,"PS2") == 0))
     {
+        const char
+            * const PageSizes[]=
+            {
+                PAGE_SIZES
+            };
+
       char
         geometry[MaxTextExtent];
 
