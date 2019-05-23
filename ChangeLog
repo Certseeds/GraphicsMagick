@@ -1,3 +1,7 @@
+2019-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c: Make more data const.
+
 2019-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/animate.c: Reduce initialized static allocations.

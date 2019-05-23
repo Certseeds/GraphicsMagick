@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -85,9 +85,9 @@ typedef struct
 }
 MATHeader;
 
-static const char *MonthsTab[12]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-static const char *DayOfWTab[7]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-static const char *OsDesc=
+static const char MonthsTab[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+static const char DayOfWTab[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char OsDesc[]=
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
     "PCWIN";
 #else
