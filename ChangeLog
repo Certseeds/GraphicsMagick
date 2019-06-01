@@ -1,3 +1,8 @@
+2019-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/logo.c: Tidy logo image definitions, and logo image
+	output.
+
 2019-05-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c: Make more data const.
