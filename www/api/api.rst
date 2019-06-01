@@ -201,24 +201,24 @@ image frames to 106x80, and writes the resulting animation to disk::
   #include <time.h>
   #include <sys/types.h>
   #include <magick/api.h>
-  
+
   int main(int argc,char **argv)
   {
     ExceptionInfo
       exception;
-  
+
     Image
       *image,
       *images,
       *resize_image,
       *thumbnails;
-  
+
     ImageInfo
       *image_info;
-  
+
     int
       i;
-  
+
     /*
       Initialize the image info structure and read the list of files
       provided by the user as a image sequence
@@ -238,7 +238,7 @@ image frames to 106x80, and writes the resulting animation to disk::
         if (image)
           (void) AppendImageToList(&images,image);
       }
-  
+
     if (!images)
       {
         printf("Failed to read any images!\n");
@@ -270,7 +270,7 @@ image frames to 106x80, and writes the resulting animation to disk::
                GetImageListLength(thumbnails));
         WriteImage(image_info,thumbnails);
       }
-  
+
     /*
       Release resources
     */
@@ -301,5 +301,4 @@ your program will compile and run.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
-
+Copyright |copy| GraphicsMagick Group 2002 - 2019
