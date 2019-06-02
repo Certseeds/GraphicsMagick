@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to May 7, 2019
+This file was last updated to reflect changes up to June 2, 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -32,7 +32,9 @@ Special Issues:
   medium sized files.  The time to initialize is often longer than the
   time to read the input file, process the image, and write the output
   file.  If the 'ICU' dependency can not be avoided, then make sure to
-  use the modules build.
+  use the modules build.  Please lobby the 'ICU' library developers to
+  change their implementation to avoid long start-up times due to
+  merely linking with the library.
 
 Security Fixes:
 
@@ -61,6 +63,9 @@ Security Fixes:
   buffer overflows.
 
 * MIFF reader: Detect end of file while reading RLE packets.
+
+* MIFF reader: Fix heap overflow (for some files using RLE
+  compression) caused by a typo in the code.
 
 * MAT writer: Added missing error handling to avoid heap overflow.
 
@@ -112,7 +117,14 @@ Bug fixes:
 
 * PDF writer: Fixed a memory leak.
 
+* PDF writer: Fixed a thread safety problem.
+
+* PICT reader: Fix a thread safety problem.
+
 * Exception reporting: Throwing an exception was not thread safe.  Now it is.
+
+* Exception reporting: Handle the case where some passed character
+  strings refer to existing exception character strings.
 
 * Command-line parser now does not attempt to read a list of filenames
   from a file in '@name' syntax if the path '@name' exists.
@@ -121,6 +133,9 @@ Bug fixes:
 
 
 New Features:
+
+* Added support for writing the Braille image format (by Samuel
+  Thibault).
 
 * WebP writer: Support WebP 'use_sharp_yuv' option ("if needed, use
   sharp (and slow) RGB->YUV conversion") via `-define
@@ -158,7 +173,39 @@ Feature improvements:
   semi-transparent pixels.
 
 * Library metrics: The number of shared library relocations and the
-  amount of initialized data has been reduced.
+  amount of initialized data has been signficantly reduced by
+  following recommendations from Ulrich Drepper's document `How To
+  Write Shared Libraries <https://akkadia.org/drepper/dsohowto.pdf>`_.
+
+  For comparison, these are the differences in library metrics between
+  the 1.3.31 and 1.3.32 releases for a simple shared library with all
+  features supported:
+
+  +---------+-------------+------------------+------------+
+  | Release | Relocations | Initialized Data | Total Size |
+  +=========+=============+==================+============+
+  | 1.3.31  |      12,432 |          506,496 |  3,587,227 |
+  +---------+-------------+------------------+------------+
+  | 1.3.32  |         747 |          130,016 |  3,037,047 |
+  +---------+-------------+------------------+------------+
+
+  and these are the differences library metrics between 1.3.31 and
+  1.3.32 for a shared library using the modules option (recommended!)
+  with all features supported:
+
+  +---------+-------------+------------------+------------+
+  | Release | Relocations | Initialized Data | Total Size |
+  +=========+=============+==================+============+
+  | 1.3.31  |       5,370 |          176,784 |  1,940,620 |
+  +---------+-------------+------------------+------------+
+  | 1.3.32  |         367 |          121,552 |  1,829,419 |
+  +---------+-------------+------------------+------------+
+
+  As can be seen, the number of relocations was extreme and has been
+  reduced to reasonable levels while also diminishing the amount of
+  initialized data and the total size of the library/program.  Most
+  remaining initialized data may be attributed to the optional X11
+  display/animate support.
 
 Windows Delegate Updates/Additions:
 

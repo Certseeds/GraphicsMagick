@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to May 7, 2019</p>
+<p>This file was last updated to reflect changes up to June 2, 2019</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -96,7 +96,9 @@ slowness when GraphicsMagick utilities are used to process small to
 medium sized files.  The time to initialize is often longer than the
 time to read the input file, process the image, and write the output
 file.  If the 'ICU' dependency can not be avoided, then make sure to
-use the modules build.</li>
+use the modules build.  Please lobby the 'ICU' library developers to
+change their implementation to avoid long start-up times due to
+merely linking with the library.</li>
 </ul>
 <p>Security Fixes:</p>
 <ul class="simple">
@@ -120,6 +122,8 @@ also claim to be colormapped.</li>
 <li>DIB reader/writer: Improve buffer-size calculations to guard against
 buffer overflows.</li>
 <li>MIFF reader: Detect end of file while reading RLE packets.</li>
+<li>MIFF reader: Fix heap overflow (for some files using RLE
+compression) caused by a typo in the code.</li>
 <li>MAT writer: Added missing error handling to avoid heap overflow.</li>
 <li>MNG reader: Fixed a small heap buffer overflow.</li>
 <li>SVG reader: Fixed a stack buffer overflow.</li>
@@ -153,7 +157,11 @@ JPEG dimensions and not the scaled dimensions.</li>
 as 2500.  Extremely compressed files were being rejected.</li>
 <li>FreeType renderer: Fixed a memory leak.</li>
 <li>PDF writer: Fixed a memory leak.</li>
+<li>PDF writer: Fixed a thread safety problem.</li>
+<li>PICT reader: Fix a thread safety problem.</li>
 <li>Exception reporting: Throwing an exception was not thread safe.  Now it is.</li>
+<li>Exception reporting: Handle the case where some passed character
+strings refer to existing exception character strings.</li>
 <li>Command-line parser now does not attempt to read a list of filenames
 from a file in <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>&#64;</span>name</a>' syntax if the path <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>&#64;</span>name</a>' exists.
 Previously it would attempt to read a list of file names from 'name'
@@ -161,6 +169,8 @@ even if <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
+<li>Added support for writing the Braille image format (by Samuel
+Thibault).</li>
 <li>WebP writer: Support WebP 'use_sharp_yuv' option (&quot;if needed, use
 sharp (and slow) RGB-&gt;YUV conversion&quot;) via <cite>-define
 webp:use-sharp-yuv=true</cite>.</li>
@@ -172,24 +182,99 @@ number rather than just the integer version identifier.</li>
 <li>None</li>
 </ul>
 <p>Feature improvements:</p>
-<ul class="simple">
-<li>Microsoft Windows timing information now uses
+<ul>
+<li><p class="first">Microsoft Windows timing information now uses
 QueryPerformanceFrequency() and QueryPerformanceCounter() for
-increased precision.</li>
-<li>The 'benchmark' command now shows 6 digits (microseconds) of elapsed
-time indication.</li>
-<li>The 'time' command now shows 6 digits (microseconds) of elapsed time
-indication.</li>
-<li>The logging facility now shows 6 digits (microseconds) of time
-resolulution</li>
-<li>Dcraw: When QuantumDepth is greater than 8, pass -6 option to dcraw
-so that it returns a 16-bit/sample image.</li>
-<li>Dcraw: If Dcraw supports TIFF format, then request TIFF format in
-order to be able to acquire more metatdata.</li>
-<li>Scale algorithm: Eliminate artifacts when scaling an image with
-semi-transparent pixels.</li>
-<li>Library metrics: The number of shared library relocations and the
-amount of initialized data has been reduced.</li>
+increased precision.</p>
+</li>
+<li><p class="first">The 'benchmark' command now shows 6 digits (microseconds) of elapsed
+time indication.</p>
+</li>
+<li><p class="first">The 'time' command now shows 6 digits (microseconds) of elapsed time
+indication.</p>
+</li>
+<li><p class="first">The logging facility now shows 6 digits (microseconds) of time
+resolulution</p>
+</li>
+<li><p class="first">Dcraw: When QuantumDepth is greater than 8, pass -6 option to dcraw
+so that it returns a 16-bit/sample image.</p>
+</li>
+<li><p class="first">Dcraw: If Dcraw supports TIFF format, then request TIFF format in
+order to be able to acquire more metatdata.</p>
+</li>
+<li><p class="first">Scale algorithm: Eliminate artifacts when scaling an image with
+semi-transparent pixels.</p>
+</li>
+<li><p class="first">Library metrics: The number of shared library relocations and the
+amount of initialized data has been signficantly reduced by
+following recommendations from Ulrich Drepper's document <a class="reference external" href="https://akkadia.org/drepper/dsohowto.pdf">How To
+Write Shared Libraries</a>.</p>
+<p>For comparison, these are the differences in library metrics between
+the 1.3.31 and 1.3.32 releases for a simple shared library with all
+features supported:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="25%" />
+<col width="35%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Release</th>
+<th class="head">Relocations</th>
+<th class="head">Initialized Data</th>
+<th class="head">Total Size</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1.3.31</td>
+<td>12,432</td>
+<td>506,496</td>
+<td>3,587,227</td>
+</tr>
+<tr><td>1.3.32</td>
+<td>747</td>
+<td>130,016</td>
+<td>3,037,047</td>
+</tr>
+</tbody>
+</table>
+<p>and these are the differences library metrics between 1.3.31 and
+1.3.32 for a shared library using the modules option (recommended!)
+with all features supported:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="25%" />
+<col width="35%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Release</th>
+<th class="head">Relocations</th>
+<th class="head">Initialized Data</th>
+<th class="head">Total Size</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1.3.31</td>
+<td>5,370</td>
+<td>176,784</td>
+<td>1,940,620</td>
+</tr>
+<tr><td>1.3.32</td>
+<td>367</td>
+<td>121,552</td>
+<td>1,829,419</td>
+</tr>
+</tbody>
+</table>
+<p>As can be seen, the number of relocations was extreme and has been
+reduced to reasonable levels while also diminishing the amount of
+initialized data and the total size of the library/program.  Most
+remaining initialized data may be attributed to the optional X11
+display/animate support.</p>
+</li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
