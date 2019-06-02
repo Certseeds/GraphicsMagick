@@ -30,15 +30,21 @@ Prerequisites
 
   While it is not a requirement, it is strongly recommended that the
   `Ghostscript <http://sourceforge.net/projects/ghostscript/>`_
-  package (GraphicsMagick is tested with version 9.10) be
+  package (GraphicsMagick is tested with version 9.27) be
   installed. GraphicsMagick uses Ghostscript to render Postscript and
   PDF files, as well as formats where a translator to Postscript is
   available. GraphicsMagick will use the `Ghostscript Fonts
-  <http://sourceforge.net/projects/gs-fonts/>`_ to support the
-  standard set of Adobe Postscript fonts like "Helvetica" and "Times
-  Roman" if these fonts are not available as TrueType fonts.  The
-  Ghostscript fonts need to manually installed with administrator
-  privileges in the Ghostscript installation directory.
+  <http://sourceforge.net/projects/gs-fonts/>`_ (also known as "URW
+  Fonts") to support the standard set of Adobe Postscript fonts like
+  "Helvetica" and "Times Roman" if these fonts are not available as
+  TrueType fonts.  The Ghostscript fonts need to manually installed
+  with administrator privileges in the Ghostscript installation
+  directory (e.g. as "C:\Program Files\gs\fonts" or "C:Program
+  Files\gs\gs9.27\fonts").
+
+  The algorithm used to find the fonts consults the Windows registry
+  to learn Ghostscript installation paths, and then looks for a
+  "fonts/n019003l.pfb" file in each path until it finds a match.
 
   Make sure to install a Ghostscript which is compatible with the
   GraphicsMagick you are installing.  For example, if you are
@@ -73,7 +79,7 @@ Retrieve Install Package
   profiles, or deal with images that have limited contrast, then the Q16
   version is recommended.
 
-  The `win32' packages are for 32-bit or 64-bit Windows, whereas the
+  The `win32` packages are for 32-bit or 64-bit Windows, whereas the
   `win64` packages are only for 64-bit Windows.  The 64-bit version
   allows processing larger images in memory (rather than disk files),
   provided that the system has more than 2GB of RAM installed.  Memory
@@ -213,15 +219,20 @@ Uninstall
 Use From Another Package or Program
 -----------------------------------
 
-  The GraphicsMagick gm utility may be executed as a sub-process by other
-  programs. If gm utility is not in the systems executable search path
-  (it should be since the GraphicsMagick install extends the path), then
-  the utility should be executed via the complete path to the executable.
+  The GraphicsMagick gm utility may be executed as a sub-process by
+  other programs. If gm utility is not in the systems executable
+  search path (it should be since the GraphicsMagick install extends
+  the path by default), then the utility should be executed via the
+  complete path to the executable.
 
   The `ImageMagickObject <ImageMagickObject.html>`_ COM object may be
-  used to execute the gm sub-functions (e.g. "convert") without spawning
-  a new process or causing Windows to pop up a window. The COM object
-  supports multi-threaded concurrent use.
+  used to execute the gm sub-functions (e.g. "convert") without
+  spawning a new process or causing Windows to pop up a window. The
+  COM object supports multi-threaded concurrent use.  Note that the
+  COM object (and other components depending on proprietary libraries)
+  is no longer included in the installation packages we create.  If
+  you need this, then you will need to build GraphicsMagick from
+  source code.
 
   When GraphicsMagick is installed, entries are added to the Windows
   Registry so that other programs may obtain information regarding the
@@ -459,7 +470,7 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
   custom application compiling with little effort.
 
   With this feature enabled, you should be able to nab a copy of...
-    
+
     ``VisualMagick\utilities\UTIL_gm_xxx_exe.dsp``  (for C)
 
      -or-
@@ -490,7 +501,7 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
     ``GraphicsMagick\VisualMagick\Magick++\demo`` (project - DSP)
 
   For C++ and Magick++ and MFC windows applications use
-   
+
     ``GraphicsMagick\win2k\IMDisplay`` (source code)
 
     ``GraphicsMagick\VisualMagick\win32\NtMagick`` (project - DSP)
@@ -579,7 +590,7 @@ Environment Variables
   ALSO. You can elect to changes these things the good old "hard-coded"
   way. Two #defines are applicable.
 
-  defines.h has 
+  defines.h has
 
       ``#define MagickConfigurePath  "c:\\GraphicsMagick\\"``
 
@@ -609,7 +620,7 @@ Windows Distribution Build Procedure
 
     a. Install Microsoft Visual Studio.
 
-    b. Download and install Inno Setup 5
+    b. Download and install Inno Setup 6
        <"http://www.jrsoftware.org/isinfo.php">.
 
     c. Download and install ActiveState ActivePerl (optional)
@@ -703,7 +714,7 @@ Windows Distribution Build Procedure
 
      f. ``cd ..\..\..\..``
 
-  7. Build PerlMagick extension (optional)
+  7. Build PerlMagick extension (optional and now rarely done)
 
      a. Open Visual Studio Command Shell Window for WIN32  or WIN64
 

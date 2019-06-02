@@ -86,14 +86,19 @@ the existing GraphicsMagick (see uninstall procedure) prior to
 installing the newer version.</p>
 <p>While it is not a requirement, it is strongly recommended that the
 <a class="reference external" href="http://sourceforge.net/projects/ghostscript/">Ghostscript</a>
-package (GraphicsMagick is tested with version 9.10) be
+package (GraphicsMagick is tested with version 9.27) be
 installed. GraphicsMagick uses Ghostscript to render Postscript and
 PDF files, as well as formats where a translator to Postscript is
-available. GraphicsMagick will use the <a class="reference external" href="http://sourceforge.net/projects/gs-fonts/">Ghostscript Fonts</a> to support the
-standard set of Adobe Postscript fonts like &quot;Helvetica&quot; and &quot;Times
-Roman&quot; if these fonts are not available as TrueType fonts.  The
-Ghostscript fonts need to manually installed with administrator
-privileges in the Ghostscript installation directory.</p>
+available. GraphicsMagick will use the <a class="reference external" href="http://sourceforge.net/projects/gs-fonts/">Ghostscript Fonts</a> (also known as &quot;URW
+Fonts&quot;) to support the standard set of Adobe Postscript fonts like
+&quot;Helvetica&quot; and &quot;Times Roman&quot; if these fonts are not available as
+TrueType fonts.  The Ghostscript fonts need to manually installed
+with administrator privileges in the Ghostscript installation
+directory (e.g. as &quot;C:Program Filesgsfonts&quot; or &quot;C:Program
+Filesgsgs9.27fonts&quot;).</p>
+<p>The algorithm used to find the fonts consults the Windows registry
+to learn Ghostscript installation paths, and then looks for a
+&quot;fonts/n019003l.pfb&quot; file in each path until it finds a match.</p>
 <p>Make sure to install a Ghostscript which is compatible with the
 GraphicsMagick you are installing.  For example, if you are
 installing a 64-bit GraphicsMagick, you should install a 64-bit
@@ -125,8 +130,8 @@ typical photos intended for viewing on a computer screen. If you are
 dealing with film, scientific, or medical images, use ICC color
 profiles, or deal with images that have limited contrast, then the Q16
 version is recommended.</p>
-<p>The <cite>win32' packages are for 32-bit or 64-bit Windows, whereas the
-`win64</cite> packages are only for 64-bit Windows.  The 64-bit version
+<p>The <cite>win32</cite> packages are for 32-bit or 64-bit Windows, whereas the
+<cite>win64</cite> packages are only for 64-bit Windows.  The 64-bit version
 allows processing larger images in memory (rather than disk files),
 provided that the system has more than 2GB of RAM installed.  Memory
 access is 1000 times faster than disk access.</p>
@@ -261,14 +266,19 @@ to uninstall it.</p>
 <div class="section" id="use-from-another-package-or-program">
 <h2><a class="toc-backref" href="#id15">Use From Another Package or Program</a></h2>
 <blockquote>
-<p>The GraphicsMagick gm utility may be executed as a sub-process by other
-programs. If gm utility is not in the systems executable search path
-(it should be since the GraphicsMagick install extends the path), then
-the utility should be executed via the complete path to the executable.</p>
+<p>The GraphicsMagick gm utility may be executed as a sub-process by
+other programs. If gm utility is not in the systems executable
+search path (it should be since the GraphicsMagick install extends
+the path by default), then the utility should be executed via the
+complete path to the executable.</p>
 <p>The <a class="reference external" href="ImageMagickObject.html">ImageMagickObject</a> COM object may be
-used to execute the gm sub-functions (e.g. &quot;convert&quot;) without spawning
-a new process or causing Windows to pop up a window. The COM object
-supports multi-threaded concurrent use.</p>
+used to execute the gm sub-functions (e.g. &quot;convert&quot;) without
+spawning a new process or causing Windows to pop up a window. The
+COM object supports multi-threaded concurrent use.  Note that the
+COM object (and other components depending on proprietary libraries)
+is no longer included in the installation packages we create.  If
+you need this, then you will need to build GraphicsMagick from
+source code.</p>
 <p>When GraphicsMagick is installed, entries are added to the Windows
 Registry so that other programs may obtain information regarding the
 most recently installed GraphicsMagick. These entries are available
@@ -633,7 +643,7 @@ GraphicsMagick 1.3.26):</p>
 <blockquote>
 <ol class="loweralpha simple">
 <li>Install Microsoft Visual Studio.</li>
-<li>Download and install Inno Setup 5
+<li>Download and install Inno Setup 6
 &lt;&quot;<a class="reference external" href="http://www.jrsoftware.org/isinfo.php">http://www.jrsoftware.org/isinfo.php</a>&quot;&gt;.</li>
 <li>Download and install ActiveState ActivePerl (optional)
 &lt;&quot;<a class="reference external" href="http://www.activestate.com/activeperl/downloads/">http://www.activestate.com/activeperl/downloads/</a>&quot;&gt;.</li>
@@ -708,7 +718,7 @@ project.</li>
 <li><tt class="docutils literal">cd <span class="pre">..\..\..\..</span></tt></li>
 </ol>
 </li>
-<li><p class="first">Build PerlMagick extension (optional)</p>
+<li><p class="first">Build PerlMagick extension (optional and now rarely done)</p>
 <ol class="loweralpha">
 <li><p class="first">Open Visual Studio Command Shell Window for WIN32  or WIN64</p>
 </li>

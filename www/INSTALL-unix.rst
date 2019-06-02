@@ -614,7 +614,7 @@ Several configure options require special note:
   safety is virtually unmeasurable so usually there is no reason to
   disable multi-thread support.  While previous versions disabled
   OpenMP support when this option was supplied, that is no longer the
-  case.
+  case since then OpenMP locking APIs are used instead.
 
 --disable-largefile
 
@@ -634,7 +634,7 @@ Several configure options require special note:
   4.2. OpenMP is a well-established standard and was implemented in
   some other compilers in the late '90s, long before its appearance in
   GCC. OpenMP adds additional build and linkage requirements.
-  GraphicsMagick supports OpenMP version 2.5 and later, primarily
+  GraphicsMagick supports OpenMP version 2.0 and later, primarily
   using features defined by version 2.5, but will be optionally using
   features from version 3.1 in the future since it is commonly
   available.
@@ -682,8 +682,8 @@ Several configure options require special note:
   /path/to/perl will be taken as the PERL interpreter to use. This is
   important in case the 'perl' executable in your PATH is not PERL5,
   or is not the PERL you want to use.  Experience suggests that static
-  PerlMagick builds may not be fully successful for Perl versions
-  newer than 5.8.8.
+  PerlMagick builds may not be fully successful (at least for
+  executing the test suite) for Perl versions newer than 5.8.8.
 
 --with-perl-options
 
@@ -712,12 +712,12 @@ Several configure options require special note:
 --with-gs-font-dir
 
   Specify the directory containing the Ghostscript Postscript Type 1
-  font files (e.g. "n022003l.pfb") so that they can be rendered using
-  the FreeType library.  These fonts emulate the standard 35 fonts
-  commonly available on printers supporting Adobe Postscript so they
-  are very useful to have. If the font files are installed using the
-  default Ghostscript installation paths
-  (${prefix}/share/ghostscript/fonts), they should be discovered
+  font files (e.g. "n019003l.pfb") also known as the "URW Fonts" so
+  that they can be rendered using the FreeType library.  These fonts
+  emulate the standard 35 fonts commonly available on printers
+  supporting Adobe Postscript so they are very useful to have. If the
+  font files are installed using the default Ghostscript installation
+  paths (${prefix}/share/ghostscript/fonts), they should be discovered
   automatically by configure and specifying this option is not
   necessary. Specify this option if the Ghostscript fonts fail to be
   located automatically, or the location needs to be overridden.
