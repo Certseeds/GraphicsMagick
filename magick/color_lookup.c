@@ -674,7 +674,7 @@ DestroyColorInfoEntry(ColorInfo *entry)
     }
   MagickFreeMemory(entry);
 }
-MagickExport void
+void
 DestroyColorInfo(void)
 {
   ColorInfo
@@ -1010,7 +1010,7 @@ GetColorList(const char *pattern,unsigned long *number_colors)
 %
 %
 */
-MagickExport unsigned int
+unsigned int
 ListColorInfo(FILE *file,ExceptionInfo *exception)
 {
   register long
