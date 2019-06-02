@@ -1660,6 +1660,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
   */
   {
+#define URW_FONT_HELVETICA_FILE "n019003l.pfb"
     const char
       *end = NULL,
       *start = gs_lib_path;
@@ -1685,7 +1686,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
         (void) strlcpy(font_dir_file,start,length);
         (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-        (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+        (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
         if (IsAccessible(font_dir_file))
           {
             (void) strlcpy(path, start, Min(length,path_length));
@@ -1721,7 +1722,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
             (void) strlcpy(font_dir_file,start,length);
             (void) strlcat(font_dir_file,"fonts",MaxTextExtent);
             (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-            (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+            (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
             if (IsAccessible(font_dir_file))
               {
                 (void) strlcpy(path,font_dir_file,Min(length+5,path_length));  // str size "fonts" is 5.
@@ -1757,7 +1758,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
     (void) strlcpy(font_dir_file,gs_font_dir,MaxTextExtent);
     (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-    (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+    (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
     if (IsAccessible(font_dir_file))
       {
         (void) strlcpy(path,gs_font_dir,path_length);

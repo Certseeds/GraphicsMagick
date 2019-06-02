@@ -1,5 +1,9 @@
 2019-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_base.c: Search for n019003l.pfb (the "Helvetica"-like
+	font) rather than fonts.dir since fonts.dir is not present in all
+	URW font collections.
+
 	* NEWS.txt: Update news.
 
 2019-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
