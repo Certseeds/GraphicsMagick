@@ -203,9 +203,10 @@ Feature improvements:
 
   As can be seen, the number of relocations was extreme and has been
   reduced to reasonable levels while also diminishing the amount of
-  initialized data and the total size of the library/program.  Most
-  remaining initialized data may be attributed to the optional X11
-  display/animate support.
+  initialized data and the total size of the library/program.  Most of
+  the remaining initialized data (161,907 bytes) and some of the
+  relocations (65 relocations) may be attributed to the optional X11
+  animate/display/import support.
 
 Windows Delegate Updates/Additions:
 
