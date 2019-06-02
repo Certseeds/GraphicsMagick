@@ -146,10 +146,10 @@ set truecolor_file=%srcdir%input_truecolor.miff
 %exedir%rwfile.exe -debug %events% -filespec "out_gray_%%d" %gray_file% PS
 %exedir%rwfile.exe -debug %events% -filespec "out_pallette_%%d" %pallette_file% PS
 %exedir%rwfile.exe -debug %events% -filespec "out_truecolor_%%d" %truecolor_file% PS
-%exedir%rwfile.exe -debug %events% -filespec "out_bilevel_%%d" %bilevel_file% PSD
-%exedir%rwfile.exe -debug %events% -filespec "out_gray_%%d" %gray_file% PSD
-%exedir%rwfile.exe -debug %events% -filespec "out_pallette_%%d" %pallette_file% PSD
-%exedir%rwfile.exe -debug %events% -filespec "out_truecolor_%%d" %truecolor_file% PSD
+: %exedir%rwfile.exe -debug %events% -filespec "out_bilevel_%%d" %bilevel_file% PSD
+: %exedir%rwfile.exe -debug %events% -filespec "out_gray_%%d" %gray_file% PSD
+: %exedir%rwfile.exe -debug %events% -filespec "out_pallette_%%d" %pallette_file% PSD
+: %exedir%rwfile.exe -debug %events% -filespec "out_truecolor_%%d" %truecolor_file% PSD
 %exedir%rwfile.exe -debug %events% -filespec "out_bilevel_%%d" %bilevel_file% RAS
 %exedir%rwfile.exe -debug %events% -filespec "out_gray_%%d" %gray_file% RAS
 %exedir%rwfile.exe -debug %events% -filespec "out_pallette_%%d" %pallette_file% RAS

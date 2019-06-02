@@ -139,10 +139,10 @@ set truecolor_file=%srcdir%input_truecolor.miff
 %exedir%rwblob.exe -debug %events% %gray_file% PS 
 %exedir%rwblob.exe -debug %events% %pallette_file% PS 
 %exedir%rwblob.exe -debug %events% %truecolor_file% PS 
-%exedir%rwblob.exe -debug %events% %bilevel_file% PSD 
-%exedir%rwblob.exe -debug %events% %gray_file% PSD 
-%exedir%rwblob.exe -debug %events% %pallette_file% PSD 
-%exedir%rwblob.exe -debug %events% %truecolor_file% PSD 
+: %exedir%rwblob.exe -debug %events% %bilevel_file% PSD 
+: %exedir%rwblob.exe -debug %events% %gray_file% PSD 
+: %exedir%rwblob.exe -debug %events% %pallette_file% PSD 
+: %exedir%rwblob.exe -debug %events% %truecolor_file% PSD 
 %exedir%rwblob.exe -debug %events% %bilevel_file% RAS 
 %exedir%rwblob.exe -debug %events% %gray_file% RAS 
 %exedir%rwblob.exe -debug %events% %pallette_file% RAS 
