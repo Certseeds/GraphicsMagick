@@ -1,3 +1,8 @@
+2019-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (SetClientFilename): Reduce initialized data
+	some more.
+
 2019-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/nt_base.c: Search for n019003l.pfb (the "Helvetica"-like

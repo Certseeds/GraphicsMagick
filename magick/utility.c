@@ -4731,7 +4731,7 @@ MagickExport unsigned long MultilineCensus(const char *label)
 %  Method SetClientFilename sets the client filename if the name is specified.
 %  Otherwise the current client filename is returned. On a UNIX system the
 %  client name and filename are often the same since file extensions are not
-%  very important, but on windows the distinction if very important.
+%  very important, but on windows the distinction is very important.
 %
 %  The format of the SetClientFilename method is:
 %
@@ -4753,7 +4753,7 @@ MagickExport const char *GetClientFilename(void)
 MagickExport const char *SetClientFilename(const char *name)
 {
   static char
-    client_filename[MaxTextExtent] = "";
+    client_filename[256] = "";
 
   if ((name != (char *) NULL) && (*name != '\0'))
     {
@@ -4776,7 +4776,8 @@ MagickExport const char *SetClientFilename(const char *name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method SetClientName sets the client name if the name is specified.
-%  Otherwise the current client name is returned.
+%  Otherwise the current client name is returned.  The default value
+%  returned if a value was never set is "Magick".
 %
 %  The format of the SetClientName method is:
 %
@@ -4792,13 +4793,13 @@ MagickExport const char *SetClientFilename(const char *name)
 */
 MagickExport const char *GetClientName(void)
 {
-  return(SetClientName((char *) NULL));
+  return SetClientName((char *) NULL);
 }
 
 MagickExport const char *SetClientName(const char *name)
 {
   static char
-    client_name[MaxTextExtent] = "Magick";
+    client_name[256] = "";
 
   if ((name != (char *) NULL) && (*name != '\0'))
     {
@@ -4806,7 +4807,7 @@ MagickExport const char *SetClientName(const char *name)
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
         "Client Name was set to: %s",client_name);
     }
-  return(client_name);
+  return (client_name[0] == '\0' ? "Magick" : client_name);
 }
 
 /*

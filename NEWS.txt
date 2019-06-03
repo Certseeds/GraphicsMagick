@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to June 2, 2019
+This file was last updated to reflect changes up to June 3, 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -186,7 +186,7 @@ Feature improvements:
   +=========+=============+==================+============+
   | 1.3.31  |      12,432 |          506,496 |  3,587,227 |
   +---------+-------------+------------------+------------+
-  | 1.3.32  |         747 |          130,016 |  3,037,047 |
+  | 1.3.32  |         747 |          127,936 |  3,037,071 |
   +---------+-------------+------------------+------------+
 
   and these are the differences library metrics between 1.3.31 and
@@ -198,7 +198,7 @@ Feature improvements:
   +=========+=============+==================+============+
   | 1.3.31  |       5,370 |          176,784 |  1,940,620 |
   +---------+-------------+------------------+------------+
-  | 1.3.32  |         367 |          121,552 |  1,829,419 |
+  | 1.3.32  |         367 |          119,472 |  1,829,443 |
   +---------+-------------+------------------+------------+
 
   As can be seen, the number of relocations was extreme and has been
