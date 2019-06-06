@@ -5934,16 +5934,6 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
     return((char *) NULL);
   text=(char *) formatted_text;
   /*
-    If text starts with '@' then try to replace it with the content of
-    the file name which follows.
-  */
-  if ((*text == '@') && IsAccessible(text+1))
-    {
-      text=(char *) FileToBlob(text+1,&length,&image->exception);
-      if (text == (char *) NULL)
-        return((char *) NULL);
-    }
-  /*
     Translate any embedded format characters.
   */
   length=strlen(text)+MaxTextExtent;
