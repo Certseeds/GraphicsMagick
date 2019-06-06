@@ -2477,11 +2477,16 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   if (*draw_info->primitive == '\0')
     return(MagickFail);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"begin draw-image");
-  if (*draw_info->primitive != '@')
-    primitive=AllocateString(draw_info->primitive);
-  else
+  /*
+    Read primitive from file if supplied primitive starts with '@' and
+    we are not already drawing.
+  */
+  if ((*draw_info->primitive == '@') &&
+      (DrawImageGetCurrentRecurseLevel(image) == 1))
     primitive=(char *)
       FileToBlob(draw_info->primitive+1,&length,&image->exception);
+  else
+    primitive=AllocateString(draw_info->primitive);
   if (primitive == (char *) NULL)
     return(MagickFail);
   primitive_extent=strlen(primitive);
