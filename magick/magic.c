@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2009 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -58,7 +58,7 @@ static const struct
 }
 StaticMagic[] =
 {
-#define MAGIC(name,offset,magic) {name,(unsigned char *)magic,sizeof(magic)-1,offset}
+#define MAGIC(name,offset,magic) {name,(const unsigned char * const)magic,sizeof(magic)-1,offset}
   MAGIC("WEBP", 8, "WEBP"),
   /* MAGIC("AVI", 0, "RIFF"), */
   MAGIC("8BIMWTEXT", 0, "8\000B\000I\000M\000#"),
@@ -249,7 +249,7 @@ GetMagickFileFormat(const unsigned char *header, const size_t header_length,
       /*
         Search for requested magic.
       */
-      for (i=0; i < sizeof(StaticMagic)/sizeof(StaticMagic[0]); i++)
+      for (i=0; i < ArraySize(StaticMagic); i++)
         {
           if (StaticMagic[i].offset+StaticMagic[i].length <= header_length)
             {
@@ -333,7 +333,7 @@ ListMagicInfo(FILE *file,ExceptionInfo *exception)
   (void) fprintf(file,"Name      Offset Target\n");
   (void) fprintf(file,"-------------------------------------------------"
                  "------------------------------\n");
-  for (i=0; i < sizeof(StaticMagic)/sizeof(StaticMagic[0]); i++)
+  for (i=0; i < ArraySize(StaticMagic); i++)
     {
       register const unsigned char
         *c;

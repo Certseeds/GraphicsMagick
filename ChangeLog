@@ -1,3 +1,13 @@
+2019-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Only support '@filename' syntax to
+	read drawing primitive from a file if we are not already drawing.
+
+	* magick/utility.c (TranslateTextEx): Remove support for reading
+	from a file using '@filename' syntax due to security concerns.
+	Problem was reported to us by "Battle Furry" via the
+	GraphicsMagick security mail alias on June 6, 2019.
+
 2019-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/utility.c (SetClientFilename): Reduce initialized data
