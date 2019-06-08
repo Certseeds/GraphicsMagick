@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to June 3, 2019
+This file was last updated to reflect changes up to June 8 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -131,7 +131,6 @@ Bug fixes:
   Previously it would attempt to read a list of file names from 'name'
   even if '@name' did exist.
 
-
 New Features:
 
 * Added support for writing the Braille image format (by Samuel
@@ -224,7 +223,7 @@ Build Changes:
 
 Behavior Changes:
 
-* None
+* AnnotateImage(): No longer implicitly call TranslateText() since this is not suitable for most use-cases and causes additional performance impact.  The API user can perform such translations in advance on the text string using TranslateText() if need be.
 
 
 1.3.31 (November 17, 2018)

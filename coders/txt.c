@@ -1008,7 +1008,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
           rendered at a time via AnnotateImage().
         */
         (void) ConcatenateString(&draw_info->text,text);
-        (void) ConcatenateString(&draw_info->text,"\\n");
+        (void) ConcatenateString(&draw_info->text,"\n");
         line_num++;
 
         if (image->previous == (Image *) NULL)

@@ -35,6 +35,20 @@
 <div class="document">
 
 
+<p>2019-06-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/txt.c (ReadTXTImage): Use real a new-line character as
+line delimiter rather than 'n' string.</li>
+<li>magick/annotate.c (AnnotateImage): No longer implicitly call
+TranslateText() since this is not suitable for most use-cases and
+causes additional performance impact.  The API user can perform
+such translations in advance on the text string using
+TranslateText() if need be.  No longer call StringToList() to
+split strings into an array of strings since this can lead to
+unexpected results, and a custom-splitter is more efficient.</li>
+</ul>
+</blockquote>
 <p>2019-06-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

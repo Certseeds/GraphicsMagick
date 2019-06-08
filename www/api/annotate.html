@@ -48,63 +48,25 @@
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-unsigned int AnnotateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
+MagickPassFail AnnotateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
 </pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
-<p>AnnotateImage() annotates an image with text.  Optionally you can include
-any of the following bits of information about the image by embedding
-the appropriate special characters:</p>
-<p>%b   file size
-%c   comment
-%d   directory
-%e   filename extension
-%f   filename
-%g   page dimensions and offsets
-%h   height
-%i   input filename
-%k   number of unique colors
-%l   label
-%m   magick
-%n   number of scenes
-%o   output filename
-%p   page number
-%q   image bit depth
-%r   image type description
-%s   scene number
-%t   top of filename
-%w   width
-%x   horizontal resolution
-%y   vertical resolution
-%A   transparency supported
-%C   compression type
-%D   GIF disposal method
-%G   Original width and height
-%H   page height
-%M   original filename specification
-%O   page offset (x,y)
-%P   page dimensions (width,height)
-%T   time delay (in centi-seconds)
-%U   resolution units
-%W   page width
-%X   page horizontal offset (x)
-%Y   page vertical offset (y)
-%&#64;   trim bounding box
-%[a] named attribute 'a'
-%#   signature
-n   newline
-r   carriage return
-%%   % (literal)</p>
+<p>AnnotateImage() annotates an image with DrawInfo 'text' based on other
+parameters from DrawInfo such as 'affine', 'align', 'decorate', and
+'gravity'.</p>
+<p>Originally this function additionally transformed 'text' using
+TranslateText() but it no longer does so as of GraphicsMagick 1.3.32.</p>
 <p>The format of the AnnotateImage method is:</p>
 <pre class="literal-block">
-unsigned int AnnotateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
+MagickPassFail AnnotateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">
 <dt>status:</dt>
-<dd>Method AnnotateImage returns True if the image is annotated
-otherwise False.</dd>
+<dd>Method AnnotateImage returns MagickPass if the image is annotated
+otherwise MagickFail.</dd>
 <dt>image:</dt>
 <dd>The image.</dd>
 <dt>draw_info:</dt>
