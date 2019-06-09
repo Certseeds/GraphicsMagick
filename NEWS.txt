@@ -223,7 +223,10 @@ Build Changes:
 
 Behavior Changes:
 
-* AnnotateImage(): No longer implicitly call TranslateText() since this is not suitable for most use-cases and causes additional performance impact.  The API user can perform such translations in advance on the text string using TranslateText() if need be.
+* AnnotateImage(): No longer implicitly call TranslateText() since
+  this is not suitable for most use-cases and causes additional
+  performance impact.  The API user can perform such translations in
+  advance on the text string using TranslateText() if need be.
 
 
 1.3.31 (November 17, 2018)

@@ -3042,7 +3042,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   break;
                 }
               (void) CloneString(&graphic_context[n]->extra->composite_path,token);
-              (void) DrawCompositeMask(image,graphic_context[n],graphic_context[n]->extra->composite_path);
+              if (DrawCompositeMask(image,graphic_context[n],
+                                    graphic_context[n]->extra->composite_path)
+                  == MagickFail)
+                status=MagickFail;
               break;
             }
         if (LocaleCompare("matte",keyword) == 0)
@@ -6484,38 +6487,42 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
   MagickGetToken() to support TracePath() parsing error detection and
   reporting.
 */
-#define MagickTracePathAtoF(str,value)                          \
+#define MagickTracePathAtoF(str,value,status)                   \
   do {                                                          \
-    if (MagickAtoFChk(str,value) != MagickPass)                \
+    if (MagickAtoFChk(str,value) != MagickPass)                 \
       {                                                         \
         ThrowException(&image->exception,DrawError,FloatValueConversionError,str); \
+        *(status)=MagickFail;                                           \
         return 0;                                               \
       }                                                         \
   } while(0)
 
-#define MagickTracePathAtoI(str,value)                       \
+#define MagickTracePathAtoI(str,value,status)                \
   do {                                                       \
     if (MagickAtoIChk(str,value) != MagickPass)              \
       {                                                      \
         ThrowException(&image->exception,DrawError,IntegerValueConversionError,str); \
+        *(status)=MagickFail;                                           \
         return 0;                                            \
       }                                                      \
   } while(0)
 
-#define MagickTracePathAtoUI(str,value)                       \
+#define MagickTracePathAtoUI(str,value,status)                     \
   do {                                                       \
     if (MagickAtoUIChk(str,value) != MagickPass)              \
       {                                                      \
         ThrowException(&image->exception,DrawError,IntegerValueConversionError,str); \
+        *(status)=MagickFail;                                           \
         return 0;                                            \
       }                                                      \
   } while(0)
 
-#define MagickGetTracePathToken(p,ep,token,extent)        \
+#define MagickGetTracePathToken(p,ep,token,extent,status)       \
   do {                                                    \
     if (MagickGetToken(p,ep,token,extent) < 1)            \
       {                                                   \
         ThrowException(&image->exception,DrawError,VectorPathTruncated,p); \
+        *(status)=MagickFail;                                           \
         return 0;                        \
       }                                                   \
   } while(0)
@@ -6606,34 +6613,36 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
         */
         do
         {
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&arc.x);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&arc.x,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&arc.y);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&arc.y,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&angle);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&angle,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoUI(token,&large_arc);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoUI(token,&large_arc,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoUI(token,&sweep);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoUI(token,&sweep,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&x);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&x,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&y);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&y,&status);
+          if (status == MagickFail)
+            goto trace_path_done;
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
           if ((status=TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep)) == MagickFail)
@@ -6663,18 +6672,22 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           points[0]=point;
           for (i=1; i < 4; i++)
           {
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&x);
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&x,&status);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&y);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&y,&status);
+            if (status == MagickFail)
+              goto trace_path_done;
             end.x=attribute == 'C' ? x : point.x+x;
             end.y=attribute == 'C' ? y : point.y+y;
             points[i]=end;
           }
+          if (status == MagickFail)
+            break;
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
           if ((status=TraceBezier(p_PIMgr,4)) == MagickFail)
@@ -6696,10 +6709,12 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       {
         do
         {
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&x);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&x,&status);
+          if (status == MagickFail)
+            goto trace_path_done;
           point.x=attribute == 'H' ? x: point.x+x;
           /* make sure we have at least 100 elements available */
           if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
@@ -6728,14 +6743,16 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       {
         do
         {
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&x);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&x,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&y);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&y,&status);
+          if (status == MagickFail)
+            goto trace_path_done;
           point.x=attribute == 'L' ? x : point.x+x;
           point.y=attribute == 'L' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
@@ -6774,14 +6791,16 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
         i=0;
         do
         {
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&x);
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&x,&status);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&y);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&y,&status);
+          if (status == MagickFail)
+            goto trace_path_done;
           point.x=attribute == 'M' ? x : point.x+x;
           point.y=attribute == 'M' ? y : point.y+y;
           if (i == 0)
@@ -6823,14 +6842,16 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           points[0]=point;
           for (i=1; i < 3; i++)
           {
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&x);
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&x,&status);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&y);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&y,&status);
+            if (status == MagickFail)
+              goto trace_path_done;
             if (*p == ',')
               p++;
             end.x=attribute == 'Q' ? x : point.x+x;
@@ -6874,14 +6895,16 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           points[1].y=2.0*points[3].y-points[2].y;
           for (i=2; i < 4; i++)
           {
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&x);
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&x,&status);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&y);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&y,&status);
+            if (status == MagickFail)
+              goto trace_path_done;
             if (*p == ',')
               p++;
             end.x=attribute == 'S' ? x : point.x+x;
@@ -6931,14 +6954,16 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           points[1].y=2.0*points[2].y-points[1].y;
           for (i=2; i < 3; i++)
           {
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&x);
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&x,&status);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
             if (*token == ',')
-              MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-            MagickTracePathAtoF(token,&y);
+              MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+            MagickTracePathAtoF(token,&y,&status);
+            if (status == MagickFail)
+              goto trace_path_done;
             end.x=attribute == 'T' ? x : point.x+x;
             end.y=attribute == 'T' ? y : point.y+y;
             points[i]=end;
@@ -6973,10 +6998,12 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
       {
         do
         {
-          MagickGetTracePathToken(p,&p,token,MaxTextExtent);
+          MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
           if (*token == ',')
-            MagickGetTracePathToken(p,&p,token,MaxTextExtent);
-          MagickTracePathAtoF(token,&y);
+            MagickGetTracePathToken(p,&p,token,MaxTextExtent,&status);
+          MagickTracePathAtoF(token,&y,&status);
+          if (status == MagickFail)
+            goto trace_path_done;
           point.y=attribute == 'V' ? y : point.y+y;
           /* make sure we have at least 100 elements available */
           if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)

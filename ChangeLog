@@ -1,3 +1,11 @@
+2019-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Terminate drawing if
+	DrawCompositeMask() reports failure.  Fixes oss-fuzz 12373
+	"graphicsmagick/coder_MVG_fuzzer: Timeout in
+	graphicsmagick_coder_MVG_fuzzer".
+	(TracePath): Terminate path parsing upon first parsing error.
+
 2019-06-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/txt.c (ReadTXTImage): Use real a new-line character as
