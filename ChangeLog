@@ -1,3 +1,8 @@
+2019-06-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Detect an error in TracePath() and
+	quit rather than forging on.
+
 2019-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Terminate drawing if

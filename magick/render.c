@@ -198,6 +198,7 @@ static MagickPassFail
   TraceCircle(PrimitiveInfoMgr *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
   TraceEllipse(PrimitiveInfoMgr *,const PointInfo,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
   TraceLine(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
+  TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path,unsigned long *number_coordinates),
   TracePoint(PrimitiveInfo *,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
   TraceRectangle(PrimitiveInfo *,const PointInfo,const PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
   TraceRoundRectangle(PrimitiveInfoMgr *,const PointInfo,const PointInfo,PointInfo) MAGICK_FUNC_WARN_UNUSED_RESULT,
@@ -211,9 +212,6 @@ static MagickBool
 static void
   SetDrawInfoClippingPath(DrawInfo *, MagickBool ClippingPath),   /* tag DrawInfo as clipping path or not */
   SetDrawInfoSVGCompliant(DrawInfo *, MagickBool SVGCompliant);   /* tag DrawInfo as SVG compliant or not */
-
-static unsigned long
-  TracePath(Image *image, PrimitiveInfoMgr *,const char *);
 
 static void
 #if 0
@@ -2425,7 +2423,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     primitive_extent;
 
   MagickPassFail
-    status;
+    status = MagickPass;
 
   size_t
     number_points=0;
@@ -2476,7 +2474,12 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 
   if (*draw_info->primitive == '\0')
     return(MagickFail);
+
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"begin draw-image");
+
+  if ((status &= SetImageType(image,TrueColorType)) != MagickPass)
+    return(MagickFail);
+
   /*
     Read primitive from file if supplied primitive starts with '@' and
     we are not already drawing.
@@ -2517,7 +2520,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   PIMgr.StoreStartingAt = 0;
   PIMgr.p_Exception = &image->exception;
 
-  if ((status=PrimitiveInfoRealloc(&PIMgr,6553)) == MagickFail)
+  if ((status &= PrimitiveInfoRealloc(&PIMgr,6553)) != MagickPass)
     {
       MagickFreeMemory(primitive);
       MagickFreeMemory(graphic_context);
@@ -2529,8 +2532,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
   token=MagickAllocateMemory(char *,primitive_extent+1);
   token_max_length=primitive_extent;
   (void) QueryColorDatabase("black",&start_color,&image->exception);
-  (void) SetImageType(image,TrueColorType);
-  status=MagickPass;
   defsPushCount = 0;  /* not inside of <defs> ... </defs> */
   xTextCurrent = yTextCurrent = 0.0;  /* initialize current text position */
   /*
@@ -4399,15 +4400,18 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        if ((status=TraceBezier(&PIMgr,primitive_info[j].coordinates)) == MagickFail)
+        if ((status &= TraceBezier(&PIMgr,primitive_info[j].coordinates)) != MagickPass)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
       }
       case PathPrimitive:
       {
+        unsigned long number_coordinates=0i;
         PIMgr.StoreStartingAt=j;
-        PIMgr.StoreStartingAt=i=(long) (j+TracePath(image,&PIMgr,token));
+        if ((status &= TracePath(image,&PIMgr,token, &number_coordinates)) != MagickPass)
+          break;
+        PIMgr.StoreStartingAt=i=(long) (j+number_coordinates);
         break;
       }
       case ColorPrimitive:
@@ -6492,7 +6496,7 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
     if (MagickAtoFChk(str,value) != MagickPass)                 \
       {                                                         \
         ThrowException(&image->exception,DrawError,FloatValueConversionError,str); \
-        *(status)=MagickFail;                                           \
+        *(status)=MagickFail;                                        \
         return 0;                                               \
       }                                                         \
   } while(0)
@@ -6502,7 +6506,7 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
     if (MagickAtoIChk(str,value) != MagickPass)              \
       {                                                      \
         ThrowException(&image->exception,DrawError,IntegerValueConversionError,str); \
-        *(status)=MagickFail;                                           \
+        *(status)=MagickFail;                                        \
         return 0;                                            \
       }                                                      \
   } while(0)
@@ -6522,14 +6526,14 @@ TraceLine(PrimitiveInfo *primitive_info,const PointInfo start,
     if (MagickGetToken(p,ep,token,extent) < 1)            \
       {                                                   \
         ThrowException(&image->exception,DrawError,VectorPathTruncated,p); \
-        *(status)=MagickFail;                                           \
+        *(status)=MagickFail;                                        \
         return 0;                        \
       }                                                   \
   } while(0)
 
 
-static unsigned long
-TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
+static MagickPassFail
+TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path,unsigned long *number_coordinates)
 {
   char
     token[MaxTextExtent];
@@ -6565,7 +6569,6 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
     i;
 
   unsigned long
-    number_coordinates,
     z_count;
 
   size_t
@@ -6578,7 +6581,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
   SubpathOffset = p_PIMgr->StoreStartingAt;
   primitive_info = *pp_PrimitiveInfo + SubpathOffset;
   attribute=0;
-  number_coordinates=0;
+  *number_coordinates=0;
   z_count=0;
   primitive_type=primitive_info->primitive;
   q=primitive_info;
@@ -6645,7 +6648,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             goto trace_path_done;
           end.x=attribute == 'A' ? x : point.x+x;
           end.y=attribute == 'A' ? y : point.y+y;
-          if ((status=TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep)) == MagickFail)
+          if ((status &= TraceArcPath(p_PIMgr,point,end,arc,angle,large_arc,sweep)) != MagickPass)
             goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
@@ -6690,7 +6693,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             break;
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          if ((status=TraceBezier(p_PIMgr,4)) == MagickFail)
+          if ((status &= TraceBezier(p_PIMgr,4)) != MagickPass)
             goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           p_PIMgr->StoreStartingAt += q->coordinates;
@@ -6719,11 +6722,11 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           /* make sure we have at least 100 elements available */
           if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
             {
-              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
-                return 0; /* FIXME: How to return useful error? */
+              if ((status &= PrimitiveInfoRealloc(p_PIMgr,100)) != MagickPass)
+                goto trace_path_done; /* FIXME: How to return useful error? */
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
             }
-          if ((status=TracePoint(q,point)) == MagickFail)
+          if ((status &= TracePoint(q,point)) != MagickPass)
             goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6758,11 +6761,11 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           /* make sure we have at least 100 elements available */
           if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
           {
-            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+            if ((status &= PrimitiveInfoRealloc(p_PIMgr,100)) != MagickPass)
               goto trace_path_done;
             q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           }
-          if ((status=TracePoint(q,point)) == MagickFail)
+          if ((status &= TracePoint(q,point)) != MagickPass)
             goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6784,7 +6787,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           {
             primitive_info = *pp_PrimitiveInfo + SubpathOffset;
             primitive_info->coordinates=q-primitive_info;
-            number_coordinates+=primitive_info->coordinates;
+            *number_coordinates+=primitive_info->coordinates;
             primitive_info=q;
             SubpathOffset=p_PIMgr->StoreStartingAt;
           }
@@ -6807,13 +6810,13 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             start=point; /*otherwise it's an implied lineto command for both 'M' and 'm'*/
           i++;
           /* make sure we have at least 100 elements available */
-          if  ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
+          if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
             {
-              if (PrimitiveInfoRealloc(p_PIMgr,100) == MagickFail)
-                return 0; /* FIXME: How to return useful error? */
-              q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
+              if ((status &= PrimitiveInfoRealloc(p_PIMgr,100)) != MagickPass)
+                goto trace_path_done; /* FIXME: How to return useful error? */
+               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
             }
-          if ((status=TracePoint(q,point)) == MagickFail)
+          if ((status &= TracePoint(q,point)) != MagickPass)
             goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -6860,7 +6863,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+          if ((status &= TraceBezier(p_PIMgr,3)) != MagickPass)
             goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
@@ -6918,7 +6921,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 4; i++)
             (q+i)->point=points[i];
-          if ((TraceBezier(p_PIMgr,4)) == MagickFail)
+          if ((status &= TraceBezier(p_PIMgr,4)) != MagickPass)
             goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
@@ -6975,7 +6978,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
             }
           for (i=0; i < 3; i++)
             (q+i)->point=points[i];
-          if ((status=TraceBezier(p_PIMgr,3)) == MagickFail)
+          if ((status &= TraceBezier(p_PIMgr,3)) != MagickPass)
             goto trace_path_done;
           q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
           p_PIMgr->StoreStartingAt += q->coordinates;
@@ -7008,11 +7011,11 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
           /* make sure we have at least 100 elements available */
           if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
             {
-              if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+              if ((status &= PrimitiveInfoRealloc(p_PIMgr,100)) != MagickPass)
                 goto trace_path_done;
               q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
             }
-          if ((status=TracePoint(q,point)) == MagickFail)
+          if ((status &= TracePoint(q,point)) != MagickPass)
             goto trace_path_done;
           p_PIMgr->StoreStartingAt += q->coordinates;
           q+=q->coordinates;
@@ -7034,7 +7037,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
         /* make sure we have at least 100 elements available */
         if ((p_PIMgr->StoreStartingAt + 100) > *p_PIMgr->p_AllocCount)
           {
-            if ((status=PrimitiveInfoRealloc(p_PIMgr,100)) == MagickFail)
+            if ((status &= PrimitiveInfoRealloc(p_PIMgr,100)) != MagickPass)
               goto trace_path_done;
             q = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;  /* base address might have changed */
           }
@@ -7045,7 +7048,7 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
         primitive_info = *pp_PrimitiveInfo + SubpathOffset;
         primitive_info->coordinates=q-primitive_info;
         PRIMINF_SET_IS_CLOSED_SUBPATH(primitive_info,1);
-        number_coordinates+=primitive_info->coordinates;
+        *number_coordinates+=primitive_info->coordinates;
         primitive_info=q;
         SubpathOffset = p_PIMgr->StoreStartingAt;
         z_count++;
@@ -7062,8 +7065,8 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
 
   primitive_info = *pp_PrimitiveInfo + SubpathOffset;
   primitive_info->coordinates=q-primitive_info;
-  number_coordinates+=primitive_info->coordinates;
-  for (i=0; i < (long) number_coordinates; i++)
+  *number_coordinates+=primitive_info->coordinates;
+  for (i=0; i < (long) *number_coordinates; i++)
   {
     q--;
     q->primitive=primitive_type;
@@ -7075,9 +7078,9 @@ TracePath(Image *image,PrimitiveInfoMgr *p_PIMgr,const char *path)
  trace_path_done:;
 
   if (status == MagickFail)
-    number_coordinates = 0;
+    *number_coordinates = 0;
 
-  return(number_coordinates);
+  return status;
 }
 
 static MagickPassFail
