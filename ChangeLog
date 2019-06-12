@@ -1,3 +1,8 @@
+2019-06-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix typo when initializing
+	number_coordinates.  Somehow GCC and clang let this typo slip by.
+
 2019-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dib.c (ReadDIBImage): Preserve PseudoClass opaque

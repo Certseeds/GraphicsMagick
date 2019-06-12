@@ -4407,7 +4407,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       }
       case PathPrimitive:
       {
-        unsigned long number_coordinates=0i;
+        unsigned long number_coordinates=0;
         PIMgr.StoreStartingAt=j;
         if ((status &= TracePath(image,&PIMgr,token, &number_coordinates)) != MagickPass)
           break;
