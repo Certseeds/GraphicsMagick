@@ -1048,8 +1048,10 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       char
         byte;
 
-      image->storage_class=DirectClass;
-      image->matte=True;
+      ClassType
+        storage_class = image->storage_class;
+
+      image->matte=MagickFalse;
       for (y=(long) image->rows-1; y >= 0; y--)
         {
           if (image->logging)
@@ -1064,8 +1066,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
                 break;
               for (bit=0; bit < 8; bit++)
-                q[x+bit].opacity=(Quantum)
-                  (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                {
+                  q[x+bit].opacity=(Quantum)
+                    (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                  if (q[x+bit].opacity != OpaqueOpacity)
+                    image->matte=MagickTrue;
+                }
             }
           /* Detect early loop termination above due to EOF */
           if (x < ((long) image->columns-7))
@@ -1076,8 +1082,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
                 break;
               for (bit=0; bit < (long) (image->columns % 8); bit++)
-                q[x+bit].opacity=(Quantum)
-                  (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                {
+                  q[x+bit].opacity=(Quantum)
+                    (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                  if (q[x+bit].opacity != OpaqueOpacity)
+                    image->matte=MagickTrue;
+                }
             }
           if (image->columns % 32)
             for (x=0; x < (long) ((32-(image->columns % 32))/8); x++)
@@ -1095,6 +1105,13 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
+      /*
+        If a PseudoClass image has a non-opaque opacity channel, then
+        we must mark it as DirectClass since there is no standard way
+        to store PseudoClass with an opacity channel.
+      */
+      if ((storage_class == PseudoClass) && (image->matte == MagickTrue))
+        image->storage_class=DirectClass;
 #if 0
       /*
         FIXME: SourceForge bug 557 provides an icon for which magick

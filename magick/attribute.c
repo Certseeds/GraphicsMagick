@@ -2534,7 +2534,7 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
 %  whether the EXIF profile was successfully updated. The new
 %  EXIF:Orientation attribute replaces the existing value rather than
 %  being concatenated to it as when setting other attributes.
-$
+%
 %  The 'comment' and 'label' attributes are treated specially in that
 %  embedded format specifications are translated according to the formatting
 %  rules of TranslateText().
