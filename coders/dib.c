@@ -1048,9 +1048,6 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       char
         byte;
 
-      ClassType
-        storage_class = image->storage_class;
-
       image->matte=MagickFalse;
       for (y=(long) image->rows-1; y >= 0; y--)
         {
@@ -1110,7 +1107,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         we must mark it as DirectClass since there is no standard way
         to store PseudoClass with an opacity channel.
       */
-      if ((storage_class == PseudoClass) && (image->matte == MagickTrue))
+      if ((image->storage_class == PseudoClass) && (image->matte == MagickTrue))
         image->storage_class=DirectClass;
 #if 0
       /*
