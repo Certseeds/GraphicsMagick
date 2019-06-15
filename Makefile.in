@@ -2377,10 +2377,7 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
-	$(distdir).tar.xz
 GZIP_ENV = --best
-DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip
 distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
@@ -4700,7 +4697,8 @@ UTILITIES_TESTS = \
 	utilities/tests/list.tap \
 	utilities/tests/montage.tap \
 	utilities/tests/msl_composite.tap \
-	utilities/tests/preview.tap
+	utilities/tests/preview.tap \
+	utilities/tests/resize.tap
 
 UTILITIES_MANS = \
 	utilities/gm.1 \
@@ -4804,6 +4802,12 @@ DISTDIRS = locale scripts www PerlMagick TclMagick
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm
+
+
+# Add zstd compression to output files
+DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
+	$(distdir).tar.xz $(distdir).tar.zst
 
 
 #
@@ -11232,6 +11236,11 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo ==============================================================
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_RPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
+
+# Rules to build a .tar.zst tarball
+dist-zstd: distdir
+	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-19} zstd -c >$(distdir).tar.zst
+	$(am__post_remove_distdir)
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
@@ -11254,9 +11263,16 @@ coverity:
 	https://scan.coverity.com/builds?project=GraphicsMagick
 	$(RM) $(COVERITY_TARBALL)
 
+# Build symbols files to add 'gm' prefix to functions
 gmsymbols:
 	$(srcdir)/scripts/gmsymbols.sh magick/.libs/libGraphicsMagick.a MAGICK > $(GMMAGICKSYMBOLS)
 	$(srcdir)/scripts/gmsymbols.sh wand/.libs/libGraphicsMagickWand.a MAGICK_WAND > $(GMWANDSYMBOLS)
+
+# Convenient target to build release archive files and sign them.
+release: $(DIST_WINDOWS_SRC_7ZIP) distcheck
+	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
+	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

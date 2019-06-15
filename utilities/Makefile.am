@@ -29,7 +29,8 @@ UTILITIES_TESTS = \
 	utilities/tests/list.tap \
 	utilities/tests/montage.tap \
 	utilities/tests/msl_composite.tap \
-	utilities/tests/preview.tap
+	utilities/tests/preview.tap \
+	utilities/tests/resize.tap
 
 utilities/tests/montage.log : \
 	utilities/tests/effects.log

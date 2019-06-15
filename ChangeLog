@@ -1,3 +1,9 @@
+2019-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am (release): Add a release target to make it easier to
+	produce and sign the release files.  Add a zstd-compressed output
+	tarball just because we can.
+
 2019-06-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix typo when initializing
