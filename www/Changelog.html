@@ -38,6 +38,11 @@
 <p>2019-06-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>Makefile.am (dist-zstd): Use the maximum possible compression
+level (22) when creating a Zstd-compressed tarball to get close to
+lzip/xz compression levels.</li>
+<li>coders/tiff.c (ReadTIFFImage): Fix typo in initialization of
+'tile' pointer variable.</li>
 <li>version.sh: Updates in preparation for 1.3.32 release.</li>
 </ul>
 </blockquote>
