@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.31 (Released November 17, 2018) `download release`__
+Current Release              1.3.32 (Released June 15, 2019) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -68,8 +68,8 @@ of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
 of source code in the base package (or 1,225K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
-over 88 major formats including important formats like DPX, GIF, JPEG,
-JPEG-2000, PNG, PDF, PNM, and TIFF.
+over 89 major formats including important formats like DPX, GIF, JPEG,
+JPEG-2000, PNG, PDF, PNM, TIFF, and WebP.
 
 Image processing is multi-threaded using OpenMP_ (`read about OpenMP
 in GraphicsMagick`_) so that CPU-bound tasks scale linearly as
