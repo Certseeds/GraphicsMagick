@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2012 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -174,18 +174,26 @@ MagickExport double ExpandAffine(const AffineMatrix *affine)
 #define SigmaPoisson   0.05
 #define TauGaussian    20.0
 
+#if defined(HAVE_LOGF)
+#  define NOISE_FLT_T float
+#else
+#  define NOISE_FLT_T double
+#endif
+
 MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
                                               const NoiseType noise_type,
                                               MagickRandomKernel *kernel)
 {
-  double
+  NOISE_FLT_T
     alpha,
     beta,
     pixel,
-    sigma,
+    sigma;
+
+  double
     value;
 
-  pixel=(double) quantum_pixel;
+  pixel=(NOISE_FLT_T) quantum_pixel;
 
 #if QuantumDepth > 8
   pixel /= MaxRGBDouble/255.0;
@@ -204,13 +212,13 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
     }
     case GaussianNoise:
     {
-      double
+      float
         tau;
 
       beta=MagickRandomRealInlined(kernel);
-      sigma=sqrt(-2.0*log(alpha))*cos(2.0*MagickPI*beta);
-      tau=sqrt(-2.0*log(alpha))*sin(2.0*MagickPI*beta);
-      value=sqrt((double) pixel)*SigmaGaussian*sigma+TauGaussian*tau;
+      sigma=SQRTF(-2.0*LOGF(alpha))*COSF(2.0*MagickPI*beta);
+      tau=SQRTF(-2.0*LOGF(alpha))*SINF(2.0*MagickPI*beta);
+      value=SQRTF(pixel)*SigmaGaussian*sigma+TauGaussian*tau;
       break;
     }
     case MultiplicativeGaussianNoise:
@@ -218,9 +226,9 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
       if (alpha <= NoiseEpsilon)
         sigma=255.0;
       else
-        sigma=sqrt(-2.0*log(alpha));
+        sigma=SQRTF(-2.0*LOGF(alpha));
       beta=MagickRandomRealInlined(kernel);
-      value=pixel*SigmaMultiplicativeGaussian*sigma*cos(2.0*MagickPI*beta);
+      value=pixel*SigmaMultiplicativeGaussian*sigma*COSF(2.0*MagickPI*beta);
       break;
     }
     case ImpulseNoise:
@@ -241,14 +249,14 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
           if (alpha <= NoiseEpsilon)
             value=-255.0;
           else
-            value=SigmaLaplacian*log(2.0*alpha);
+            value=SigmaLaplacian*LOGF(2.0*alpha);
           break;
         }
       beta=1.0-alpha;
       if (beta <= (0.5*NoiseEpsilon))
         value=255.0;
       else
-        value=-(SigmaLaplacian*log(2.0*beta));
+        value=-(SigmaLaplacian*LOGF(2.0*beta));
       break;
     }
     case PoissonNoise:

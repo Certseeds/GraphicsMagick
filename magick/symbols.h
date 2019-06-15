@@ -161,6 +161,7 @@
 #define DestroyLogInfo GmDestroyLogInfo
 #define DestroyMagicInfo GmDestroyMagicInfo
 #define DestroyMagick GmDestroyMagick
+#define DestroyMagickExceptionHandling GmDestroyMagickExceptionHandling
 #define DestroyMagickModules GmDestroyMagickModules
 #define DestroyMagickMonitor GmDestroyMagickMonitor
 #define DestroyMagickRandomGenerator GmDestroyMagickRandomGenerator
@@ -325,7 +326,6 @@
 #define FormatString GmFormatString
 #define FormatStringList GmFormatStringList
 #define FrameImage GmFrameImage
-#define FreeFunc GmFreeFunc
 #define FuzzyColorMatch GmFuzzyColorMatch
 #define GammaImage GmGammaImage
 #define GaussianBlurImage GmGaussianBlurImage
@@ -473,6 +473,7 @@
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
 #define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
+#define InitializeMagickExceptionHandling GmInitializeMagickExceptionHandling
 #define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickMonitor GmInitializeMagickMonitor
 #define InitializeMagickRandomGenerator GmInitializeMagickRandomGenerator
@@ -586,6 +587,7 @@
 #define MagickMapIterateToFront GmMagickMapIterateToFront
 #define MagickMapRemoveEntry GmMagickMapRemoveEntry
 #define MagickMonitor GmMagickMonitor
+#define MagickMonitorActive GmMagickMonitorActive
 #define MagickMonitorFormatted GmMagickMonitorFormatted
 #define MagickRandNewSeed GmMagickRandNewSeed
 #define MagickRandReentrant GmMagickRandReentrant
@@ -689,13 +691,13 @@
 #define MagickXSetWindows GmMagickXSetWindows
 #define MagickXSignalHandler GmMagickXSignalHandler
 #define MagickXTextViewWidget GmMagickXTextViewWidget
+#define MagickXTextViewWidgetNDL GmMagickXTextViewWidgetNDL
 #define MagickXUserPreferences GmMagickXUserPreferences
 #define MagickXWarning GmMagickXWarning
 #define MagickXWindowByID GmMagickXWindowByID
 #define MagickXWindowByName GmMagickXWindowByName
 #define MagickXWindowByProperty GmMagickXWindowByProperty
 #define MagnifyImage GmMagnifyImage
-#define MallocFunc GmMallocFunc
 #define MapBlob GmMapBlob
 #define MapImage GmMapImage
 #define MapImages GmMapImages
@@ -770,7 +772,6 @@
 #define ReacquireMemory GmReacquireMemory
 #define ReadBlob GmReadBlob
 #define ReadBlobByte GmReadBlobByte
-#define ReadBlobByteFromBuffer GmReadBlobByteFromBuffer
 #define ReadBlobLSBDouble GmReadBlobLSBDouble
 #define ReadBlobLSBDoubles GmReadBlobLSBDoubles
 #define ReadBlobLSBFloat GmReadBlobLSBFloat
@@ -778,7 +779,6 @@
 #define ReadBlobLSBLong GmReadBlobLSBLong
 #define ReadBlobLSBLongs GmReadBlobLSBLongs
 #define ReadBlobLSBShort GmReadBlobLSBShort
-#define ReadBlobLSBShortFromBuffer GmReadBlobLSBShortFromBuffer
 #define ReadBlobLSBShorts GmReadBlobLSBShorts
 #define ReadBlobLSBSignedLong GmReadBlobLSBSignedLong
 #define ReadBlobLSBSignedShort GmReadBlobLSBSignedShort
@@ -796,7 +796,7 @@
 #define ReadBlobZC GmReadBlobZC
 #define ReadImage GmReadImage
 #define ReadInlineImage GmReadInlineImage
-#define ReallocFunc GmReallocFunc
+#define ReallocateImageColormap GmReallocateImageColormap
 #define ReduceNoiseImage GmReduceNoiseImage
 #define ReferenceBlob GmReferenceBlob
 #define ReferenceCache GmReferenceCache
@@ -804,6 +804,7 @@
 #define RegisterARTImage GmRegisterARTImage
 #define RegisterAVSImage GmRegisterAVSImage
 #define RegisterBMPImage GmRegisterBMPImage
+#define RegisterBRAILLEImage GmRegisterBRAILLEImage
 #define RegisterCALSImage GmRegisterCALSImage
 #define RegisterCAPTIONImage GmRegisterCAPTIONImage
 #define RegisterCINEONImage GmRegisterCINEONImage
@@ -1018,6 +1019,7 @@
 #define UnregisterARTImage GmUnregisterARTImage
 #define UnregisterAVSImage GmUnregisterAVSImage
 #define UnregisterBMPImage GmUnregisterBMPImage
+#define UnregisterBRAILLEImage GmUnregisterBRAILLEImage
 #define UnregisterCALSImage GmUnregisterCALSImage
 #define UnregisterCAPTIONImage GmUnregisterCAPTIONImage
 #define UnregisterCINEONImage GmUnregisterCINEONImage

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2160,7 +2160,7 @@ MagickExport MagickPassFail OrderedDitherImage(Image *image)
 {
 #define DitherImageText "[%s] Ordered dither..."
 
-  static Quantum
+  static const Quantum
     DitherMatrix[8][8] =
     {
       {   0, 192,  48, 240,  12, 204,  60, 252 },

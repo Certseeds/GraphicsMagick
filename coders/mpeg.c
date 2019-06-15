@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -228,7 +228,7 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
   register long
     i;
 
-  static int
+  static const int
     q_matrix[]=
     {
        8, 16, 19, 22, 26, 27, 29, 34,

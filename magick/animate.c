@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -36,6 +36,7 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#if defined(HasX11)
 #include "magick/color.h"
 #include "magick/constitute.h"
 #include "magick/delegate.h"
@@ -45,8 +46,135 @@
 #include "magick/utility.h"
 #include "magick/version.h"
 #include "magick/xwindow.h"
-#if defined(HasX11)
-#include "magick/animate.h"
+
+/*
+  Animate state declarations.
+*/
+#define AutoReverseAnimationState 0x0004
+#define ForwardAnimationState 0x0008
+#define HighlightState  0x0010
+#define PlayAnimationState 0x0020
+#define RepeatAnimationState 0x0040
+#define StepAnimationState 0x0080
+
+/*
+  Static declarations.
+*/
+static const char
+  AnimateHelp[]=
+    "BUTTONS\0"
+    "\0"
+    "  Press any button to map or unmap the Command widget.\0"
+    "\0"
+    "COMMAND WIDGET\0"
+    "  The Command widget lists a number of sub-menus and commands.\0"
+    "  They are\0"
+    "\0"
+    "    Animate\0"
+    "      Open\0"
+    "      Play\0"
+    "      Step\0"
+    "      Repeat\0"
+    "      Auto Reverse\0"
+    "    Speed\0"
+    "      Slower\0"
+    "      Faster\0"
+    "    Direction\0"
+    "      Forward\0"
+    "      Reverse\0"
+    "      Help\0"
+    "        Overview\0"
+    "        Browse Documentation\0"
+    "        About Animate\0"
+    "    Image Info\0"
+    "    Quit\0"
+    "\0"
+    "  Menu items with a indented triangle have a sub-menu.  They\0"
+    "  are represented above as the indented items.  To access a\0"
+    "  sub-menu item, move the pointer to the appropriate menu and\0"
+    "  press a button and drag.  When you find the desired sub-menu\0"
+    "  item, release the button and the command is executed.  Move\0"
+    "  the pointer away from the sub-menu if you decide not to\0"
+    "  execute a particular command.\0"
+    "\0"
+    "KEYBOARD ACCELERATORS\0"
+    "  Accelerators are one or two key presses that effect a\0"
+    "  particular command.  The keyboard accelerators that\0"
+    "  animate(1) understands is:\0"
+    "\0"
+    "  Ctl+O  Press to open an image from a file.\0"
+    "\0"
+    "  space  Press to display the next image in the sequence.\0"
+    "\0"
+    "  <      Press to speed-up the display of the images.  Refer to\0"
+    "         -delay for more information.\0"
+    "\0"
+    "  >      Press to slow the display of the images.  Refer to\0"
+    "         -delay for more information.\0"
+    "\0"
+    "  F1     Press to display helpful information about animate(1).\0"
+    "\0"
+    "  Find   Press to browse documentation about ImageMagick.\0"
+    "\0"
+    "  ?      Press to display information about the image.  Press\0"
+    "         any key or button to erase the information.\0"
+    "\0"
+    "         This information is printed: image name;  image size;\0"
+    "         and the total number of unique colors in the image.\0"
+    "\0"
+    "  Ctl-q  Press to discard all images and exit program.";
+
+/*
+  Constant declarations.
+*/
+static const unsigned char
+  HighlightBitmap[8] =
+  {
+    0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55
+  },
+  ShadowBitmap[8] =
+  {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  };
+
+/*
+  Enumeration declarations.
+*/
+typedef enum
+{
+  OpenCommand,
+  PlayCommand,
+  StepCommand,
+  RepeatCommand,
+  AutoReverseCommand,
+  SlowerCommand,
+  FasterCommand,
+  ForwardCommand,
+  ReverseCommand,
+  HelpCommand,
+  BrowseDocumentationCommand,
+  VersionCommand,
+  InfoCommand,
+  QuitCommand,
+  StepBackwardCommand,
+  StepForwardCommand,
+  NullCommand
+} CommandType;
+
+/*
+  Stipples.
+*/
+#define HighlightWidth  8
+#define HighlightHeight  8
+#define ShadowWidth  8
+#define ShadowHeight  8
+
+/*
+  Function prototypes.
+*/
+static Image
+  *MagickXMagickCommand(Display *,MagickXResourceInfo *,MagickXWindows *,const CommandType,
+    Image **,unsigned int *);
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,8 +423,10 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       /*
         User requested help.
       */
-      MagickXTextViewWidget(display,resource_info,windows,False,
-        "Help Viewer - Animate",AnimateHelp);
+      MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                               "Help Viewer - Animate",
+                               AnimateHelp,
+                               sizeof(AnimateHelp));
       break;
     }
     case BrowseDocumentationCommand:
@@ -926,8 +1056,8 @@ MagickXAnimateImages(Display *display,
 #define MaxWindows  8
 #define MagickTitle  "Commands"
 
-  static const char
-    *CommandMenu[]=
+  const char
+    * const CommandMenu[]=
     {
       "Animate",
       "Speed",
@@ -937,7 +1067,7 @@ MagickXAnimateImages(Display *display,
       "Quit",
       (char *) NULL
     },
-    *AnimateMenu[]=
+    * const AnimateMenu[]=
     {
       "Open",
       "Play",
@@ -946,19 +1076,19 @@ MagickXAnimateImages(Display *display,
       "Auto Reverse",
       (char *) NULL
     },
-    *SpeedMenu[]=
+    * const SpeedMenu[]=
     {
       "Faster",
       "Slower",
       (char *) NULL
     },
-    *DirectionMenu[]=
+    * const DirectionMenu[]=
     {
       "Forward",
       "Reverse",
       (char *) NULL
     },
-    *HelpMenu[]=
+    * const HelpMenu[]=
     {
       "Overview",
       "Browse Documentation",
@@ -967,8 +1097,8 @@ MagickXAnimateImages(Display *display,
     };
 
 
-  static const char
-    **Menus[MagickMenus]=
+  const char
+    * const *Menus[MagickMenus]=
     {
       AnimateMenu,
       SpeedMenu,
@@ -1012,7 +1142,7 @@ MagickXAnimateImages(Display *display,
     };
 
   static const CommandType
-    *Commands[MagickMenus]=
+    * const Commands[MagickMenus]=
     {
       CommandTypes,
       SpeedCommands,

@@ -120,6 +120,27 @@ extern "C" {
 #  define hypot  _hypot
 #endif
 
+// We do not yet know what CRT versions have these float functions or if
+// special-handling (e.g. mapping to underscore version) is needed.
+#if defined(_VISUALC_)
+
+/* Define to 1 if you have the `cosf' function. */
+#define HAVE_COSF 1
+
+/* Define to 1 if you have the `fabsf' function. */
+#define HAVE_FABSF 1
+
+/* Define to 1 if you have the `logf' function. */
+#define HAVE_LOGF 1
+
+/* Define to 1 if you have the `sinf' function. */
+#define HAVE_SINF 1
+
+/* Define to 1 if you have the `sqrtf' function. */
+#define HAVE_SQRTF 1
+
+#endif // defined(_VISUALC_)
+
 #if !defined(_MSC_VER) || (defined(_MSC_VER) && _MSC_VER < 1500)
 #define vsnprintf _vsnprintf
 #endif

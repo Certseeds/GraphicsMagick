@@ -153,7 +153,7 @@ dtrace = nodebugtrace
 # extract and save function title.  example:
 # +   X M a g i c k C o m m a n d                                               %
 # %   X A n i m a t e B a c k g r o u n d I m a g e                             %
-# Lines starting with '+' are private APIs which should not appear in 
+# Lines starting with '+' are private APIs which should not appear in
 # in the output.
 re_func_title = re.compile(r'^[+|%]\s+((\w )+)\s*%')
 
@@ -232,7 +232,7 @@ class Prototype:
                     line += ', '
 
             proto_lines.append(line)
-            proto = '\n  '.join(proto_lines)                    
+            proto = '\n  '.join(proto_lines)
         return ".. parsed-literal::\n\n    %s" % proto
 
 
@@ -600,4 +600,3 @@ def main(argv=None):
 
 if __name__ == '__main__':
     sys.exit(main())
-

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -265,18 +265,14 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
 ModuleExport void RegisterJBIGImage(void)
 {
   static const char
-    *description="Joint Bi-level Image experts Group interchange format";
+    description[]="Joint Bi-level Image experts Group interchange format";
 
-  static char
-    version[MaxTextExtent];
+  static const char
+    version[]="JBIG-Kit " JBG_VERSION;
 
   MagickInfo
     *entry;
 
-  *version='\0';
-#if defined(JBG_VERSION)
-  (void) strlcpy(version,JBG_VERSION,MaxTextExtent);
-#endif
   entry=SetMagickInfo("BIE");
 #if defined(HasJBIG)
   entry->decoder=(DecoderHandler) ReadJBIGImage;
@@ -284,7 +280,6 @@ ModuleExport void RegisterJBIGImage(void)
 #endif
   entry->adjoin=False;
   entry->description=description;
-  if (*version != '\0')
     entry->version=version;
   entry->module="JBIG";
   entry->coder_class=PrimaryCoderClass;
@@ -296,8 +291,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->encoder=(EncoderHandler) WriteJBIGImage;
 #endif
   entry->description=description;
-  if (*version != '\0')
-    entry->version=version;
+  entry->version=version;
   entry->module="JBIG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -308,8 +302,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->encoder=(EncoderHandler) WriteJBIGImage;
 #endif
   entry->description=description;
-  if (*version != '\0')
-    entry->version=version;
+  entry->version=version;
   entry->module="JBIG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

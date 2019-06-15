@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013 - 2017 GraphicsMagick Group
+% Copyright (C) 2013-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -104,6 +104,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *,Image *);
 #include <webp/mux.h>
 #endif
 #if WEBP_ENCODER_ABI_VERSION >= 0x020e /* >= 0.6.0 */
+#  define SUPPORT_CONFIG_USE_SHARP_YUV
 #endif
 
 /*
@@ -363,10 +364,10 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
 ModuleExport void RegisterWEBPImage(void)
 {
   static const char
-    *description = "WebP Image Format";
+    description[] = "WebP Image Format";
 
   static char
-    version[MaxTextExtent];
+    version[41];
 
   MagickInfo
     *entry;
@@ -400,8 +401,9 @@ ModuleExport void RegisterWEBPImage(void)
   webp_major=(web_encoder_version >> 16) & 0xff;
   webp_minor=(web_encoder_version >> 8) & 0xff;
   webp_revision=web_encoder_version & 0xff;
-  FormatString(version, "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
-               webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
+  (void) sprintf(version,
+                  "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
+                  webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
 
   entry=SetMagickInfo("WEBP");
 #if defined(HasWEBP)
@@ -593,6 +595,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   */
   (void) TransformColorspace(image,RGBColorspace);
   image->storage_class=DirectClass;
+  picture.use_argb = 1;
 
   (void) MagickTsdSetSpecific(tsd_key,(void *) image);
 
@@ -676,6 +679,10 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   if ((value=AccessDefinition(image_info,"webp","low-memory")))
     configure.low_memory=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
 #endif
+#if defined(SUPPORT_CONFIG_USE_SHARP_YUV)
+  if ((value=AccessDefinition(image_info,"webp","use-sharp-yuv")))
+    configure.use_sharp_yuv=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+#endif
   if (WebPValidateConfig(&configure) != 1)
     ThrowWriterException(CoderError,WebPInvalidConfiguration,image);
 
@@ -684,7 +691,6 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
       /*
         Use ARGB input for lossless (YUVA input is lossy).
       */
-      picture.use_argb = 1;
       webp_status = WebPPictureAlloc(&picture);
 
       for (y = 0; y < image->rows; y++)

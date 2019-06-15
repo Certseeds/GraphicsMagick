@@ -329,9 +329,13 @@ Optional Packages/Options
 
     disable TrueType support
 
+--with-mtmalloc
+
+    enable Solaris mtmalloc memory allocation library support
+
 --with-umem
 
-    enable libumem memory allocation library support
+    enable Solaris libumem memory allocation library support
 
 --without-wmf
 
@@ -480,6 +484,28 @@ Several configure options require special note:
   copying a module into place) but GraphicsMagick itself is not built
   using modules.
 
+  Use of the modules build is recommended where it is possible to use
+  it.  Using modules defers the overhead due to library dependencies
+  (searching the filesystem for libraries, shared library relocations,
+  initialized data, and constructors) until the point the libraries
+  are required to be used to support the file format requested.
+  Traditionally it has been thought that a 'static' program will be
+  more performant than one built with shared libraries, and perhaps
+  this may be true, but building a 'static' GraphicsMagick does not
+  account for the many shared libraries it uses on a typical
+  Unix/Linux system.  These shared libraries may impose unexpected
+  overhead.  For example, it was recently noted that libxml2 is now
+  often linked with the ICU (international character sets) libraries
+  which are huge C++ libraries consuming almost 30MB of disk space and
+  that simply linking with these libraries causes GraphicsMagick to
+  start up much more slowly. By using the modules build, libxml2 (and
+  therefore the huge ICU C++ libraries) are only loaded in the few
+  cases (e.g. SVG format) where it is needed.
+
+  When applications depend on the GraphicsMagick libraries, using the
+  modules build lessens the linkage overhead due to using
+  GraphicsMagick.
+
 --enable-symbol-prefix
 
   The GraphicsMagick libraries may contain symbols which conflict with
@@ -588,7 +614,7 @@ Several configure options require special note:
   safety is virtually unmeasurable so usually there is no reason to
   disable multi-thread support.  While previous versions disabled
   OpenMP support when this option was supplied, that is no longer the
-  case.
+  case since then OpenMP locking APIs are used instead.
 
 --disable-largefile
 
@@ -608,6 +634,10 @@ Several configure options require special note:
   4.2. OpenMP is a well-established standard and was implemented in
   some other compilers in the late '90s, long before its appearance in
   GCC. OpenMP adds additional build and linkage requirements.
+  GraphicsMagick supports OpenMP version 2.0 and later, primarily
+  using features defined by version 2.5, but will be optionally using
+  features from version 3.1 in the future since it is commonly
+  available.
 
   By default, GraphicsMagick enables as many threads as there are CPU
   cores (or CPU threads).  According to the OpenMP standard, the
@@ -652,8 +682,8 @@ Several configure options require special note:
   /path/to/perl will be taken as the PERL interpreter to use. This is
   important in case the 'perl' executable in your PATH is not PERL5,
   or is not the PERL you want to use.  Experience suggests that static
-  PerlMagick builds may not be fully successful for Perl versions
-  newer than 5.8.8.
+  PerlMagick builds may not be fully successful (at least for
+  executing the test suite) for Perl versions newer than 5.8.8.
 
 --with-perl-options
 
@@ -682,18 +712,66 @@ Several configure options require special note:
 --with-gs-font-dir
 
   Specify the directory containing the Ghostscript Postscript Type 1
-  font files (e.g. "n022003l.pfb") so that they can be rendered using
-  the FreeType library. If the font files are installed using the
-  default Ghostscript installation paths
-  (${prefix}/share/ghostscript/fonts), they should be discovered
+  font files (e.g. "n019003l.pfb") also known as the "URW Fonts" so
+  that they can be rendered using the FreeType library.  These fonts
+  emulate the standard 35 fonts commonly available on printers
+  supporting Adobe Postscript so they are very useful to have. If the
+  font files are installed using the default Ghostscript installation
+  paths (${prefix}/share/ghostscript/fonts), they should be discovered
   automatically by configure and specifying this option is not
   necessary. Specify this option if the Ghostscript fonts fail to be
   located automatically, or the location needs to be overridden.
+
+  The "Ghostscript" fonts (also known as "URW Standard postscript
+  fonts (cyrillicized)") are available from
+
+    https://sourceforge.net/projects/gs-fonts/
+
+  These fonts may are often available as a package installed by a
+  package manager and installing from a package manager is easier than
+  installing from source:
+
+  .. table:: URW Font Packages
+
+    ==============  =====================  =============================
+    Distribution    Package Name           Fonts Installation Path
+    ==============  =====================  =============================
+    Cygwin          urw-base35-fonts       /usr/share/ghostscript/fonts
+    Debian Linux    fonts-urw-base35       /usr/share/fonts/type1/gsfonts
+    Gentoo Linux    media-fonts/urw-fonts  /usr/share/fonts/ghostscript
+    Illumos/pkgsrc  urw-fonts-2.0nb1       /opt/local/share/fonts/urw
+    NetBSD/pkgsrc   urw-fonts-2.0nb1       /share/fonts/urw
+    OpenIndiana     gnu-gs-fonts-std       /usr/share/ghostscript/fonts
+    OS X/Homebrew   font-urw-base35        [ TBD ]
+    Red Hat Linux   urw-fonts-2.0          /usr/share/fonts/default/Type1
+    Ubuntu Linux    fonts-urw-base35       /usr/share/fonts/type1/gsfonts
+    ==============  =====================  =============================
 
 --with-windows-font-dir
 
   Specify the directory containing MS-Windows-compatible fonts. This is
   not necessary when GraphicsMagick is running under MS-Windows.
+
+--with-umem
+
+  The default Solaris memory allocator exhibits poor concurrency in
+  multi-threaded programs and this can impact OpenMP speedup under
+  Solaris (and systems derived from it such as Illumos).  Use this
+  convenience option to enable use of the umem memory allocation
+  library, which is observed to be more performant in multi-threaded
+  programs.  There is a port of umem available for Linux so this
+  option is not specific to Solaris.
+
+--with-mtmalloc
+
+  The default Solaris memory allocator exhibits poor concurrency in
+  multi-threaded programs and this can impact OpenMP speedup under
+  Solaris (and systems derived from it such as Illumos).  Use this
+  convenience option to enable use of the mtmalloc memory allocation
+  library, which is more performant in multi-threaded programs than
+  the default libc memory allocator, and more performant in
+  multi-threaded programs than umem, but is less memory efficient.
+
 
 Building under Cygwin
 ---------------------
@@ -985,4 +1063,4 @@ libraries.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

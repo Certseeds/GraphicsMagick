@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2014 GraphicsMagick Group
+# Copyright (C) 2004-2019 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -42,9 +42,7 @@ magick_libGraphicsMagick_la_LDFLAGS = \
 if HasX11
 MAGICK_X11_BASE_SRCS = \
 	magick/animate.c \
-	magick/animate.h \
 	magick/display.c \
-	magick/display.h \
 	magick/PreRvIcccm.c \
 	magick/PreRvIcccm.h \
 	magick/widget.c \
@@ -291,16 +289,16 @@ MAGICK_INCLUDE_HDRS = \
 
 MAGICK_NOINST_HDRS = \
 	magick/alpha_composite.h \
-	magick/animate.h \
 	magick/bit_stream.h \
-	magick/display.h \
 	magick/floats.h \
+	magick/image-private.h \
 	magick/locale_c.h \
 	magick/map.h \
 	magick/module_aliases.h \
 	magick/nt_base.h \
 	magick/nt_feature.h \
 	magick/omp_data_view.h \
+	magick/pixel_cache-private.h \
 	magick/prefetch.h \
 	magick/random-private.h \
 	magick/semaphore.h \

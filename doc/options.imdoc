@@ -1508,6 +1508,10 @@ size will be similar but the degradation will be lower.
 <dd>If set, reduce memory usage (but increase CPU use)
 </dd>
 
+<dt>webp:use-sharp-yuv={true|false}</dt>
+<dd>If set, if needed, use sharp (and slow) RGB->YUV conversion
+</dd>
+
 </dl>
 </pp>
 

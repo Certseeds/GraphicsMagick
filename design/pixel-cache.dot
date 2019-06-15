@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008, 2013 GraphicsMagick Group
+  Copyright (C) 2008 - 2019 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with
@@ -96,6 +96,12 @@ digraph "pixel-cache" {
   ClipCacheNexus -> DestroyCacheNexus;
   ClipCacheNexus -> GetCacheNexus;
   CloseCacheView -> DestroyCacheNexus;
+
+  CompositeCacheNexus -> AcquireCacheNexus;
+  CompositeCacheNexus -> AllocateCacheNexus;
+  CompositeCacheNexus -> DestroyCacheNexus;
+  CompositeCacheNexus -> GetCacheNexus;
+
 /*   DestroyCacheInfo -> DestroySemaphoreInfo; */
 /*   DestroyCacheInfo -> LockSemaphoreInfo; */
 /*   DestroyCacheInfo -> UnlockSemaphoreInfo; */
@@ -139,12 +145,12 @@ digraph "pixel-cache" {
   SetImagePixels -> SetCacheViewPixels;
   SetImagePixelsEx -> SetCacheViewPixels;
   SyncCacheNexus -> ClipCacheNexus;
+  SyncCacheNexus -> CompositeCacheNexus;
   SyncCacheNexus -> WriteCachePixels;
   SyncCacheNexus -> WriteCacheIndexes;
   SyncCacheViewPixels -> SyncCacheNexus;
   SyncImagePixels -> SyncCacheViewPixels;
   SyncImagePixelsEx -> SyncCacheViewPixels;
-  SetNexus -> IsNexusInCore;
 
   ReadCacheIndexes -> FilePositionRead;
   ReadCachePixels -> FilePositionRead;

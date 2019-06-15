@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -71,6 +71,9 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   PixelPacket
     corners[3];
 
@@ -80,6 +83,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
 
+  monitor_active=MagickMonitorActive();
   bounds.width=0;
   bounds.height=0;
   bounds.x=(long) image->columns;
@@ -188,14 +192,24 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
               }
         }
 
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                    GetImageBoundingBoxText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                        GetImageBoundingBoxText,image->filename))
+              thread_status=MagickFail;
+        }
 
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_GetImageBoundingBox)

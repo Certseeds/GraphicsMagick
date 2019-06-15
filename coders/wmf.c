@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -61,6 +61,7 @@
 
 #if defined(HasWMF) || defined(HasWMFlite)
 
+#undef ERR
 #define ERR(API)  ((API)->err != wmf_E_None)
 #define XC(x) ((double)x)
 #define YC(y) ((double)y)
@@ -2116,7 +2117,15 @@ static float lite_font_stringwidth( wmfAPI* API, wmfFont* font, char* str)
 /* Map font (similar to wmf_ipa_font_map) */
 
 /* Mappings to Postscript fonts: family, normal, italic, bold, bolditalic */
-static const wmfFontMap WMFFontMap[] = {
+static const struct
+{
+  char name[17];       /* wmf font name */
+
+  char normal[12];     /* postscript font names */
+  char italic[18];
+  char bold[15];
+  char bolditalic[22];
+} WMFFontMap[] = {
   { "Courier",            "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
   { "Helvetica",          "Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
   { "Modern",             "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
@@ -2124,22 +2133,24 @@ static const wmfFontMap WMFFontMap[] = {
   { "News Gothic",        "Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
   { "Symbol",             "Symbol",      "Symbol",            "Symbol",         "Symbol"                },
   { "System",             "Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
-  { "Times",              "Times-Roman", "Times-Italic",      "Times-Bold",     "Times-BoldItalic"      },
-  {  NULL,                NULL,           NULL,               NULL,              NULL                   }
+  { "Times",              "Times-Roman", "Times-Italic",      "Times-Bold",     "Times-BoldItalic"      }
 };
 
 /* Mapping between base name and Ghostscript family name */
-static const wmfMapping SubFontMap[] = {
-  { "Arial",      "Helvetica",  (FT_Encoding) 0 },
-  { "Courier",    "Courier",    (FT_Encoding) 0 },
-  { "Fixed",      "Courier",    (FT_Encoding) 0 },
-  { "Helvetica",  "Helvetica",  (FT_Encoding) 0 },
-  { "Sans",       "Helvetica",  (FT_Encoding) 0 },
-  { "Sym",        "Symbol",     (FT_Encoding) 0 },
-  { "Terminal",   "Courier",    (FT_Encoding) 0 },
-  { "Times",      "Times",      (FT_Encoding) 0 },
-  { "Wingdings",  "Symbol",     (FT_Encoding) 0 },
-  {  NULL,        NULL,         (FT_Encoding) 0 }
+static const struct
+{
+  char name[10];
+  char mapping[10];
+} SubFontMap[] = {
+  { "Arial",      "Helvetica" },
+  { "Courier",    "Courier" },
+  { "Fixed",      "Courier" },
+  { "Helvetica",  "Helvetica" },
+  { "Sans",       "Helvetica" },
+  { "Sym",        "Symbol" },
+  { "Terminal",   "Courier" },
+  { "Times",      "Times" },
+  { "Wingdings",  "Symbol" }
 };
 
 static void lite_font_map( wmfAPI* API, wmfFont* font)
@@ -2242,14 +2253,16 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
   /* Now let's try simple substitution mappings from WMFFontMap */
   if(!magick_font->ps_name)
     {
-      char
-        target[MaxTextExtent];
+      unsigned int
+        i;
 
       int
         target_weight = 400,
         want_italic = False,
-        want_bold = False,
-        i;
+        want_bold = False;
+
+      char
+        target[MaxTextExtent];
 
       if( WMF_FONT_WEIGHT(font) != 0 )
         target_weight = WMF_FONT_WEIGHT(font);
@@ -2264,7 +2277,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
         want_italic = True;
 
       (void) strcpy(target,"Times");
-      for( i=0; SubFontMap[i].name != NULL; i++ )
+      for( i=0; i < ArraySize(SubFontMap); i++ )
         {
           if(LocaleCompare(wmf_font_name, SubFontMap[i].name) == 0)
             {
@@ -2273,7 +2286,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
             }
         }
 
-      for( i=0; WMFFontMap[i].name != NULL; i++ )
+      for( i=0; i < ArraySize(WMFFontMap); i++ )
         {
           if(LocaleNCompare(WMFFontMap[i].name,target,strlen(WMFFontMap[i].name)) == 0)
             {
@@ -2522,7 +2535,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
     }
 
   /* Obtain (or guess) metafile units */
-  if ((API)->File->placeable)
+  if ((API)->File->placeable && (API)->File->pmh->Inch)
     units_per_inch = (API)->File->pmh->Inch;
   else if( (wmf_width*wmf_height) < 1024*1024)
     units_per_inch = POINTS_PER_INCH;  /* MM_TEXT */
@@ -2547,6 +2560,21 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
 
   bounding_width  = bbox.BR.x - bbox.TL.x;
   bounding_height = bbox.BR.y - bbox.TL.y;
+
+  if ((bounding_width == 0) || (bounding_height == 0))
+    {
+      /*
+        It is not clear what we can do if the reported bounding box is
+        empty or if this could be a valid case.  Reject such files
+        until evidence is found to the contrary.
+       */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Empty Bounding Box! %.4g,%.4g %.4g,%.4g",
+                            bbox.TL.x, bbox.TL.y, bbox.BR.x, bbox.BR.y);
+      ipa_device_close(API);
+      (void) wmf_api_destroy(API);
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    }
 
   ddata->scale_x = image_width/bounding_width;
   ddata->translate_x = 0-bbox.TL.x;
@@ -2761,7 +2789,7 @@ ModuleExport void RegisterWMFImage(void)
     *entry;
 
   static const char
-    *WMFNote =
+    WMFNote[] =
     {
       "Use density to adjust scale (default 72DPI). Use background or\n"
       "texture to apply a background color or texture under the image."

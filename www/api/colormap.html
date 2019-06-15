@@ -49,7 +49,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-unsigned int AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
+MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
 </pre>
 </div>
 <div class="section" id="description">
@@ -57,10 +57,10 @@ unsigned int AllocateImageColormap( <a class="reference external" href="../api/t
 <p>AllocateImageColormap() allocates an image colormap and initializes
 it to a linear gray colorspace with increasing intensity.  If the image
 already has a colormap, it is replaced.  AllocateImageColormap() returns
-True if successful, otherwise False if there is not enough memory.</p>
+MagickPass if successful, otherwise MagickFail if there is not enough memory.</p>
 <p>The format of the AllocateImageColormap method is:</p>
 <pre class="literal-block">
-unsigned int AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
+MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
 </pre>
 <dl class="docutils">
 <dt>image:</dt>
@@ -75,7 +75,7 @@ unsigned int AllocateImageColormap( <a class="reference external" href="../api/t
 <div class="section" id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
+MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
 </pre>
 </div>
 <div class="section" id="id2">
@@ -85,7 +85,7 @@ positions.  If you cycle the colormap a number of times you can produce
 a psychodelic effect.</p>
 <p>The format of the CycleColormapImage method is:</p>
 <pre class="literal-block">
-CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
+MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">

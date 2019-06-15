@@ -71,6 +71,12 @@ default warning
 .
 
 MessageId       = +1
+SymbolicName    = CacheErrorEmptyCacheNexus
+Language        = English
+Cache nexus contains no pixels
+.
+
+MessageId       = +1
 SymbolicName    = CacheErrorInconsistentPersistentCacheDepth
 Language        = English
 Inconsistent persistent cache depth
@@ -2432,6 +2438,24 @@ MessageId       = +1
 SymbolicName    = LimitErrorMemoryAllocationFailed
 Language        = English
 Memory allocation failed
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelHeightLimitExceeded
+Language        = English
+Pixel nexus height limit exceeded (see -limit Height)
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelLimitExceeded
+Language        = English
+Pixel nexus limit exceeded (see -limit Pixels)
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorNexusPixelWidthLimitExceeded
+Language        = English
+Pixel nexus width limit exceeded (see -limit Width)
 .
 
 MessageId       = +1

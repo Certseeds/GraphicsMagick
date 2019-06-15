@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -146,6 +146,9 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   long
     height,
     width,
@@ -199,6 +202,8 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
     CloneImage(image,frame_info->width,frame_info->height,True,exception);
   if (frame_image == (Image *) NULL)
     return(False);
+
+  monitor_active=MagickMonitorActive();
 
   /*
     Set image type.
@@ -337,19 +342,30 @@ MagickExport Image *FrameImage(const Image *image,const FrameInfo *frame_info,
           if (!SyncImagePixelsEx(frame_image,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                    FrameImageText,image->filename,
-                                    frame_info->width,frame_info->height,
-                                    frame_info->x,
-                                    frame_info->y,
-                                    frame_info->inner_bevel,
-                                    frame_info->outer_bevel))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                        FrameImageText,image->filename,
+                                        frame_info->width,frame_info->height,
+                                        frame_info->x,
+                                        frame_info->y,
+                                        frame_info->inner_bevel,
+                                        frame_info->outer_bevel))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -457,6 +473,9 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   double
     foreground,
     background;
@@ -493,6 +512,8 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
       background=MaxRGBDouble;
     }
   (void) SetImageType(image,TrueColorType);
+
+  monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
 #  if defined(TUNE_OPENMP)
@@ -601,14 +622,25 @@ RaiseImage(Image *image,const RectangleInfo *raise_info,const int raise_flag)
           if (!SyncImagePixelsEx(image,&image->exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
-                                    RaiseImageText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,&image->exception,
+                                        RaiseImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {

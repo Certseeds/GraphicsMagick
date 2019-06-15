@@ -3593,15 +3593,9 @@ ImportViewPixelArea(ViewInfo *view,
   {
     const double scale_denominator = double_maxvalue-double_minvalue;
     if (scale_denominator < MagickEpsilon)
-      {
-        char error_message[MaxTextExtent];
-        FormatString(error_message,"import double max/min value: max=%g, min=%g",
-                     double_maxvalue,double_minvalue);
-        ThrowException(&GetCacheViewImage(view)->exception,CoderError,
-                       DivisionByZero,error_message);
-        return MagickFail;
-      }
-    double_scale=MaxRGBDouble/(scale_denominator);
+        double_scale = 0.0;
+    else
+      double_scale=MaxRGBDouble/(scale_denominator);
   }
   if ((sample_type != FloatQuantumSampleType) && (sample_bits <= 32U))
     {

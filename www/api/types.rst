@@ -62,7 +62,7 @@ ChannelType
     AllChannels,    /* Color channels */
     GrayChannel     /* Color channels represent an intensity. */
   } ChannelType;
-  
+
 ChromaticityInfo
 ================
 
@@ -128,10 +128,10 @@ ColorPacket
   {
     PixelPacket
       pixel;
-  
+
     unsigned short
       index;
-  
+
     unsigned long
       count;
   } ColorPacket;
@@ -155,7 +155,7 @@ When encoding an output image, the colorspaces RGBColorspace,
 CMYKColorspace, and GRAYColorspace may be specified. The CMYKColorspace
 option is only applicable when writing TIFF, JPEG, and Adobe Photoshop
 bitmap (PSD) files.
- 
+
 
 .. table:: ColorspaceType
 
@@ -207,7 +207,7 @@ CompositeOperator is used to select the image composition algorithm used
 to compose a composite image with an image. By default, each of the
 composite image pixels are replaced by the corresponding image tile
 pixel. Specify CompositeOperator to select a different algorithm.
- 
+
 The image compositor requires a matte, or alpha channel in the image for
 some operations. This extra channel usually defines a mask which
 represents a sort of a cookie-cutter for the image. This is the case when
@@ -220,7 +220,7 @@ properly borderWidth must be 0).
 .. table:: CompositeOperator
 
    ======================  ==========================================================================
-        Enumeration                                       Description                                
+        Enumeration                                       Description
    ======================  ==========================================================================
    UndefinedCompositeOp    Unset value.
    OverCompositeOp         The result is the union of the the two image shapes with the composite
@@ -239,7 +239,7 @@ properly borderWidth must be 0).
    MinusCompositeOp        The result of composite image - image, with overflow cropped to zero. The
                            matte chanel is ignored (set to 255, full coverage).
    AddCompositeOp          The result of composite image + image, with overflow wrapping around (mod
-                           256).                                                                     
+                           256).
    SubtractCompositeOp     The result of composite image - image, with underflow wrapping around (mod
                            256). The add and subtract operators can be used to perform reversible
                            transformations.
@@ -270,7 +270,7 @@ properly borderWidth must be 0).
    LuminizeCompositeOp     Copy Brightness channel (from HSL colorspace).
    ScreenCompositeOp       [Not yet implemented]
    OverlayCompositeOp      [Not yet implemented]
-   CopyCyanCompositeOp	   Copy the Cyan channel.
+   CopyCyanCompositeOp     Copy the Cyan channel.
    CopyMagentaCompositeOp  Copy the Magenta channel.
    CopyYellowCompositeOp   Copy the Yellow channel.
    CopyBlackCompositeOp    Copy the Black channel.
@@ -285,7 +285,7 @@ encoding an image. Be aware that most image types only support a sub-set
 of the available compression types. If the compression type specified is
 incompatable with the image, GraphicsMagick selects a compression type
 compatable with the image type.
- 
+
 
 .. table:: CompressionType
 
@@ -342,7 +342,7 @@ DrawInfo
 
 The DrawInfo structure is used to support annotating an image using
 drawing commands.
- 
+
 
 .. table:: Methods Supporting DrawInfo
 
@@ -362,7 +362,7 @@ The members of the DrawInfo structure are shown in the following table.
 The structure is initialized to reasonable defaults by first initializing
 the equivalent members of ImageInfo, and then initializing the entire
 structure using GetDrawInfo().
- 
+
 
 .. table:: DrawInfo Structure Members Supporting DrawImage()
 
@@ -411,7 +411,7 @@ space or new-line delimited list to the primitive member. Primitives
 which set drawing options effect the results from subsequent drawing
 operations. See the 'push graphic-context' and 'pop graphic-context'
 primitives for a way to control the propagation of drawing options.
- 
+
 
 .. table:: Drawing Primitives
 
@@ -551,10 +551,10 @@ ExceptionInfo
     char
       *reason,
       *description;
-  
+
     ExceptionType
       severity;
-  
+
     unsigned long
       signature;
   } ExceptionInfo;
@@ -703,7 +703,7 @@ FrameInfo
     unsigned long
       width,
       height;
-  
+
     long
       x,
       y,
@@ -720,7 +720,7 @@ a bounding region (e.g. an image). Gravity provides a convenient way to
 locate objects irrespective of the size of the bounding region, in other
 words, you don't need to provide absolute coordinates in order to
 position an object. A common default for gravity is NorthWestGravity.
- 
+
 
 .. table:: GravityType
 
@@ -802,7 +802,7 @@ high-level interface helps protect image coders from changes to
 GraphicsMagick's pixel representation and simplifies the implementation.
 
 The members of the Image structure are shown in the following table:
- 
+
 
 .. table:: Image Structure Members
 
@@ -973,7 +973,7 @@ an existing ImageInfo structure. Use SetImageInfo() to set image type
 information in the ImageInfo structure based on an existing image.
 
 The members of the ImageInfo structure are shown in the following table:
- 
+
 
 .. table:: ImageInfo Structure Members
 
@@ -1147,7 +1147,7 @@ resolution increasing over time.
 
 Use LineInterlace or PlaneInterlace to create an interlaced GIF or
 progressive JPEG image.
- 
+
 .. table:: InterlaceType
 
    +------------------+------------------------------------------------------------------------------+
@@ -1220,13 +1220,13 @@ is the upper-cased name of the module file::
   {
     [ decode the image ... ]
   }
-  
+
   /* Write image */
   unsigned int WriteGIFImage(const ImageInfo *image_info,Image *image)
   {
     [ encode the image ... ]
   }
-  
+
   /* Module call-back to register support for formats */
   void RegisterGIFImage(void)
   {
@@ -1246,7 +1246,7 @@ is the upper-cased name of the module file::
     entry->module="GIF";
     RegisterMagickInfo(entry);
   }
-  
+
   /* Module call-back to unregister support for formats */
   Export void UnregisterGIFImage(void)
   {
@@ -1389,40 +1389,40 @@ MontageInfo
       *frame,
       *texture,
       *font;
-  
+
     double
       pointsize;
-  
+
     unsigned long
       border_width;
-  
+
     unsigned int
       shadow;
-  
+
     PixelPacket
       fill,
       stroke,
       background_color,
       border_color,
       matte_color;
-  
+
     GravityType
       gravity;
-  
+
     char
       filename[MaxTextExtent];
-  
+
     unsigned long
       signature;
   } MontageInfo;
-  
+
 
 NoiseType
 =========
 
 NoiseType is used as an argument to select the type of noise to be added
 to the image.
- 
+
 .. table:: NoiseType
 
    +----------------------------------------------+--------------------------------------------------+
@@ -1508,7 +1508,7 @@ Use QuantizeImage() to restore the PseudoClass colormap if the
 DirectClass representation is modified.
 
 The members of the PixelPacket structure are shown in the following table:
- 
+
 
 .. table:: PixelPacket Structure Members
 
@@ -1547,7 +1547,7 @@ specify chromaticity point values. This defines the boundaries and gammut
 (range of included color) of the colorspace.
 
 The members of the PointInfo structure are shown in the following table:
- 
+
 
 .. table:: PointInfo Structure Members
 
@@ -1568,7 +1568,7 @@ The ProfileInfo structure is used to represent ICC or IPCT profiles in
 GraphicsMagick (stored as an opaque BLOB).
 
 The members of the ProfileInfo structure are shown in the following table:
- 
+
 .. table:: ProfileInfo Structure Members
 
    +-----------------------+--------------------------------------+----------------------------------+
@@ -1589,7 +1589,7 @@ calculating a color palette which best approximates the image within a
 specified colorspace, and then adjusting the image pixels to use the
 calculated color palette. The maximum number of colors allowed in the
 color palette may be specified.
- 
+
 
 .. table:: Methods Supporting QuantizeInfo
 
@@ -1842,10 +1842,10 @@ SignatureInfo
       digest[8],
       low_order,
       high_order;
-  
+
     long
       offset;
-  
+
     unsigned char
       message[SignatureSize];
   } SignatureInfo;
@@ -1918,17 +1918,17 @@ TypeMetric
   {
     PointInfo
       pixels_per_em;
-  
+
     double
       ascent,
       descent,
       width,
       height,
       max_advance;
-  
+
     SegmentInfo
       bounds;
-  
+
     double
       underline_position,
       underline_thickness;
@@ -1973,95 +1973,95 @@ MagickXResourceInfo
   {
     XrmDatabase
       resource_database;
-  
+
     ImageInfo
       *image_info;
-  
+
     QuantizeInfo
       *quantize_info;
-  
+
     unsigned long
       colors;
-  
+
     unsigned int
       close_server,
       backdrop;
-  
+
     char
       *background_color,
       *border_color;
-  
+
     char
       *client_name;
-  
+
     XColormapType
       colormap;
-  
+
     unsigned int
       border_width,
       color_recovery,
       confirm_exit,
       delay;
-  
+
     char
       *display_gamma;
-  
+
     char
       *font,
       *font_name[MaxNumberFonts],
       *foreground_color;
-  
+
     unsigned int
       display_warnings,
       gamma_correct;
-  
+
     char
       *icon_geometry;
-  
+
     unsigned int
       iconic,
       immutable;
-  
+
     char
       *image_geometry;
-  
+
     char
       *map_type,
       *matte_color,
       *name;
-  
+
     unsigned int
       magnify,
       pause;  char
       *pen_colors[MaxNumberPens];
-  
+
     char
       *text_font,
       *title;
-  
+
     int
       quantum;
-  
+
     unsigned int
       update,
       use_pixmap,
       use_shared_memory;
-  
+
     unsigned long
       undo_cache;
-  
+
     char
       *visual_type,
       *window_group,
       *window_id,
       *write_filename;
-  
+
     Image
       *copy_image;
-  
+
     int
       gravity;
-  
+
     char
       home_directory[MaxTextExtent];
   } XResourceInfo;
@@ -2070,4 +2070,4 @@ MagickXResourceInfo
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

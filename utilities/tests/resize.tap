@@ -1,0 +1,19 @@
+#!/bin/sh
+# -*- shell-script -*-
+# Copyright (C) 2014 GraphicsMagick Group
+# Test resize geometry specifications
+# Note that running a test command containing a pipe blows up
+# test_command_fn so we will only check final status.
+. ./common.shi
+. ${top_srcdir}/utilities/tests/common.sh
+
+# Rose image has dimensions 70x46
+ROSE='rose:'
+
+# Number of tests we plan to execute
+test_plan_fn 1
+
+${GM} convert ${CONVERT_FLAGS} ${ROSE} -resize "50x50@>" -format "%wx%h" info:-
+test_command_fn 'Convert piped to identify (implicit MIFF)' test $?
+
+:

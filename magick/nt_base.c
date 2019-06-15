@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -975,21 +975,41 @@ MagickExport int NTmunmap(void *map,size_t length)
 */
 MagickExport double NTElapsedTime(void)
 {
-  union
-  {
-    FILETIME
-      filetime;
+  /*
+    See
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms644905%28v=vs.85%29.aspx
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms644904%28v=vs.85%29.aspx
+  */
+  static LARGE_INTEGER pFrequency = {0};
+  LARGE_INTEGER CurrentTime;
 
-    __int64
-      filetime64;
-  } elapsed_time;
+  if (pFrequency.QuadPart == 0)
+    if (QueryPerformanceFrequency(&pFrequency) == 0)
+      pFrequency.QuadPart = 1;  /* Mark that the Performance counter is NOT supported. */
 
-  SYSTEMTIME
-    system_time;
+  if (pFrequency.QuadPart > 1)
+    {
+      QueryPerformanceCounter(&CurrentTime);
+      return (double) CurrentTime.QuadPart / pFrequency.QuadPart;
+    }
+  else
+    {
+      union
+      {
+        FILETIME
+        filetime;
 
-  GetSystemTime(&system_time);
-  SystemTimeToFileTime(&system_time,&elapsed_time.filetime);
-  return((double) 1.0e-7*elapsed_time.filetime64);
+        __int64
+        filetime64;
+      } elapsed_time;
+
+      SYSTEMTIME
+        system_time;
+
+      GetSystemTime(&system_time);
+      SystemTimeToFileTime(&system_time,&elapsed_time.filetime);
+      return((double) 1.0e-7*elapsed_time.filetime64);
+    }
 }
 
 /*
@@ -1633,22 +1653,22 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
     Ghostscript 7.0X does not include the Resource entry.
 
     Search path used by GPL Ghostscript 9.10 (2013-08-30):
-      C:\Program Files\gs\gs9.10\bin ; C:\Program Files\gs\gs9.10\lib ;
-      C:\Program Files\gs\gs9.10\fonts ; %rom%Resource/Init/ ; %rom%lib/ ;
-      c:/gs/gs9.10/Resource/Init ; c:/gs/gs9.10/lib ;
-      c:/gs/gs9.10/Resource/Font ; c:/gs/fonts
+    C:\Program Files\gs\gs9.10\bin ; C:\Program Files\gs\gs9.10\lib ;
+    C:\Program Files\gs\gs9.10\fonts ; %rom%Resource/Init/ ; %rom%lib/ ;
+    c:/gs/gs9.10/Resource/Init ; c:/gs/gs9.10/lib ;
+    c:/gs/gs9.10/Resource/Font ; c:/gs/fonts
 
   */
   {
+#define URW_FONT_HELVETICA_FILE "n019003l.pfb"
     const char
       *end = NULL,
       *start = gs_lib_path;
 
-    end=start+strlen(start);
+    end = start+strlen(start);
     while ( start < end )
       {
         char
-          font_dir[MaxTextExtent],
           font_dir_file[MaxTextExtent];
 
         const char
@@ -1662,21 +1682,62 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
           length=separator-start;
         else
           length=end-start;
-        (void) strlcpy(font_dir,start,Min(length+1,MaxTextExtent));
-        (void) strlcpy(font_dir_file,font_dir,MaxTextExtent);
+        length = Min(length+1,MaxTextExtent);
+
+        (void) strlcpy(font_dir_file,start,length);
         (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-        (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+        (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
         if (IsAccessible(font_dir_file))
           {
-            (void) strlcpy(path,font_dir,path_length);
+            (void) strlcpy(path, start, Min(length,path_length));
             (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
                                   "Ghostscript fonts in directory \"%s\"",
                                   path);
             return TRUE;
           }
-        start += length+1;
+        start += length;
+      }
+
+
+    // Second scan will try to get common fonts for all gs versions.
+    start = gs_lib_path;
+    end = start + strlen(start);
+    while ( start < end )
+      {
+        char
+          font_dir_file[MaxTextExtent];
+
+        const char
+          *separator, *gsdir;
+
+        int
+          length;
+
+        separator = strchr(start,DirectoryListSeparator);
+        gsdir = strstr(start,"/gs/gs");
+        if (gsdir==NULL) gsdir = strstr(start,"\\gs\\gs");
+        if (gsdir!=NULL && (separator==NULL || gsdir<separator))
+          {
+            length = Min((gsdir-start)+5,MaxTextExtent);
+            (void) strlcpy(font_dir_file,start,length);
+            (void) strlcat(font_dir_file,"fonts",MaxTextExtent);
+            (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
+            (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
+            if (IsAccessible(font_dir_file))
+              {
+                (void) strlcpy(path,font_dir_file,Min(length+5,path_length));  // str size "fonts" is 5.
+                (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                      "Ghostscript common fonts in directory \"%s\"",
+                                      path);
+                return TRUE;
+              }
+          }
+
+        if (separator==NULL) break;
+        start = separator + 1;
       }
   }
+
   {
     /*
       Check "c:/gs/fonts" since Ghostscript also looks there.  This
@@ -1689,15 +1750,15 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
       different GS_LIB_DEFAULT (which includes AROOTDIR) definition.
     */
 
-    const char *
-      gs_font_dir           = "c:\\gs\\fonts";
+    const char
+      gs_font_dir[] = "c:\\gs\\fonts";
 
     char
       font_dir_file[MaxTextExtent];
 
     (void) strlcpy(font_dir_file,gs_font_dir,MaxTextExtent);
     (void) strlcat(font_dir_file,DirectorySeparator,MaxTextExtent);
-    (void) strlcat(font_dir_file,"fonts.dir",MaxTextExtent);
+    (void) strlcat(font_dir_file,URW_FONT_HELVETICA_FILE,MaxTextExtent);
     if (IsAccessible(font_dir_file))
       {
         (void) strlcpy(path,gs_font_dir,path_length);

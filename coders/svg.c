@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1745,12 +1745,12 @@ SVGStartElement(void *context,const xmlChar *name,
                     font-family.  Maybe we need a generalized solution for
                     this.
                   */
-                  if ((value[0] == '\'') && (value[strlen(value)-1] == '\''))
+                  int value_length;
+                  if ((value[0] == '\'') && ((value_length=(int) strlen(value)) > 2)
+                      && (value[value_length-1] == '\''))
                     {
-                      char nvalue[MaxTextExtent];
-                      (void) strlcpy(nvalue,value+1,sizeof(nvalue));
-                      nvalue[strlen(nvalue)-1]='\0';
-                      MVGPrintf(svg_info->file,"font-family '%s'\n",nvalue);
+                      MVGPrintf(svg_info->file,"font-family '%.*s'\n",
+                                (int)(value_length-2),value+1);
                     }
                   else
                     {
@@ -3805,13 +3805,26 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   xmlSAXHandlerPtr
     SAXHandler;
 
-  /*
-    Open image file.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
+  /*
+    Libxml initialization.  We call it here since initialization can
+    be expensive and we don't know when/if libxml will be
+    needed. Should normally be called at program start-up but may be
+    called several times since libxml uses a flag to know if it has
+    already been initialized.  When libxml2 is built to support
+    threads, it tests if it is already initialized under a lock and
+    holds a lock while it is being initialized so calling this
+    function from multiple threads is ok.
+  */
+  xmlInitParser();
+
+  /*
+    Open image file.
+  */
   image=AllocateImage(image_info);
   /*
     If there is a geometry string in image_info->size (e.g., gm convert
@@ -3921,7 +3934,6 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SVGEndDocument(&svg_info);
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
-  xmlCleanupParser();
   (void) fclose(file);
   CloseBlob(image);
   DestroyImage(image);
@@ -3996,16 +4008,14 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 ModuleExport void
 RegisterSVGImage(void)
 {
-  static char
-    version[MaxTextExtent];
+#if defined(LIBXML_DOTTED_VERSION)
+  static const char
+    version[] = "XML " LIBXML_DOTTED_VERSION;
+#define HAS_VERSION 1
+#endif
 
   MagickInfo
     *entry;
-
-  *version='\0';
-#if defined(LIBXML_DOTTED_VERSION)
-  (void) strlcpy(version,"XML " LIBXML_DOTTED_VERSION,MaxTextExtent);
-#endif /* defined(LIBXML_DOTTED_VERSION) */
 
   entry=SetMagickInfo("SVG");
 #if defined(HasXML)
@@ -4015,8 +4025,9 @@ RegisterSVGImage(void)
   entry->encoder=(EncoderHandler) WriteSVGImage;
 #endif /* if ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics";
-  if (*version != '\0')
+#if defined(HAS_VERSION)
     entry->version=version;
+#endif
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
 
@@ -4028,8 +4039,9 @@ RegisterSVGImage(void)
   entry->encoder=(EncoderHandler) WriteSVGImage;
 #endif /* if ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics (ZIP compressed)";
-  if (*version != '\0')
+#if defined(HAS_VERSION)
     entry->version=version;
+#endif
   entry->module="SVG";
   (void) RegisterMagickInfo(entry);
 }
@@ -4056,6 +4068,10 @@ RegisterSVGImage(void)
 ModuleExport void
 UnregisterSVGImage(void)
 {
+  /*
+    Libxml clean-up. Should only be called just before exit().
+  */
+  /* xmlCleanupParser(); */
   (void) UnregisterMagickInfo("SVG");
   (void) UnregisterMagickInfo("SVGZ");
 }

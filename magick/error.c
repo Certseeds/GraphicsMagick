@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -38,6 +38,7 @@
 */
 #include "magick/studio.h"
 #include "magick/magick.h"
+#include "magick/semaphore.h"
 #include "magick/utility.h"
 
 /*
@@ -59,6 +60,9 @@ static void
 /*
   Global declarations.
 */
+static SemaphoreInfo
+  *error_semaphore = (SemaphoreInfo *) NULL;
+
 static ErrorHandler
   error_handler = DefaultErrorHandler;
 
@@ -67,6 +71,69 @@ static FatalErrorHandler
 
 static WarningHandler
   warning_handler = DefaultWarningHandler;
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   I n i t i a l i z e M a g i c k E x c e p t i o n H a n d l i n g         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method InitializeMagickExceptionHandling initializes the exception
+%  reporting facility so that exception reporting is thread safe.
+%  This function must be invoked before any exception is thrown.
+%  A memory-allocation failure in this function results in a fatal
+%  error for the whole program.  All of the allocations performed by
+%  this function are released by DestroyMagickExceptionHandling().
+%
+%  The format of the InitializeLogInfo method is:
+%
+%      MagickPassFail InitializeLogInfo(void)
+%
+%
+*/
+MagickPassFail
+InitializeMagickExceptionHandling(void)
+{
+  /*
+    Initialize error-reporting semaphore
+  */
+  assert(error_semaphore == (SemaphoreInfo *) NULL);
+  error_semaphore=AllocateSemaphoreInfo();
+  return MagickPass;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   D e s t r o y M a g i c k E x c e p t i o n H a n d l i n g               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method DestroyMagickExceptionHandling deallocates resources allocated
+%  for exception handling.
+%
+%  The format of the DestroyLogInfo method is:
+%
+%      DestroyLogInfo(void)
+%
+%
+*/
+void DestroyMagickExceptionHandling(void)
+{
+  /*
+    Destroy error-reporting semaphore
+  */
+  DestroySemaphoreInfo(&error_semaphore);
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,28 +163,32 @@ MagickExport void CatchException(const ExceptionInfo *exception)
 {
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if (exception->severity == UndefinedException)
-    return;
-  errno=exception->error_number; /* Shabby work-around for parameter limits */
-  if ((exception->severity >= WarningException) &&
-      (exception->severity < ErrorException))
+
+  do
     {
-      MagickWarning2(exception->severity,exception->reason,
-        exception->description);
-      return;
-    }
-  if ((exception->severity >= ErrorException) &&
-      (exception->severity < FatalErrorException))
-    {
-      MagickError2(exception->severity,exception->reason,exception->description);
-      return;
-    }
-  if (exception->severity >= FatalErrorException)
-    {
-      MagickFatalError2(exception->severity,exception->reason,
-        exception->description);
-      return;
-    }
+      if (exception->severity == UndefinedException)
+        break;
+      errno=exception->error_number; /* Shabby work-around for parameter limits */
+      if ((exception->severity >= WarningException) &&
+          (exception->severity < ErrorException))
+        {
+          MagickWarning2(exception->severity,exception->reason,
+                         exception->description);
+          break;
+        }
+      if ((exception->severity >= ErrorException) &&
+          (exception->severity < FatalErrorException))
+        {
+          MagickError2(exception->severity,exception->reason,exception->description);
+          break;
+        }
+      if (exception->severity >= FatalErrorException)
+        {
+          MagickFatalError2(exception->severity,exception->reason,
+                            exception->description);
+          break;
+        }
+    } while(0);
 }
 
 /*
@@ -150,6 +221,7 @@ MagickExport void CopyException(ExceptionInfo *copy, const ExceptionInfo *origin
   assert(copy != (ExceptionInfo *) NULL);
   assert(copy->signature == MagickSignature);
   assert(original != (ExceptionInfo *) NULL);
+  assert(copy != original);
   assert(original->signature == MagickSignature);
   copy->severity=original->severity;
   MagickFreeMemory(copy->reason);
@@ -710,8 +782,10 @@ MagickExport ErrorHandler SetErrorHandler(ErrorHandler handler)
   ErrorHandler
     previous_handler;
 
+  LockSemaphoreInfo(error_semaphore);
   previous_handler=error_handler;
   error_handler=handler;
+  UnlockSemaphoreInfo(error_semaphore);
   return(previous_handler);
 }
 
@@ -744,8 +818,10 @@ MagickExport void SetExceptionInfo(ExceptionInfo *exception,
   ExceptionType severity)
 {
   assert(exception != (ExceptionInfo *) NULL);
+  LockSemaphoreInfo(error_semaphore);
   exception->severity=severity;
   errno=0;
+  UnlockSemaphoreInfo(error_semaphore);
 }
 
 /*
@@ -777,8 +853,10 @@ MagickExport FatalErrorHandler SetFatalErrorHandler(FatalErrorHandler handler)
   FatalErrorHandler
     previous_handler;
 
+  LockSemaphoreInfo(error_semaphore);
   previous_handler=fatal_error_handler;
   fatal_error_handler=handler;
+  UnlockSemaphoreInfo(error_semaphore);
   return(previous_handler);
 }
 
@@ -811,8 +889,10 @@ MagickExport WarningHandler SetWarningHandler(WarningHandler handler)
   WarningHandler
     previous_handler;
 
+  LockSemaphoreInfo(error_semaphore);
   previous_handler=warning_handler;
   warning_handler=handler;
+  UnlockSemaphoreInfo(error_semaphore);
   return(previous_handler);
 }
 
@@ -855,20 +935,29 @@ MagickExport void ThrowException(ExceptionInfo *exception,
 {
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  LockSemaphoreInfo(error_semaphore);
   exception->severity=(ExceptionType) severity;
-  MagickFreeMemory(exception->reason);
-  if (reason)
-    exception->reason=
-      AcquireString(GetLocaleExceptionMessage(severity,reason));
-  MagickFreeMemory(exception->description);
-  if (description)
-    exception->description=
-      AcquireString(GetLocaleExceptionMessage(severity,description));
+  {
+    char *new_reason=NULL;
+    if (reason)
+      new_reason=AcquireString(GetLocaleExceptionMessage(severity,reason));
+    MagickFreeMemory(exception->reason);
+    exception->reason=new_reason;
+  }
+  {
+    char *new_description=NULL;
+    if (description)
+      new_description=
+        AcquireString(GetLocaleExceptionMessage(severity,description));
+    MagickFreeMemory(exception->description);
+    exception->description=new_description;
+  }
   exception->error_number=errno;
   MagickFreeMemory(exception->module);
   MagickFreeMemory(exception->function);
   exception->line=0UL;
   exception->signature=0UL;
+  UnlockSemaphoreInfo(error_semaphore);
   return;
 }
 #endif
@@ -917,14 +1006,20 @@ MagickExport void ThrowException(ExceptionInfo *exception,
 %
 */
 MagickExport void ThrowLoggedException(ExceptionInfo *exception,
-  const ExceptionType severity,const char *reason,const char *description,
-  const char *module,const char *function,const unsigned long line)
+                                       const ExceptionType severity,
+                                       const char *reason,
+                                       const char *description,
+                                       const char *module,
+                                       const char *function,
+                                       const unsigned long line)
 {
+  MagickBool ignore = MagickFalse;
   assert(exception != (ExceptionInfo *) NULL);
   assert(function != (const char *) NULL);
   assert(exception->signature == MagickSignature);
+  LockSemaphoreInfo(error_semaphore);
   if ((exception->severity > ErrorException) ||
-       (exception->severity > severity))
+      (exception->severity > severity))
     {
       if (reason)
         {
@@ -940,38 +1035,62 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
           (void) LogMagickEvent(severity,module,function,line,
                                 "Ignored: exception contains no reason!");
         }
-      return;
+      ignore=MagickTrue;
     }
-  exception->severity=(ExceptionType) severity;
-  MagickFreeMemory(exception->reason);
-  if (reason)
-    exception->reason=
-      AcquireString(GetLocaleExceptionMessage(severity,reason));
-  MagickFreeMemory(exception->description);
-  if (description)
-    exception->description=
-      AcquireString(GetLocaleExceptionMessage(severity,description));
-  exception->error_number=errno;
-  MagickFreeMemory(exception->module);
-  if (module)
-    exception->module=AcquireString(module);
-  MagickFreeMemory(exception->function);
-  if (function)
-    exception->function=AcquireString(function);
-  exception->line=line;
-  if (exception->reason)
+  if (!ignore)
     {
-      if (exception->description)
-        (void) LogMagickEvent(severity,module,function,line,"%.1024s (%.1024s)",
-                              exception->reason,exception->description );
+      exception->severity=(ExceptionType) severity;
+
+      {
+        char *new_reason = NULL;
+        if (reason)
+          new_reason=AcquireString(GetLocaleExceptionMessage(severity,reason));
+        MagickFreeMemory(exception->reason);
+        exception->reason=new_reason;
+      }
+
+      {
+        char *new_description = NULL;
+        if (description)
+          new_description=AcquireString(GetLocaleExceptionMessage(severity,description));
+        MagickFreeMemory(exception->description);
+        exception->description=new_description;
+      }
+
+      exception->error_number=errno;
+      {
+        char *new_module = NULL;
+        if (module)
+          new_module=AcquireString(module);
+        MagickFreeMemory(exception->module);
+        exception->module=new_module;
+      }
+
+      {
+        char *new_function = NULL;
+        if (function)
+          new_function=AcquireString(function);
+        MagickFreeMemory(exception->function);
+        exception->function=new_function;
+      }
+
+      exception->line=line;
+
+      if (exception->reason)
+        {
+          if (exception->description)
+            (void) LogMagickEvent(severity,module,function,line,"%.1024s (%.1024s)",
+                                  exception->reason,exception->description );
+          else
+            (void) LogMagickEvent(severity,module,function,line,"%.1024s",
+                                  exception->reason);
+        }
       else
-        (void) LogMagickEvent(severity,module,function,line,"%.1024s",
-                              exception->reason);
+        {
+          (void) LogMagickEvent(severity,module,function,line,
+                                "exception contains no reason!");
+        }
     }
-  else
-    {
-      (void) LogMagickEvent(severity,module,function,line,
-                            "exception contains no reason!");
-    }
+  UnlockSemaphoreInfo(error_semaphore);
   return;
 }

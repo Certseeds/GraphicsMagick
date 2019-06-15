@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -57,7 +57,7 @@ typedef struct
    } RGB_Record;
 
 /* Default palette for WPG level 1 */
-const RGB_Record WPG1_Palette[256]={
+static const RGB_Record WPG1_Palette[256]={
 {  0,  0,  0},          {  0,  0,168},
 {  0,168,  0},          {  0,168,168},
 {168,  0,  0},          {168,  0,168},
@@ -235,6 +235,23 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
+
+static MagickPassFail ReallocColormap(Image *image,size_t colors)
+{
+  PixelPacket *colormap;
+
+  colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
+  if (colormap != (PixelPacket *) NULL)
+    {
+      (void) memcpy(colormap,image->colormap,Min(image->colors,colors)*sizeof(PixelPacket));
+      MagickFreeMemory(image->colormap);
+      image->colormap = colormap;
+      image->colors = colors;
+      return MagickPass;
+    }
+
+  return MagickFail;
+}
 
 static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
@@ -1106,6 +1123,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
     ThrowReaderException(CoderError,EncryptedWPGImageFileNotSupported,image);
 
   image->colors = 0;
+  image->storage_class = DirectClass;
   bpp=0;
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1156,7 +1174,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "Parsing object: %X", Rec.RecType);
-          //printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType);
+          /* printf("\nParsing object: %u:%X", (unsigned)FilePos, Rec.RecType); */
 
           switch(Rec.RecType)
             {
@@ -1236,7 +1254,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->rows=BitmapHeader2.Heigth;
               bpp=BitmapHeader2.Depth;
 
-            UnpackRaster:
+UnpackRaster:
               if(bpp>24)
                 {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
 
@@ -1263,8 +1281,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 {
                   if (bpp < 24)
                     if ( (image->colors < (1UL<<bpp)) && (bpp != 24) )
-                      MagickReallocMemory(PixelPacket *,image->colormap,
-                                          (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                      if (!ReallocColormap(image,1U<<bpp))
+                        goto NoMemory;
+                      /* MagickReallocMemory(PixelPacket *,image->colormap, */
+                      /*                     (size_t) (1U<<bpp)*sizeof(PixelPacket)); */
                 }
 
               if(bpp == 1)
@@ -1459,8 +1479,13 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 {
                   if(bpp < 24)
                     if( image->colors<(1UL<<bpp) && bpp!=24 )
-                      MagickReallocMemory(PixelPacket *,image->colormap,
-                                          (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                      if (!ReallocColormap(image,1U<<bpp))
+                        goto NoMemory;
+                  /*
+                    Above was formerly this, but causes use of uninitialized memory:
+                        MagickReallocMemory(PixelPacket *,image->colormap,
+                                            (size_t) (1U<<bpp)*sizeof(PixelPacket));
+                  */
                 }
 
 

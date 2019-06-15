@@ -106,59 +106,21 @@ static unsigned int
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  AnnotateImage() annotates an image with text.  Optionally you can include
-%  any of the following bits of information about the image by embedding
-%  the appropriate special characters:
+%  AnnotateImage() annotates an image with DrawInfo 'text' based on other
+%  parameters from DrawInfo such as 'affine', 'align', 'decorate', and
+%  'gravity'.
 %
-%    %b   file size
-%    %c   comment
-%    %d   directory
-%    %e   filename extension
-%    %f   filename
-%    %g   page dimensions and offsets
-%    %h   height
-%    %i   input filename
-%    %k   number of unique colors
-%    %l   label
-%    %m   magick
-%    %n   number of scenes
-%    %o   output filename
-%    %p   page number
-%    %q   image bit depth
-%    %r   image type description
-%    %s   scene number
-%    %t   top of filename
-%    %w   width
-%    %x   horizontal resolution
-%    %y   vertical resolution
-%    %A   transparency supported
-%    %C   compression type
-%    %D   GIF disposal method
-%    %G   Original width and height
-%    %H   page height
-%    %M   original filename specification
-%    %O   page offset (x,y)
-%    %P   page dimensions (width,height)
-%    %T   time delay (in centi-seconds)
-%    %U   resolution units
-%    %W   page width
-%    %X   page horizontal offset (x)
-%    %Y   page vertical offset (y)
-%    %@   trim bounding box
-%    %[a] named attribute 'a'
-%    %#   signature
-%    \n   newline
-%    \r   carriage return
-%    %%   % (literal)
+%  Originally this function additionally transformed 'text' using
+%  TranslateText() but it no longer does so as of GraphicsMagick 1.3.32.
 %
 %  The format of the AnnotateImage method is:
 %
-%      unsigned int AnnotateImage(Image *image,DrawInfo *draw_info)
+%      MagickPassFail AnnotateImage(Image *image,DrawInfo *draw_info)
 %
 %  A description of each parameter follows:
 %
-%    o status: Method AnnotateImage returns True if the image is annotated
-%      otherwise False.
+%    o status: Method AnnotateImage returns MagickPass if the image is annotated
+%      otherwise MagickFail.
 %
 %    o image: The image.
 %
@@ -170,6 +132,7 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
 {
   char
     primitive[MaxTextExtent],
+    *p,
     *text,
     **textlist;
 
@@ -183,11 +146,8 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
   RectangleInfo
     geometry;
 
-  register long
+  register size_t
     i;
-
-  size_t
-    length;
 
   TypeMetric
     metrics;
@@ -205,9 +165,6 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
   MagickBool
     metrics_initialized = MagickFalse;
 
-  /*
-    Translate any embedded format characters (e.g. %f).
-  */
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(draw_info != (DrawInfo *) NULL);
@@ -216,29 +173,43 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
     return(MagickFail);
   if (*draw_info->text == '\0')
     return(MagickPass);
-  text=TranslateText((ImageInfo *) NULL,image,draw_info->text);
-  if (text == (char *) NULL)
-    ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-      UnableToAnnotateImage);
-  textlist=StringToList(text);
-  MagickFreeMemory(text);
+  annotate=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+  text=annotate->text;
+  annotate->text=(char *) NULL;
+  clone_info=CloneDrawInfo((ImageInfo *) NULL,annotate);
+  /*
+    Split text into list based on new-lines
+  */
+  number_lines=1;
+  for (p=text; *p != '\0'; p++)
+    if (*p == '\n')
+      number_lines++;
+  textlist=MagickAllocateMemory(char **,(number_lines+1)*sizeof(char *));
   if (textlist == (char **) NULL)
-    return(MagickFail);
-  length=strlen(textlist[0]);
-  for (i=1; textlist[i] != (char *) NULL; i++)
-    if (strlen(textlist[i]) > length)
-      length=strlen(textlist[i]);
-  number_lines=i;
-  text=MagickAllocateMemory(char *,length+MaxTextExtent);
-  if (text == (char *) NULL)
-    ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-      UnableToAnnotateImage);
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                      UnableToConvertText);
+  p=text;
+  for (i=0; i < number_lines; i++)
+    {
+      char *q;
+      textlist[i]=p;
+      for (q=(char *) p; *q != '\0'; q++)
+          if ((*q == '\r') || (*q == '\n'))
+            break;
+      if (*q == '\r')
+        {
+          *q='\0';
+          q++;
+        }
+      *q='\0';
+      p=q+1;
+    }
+  textlist[i]=(char *) NULL;
+
   SetGeometry(image,&geometry);
   if (draw_info->geometry != (char *) NULL)
     (void) GetGeometry(draw_info->geometry,&geometry.x,&geometry.y,
       &geometry.width,&geometry.height);
-  annotate=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   matte=image->matte;
   status=MagickPass;
   for (i=0; textlist[i] != (char *) NULL; i++)
@@ -421,10 +392,8 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
   */
   DestroyDrawInfo(clone_info);
   DestroyDrawInfo(annotate);
-  MagickFreeMemory(text);
-  for (i=0; textlist[i] != (char *) NULL; i++)
-    MagickFreeMemory(textlist[i]);
   MagickFreeMemory(textlist);
+  MagickFreeMemory(text);
   return(status);
 }
 
@@ -1549,8 +1518,11 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
     origin.x+=face->glyph->advance.x;
     if (origin.x > metrics->width)
       metrics->width=origin.x;
-    if (last_glyph.id != 0)
-      FT_Done_Glyph(last_glyph.image);
+    if (last_glyph.image != 0)
+      {
+        FT_Done_Glyph(last_glyph.image);
+        last_glyph.image=0;
+      }
     last_glyph=glyph;
   }
   metrics->width/=64.0;
@@ -1570,8 +1542,11 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
         (void) ConcatenateString(&clone_info->primitive,"'");
         (void) DrawImage(image,clone_info);
       }
-  if (glyph.id != 0)
-    FT_Done_Glyph(glyph.image);
+  if (glyph.image != 0)
+    {
+      FT_Done_Glyph(glyph.image);
+      glyph.image=0;
+    }
   /*
     Free resources.
   */

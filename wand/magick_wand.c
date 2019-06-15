@@ -5090,27 +5090,27 @@ WandExport MagickPassFail MagickHaldClutImage(MagickWand *wand,const MagickWand 
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%   M a g i c k H a s C o l o r M a p                                         %
+%   M a g i c k H a s C o l o r m a p                                         %
 %                                                                             %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  MagickHasColormap() returns True if the check was successful with the
-%  colormap parameter set to a boolean value indicating whether the current
-%  wand image uses a color map or not. Returns False if there are no wand
-%  images available.
+% MagickHasColormap() returns True if the check was successful with the
+% colormap parameter set to a boolean value indicating whether the current
+% wand image uses a color map or not. Returns False if there are no wand
+% images available.
 %
 %  The format of the MagickHasColormap method is:
 %
 %      unsigned int MagickHasColormap(MagickWand *wand,
-%        unsigned int *colormap)
+%                                     unsigned int *colormap)
 %
 %  A description of each parameter follows:
 %
-%    o wand: The magick wand.
+%     o wand: The magick wand.
 %
-%    o colormap: Set to True if current image uses a color map, False if not.
+%     o colormap: Set to True if current image uses a color map, False if not.
 %
 */
 WandExport unsigned int MagickHasColormap(MagickWand *wand,

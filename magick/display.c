@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -62,13 +62,1449 @@
 #include "magick/utility.h"
 #include "magick/version.h"
 #include "magick/xwindow.h"
-#include "magick/display.h"
+/*
+  Enumeration declarations.
+*/
+typedef enum
+{
+  CopyMode,
+  CropMode,
+  CutMode
+} ClipboardMode;
+
+typedef enum
+{
+  OpenCommand,
+  NextCommand,
+  FormerCommand,
+  SelectCommand,
+  SaveCommand,
+  PrintCommand,
+  DeleteCommand,
+  NewCommand,
+  VisualDirectoryCommand,
+  QuitCommand,
+  UndoCommand,
+  RedoCommand,
+  CutCommand,
+  CopyCommand,
+  PasteCommand,
+  HalfSizeCommand,
+  OriginalSizeCommand,
+  DoubleSizeCommand,
+  ResizeCommand,
+  ApplyCommand,
+  RefreshCommand,
+  RestoreCommand,
+  CropCommand,
+  ChopCommand,
+  FlopCommand,
+  FlipCommand,
+  RotateRightCommand,
+  RotateLeftCommand,
+  RotateCommand,
+  ShearCommand,
+  RollCommand,
+  TrimCommand,
+  HueCommand,
+  SaturationCommand,
+  BrightnessCommand,
+  GammaCommand,
+  SpiffCommand,
+  DullCommand,
+  EqualizeCommand,
+  NormalizeCommand,
+  NegateCommand,
+  GrayscaleCommand,
+  MapCommand,
+  QuantizeCommand,
+  DespeckleCommand,
+  EmbossCommand,
+  ReduceNoiseCommand,
+  AddNoiseCommand,
+  SharpenCommand,
+  BlurCommand,
+  ThresholdCommand,
+  EdgeDetectCommand,
+  SpreadCommand,
+  ShadeCommand,
+  RaiseCommand,
+  SegmentCommand,
+  SolarizeCommand,
+  SwirlCommand,
+  ImplodeCommand,
+  WaveCommand,
+  OilPaintCommand,
+  CharcoalDrawCommand,
+  AnnotateCommand,
+  DrawCommand,
+  ColorCommand,
+  MatteCommand,
+  CompositeCommand,
+  AddBorderCommand,
+  AddFrameCommand,
+  CommentCommand,
+  LaunchCommand,
+  RegionofInterestCommand,
+  ROIHelpCommand,
+  ROIDismissCommand,
+  InfoCommand,
+  ZoomCommand,
+  ShowPreviewCommand,
+  ShowHistogramCommand,
+  ShowMatteCommand,
+  BackgroundCommand,
+  SlideShowCommand,
+  PreferencesCommand,
+  HelpCommand,
+  BrowseDocumentationCommand,
+  VersionCommand,
+  SaveToUndoBufferCommand,
+  FreeBuffersCommand,
+  NullCommand
+} CommandType;
+
+typedef enum
+{
+  AnnotateNameCommand,
+  AnnotateFontColorCommand,
+  AnnotateBackgroundColorCommand,
+  AnnotateRotateCommand,
+  AnnotateHelpCommand,
+  AnnotateDismissCommand,
+  TextHelpCommand,
+  TextApplyCommand,
+  ChopDirectionCommand,
+  ChopHelpCommand,
+  ChopDismissCommand,
+  HorizontalChopCommand,
+  VerticalChopCommand,
+  ColorEditMethodCommand,
+  ColorEditColorCommand,
+  ColorEditBorderCommand,
+  ColorEditFuzzCommand,
+  ColorEditUndoCommand,
+  ColorEditHelpCommand,
+  ColorEditDismissCommand,
+  CompositeOperatorsCommand,
+  CompositeDissolveCommand,
+  CompositeDisplaceCommand,
+  CompositeHelpCommand,
+  CompositeDismissCommand,
+  CropHelpCommand,
+  CropDismissCommand,
+  RectifyCopyCommand,
+  RectifyHelpCommand,
+  RectifyDismissCommand,
+  DrawElementCommand,
+  DrawColorCommand,
+  DrawStippleCommand,
+  DrawWidthCommand,
+  DrawUndoCommand,
+  DrawHelpCommand,
+  DrawDismissCommand,
+  MatteEditMethod,
+  MatteEditBorderCommand,
+  MatteEditFuzzCommand,
+  MatteEditValueCommand,
+  MatteEditUndoCommand,
+  MatteEditHelpCommand,
+  MatteEditDismissCommand,
+  PasteOperatorsCommand,
+  PasteHelpCommand,
+  PasteDismissCommand,
+  RotateColorCommand,
+  RotateDirectionCommand,
+  RotateCropCommand,
+  RotateSharpenCommand,
+  RotateHelpCommand,
+  RotateDismissCommand,
+  HorizontalRotateCommand,
+  VerticalRotateCommand,
+  TileLoadCommand,
+  TileNextCommand,
+  TileFormerCommand,
+  TileDeleteCommand,
+  TileUpdateCommand
+} ModeType;
 
 /*
-  Constant declaration.
+  Function prototypes.
 */
+static CommandType
+  MagickXImageWindowCommand(Display *,MagickXResourceInfo *,MagickXWindows *,const unsigned int,
+    KeySym,Image **);
+
+static Image
+  *MagickXMagickCommand(Display *,MagickXResourceInfo *,MagickXWindows *,const CommandType,
+    Image **),
+  *MagickXOpenImage(Display *,MagickXResourceInfo *,MagickXWindows *,const unsigned int),
+  *MagickXTileImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *,XEvent *),
+  *MagickXVisualDirectoryImage(Display *,MagickXResourceInfo *,MagickXWindows *);
+
+static unsigned int
+  MagickXAnnotateEditImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXDrawEditImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXChopImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXCropImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *,const ClipboardMode),
+  MagickXBackgroundImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXColorEditImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXCompositeImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXConfigureImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXMatteEditImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXPasteImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXPrintImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXRotateImage(Display *,MagickXResourceInfo *,MagickXWindows *,double,Image **),
+  MagickXROIImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image **),
+  MagickXSaveImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXTrimImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *);
+
+static void
+  MagickXDrawPanRectangle(Display *,MagickXWindows *),
+  MagickXImageCache(Display *,MagickXResourceInfo *,MagickXWindows *,const CommandType,Image **),
+  MagickXMagnifyImage(Display *,MagickXWindows *,XEvent *),
+  MagickXMakePanImage(Display *,MagickXResourceInfo *,MagickXWindows *,Image *),
+  MagickXPanImage(Display *,MagickXWindows *,XEvent *),
+  MagickXMagnifyWindowCommand(Display *,MagickXWindows *,const unsigned int,const KeySym),
+  MagickXSetCropGeometry(Display *,MagickXWindows *,RectangleInfo *,Image *),
+  MagickXScreenEvent(Display *,MagickXWindows *,XEvent *),
+  MagickXTranslateImage(Display *,MagickXWindows *,Image *,const KeySym);
+
+/*
+  Define declarations.
+*/
+#define MaxColors  Min(windows->visual_info->colormap_size,256)
+/*
+  Stipples.
+*/
+#define BricksWidth  20
+#define BricksHeight  20
+#define DiagonalWidth  16
+#define DiagonalHeight  16
+#define HighlightWidth  8
+#define HighlightHeight  8
+#define ScalesWidth  16
+#define ScalesHeight  16
+#define ShadowWidth  8
+#define ShadowHeight  8
+#define VerticalWidth  16
+#define VerticalHeight  16
+#define WavyWidth  16
+#define WavyHeight  16
+
+/*
+  Constant declarations.
+*/
+static const unsigned char
+  BricksBitmap[] =
+  {
+    0xff, 0xff, 0x0f, 0x03, 0x0c, 0x00, 0x03, 0x0c, 0x00, 0x03, 0x0c, 0x00,
+    0x03, 0x0c, 0x00, 0xff, 0xff, 0x0f, 0x60, 0x80, 0x01, 0x60, 0x80, 0x01,
+    0x60, 0x80, 0x01, 0x60, 0x80, 0x01, 0xff, 0xff, 0x0f, 0x03, 0x0c, 0x00,
+    0x03, 0x0c, 0x00, 0x03, 0x0c, 0x00, 0x03, 0x0c, 0x00, 0xff, 0xff, 0x0f,
+    0x60, 0x80, 0x01, 0x60, 0x80, 0x01, 0x60, 0x80, 0x01, 0x60, 0x80, 0x01
+  },
+  DiagonalBitmap[] =
+  {
+    0x44, 0x44, 0x88, 0x88, 0x11, 0x11, 0x22, 0x22, 0x44, 0x44, 0x88, 0x88,
+    0x11, 0x11, 0x22, 0x22, 0x44, 0x44, 0x88, 0x88, 0x11, 0x11, 0x22, 0x22,
+    0x44, 0x44, 0x88, 0x88, 0x11, 0x11, 0x22, 0x22
+  },
+  ScalesBitmap[] =
+  {
+    0x08, 0x08, 0x08, 0x08, 0x14, 0x14, 0xe3, 0xe3, 0x80, 0x80, 0x80, 0x80,
+    0x41, 0x41, 0x3e, 0x3e, 0x08, 0x08, 0x08, 0x08, 0x14, 0x14, 0xe3, 0xe3,
+    0x80, 0x80, 0x80, 0x80, 0x41, 0x41, 0x3e, 0x3e
+  },
+  VerticalBitmap[] =
+  {
+    0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,
+    0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,
+    0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11
+  },
+  WavyBitmap[] =
+  {
+    0xfe, 0xff, 0xfe, 0xff, 0xfe, 0xff, 0xfd, 0xff, 0xfd, 0xff, 0xfb, 0xff,
+    0xe7, 0xff, 0x1f, 0xff, 0xff, 0xf8, 0xff, 0xe7, 0xff, 0xdf, 0xff, 0xbf,
+    0xff, 0xbf, 0xff, 0x7f, 0xff, 0x7f, 0xff, 0x7f
+  };
+
 static const int
   RoiDelta = 8;
+
+static unsigned const char
+  HighlightBitmap[8] =
+  {
+    0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55
+  },
+  ShadowBitmap[8] =
+  {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  };
+
+#define PAGE_SIZES \
+    "Letter",      \
+    "Tabloid", \
+    "Ledger", \
+    "Legal", \
+    "Statement", \
+    "Executive", \
+    "A3", \
+    "A4", \
+    "A5", \
+    "B4", \
+    "B5", \
+    "Folio", \
+    "Quarto", \
+    "10x14", \
+    (char *) NULL
+
+/*
+  Help widget declarations.
+*/
+static const char ImageAnnotateHelp[]=
+    "In annotate mode, the Command widget has these options:\0"
+    "\0"
+    "    Font Name\0"
+    "      fixed\0"
+    "      variable\0"
+    "      5x8\0"
+    "      6x10\0"
+    "      7x13bold\0"
+    "      8x13bold\0"
+    "      9x15bold\0"
+    "      10x20\0"
+    "      12x24\0"
+    "      Browser...\0"
+    "    Font Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      transparent\0"
+    "      Browser...\0"
+    "    Font Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      transparent\0"
+    "      Browser...\0"
+    "    Rotate Text\0"
+    "      -90\0"
+    "      -45\0"
+    "      -30\0"
+    "      0\0"
+    "      30\0"
+    "      45\0"
+    "      90\0"
+    "      180\0"
+    "      Dialog...\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a font name from the Font Name sub-menu.  Additional\0"
+    "font names can be specified with the font browser.  You can\0"
+    "change the menu names by setting the X resources font1\0"
+    "through font9.\0"
+    "\0"
+    "Choose a font color from the Font Color sub-menu.\0"
+    "Additional font colors can be specified with the color\0"
+    "browser.  You can change the menu colors by setting the X\0"
+    "resources pen1 through pen9.\0"
+    "\0"
+    "If you select the color browser and press Grab, you can\0"
+    "choose the font color by moving the pointer to the desired\0"
+    "color on the screen and press any button.\0"
+    "\0"
+    "If you choose to rotate the text, choose Rotate Text from the\0"
+    "menu and select an angle.  Typically you will only want to\0"
+    "rotate one line of text at a time.  Depending on the angle you\0"
+    "choose, subsequent lines may end up overwriting each other.\0"
+    "\0"
+    "Choosing a font and its color is optional.  The default font\0"
+    "is fixed and the default color is black.  However, you must\0"
+    "choose a location to begin entering text and press button 1.\0"
+    "An underscore character will appear at the location of the\0"
+    "pointer.  The cursor changes to a pencil to indicate you are\0"
+    "in text mode.  To exit immediately, press Dismiss.\0"
+    "\0"
+    "In text mode, any key presses will display the character at\0"
+    "the location of the underscore and advance the underscore\0"
+    "cursor.  Enter your text and once completed press Apply to\0"
+    "finish your image annotation.  To correct errors press BACK\0"
+    "SPACE.  To delete an entire line of text, press DELETE.  Any\0"
+    "text that exceeds the boundaries of the image window is\0"
+    "automatically continued onto the next line.\0"
+    "\0"
+    "The actual color you request for the font is saved in the\0"
+    "image.  However, the color that appears in your image window\0"
+    "may be different.  For example, on a monochrome screen the\0"
+    "text will appear black or white even if you choose the color\0"
+    "red as the font color.  However, the image saved to a file\0"
+    "with -write is written with red lettering.  To assure the\0"
+    "correct color text in the final image, any PseudoClass image\0"
+    "is promoted to DirectClass (see miff(5)).  To force a\0"
+  "PseudoClass image to remain PseudoClass, use -colors.",
+  ImageChopHelp[]=
+    "In chop mode, the Command widget has these options:\0"
+    "\0"
+    "    Direction\0"
+    "      horizontal\0"
+    "      vertical\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "If the you choose the horizontal direction (this is the\0"
+    "default), the area of the image between the two horizontal\0"
+    "endpoints of the chop line is removed.  Otherwise, the area\0"
+    "of the image between the two vertical endpoints of the chop\0"
+    "line is removed.\0"
+    "\0"
+    "Select a location within the image window to begin your chop,\0"
+    "press and hold any button.  Next, move the pointer to\0"
+    "another location in the image.  As you move a line will\0"
+    "connect the initial location and the pointer.  When you\0"
+    "release the button, the area within the image to chop is\0"
+    "determined by which direction you choose from the Command\0"
+    "widget.\0"
+    "\0"
+    "To cancel the image chopping, move the pointer back to the\0"
+    "starting point of the line and release the button.",
+  ImageColorEditHelp[]=
+    "In color edit mode, the Command widget has these options:\0"
+    "\0"
+    "    Method\0"
+    "      point\0"
+    "      replace\0"
+    "      floodfill\0"
+    "      filltoborder\0"
+    "      reset\0"
+    "    Pixel Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      Browser...\0"
+    "    Border Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      Browser...\0"
+    "    Fuzz\0"
+    "      0%\0"
+    "      2%\0"
+    "      5%\0"
+    "      10%\0"
+    "      15%\0"
+    "      Dialog...\0"
+    "    Undo\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a color editing method from the Method sub-menu\0"
+    "of the Command widget.  The point method recolors any pixel\0"
+    "selected with the pointer until the button is released.  The\0"
+    "replace method recolors any pixel that matches the color of\0"
+    "the pixel you select with a button press.  Floodfill recolors\0"
+    "any pixel that matches the color of the pixel you select with\0"
+    "a button press and is a neighbor.  Whereas filltoborder recolors\0"
+    "any neighbor pixel that is not the border color.  Finally reset\0"
+    "changes the entire image to the designated color.\0"
+    "\0"
+    "Next, choose a pixel color from the Pixel Color sub-menu.\0"
+    "Additional pixel colors can be specified with the color\0"
+    "browser.  You can change the menu colors by setting the X\0"
+    "resources pen1 through pen9.\0"
+    "\0"
+    "Now press button 1 to select a pixel within the image window\0"
+    "to change its color.  Additional pixels may be recolored as\0"
+    "prescribed by the method you choose.\0"
+    "\0"
+    "If the Magnify widget is mapped, it can be helpful in positioning\0"
+    "your pointer within the image (refer to button 2).\0"
+    "\0"
+    "The actual color you request for the pixels is saved in the\0"
+    "image.  However, the color that appears in your image window\0"
+    "may be different.  For example, on a monochrome screen the\0"
+    "pixel will appear black or white even if you choose the\0"
+    "color red as the pixel color.  However, the image saved to a\0"
+    "file with -write is written with red pixels.  To assure the\0"
+    "correct color text in the final image, any PseudoClass image\0"
+    "is promoted to DirectClass (see miff(5)).  To force a\0"
+  "PseudoClass image to remain PseudoClass, use -colors.",
+  ImageCompositeHelp[]=
+    "First a widget window is displayed requesting you to enter an\0"
+    "image name. Press Composite, Grab or type a file name.\0"
+    "Press Cancel if you choose not to create a composite image.\0"
+    "When you choose Grab, move the pointer to the desired window\0"
+    "and press any button.\0"
+    "\0"
+    "If the Composite image does not have any matte information,\0"
+    "you are informed and the file browser is displayed again.\0"
+    "Enter the name of a mask image.  The image is typically\0"
+    "grayscale and the same size as the composite image.  If the\0"
+    "image is not grayscale, it is converted to grayscale and the\0"
+    "resulting intensities are used as matte information.\0"
+    "\0"
+    "A small window appears showing the location of the cursor in\0"
+    "the image window. You are now in composite mode.  To exit\0"
+    "immediately, press Dismiss.  In composite mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Operators\0"
+    "      Over\0"
+    "      In\0"
+    "      Out\0"
+    "      Atop\0"
+    "      Xor\0"
+    "      Plus\0"
+    "      Minus\0"
+    "      Add\0"
+    "      Subtract\0"
+    "      Difference\0"
+    "      Multiply\0"
+    "      Bumpmap\0"
+    "      Copy\0"
+    "      CopyRed\0"
+    "      CopyGreen\0"
+    "      CopyBlue\0"
+    "      CopyOpacity\0"
+    "      Clear\0"
+    "    Dissolve\0"
+    "    Displace\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a composite operation from the Operators sub-menu of\0"
+    "the Command widget.  How each operator behaves is described\0"
+    "below.  Image window is the image currently displayed on\0"
+    "your X server and image is the image obtained with the File\0"
+    "Browser widget.\0"
+    "\0"
+    "Over     The result is the union of the two image shapes,\0"
+    "         with image obscuring image window in the region of\0"
+    "         overlap.\0"
+    "\0"
+    "In       The result is simply image cut by the shape of\0"
+    "         image window.  None of the image data of image\0"
+    "         window is in the result.\0"
+    "\0"
+    "Out      The resulting image is image with the shape of\0"
+    "         image window cut out.\0"
+    "\0"
+    "Atop     The result is the same shape as image image window,\0"
+    "         with image obscuring image window where the image\0"
+    "         shapes overlap.  Note this differs from over\0"
+    "         because the portion of image outside image window's\0"
+    "         shape does not appear in the result.\0"
+    "\0"
+    "Xor      The result is the image data from both image and\0"
+    "         image window that is outside the overlap region.\0"
+    "         The overlap region is blank.\0"
+    "\0"
+    "Plus     The result is just the sum of the image data.\0"
+    "         Output values are cropped to 255 (no overflow).\0"
+    "         This operation is independent of the matte\0"
+    "         channels.\0"
+    "\0"
+    "Minus    The result of image - image window, with underflow\0"
+    "         cropped to zero.  The matte channel is ignored (set\0"
+    "         to 255, full coverage).\0"
+    "\0"
+    "Add      The result of image + image window, with overflow\0"
+    "         wrapping around (mod 256).\0"
+    "\0"
+    "Subtract The result of image - image window, with underflow\0"
+    "         wrapping around (mod 256).  The add and subtract\0"
+    "         operators can be used to perform reversible\0"
+    "         transformations.\0"
+    "\0"
+    "Difference\0"
+    "         The result of abs(image - image window).  This is\0"
+    "         useful for comparing two very similar images.\0"
+    "\0"
+    "Multiply\0"
+    "         The result of image * image window.  This is\0"
+    "         useful for the creation of drop-shadows.\0"
+    "\0"
+    "Bumpmap  The result of surface normals from image * image\0"
+    "         window.\0"
+    "\0"
+    "Copy     The resulting image is image window replaced with\0"
+    "         image.  Here the matte information is ignored.\0"
+    "\0"
+    "CopyRed  The red layer of the image window is replace with\0"
+    "         the red layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyGreen\0"
+    "         The green layer of the image window is replace with\0"
+    "         the green layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyBlue The blue layer of the image window is replace with\0"
+    "         the blue layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyOpacity\0"
+    "         The matte layer of the image window is replace with\0"
+    "         the matte layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "The image compositor requires a matte, or alpha channel in\0"
+    "the image for some operations.  This extra channel usually\0"
+    "defines a mask which represents a sort of a cookie-cutter\0"
+    "for the image.  This is the case when matte is 255 (full\0"
+    "coverage) for pixels inside the shape, zero outside, and\0"
+    "between zero and 255 on the boundary.  If image does not\0"
+    "have a matte channel, it is initialized with 0 for any pixel\0"
+    "matching in color to pixel location (0,0), otherwise 255.\0"
+    "\0"
+    "If you choose Dissolve, the composite operator becomes Over.  The\0"
+    "image matte channel percent transparency is initialized to factor.\0"
+    "The image window is initialized to (100-factor). Where factor is the\0"
+    "value you specify in the Dialog widget.\0"
+    "\0"
+    "Displace shifts the image pixels as defined by a displacement\0"
+    "map.  With this option, image is used as a displacement map.\0"
+    "Black, within the displacement map, is a maximum positive\0"
+    "displacement.  White is a maximum negative displacement and\0"
+    "middle gray is neutral.  The displacement is scaled to determine\0"
+    "the pixel shift.  By default, the displacement applies in both the\0"
+    "horizontal and vertical directions.  However, if you specify a mask,\0"
+    "image is the horizontal X displacement and mask the vertical Y\0"
+    "displacement.\0"
+    "\0"
+    "Note that matte information for image window is not retained\0"
+    "for colormapped X server visuals (e.g. StaticColor,\0"
+    "StaticColor, GrayScale, PseudoColor).  Correct compositing\0"
+    "behavior may require a TrueColor or DirectColor visual or a\0"
+    "Standard Colormap.\0"
+    "\0"
+    "Choosing a composite operator is optional.  The default\0"
+    "operator is replace.  However, you must choose a location to\0"
+    "composite your image and press button 1.  Press and hold the\0"
+    "button before releasing and an outline of the image will\0"
+    "appear to help you identify your location.\0"
+    "\0"
+    "The actual colors of the composite image is saved.  However,\0"
+    "the color that appears in image window may be different.\0"
+    "For example, on a monochrome screen image window will appear\0"
+    "black or white even though your composited image may have\0"
+    "many colors.  If the image is saved to a file it is written\0"
+    "with the correct colors.  To assure the correct colors are\0"
+    "saved in the final image, any PseudoClass image is promoted\0"
+    "to DirectClass (see miff(5)).  To force a PseudoClass image\0"
+    "to remain PseudoClass, use -colors.",
+  ImageCutHelp[]=
+    "In cut mode, the Command widget has these options:\0"
+    "\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "To define a cut region, press button 1 and drag.  The\0"
+    "cut region is defined by a highlighted rectangle that\0"
+    "expands or contracts as it follows the pointer.  Once you\0"
+    "are satisfied with the cut region, release the button.\0"
+    "You are now in rectify mode.  In rectify mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Cut\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "You can make adjustments by moving the pointer to one of the\0"
+    "cut rectangle corners, pressing a button, and dragging.\0"
+    "Finally, press Cut to commit your copy region.  To\0"
+    "exit without cutting the image, press Dismiss.",
+  ImageCopyHelp[]=
+    "In copy mode, the Command widget has these options:\0"
+    "\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "To define a copy region, press button 1 and drag.  The\0"
+    "copy region is defined by a highlighted rectangle that\0"
+    "expands or contracts as it follows the pointer.  Once you\0"
+    "are satisfied with the copy region, release the button.\0"
+    "You are now in rectify mode.  In rectify mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Copy\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "You can make adjustments by moving the pointer to one of the\0"
+    "copy rectangle corners, pressing a button, and dragging.\0"
+    "Finally, press Copy to commit your copy region.  To\0"
+    "exit without copying the image, press Dismiss.",
+  ImageCropHelp[]=
+    "In crop mode, the Command widget has these options:\0"
+    "\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "To define a cropping region, press button 1 and drag.  The\0"
+    "cropping region is defined by a highlighted rectangle that\0"
+    "expands or contracts as it follows the pointer.  Once you\0"
+    "are satisfied with the cropping region, release the button.\0"
+    "You are now in rectify mode.  In rectify mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Crop\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "You can make adjustments by moving the pointer to one of the\0"
+    "cropping rectangle corners, pressing a button, and dragging.\0"
+    "Finally, press Crop to commit your cropping region.  To\0"
+    "exit without cropping the image, press Dismiss.",
+  ImageDrawHelp[]=
+    "The cursor changes to a crosshair to indicate you are in\0"
+    "draw mode.  To exit immediately, press Dismiss.  In draw mode,\0"
+    "the Command widget has these options:\0"
+    "\0"
+    "    Element\0"
+    "      point\0"
+    "      line\0"
+    "      rectangle\0"
+    "      fill rectangle\0"
+    "      circle\0"
+    "      fill circle\0"
+    "      ellipse\0"
+    "      fill ellipse\0"
+    "      polygon\0"
+    "      fill polygon\0"
+    "    Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      transparent\0"
+    "      Browser...\0"
+    "    Stipple\0"
+    "      Brick\0"
+    "      Diagonal\0"
+    "      Scales\0"
+    "      Vertical\0"
+    "      Wavy\0"
+    "      Translucent\0"
+    "      Opaque\0"
+    "      Open...\0"
+    "    Width\0"
+    "      1\0"
+    "      2\0"
+    "      4\0"
+    "      8\0"
+    "      16\0"
+    "      Dialog...\0"
+    "    Undo\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a drawing primitive from the Element sub-menu.\0"
+    "\0"
+    "Choose a color from the Color sub-menu.  Additional\0"
+    "colors can be specified with the color browser.\0"
+    "\0"
+    "If you choose the color browser and press Grab, you can\0"
+    "select the color by moving the pointer to the desired\0"
+    "color on the screen and press any button.  The transparent\0"
+    "color updates the image matte channel and is useful for\0"
+    "image compositing.\0"
+    "\0"
+    "Choose a stipple, if appropriate, from the Stipple sub-menu.\0"
+    "Additional stipples can be specified with the file browser.\0"
+    "Stipples obtained from the file browser must be on disk in the\0"
+    "X11 bitmap format.\0"
+    "\0"
+    "Choose a width, if appropriate, from the Width sub-menu.  To\0"
+    "choose a specific width select the Dialog widget.\0"
+    "\0"
+    "Choose a point in the Image window and press button 1 and\0"
+    "hold.  Next, move the pointer to another location in the\0"
+    "image.  As you move, a line connects the initial location and\0"
+    "the pointer.  When you release the button, the image is\0"
+    "updated with the primitive you just drew.  For polygons, the\0"
+    "image is updated when you press and release the button without\0"
+    "moving the pointer.\0"
+    "\0"
+    "To cancel image drawing, move the pointer back to the\0"
+    "starting point of the line and release the button.",
+  DisplayHelp[]=
+    "BUTTONS\0"
+    "  The effects of each button press is described below.  Three\0"
+    "  buttons are required.  If you have a two button mouse,\0"
+    "  button 1 and 3 are returned.  Press ALT and button 3 to\0"
+    "  simulate button 2.\0"
+    "\0"
+    "  1    Press this button to map or unmap the Command widget.\0"
+    "\0"
+    "  2    Press and drag to define a region of the image to\0"
+    "       magnify.\0"
+    "\0"
+    "  3    Press and drag to choose from a select set of commands.\0"
+    "       This button behaves differently if the image being\0"
+    "       displayed is a visual image directory.  Here, choose a\0"
+    "       particular tile of the directory and press this button and\0"
+    "       drag to select a command from a pop-up menu.  Choose from\0"
+    "       these menu items:\0"
+    "\0"
+    "           Open\0"
+    "           Next\0"
+    "           Former\0"
+    "           Delete\0"
+    "           Update\0"
+    "\0"
+    "       If you choose Open, the image represented by the tile is\0"
+    "       displayed.  To return to the visual image directory, choose\0"
+    "       Next from the Command widget.  Next and Former moves to the\0"
+    "       next or former image respectively.  Choose Delete to delete\0"
+    "       a particular image tile.  Finally, choose Update to\0"
+    "       synchronize all the image tiles with their respective\0"
+    "       images.\0"
+    "\0"
+    "COMMAND WIDGET\0"
+    "  The Command widget lists a number of sub-menus and commands.\0"
+    "  They are\0"
+    "\0"
+    "      File\0"
+    "        Open...\0"
+    "        Next\0"
+    "        Former\0"
+    "        Select...\0"
+    "        Save...\0"
+    "        Print...\0"
+    "        Delete...\0"
+    "        New...\0"
+    "        Visual Directory...\0"
+    "        Quit\0"
+    "      Edit\0"
+    "        Undo\0"
+    "        Redo\0"
+    "        Cut\0"
+    "        Copy\0"
+    "        Paste\0"
+    "      View\0"
+    "        Half Size\0"
+    "        Original Size\0"
+    "        Double Size\0"
+    "        Resize...\0"
+    "        Apply\0"
+    "        Refresh\0"
+    "        Restore\0"
+    "      Transform\0"
+    "        Crop\0"
+    "        Chop\0"
+    "        Flop\0"
+    "        Flip\0"
+    "        Rotate Right\0"
+    "        Rotate Left\0"
+    "        Rotate...\0"
+    "        Shear...\0"
+    "        Roll...\0"
+    "        Trim Edges\0"
+    "      Enhance\0"
+    "        Brightness...\0"
+    "        Saturation...\0"
+    "        Hue...\0"
+    "        Gamma...\0"
+    "        Sharpen...\0"
+    "        Dull\0"
+    "        Equalize\0"
+    "        Normalize\0"
+    "        Negate\0"
+    "        Grayscale\0"
+    "        Map...\0"
+    "        Quantize...\0"
+    "      Effects\0"
+    "        Despeckle\0"
+    "        Emboss\0"
+    "        Reduce Noise\0"
+    "        Add Noise\0"
+    "        Sharpen...\0"
+    "        Blur...\0"
+    "        Threshold...\0"
+    "        Edge Detect...\0"
+    "        Spread...\0"
+    "        Shade...\0"
+    "        Painting...\0"
+    "        Segment...\0"
+    "      F/X\0"
+    "        Solarize...\0"
+    "        Swirl...\0"
+    "        Implode...\0"
+    "        Wave...\0"
+    "        Oil Painting...\0"
+    "        Charcoal Drawing...\0"
+    "      Image Edit\0"
+    "        Annotate...\0"
+    "        Draw...\0"
+    "        Color...\0"
+    "        Matte...\0"
+    "        Composite...\0"
+    "        Add Border...\0"
+    "        Add Frame...\0"
+    "        Comment...\0"
+    "        Launch...\0"
+    "        Region of Interest...\0"
+    "      Miscellany\0"
+    "        Image Info\0"
+    "        Zoom Image\0"
+    "        Show Preview...\0"
+    "        Show Histogram\0"
+    "        Show Matte\0"
+    "        Background...\0"
+    "        Slide Show\0"
+    "        Preferences...\0"
+    "      Help\0"
+    "        Overview\0"
+    "        Browse Documentation\0"
+    "        About Display\0"
+    "\0"
+    "  Menu items with a indented triangle have a sub-menu.  They\0"
+    "  are represented above as the indented items.  To access a\0"
+    "  sub-menu item, move the pointer to the appropriate menu and\0"
+    "  press a button and drag.  When you find the desired sub-menu\0"
+    "  item, release the button and the command is executed.  Move\0"
+    "  the pointer away from the sub-menu if you decide not to\0"
+    "  execute a particular command.\0"
+    "\0"
+    "KEYBOARD ACCELERATORS\0"
+    "  Accelerators are one or two key presses that effect a\0"
+    "  particular command.  The keyboard accelerators that\0"
+    "  display(1) understands is:\0"
+    "\0"
+    "  Ctl+O     Press to open an image from a file.\0"
+    "\0"
+    "  space     Press to display the next image.\0"
+    "\0"
+    "            If the image is a multi-paged document such as a Postscript\0"
+    "            document, you can skip ahead several pages by preceeding\0"
+    "            this command with a number.  For example to display the\0"
+    "            fourth page beyond the current page, press 4n.\0"
+    "\0"
+    "  backspace Press to display the former image.\0"
+    "\0"
+    "            If the image is a multi-paged document such as a Postscript\0"
+    "            document, you can skip behind several pages by preceeding\0"
+    "            this command with a number.  For example to display the\0"
+    "            fourth page preceeding the current page, press 4space.\0"
+    "\0"
+    "  Ctl+S     Press to write the image to a file.\0"
+    "\0"
+    "  Ctl+P     Press to print the image to a Postscript printer.\0"
+    "\0"
+    "  Ctl+D     Press to delete an image file.\0"
+    "\0"
+    "  Ctl+N     Press to create a blank canvas.\0"
+    "\0"
+    "  Ctl+Q     Press to discard all images and exit program.\0"
+    "\0"
+    "  Ctl+Z     Press to undo last image transformation.\0"
+    "\0"
+    "  Ctl+R     Press to redo last image transformation.\0"
+    "\0"
+    "  Ctl+X     Press to cut a region of the image.\0"
+    "\0"
+    "  Ctl+C     Press to copy a region of the image.\0"
+    "\0"
+    "  Ctl+V     Press to paste a region to the image.\0"
+    "\0"
+    "  <         Press to half the image size.\0"
+    "\0"
+    "  -         Press to return to the original image size.\0"
+    "\0"
+    "  >         Press to double the image size.\0"
+    "\0"
+    "  %         Press to resize the image to a width and height you\0"
+    "            specify.\0"
+    "\0"
+    "Cmd-A       Press to make any image transformations permanent."
+    "\0"
+    "            By default, any image size transformations are applied\0"
+    "            to the original image to create the image displayed on\0"
+    "            the X server.  However, the transformations are not\0"
+    "            permanent (i.e. the original image does not change\0"
+    "            size only the X image does).  For example, if you\0"
+    "            press > the X image will appear to double in size,\0"
+    "            but the original image will in fact remain the same size.\0"
+    "            To force the original image to double in size, press >\0"
+    "            followed by Cmd-A.\0"
+    "\0"
+    "  @         Press to refresh the image window.\0"
+    "\0"
+    "  C         Press to crop the image.\0"
+    "\0"
+    "  [         Press to chop the image.\0"
+    "\0"
+    "  H         Press to flop image in the horizontal direction.\0"
+    "\0"
+    "  V         Press to flip image in the vertical direction.\0"
+    "\0"
+    "  /         Press to rotate the image 90 degrees clockwise.\0"
+    "\0"
+    " \\         Press to rotate the image 90 degrees counter-clockwise.\0"
+    "\0"
+    "  *         Press to rotate the image the number of degrees you\0"
+    "            specify.\0"
+    "\0"
+    "  S         Press to shear the image the number of degrees you\0"
+    "            specify.\0"
+    "\0"
+    "  R         Press to roll the image.\0"
+    "\0"
+    "  T         Press to trim the image edges.\0"
+    "\0"
+    "  Shft-H    Press to vary the image hue.\0"
+    "\0"
+    "  Shft-S    Press to vary the color saturation.\0"
+    "\0"
+    "  Shft-L    Press to vary the color brightness.\0"
+    "\0"
+    "  Shft-G    Press to gamma correct the image.\0"
+    "\0"
+    "  Shft-C    Press to sharpen the image contrast.\0"
+    "\0"
+    "  Shft-Z    Press to dull the image contrast.\0"
+    "\0"
+    "  =         Press to perform histogram equalization on the image.\0"
+    "\0"
+    "  Shft-N    Press to perform histogram normalization on the image.\0"
+    "\0"
+    "  Shft-~    Press to negate the colors of the image.\0"
+    "\0"
+    "  .         Press to convert the image colors to gray.\0"
+    "\0"
+    "  Shft-#    Press to set the maximum number of unique colors in the\0"
+    "            image.\0"
+    "\0"
+    "  F2        Press to reduce the speckles in an image.\0"
+    "\0"
+    "  F3        Press to eliminate peak noise from an image.\0"
+    "\0"
+    "  F4        Press to add noise to an image.\0"
+    "\0"
+    "  F5        Press to sharpen an image.\0"
+    "\0"
+    "  F6        Press to delete an image file.\0"
+    "\0"
+    "  F7        Press to threshold the image.\0"
+    "\0"
+    "  F8        Press to detect edges within an image.\0"
+    "\0"
+    "  F9        Press to emboss an image.\0"
+    "\0"
+    "  F10       Press to displace pixels by a random amount.\0"
+    "\0"
+    "  F11       Press to negate all pixels above the threshold level.\0"
+    "\0"
+    "  F12       Press to shade the image using a distant light source.\0"
+    "\0"
+    "  F13       Press to lighten or darken image edges to create a 3-D effect.\0"
+    "\0"
+    "  F14       Press to segment the image by color.\0"
+    "\0"
+    "  Meta-S    Press to swirl image pixels about the center.\0"
+    "\0"
+    "  Meta-I    Press to implode image pixels about the center.\0"
+    "\0"
+    "  Meta-W    Press to alter an image along a sine wave.\0"
+    "\0"
+    "  Meta-P    Press to simulate an oil painting.\0"
+    "\0"
+    "  Meta-C    Press to simulate a charcoal drawing.\0"
+    "\0"
+    "  Alt-A     Press to annotate the image with text.\0"
+    "\0"
+    "  Alt-D     Press to draw on an image.\0"
+    "\0"
+    "  Alt-P     Press to edit an image pixel color.\0"
+    "\0"
+    "  Alt-M     Press to edit the image matte information.\0"
+    "\0"
+    "  Alt-V     Press to composite the image with another.\0"
+    "\0"
+    "  Alt-B     Press to add a border to the image.\0"
+    "\0"
+    "  Alt-F     Press to add an ornamental border to the image.\0"
+    "\0"
+    "  Alt-Shft-!\0"
+    "            Press to add an image comment.\0"
+    "\0"
+    "  Ctl-A     Press to apply image processing techniques to a region\0"
+    "            of interest.\0"
+    "\0"
+    "  Shft-?    Press to display information about the image.\0"
+    "\0"
+    "  Shft-+    Press to map the zoom image window.\0"
+    "\0"
+    "  Shft-P    Press to preview an image enhancement, effect, or f/x.\0"
+    "\0"
+    "  F1        Press to display helpful information about display(1).\0"
+    "\0"
+    "  Find      Press to browse documentation about ImageMagick.\0"
+    "\0"
+    "  1-9       Press to change the level of magnification.\0"
+    "\0"
+    "  Use the arrow keys to move the image one pixel up, down,\0"
+    "  left, or right within the magnify window.  Be sure to first\0"
+    "  map the magnify window by pressing button 2.\0"
+    "\0"
+    "  Press ALT and one of the arrow keys to trim off one pixel\0"
+    "  from any side of the image.",
+  ImageMatteEditHelp[]=
+    "Matte information within an image is useful for some\0"
+    "operations such as image compositing (See IMAGE\0"
+    "COMPOSITING).  This extra channel usually defines a mask\0"
+    "which represents a sort of a cookie-cutter for the image.\0"
+    "This is the case when matte is 255 (full coverage) for\0"
+    "pixels inside the shape, zero outside, and between zero and\0"
+    "255 on the boundary.\0"
+    "\0"
+    "A small window appears showing the location of the cursor in\0"
+    "the image window. You are now in matte edit mode.  To exit\0"
+    "immediately, press Dismiss.  In matte edit mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Method\0"
+    "      point\0"
+    "      replace\0"
+    "      floodfill\0"
+    "      filltoborder\0"
+    "      reset\0"
+    "    Border Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      Browser...\0"
+    "    Fuzz\0"
+    "      0%\0"
+    "      2%\0"
+    "      5%\0"
+    "      10%\0"
+    "      15%\0"
+    "      Dialog...\0"
+    "    Matte\0"
+    "      Opaque\0"
+    "      Transparent\0"
+    "      Dialog...\0"
+    "    Undo\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a matte editing method from the Method sub-menu of\0"
+    "the Command widget.  The point method changes the matte value\0"
+    "of any pixel selected with the pointer until the button is\0"
+    "is released.  The replace method changes the matte value of\0"
+    "any pixel that matches the color of the pixel you select with\0"
+    "a button press.  Floodfill changes the matte value of any pixel\0"
+    "that matches the color of the pixel you select with a button\0"
+    "press and is a neighbor.  Whereas filltoborder changes the matte\0"
+    "value any neighbor pixel that is not the border color.  Finally\0"
+    "reset changes the entire image to the designated matte value.\0"
+    "\0"
+    "Choose Matte Value and pick Opaque or Transarent.  For other values\0"
+    "select the Dialog entry.  Here a dialog appears requesting a matte\0"
+    "value.  The value you select is assigned as the opacity value of the\0"
+    "selected pixel or pixels.\0"
+    "\0"
+    "Now, press any button to select a pixel within the image\0"
+    "window to change its matte value.\0"
+    "\0"
+    "If the Magnify widget is mapped, it can be helpful in positioning\0"
+    "your pointer within the image (refer to button 2).\0"
+    "\0"
+    "Matte information is only valid in a DirectClass image.\0"
+    "Therefore, any PseudoClass image is promoted to DirectClass\0"
+    "(see miff(5)).  Note that matte information for PseudoClass\0"
+    "is not retained for colormapped X server visuals (e.g.\0"
+    "StaticColor, StaticColor, GrayScale, PseudoColor) unless you\0"
+    "immediately save your image to a file (refer to Write).\0"
+    "Correct matte editing behavior may require a TrueColor or\0"
+    "DirectColor visual or a Standard Colormap.",
+  ImagePanHelp[]=
+    "When an image exceeds the width or height of the X server\0"
+    "screen, display maps a small panning icon.  The rectangle\0"
+    "within the panning icon shows the area that is currently\0"
+    "displayed in the the image window.  To pan about the image,\0"
+    "press any button and drag the pointer within the panning\0"
+    "icon.  The pan rectangle moves with the pointer and the\0"
+    "image window is updated to reflect the location of the\0"
+    "rectangle within the panning icon.  When you have selected\0"
+    "the area of the image you wish to view, release the button.\0"
+    "\0"
+    "Use the arrow keys to pan the image one pixel up, down,\0"
+    "left, or right within the image window.\0"
+    "\0"
+    "The panning icon is withdrawn if the image becomes smaller\0"
+    "than the dimensions of the X server screen.",
+  ImagePasteHelp[]=
+    "A small window appears showing the location of the cursor in\0"
+    "the image window. You are now in paste mode.  To exit\0"
+    "immediately, press Dismiss.  In paste mode, the Command\0"
+    "widget has these options:\0"
+    "\0"
+    "    Operators\0"
+    "      over\0"
+    "      in\0"
+    "      out\0"
+    "      atop\0"
+    "      xor\0"
+    "      plus\0"
+    "      minus\0"
+    "      add\0"
+    "      subtract\0"
+    "      difference\0"
+    "      replace\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a composite operation from the Operators sub-menu of\0"
+    "the Command widget.  How each operator behaves is described\0"
+    "below.  Image window is the image currently displayed on\0"
+    "your X server and image is the image obtained with the File\0"
+    "Browser widget.\0"
+    "\0"
+    "Over     The result is the union of the two image shapes,\0"
+    "         with image obscuring image window in the region of\0"
+    "         overlap.\0"
+    "\0"
+    "In       The result is simply image cut by the shape of\0"
+    "         image window.  None of the image data of image\0"
+    "         window is in the result.\0"
+    "\0"
+    "Out      The resulting image is image with the shape of\0"
+    "         image window cut out.\0"
+    "\0"
+    "Atop     The result is the same shape as image image window,\0"
+    "         with image obscuring image window where the image\0"
+    "         shapes overlap.  Note this differs from over\0"
+    "         because the portion of image outside image window's\0"
+    "         shape does not appear in the result.\0"
+    "\0"
+    "Xor      The result is the image data from both image and\0"
+    "         image window that is outside the overlap region.\0"
+    "         The overlap region is blank.\0"
+    "\0"
+    "Plus     The result is just the sum of the image data.\0"
+    "         Output values are cropped to 255 (no overflow).\0"
+    "         This operation is independent of the matte\0"
+    "         channels.\0"
+    "\0"
+    "Minus    The result of image - image window, with underflow\0"
+    "         cropped to zero.  The matte channel is ignored (set\0"
+    "         to 255, full coverage).\0"
+    "\0"
+    "Add      The result of image + image window, with overflow\0"
+    "         wrapping around (mod 256).\0"
+    "\0"
+    "Subtract The result of image - image window, with underflow\0"
+    "         wrapping around (mod 256).  The add and subtract\0"
+    "         operators can be used to perform reversible\0"
+    "         transformations.\0"
+    "\0"
+    "Difference\0"
+    "         The result of abs(image - image window).  This is\0"
+    "         useful for comparing two very similar images.\0"
+    "\0"
+    "Copy     The resulting image is image window replaced with\0"
+    "         image.  Here the matte information is ignored.\0"
+    "\0"
+    "CopyRed  The red layer of the image window is replace with\0"
+    "         the red layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyGreen\0"
+    "         The green layer of the image window is replace with\0"
+    "         the green layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyBlue The blue layer of the image window is replace with\0"
+    "         the blue layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "CopyOpacity\0"
+    "         The matte layer of the image window is replace with\0"
+    "         the matte layer of the image.  The other layers are\0"
+    "         untouched.\0"
+    "\0"
+    "The image compositor requires a matte, or alpha channel in\0"
+    "the image for some operations.  This extra channel usually\0"
+    "defines a mask which represents a sort of a cookie-cutter\0"
+    "for the image.  This is the case when matte is 255 (full\0"
+    "coverage) for pixels inside the shape, zero outside, and\0"
+    "between zero and 255 on the boundary.  If image does not\0"
+    "have a matte channel, it is initialized with 0 for any pixel\0"
+    "matching in color to pixel location (0,0), otherwise 255.\0"
+    "\0"
+    "Note that matte information for image window is not retained\0"
+    "for colormapped X server visuals (e.g. StaticColor,\0"
+    "StaticColor, GrayScale, PseudoColor).  Correct compositing\0"
+    "behavior may require a TrueColor or DirectColor visual or a\0"
+    "Standard Colormap.\0"
+    "\0"
+    "Choosing a composite operator is optional.  The default\0"
+    "operator is replace.  However, you must choose a location to\0"
+    "paste your image and press button 1.  Press and hold the\0"
+    "button before releasing and an outline of the image will\0"
+    "appear to help you identify your location.\0"
+    "\0"
+    "The actual colors of the pasted image is saved.  However,\0"
+    "the color that appears in image window may be different.\0"
+    "For example, on a monochrome screen image window will appear\0"
+    "black or white even though your pasted image may have\0"
+    "many colors.  If the image is saved to a file it is written\0"
+    "with the correct colors.  To assure the correct colors are\0"
+    "saved in the final image, any PseudoClass image is promoted\0"
+    "to DirectClass (see miff(5)).  To force a PseudoClass image\0"
+    "to remain PseudoClass, use -colors.",
+  ImageROIHelp[]=
+    "In region of interest mode, the Command widget has these\0"
+    "options:\0"
+    "\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "To define a region of interest, press button 1 and drag.\0"
+    "The region of interest is defined by a highlighted rectangle\0"
+    "that expands or contracts as it follows the pointer.  Once\0"
+    "you are satisfied with the region of interest, release the\0"
+    "button.  You are now in apply mode.  In apply mode the\0"
+    "Command widget has these options:\0"
+    "\0"
+    "      File\0"
+    "        Save...\0"
+    "        Print...\0"
+    "      Edit\0"
+    "        Undo\0"
+    "        Redo\0"
+    "      Transform\0"
+    "        Flop\0"
+    "        Flip\0"
+    "        Rotate Right\0"
+    "        Rotate Left\0"
+    "      Enhance\0"
+    "        Hue...\0"
+    "        Saturation...\0"
+    "        Brightness...\0"
+    "        Gamma...\0"
+    "        Spiff\0"
+    "        Dull\0"
+    "        Equalize\0"
+    "        Normalize\0"
+    "        Negate\0"
+    "        Grayscale\0"
+    "        Map...\0"
+    "        Quantize...\0"
+    "      Effects\0"
+    "        Despeckle\0"
+    "        Emboss\0"
+    "        Reduce Noise\0"
+    "        Sharpen...\0"
+    "        Blur...\0"
+    "        Threshold...\0"
+    "        Edge Detect...\0"
+    "        Spread...\0"
+    "        Shade...\0"
+    "        Raise...\0"
+    "        Segment...\0"
+    "      F/X\0"
+    "        Solarize...\0"
+    "        Swirl...\0"
+    "        Implode...\0"
+    "        Wave...\0"
+    "        Oil Painting...\0"
+    "        Charcoal Drawing...\0"
+    "      Miscellany\0"
+    "        Image Info\0"
+    "        Zoom Image\0"
+    "        Show Preview...\0"
+    "        Show Histogram\0"
+    "        Show Matte\0"
+    "      Help\0"
+    "      Dismiss\0"
+    "\0"
+    "You can make adjustments to the region of interest by moving\0"
+    "the pointer to one of the rectangle corners, pressing a\0"
+    "button, and dragging.  Finally, choose an image processing\0"
+    "technique from the Command widget.  You can choose more than\0"
+    "one image processing technique to apply to an area.\0"
+    "Alternatively, you can move the region of interest before\0"
+    "applying another image processing technique.  To exit, press\0"
+    "Dismiss.",
+  ImageRotateHelp[]=
+    "In rotate mode, the Command widget has these options:\0"
+    "\0"
+    "    Pixel Color\0"
+    "      black\0"
+    "      blue\0"
+    "      cyan\0"
+    "      green\0"
+    "      gray\0"
+    "      red\0"
+    "      magenta\0"
+    "      yellow\0"
+    "      white\0"
+    "      Browser...\0"
+    "    Direction\0"
+    "      horizontal\0"
+    "      vertical\0"
+    "    Help\0"
+    "    Dismiss\0"
+    "\0"
+    "Choose a background color from the Pixel Color sub-menu.\0"
+    "Additional background colors can be specified with the color\0"
+    "browser.  You can change the menu colors by setting the X\0"
+    "resources pen1 through pen9.\0"
+    "\0"
+    "If you choose the color browser and press Grab, you can\0"
+    "select the background color by moving the pointer to the\0"
+    "desired color on the screen and press any button.\0"
+    "\0"
+    "Choose a point in the image window and press this button and\0"
+    "hold.  Next, move the pointer to another location in the\0"
+    "image.  As you move a line connects the initial location and\0"
+    "the pointer.  When you release the button, the degree of\0"
+    "image rotation is determined by the slope of the line you\0"
+    "just drew.  The slope is relative to the direction you\0"
+    "choose from the Direction sub-menu of the Command widget.\0"
+    "\0"
+    "To cancel the image rotation, move the pointer back to the\0"
+    "starting point of the line and release the button.";
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,8 +1540,8 @@ static const int
 static unsigned int MagickXAnnotateEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image *image)
 {
-  static const char
-    *AnnotateMenu[]=
+  const char
+    * const AnnotateMenu[]=
     {
       "Font Name",
       "Font Color",
@@ -115,7 +1551,7 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
       "Dismiss",
       (char *) NULL
     },
-    *TextMenu[]=
+    * const TextMenu[]=
     {
       "Help",
       "Apply",
@@ -385,8 +1821,8 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
             static char
               angle[MaxTextExtent] = "30.0";
 
-            static const char
-              *RotateMenu[]=
+            const char
+              * const RotateMenu[]=
               {
                 "-90",
                 "-45",
@@ -421,8 +1857,10 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
           }
           case AnnotateHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Annotation",ImageAnnotateHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Annotation",
+                                     ImageAnnotateHelp,
+                                     sizeof(ImageAnnotateHelp));
             break;
           }
           case AnnotateDismissCommand:
@@ -483,8 +1921,10 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
           case XK_F1:
           case XK_Help:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Annotation",ImageAnnotateHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Annotation",
+                                     ImageAnnotateHelp,
+                                     sizeof(ImageAnnotateHelp));
             break;
           }
           default:
@@ -621,8 +2061,10 @@ static unsigned int MagickXAnnotateEditImage(Display *display,
         {
           case TextHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Annotation",ImageAnnotateHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Annotation",
+                                     ImageAnnotateHelp,
+                                     sizeof(ImageAnnotateHelp));
             (void) XDefineCursor(display,windows->image.id,cursor);
             break;
           }
@@ -1153,8 +2595,8 @@ static unsigned int MagickXBackgroundImage(Display *display,
 static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image **image)
 {
-  static const char
-    *ChopMenu[]=
+  const char
+    * const ChopMenu[]=
     {
       "Direction",
       "Help",
@@ -1254,8 +2696,8 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
             char
               command[MaxTextExtent];
 
-            static const char
-              *Directions[]=
+            const char
+              * const Directions[]=
               {
                 "horizontal",
                 "vertical",
@@ -1273,8 +2715,10 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
           }
           case ChopHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Chop",ImageChopHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Chop",
+                                     ImageChopHelp,
+                                     sizeof(ImageChopHelp));
             break;
           }
           case ChopDismissCommand:
@@ -1345,8 +2789,10 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
           {
             (void) XSetFunction(display,windows->image.highlight_context,
               GXcopy);
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Chop",ImageChopHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Chop",
+                                     ImageChopHelp,
+                                     sizeof(ImageChopHelp));
             (void) XSetFunction(display,windows->image.highlight_context,
               GXinvert);
             break;
@@ -1573,8 +3019,8 @@ static unsigned int MagickXChopImage(Display *display,MagickXResourceInfo *resou
 static unsigned int MagickXColorEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image **image)
 {
-  static const char
-    *ColorEditMenu[]=
+  const char
+    * const ColorEditMenu[]=
     {
       "Method",
       "Pixel Color",
@@ -1692,8 +3138,8 @@ static unsigned int MagickXColorEditImage(Display *display,
         {
           case ColorEditMethodCommand:
           {
-            static const char
-              *MethodMenu[]=
+            const char
+              * const MethodMenu[]=
               {
                 "point",
                 "replace",
@@ -1714,7 +3160,7 @@ static unsigned int MagickXColorEditImage(Display *display,
           }
           case ColorEditColorCommand:
           {
-            char
+            const char
               *ColorMenu[MaxNumberPens];
 
             int
@@ -1725,8 +3171,8 @@ static unsigned int MagickXColorEditImage(Display *display,
             */
             for (i=0; i < (int) (MaxNumberPens-2); i++)
               ColorMenu[i]=resource_info->pen_colors[i];
-            ColorMenu[MaxNumberPens-2]=(char *) "Browser...";
-            ColorMenu[MaxNumberPens-1]=(char *) NULL;
+            ColorMenu[MaxNumberPens-2]="Browser...";
+            ColorMenu[MaxNumberPens-1]=NULL;
             /*
               Select a pen color from the pop-up menu.
             */
@@ -1760,7 +3206,7 @@ static unsigned int MagickXColorEditImage(Display *display,
           }
           case ColorEditBorderCommand:
           {
-            char
+            const char
               *ColorMenu[MaxNumberPens];
 
             int
@@ -1771,8 +3217,8 @@ static unsigned int MagickXColorEditImage(Display *display,
             */
             for (i=0; i < (int) (MaxNumberPens-2); i++)
               ColorMenu[i]=resource_info->pen_colors[i];
-            ColorMenu[MaxNumberPens-2]=(char *) "Browser...";
-            ColorMenu[MaxNumberPens-1]=(char *) NULL;
+            ColorMenu[MaxNumberPens-2]="Browser...";
+            ColorMenu[MaxNumberPens-1]=NULL;
             /*
               Select a pen color from the pop-up menu.
             */
@@ -1805,8 +3251,8 @@ static unsigned int MagickXColorEditImage(Display *display,
             static char
               fuzz[MaxTextExtent];
 
-            static const char
-              *FuzzMenu[]=
+            const char
+              * const FuzzMenu[]=
               {
                 "0%",
                 "2%",
@@ -1847,8 +3293,10 @@ static unsigned int MagickXColorEditImage(Display *display,
           case ColorEditHelpCommand:
           default:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Annotation",ImageColorEditHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Annotation",
+                                     ImageColorEditHelp,
+                                     sizeof(ImageColorEditHelp));
             break;
           }
           case ColorEditDismissCommand:
@@ -1938,8 +3386,10 @@ static unsigned int MagickXColorEditImage(Display *display,
           case XK_F1:
           case XK_Help:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Annotation",ImageColorEditHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Annotation",
+                                     ImageColorEditHelp,
+                                     sizeof(ImageColorEditHelp));
             break;
           }
           default:
@@ -2177,8 +3627,8 @@ static unsigned int MagickXCompositeImage(Display *display,
     displacement_geometry[MaxTextExtent] = "30x30",
     filename[MaxTextExtent] = "\0";
 
-  static const char
-    *CompositeMenu[]=
+  const char
+    * const CompositeMenu[]=
     {
       "Operators",
       "Dissolve",
@@ -2354,8 +3804,8 @@ static unsigned int MagickXCompositeImage(Display *display,
             char
               command[MaxTextExtent];
 
-            static const char
-              *OperatorMenu[]=
+            const char
+              * const OperatorMenu[]=
               {
                 "Over",
                 "In",
@@ -2425,8 +3875,10 @@ static unsigned int MagickXCompositeImage(Display *display,
           {
             (void) XSetFunction(display,windows->image.highlight_context,
               GXcopy);
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Composite",ImageCompositeHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Composite",
+                                     ImageCompositeHelp,
+                                     sizeof(ImageCompositeHelp));
             (void) XSetFunction(display,windows->image.highlight_context,
               GXinvert);
             break;
@@ -2530,8 +3982,10 @@ static unsigned int MagickXCompositeImage(Display *display,
           {
             (void) XSetFunction(display,windows->image.highlight_context,
               GXcopy);
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Composite",ImageCompositeHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Composite",
+                                     ImageCompositeHelp,
+                                     sizeof(ImageCompositeHelp));
             (void) XSetFunction(display,windows->image.highlight_context,
               GXinvert);
             break;
@@ -2890,14 +4344,14 @@ static unsigned int MagickXConfigureImage(Display *display,
 static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image,const ClipboardMode mode)
 {
-  static const char
-    *CropModeMenu[]=
+  const char
+    * const CropModeMenu[]=
     {
       "Help",
       "Dismiss",
       (char *) NULL
     },
-    *RectifyModeMenu[]=
+    * RectifyModeMenu[]=
     {
       "Crop",
       "Help",
@@ -3025,20 +4479,26 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
             {
               case CopyMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Copy",ImageCopyHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Copy",
+                                         ImageCopyHelp,
+                                         sizeof(ImageCopyHelp));
                 break;
               }
               case CropMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Crop",ImageCropHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Crop",
+                                         ImageCropHelp,
+                                         sizeof(ImageCropHelp));
                 break;
               }
               case CutMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Cut",ImageCutHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Cut",
+                                         ImageCutHelp,
+                                         sizeof(ImageCutHelp));
                 break;
               }
             }
@@ -3107,20 +4567,26 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
             {
               case CopyMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Copy",ImageCopyHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Copy",
+                                         ImageCopyHelp,
+                                         sizeof(ImageCopyHelp));
                 break;
               }
               case CropMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Crop",ImageCropHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Crop",
+                                         ImageCropHelp,
+                                         sizeof(ImageCropHelp));
                 break;
               }
               case CutMode:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Cut",ImageCutHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Cut",
+                                         ImageCutHelp,
+                                         sizeof(ImageCutHelp));
                 break;
               }
             }
@@ -3331,20 +4797,26 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
                 {
                   case CopyMode:
                   {
-                    MagickXTextViewWidget(display,resource_info,windows,False,
-                      "Help Viewer - Image Copy",ImageCopyHelp);
+                    MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                             "Help Viewer - Image Copy",
+                                             ImageCopyHelp,
+                                             sizeof(ImageCopyHelp));
                     break;
                   }
                   case CropMode:
                   {
-                    MagickXTextViewWidget(display,resource_info,windows,False,
-                      "Help Viewer - Image Crop",ImageCropHelp);
+                    MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                             "Help Viewer - Image Crop",
+                                             ImageCropHelp,
+                                             sizeof(ImageCropHelp));
                     break;
                   }
                   case CutMode:
                   {
-                    MagickXTextViewWidget(display,resource_info,windows,False,
-                      "Help Viewer - Image Cut",ImageCutHelp);
+                    MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                             "Help Viewer - Image Cut",
+                                             ImageCutHelp,
+                                             sizeof(ImageCutHelp));
                     break;
                   }
                 }
@@ -3472,20 +4944,26 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
               {
                 case CopyMode:
                 {
-                  MagickXTextViewWidget(display,resource_info,windows,False,
-                    "Help Viewer - Image Copy",ImageCopyHelp);
+                  MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                           "Help Viewer - Image Copy",
+                                           ImageCopyHelp,
+                                           sizeof(ImageCopyHelp));
                   break;
                 }
                 case CropMode:
                 {
-                  MagickXTextViewWidget(display,resource_info,windows,False,
-                    "Help Viewer - Image Cropg",ImageCropHelp);
+                  MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                           "Help Viewer - Image Cropg",
+                                           ImageCropHelp,
+                                           sizeof(ImageCropHelp));
                   break;
                 }
                 case CutMode:
                 {
-                  MagickXTextViewWidget(display,resource_info,windows,False,
-                    "Help Viewer - Image Cutg",ImageCutHelp);
+                  MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                           "Help Viewer - Image Cutg",
+                                           ImageCutHelp,
+                                           sizeof(ImageCutHelp));
                   break;
                 }
               }
@@ -3647,8 +5125,8 @@ static unsigned int MagickXCropImage(Display *display,MagickXResourceInfo *resou
 static unsigned int MagickXDrawEditImage(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows,Image **image)
 {
-  static const char
-    *DrawMenu[]=
+  const char
+    * const DrawMenu[]=
     {
       "Element",
       "Color",
@@ -3790,8 +5268,8 @@ static unsigned int MagickXDrawEditImage(Display *display,
           {
             case DrawElementCommand:
             {
-              static const char
-                *Elements[]=
+              const char
+                * const Elements[]=
                 {
                   "point",
                   "line",
@@ -3884,8 +5362,8 @@ static unsigned int MagickXDrawEditImage(Display *display,
               static char
                 filename[MaxTextExtent] = "\0";
 
-              static const char
-                *StipplesMenu[]=
+              const char
+                * const StipplesMenu[]=
                 {
                   "Brick",
                   "Diagonal",
@@ -3894,14 +5372,13 @@ static unsigned int MagickXDrawEditImage(Display *display,
                   "Wavy",
                   "Translucent",
                   "Opaque",
-                  (char *) NULL,
+                  "Open...",
                   (char *) NULL,
                 };
 
               /*
                 Select a command from the pop-up menu.
               */
-              StipplesMenu[7]=(char *) "Open...";
               entry=MagickXMenuWidget(display,windows,DrawMenu[id],StipplesMenu,
                 command);
               if (entry < 0)
@@ -3996,8 +5473,8 @@ static unsigned int MagickXDrawEditImage(Display *display,
               static char
                 width[MaxTextExtent] = "0";
 
-              static const char
-                *WidthsMenu[]=
+              const char
+                * const WidthsMenu[]=
                 {
                   "1",
                   "2",
@@ -4035,8 +5512,10 @@ static unsigned int MagickXDrawEditImage(Display *display,
             }
             case DrawHelpCommand:
             {
-              MagickXTextViewWidget(display,resource_info,windows,False,
-                "Help Viewer - Image Rotation",ImageDrawHelp);
+              MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                       "Help Viewer - Image Rotation",
+                                       ImageDrawHelp,
+                                       sizeof(ImageDrawHelp));
               (void) XDefineCursor(display,windows->image.id,cursor);
               break;
             }
@@ -4102,8 +5581,10 @@ static unsigned int MagickXDrawEditImage(Display *display,
             case XK_F1:
             case XK_Help:
             {
-              MagickXTextViewWidget(display,resource_info,windows,False,
-                "Help Viewer - Image Rotation",ImageDrawHelp);
+              MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                       "Help Viewer - Image Rotation",
+                                       ImageDrawHelp,
+                                       sizeof(ImageDrawHelp));
               break;
             }
             default:
@@ -6215,6 +7696,18 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       static char
         option[MaxTextExtent] = "Gaussian";
 
+      const char
+        * const NoiseTypes[] =
+        {
+          "Uniform",
+          "Gaussian",
+          "Multiplicative",
+          "Impulse",
+          "Lapacian",
+          "Poisson",
+          (char *) NULL
+        };
+
       NoiseType
         noise_type;
 
@@ -6930,6 +8423,41 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       static char
         preview_type[MaxTextExtent] = "Gamma";
 
+      const char
+        * const PreviewTypes[] =
+        {
+          "Rotate",
+          "Shear",
+          "Roll",
+          "Hue",
+          "Saturation",
+          "Brightness",
+          "Gamma",
+          "Spiff",
+          "Dull",
+          "Grayscale",
+          "Quantize",
+          "Despeckle",
+          "Reduce Noise",
+          "Add Noise",
+          "Sharpen",
+          "Blur",
+          "Threshold",
+          "Edge Detect",
+          "Spread",
+          "Solarize",
+          "Shade",
+          "Raise",
+          "Segment",
+          "Swirl",
+          "Implode",
+          "Wave",
+          "Oil Paint",
+          "Charcoal Drawing",
+          "JPEG",
+          (char *) NULL
+        };
+
       register int
         i;
 
@@ -7086,8 +8614,10 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       /*
         User requested help.
       */
-      MagickXTextViewWidget(display,resource_info,windows,False,
-        "Help Viewer - Display",DisplayHelp);
+      MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                               "Help Viewer - Display",
+                               DisplayHelp,
+                               sizeof(DisplayHelp));
       break;
     }
     case BrowseDocumentationCommand:
@@ -7495,8 +9025,8 @@ static unsigned int MagickXMatteEditImage(Display *display,
   static char
     matte[MaxTextExtent] = "0";
 
-  static const char
-    *MatteEditMenu[]=
+  const char
+    * const MatteEditMenu[]=
     {
       "Method",
       "Border Color",
@@ -7608,8 +9138,8 @@ static unsigned int MagickXMatteEditImage(Display *display,
         {
           case MatteEditMethod:
           {
-            static const char
-              *MethodMenu[]=
+            const char
+              * const MethodMenu[]=
               {
                 "point",
                 "replace",
@@ -7675,8 +9205,8 @@ static unsigned int MagickXMatteEditImage(Display *display,
             static char
               fuzz[MaxTextExtent];
 
-            static const char
-              *FuzzMenu[]=
+            const char
+              * const FuzzMenu[]=
               {
                 "0%",
                 "2%",
@@ -7713,8 +9243,8 @@ static unsigned int MagickXMatteEditImage(Display *display,
             static char
               message[MaxTextExtent];
 
-            static const char
-              *MatteMenu[]=
+            const char
+              * const MatteMenu[]=
               {
                 "Opaque",
                 "Transparent",
@@ -7750,8 +9280,10 @@ static unsigned int MagickXMatteEditImage(Display *display,
           }
           case MatteEditHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Matte Edit",ImageMatteEditHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Matte Edit",
+                                     ImageMatteEditHelp,
+                                     sizeof(ImageMatteEditHelp));
             break;
           }
           case MatteEditDismissCommand:
@@ -7846,8 +9378,10 @@ static unsigned int MagickXMatteEditImage(Display *display,
           case XK_F1:
           case XK_Help:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Matte Edit",ImageMatteEditHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Matte Edit",
+                                     ImageMatteEditHelp,
+                                     sizeof(ImageMatteEditHelp));
             break;
           }
           default:
@@ -8420,8 +9954,8 @@ static void MagickXPanImage(Display *display,MagickXWindows *windows,XEvent *eve
 static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image)
 {
-  static const char
-    *PasteMenu[]=
+  const char
+    * const PasteMenu[]=
     {
       "Operator",
       "Help",
@@ -8536,8 +10070,8 @@ static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *reso
             char
               command[MaxTextExtent];
 
-            static const char
-              *OperatorMenu[]=
+            const char
+              * const OperatorMenu[]=
               {
                 "Over",
                 "In",
@@ -8569,8 +10103,10 @@ static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *reso
           }
           case PasteHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Composite",ImagePasteHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Composite",
+                                     ImagePasteHelp,
+                                     sizeof(ImagePasteHelp));
             break;
           }
           case PasteDismissCommand:
@@ -8681,8 +10217,10 @@ static unsigned int MagickXPasteImage(Display *display,MagickXResourceInfo *reso
           {
             (void) XSetFunction(display,windows->image.highlight_context,
               GXcopy);
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Image Composite",ImagePasteHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Image Composite",
+                                     ImagePasteHelp,
+                                     sizeof(ImagePasteHelp));
             (void) XSetFunction(display,windows->image.highlight_context,
               GXinvert);
             break;
@@ -8818,6 +10356,12 @@ static unsigned int MagickXPrintImage(Display *display,MagickXResourceInfo *reso
   unsigned int
     status=True;
 
+  const char
+  * const PageSizes[]=
+  {
+    PAGE_SIZES
+  };
+
   /*
     Request Postscript page geometry from user.
   */
@@ -8911,14 +10455,14 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
 {
 #define ApplyMenus  7
 
-  static const char
-    *ROIMenu[]=
+  const char
+    * const ROIMenu[]=
     {
       "Help",
       "Dismiss",
       (char *) NULL
     },
-    *ApplyMenu[]=
+    * const ApplyMenu[]=
     {
       "File",
       "Edit",
@@ -8931,19 +10475,19 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       "Dismiss",
       (char *) NULL
     },
-    *FileMenu[]=
+    * const FileMenu[]=
     {
       "Save...",
       "Print...",
       (char *) NULL
     },
-    *EditMenu[]=
+    * const EditMenu[]=
     {
       "Undo",
       "Redo",
       (char *) NULL
     },
-    *TransformMenu[]=
+    * const TransformMenu[]=
     {
       "Flop",
       "Flip",
@@ -8951,7 +10495,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       "Rotate Left",
       (char *) NULL
     },
-    *EnhanceMenu[]=
+    * const EnhanceMenu[]=
     {
       "Hue...",
       "Saturation...",
@@ -8967,7 +10511,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       "Quantize...",
       (char *) NULL
     },
-    *EffectsMenu[]=
+    * const EffectsMenu[]=
     {
       "Despeckle",
       "Emboss",
@@ -8983,7 +10527,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       "Segment...",
       (char *) NULL
     },
-    *FXMenu[]=
+    * const FXMenu[]=
     {
       "Solarize...",
       "Swirl...",
@@ -8993,7 +10537,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       "Charcoal Draw...",
       (char *) NULL
     },
-    *MiscellanyMenu[]=
+    * const MiscellanyMenu[]=
     {
       "Image Info",
       "Zoom Image",
@@ -9003,8 +10547,8 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       (char *) NULL
     };
 
-  static const char
-    **Menus[ApplyMenus]=
+  const char
+    * const *Menus[ApplyMenus]=
     {
       FileMenu,
       EditMenu,
@@ -9097,7 +10641,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       ROIDismissCommand
     };
 
-  static const CommandType
+  const CommandType
     *Commands[ApplyMenus]=
     {
       FileCommands,
@@ -9196,8 +10740,10 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
         {
           case ROIHelpCommand:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Region of Interest",ImageROIHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Region of Interest",
+                                     ImageROIHelp,
+                                     sizeof(ImageROIHelp));
             break;
           }
           case ROIDismissCommand:
@@ -9262,8 +10808,10 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
           case XK_F1:
           case XK_Help:
           {
-            MagickXTextViewWidget(display,resource_info,windows,False,
-              "Help Viewer - Region of Interest",ImageROIHelp);
+            MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                     "Help Viewer - Region of Interest",
+                                     ImageROIHelp,
+                                     sizeof(ImageROIHelp));
             break;
           }
           default:
@@ -9545,8 +11093,10 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
             {
               (void) XSetFunction(display,windows->image.highlight_context,
                 GXcopy);
-              MagickXTextViewWidget(display,resource_info,windows,False,
-                "Help Viewer - Region of Interest",ImageROIHelp);
+              MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                       "Help Viewer - Region of Interest",
+                                       ImageROIHelp,
+                                       sizeof(ImageROIHelp));
               (void) XSetFunction(display,windows->image.highlight_context,
                 GXinvert);
               continue;
@@ -9674,8 +11224,10 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
             {
               (void) XSetFunction(display,windows->image.highlight_context,
                 GXcopy);
-              MagickXTextViewWidget(display,resource_info,windows,False,
-                "Help Viewer - Region of Interest",ImageROIHelp);
+              MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                       "Help Viewer - Region of Interest",
+                                       ImageROIHelp,
+                                       sizeof(ImageROIHelp));
               (void) XSetFunction(display,windows->image.highlight_context,
                 GXinvert);
               break;
@@ -9776,8 +11328,8 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
 static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,double degrees,Image **image)
 {
-  static const char
-    *RotateMenu[]=
+  const char
+    * const RotateMenu[]=
     {
       "Pixel Color",
       "Direction",
@@ -9935,8 +11487,8 @@ static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *res
               }
               case RotateDirectionCommand:
               {
-                static const char
-                  *Directions[]=
+                const char
+                  * const Directions[]=
                   {
                     "horizontal",
                     "vertical",
@@ -9954,8 +11506,10 @@ static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *res
               }
               case RotateHelpCommand:
               {
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Rotation",ImageRotateHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Rotation",
+                                         ImageRotateHelp,
+                                         sizeof(ImageRotateHelp));
                 break;
               }
               case RotateDismissCommand:
@@ -10028,8 +11582,10 @@ static unsigned int MagickXRotateImage(Display *display,MagickXResourceInfo *res
               {
                 (void) XSetFunction(display,windows->image.highlight_context,
                   GXcopy);
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Rotation",ImageRotateHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Rotation",
+                                         ImageRotateHelp,
+                                         sizeof(ImageRotateHelp));
                 (void) XSetFunction(display,windows->image.highlight_context,
                   GXinvert);
                 break;
@@ -10353,6 +11909,12 @@ static unsigned int MagickXSaveImage(Display *display,MagickXResourceInfo *resou
       (LocaleCompare(image_info->magick,"PS") == 0) ||
       (LocaleCompare(image_info->magick,"PS2") == 0))
     {
+        const char
+            * const PageSizes[]=
+            {
+                PAGE_SIZES
+            };
+
       char
         geometry[MaxTextExtent];
 
@@ -10800,8 +12362,8 @@ static void MagickXSetCropGeometry(Display *display,MagickXWindows *windows,
 static Image *MagickXTileImage(Display *display,MagickXResourceInfo *resource_info,
   MagickXWindows *windows,Image *image,XEvent *event)
 {
-  static const char
-    *VerbMenu[]=
+  const char
+    * const VerbMenu[]=
     {
       "Load",
       "Next",
@@ -11833,8 +13395,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
                     char *argv[],int argc,Image **image,unsigned long *state)
 {
 
-  static const char
-    *CommandMenu[]=
+  const char
+    * const CommandMenu[]=
     {
       "File",
       "Edit",
@@ -11848,7 +13410,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Help",
       (char *) NULL
     },
-    *FileMenu[]=
+    * const FileMenu[]=
     {
       "Open...",
       "Next",
@@ -11862,7 +13424,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Quit",
       (char *) NULL
     },
-    *EditMenu[]=
+    * const EditMenu[]=
     {
       "Undo",
       "Redo",
@@ -11871,7 +13433,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Paste",
       (char *) NULL
     },
-    *ViewMenu[]=
+    * const ViewMenu[]=
     {
       "Half Size",
       "Original Size",
@@ -11882,7 +13444,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Restore",
       (char *) NULL
     },
-    *TransformMenu[]=
+    * const TransformMenu[]=
     {
       "Crop",
       "Chop",
@@ -11896,7 +13458,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Trim Edges",
       (char *) NULL
     },
-    *EnhanceMenu[]=
+    * const EnhanceMenu[]=
     {
       "Hue...",
       "Saturation...",
@@ -11912,7 +13474,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Quantize...",
       (char *) NULL
     },
-    *EffectsMenu[]=
+    * const EffectsMenu[]=
     {
       "Despeckle",
       "Emboss",
@@ -11928,7 +13490,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Segment...",
       (char *) NULL
     },
-    *FXMenu[]=
+    * const FXMenu[]=
     {
       "Solarize...",
       "Swirl...",
@@ -11938,7 +13500,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Charcoal Draw...",
       (char *) NULL
     },
-    *ImageEditMenu[]=
+    * const ImageEditMenu[]=
     {
       "Annotate...",
       "Draw...",
@@ -11952,7 +13514,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Region of Interest...",
       (char *) NULL
     },
-    *MiscellanyMenu[]=
+    * const MiscellanyMenu[]=
     {
       "Image Info",
       "Zoom Image",
@@ -11964,14 +13526,14 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Preferences...",
       (char *) NULL
     },
-    *HelpMenu[]=
+    * const HelpMenu[]=
     {
       "Overview",
       "Browse Documentation",
       "About Display",
       (char *) NULL
     },
-    *ShortCutsMenu[]=
+    * const ShortCutsMenu[]=
     {
       "Next",
       "Former",
@@ -11984,7 +13546,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       "Quit",
       (char *) NULL
     },
-    *ImmutableMenu[]=
+    * const ImmutableMenu[]=
     {
       "Image Info",
       "Print",
@@ -11993,8 +13555,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       (char *) NULL
     };
 
-  static const char
-    **Menus[MagickMenus]=
+  const char
+    * const *Menus[MagickMenus]=
     {
       FileMenu,
       EditMenu,
@@ -12008,7 +13570,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       HelpMenu
     };
 
-  static CommandType
+  static const CommandType
     CommandMenus[]=
     {
       NullCommand,
@@ -12155,8 +13717,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       QuitCommand
     };
 
-  static CommandType
-    *Commands[MagickMenus]=
+  static const CommandType
+    * const Commands[MagickMenus]=
     {
       FileCommands,
       EditCommands,
@@ -13051,8 +14613,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
             int
               factor;
 
-            static const char
-              *MagnifyMenu[]=
+            const char
+              * const MagnifyMenu[]=
               {
                 "2",
                 "4",
@@ -13065,7 +14627,7 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
                 (char *) NULL,
               };
 
-            static KeySym
+            static const KeySym
               MagnifyCommands[]=
               {
                 XK_2,
@@ -13532,8 +15094,10 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
                 windows->pan.screen);
             else
               if ((key_symbol == XK_F1) || (key_symbol == XK_Help))
-                MagickXTextViewWidget(display,resource_info,windows,False,
-                  "Help Viewer - Image Pan",ImagePanHelp);
+                MagickXTextViewWidgetNDL(display,resource_info,windows,False,
+                                         "Help Viewer - Image Pan",
+                                         ImagePanHelp,
+                                         sizeof(ImagePanHelp));
               else
                 MagickXTranslateImage(display,windows,*image,key_symbol);
           }

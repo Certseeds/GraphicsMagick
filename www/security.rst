@@ -49,7 +49,7 @@ maintainers or to the `GraphicsMagick Security`_ mail address.  More
 minor issues are best addressed via the `GraphicsMagick Bug Tracker`_
 at SourceForge.  Please remember to set the bug to 'private' if you
 use the bug tracker or else someone may aquire a zero-day exploit from
-your report.  We wil set the bug to 'public' as soon as a remedy has
+your report.  We will set the bug to 'public' as soon as a remedy has
 been made available.
 
 Reporting an issue will allow us to fix it so that future releases of
@@ -302,4 +302,4 @@ correspondence::
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

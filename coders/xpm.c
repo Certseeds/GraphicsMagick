@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -186,7 +186,7 @@ static char *ParseColor(char *data)
 #define NumberTargets  6
 
   static const char
-    * const targets[NumberTargets] = { "c ", "g ", "g4 ", "m ", "b ", "s " };
+    targets[NumberTargets][3] = { "c ", "g ", "g4 ", "m ", "b ", "s " };
 
   register char
     *p,
@@ -799,6 +799,10 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
     {
       colors++;
       MagickReallocMemory(PixelPacket *,picon->colormap,colors*sizeof(PixelPacket));
+      if (picon->colormap == (PixelPacket *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,picon);
+      picon->colormap[colors-1].red=picon->colormap[colors-1].green=picon->colormap[colors-1].blue=0;
+      picon->colormap[colors-1].opacity=TransparentOpacity;
       for (y=0; y < (long) picon->rows; y++)
       {
         register IndexPacket
@@ -1029,6 +1033,10 @@ static unsigned int WriteXPMImage(const ImageInfo *image_info,Image *image)
     {
       colors++;
       MagickReallocMemory(PixelPacket *,image->colormap,colors*sizeof(PixelPacket));
+      if (image->colormap == (PixelPacket *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      image->colormap[colors-1].red=image->colormap[colors-1].green=image->colormap[colors-1].blue=0;
+      image->colormap[colors-1].opacity=TransparentOpacity;
       for (y=0; y < (long) image->rows; y++)
       {
         register IndexPacket

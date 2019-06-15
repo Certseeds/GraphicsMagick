@@ -131,9 +131,9 @@ static unsigned int IsJPEG(const unsigned char *magick,const size_t length)
   indications, which may be confusing for the user.  However, the
   libjpeg method provides more detailed progress.
 */
-#define USE_LIBJPEG_PROGRESS 0 // Use libjpeg callback for progress
+#define USE_LIBJPEG_PROGRESS 0 /* Use libjpeg callback for progress */
 
-static const char *xmp_std_header="http://ns.adobe.com/xap/1.0/";
+static const char xmp_std_header[]="http://ns.adobe.com/xap/1.0/";
 
 
 typedef struct _DestinationManager
@@ -1258,6 +1258,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_calc_output_dimensions(&jpeg_info);
       image->magick_columns=jpeg_info.output_width;
       image->magick_rows=jpeg_info.output_height;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "magick_geometry=%lux%lu",
+                              image->magick_columns, image->magick_rows);
       scale_factor=(double) jpeg_info.output_width/image->columns;
       if (scale_factor > ((double) jpeg_info.output_height/image->rows))
         scale_factor=(double) jpeg_info.output_height/image->rows;
@@ -1265,8 +1269,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_calc_output_dimensions(&jpeg_info);
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Scale_factor: %ld (scale_num=%d, "
-                              "scale_denom=%d)",
+                              "Original Geometry: %lux%lu,"
+                              " Scale_factor: %ld (scale_num=%d,"
+                              " scale_denom=%d)",
+                              image->magick_columns, image->magick_rows,
                               (long) scale_factor,
                               jpeg_info.scale_num,jpeg_info.scale_denom);
     }
@@ -1392,13 +1398,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             (jpeg_info.do_block_smoothing ? "true" : "false"));
     }
 
-  if (image_info->ping)
-    {
-      jpeg_destroy_decompress(&jpeg_info);
-      CloseBlob(image);
-      return(image);
-    }
-
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
@@ -1445,6 +1444,12 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_destroy_decompress(&jpeg_info);
         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
+  if (image_info->ping)
+    {
+      jpeg_destroy_decompress(&jpeg_info);
+      CloseBlob(image);
+      return(image);
+    }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
@@ -1469,17 +1474,36 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       magick_off_t
         blob_size;
 
+      double
+        ratio = 0;
+
       blob_size = GetBlobSize(image);
-      if ((blob_size == 0) ||
-          (((double) image->columns*image->rows*
-            jpeg_info.output_components/blob_size) > 512.0))
+
+      if (blob_size != 0)
+        {
+          /* magick columns/rows are only set if size was specified! */
+          if (image->magick_columns && image->magick_rows)
+            ratio = ((double) image->magick_columns*image->magick_rows*
+                     jpeg_info.output_components/blob_size);
+          else
+            ratio = ((double) image->columns*image->rows*
+                     jpeg_info.output_components/blob_size);
+        }
+
+      /* All-black JPEG can produce tremendous compression ratios.
+         Allow for it. */
+      if ((blob_size == 0) || (ratio > 2500.0))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Unreasonable dimensions: "
-                                "geometry=%lux%lu, components=%d, "
-                                "blob size=%" MAGICK_OFF_F "d bytes",
+                                "geometry=%lux%lu,"
+                                " magick_geometry=%lux%lu,"
+                                " components=%d, "
+                                "blob size=%" MAGICK_OFF_F "d bytes, "
+                                "compression ratio %g",
                                 image->columns, image->rows,
-                                jpeg_info.output_components, blob_size);
+                                image->magick_columns, image->magick_rows,
+                                jpeg_info.output_components, blob_size, ratio);
 
           jpeg_destroy_decompress(&jpeg_info);
           ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
@@ -1710,10 +1734,13 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 ModuleExport void RegisterJPEGImage(void)
 {
   static const char
-    *description="Joint Photographic Experts Group JFIF format";
+    description[]="Joint Photographic Experts Group JFIF format";
 
-  static char
-    version[MaxTextExtent];
+#if defined(HasJPEG) && defined(JPEG_LIB_VERSION)
+  static const char
+    version[] = "IJG JPEG " DefineValueToString(JPEG_LIB_VERSION);
+#define HAVE_JPEG_VERSION
+#endif
 
   MagickInfo
     *entry;
@@ -1727,11 +1754,6 @@ ModuleExport void RegisterJPEGImage(void)
   thread_support=MagickFalse; /* libjpeg is not thread safe */
 #endif
 
-  version[0]='\0';
-#if defined(HasJPEG)
-  FormatString(version,"IJG JPEG %d",JPEG_LIB_VERSION);
-#endif
-
   entry=SetMagickInfo("JPEG");
   entry->thread_support=thread_support;
 #if defined(HasJPEG)
@@ -1741,8 +1763,9 @@ ModuleExport void RegisterJPEGImage(void)
   entry->magick=(MagickHandler) IsJPEG;
   entry->adjoin=False;
   entry->description=description;
-  if (version[0] != '\0')
+#if defined(HAVE_JPEG_VERSION)
     entry->version=version;
+#endif
   entry->module="JPEG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -1755,8 +1778,9 @@ ModuleExport void RegisterJPEGImage(void)
 #endif
   entry->adjoin=False;
   entry->description=description;
-  if (version[0] != '\0')
+#if defined(HAVE_JPEG_VERSION)
     entry->version=version;
+#endif
   entry->module="JPEG";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 GraphicsMagick Group
+  Copyright (C) 2003-2019 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -7,7 +7,7 @@
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
-  X11 User Interface Methods for ImageMagick.
+  X11 User Interface Methods for GraphicsMagick.
 */
 #ifndef _MAGICK_WIDGET_H
 #define _MAGICK_WIDGET_H
@@ -65,27 +65,42 @@ typedef struct _MagickXWidgetInfo
 /*
   X utilities routines.
 */
-extern MagickExport int
-  MagickXCommandWidget(Display *,MagickXWindows *,const char **,XEvent *),
-  MagickXConfirmWidget(Display *,MagickXWindows *,const char *,const char *),
-  MagickXDialogWidget(Display *,MagickXWindows *,const char *,const char *,char *),
-  MagickXMenuWidget(Display *,MagickXWindows *,const char *,const char **,char *);
+extern int
+  MagickXCommandWidget(Display *display,MagickXWindows *windows,
+    const char * const *selections,XEvent *event),
+  MagickXConfirmWidget(Display *display,MagickXWindows *windows,
+    const char *reason,const char *description),
+  MagickXDialogWidget(Display *display,MagickXWindows *windows,
+    const char *action,const char *query,char *reply),
+  MagickXMenuWidget(Display *display,MagickXWindows *windows,
+    const char *title,const char * const *selections,char *item);
 
-extern MagickExport unsigned int
-  MagickXPreferencesWidget(Display *,MagickXResourceInfo *,MagickXWindows *);
+extern unsigned int
+  MagickXPreferencesWidget(Display *display,
+    MagickXResourceInfo *resource_info,MagickXWindows *windows);
 
-extern MagickExport void
-  MagickXColorBrowserWidget(Display *,MagickXWindows *,const char *,char *),
-  MagickXFileBrowserWidget(Display *,MagickXWindows *,const char *,char *),
-  MagickXFontBrowserWidget(Display *,MagickXWindows *,const char *,char *),
-  MagickXInfoWidget(Display *,MagickXWindows *,const char *),
-  MagickXListBrowserWidget(Display *,MagickXWindows *,MagickXWindowInfo *,const char **,
-    const char *,const char *,char *),
-  MagickXMonitorWidget(Display *display,MagickXWindows *windows,const char *task,
-    const magick_int64_t quantum,const magick_uint64_t span),
-  MagickXNoticeWidget(Display *,MagickXWindows *,const char *,const char *),
-  MagickXTextViewWidget(Display *,const MagickXResourceInfo *,MagickXWindows *,const unsigned int,
-    const char *,const char **);
+extern void
+  MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
+    const char *action,char *reply),
+  MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
+    const char *action,char *reply),
+  MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
+    const char *action,char *reply),
+  MagickXInfoWidget(Display *display,MagickXWindows *windows,
+    const char *activity),
+  MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
+  MagickXWindowInfo *window_info,const char * const *list,const char *action,
+    const char *query,char *reply),
+  MagickXMonitorWidget(Display *display,MagickXWindows *windows,
+    const char *task,const magick_int64_t quantum,const magick_uint64_t span),
+  MagickXNoticeWidget(Display *display,MagickXWindows *windows,
+    const char *reason,const char *description),
+  MagickXTextViewWidget(Display *display,
+    const MagickXResourceInfo *resource_info,MagickXWindows *windows,
+    const unsigned int mono,const char *title,const char * const *textlist),
+  MagickXTextViewWidgetNDL(Display *display,const MagickXResourceInfo *resource_info,
+    MagickXWindows *windows,const unsigned int mono,const char *title,
+    const char *text_ndl,const size_t text_ndl_size);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -99,6 +99,75 @@ static void
   XSetBevelColor(Display *,const MagickXWindowInfo *,const unsigned int),
   XSetMatteColor(Display *,const MagickXWindowInfo *,const unsigned int),
   XSetTextColor(Display *,const MagickXWindowInfo *,const unsigned int);
+
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k S p l i t N D L T e x t T o L i s t                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickSplitNDLTextToList splits a hunk of null-delimited text
+%  into an array of null-terminated text strings, storing pointers to the
+%  null-terminated text strings in a fixed-size buffer provided by the user.
+%  The array of null-terminated text strings is itself terminated by a NULL
+%  pointer.  This method is most useful if the maximum number of lines is
+%  known in advance since no memory allocations are performed.  The list
+%  is truncated if there are more lines than can be stored in the text
+%  list buffer.
+%
+%  The format of the MagickSplitNDLTextToList function is:
+%
+%      size_t MagickSplitNDLTextToList(const char * restrict text_ndl,
+%                                      const size_t text_ndl_size,
+%                                      const char * restrict *textlist,
+%                                      const size_t textlist_size)
+%
+%  A description of each parameter follows:
+%
+%    o text_ndl: Constant input text to split on embedded null terminations.
+%
+%    o text_ndl_size: Size (in bytes) of text provided via text_ndl.
+%
+%    o textlist: Buffer in which to write a pointer to each null-terminated
+%      string found in text_ndl.
+%
+%    o textlist_size: The size (in bytes) in bytes of the provided
+%      textlist buffer.  Splitting stops once the textlist buffer is
+%      full.
+%
+%    o returns: The number of pointers stored in textlist is returned,
+%      including the terminating NULL pointer.
+%
+*/
+static size_t MagickSplitNDLTextToList(const char * restrict text_ndl,
+                                       const size_t text_ndl_size,
+                                       const char * restrict *textlist,
+                                       const size_t textlist_size)
+{
+  size_t i;
+  const char *p;
+
+  for (i=0, textlist[0]=text_ndl, p=text_ndl+1;
+       (i < (size_t) ((textlist_size/sizeof(*textlist))-2)) &&
+         ((size_t) (p-text_ndl) < text_ndl_size-1);
+       p++)
+    {
+      if (*p == '\0')
+        {
+          i++;
+          textlist[i]=p+1;
+        }
+    }
+  i++;
+  textlist[i]=(char *) NULL;
+  return i;
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1523,7 +1592,7 @@ static void XSetTextColor(Display *display,const MagickXWindowInfo *window_info,
 %
 %
 */
-MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -2697,15 +2766,15 @@ MagickExport void MagickXColorBrowserWidget(Display *display,MagickXWindows *win
 %
 %
 */
-MagickExport int MagickXCommandWidget(Display *display,MagickXWindows *windows,
-  const char **selections,XEvent *event)
+int MagickXCommandWidget(Display *display,MagickXWindows *windows,
+  const char * const *selections,XEvent *event)
 {
   /*
     GraphicsMagick monochrome logo for top of command bar.
   */
 #define tile_width 112
 #define tile_height 64
-static unsigned char tile_bits[] = {
+static const unsigned char tile_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x78, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,
@@ -3121,7 +3190,7 @@ static unsigned char tile_bits[] = {
 %
 %
 */
-MagickExport int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
+int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
   const char *reason,const char *description)
 {
 #define CancelButtonText  "Cancel"
@@ -3523,7 +3592,7 @@ MagickExport int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport int MagickXDialogWidget(Display *display,MagickXWindows *windows,
+int MagickXDialogWidget(Display *display,MagickXWindows *windows,
   const char *action,const char *query,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -4094,7 +4163,7 @@ MagickExport int MagickXDialogWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -5338,7 +5407,7 @@ static int FontCompare(const void *x,const void *y)
 }
 #endif
 
-MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
+void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
   const char *action,char *reply)
 {
 #define BackButtonText  "Back"
@@ -6506,7 +6575,7 @@ MagickExport void MagickXFontBrowserWidget(Display *display,MagickXWindows *wind
 %
 %
 */
-MagickExport void MagickXInfoWidget(Display *display,MagickXWindows *windows,
+void MagickXInfoWidget(Display *display,MagickXWindows *windows,
   const char *activity)
 {
   int
@@ -6611,8 +6680,8 @@ MagickExport void MagickXInfoWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
-  MagickXWindowInfo *window_info,const char **list,const char *action,
+void MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
+  MagickXWindowInfo *window_info,const char * const *list,const char *action,
   const char *query,char *reply)
 {
 #define CancelButtonText  "Cancel"
@@ -7518,8 +7587,8 @@ MagickExport void MagickXListBrowserWidget(Display *display,MagickXWindows *wind
 %
 %
 */
-MagickExport int MagickXMenuWidget(Display *display,MagickXWindows *windows,
-  const char *title,const char **selections,char *item)
+int MagickXMenuWidget(Display *display,MagickXWindows *windows,
+  const char *title,const char * const *selections,char *item)
 {
   Cursor
     cursor;
@@ -7950,7 +8019,7 @@ MagickExport int MagickXMenuWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
+void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
   const char *task,const magick_int64_t quantum,
   const magick_uint64_t span)
 {
@@ -8026,7 +8095,7 @@ MagickExport void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
+void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
   const char *reason,const char *description)
 {
 #define DismissButtonText  "Dismiss"
@@ -8349,24 +8418,23 @@ MagickExport void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
 %
 %
 */
-MagickExport unsigned int MagickXPreferencesWidget(Display *display,
+unsigned int MagickXPreferencesWidget(Display *display,
   MagickXResourceInfo *resource_info,MagickXWindows *windows)
 {
 #define ApplyButtonText  "Apply"
 #define CacheButtonText  "%lu mega-bytes of memory in the undo edit cache   "
 #define CancelButtonText  "Cancel"
 #define NumberPreferences  7
-
-  static char
-    *Preferences[] =
+  static const char
+    Preferences[NumberPreferences][47] =
     {
-      (char *) "display image centered on a backdrop",
-      (char *) "confirm on program exit",
-      (char *) "correct image for display gamma",
-      (char *) "display warning messages",
-      (char *) "apply Floyd/Steinberg error diffusion to image",
-      (char *) "use a shared colormap for colormapped X visuals",
-      (char *) "display images as an X server pixmap"
+      "display image centered on a backdrop",
+      "confirm on program exit",
+      "correct image for display gamma",
+      "display warning messages",
+      "apply Floyd/Steinberg error diffusion to image",
+      "use a shared colormap for colormapped X visuals",
+      "display images as an X server pixmap"
     };
 
   char
@@ -8778,9 +8846,9 @@ MagickExport unsigned int MagickXPreferencesWidget(Display *display,
 %
 %
 */
-MagickExport void MagickXTextViewWidget(Display *display,
+void MagickXTextViewWidget(Display *display,
   const MagickXResourceInfo *resource_info,MagickXWindows *windows,const unsigned int mono,
-  const char *title,const char **textlist)
+  const char *title,const char * const *textlist)
 {
 #define DismissButtonText  "Dismiss"
 
@@ -9467,5 +9535,84 @@ MagickExport void MagickXTextViewWidget(Display *display,
   MagickXSetCursorState(display,windows,False);
   (void) XWithdrawWindow(display,windows->widget.id,windows->widget.screen);
   MagickXCheckRefreshWindows(display,windows);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   X T e x t V i e w W i d g e t N D L                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickXTextViewWidgetNDL displays null-delimited text in a
+%  Text View widget.  The implementation of this function is intentionally
+%  limited to a maximum number of lines since it is primarily used to
+%  display help text.
+%
+%  The format of the MagickXTextViewWidgetNDL method is:
+%
+%      void MagickXTextViewWidgetNDL(Display *display,
+%        const MagickXResourceInfo *resource_info,
+%        MagickXWindows *windows,const unsigned int mono,const char *title,
+%        const char *text_ndl, size_t text_ndl_size)
+%
+%  A description of each parameter follows:
+%
+%    o display: Specifies a connection to an X server;  returned from
+%      XOpenDisplay.
+%
+%    o resource_info: Specifies a pointer to a X11 MagickXResourceInfo structure.
+%
+%    o window: Specifies a pointer to a MagickXWindows structure.
+%
+%    o mono:  Use mono-spaced font when displaying text.
+%
+%    o title: This character string is displayed at the top of the widget
+%      window.
+%
+%    o text_ndl: A character buffer using null characters to mark a list of
+%      strings to be displayed within the Text View widget.
+%
+%    o text_ndl_size: The size of the text_ndl buffer
+%
+%
+*/
+void MagickXTextViewWidgetNDL(Display *display,
+                              const MagickXResourceInfo *resource_info,
+                              MagickXWindows *windows,
+                              const unsigned int mono,
+                              const char *title,
+                              const char *text_ndl,
+                              const size_t text_ndl_size)
+{
+  const char *textlist[400];
+
+  /* Split null-delimited text into array of string pointers */
+  (void) MagickSplitNDLTextToList(text_ndl,text_ndl_size,textlist,
+                                   sizeof(textlist));
+  #if 0
+  size_t i;
+  const char *p;
+
+  for (i=0, textlist[0]=text_ndl, p=text_ndl+1;
+       (i < (size_t) (ArraySize(textlist)-2)) &&
+         ((size_t) (p-text_ndl) < text_ndl_size-1);
+       p++)
+    {
+      if (*p == '\0')
+        {
+          i++;
+          textlist[i]=p+1;
+        }
+    }
+  i++;
+  textlist[i]=(char *) NULL;
+  #endif
+
+  MagickXTextViewWidget(display, resource_info, windows, mono, title,textlist);
 }
 #endif

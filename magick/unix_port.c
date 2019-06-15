@@ -69,7 +69,7 @@
 MagickExport long MagickGetMMUPageSize(void)
 {
   static long
-    pagesize = -1;
+    pagesize = 0;
 
   if (pagesize <= 0)
     {

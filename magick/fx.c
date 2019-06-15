@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -85,32 +85,66 @@
 %
 */
 MagickExport Image *CharcoalImage(const Image *image,const double radius,
-  const double sigma,ExceptionInfo *exception)
+                                  const double sigma,ExceptionInfo *exception)
 {
   Image
-    *blur_image,
+    *blur_image = (Image *) NULL,
     *charcoal_image,
-    *edge_image;
+    *edge_image = (Image *) NULL;
+
+  MagickPassFail
+    status = MagickFail;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  charcoal_image=CloneImage(image,0,0,True,exception);
-  if (charcoal_image == (Image *) NULL)
-    return((Image *) NULL);
-  (void) SetImageType(charcoal_image,GrayscaleType);
-  edge_image=EdgeImage(charcoal_image,radius,exception);
-  if (edge_image == (Image *) NULL)
-    return((Image *) NULL);
-  DestroyImage(charcoal_image);
-  blur_image=BlurImage(edge_image,radius,sigma,exception);
-  if (blur_image == (Image *) NULL)
-    return((Image *) NULL);
-  DestroyImage(edge_image);
-  (void) NormalizeImage(blur_image);
-  (void) NegateImage(blur_image,False);
-  (void) SetImageType(blur_image,GrayscaleType);
+
+  do
+    {
+      if ((charcoal_image=CloneImage(image,0,0,True,exception)) == (Image *) NULL)
+        break;
+      if (SetImageType(charcoal_image,GrayscaleType) == MagickFail)
+        break;
+      if ((edge_image=EdgeImage(charcoal_image,radius,exception)) == (Image *) NULL)
+        break;
+      DestroyImage(charcoal_image);
+      charcoal_image=(Image *) NULL;
+      if ((blur_image=BlurImage(edge_image,radius,sigma,exception)) == (Image *) NULL)
+        break;
+      DestroyImage(edge_image);
+      edge_image=(Image *) NULL;
+      if (NormalizeImage(blur_image) == MagickFail)
+        {
+          if (blur_image->exception.severity > exception->severity)
+            CopyException(exception,&blur_image->exception);
+          break;
+        }
+      if (NegateImage(blur_image,False) == MagickFail)
+        {
+          if (blur_image->exception.severity > exception->severity)
+            CopyException(exception,&blur_image->exception);
+          break;
+        }
+      if (SetImageType(blur_image,GrayscaleType) == MagickFail)
+        {
+          if (blur_image->exception.severity > exception->severity)
+            CopyException(exception,&blur_image->exception);
+          break;
+        }
+      status = MagickPass;
+    } while(0);
+
+  if (charcoal_image)
+    DestroyImage(charcoal_image);
+  if (edge_image)
+    DestroyImage(edge_image);
+  if (status == MagickFail)
+    {
+      DestroyImage(blur_image);
+      blur_image=(Image *) NULL;
+    }
+
   return(blur_image);
 }
 
@@ -213,6 +247,9 @@ MagickExport Image *ColorizeImage(const Image *image,const char *opacity,
   unsigned int
     is_grayscale;
 
+  MagickPassFail
+    status;
+
   /*
     Allocate colorized image.
   */
@@ -251,11 +288,16 @@ MagickExport Image *ColorizeImage(const Image *image,const char *opacity,
   /*
     Colorize DirectClass image.
   */
-  (void) PixelIterateDualNew(ColorizeImagePixelsCB,NULL,
+  status=PixelIterateDualNew(ColorizeImagePixelsCB,NULL,
                              ColorizeImageText,NULL,&options,
                              image->columns,image->rows,image,0,0,
-                             colorize_image,0,0,&colorize_image->exception);
+                             colorize_image,0,0,exception);
   colorize_image->is_grayscale=(is_grayscale && IsGray(target));
+  if (status == MagickFail)
+    {
+      DestroyImage(colorize_image);
+      colorize_image=(Image *) NULL;
+    }
   return(colorize_image);
 }
 
@@ -588,6 +630,8 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
   long
     y;
 
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Initialize implode image attributes.
@@ -621,17 +665,19 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
     Implode each row.
   */
   {
-    MagickPassFail
-      status = MagickPass;
-
     unsigned long
       row_count=0;
+
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -700,14 +746,25 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
               if (!SyncImagePixelsEx(implode_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      ImplodeImageText,implode_image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          ImplodeImageText,implode_image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {
@@ -719,6 +776,11 @@ MagickExport Image *ImplodeImage(const Image * restrict image,const double amoun
       }
   }
   implode_image->is_grayscale=image->is_grayscale;
+  if (status == MagickFail)
+    {
+      DestroyImage(implode_image);
+      implode_image=(Image *) NULL;
+    }
   return(implode_image);
 }
 
@@ -963,6 +1025,9 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
   unsigned long
     row_count=0;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -984,6 +1049,8 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
 
   (void) SetImageType(paint_image,TrueColorType);
 
+  monitor_active=MagickMonitorActive();
+
   /*
     Paint each row of the image.
   */
@@ -991,7 +1058,7 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
   for (y=0; y < (long) image->rows; y++)
@@ -1079,14 +1146,25 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
           if (!SyncImagePixelsEx(paint_image,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      OilPaintImageText,image->filename))
-          thread_status=MagickFail;
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                        OilPaintImageText,image->filename))
+              thread_status=MagickFail;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1098,6 +1176,11 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
     }
 
   paint_image->is_grayscale=image->is_grayscale;
+  if (status == MagickFail)
+    {
+      DestroyImage(paint_image);
+      paint_image=(Image *) NULL;
+    }
   return(paint_image);
 }
 
@@ -1430,7 +1513,7 @@ MagickExport Image *StereoImage(const Image * restrict image,const Image * restr
       r->red=p->red;
       r->green=q->green;
       r->blue=q->blue;
-      r->opacity=(p->opacity+q->opacity)/2;
+      r->opacity=(Quantum) (((double) p->opacity+q->opacity)/2.0);
       p++;
       q++;
       r++;
@@ -1442,6 +1525,13 @@ MagickExport Image *StereoImage(const Image * restrict image,const Image * restr
                                   StereoImageText,image->filename))
         break;
   }
+  if (y != (long) stereo_image->rows)
+    {
+      if (stereo_image->exception.severity > exception->severity)
+        CopyException(exception,&stereo_image->exception);
+      DestroyImage(stereo_image);
+      stereo_image=(Image *) NULL;
+    }
   return(stereo_image);
 }
 
@@ -1492,6 +1582,9 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
   Image
     * restrict swirl_image;
 
+  MagickPassFail
+    status = MagickPass;
+
   /*
     Initialize swirl image attributes.
   */
@@ -1522,17 +1615,19 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
     Swirl each row.
   */
   {
-    MagickPassFail
-      status = MagickPass;
-
     unsigned long
       row_count=0;
+
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,8) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) image->rows; y++)
@@ -1602,14 +1697,25 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
               if (!SyncImagePixelsEx(swirl_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,image->rows))
-          if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                      SwirlImageText,image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          SwirlImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {
@@ -1621,6 +1727,11 @@ MagickExport Image *SwirlImage(const Image * restrict image,double degrees,
       }
   }
   swirl_image->is_grayscale=image->is_grayscale;
+  if (status == MagickFail)
+    {
+      DestroyImage(swirl_image);
+      swirl_image=(Image *) NULL;
+    }
   return(swirl_image);
 }
 
@@ -1662,7 +1773,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
   VirtualPixelMethod
     virtual_pixel_method;
 
-  double
+  float
     * restrict sine_map;
 
   Image
@@ -1670,6 +1781,9 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
 
   long
     y;
+
+  MagickPassFail
+    status = MagickPass;
 
   /*
     Initialize wave image attributes.
@@ -1679,10 +1793,9 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   wave_image=CloneImage(image,image->columns,(long)
-                        (image->rows+2.0*fabs(amplitude)),MagickFalse,exception);
+                        (image->rows+2.0*FABSF(amplitude)),MagickTrue,exception);
   if (wave_image == (Image *) NULL)
     return((Image *) NULL);
-
   wave_image->storage_class=DirectClass;
 
   /*
@@ -1699,8 +1812,8 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
     register long
       x;
 
-    sine_map=MagickAllocateMemory(double *,wave_image->columns*sizeof(double));
-    if (sine_map == (double *) NULL)
+    sine_map=MagickAllocateArray(float *,wave_image->columns,sizeof(float));
+    if (sine_map == (float *) NULL)
       {
         DestroyImage(wave_image);
         ThrowImageException(ResourceLimitError,MemoryAllocationFailed,
@@ -1711,7 +1824,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
 #  pragma omp parallel for schedule(static,256)
 #endif
     for (x=0; x < (long) wave_image->columns; x++)
-      sine_map[x]=fabs(amplitude)+amplitude*sin((2*MagickPI*x)/wave_length);
+      sine_map[x]=(float) (FABSF(amplitude)+amplitude*SINF((2.0*MagickPI*x)/wave_length));
   }
   /*
     Set virtual pixel method.
@@ -1724,17 +1837,19 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
     Wave image.
   */
   {
-    MagickPassFail
-      status = MagickPass;
-
     unsigned long
       row_count=0;
+
+    MagickBool
+      monitor_active;
+
+    monitor_active=MagickMonitorActive();
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
 #  else
-#    pragma omp parallel for schedule(static,4) shared(row_count, status)
+#    pragma omp parallel for schedule(guided) shared(row_count, status)
 #  endif
 #endif
     for (y=0; y < (long) wave_image->rows; y++)
@@ -1742,7 +1857,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
         register PixelPacket
           * restrict q;
 
-        register long
+        register unsigned long
           x;
 
         ViewInfo
@@ -1761,7 +1876,7 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
           thread_status=MagickFail;
         if (thread_status != MagickFail)
           {
-            for (x=0; x < (long) wave_image->columns; x++)
+            for (x=0; x < wave_image->columns; x++)
               {
                 if (InterpolateViewColor(image_view,&q[x],(double) x,
                                          (double) y-sine_map[x],
@@ -1775,14 +1890,25 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
               if (!SyncImagePixelsEx(wave_image,exception))
                 thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-        row_count++;
-        if (QuantumTick(row_count,wave_image->rows))
-          if (!MagickMonitorFormatted(row_count,wave_image->rows,exception,
-                                      WaveImageText,image->filename))
-            thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,wave_image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,wave_image->rows,exception,
+                                          WaveImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
         if (thread_status == MagickFail)
           {
@@ -1799,5 +1925,10 @@ MagickExport Image *WaveImage(const Image * restrict image,const double amplitud
   (void) SetImageVirtualPixelMethod(image,virtual_pixel_method);
   MagickFreeMemory(sine_map);
   wave_image->is_grayscale=(image->is_grayscale && IsGray(wave_image->background_color));
+  if (status == MagickFail)
+    {
+      DestroyImage(wave_image);
+      wave_image=(Image *) NULL;
+    }
   return(wave_image);
 }

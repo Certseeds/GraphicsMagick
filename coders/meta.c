@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -127,18 +127,15 @@ static unsigned int IsMETA(const unsigned char *magick,const size_t length)
 */
 #define BUFFER_SZ 4096
 
-typedef struct _html_code
+static const struct
 {
-  unsigned short
+  const unsigned char
     len;
 
   const char
-    *code,
+    code[7],
     val;
-
-} html_code;
-
-static html_code const html_codes[] = {
+} html_codes[] = {
 #ifdef HANDLE_GT_LT
   { 4,"&lt;",'<' },
   { 4,"&gt;",'>' },
@@ -1843,16 +1840,14 @@ static void formatString(Image *ofile, const char *s, int len)
 #endif
 }
 
-typedef struct _tag_spec
+static const struct
 {
-  short
+  unsigned char
     id;
 
   const char
-    *name;
-} tag_spec;
-
-static const tag_spec tags[] = {
+    name[32];
+} tags[] = {
   { 5, "Image Name" },
   { 7, "Edit Status" },
   { 10, "Priority" },
@@ -1931,7 +1926,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
 
   int
     i,
-    tagcount = sizeof(tags) / sizeof(tag_spec);
+    tagcount = ArraySize(tags);
 
   int
     c;
@@ -2067,7 +2062,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
 
   int
     i,
-    tagcount = sizeof(tags) / sizeof(tag_spec);
+    tagcount = ArraySize(tags);
 
   int
     c;

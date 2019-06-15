@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2009 GraphicsMagick Group
+  Copyright (C) 2003 - 2019 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -23,11 +23,12 @@ extern "C" {
 #include "magick/error.h"
 
 extern MagickExport MagickPassFail
-  AllocateImageColormap(Image *,const unsigned long),
+  AllocateImageColormap(Image *,const unsigned long colors),
   CycleColormapImage(Image *image,const int amount),
+  ReallocateImageColormap(Image *,const unsigned int colors),
   ReplaceImageColormap(Image *image,const PixelPacket *colormap,
     const unsigned int colors),
-  SortColormapByIntensity(Image *);
+  SortColormapByIntensity(Image *image);
 
 #if defined(MAGICK_IMPLEMENTATION)
 

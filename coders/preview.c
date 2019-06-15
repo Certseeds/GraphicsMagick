@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -59,7 +59,7 @@
   Constant declarations.
 */
 static const char
-  *DefaultPreviewGeometry = "204x204+10+10";
+  DefaultPreviewGeometry[] = "204x204+10+10";
 
 /*
   Forward declarations.

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -643,7 +643,8 @@ NoPalette:
      (void) SeekBlob(image, 512 /*sizeof(Header)*/, SEEK_SET);
      for (i = 0; i < (int) Header.Rows; i++)
      {
-       (void)ReadBlob(image, ldblk, (char *)BImgBuff);
+       if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
+         ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
        InsertRow(depth, BImgBuff, i, image, 0, image->columns, &import_options);
      }
      break;

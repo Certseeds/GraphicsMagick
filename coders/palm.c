@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -728,7 +728,7 @@ static void LogPALMHeader(const PalmHeader* palm_header)
   static const struct
   {
     unsigned short mask;
-    const char * text;
+    const char text[18];
   }
   FlagDecodes[] =
     {

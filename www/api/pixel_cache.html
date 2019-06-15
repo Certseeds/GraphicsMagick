@@ -185,8 +185,8 @@ or GetImagePixels().</dd>
 <div class="section" id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireCacheViewPixels( const <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x,
-                                           const long y, const unsigned long columns,
+const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireCacheViewPixels( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
+                                           const unsigned long columns,
                                            const unsigned long rows,
                                            <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
 </pre>
@@ -199,8 +199,8 @@ pointer to the pixels is returned if the pixels are transferred, otherwise
 NULL is returned.</p>
 <p>The format of the AcquireCacheViewPixels method is:</p>
 <pre class="literal-block">
-const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireCacheViewPixels( const <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x,
-                                           const long y, const unsigned long columns,
+const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireCacheViewPixels( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
+                                           const unsigned long columns,
                                            const unsigned long rows,
                                            <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
 </pre>
@@ -815,7 +815,7 @@ cache returning a pointer to the cache.</p>
 <div class="section" id="id49">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-<a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetCacheViewPixels( const <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
+<a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetCacheViewPixels( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
                                  const unsigned long columns, const unsigned long rows );
 </pre>
 </div>
@@ -826,7 +826,7 @@ defined by the geometry parameters.   A pointer to the pixels is returned
 if the pixels are transferred, otherwise a NULL is returned.</p>
 <p>The format of the SetCacheViewPixels method is:</p>
 <pre class="literal-block">
-<a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetCacheViewPixels( const <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
+<a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetCacheViewPixels( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
                                  const unsigned long columns, const unsigned long rows );
 </pre>
 <dl class="docutils">

@@ -90,8 +90,8 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PPM
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PS
-if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both PSD
+: if not %COUNT% EQU 6 goto :_failed
+: call :_dorwtest both PSD
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PTIF
 if not %COUNT% EQU 6 goto :_failed

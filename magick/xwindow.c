@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2015 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4658,7 +4658,7 @@ MagickXGetWindowInfo(Display *display,
       window->matte_pixmap=(Pixmap) NULL;
       window->mapped=False;
       window->stasis=False;
-      window->shared_memory=True;
+      window->shared_memory=MagickTrue;
       /* window->segment_info=0; */
 #if defined(HasSharedMemory)
       {
@@ -4667,11 +4667,18 @@ MagickXGetWindowInfo(Display *display,
 
         if (window->segment_info == (void *) NULL)
           window->segment_info=MagickAllocateArray(void *,2,sizeof(XShmSegmentInfo));
-        segment_info=(XShmSegmentInfo *) window->segment_info;
-        segment_info[0].shmid=(-1);
-        segment_info[0].shmaddr=NULL;
-        segment_info[1].shmid=(-1);
-        segment_info[1].shmaddr=NULL;
+        if (window->segment_info != (void *) NULL)
+          {
+            segment_info=(XShmSegmentInfo *) window->segment_info;
+            segment_info[0].shmid=(-1);
+            segment_info[0].shmaddr=NULL;
+            segment_info[1].shmid=(-1);
+            segment_info[1].shmaddr=NULL;
+          }
+        else
+          {
+            window->shared_memory=MagickFalse;
+          }
       }
 #endif
     }

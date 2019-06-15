@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -499,6 +499,9 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
     unsigned long
       row_count=0;
 
+    MagickBool
+      monitor_active;
+
     DoublePixelPacket
       zero;
 
@@ -506,6 +509,9 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
       status=MagickPass;
 
     (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+    monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -569,22 +575,33 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
             if (!SyncImagePixelsEx(minify_image,exception))
               thread_status=MagickFail;
           }
+
+        if (monitor_active)
+          {
+            unsigned long
+              thread_row_count;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      row_count++;
-      if (QuantumTick(row_count,image->rows))
-        if (!MagickMonitorFormatted(row_count,image->rows,exception,
-                                    MinifyImageText,image->filename))
-          thread_status=MagickFail;
+            row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+            thread_row_count=row_count;
+            if (QuantumTick(thread_row_count,image->rows))
+              if (!MagickMonitorFormatted(thread_row_count,image->rows,exception,
+                                          MinifyImageText,image->filename))
+                thread_status=MagickFail;
+          }
 
-      if (thread_status == MagickFail)
-        {
-          status=MagickFail;
+        if (thread_status == MagickFail)
+          {
+            status=MagickFail;
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (status)
 #endif
-        }
+          }
       }
   }
   minify_image->is_grayscale=image->is_grayscale;
@@ -829,6 +846,9 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
   unsigned long
     quantum;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -853,6 +873,9 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
     }
   scale=1.0/scale;
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status, quantum)
@@ -1011,18 +1034,26 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
           if (!SyncImagePixelsEx(destination,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_quantum;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(quantum,span))
-        if (!MagickMonitorFormatted(quantum,span,exception,
-                                    ResizeImageText,source->filename))
-          thread_status=MagickFail;
+          thread_quantum=quantum;
+          if (QuantumTick(thread_quantum,span))
+            if (!MagickMonitorFormatted(thread_quantum,span,exception,
+                                        ResizeImageText,source->filename))
+              thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      quantum++;
+          quantum++;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1063,6 +1094,9 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
   unsigned long
     quantum;
 
+  MagickBool
+    monitor_active;
+
   MagickPassFail
     status=MagickPass;
 
@@ -1090,6 +1124,9 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
     }
   scale=1.0/scale;
   (void) memset(&zero,0,sizeof(DoublePixelPacket));
+
+  monitor_active=MagickMonitorActive();
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status, quantum)
@@ -1248,18 +1285,27 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
           if (!SyncImagePixelsEx(destination,exception))
             thread_status=MagickFail;
         }
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_quantum;
+
+
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (quantum)
 #endif
-      if (QuantumTick(quantum,span))
-        if (!MagickMonitorFormatted(quantum,span,exception,
-                                    ResizeImageText,source->filename))
-          thread_status=MagickFail;
+          thread_quantum=quantum;
+          if (QuantumTick(thread_quantum,span))
+            if (!MagickMonitorFormatted(thread_quantum,span,exception,
+                                        ResizeImageText,source->filename))
+              thread_status=MagickFail;
 
 #if defined(HAVE_OPENMP)
 #  pragma omp atomic
 #endif
-      quantum++;
+          quantum++;
+        }
 
       if (thread_status == MagickFail)
         {
@@ -1645,7 +1691,10 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
     x_scale,
     x_span,
     y_scale,
-    y_span;
+    y_span,
+    factor,
+    x_volume,
+    *y_volumes = (double *) NULL;
 
   DoublePixelPacket
     pixel,
@@ -1714,20 +1763,22 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   /*
     Allocate memory.
   */
-  x_vector=MagickAllocateMemory(DoublePixelPacket *,
-                                image->columns*sizeof(DoublePixelPacket));
+  x_vector=MagickAllocateClearedArray(DoublePixelPacket *,
+                                      image->columns,sizeof(DoublePixelPacket));
   scanline=x_vector;
   if (image->rows != scale_image->rows)
-    scanline=MagickAllocateMemory(DoublePixelPacket *,
-                                  image->columns*sizeof(DoublePixelPacket));
-  scale_scanline=MagickAllocateMemory(DoublePixelPacket *,
-                                      scale_image->columns*sizeof(DoublePixelPacket));
-  y_vector=MagickAllocateMemory(DoublePixelPacket *,
-                                image->columns*sizeof(DoublePixelPacket));
+    scanline=MagickAllocateArray(DoublePixelPacket *,
+                                 image->columns,sizeof(DoublePixelPacket));
+  scale_scanline=MagickAllocateArray(DoublePixelPacket *,
+                                     scale_image->columns,sizeof(DoublePixelPacket));
+  y_vector=MagickAllocateClearedArray(DoublePixelPacket *,
+                                      image->columns,sizeof(DoublePixelPacket));
+  y_volumes=MagickAllocateClearedArray(double *, image->columns,sizeof(double));
   if ((scanline == (DoublePixelPacket *) NULL) ||
       (scale_scanline == (DoublePixelPacket *) NULL) ||
       (x_vector == (DoublePixelPacket *) NULL) ||
-      (y_vector == (DoublePixelPacket *) NULL))
+      (y_vector == (DoublePixelPacket *) NULL) ||
+      (y_volumes == (double *) NULL))
     {
       if (scanline == x_vector)
         scanline=(DoublePixelPacket *) NULL;
@@ -1746,8 +1797,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   next_row=True;
   y_span=1.0;
   y_scale=(double) scale_image->rows/image->rows;
-  (void) memset(y_vector,0,image->columns*sizeof(DoublePixelPacket));
-  (void) memset(&zero,0,sizeof(DoublePixelPacket));
+  (void) memset(&zero,0,(size_t) sizeof(DoublePixelPacket));
   i=0;
   for (y=0; y < (long) scale_image->rows; y++)
     {
@@ -1764,9 +1814,18 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
             break;
           for (x=0; x < (long) image->columns; x++)
             {
-              x_vector[x].red=p->red;
-              x_vector[x].green=p->green;
-              x_vector[x].blue=p->blue;
+              if (p->opacity == TransparentOpacity)
+                {
+                  x_vector[x].red=0.0;
+                  x_vector[x].green=0.0;
+                  x_vector[x].blue=0.0;
+                }
+              else
+                {
+                  x_vector[x].red=p->red;
+                  x_vector[x].green=p->green;
+                  x_vector[x].blue=p->blue;
+                }
               x_vector[x].opacity=p->opacity;
               p++;
             }
@@ -1788,9 +1847,18 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                     break;
                   for (x=0; x < (long) image->columns; x++)
                     {
-                      x_vector[x].red=p->red;
-                      x_vector[x].green=p->green;
-                      x_vector[x].blue=p->blue;
+                      if (p->opacity == TransparentOpacity)
+                        {
+                          x_vector[x].red=0;
+                          x_vector[x].green=0;
+                          x_vector[x].blue=0;
+                        }
+                      else
+                        {
+                          x_vector[x].red=p->red;
+                          x_vector[x].green=p->green;
+                          x_vector[x].blue=p->blue;
+                        }
                       x_vector[x].opacity=p->opacity;
                       p++;
                     }
@@ -1798,6 +1866,8 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                 }
               for (x=0; x < (long) image->columns; x++)
                 {
+                  if (x_vector[x].opacity < (double) TransparentOpacity)
+                    y_volumes[x] += y_scale;
                   y_vector[x].red+=y_scale*x_vector[x].red;
                   y_vector[x].green+=y_scale*x_vector[x].green;
                   y_vector[x].blue+=y_scale*x_vector[x].blue;
@@ -1817,9 +1887,18 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                 break;
               for (x=0; x < (long) image->columns; x++)
                 {
-                  x_vector[x].red=p->red;
-                  x_vector[x].green=p->green;
-                  x_vector[x].blue=p->blue;
+                  if (p->opacity == TransparentOpacity)
+                    {
+                      x_vector[x].red=0;
+                      x_vector[x].green=0;
+                      x_vector[x].blue=0;
+                    }
+                  else
+                    {
+                      x_vector[x].red=p->red;
+                      x_vector[x].green=p->green;
+                      x_vector[x].blue=p->blue;
+                    }
                   x_vector[x].opacity=p->opacity;
                   p++;
                 }
@@ -1829,10 +1908,23 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
           s=scanline;
           for (x=0; x < (long) image->columns; x++)
             {
+              if (x_vector[x].opacity < (double) TransparentOpacity)
+                y_volumes[x] += y_span;
               pixel.red=y_vector[x].red+y_span*x_vector[x].red;
               pixel.green=y_vector[x].green+y_span*x_vector[x].green;
               pixel.blue=y_vector[x].blue+y_span*x_vector[x].blue;
               pixel.opacity=y_vector[x].opacity+y_span*x_vector[x].opacity;
+              /*
+                Scale color values if blended pixel contains contributions from
+                both fully transparent and non-fully transparent pixels
+               */
+              if (y_volumes[x] > 0.0 && y_volumes[x] < 1.0)
+                {
+                  factor = 1 / y_volumes[x];
+                  pixel.red *= factor;
+                  pixel.green *= factor;
+                  pixel.blue *= factor;
+                }
               s->red=pixel.red > MaxRGBDouble ? MaxRGBDouble : pixel.red;
               s->green=pixel.green > MaxRGBDouble ? MaxRGBDouble : pixel.green;
               s->blue=pixel.blue > MaxRGBDouble ? MaxRGBDouble : pixel.blue;
@@ -1842,6 +1934,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
               y_vector[x].green=0;
               y_vector[x].blue=0;
               y_vector[x].opacity=0;
+              y_volumes[x] = 0;
             }
           y_scale-=y_span;
           if (y_scale <= 0)
@@ -1877,6 +1970,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
           x_span=1.0;
           s=scanline;
           t=scale_scanline;
+          x_volume = 0.0;
           for (x=0; x < (long) image->columns; x++)
             {
               x_scale=(double) scale_image->columns/image->columns;
@@ -1884,9 +1978,24 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                 {
                   if (next_column)
                     {
+                      /*
+                        Scale color values if blended pixel contains
+                        contributions from both fully transparent and
+                        non-fully transparent pixels
+                       */
+                      if (x_volume > 0.0 && x_volume < 1.0)
+                        {
+                          factor = 1 / x_volume;
+                          t->red *= factor;
+                          t->green *= factor;
+                          t->blue *= factor;
+                        }
+                      x_volume = 0.0;
                       pixel=zero;
                       t++;
                     }
+                  if (s->opacity < (double) TransparentOpacity)
+                    x_volume += x_span;
                   pixel.red+=x_span*s->red;
                   pixel.green+=x_span*s->green;
                   pixel.blue+=x_span*s->blue;
@@ -1903,10 +2012,25 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
                 {
                   if (next_column)
                     {
+                      /*
+                        Scale color values if blended pixel contains
+                        contributions from both fully transparent and
+                        non-fully transparent pixels
+                       */
+                      if (x_volume > 0.0 && x_volume < 1.0)
+                        {
+                          factor = 1 / x_volume;
+                          t->red *= factor;
+                          t->green *= factor;
+                          t->blue *= factor;
+                        }
+                      x_volume = 0.0;
                       pixel=zero;
                       next_column=False;
                       t++;
                     }
+                  if (s->opacity < (double) TransparentOpacity)
+                    x_volume += x_scale;
                   pixel.red+=x_scale*s->red;
                   pixel.green+=x_scale*s->green;
                   pixel.blue+=x_scale*s->blue;
@@ -1918,6 +2042,8 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
           if (x_span > 0.0)
             {
               s--;
+              if (s->opacity < (double) TransparentOpacity)
+                x_volume += x_span;
               pixel.red+=x_span*s->red;
               pixel.green+=x_span*s->green;
               pixel.blue+=x_span*s->blue;
@@ -1960,6 +2086,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
   MagickFreeMemory(scale_scanline);
   MagickFreeMemory(x_vector);
   MagickFreeMemory(y_vector);
+  MagickFreeMemory(y_volumes);
   scale_image->is_grayscale=image->is_grayscale;
   return(scale_image);
 }

@@ -57,9 +57,9 @@
 /*
   Static variables.
 */
-MagickFreeFunc    FreeFunc    = free;
-MagickMallocFunc  MallocFunc  = malloc;
-MagickReallocFunc ReallocFunc = realloc;
+static MagickFreeFunc    FreeFunc    = free;
+static MagickMallocFunc  MallocFunc  = malloc;
+static MagickReallocFunc ReallocFunc = realloc;
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,6 +168,7 @@ MagickExport void * MagickMalloc(const size_t size)
   if (size == 0)
     return ((void *) NULL);
 
+  /* fprintf(stderr,"%s %zu\n",__func__, size); */
   MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
 
   return (MallocFunc)(size);
@@ -225,6 +226,7 @@ MagickExport void * MagickMallocAligned(const size_t alignment,const size_t size
   void
     *alligned_p = 0;
 
+  /* fprintf(stderr,"%s %zu\n",__func__, size); */
   MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
 
   alligned_size=RoundUpToAlignment(size,alignment);

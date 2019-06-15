@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -45,27 +45,25 @@
 
 #include "magick/module_aliases.h"
 
-typedef struct _StaticModule
-{
-  const char* name;
-  void (*register_fn)(void);
-  void (*unregister_fn)(void);
-  MagickBool loaded;
-  const unsigned int name_length;
-
-} StaticModule;
-
 /*
   This list must be ordered by 'name' in an ascending order based on
-  strcmp().
+  strcmp(). This list will always be initialized data due to function
+  address resolution.
 */
-static StaticModule
-StaticModules[] =
+static const struct
 {
-#define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn,MagickFalse,sizeof(name)-1}
+  const char *name;
+  void (*register_fn)(void);
+  void (*unregister_fn)(void);
+  const unsigned char name_length;
+
+} StaticModules[] =
+{
+#define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn,sizeof(name)-1}
   STATICM("ART",RegisterARTImage,UnregisterARTImage),
   STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
+  STATICM("BRAILLE",RegisterBRAILLEImage,UnregisterBRAILLEImage),
   STATICM("CALS",RegisterCALSImage,UnregisterCALSImage),
   STATICM("CAPTION",RegisterCAPTIONImage,UnregisterCAPTIONImage),
   STATICM("CINEON",RegisterCINEONImage,UnregisterCINEONImage),
@@ -198,6 +196,8 @@ StaticModules[] =
   STATICM("YUV",RegisterYUVImage,UnregisterYUVImage)
 };
 
+static unsigned char StaticModulesLoaded[ArraySize(StaticModules)] = { MagickFalse };
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -223,12 +223,12 @@ DestroyMagickModules(void)
 {
   unsigned int index;
 
-  for (index=0; index < sizeof(StaticModules)/sizeof(StaticModules[0]);index++)
+  for (index=0; index < ArraySize(StaticModules);index++)
     {
-      if (StaticModules[index].loaded == MagickTrue)
+      if (StaticModulesLoaded[index] != MagickFalse)
         {
           (StaticModules[index].unregister_fn)();
-          StaticModules[index].loaded = MagickFalse;
+          StaticModulesLoaded[index] = MagickFalse;
         }
     }
 }
@@ -334,10 +334,10 @@ OpenModule(const char *module,ExceptionInfo *exception)
           (StaticModules[index].name_length == name_length) &&
           (memcmp(StaticModules[index].name,module_name,name_length) == 0))
         {
-          if (StaticModules[index].loaded == MagickFalse)
+          if (StaticModulesLoaded[index] == MagickFalse)
             {
               (StaticModules[index].register_fn)();
-              StaticModules[index].loaded = MagickTrue;
+              StaticModulesLoaded[index] = MagickTrue;
               (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
                                     "Loaded static module \"%s\"", module_name);
             }
@@ -382,12 +382,12 @@ OpenModules(ExceptionInfo *exception)
   unsigned int index;
   (void) exception;
 
-  for (index=0; index < ArraySize(StaticModules);index++)
+  for (index=0; index < ArraySize(StaticModules); index++)
     {
-      if (StaticModules[index].loaded == MagickFalse)
+      if (StaticModulesLoaded[index] == MagickFalse)
         {
           (StaticModules[index].register_fn)();
-          StaticModules[index].loaded = MagickTrue;
+          StaticModulesLoaded[index] = MagickTrue;
         }
     }
 
@@ -492,10 +492,10 @@ void RegisterStaticModules(void)
 
   for (index=0; index < ArraySize(StaticModules); index++)
     {
-      if (StaticModules[index].loaded == MagickFalse)
+      if (StaticModulesLoaded[index] == MagickFalse)
         {
           (StaticModules[index].register_fn)();
-          StaticModules[index].loaded = MagickTrue;
+          StaticModulesLoaded[index] = MagickTrue;
         }
     }
 #endif /* !defined(SupportMagickModules) */
@@ -528,10 +528,10 @@ void UnregisterStaticModules(void)
 
   for (index=0; index < ArraySize(StaticModules);index++)
     {
-      if (StaticModules[index].loaded == MagickTrue)
+      if (StaticModulesLoaded[index] != MagickFalse)
         {
           (StaticModules[index].unregister_fn)();
-          StaticModules[index].loaded = MagickFalse;
+          StaticModulesLoaded[index] = MagickFalse;
         }
     }
 #endif /* !defined(SupportMagickModules) */

@@ -54,4 +54,4 @@ the assocated IndexPacket.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| Bob Friesenhahn 1999 - 2018
+Copyright |copy| Bob Friesenhahn 1999 - 2019

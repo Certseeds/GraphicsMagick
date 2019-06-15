@@ -2,16 +2,17 @@
 .. This text is in reStucturedText format, so it may look a bit odd.
 .. See http://docutils.sourceforge.net/rst.html for details.
 
-========================
-Magick Image File Format
-========================
+======================================
+Magick Image File Format (version 1.0)
+======================================
 
 Magick Image File Format (MIFF) is a platform-independent format for
 storing bitmap images. MIFF was originally invented by John Cristy for
-ImageMagick, but is also a native format of GraphicsMagick. It is useful
-as an efficient lossless working file format which assures that all of
-the image attributes used by GraphicsMagick are preserved. Several
-lossless compression algorithms are available in order to save space.
+ImageMagick, but is also a native format of GraphicsMagick. It is
+useful as an efficient lossless working file format which assures that
+all of the image attributes used by ImageMagick and GraphicsMagick are
+preserved. Several lossless compression algorithms are available in
+order to save space.
 
 Description
 ===========
@@ -32,8 +33,17 @@ the colon with a formfeed and a newline character. The formfeed prevents
 the listing of binary data when using more(1) under Unix where the ctrl-Z
 has the same effect with the type command on the Win32 command line.
 
-The following is a list of keyword=value combinations that may be found
-in a MIFF file:
+It is required that the 'id' keyword be present with the value
+'ImageMagick' (id=ImageMagick) and be the first keyword listed in the
+MIFF header.  Files not starting with this keyword/value may be
+rejected.  The 'version' keyword must always be emitted for all new
+files with the value '1.0' (version=1.0).
+
+The MIFF header supports arbitrary LATIN-1 keyword strings.  Some
+keyword strings have special interpretation while others are merely
+stored as image attributes.  The following is a list of keyword=value
+combinations with special interpretation that may be found in a MIFF
+file:
 
 background-color=color
 
@@ -71,7 +81,15 @@ colorspace=CMYK
 
   the colorspace of the pixel data. The default is RGB.
 
+comment={text}
+
+  comment text.  Note that extremely old MIFF files used a different
+  means to indicate comment text.
+
+
 compression=BZip
+
+compression=None
 
 compression=RLE
 
@@ -90,9 +108,11 @@ depth=16
 
 depth=32
 
-  depth of a single color value representing values from 0 to 255 (depth
-  8), 65535 (depth 16), or 4294967295 (depth 32). If this keyword is
-  absent, a depth of 8 is assumed.
+  depth of a single color value representing values from 0 to 255
+  (depth 8), 65535 (depth 16), or 4294967295 (depth 32). If this
+  keyword is absent, a depth of 8 is assumed.  Depth values of 1 to 32
+  are accepted, with the storage depth being rounded up to 8, 16,
+  or 32.
 
 dispose value
 
@@ -113,10 +133,11 @@ dispose value
 
 gamma=value
 
-  gamma of the image. If it is not specified, a gamma of 1.0 (linear
-  brightness response) is assumed,
+  gamma of the image. If it is not specified, a gamma value of
+  .45454545 (linear-intensity gamma "2.2" as used by NTSC, sRGB, and
+  Rec.709) is assumed.  A gamma value of 1.0 indicates linear-light.
 
-id=GraphicsMagick
+id=ImageMagick
 
   identify the file as a MIFF-format image file. This keyword is required
   and has no default. Although this keyword can appear anywhere in the
@@ -178,6 +199,12 @@ profile-name=value
   the profile. Name is substituted with any LATIN-1 string to form a
   unique generic profile identifier.
 
+profile:name=value
+
+  the number of bytes in the generic profile name where name identifies
+  the profile. Name is substituted with any LATIN-1 string to form a
+  unique generic profile identifier.
+
 red-primary=x,y
 
 green-primary=x,y
@@ -209,6 +236,13 @@ rows=value
   the height of the image in pixels. This is a required keyword and has
   no default.
 
+orientation=value
+
+  specifies the orientation of the image as an attribute (does not
+  effect pixel storage).  Supported values are TopLeft, TopRight,
+  BottomRight, BottomLeft, LeftTop, RightTop, RightBottom, LeftBottom
+  as specified by the TIFF and EXIF standards.
+
 scene=value
 
   the sequence number for this MIFF image file. This optional keyword is
@@ -227,10 +261,17 @@ units=pixels-per-centimeter
 
   image resolution units.
 
+version=1.0
+
+  Identifies the MIFF version used, which is 1.0 for the purpose of
+  this specification.  If version is omitted, then certain MIFF
+  features (e.g. compressed rows) are assumed to be encoded using a
+  defunct MIFF format.
+
 Other key value pairs are permitted. If a value contains whitespace it must be
 enclosed with braces as illustrated here::
 
-  id=GraphicsMagick
+  id=ImageMagick  version=1.0
   class=PseudoClass colors=256
   compression=RLE
   columns=1280 rows=1024
@@ -288,7 +329,7 @@ following table:
   +--------+----------------+---------------+
   |   32   |       4        | 0..4294967295 |
   +--------+----------------+---------------+
-        
+
 The alpha value (if it occurs) represents the degree of pixel opacity
 (zero is totally transparent).
 
@@ -332,15 +373,24 @@ If matte is true, each colormap index is immediately followed by an
 equally-sized alpha value. The alpha value represents the degree of pixel
 opacity (zero is totally transparent).
 
-The image data in a MIFF file may be uncompressed, runlength encoded, Zip
-compressed, or BZip compressed. The compression keyword in the header
-defines how the image data is compressed. Uncompressed pixels are stored
-one scanline at a time in row order. Runlength encoded compression counts
-runs of identical adjacent pixels and stores the pixels followed by a
-length byte (the number of identical pixels minus 1). Zip and BZip
-compression compresses each row of an image and precedes the compressed
-row with the length of compressed pixel bytes as a word in most
-significant byte first order.
+The image data in a MIFF file may be uncompressed, runlength encoded,
+Zip compressed, or BZip compressed. The compression keyword in the
+header defines how the image data is compressed. Uncompressed pixels
+are stored one scanline at a time in row order. Runlength encoded
+compression counts runs of identical adjacent pixels and stores the
+pixels followed by a length byte (the number of identical pixels minus
+1). Zip and BZip compression for version 1.0 compresses each row of an
+image and precedes the compressed row with the length of compressed
+pixel bytes as a 32-bit unsigned value in most significant byte first
+order. If the version tag is not present (indicating a virtually
+unused legacy format) then Zip and BZip omit this length value and the
+reader must incrementally decode each row and restart compression at
+the point where decoding completed for the previous row.
+
+Note that compression in MIFF is scanline-based without any
+specialized pre-processing as is found in the PNG and TIFF file
+formats.  As a result, available compression levels are likely to be
+less than some other file formats given the same compression algorithm.
 
 MIFF files may contain more than one image. Simply concatenate each
 individual image (composed of a header and image data) into one file.
@@ -356,4 +406,4 @@ Maintained since 2002 by Bob Friesenhahn, GraphicsMagick Group.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

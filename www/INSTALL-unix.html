@@ -355,9 +355,13 @@ directory (only one can be used for development)</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--without-ttf</span></kbd></td>
 <td>disable TrueType support</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--with-mtmalloc</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>enable Solaris mtmalloc memory allocation library support</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--with-umem</span></kbd></td>
-<td>enable libumem memory allocation library support</td></tr>
+<td>enable Solaris libumem memory allocation library support</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--without-wmf</span></kbd></td>
 <td>disable WMF support</td></tr>
@@ -489,7 +493,7 @@ enabled.  One of the formats currently controlled by this is Adobe
 Photoshop bitmap format (PSD).</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--with-modules</span></kbd></td>
-<td>Image coders and process modules are built as loadable modules which
+<td><p class="first">Image coders and process modules are built as loadable modules which
 are installed under the directory
 [prefix]/lib/GraphicsMagick-X.X.X/modules-QN (where 'N' equals 8, 16,
 or 32 depending on the quantum depth) in the subdirectories 'coders'
@@ -499,7 +503,28 @@ not also specified, then support for building modules is disabled.
 Note that if --enable-shared is specified, the module loader is
 active (allowing extending an installed GraphicsMagick by simply
 copying a module into place) but GraphicsMagick itself is not built
-using modules.</td></tr>
+using modules.</p>
+<p>Use of the modules build is recommended where it is possible to use
+it.  Using modules defers the overhead due to library dependencies
+(searching the filesystem for libraries, shared library relocations,
+initialized data, and constructors) until the point the libraries
+are required to be used to support the file format requested.
+Traditionally it has been thought that a 'static' program will be
+more performant than one built with shared libraries, and perhaps
+this may be true, but building a 'static' GraphicsMagick does not
+account for the many shared libraries it uses on a typical
+Unix/Linux system.  These shared libraries may impose unexpected
+overhead.  For example, it was recently noted that libxml2 is now
+often linked with the ICU (international character sets) libraries
+which are huge C++ libraries consuming almost 30MB of disk space and
+that simply linking with these libraries causes GraphicsMagick to
+start up much more slowly. By using the modules build, libxml2 (and
+therefore the huge ICU C++ libraries) are only loaded in the few
+cases (e.g. SVG format) where it is needed.</p>
+<p class="last">When applications depend on the GraphicsMagick libraries, using the
+modules build lessens the linkage overhead due to using
+GraphicsMagick.</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable-symbol-prefix</span></kbd></td>
 </tr>
@@ -642,7 +667,7 @@ or dependence on thread APIs is undesireable, then specify
 safety is virtually unmeasurable so usually there is no reason to
 disable multi-thread support.  While previous versions disabled
 OpenMP support when this option was supplied, that is no longer the
-case.</td></tr>
+case since then OpenMP locking APIs are used instead.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--disable-largefile</span></kbd></td>
 </tr>
@@ -661,7 +686,11 @@ OpenMP automatically parallizes loops across concurrent threads
 based on instructions in pragmas. OpenMP was introduced in GCC
 4.2. OpenMP is a well-established standard and was implemented in
 some other compilers in the late '90s, long before its appearance in
-GCC. OpenMP adds additional build and linkage requirements.</p>
+GCC. OpenMP adds additional build and linkage requirements.
+GraphicsMagick supports OpenMP version 2.0 and later, primarily
+using features defined by version 2.5, but will be optionally using
+features from version 3.1 in the future since it is commonly
+available.</p>
 <p class="last">By default, GraphicsMagick enables as many threads as there are CPU
 cores (or CPU threads).  According to the OpenMP standard, the
 OMP_NUM_THREADS environment variable specifies how many threads
@@ -704,8 +733,8 @@ GraphicsMagick libraries may be used.</p>
 /path/to/perl will be taken as the PERL interpreter to use. This is
 important in case the 'perl' executable in your PATH is not PERL5,
 or is not the PERL you want to use.  Experience suggests that static
-PerlMagick builds may not be fully successful for Perl versions
-newer than 5.8.8.</p>
+PerlMagick builds may not be fully successful (at least for
+executing the test suite) for Perl versions newer than 5.8.8.</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-perl-options</span></kbd></td>
@@ -733,19 +762,100 @@ to X11 fonts (consider using Postscript or TrueType fonts instead).</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-gs-font-dir</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Specify the directory containing the Ghostscript Postscript Type 1
-font files (e.g. &quot;n022003l.pfb&quot;) so that they can be rendered using
-the FreeType library. If the font files are installed using the
-default Ghostscript installation paths
-(${prefix}/share/ghostscript/fonts), they should be discovered
+<tr><td>&nbsp;</td><td><p class="first">Specify the directory containing the Ghostscript Postscript Type 1
+font files (e.g. &quot;n019003l.pfb&quot;) also known as the &quot;URW Fonts&quot; so
+that they can be rendered using the FreeType library.  These fonts
+emulate the standard 35 fonts commonly available on printers
+supporting Adobe Postscript so they are very useful to have. If the
+font files are installed using the default Ghostscript installation
+paths (${prefix}/share/ghostscript/fonts), they should be discovered
 automatically by configure and specifying this option is not
 necessary. Specify this option if the Ghostscript fonts fail to be
-located automatically, or the location needs to be overridden.</td></tr>
+located automatically, or the location needs to be overridden.</p>
+<p>The &quot;Ghostscript&quot; fonts (also known as &quot;URW Standard postscript
+fonts (cyrillicized)&quot;) are available from</p>
+<blockquote>
+<a class="reference external" href="https://sourceforge.net/projects/gs-fonts/">https://sourceforge.net/projects/gs-fonts/</a></blockquote>
+<p>These fonts may are often available as a package installed by a
+package manager and installing from a package manager is easier than
+installing from source:</p>
+<table border="1" class="last docutils">
+<caption>URW Font Packages</caption>
+<colgroup>
+<col width="22%" />
+<col width="32%" />
+<col width="46%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Distribution</th>
+<th class="head">Package Name</th>
+<th class="head">Fonts Installation Path</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Cygwin</td>
+<td>urw-base35-fonts</td>
+<td>/usr/share/ghostscript/fonts</td>
+</tr>
+<tr><td>Debian Linux</td>
+<td>fonts-urw-base35</td>
+<td>/usr/share/fonts/type1/gsfonts</td>
+</tr>
+<tr><td>Gentoo Linux</td>
+<td>media-fonts/urw-fonts</td>
+<td>/usr/share/fonts/ghostscript</td>
+</tr>
+<tr><td>Illumos/pkgsrc</td>
+<td>urw-fonts-2.0nb1</td>
+<td>/opt/local/share/fonts/urw</td>
+</tr>
+<tr><td>NetBSD/pkgsrc</td>
+<td>urw-fonts-2.0nb1</td>
+<td>/share/fonts/urw</td>
+</tr>
+<tr><td>OpenIndiana</td>
+<td>gnu-gs-fonts-std</td>
+<td>/usr/share/ghostscript/fonts</td>
+</tr>
+<tr><td>OS X/Homebrew</td>
+<td>font-urw-base35</td>
+<td>[ TBD ]</td>
+</tr>
+<tr><td>Red Hat Linux</td>
+<td>urw-fonts-2.0</td>
+<td>/usr/share/fonts/default/Type1</td>
+</tr>
+<tr><td>Ubuntu Linux</td>
+<td>fonts-urw-base35</td>
+<td>/usr/share/fonts/type1/gsfonts</td>
+</tr>
+</tbody>
+</table>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-windows-font-dir</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Specify the directory containing MS-Windows-compatible fonts. This is
 not necessary when GraphicsMagick is running under MS-Windows.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--with-umem</span></kbd></td>
+<td>The default Solaris memory allocator exhibits poor concurrency in
+multi-threaded programs and this can impact OpenMP speedup under
+Solaris (and systems derived from it such as Illumos).  Use this
+convenience option to enable use of the umem memory allocation
+library, which is observed to be more performant in multi-threaded
+programs.  There is a port of umem available for Linux so this
+option is not specific to Solaris.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--with-mtmalloc</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The default Solaris memory allocator exhibits poor concurrency in
+multi-threaded programs and this can impact OpenMP speedup under
+Solaris (and systems derived from it such as Illumos).  Use this
+convenience option to enable use of the mtmalloc memory allocation
+library, which is more performant in multi-threaded programs than
+the default libc memory allocator, and more performant in
+multi-threaded programs than umem, but is less memory efficient.</td></tr>
 </tbody>
 </table>
 </div>
@@ -1005,7 +1115,7 @@ the developer's environment environment and your own may include the
 compiler, the CPU type, and the library versions used. The
 GraphicsMagick developers use the current release of all dependent
 libraries.</p>
-<p>Copyright © GraphicsMagick Group 2002 - 2018</p>
+<p>Copyright © GraphicsMagick Group 2002 - 2019</p>
 </div>
 </div>
 </body>

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2203,7 +2203,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
             palette;
 
           (void) png_get_PLTE(ping,ping_info,&palette,&number_colors);
-          image->colors=number_colors;
+          image->colors=number_colors; /* FIXME: bug 596 */
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "    Reading PNG PLTE chunk:"
@@ -2653,7 +2653,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       png_destroy_read_struct(&ping,&ping_info,&end_info);
       MagickFreeMemory(mng_info->quantum_scanline);
       MagickFreeMemory(mng_info->png_pixels);
-      image->colors=2;
+      if (ReallocateImageColormap(image,2) == MagickFail)
+        {
+          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                               image);
+        }
       (void) SetImage(image,TransparentOpacity);
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
       UnlockSemaphoreInfo(png_semaphore);
@@ -4891,7 +4895,22 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   image->background_color=mng_background_color;
                   image->matte=MagickFalse;
                   image->delay=0;
-                  (void) SetImage(image,OpaqueOpacity);
+                  if (SetImage(image,OpaqueOpacity) != MagickPass)
+                    {
+                      if (logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "  Failed to insert background layer,"
+                                              " L=%ld, R=%ld, T=%ld, B=%ld",
+                                              mng_info->clip.left,
+                                              mng_info->clip.right,
+                                              mng_info->clip.top,
+                                              mng_info->clip.bottom);
+                      CopyException(exception,&image->exception);
+                      MagickFreeMemory(chunk);
+                      DestroyImageList(image);
+                      MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      return((Image *) NULL);
+                    }
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "  Inserted background layer,"
@@ -5023,6 +5042,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               long loop_iters=1;
 
+              if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Handling LOOP chunk");
               if (length >= 5) /* To do: check spec, if empty LOOP is allowed */
                 {
                   loop_level=chunk[0]; /* 1 byte */
@@ -5032,6 +5054,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     Record starting point.
                   */
                   loop_iters=mng_get_long(&chunk[1]); /* 4 bytes */
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Loop iterations requested: %ld", loop_iters);
                   if (loop_iters <= 0)
                     skipping_loop=loop_level;
                   else
@@ -5042,6 +5067,24 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       const char
                         *definition_value;
 
+                      if (image_info->subrange != 0)
+                        {
+                          /*
+                            FIXME: This is a quick hack to adjust the
+                            maximum loop iterations based on the
+                            subrange specification.  A proper solution
+                            would be to handle scene/subimage/subrange
+                            for MNG as it should have been in the
+                            first place.
+                          */
+                          if (logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "Adjusting loop ierations based on subrange:"
+                                                  " scene: %lu: subimage: %lu, subrange: %lu",
+                                                  image->scene, image_info->subimage,
+                                                  image_info->subrange);
+                          loop_iters=Min(image_info->subrange,(unsigned long) loop_iters);
+                        }
                       if ((definition_value=AccessDefinition(image_info,"mng","maximum-loops")))
                         loop_iters_max=atol(definition_value);
                       if (loop_iters > loop_iters_max)
@@ -5054,6 +5097,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         loop_iters=2147483647L;
                       else if (loop_iters < 0)
                         loop_iters=1;
+
+                      if (logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "Loop iterations allowed: %ld", loop_iters);
 
                       mng_info->loop_jump[loop_level]=TellBlob(image);
                       mng_info->loop_count[loop_level]=loop_iters;
@@ -5080,6 +5127,18 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   continue;
                 }
               loop_level=chunk[0];
+#if 0
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "ENDL: loop_level = %d,"
+                                      " loop_active[%d]=%d,"
+                                      " mng_info->loop_count[%d]=%ld,"
+                                      " loop_iteration[%d]=%ld",
+                                      (int) loop_level,
+                                      (int) loop_level, (int) mng_info->loop_active[loop_level],
+                                      (int) loop_level, mng_info->loop_count[loop_level],
+                                      (int) loop_level, mng_info->loop_iteration[loop_level]);
+#endif
               if (skipping_loop > 0)
                 {
                   if (skipping_loop == loop_level)
@@ -5098,7 +5157,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     {
                       mng_info->loop_count[loop_level]--;
                       mng_info->loop_iteration[loop_level]++;
-                      if (mng_info->loop_count[loop_level] != 0)
+                      if (mng_info->loop_count[loop_level] > 0)
                         (void) SeekBlob(image,mng_info->loop_jump[loop_level],
                                         SEEK_SET);
                       else
@@ -6047,7 +6106,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   image->columns=1;
                   image->rows=1;
-                  image->colors=2;
+                  if (ReallocateImageColormap(image,2) == MagickFail)
+                    {
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                           image);
+                    }
                   (void) SetImage(image,TransparentOpacity);
                   image->page.width=1;
                   image->page.height=1;
@@ -6339,25 +6402,25 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 ModuleExport void RegisterPNGImage(void)
 {
   static char
-    version[MaxTextExtent];
+    version[32];
 
   MagickInfo
     *entry;
 
   static const char
-    *PNGNote=
+    PNGNote[]=
     {
       "See http://www.libpng.org/ for information on PNG.."
     };
 
   static const char
-    *JNGNote=
+    JNGNote[]=
     {
       "See http://www.libpng.org/pub/mng/ for information on JNG."
     };
 
   static const char
-    *MNGNote=
+    MNGNote[]=
     {
       "See http://www.libpng.org/pub/mng/ for information on MNG."
     };

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -50,6 +50,7 @@
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
 #include "magick/utility.h"
+#include "magick/version.h"
 #if defined(HasZLIB)
 #  include "zlib.h"
 #endif
@@ -148,13 +149,13 @@ ImportRLEPixels(Image *image,
     *p;
 
   register unsigned int
+    index,
     quantum;
 
   register int
     length;
 
   register IndexPacket
-    index,
     *indexes;
 
   register long
@@ -203,10 +204,10 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++);
+                      index=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -220,11 +221,11 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -241,13 +242,13 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 24);
-                      index|=(*p++ << 16);
-                      index|=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 24);
+                      index|=((unsigned int) *p++ << 16);
+                      index|=((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -271,12 +272,12 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++);
+                      index=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++);
+                      quantum=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleCharToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -290,14 +291,14 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -314,18 +315,18 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      index=(*p++ << 24);
-                      index|=(*p++ << 16);
-                      index|=(*p++ << 8);
-                      index|=(*p++);
+                      index =((unsigned int) *p++ << 24);
+                      index|=((unsigned int) *p++ << 16);
+                      index|=((unsigned int) *p++ << 8);
+                      index|=((unsigned int) *p++);
                       VerifyColormapIndex(image,index);
                       pixel=image->colormap[index];
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -354,7 +355,7 @@ ImportRLEPixels(Image *image,
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=ScaleCharToQuantum(*p++);
                       index=(IndexPacket) MaxRGB-ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -368,22 +369,22 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum= ((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
+                      quantum= ((unsigned int) *p++ << 8);
                       quantum|=(*p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       index=(IndexPacket) MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *indexes++=index;
@@ -397,35 +398,35 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       index=(IndexPacket) MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
-                  indexes[x]=index;
+                  *indexes++=index;
                   *q++=pixel;
                 }
               break;
@@ -450,7 +451,7 @@ ImportRLEPixels(Image *image,
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -463,19 +464,19 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -488,27 +489,27 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -535,7 +536,7 @@ ImportRLEPixels(Image *image,
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
                       pixel.opacity=MaxRGB-ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -548,19 +549,19 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -573,27 +574,27 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.opacity=MaxRGB-ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -619,7 +620,7 @@ ImportRLEPixels(Image *image,
                       pixel.red=ScaleCharToQuantum(*p++);
                       pixel.green=ScaleCharToQuantum(*p++);
                       pixel.blue=ScaleCharToQuantum(*p++);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -632,16 +633,16 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
-                      quantum=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleShortToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -654,22 +655,22 @@ ImportRLEPixels(Image *image,
                 {
                   if (length == 0)
                     {
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.red=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleLongToQuantum(quantum);
-                      quantum=(*p++ << 24);
-                      quantum|=(*p++ << 16);
-                      quantum|=(*p++ << 8);
-                      quantum|=(*p++);
+                      quantum =((unsigned int) *p++ << 24);
+                      quantum|=((unsigned int) *p++ << 16);
+                      quantum|=((unsigned int) *p++ << 8);
+                      quantum|=((unsigned int) *p++);
                       pixel.blue=ScaleLongToQuantum(quantum);
-                      length=(*p++)+1;
+                      length=((int) *p++)+1;
                     }
                   length--;
                   *q++=pixel;
@@ -755,8 +756,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     c;
 
   size_t
+    compressed_length,
     length,
-    compressed_length;
+    pixels_size;
 
   long
     y;
@@ -1037,6 +1039,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 /* Legacy ImageMagick 4.2.9 used keyword "color-profile" for ICC profile */
                 if (LocaleCompare(keyword,"color-profile") == 0)
                   {
+                    if (MagickAtoL(values) <= 0)
+                      ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
                     MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
                     if (profiles == (ProfileInfo *) NULL)
@@ -1217,6 +1221,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if ((LocaleNCompare(keyword,"profile-",8) == 0) ||
                     (LocaleNCompare(keyword,"profile:",8) == 0))
                   {
+                    if (MagickAtoL(values) <= 0)
+                      ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
                     MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
                     if (profiles == (ProfileInfo *) NULL)
@@ -1366,7 +1372,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         (image->compression == UndefinedCompression) ||
         (image->colorspace == UndefinedColorspace) ||
         (image->columns == 0) ||
-        (image->rows == 0))
+        (image->rows == 0) ||
+        (image->depth == 0) || (image->depth > 32))
       {
         if (image->previous)
           {
@@ -1396,6 +1403,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         register char
           *p;
 
+        size_t
+          directory_length;
+
         /*
           Image directory.
         */
@@ -1403,25 +1413,27 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         if (image->directory == (char *) NULL)
           ThrowMIFFReaderException(CorruptImageError,UnableToReadImageData,image);
         p=image->directory;
+        directory_length=0;
         do
         {
           *p='\0';
-          if (((strlen(image->directory)+1) % MaxTextExtent) == 0)
+          if (((directory_length+1) % MaxTextExtent) == 0)
             {
               /*
                 Allocate more memory for the image directory.
               */
               MagickReallocMemory(char *,image->directory,
-                (strlen(image->directory)+MaxTextExtent+1));
+                (directory_length+MaxTextExtent+1));
               if (image->directory == (char *) NULL)
                 ThrowMIFFReaderException(CorruptImageError,UnableToReadImageData,
                   image);
-              p=image->directory+strlen(image->directory);
+              p=image->directory+directory_length;
             }
           c=ReadBlobByte(image);
           if (c == EOF)
             break;
           *p++=c;
+          ++directory_length;
         } while (c != '\0');
       }
 
@@ -1432,14 +1444,34 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
       {
         for (i=0; i < (long) number_of_profiles; i++)
         {
-          if (profiles[i].length == 0)
-            continue;
-          profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
-          if (profiles[i].info == (unsigned char *) NULL)
-            ThrowMIFFReaderException(CorruptImageError,UnableToReadGenericProfile,
-              image);
-          (void) ReadBlob(image,profiles[i].length,profiles[i].info);
-          (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+          if (profiles[i].length > 0)
+            {
+              if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
+                  ((BlobIsSeekable(image)
+                    && (GetBlobSize(image) - TellBlob(image)) >
+                    (magick_off_t) profiles[i].length) ||
+                   (profiles[i].length < 15*1024*1024)))
+                {
+                  profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
+                  if (profiles[i].info == (unsigned char *) NULL)
+                    ThrowMIFFReaderException(CorruptImageError,UnableToReadGenericProfile,
+                                             image);
+                  if (ReadBlob(image,profiles[i].length,profiles[i].info)
+                      != profiles[i].length)
+                    ThrowMIFFReaderException(CorruptImageError,
+                                             UnexpectedEndOfFile,
+                                             image);
+                  (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+                }
+              else
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Profile size %" MAGICK_SIZE_T_F "u is excessively large",
+                                        (MAGICK_SIZE_T ) profiles[i].length);
+                  ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,
+                                           image);
+                }
+            }
           MagickFreeMemory(profiles[i].name);
           MagickFreeMemory(profiles[i].info);
         }
@@ -1490,13 +1522,13 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 {
                   for (i=0; i < (long) image->colors; i++)
                     {
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].red=ScaleShortToQuantum(pixel);
                       p+=2;
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].green=ScaleShortToQuantum(pixel);
                       p+=2;
-                      pixel=(*p << 8) | *(p+1);
+                      pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].blue=ScaleShortToQuantum(pixel);
                       p+=2;
                     }
@@ -1506,13 +1538,22 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 {
                   for (i=0; i < (long) image->colors; i++)
                     {
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].red=ScaleLongToQuantum(pixel);
                       p+=4;
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].green=ScaleLongToQuantum(pixel);
                       p+=4;
-                      pixel=(*p << 24) | (*(p+1) << 16) | (*(p+2) << 8) | *(p+3);
+                      pixel=((unsigned int) *p << 24) |
+                        ((unsigned int) *(p+1) << 16) |
+                        ((unsigned int) *(p+2) << 8) |
+                        (unsigned int) *(p+3);
                       image->colormap[i].blue=ScaleLongToQuantum(pixel);
                       p+=4;
                     }
@@ -1578,12 +1619,19 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
       packet_size+=quantum_size/8;
     if (image->compression == RLECompression)
       packet_size++;
-    pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+    pixels_size=MagickArraySize(packet_size,image->columns);
+    if (pixels_size == 0)
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
+    pixels=MagickAllocateMemory(unsigned char *,pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    length=(size_t) (1.01*MagickArraySize(packet_size,image->columns));
-    if (length)
+    length=(size_t) (1.01*pixels_size);
+    if (length < pixels_size)
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
+    if (~((size_t) 0) - length > 600)
       length += 600;
+    else
+      ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
     compressed_length = length;
     compress_pixels=MagickAllocateMemory(unsigned char *,compressed_length);
     if (compress_pixels == (unsigned char *) NULL)
@@ -1626,7 +1674,10 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       zip_info.next_in=compress_pixels;
                       if (version == 0)
                         {
-                          length=(int) (1.01*packet_size*image->columns+12);
+                          length=(int) (1.01*pixels_size+12);
+                          if (image->logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "length = %zu", length);
                           zip_info.avail_in=(uInt) ReadBlob(image,length,zip_info.next_in);
                         }
                       else
@@ -1649,9 +1700,20 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                             }
                         }
                     }
+                  if (zip_info.avail_in <= 0)
+                    {
+                      (void) inflateEnd(&zip_info);
+                      ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                               image);
+                    }
                   zip_status=inflate(&zip_info,Z_NO_FLUSH);
                   if (zip_status == Z_STREAM_END)
+                    {
+                      if (image->logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "zip_status == Z_STREAM_END");
                     break;
+                    }
                   else if (zip_status != Z_OK)
                     {
                       (void) inflateEnd(&zip_info);
@@ -1666,6 +1728,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                                             zip_info.avail_in),SEEK_CUR);
                   code=inflateEnd(&zip_info);
                   status|=code >= 0;
+                }
+              if ((size_t) (zip_info.next_out-pixels) < pixels_size)
+                {
+                  (void) inflateEnd(&zip_info);
+                  ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                           image);
                 }
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
                 break;
@@ -1702,7 +1770,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   bzip_info.avail_in=0;
                 }
               bzip_info.next_out=(char *) pixels;
-              bzip_info.avail_out=(unsigned int) (packet_size*image->columns);
+              bzip_info.avail_out=(unsigned int) (pixels_size);
               do
                 {
                   int
@@ -1713,7 +1781,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       bzip_info.next_in=(char *) compress_pixels;
                       if (version == 0)
                         {
-                          length=(int) (1.01*packet_size*image->columns+600);
+                          length=(int) (1.01*pixels_size+600);
                           bzip_info.avail_in=(unsigned int) ReadBlob(image,length,bzip_info.next_in);
                         }
                       else
@@ -1745,6 +1813,13 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                   code=BZ2_bzDecompressEnd(&bzip_info);
                   status|=code >= 0;
                 }
+              if ((size_t) (((magick_uint64_t) bzip_info.total_out_hi32 << 32) |
+                            bzip_info.total_out_lo32) < pixels_size)
+                {
+                  (void) BZ2_bzDecompressEnd(&bzip_info);
+                  ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                           image);
+                }
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0))
                 break;
               if (!SyncImagePixels(image))
@@ -1772,8 +1847,14 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               p=pixels;
               for (length=0; length < image->columns; )
                 {
-                  p+=ReadBlob(image,packet_size,p);
-                  length+=*(p-1)+1;
+                  size_t
+                    bytes_read;
+
+                  if ((bytes_read=ReadBlob(image,packet_size,p)) != packet_size)
+                    ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                             image);
+                  p+=bytes_read;
+                  length+=(size_t) *(p-1)+1;
                 }
 
               if (!ImportRLEPixels(image,quantum_type,quantum_size,pixels))
@@ -1800,7 +1881,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               pixels_p=pixels;
               if (ReadBlobZC(image,packet_size*image->columns,&pixels_p)
                   != (size_t) packet_size*image->columns)
-                break;
+                ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                         image);
               if (!ImportImagePixelArea(image,quantum_type,quantum_size,
                                         (const unsigned char*) pixels_p,0,0))
                 break;
@@ -1899,31 +1981,27 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 */
 ModuleExport void RegisterMIFFImage(void)
 {
-  static char
-    version[MaxTextExtent];
+  /* GraphicsMagick 1.4, Zlib 1.2.3, BZlib */
+  static const char
+    version[]= MagickPackageName " " MagickLibVersionText
+#if defined(ZLIB_VERSION)
+    ", Zlib " ZLIB_VERSION
+#endif
+#if defined(HasBZLIB)
+    ", BZlib"
+#endif
+    ;
 
   MagickInfo
     *entry;
 
-  *version='\0';
-#if defined(MagickLibVersionText)
-  (void) strlcpy(version,MagickLibVersionText,MaxTextExtent);
-#if defined(ZLIB_VERSION)
-  (void) strlcat(version," with Zlib ",MaxTextExtent);
-  (void) strlcat(version,ZLIB_VERSION,MaxTextExtent);
-#endif
-#if defined(HasBZLIB)
-  (void) strlcat(version," and BZlib",MaxTextExtent);
-#endif
-#endif
   entry=SetMagickInfo("MIFF");
   entry->decoder=(DecoderHandler) ReadMIFFImage;
   entry->encoder=(EncoderHandler) WriteMIFFImage;
   entry->magick=(MagickHandler) IsMIFF;
   entry->description="Magick Image File Format";
   entry->seekable_stream=MagickTrue;
-  if (*version != '\0')
-    entry->version=version;
+  entry->version=version;
   entry->module="MIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);

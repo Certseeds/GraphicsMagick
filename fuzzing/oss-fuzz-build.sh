@@ -20,6 +20,13 @@ make -j$(nproc)
 make install
 popd
 
+# build zstd
+echo "==== Building zstd..."
+pushd "$SRC/zstd"
+make -j$(nproc) lib-release
+make install PREFIX="$WORK"
+popd
+
 echo "=== Building libpng..."
 pushd "$SRC/libpng"
 autoreconf -fiv
@@ -32,6 +39,15 @@ popd
 echo "=== Building libjpeg..."
 pushd "$SRC/libjpeg-turbo"
 CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on -DWITH_JPEG8=1 -DWITH_SIMD=0
+make -j$(nproc)
+make install
+popd
+
+# Build webp
+echo "=== Building webp..."
+pushd "$SRC/libwebp"
+./autogen.sh
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
 make -j$(nproc)
 make install
 popd
@@ -63,15 +79,6 @@ make -j$(nproc)
 make install
 popd
 
-# Build webp
-echo "=== Building webp..."
-pushd "$SRC/libwebp"
-./autogen.sh
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --enable-libwebpmux --prefix="$WORK" CFLAGS="$CFLAGS -fPIC"
-make -j$(nproc)
-make install
-popd
-
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
 echo "=== Building GraphicsMagick..."
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --without-perl --with-quantum-depth=16
@@ -81,7 +88,7 @@ make install
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the
 # maximum extent possible.
-MAGICK_LIBS="$WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/liblzma.a $WORK/lib/libz.a "
+MAGICK_LIBS="$WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a "
 
 echo "=== Building fuzzers..."
 for f in fuzzing/*_fuzzer.cc; do

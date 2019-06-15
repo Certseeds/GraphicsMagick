@@ -65,7 +65,7 @@ extern "C" {
   ReacquireMemory(void **,const size_t) MAGICK_FUNC_DEPRECATED;
 
   extern MagickExport const PixelPacket
-  *AcquireCacheView(const ViewInfo *view,
+  *AcquireCacheView(ViewInfo *view,
                     const long x,const long y,const unsigned long columns,
                     const unsigned long rows,ExceptionInfo *exception) MAGICK_FUNC_DEPRECATED;
 

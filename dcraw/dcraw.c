@@ -116,6 +116,12 @@ typedef unsigned long long UINT64;
 #define ushort unsigned short
 #endif
 
+#ifdef _MSC_VER
+ #if _MSC_VER <= 1310
+ #include "port/strnlen.c"
+ #endif
+#endif
+
 /*
    All global variables are defined here, and all functions that
    access them are prefixed with "CLASS".  Note that a thread-safe

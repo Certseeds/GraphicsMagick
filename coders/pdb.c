@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -29,6 +29,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
+*/
+/*
+  Some information on this format may be found at
+  http://fileformats.archiveteam.org/wiki/Palm_Database_ImageViewer
+
+  Round-trip tests do not pass so this format is not included in the
+  test suite.
 */
 
 /*
@@ -659,9 +666,6 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       int
         c;
 
-      register char
-        *p;
-
       size_t
         length;
 
@@ -671,23 +675,27 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       c=ReadBlobByte(image);
       length=MaxTextExtent;
       comment=MagickAllocateMemory(char *,length+1);
-      p=comment;
-      p[0]='\0';
       if (comment != (char *) NULL)
-        for ( ; c != EOF; p++)
         {
-          if ((size_t) (p-comment) >= length)
+          register char
+            *p=comment;
+
+          p[0]='\0';
+          for ( ; c != EOF; p++)
             {
-              length<<=1;
-              length+=MaxTextExtent;
-              MagickReallocMemory(char *,comment,length+1);
-              if (comment == (char *) NULL)
-                break;
-              p=comment+strlen(comment);
+              if ((size_t) (p-comment) >= length)
+                {
+                  length<<=1;
+                  length+=MaxTextExtent;
+                  MagickReallocMemory(char *,comment,length+1);
+                  if (comment == (char *) NULL)
+                    break;
+                  p=comment+strlen(comment);
+                }
+              *p=c;
+              *(p+1)='\0';
+              c=ReadBlobByte(image);
             }
-          *p=c;
-          *(p+1)='\0';
-          c=ReadBlobByte(image);
         }
       if (comment == (char *) NULL)
         ThrowPDBReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -732,6 +740,7 @@ ModuleExport void RegisterPDBImage(void)
   entry->magick=(MagickHandler) IsPDB;
   entry->description="Palm Database ImageViewer Format";
   entry->module="PDB";
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
@@ -841,7 +850,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
     status;
 
   size_t
-        packets;
+    packets;
 
   unsigned long
     literal,
@@ -866,6 +875,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   if (status == False)
     ThrowPDBWriterException(FileOpenError,UnableToOpenFile,image);
   (void) TransformColorspace(image,RGBColorspace);
+  (void) SetImageType(image,GrayscaleType);
   bits_per_pixel=image->depth;
   if (GetImageType(image,&image->exception) == BilevelType)
     bits_per_pixel=1;
@@ -938,7 +948,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   if (buffer == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
   (void) memset(buffer,0,512);
-  packet_size=image->depth > 8 ? 2: 1;
+  packet_size=bits_per_pixel > 8 ? 2: 1;
   scanline=MagickAllocateArray(unsigned char *,image->columns,packet_size);
   if (scanline == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
@@ -955,7 +965,8 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;
-    (void) ExportImagePixelArea(image,GrayQuantum,image->depth,scanline,0,0);
+    (void) memset(scanline,0,image->columns*packet_size); /* FIXME: remove */
+    (void) ExportImagePixelArea(image,GrayQuantum,bits_per_pixel,scanline,0,0);
     for (x=0; x < pdb_image.width; x++)
     {
       if (x < (long) image->columns)

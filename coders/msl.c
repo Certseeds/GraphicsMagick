@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4556,6 +4556,18 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     SAXHandler;
 
   /*
+    Libxml initialization.  We call it here since initialization can
+    be expensive and we don't know when/if libxml will be
+    needed. Should normally be called at program start-up but may be
+    called several times since libxml uses a flag to know if it has
+    already been initialized.  When libxml2 is built to support
+    threads, it tests if it is already initialized under a lock and
+    holds a lock while it is being initialized so calling this
+    function from multiple threads is ok.
+  */
+  xmlInitParser();
+
+  /*
     Open image file.
   */
   assert(image_info != (const ImageInfo *) NULL);
@@ -4654,7 +4666,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 
 
   xmlFreeDoc(msl_info.document);
-  xmlCleanupParser();
+  /* xmlCleanupParser(); */
 
 /*   printf("ProcessMSLScript(msl_info->n=%ld\n",msl_info.n); */
 
@@ -4695,13 +4707,14 @@ ReadMSLImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Image *
     image;
 
-  /*
-    Open image file.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
+  /*
+    Open image file.
+  */
   image=(Image *) NULL;
   (void) ProcessMSLScript(image_info,&image,exception);
   return(image);

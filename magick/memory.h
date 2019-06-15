@@ -46,9 +46,15 @@ extern MagickExport size_t
   ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) : \
    ((type) MagickMalloc((size_t) (size))))
 
-#define MagickAllocateArray(type,count,size) \
-  ( (type) MagickMallocArray(count,size) )
+#define MagickAllocateClearedMemory(type,size) \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) : \
+   ((type) MagickMallocCleared((size_t) (size))))
 
+#define MagickAllocateArray(type,count,size) \
+  ((type) MagickMallocArray(count,size))
+
+#define MagickAllocateClearedArray(type,count,size) \
+  ((type) MagickMallocCleared(MagickArraySize(count,size)))
 /*
   Free memory and set pointer to NULL
 */

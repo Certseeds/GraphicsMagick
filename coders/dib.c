@@ -646,9 +646,11 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (dib_info.colors_important > 256)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if ((dib_info.number_colors != 0) && (dib_info.bits_per_pixel > 8))
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if ((dib_info.image_size != 0U) && (dib_info.image_size > file_size))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-  if ((dib_info.number_colors != 0) || (dib_info.bits_per_pixel < 16))
+  if ((dib_info.number_colors != 0) || (dib_info.bits_per_pixel <= 8))
     {
       image->storage_class=PseudoClass;
       image->colors=dib_info.number_colors;
@@ -728,11 +730,10 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
      bytes_per_line=4*((image->columns*dib_info.packet_size+31)/32);
   */
   bytes_per_line=MagickArraySize(image->columns,packet_size);
-  if (bytes_per_line)
-    bytes_per_line += 31;
-  bytes_per_line /= 32;
-  bytes_per_line=MagickArraySize(4,bytes_per_line);
-
+  if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+    bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+  if (bytes_per_line == 0)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "%" MAGICK_SIZE_T_F "u bytes per line",
                         (MAGICK_SIZE_T) bytes_per_line);
@@ -758,8 +759,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   length=MagickArraySize(bytes_per_line,image->rows);
   if (length == 0)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,image->columns+1));
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
+  if (~((size_t) 0) - image->columns < 1)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
+  pixels_size=MagickArraySize(image->rows,Max(bytes_per_line,(size_t) image->columns+1));
+  if (pixels_size == 0)
+    ThrowReaderException(CoderError,ArithmeticOverflow,image);
   pixels=MagickAllocateMemory(unsigned char *,pixels_size);
   if (pixels == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -945,7 +950,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         word;
 
       /*
-        Convert PseudoColor scanline.
+        Convert DirectColor (555 or 565) scanline.
       */
       image->storage_class=DirectClass;
       if (dib_info.compression == 1)
@@ -1043,8 +1048,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       char
         byte;
 
-      image->storage_class=DirectClass;
-      image->matte=True;
+      image->matte=MagickFalse;
       for (y=(long) image->rows-1; y >= 0; y--)
         {
           if (image->logging)
@@ -1059,8 +1063,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
                 break;
               for (bit=0; bit < 8; bit++)
-                q[x+bit].opacity=(Quantum)
-                  (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                {
+                  q[x+bit].opacity=(Quantum)
+                    (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                  if (q[x+bit].opacity != OpaqueOpacity)
+                    image->matte=MagickTrue;
+                }
             }
           /* Detect early loop termination above due to EOF */
           if (x < ((long) image->columns-7))
@@ -1071,8 +1079,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (ReadBlob(image,sizeof(byte),&byte) != sizeof(byte))
                 break;
               for (bit=0; bit < (long) (image->columns % 8); bit++)
-                q[x+bit].opacity=(Quantum)
-                  (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                {
+                  q[x+bit].opacity=(Quantum)
+                    (byte & (0x80 >> bit) ? TransparentOpacity : OpaqueOpacity);
+                  if (q[x+bit].opacity != OpaqueOpacity)
+                    image->matte=MagickTrue;
+                }
             }
           if (image->columns % 32)
             for (x=0; x < (long) ((32-(image->columns % 32))/8); x++)
@@ -1090,6 +1102,13 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
+      /*
+        If a PseudoClass image has a non-opaque opacity channel, then
+        we must mark it as DirectClass since there is no standard way
+        to store PseudoClass with an opacity channel.
+      */
+      if ((image->storage_class == PseudoClass) && (image->matte == MagickTrue))
+        image->storage_class=DirectClass;
 #if 0
       /*
         FIXME: SourceForge bug 557 provides an icon for which magick
@@ -1310,7 +1329,15 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         dib_info.bits_per_pixel=1;
       dib_info.number_colors=1 << dib_info.bits_per_pixel;
     }
-  bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+  /*
+     Below emulates:
+     bytes_per_line=4*((image->columns*dib_info.bits_per_pixel+31)/32);
+  */
+  bytes_per_line=MagickArraySize(image->columns,dib_info.bits_per_pixel);
+  if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+    bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+  if (bytes_per_line == 0)
+    ThrowWriterException(CoderError,ArithmeticOverflow,image);
   dib_info.header_size=40;
   dib_info.width=(long) image->columns;
   dib_info.height=(long) image->rows;

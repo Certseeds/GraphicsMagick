@@ -42,7 +42,7 @@ GraphicsMagick Change Logs
 
 The following are the ``GraphicsMagick`` change logs since 2001:
 
-  * 2018_ (1.3.28, 1.3.29, 1.3.30 released)
+  * 2018_ (1.3.28, 1.3.29, 1.3.30, 1.3.31 released)
 
   * 2017_ (1.3.26, 1.3.27, 1.3.27a released)
 
@@ -83,4 +83,4 @@ The following are the ``GraphicsMagick`` change logs since 2001:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

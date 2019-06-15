@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -962,7 +962,7 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
         Expand @filename to a list of arguments.
       */
       j=0;
-      if (option[0] == '@')
+      if ((option[0] == '@') && (!IsAccessibleNoLogging(option)))
         {
           FILE
             *file;
@@ -2183,17 +2183,18 @@ MagickExport int GetMagickGeometry(const char *geometry,long *x,long *y,
 */
 MagickExport char *GetPageGeometry(const char *page_geometry)
 {
+#undef PAGE_SIZE
 #define PAGE_SIZE(name, geometry) { name, sizeof(name)-1, geometry }
   static const struct
   {
     char
-      *name;
+      name[11];
 
-    size_t
+    unsigned char
        name_length;
 
     char
-       *geometry;
+       geometry[10];
   }
   PageSizes[] =
     {
@@ -2264,7 +2265,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
       PAGE_SIZE("LETTERSMALL",  "612x792"),
       PAGE_SIZE("QUARTO",  "610x780"),
       PAGE_SIZE("STATEMENT",  "396x612"),
-      PAGE_SIZE("TABLOID",  "792x1224"),
+      PAGE_SIZE("TABLOID",  "792x1224")
     };
 
   char
@@ -2275,7 +2276,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
 
   assert(page_geometry != (char *) NULL);
   strlcpy(page,page_geometry,MaxTextExtent);
-  for (i=0; i < sizeof(PageSizes)/sizeof(PageSizes[0]); i++)
+  for (i=0; i < ArraySize(PageSizes); i++)
     if (LocaleNCompare(PageSizes[i].name,page_geometry,
                        PageSizes[i].name_length) == 0)
       {
@@ -4730,7 +4731,7 @@ MagickExport unsigned long MultilineCensus(const char *label)
 %  Method SetClientFilename sets the client filename if the name is specified.
 %  Otherwise the current client filename is returned. On a UNIX system the
 %  client name and filename are often the same since file extensions are not
-%  very important, but on windows the distinction if very important.
+%  very important, but on windows the distinction is very important.
 %
 %  The format of the SetClientFilename method is:
 %
@@ -4752,7 +4753,7 @@ MagickExport const char *GetClientFilename(void)
 MagickExport const char *SetClientFilename(const char *name)
 {
   static char
-    client_filename[MaxTextExtent] = "";
+    client_filename[256] = "";
 
   if ((name != (char *) NULL) && (*name != '\0'))
     {
@@ -4775,7 +4776,8 @@ MagickExport const char *SetClientFilename(const char *name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method SetClientName sets the client name if the name is specified.
-%  Otherwise the current client name is returned.
+%  Otherwise the current client name is returned.  The default value
+%  returned if a value was never set is "Magick".
 %
 %  The format of the SetClientName method is:
 %
@@ -4791,13 +4793,13 @@ MagickExport const char *SetClientFilename(const char *name)
 */
 MagickExport const char *GetClientName(void)
 {
-  return(SetClientName((char *) NULL));
+  return SetClientName((char *) NULL);
 }
 
 MagickExport const char *SetClientName(const char *name)
 {
   static char
-    client_name[MaxTextExtent] = "Magick";
+    client_name[256] = "";
 
   if ((name != (char *) NULL) && (*name != '\0'))
     {
@@ -4805,7 +4807,7 @@ MagickExport const char *SetClientName(const char *name)
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
         "Client Name was set to: %s",client_name);
     }
-  return(client_name);
+  return (client_name[0] == '\0' ? "Magick" : client_name);
 }
 
 /*
@@ -5931,16 +5933,6 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
   if ((formatted_text == (const char *) NULL) || (*formatted_text == '\0'))
     return((char *) NULL);
   text=(char *) formatted_text;
-  /*
-    If text starts with '@' then try to replace it with the content of
-    the file name which follows.
-  */
-  if ((*text == '@') && IsAccessible(text+1))
-    {
-      text=(char *) FileToBlob(text+1,&length,&image->exception);
-      if (text == (char *) NULL)
-        return((char *) NULL);
-    }
   /*
     Translate any embedded format characters.
   */

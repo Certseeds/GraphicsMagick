@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2018 GraphicsMagick Group
+# Copyright (C) 2003-2019 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -291,6 +291,9 @@ then
       else
         CXXFLAGS="${CXXFLAGS} -std strict_ansi -noimplicit_include"
       fi
+      ;;
+    *-*-solaris2.* )
+      # Solaris 2 or a derivative thereof
       ;;
   esac
 else
@@ -745,15 +748,25 @@ if test "$with_ttf" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-ttf=$with_ttf "
 fi
 
+# Enable use of Solaris mtmalloc library.
+AC_ARG_WITH(mtmalloc,
+              AS_HELP_STRING([--with-mtmalloc],
+                             [enable Solaris mtmalloc memory allocation library support]),
+              [with_mtmalloc=$withval],
+              [with_mtmalloc='no'])
+if test "$with_mtmalloc" != 'no' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-mtmalloc=$with_mtmalloc "
+fi
+
 # Enable use of Solaris libumem (object-caching memory allocation library).
 # Available as a SourceForge project http://sourceforge.net/projects/umem/ or
 # https://labs.omniti.com/trac/portableumem/.
 AC_ARG_WITH(umem,
               AS_HELP_STRING([--with-umem],
-                             [enable umem memory allocation library support]),
+                             [enable Solaris umem memory allocation library support]),
               [with_umem=$withval],
               [with_umem='no'])
-if test "$with_umem" != 'yes' ; then
+if test "$with_umem" != 'no' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-umem=$with_umem "
 fi
 
@@ -898,6 +911,14 @@ AC_HEADER_DIRENT
 # Check additional headers
 AC_CHECK_HEADERS([machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
 AC_CHECK_HEADERS([wincrypt.h],[],[],[#include <windows.h>])
+
+case "${host_os}" in
+  linux* )
+  AC_CHECK_FUNCS([mallopt])
+  # Linux mallopt() needs <malloc.h>
+  AC_CHECK_HEADERS([malloc.h])
+  ;;
+esac
 
 
 ########
@@ -1180,21 +1201,6 @@ AC_SUBST(MAGICK_SSIZE_T_F)
 
 ########
 #
-# Check for functions
-#
-########
-GM_FUNC_MMAP_FILEIO
-AC_CHECK_FUNCS([atoll CryptGenRandom \
-  clock_getres clock_gettime ctime_r _exit fcntl fstatvfs ftime getexecname \
-  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r madvise \
-  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
-  posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
-  putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
-  setrlimit sigemptyset sigaction spawnvp strerror strerror_r strlcat strlcpy \
-  strtoll sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
-
-########
-#
 # Check for function prototypes
 #
 ########
@@ -1426,34 +1432,66 @@ have_umem='no'
 LIB_UMEM=''
 if test "$with_umem" != 'no'
 then
-  AC_MSG_CHECKING(for UMEM support )
+  AC_MSG_CHECKING(for Solaris umem library support )
   AC_MSG_RESULT()
   failed=0
   passed=0
   AC_CHECK_HEADER(umem.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
   AC_CHECK_LIB(umem,umem_alloc,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
   AC_CHECK_LIB(umem,umem_free,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_MSG_CHECKING(if umem memory allocation library is complete)
   if test $passed -gt 0
   then
     if test $failed -gt 0
     then
-      AC_MSG_RESULT(no -- some components failed test)
-      have_umem='no (failed tests)'
+      have_umem='no (some components failed test)'
     else
       LIB_UMEM='-lumem'
       LIBS="$LIB_UMEM $LIBS"
       AC_DEFINE(HasUMEM,1,Define if you have umem memory allocation library)
-      AC_MSG_RESULT(yes)
       have_umem='yes'
     fi
   else
     AC_MSG_RESULT(no)
   fi
+  AC_MSG_CHECKING([if Solaris umem memory allocation library is complete ])
+  AC_MSG_RESULT([$have_umem])
 fi
 AM_CONDITIONAL(HasUMEM, test "$have_umem" = 'yes')
 AC_SUBST(LIB_UMEM)
 
+#
+# Check for Solaris-derived mtmalloc library
+#
+have_mtmalloc='no'
+LIB_MTMALLOC=''
+OLIBS="$LIBS"
+if test "$have_umem" = 'no' -a "$have_threads" = 'yes' -a "$with_mtmalloc" != 'no'
+then
+    AC_MSG_CHECKING([for Solaris mtmalloc library support ])
+    AC_MSG_RESULT([])
+    failed=0
+    passed=0
+
+    AC_CHECK_HEADER([mtmalloc.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([mtmalloc],[mallocctl],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+
+    if test $passed -gt 0
+    then
+        if test $failed -gt 0
+        then
+            have_mtmalloc='no (some components failed test)'
+        else
+            LIB_MTMALLOC=-lmtmalloc
+            LIBS="$LIB_MTMALLOC $LIBS"
+            AC_DEFINE([HasMTMALLOC],[1],[Define if you have Solaris mtmalloc library])
+            have_mtmalloc='yes'
+        fi
+    fi
+    AC_MSG_CHECKING([if Solaris mtmalloc memory allocation library is complete ])
+    AC_MSG_RESULT([$have_mtmalloc])
+fi
+AM_CONDITIONAL([HasMTMALLOC], [test "$have_mtmalloc" = 'yes'])
+AC_SUBST([LIB_MTMALLOC])
 
 #
 # Find OpenMP library
@@ -2400,7 +2438,7 @@ then
         AC_MSG_RESULT(no)
     fi
 fi
-AM_CONDITIONAL(HasTIFF, test "$have_tiff" = 'yes')
+AM_CONDITIONAL([HasTIFF], [test "$have_tiff" = 'yes'])
 AC_SUBST(LIB_TIFF)
 
 #
@@ -2679,6 +2717,21 @@ AM_CONDITIONAL([HasWMF], [test "$have_wmf" = 'yes'])
 AC_SUBST([LIB_WMF])
 AC_SUBST([LIB_WMF_DEPS])
 
+########
+#
+# Check for functions
+#
+########
+GM_FUNC_MMAP_FILEIO
+AC_CHECK_FUNCS([atoll CryptGenRandom \
+  clock_getres clock_gettime ctime_r cosf _exit fabsf fcntl fstatvfs ftime getexecname \
+  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r logf madvise \
+  _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
+  posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
+  putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \
+  setrlimit sigemptyset sigaction sinf spawnvp strerror strerror_r strlcat strlcpy \
+  strtoll sqrtf sysconf times telldir ulltostr vsprintf vsnprintf qsort_r])
+
 #
 # Substitute compiler name to build/link PerlMagick
 #
@@ -2780,6 +2833,21 @@ case "${build_os}" in
 esac
 AC_DEFINE_UNQUOTED(MagickShareConfigPath,"$MagickShareConfigPathDefine",Directory where architecture-independent configuration files live.)
 AC_SUBST(MagickShareConfigPath)
+
+# Extra options to pass to dcraw via delegates.mgk.  This substition
+# is done directly on delegates.mgk and has no effect on the compiled
+# binaries.
+DcrawExtraOptions=''
+# Request 16-bit output from dcraw if QuantumDepth is > 8
+if test $QuantumDepth -gt 8 ; then
+   DcrawExtraOptions='-6'
+fi
+# Request TIFF output (including metadata) from dcraw if we can read TIFF
+if test "$have_tiff" = 'yes' ; then
+   DcrawExtraOptions="$DcrawExtraOptions -T"
+fi
+DcrawExtraOptions=`echo $DcrawExtraOptions | sed -e 's/  */ /g'`
+AC_SUBST(DcrawExtraOptions)
 
 #
 # program_transform_name is formed for use in a Makefile, so create a
@@ -2905,39 +2973,63 @@ AM_CONDITIONAL(HasTXT2HTML, test "$TXT2HTML" != 'x')
 #
 type_include_files=''
 
-# Windows
+# Windows fonts.
+#
+# Windows fonts must be in one directory, unlike typical fontconfig intallation.
+# Windows font package for Ubuntu is 'ttf-mscorefonts-installer'
+#
+AC_MSG_CHECKING([for Windows fonts directory (location of arial.ttf)])
 windows_font_dir=''
 if test "$with_windows_font_dir" != "yes" && test -n "$with_windows_font_dir"
 then
    windows_font_dir="${with_windows_font_dir}/"
 fi
-# Sometimes Windows fonts are found under /usr/X11R6/lib/X11/fonts/truetype
-if test -n "$windows_font_dir"
+if test -z "$windows_font_dir"
 then
-  if test -f '/usr/X11R6/lib/X11/fonts/truetype/arial.ttf'
-  then
-     windows_font_dir='/usr/X11R6/lib/X11/fonts/truetype/'
-  fi
+  for dir in \
+    '/usr/X11R6/lib/X11/fonts/truetype/' \
+    '/usr/share/fonts/microsoft/' \
+    '/usr/share/fonts/truetype/msttcorefonts/' \
+    '/usr/share/fonts/msttcore/'
+  do
+    if test -f "${dir}arial.ttf"
+    then
+      windows_font_dir=${dir}
+      break 1
+    fi
+  done
 fi
 if test -n "$windows_font_dir"
 then
   type_include_files="$type_include_files "'<include file="type-windows.mgk" />'
+  AC_MSG_RESULT($windows_font_dir)
+else
+  AC_MSG_RESULT(not found!);
 fi
 AC_SUBST(windows_font_dir)
 
 # Adobe Postscript fonts on various systems
+AC_MSG_CHECKING([for Solaris OpenWindows Type 1 fonts (location of Helvetica.afm)])
+openwin_fonts=''
 case $host_os in
   solaris*)
     # Check for OpenWindows Type 1 fonts.  Not available under OpenSolaris
     if test -f /usr/openwin/lib/X11/fonts/Type1/afm/Helvetica.afm
     then
+      openwin_fonts='/usr/openwin/lib/X11/fonts/Type1/afm/'
       type_include_files="$type_include_files "'<include file="type-solaris.mgk" />'
     fi
     ;;
 esac
+if test -n "$openwin_fonts"
+then
+  AC_MSG_RESULT($openwin_fonts)
+else
+  AC_MSG_RESULT(not found!);
+fi
 
 # Ghostscript
-AC_MSG_CHECKING(for Ghostscript fonts directory)
+AC_MSG_CHECKING([for Ghostscript fonts directory (location of a010013l.pfb)])
 ghostscript_font_dir=''
 if test "${with_gs_font_dir}" != 'default'
 then
@@ -3497,9 +3589,9 @@ fi
 
 if test "$build_modules" != 'no'
 then
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_MTMALLOC $LIB_THREAD"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_MTMALLOC $LIB_THREAD"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST(MAGICK_DEP_LIBS)
@@ -3637,6 +3729,8 @@ printf "PNG               --with-png=$with_png          \t$have_png ($LIB_PNG)\n
 else
 printf "PNG               --with-png=$with_png          \t$have_png\n"
 fi
+printf "Solaris mtmalloc  --with-mtmalloc=$with_mtmalloc\t\t$have_mtmalloc\n"
+printf "Solaris umem      --with-umem=$with_umem        \t$have_umem\n"
 printf "TIFF              --with-tiff=$with_tiff        \t$have_tiff\n"
 printf "TRIO              --with-trio=$with_trio        \t$have_trio\n"
 printf "WEBP              --with-webp=$with_webp        \t$have_webp\n"

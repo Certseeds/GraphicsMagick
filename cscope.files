@@ -104,14 +104,12 @@ coders/xtrn.c
 coders/xwd.c
 coders/yuv.c
 filters/analyze.c
-locale/locale_c.h
 magick/PreRvIcccm.c
 magick/PreRvIcccm.h
 magick/alpha_composite.h
 magick/analyze.c
 magick/analyze.h
 magick/animate.c
-magick/animate.h
 magick/annotate.c
 magick/api.h
 magick/attribute.c
@@ -156,7 +154,6 @@ magick/deprecate.h
 magick/describe.c
 magick/describe.h
 magick/display.c
-magick/display.h
 magick/draw.c
 magick/draw.h
 magick/effect.c

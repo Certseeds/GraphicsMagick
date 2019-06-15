@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.31 (Released November 17, 2018) `download release`__
+Current Release              1.3.32 (Released June 15, 2019) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -47,7 +47,7 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`MIT License` : http://opensource.org/licenses/MIT
 .. _OSSCC : http://www.osscc.net/en/index.html
 .. _OpenMP : http://www.openmp.org/
-.. _`see the multi-thread benchmark results` : OpenMP.html
+.. _`read about OpenMP in GraphicsMagick` : OpenMP.html
 .. _`ChangeLog` : Changelog.html
 .. _`Flickr` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _`Etsy` : http://codeascraft.etsy.com/2010/07/09/batch-processing-millions-of-images/
@@ -59,18 +59,20 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`benchmarks` : benchmarks.html
 .. _`manual page` : GraphicsMagick.html
 .. _`valgrind` : http://www.valgrind.org/
-.. _'ASan' : https://github.com/google/sanitizers/wiki/AddressSanitizer
+.. _`ASan` : https://github.com/google/sanitizers/wiki/AddressSanitizer
+.. _`UBSan` : https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+.. _`oss-fuzz` : https://github.com/google/oss-fuzz
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
 of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
 of source code in the base package (or 1,225K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
-over 88 major formats including important formats like DPX, GIF, JPEG,
-JPEG-2000, PNG, PDF, PNM, and TIFF.
+over 89 major formats including important formats like DPX, GIF, JPEG,
+JPEG-2000, PNG, PDF, PNM, TIFF, and WebP.
 
-Image processing is multi-threaded (`see the multi-thread benchmark
-results`_) using OpenMP_ so that CPU-bound tasks scale linearly as
+Image processing is multi-threaded using OpenMP_ (`read about OpenMP
+in GraphicsMagick`_) so that CPU-bound tasks scale linearly as
 processor cores are added. OpenMP_ support requires compilation with
 GCC 4.2 (or later), or use of any C compiler supporting at least the
 OpenMP_ 2.0 specification.
@@ -98,30 +100,37 @@ project since then. Since the fork from ImageMagick many improvements
 have been made (see `NEWS`_) by many `authors`_ using an open
 development model but without breaking the API or utilities operation.
 
-Here are some reasons to prefer GraphicsMagick over ImageMagick:
+Here are some reasons to prefer GraphicsMagick over ImageMagick or
+other popular software:
 
-  * GM is more efficient so it gets the job done faster using fewer
-    resources.
+  * GM is more efficient than ImageMagick so it gets the job done
+    faster using fewer resources.
 
-  * GM is much smaller and lighter (3-5X smaller installation footprint).
+  * GM is much smaller and lighter than ImageMagick (3-5X smaller
+    installation footprint).
 
   * GM is used to process billions of files at the world's largest photo
     sites (e.g. `Flickr`_ and `Etsy`_).
 
   * GM does not conflict with other installed software.
 
-  * GM suffers from fewer security issues and exploits.
+  * GM suffers from fewer security issues and exploits than ImageMagick.
+
+  * GM participates in Google's `oss-fuzz`_ project (since February, 2018).
 
   * GM `valgrind`_'s 100% clean (memcheck and helgrind).
 
-  * GM passes rigorous memory error testing using `ASan_`.
+  * GM passes rigorous memory error testing using `ASan`_.
+
+  * GM passes undefined behavior testing using `UBSan`_.
 
   * GM comes with a comprehensive `manual page`_.
 
   * GM provides API and ABI stability and managed releases that you can
-    count on.
+    count on (ImageMagick does not).
 
-  * GM provides detailed yet comprehensible `ChangeLog`_ and `NEWS`_ files.
+  * GM provides detailed yet comprehensible `ChangeLog`_ and `NEWS`_
+    files (ImageMagick does not).
 
   * GM is available for free, and may be used to support both open and
     proprietary applications.
@@ -132,7 +141,7 @@ Here are some reasons to prefer GraphicsMagick over ImageMagick:
 
   * GM source code is managed in Mercurial_, a distributed source
     control management tool which supports management of local
-    changes.
+    changes.  The repository history goes back to 1998.
 
   * GM has 0.00 (zero) defects per 1000 lines of code (293,341 total
     lines included) according to Coverity analysis on May 25, 2015.
@@ -169,4 +178,4 @@ Here are just a few examples of what GraphicsMagick can do:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -85,9 +85,9 @@ typedef struct
 }
 MATHeader;
 
-static const char *MonthsTab[12]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-static const char *DayOfWTab[7]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-static const char *OsDesc=
+static const char MonthsTab[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+static const char DayOfWTab[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char OsDesc[]=
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
     "PCWIN";
 #else
@@ -150,16 +150,16 @@ static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, R
 /* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
  Please note that this function expects gray image on input. Additional channel contents
  checking is wasting of resources only. */
-static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal, 
+static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal,
                                   double MaxVal)
 {
   double f;
   int x;
   register PixelPacket *q;
 
-  if(MinVal >= 0)	/* Grant MinVal to be negative */
+  if(MinVal >= 0)       /* Grant MinVal to be negative */
     MinVal = -1;
-  if(MaxVal <= 0)	/* Grant MaxVal to be positive */
+  if(MaxVal <= 0)       /* Grant MaxVal to be positive */
     MaxVal = 1;
 
   q = SetImagePixels(image, 0, y, image->columns, 1);
@@ -216,9 +216,9 @@ static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, 
   int x;
   register PixelPacket *q;
 
-  if(MinVal >= 0)	/* Grant MinVal to be negative */
+  if(MinVal >= 0)       /* Grant MinVal to be negative */
     MinVal = -1;
-  if(MaxVal <= 0)	/* Grant MaxVal to be positive */
+  if(MaxVal <= 0)       /* Grant MaxVal to be positive */
     MaxVal = 1;
 
   q = SetImagePixels(image, 0, y, image->columns, 1);
@@ -229,31 +229,31 @@ static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, 
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
-      /*if(f<0) f=0;	//Only for Assert, should be commented out */
+      /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
         q->red += (int)f;
       else
-        q->red = MaxRGB;        
+        q->red = MaxRGB;
       f /= 2.0;
       if(f < q->green)
         q->green = q->blue -= (int)(f);
       else
-        q->green = q->blue = 0;        
+        q->green = q->blue = 0;
     }
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* f is positive only <0; inf> */
-      /*if(f<0)	f=0; 	//Only for Assert, should be commented out */
+      /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;
-      else	/* 'else' branch is executed when NaN occurs. */
-        q->blue = MaxRGB;        
+      else      /* 'else' branch is executed when NaN occurs. */
+        q->blue = MaxRGB;
 
       f /= 2.0;
       if(f < q->green)
         q->green = q->red -= (int)(f);
-      else	/* 'else' branch is executed when NaN occurs. */
-        q->green = q->red = 0;        
+      else      /* 'else' branch is executed when NaN occurs. */
+        q->green = q->red = 0;
     }
     p++;
     q++;
@@ -455,6 +455,7 @@ UnlinkFile:
   } \
   if(clone_info) \
     DestroyImageInfo(clone_info);    \
+  MagickFreeMemory(BImgBuff); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -474,7 +475,7 @@ typedef struct {
 
 
 /* Load Matlab V4 file. */
-static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options, 
+static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPixelAreaOptions *import_options,
                              ExceptionInfo *exception, const int logging)
 {
 MAT4_HDR HDR;
@@ -628,7 +629,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                    "  MAT cannot read scanrow %u from a file.", (unsigned)(i));
-        DestroyImagePixels(image);		/* The unread data contains crap in memory, erase current image data. */
+        DestroyImagePixels(image);              /* The unread data contains crap in memory, erase current image data. */
         image->columns = image->rows = 0;
         goto ExitLoop;
       }
@@ -810,7 +811,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   if(strncmp(MATLAB_HDR.identific, "MATLAB", 6))
   {
     image2 = ReadMATImageV4(image_info,image,&import_options,exception,logging);
-    if(image2==NULL) goto MATLAB_KO;    
+    if(image2==NULL) goto MATLAB_KO;
     image = image2;
     goto END_OF_READING;
   }
@@ -848,9 +849,9 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   filepos = TellBlob(image);
 
-  filesize = GetBlobSize(image);	      /* zero is returned if the size cannot be determined. */
+  filesize = GetBlobSize(image);              /* zero is returned if the size cannot be determined. */
   if(filesize>0 && BlobIsSeekable(image))
-  { 
+  {
     if(filesize > (magick_off_t)0xFFFFFFFF)
         filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
   }
@@ -864,7 +865,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
 
   while(filepos<filesize && !EOFBlob(image)) /* object parser loop */
   {
-    Frames = 1;    
+    Frames = 1;
     if(filepos > filesize || filepos < 0)
     {
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
@@ -881,7 +882,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     {
       if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT Object with size %u overflows file with size %u.", (unsigned)MATLAB_HDR.ObjectSize, (unsigned)(filesize));
-      goto MATLAB_KO;    
+      goto MATLAB_KO;
     }
 
     filepos += (magick_off_t) MATLAB_HDR.ObjectSize + 4 + 4;   /* Position of a next object, when exists. */
@@ -908,12 +909,12 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
     }
 #endif
 
-    if(MATLAB_HDR.DataType!=miMATRIX) 
+    if(MATLAB_HDR.DataType!=miMATRIX)
     {
 #if defined(HasZLIB)
       if(image2 != image)
       {
-         DeleteImageFromList(&image2);	/* image2 is set to NULL */
+         DeleteImageFromList(&image2);  /* image2 is set to NULL */
       }
 #endif
       continue;  /* skip another objects. */
@@ -1114,6 +1115,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
                                       MATLAB_HDR.SizeY,DoublePixel, ldblk, BImgBuff,
                                       &import_options.double_minvalue,
                                       &import_options.double_maxvalue);
+      if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Double import options: Min=%g, Max=%g",
+                                        import_options.double_minvalue, import_options.double_maxvalue);
     }
     if (CellType==miSINGLE)        /* Find Min and Max Values for floats */
     {
@@ -1121,6 +1125,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
                                       MATLAB_HDR.SizeY,FloatPixel, ldblk, BImgBuff,
                                       &import_options.double_minvalue,
                                       &import_options.double_maxvalue);
+      if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Float import options: Min=%g, Max=%g",
+                                        import_options.double_minvalue, import_options.double_maxvalue);
     }
 
     /* Main loop for reading all scanlines */
@@ -1130,7 +1137,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     {
       for(i = 0; i < (long) MATLAB_HDR.SizeY; i++)
       {
-        q = SetImagePixels(image,0,MATLAB_HDR.SizeY-i-1,image->columns,1);
+        q = SetImagePixelsEx(image,0,MATLAB_HDR.SizeY-i-1,image->columns,1,&image->exception);
         if (q == (PixelPacket *)NULL)
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1141,9 +1148,10 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
-          goto ExitLoop;	/* It would be great to be abble to read corrupted images. */
-				/* this goto will abort reading, but there remains not fully read image 
-				   in the memory. */
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+          goto ExitLoop;        /* It would be great to be able to read corrupted images. */
+                                /* this goto will abort reading, but there remains not fully read image
+                                   in the memory. */
         }
         if((CellType==miINT8 || CellType==miUINT8) && (MATLAB_HDR.StructureFlag & FLAG_LOGICAL))
         {
@@ -1166,7 +1174,7 @@ ImportImagePixelAreaFailed:
             FixSignedValues(q,MATLAB_HDR.SizeX);
         }
 
-        if (!SyncImagePixels(image))
+        if (!SyncImagePixelsEx(image,&image->exception))
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
             "  MAT failed to sync image pixels for a row %u", (unsigned)(MATLAB_HDR.SizeY-i-1));
@@ -1175,6 +1183,16 @@ ImportImagePixelAreaFailed:
       }
     } while(z-- >= 2);
 ExitLoop:
+
+    if (i != (long) MATLAB_HDR.SizeY)
+      {
+        if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Failed to read all scanlines (failed at row %d of %u rows, z=%d)",
+                                          i+1, (unsigned) MATLAB_HDR.SizeY, z);
+        /* Avoid returning partially read image, which contains uninitialized data */
+        /* goto skip_reading_current; */
+        goto END_OF_READING;
+      }
 
 
     /* Read complex part of numbers here */
@@ -1200,14 +1218,16 @@ ExitLoop:
       if (CellType==miDOUBLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff);
+          if ((long) ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff) != ldblk)
+            ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
 
       if (CellType==miSINGLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff);
+          if ((long) ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff) != ldblk)
+            ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
     }
@@ -1254,7 +1274,7 @@ skip_reading_current:
     BImgBuff = NULL;
 
     if(--Frames>0)
-    {      
+    {
       z = z2;
       if(image2==NULL) image2 = image;
       if(!EOFBlob(image) && TellBlob(image)<filepos)
@@ -1279,9 +1299,9 @@ skip_reading_current:
 
   }
 
-  MagickFreeMemory(BImgBuff);
 END_OF_READING:
-  CloseBlob(image); 
+  MagickFreeMemory(BImgBuff);
+  CloseBlob(image);
 
   {
     Image *p;
@@ -1356,11 +1376,11 @@ END_OF_READING:
 %    o image:  A pointer to an Image structure.
 %
 */
-static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WriteMATLABImage(const ImageInfo *image_info,Image *image)
 {
   long y;
   unsigned z;
-  unsigned int status;
+  MagickPassFail status;
   int logging;
   unsigned long DataSize;
   char padding;
@@ -1383,7 +1403,7 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
   assert(image->signature == MagickSignature);
   logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter MAT");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-  if (status == False)
+  if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   /*
@@ -1457,26 +1477,32 @@ static unsigned int WriteMATLABImage(const ImageInfo *image_info,Image *image)
         for (y=0; y<(long)image->columns; y++)
         {
           progress_quantum++;
-          (void) AcquireImagePixels(image,y,0,1,image->rows,&image->exception);
-          (void) ExportImagePixelArea(image,z2qtype[z],8,pixels,0,0);
-          (void) WriteBlob(image,image->rows,pixels);
+          if (AcquireImagePixels(image,y,0,1,image->rows,&image->exception) == (PixelPacket *) NULL)
+            break;
+          if (ExportImagePixelArea(image,z2qtype[z],8,pixels,0,0) == MagickFail)
+            break;
+          if (WriteBlob(image,image->rows,pixels) != image->rows)
+            break;
           if (QuantumTick(progress_quantum,progress_span))
             if (!MagickMonitorFormatted(progress_quantum,progress_span,&image->exception,
                                         SaveImageText,image->filename,
                                         image->columns,image->rows))
-              goto BreakAll;
+              break;
         }
+        if (y != (long)image->columns)
+          {
+            status=MagickFail;
+            goto BreakAll;
+          }
+
       } while(z-- >= 2);
     }
 BreakAll:
 
     while(padding-->0) (void) WriteBlobByte(image,0);
 
-    status=True;
-
-    if(pixels)
-     {MagickFreeMemory(pixels);pixels=NULL;}
-    if(image->next==NULL) break;
+    MagickFreeMemory(pixels);
+    if(status == MagickFail || image->next==NULL) break;
     image=SyncNextImageInList(image);
   }
 

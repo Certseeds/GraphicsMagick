@@ -90,7 +90,7 @@ building under Microsoft Windows:
   to read the Computer Graphics Metafile (CGM) image format. You also
   need Ghostscript and Ghostscript Fonts (see below).
 
-* GraphicsMagick requires 'dcraw' from
+* GraphicsMagick requires 'dcraw' (version 8.95 or later) from
 
     http://www.cybercom.net/~dcoffin/dcraw/
 
@@ -123,7 +123,8 @@ building under Microsoft Windows:
 
   to read the Postscript or the Portable Document Format (PDF).
 
-  Ghostscript Fonts are available from
+  Ghostscript Fonts (also known as "URW Standard postscript fonts
+  (cyrillicized)") are available from
 
     https://sourceforge.net/projects/gs-fonts/
 
@@ -365,4 +366,4 @@ building under Microsoft Windows:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2018
+Copyright |copy| GraphicsMagick Group 2002 - 2019

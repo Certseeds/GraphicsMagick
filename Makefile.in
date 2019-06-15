@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2004-2014 GraphicsMagick Group
+# Copyright (C) 2004-2019 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -44,7 +44,7 @@
 #
 #
 
-# Copyright (C) 2004-2014 GraphicsMagick Group
+# Copyright (C) 2004-2019 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -90,7 +90,7 @@
 # Makefile for building Wand library
 #
 
-# Copyright (C) 2008 - 2017 GraphicsMagick Group
+# Copyright (C) 2008 - 2019 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -341,6 +341,14 @@ coders_bmp_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_bmp_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_bmp_la_rpath = -rpath $(codersdir)
+coders_braille_la_DEPENDENCIES = $(LIBMAGICK)
+am_coders_braille_la_OBJECTS = coders/coders_braille_la-braille.lo
+coders_braille_la_OBJECTS = $(am_coders_braille_la_OBJECTS)
+coders_braille_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(coders_braille_la_LDFLAGS) $(LDFLAGS) \
+	-o $@
+@WITH_MODULES_TRUE@am_coders_braille_la_rpath = -rpath $(codersdir)
 coders_cals_la_DEPENDENCIES = $(LIBMAGICK)
 am_coders_cals_la_OBJECTS = coders/coders_cals_la-cals.lo
 coders_cals_la_OBJECTS = $(am_coders_cals_la_OBJECTS)
@@ -1160,12 +1168,12 @@ am__magick_libGraphicsMagick_la_SOURCES_DIST =  \
 	magick/transform.h magick/tsd.c magick/tsd.h magick/type.c \
 	magick/type.h magick/unix_port.c magick/utility.c \
 	magick/utility.h magick/version.c magick/version.h \
-	magick/animate.c magick/animate.h magick/display.c \
-	magick/display.h magick/PreRvIcccm.c magick/PreRvIcccm.h \
-	magick/widget.c magick/widget.h magick/xwindow.c \
-	magick/xwindow.h magick/nt_feature.c magick/nt_feature.h \
-	magick/nt_base.c magick/nt_base.h coders/png.c coders/art.c \
-	coders/avs.c coders/bmp.c coders/cals.c coders/caption.c \
+	magick/animate.c magick/display.c magick/PreRvIcccm.c \
+	magick/PreRvIcccm.h magick/widget.c magick/widget.h \
+	magick/xwindow.c magick/xwindow.h magick/nt_feature.c \
+	magick/nt_feature.h magick/nt_base.c magick/nt_base.h \
+	coders/png.c coders/art.c coders/avs.c coders/bmp.c \
+	coders/braille.c coders/cals.c coders/caption.c \
 	coders/cineon.c coders/cmyk.c coders/cut.c coders/dcm.c \
 	coders/dcraw.c coders/dib.c coders/dpx.c coders/fax.c \
 	coders/fits.c coders/gif.c coders/gradient.c coders/gray.c \
@@ -1300,6 +1308,7 @@ am__objects_15 = $(am__objects_4) \
 	coders/magick_libGraphicsMagick_la-art.lo \
 	coders/magick_libGraphicsMagick_la-avs.lo \
 	coders/magick_libGraphicsMagick_la-bmp.lo \
+	coders/magick_libGraphicsMagick_la-braille.lo \
 	coders/magick_libGraphicsMagick_la-cals.lo \
 	coders/magick_libGraphicsMagick_la-caption.lo \
 	coders/magick_libGraphicsMagick_la-cineon.lo \
@@ -1615,56 +1624,56 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(Magick___lib_libGraphicsMagick___la_SOURCES) \
 	$(coders_art_la_SOURCES) $(coders_avs_la_SOURCES) \
-	$(coders_bmp_la_SOURCES) $(coders_cals_la_SOURCES) \
-	$(coders_caption_la_SOURCES) $(coders_cineon_la_SOURCES) \
-	$(coders_clipboard_la_SOURCES) $(coders_cmyk_la_SOURCES) \
-	$(coders_cut_la_SOURCES) $(coders_dcm_la_SOURCES) \
-	$(coders_dcraw_la_SOURCES) $(coders_dib_la_SOURCES) \
-	$(coders_dps_la_SOURCES) $(coders_dpx_la_SOURCES) \
-	$(coders_emf_la_SOURCES) $(coders_ept_la_SOURCES) \
-	$(coders_fax_la_SOURCES) $(coders_fits_la_SOURCES) \
-	$(coders_fpx_la_SOURCES) $(coders_gif_la_SOURCES) \
-	$(coders_gradient_la_SOURCES) $(coders_gray_la_SOURCES) \
-	$(coders_histogram_la_SOURCES) $(coders_hrz_la_SOURCES) \
-	$(coders_html_la_SOURCES) $(coders_icon_la_SOURCES) \
-	$(coders_identity_la_SOURCES) $(coders_info_la_SOURCES) \
-	$(coders_jbig_la_SOURCES) $(coders_jnx_la_SOURCES) \
-	$(coders_jp2_la_SOURCES) $(coders_jpeg_la_SOURCES) \
-	$(coders_label_la_SOURCES) $(coders_locale_la_SOURCES) \
-	$(coders_logo_la_SOURCES) $(coders_mac_la_SOURCES) \
-	$(coders_map_la_SOURCES) $(coders_mat_la_SOURCES) \
-	$(coders_matte_la_SOURCES) $(coders_meta_la_SOURCES) \
-	$(coders_miff_la_SOURCES) $(coders_mono_la_SOURCES) \
-	$(coders_mpc_la_SOURCES) $(coders_mpeg_la_SOURCES) \
-	$(coders_mpr_la_SOURCES) $(coders_msl_la_SOURCES) \
-	$(coders_mtv_la_SOURCES) $(coders_mvg_la_SOURCES) \
-	$(coders_null_la_SOURCES) $(coders_otb_la_SOURCES) \
-	$(coders_palm_la_SOURCES) $(coders_pcd_la_SOURCES) \
-	$(coders_pcl_la_SOURCES) $(coders_pcx_la_SOURCES) \
-	$(coders_pdb_la_SOURCES) $(coders_pdf_la_SOURCES) \
-	$(coders_pict_la_SOURCES) $(coders_pix_la_SOURCES) \
-	$(coders_plasma_la_SOURCES) $(coders_png_la_SOURCES) \
-	$(coders_pnm_la_SOURCES) $(coders_preview_la_SOURCES) \
-	$(coders_ps_la_SOURCES) $(coders_ps2_la_SOURCES) \
-	$(coders_ps3_la_SOURCES) $(coders_psd_la_SOURCES) \
-	$(coders_pwp_la_SOURCES) $(coders_rgb_la_SOURCES) \
-	$(coders_rla_la_SOURCES) $(coders_rle_la_SOURCES) \
-	$(coders_sct_la_SOURCES) $(coders_sfw_la_SOURCES) \
-	$(coders_sgi_la_SOURCES) $(coders_stegano_la_SOURCES) \
-	$(coders_sun_la_SOURCES) $(coders_svg_la_SOURCES) \
-	$(coders_tga_la_SOURCES) $(coders_tiff_la_SOURCES) \
-	$(coders_tile_la_SOURCES) $(coders_tim_la_SOURCES) \
-	$(coders_topol_la_SOURCES) $(coders_ttf_la_SOURCES) \
-	$(coders_txt_la_SOURCES) $(coders_uil_la_SOURCES) \
-	$(coders_url_la_SOURCES) $(coders_uyvy_la_SOURCES) \
-	$(coders_vicar_la_SOURCES) $(coders_vid_la_SOURCES) \
-	$(coders_viff_la_SOURCES) $(coders_wbmp_la_SOURCES) \
-	$(coders_webp_la_SOURCES) $(coders_wmf_la_SOURCES) \
-	$(coders_wpg_la_SOURCES) $(coders_x_la_SOURCES) \
-	$(coders_xbm_la_SOURCES) $(coders_xc_la_SOURCES) \
-	$(coders_xcf_la_SOURCES) $(coders_xpm_la_SOURCES) \
-	$(coders_xwd_la_SOURCES) $(coders_yuv_la_SOURCES) \
-	$(filters_analyze_la_SOURCES) \
+	$(coders_bmp_la_SOURCES) $(coders_braille_la_SOURCES) \
+	$(coders_cals_la_SOURCES) $(coders_caption_la_SOURCES) \
+	$(coders_cineon_la_SOURCES) $(coders_clipboard_la_SOURCES) \
+	$(coders_cmyk_la_SOURCES) $(coders_cut_la_SOURCES) \
+	$(coders_dcm_la_SOURCES) $(coders_dcraw_la_SOURCES) \
+	$(coders_dib_la_SOURCES) $(coders_dps_la_SOURCES) \
+	$(coders_dpx_la_SOURCES) $(coders_emf_la_SOURCES) \
+	$(coders_ept_la_SOURCES) $(coders_fax_la_SOURCES) \
+	$(coders_fits_la_SOURCES) $(coders_fpx_la_SOURCES) \
+	$(coders_gif_la_SOURCES) $(coders_gradient_la_SOURCES) \
+	$(coders_gray_la_SOURCES) $(coders_histogram_la_SOURCES) \
+	$(coders_hrz_la_SOURCES) $(coders_html_la_SOURCES) \
+	$(coders_icon_la_SOURCES) $(coders_identity_la_SOURCES) \
+	$(coders_info_la_SOURCES) $(coders_jbig_la_SOURCES) \
+	$(coders_jnx_la_SOURCES) $(coders_jp2_la_SOURCES) \
+	$(coders_jpeg_la_SOURCES) $(coders_label_la_SOURCES) \
+	$(coders_locale_la_SOURCES) $(coders_logo_la_SOURCES) \
+	$(coders_mac_la_SOURCES) $(coders_map_la_SOURCES) \
+	$(coders_mat_la_SOURCES) $(coders_matte_la_SOURCES) \
+	$(coders_meta_la_SOURCES) $(coders_miff_la_SOURCES) \
+	$(coders_mono_la_SOURCES) $(coders_mpc_la_SOURCES) \
+	$(coders_mpeg_la_SOURCES) $(coders_mpr_la_SOURCES) \
+	$(coders_msl_la_SOURCES) $(coders_mtv_la_SOURCES) \
+	$(coders_mvg_la_SOURCES) $(coders_null_la_SOURCES) \
+	$(coders_otb_la_SOURCES) $(coders_palm_la_SOURCES) \
+	$(coders_pcd_la_SOURCES) $(coders_pcl_la_SOURCES) \
+	$(coders_pcx_la_SOURCES) $(coders_pdb_la_SOURCES) \
+	$(coders_pdf_la_SOURCES) $(coders_pict_la_SOURCES) \
+	$(coders_pix_la_SOURCES) $(coders_plasma_la_SOURCES) \
+	$(coders_png_la_SOURCES) $(coders_pnm_la_SOURCES) \
+	$(coders_preview_la_SOURCES) $(coders_ps_la_SOURCES) \
+	$(coders_ps2_la_SOURCES) $(coders_ps3_la_SOURCES) \
+	$(coders_psd_la_SOURCES) $(coders_pwp_la_SOURCES) \
+	$(coders_rgb_la_SOURCES) $(coders_rla_la_SOURCES) \
+	$(coders_rle_la_SOURCES) $(coders_sct_la_SOURCES) \
+	$(coders_sfw_la_SOURCES) $(coders_sgi_la_SOURCES) \
+	$(coders_stegano_la_SOURCES) $(coders_sun_la_SOURCES) \
+	$(coders_svg_la_SOURCES) $(coders_tga_la_SOURCES) \
+	$(coders_tiff_la_SOURCES) $(coders_tile_la_SOURCES) \
+	$(coders_tim_la_SOURCES) $(coders_topol_la_SOURCES) \
+	$(coders_ttf_la_SOURCES) $(coders_txt_la_SOURCES) \
+	$(coders_uil_la_SOURCES) $(coders_url_la_SOURCES) \
+	$(coders_uyvy_la_SOURCES) $(coders_vicar_la_SOURCES) \
+	$(coders_vid_la_SOURCES) $(coders_viff_la_SOURCES) \
+	$(coders_wbmp_la_SOURCES) $(coders_webp_la_SOURCES) \
+	$(coders_wmf_la_SOURCES) $(coders_wpg_la_SOURCES) \
+	$(coders_x_la_SOURCES) $(coders_xbm_la_SOURCES) \
+	$(coders_xc_la_SOURCES) $(coders_xcf_la_SOURCES) \
+	$(coders_xpm_la_SOURCES) $(coders_xwd_la_SOURCES) \
+	$(coders_yuv_la_SOURCES) $(filters_analyze_la_SOURCES) \
 	$(magick_libGraphicsMagick_la_SOURCES) \
 	$(wand_libGraphicsMagickWand_la_SOURCES) \
 	$(Magick___demo_analyze_SOURCES) \
@@ -1692,56 +1701,56 @@ SOURCES = $(Magick___lib_libGraphicsMagick___la_SOURCES) \
 	$(wand_wandtest_SOURCES)
 DIST_SOURCES = $(Magick___lib_libGraphicsMagick___la_SOURCES) \
 	$(coders_art_la_SOURCES) $(coders_avs_la_SOURCES) \
-	$(coders_bmp_la_SOURCES) $(coders_cals_la_SOURCES) \
-	$(coders_caption_la_SOURCES) $(coders_cineon_la_SOURCES) \
-	$(coders_clipboard_la_SOURCES) $(coders_cmyk_la_SOURCES) \
-	$(coders_cut_la_SOURCES) $(coders_dcm_la_SOURCES) \
-	$(coders_dcraw_la_SOURCES) $(coders_dib_la_SOURCES) \
-	$(coders_dps_la_SOURCES) $(coders_dpx_la_SOURCES) \
-	$(coders_emf_la_SOURCES) $(coders_ept_la_SOURCES) \
-	$(coders_fax_la_SOURCES) $(coders_fits_la_SOURCES) \
-	$(coders_fpx_la_SOURCES) $(coders_gif_la_SOURCES) \
-	$(coders_gradient_la_SOURCES) $(coders_gray_la_SOURCES) \
-	$(coders_histogram_la_SOURCES) $(coders_hrz_la_SOURCES) \
-	$(coders_html_la_SOURCES) $(coders_icon_la_SOURCES) \
-	$(coders_identity_la_SOURCES) $(coders_info_la_SOURCES) \
-	$(coders_jbig_la_SOURCES) $(coders_jnx_la_SOURCES) \
-	$(coders_jp2_la_SOURCES) $(coders_jpeg_la_SOURCES) \
-	$(coders_label_la_SOURCES) $(coders_locale_la_SOURCES) \
-	$(coders_logo_la_SOURCES) $(coders_mac_la_SOURCES) \
-	$(coders_map_la_SOURCES) $(coders_mat_la_SOURCES) \
-	$(coders_matte_la_SOURCES) $(coders_meta_la_SOURCES) \
-	$(coders_miff_la_SOURCES) $(coders_mono_la_SOURCES) \
-	$(coders_mpc_la_SOURCES) $(coders_mpeg_la_SOURCES) \
-	$(coders_mpr_la_SOURCES) $(coders_msl_la_SOURCES) \
-	$(coders_mtv_la_SOURCES) $(coders_mvg_la_SOURCES) \
-	$(coders_null_la_SOURCES) $(coders_otb_la_SOURCES) \
-	$(coders_palm_la_SOURCES) $(coders_pcd_la_SOURCES) \
-	$(coders_pcl_la_SOURCES) $(coders_pcx_la_SOURCES) \
-	$(coders_pdb_la_SOURCES) $(coders_pdf_la_SOURCES) \
-	$(coders_pict_la_SOURCES) $(coders_pix_la_SOURCES) \
-	$(coders_plasma_la_SOURCES) $(coders_png_la_SOURCES) \
-	$(coders_pnm_la_SOURCES) $(coders_preview_la_SOURCES) \
-	$(coders_ps_la_SOURCES) $(coders_ps2_la_SOURCES) \
-	$(coders_ps3_la_SOURCES) $(coders_psd_la_SOURCES) \
-	$(coders_pwp_la_SOURCES) $(coders_rgb_la_SOURCES) \
-	$(coders_rla_la_SOURCES) $(coders_rle_la_SOURCES) \
-	$(coders_sct_la_SOURCES) $(coders_sfw_la_SOURCES) \
-	$(coders_sgi_la_SOURCES) $(coders_stegano_la_SOURCES) \
-	$(coders_sun_la_SOURCES) $(coders_svg_la_SOURCES) \
-	$(coders_tga_la_SOURCES) $(coders_tiff_la_SOURCES) \
-	$(coders_tile_la_SOURCES) $(coders_tim_la_SOURCES) \
-	$(coders_topol_la_SOURCES) $(coders_ttf_la_SOURCES) \
-	$(coders_txt_la_SOURCES) $(coders_uil_la_SOURCES) \
-	$(coders_url_la_SOURCES) $(coders_uyvy_la_SOURCES) \
-	$(coders_vicar_la_SOURCES) $(coders_vid_la_SOURCES) \
-	$(coders_viff_la_SOURCES) $(coders_wbmp_la_SOURCES) \
-	$(coders_webp_la_SOURCES) $(coders_wmf_la_SOURCES) \
-	$(coders_wpg_la_SOURCES) $(coders_x_la_SOURCES) \
-	$(coders_xbm_la_SOURCES) $(coders_xc_la_SOURCES) \
-	$(coders_xcf_la_SOURCES) $(coders_xpm_la_SOURCES) \
-	$(coders_xwd_la_SOURCES) $(coders_yuv_la_SOURCES) \
-	$(filters_analyze_la_SOURCES) \
+	$(coders_bmp_la_SOURCES) $(coders_braille_la_SOURCES) \
+	$(coders_cals_la_SOURCES) $(coders_caption_la_SOURCES) \
+	$(coders_cineon_la_SOURCES) $(coders_clipboard_la_SOURCES) \
+	$(coders_cmyk_la_SOURCES) $(coders_cut_la_SOURCES) \
+	$(coders_dcm_la_SOURCES) $(coders_dcraw_la_SOURCES) \
+	$(coders_dib_la_SOURCES) $(coders_dps_la_SOURCES) \
+	$(coders_dpx_la_SOURCES) $(coders_emf_la_SOURCES) \
+	$(coders_ept_la_SOURCES) $(coders_fax_la_SOURCES) \
+	$(coders_fits_la_SOURCES) $(coders_fpx_la_SOURCES) \
+	$(coders_gif_la_SOURCES) $(coders_gradient_la_SOURCES) \
+	$(coders_gray_la_SOURCES) $(coders_histogram_la_SOURCES) \
+	$(coders_hrz_la_SOURCES) $(coders_html_la_SOURCES) \
+	$(coders_icon_la_SOURCES) $(coders_identity_la_SOURCES) \
+	$(coders_info_la_SOURCES) $(coders_jbig_la_SOURCES) \
+	$(coders_jnx_la_SOURCES) $(coders_jp2_la_SOURCES) \
+	$(coders_jpeg_la_SOURCES) $(coders_label_la_SOURCES) \
+	$(coders_locale_la_SOURCES) $(coders_logo_la_SOURCES) \
+	$(coders_mac_la_SOURCES) $(coders_map_la_SOURCES) \
+	$(coders_mat_la_SOURCES) $(coders_matte_la_SOURCES) \
+	$(coders_meta_la_SOURCES) $(coders_miff_la_SOURCES) \
+	$(coders_mono_la_SOURCES) $(coders_mpc_la_SOURCES) \
+	$(coders_mpeg_la_SOURCES) $(coders_mpr_la_SOURCES) \
+	$(coders_msl_la_SOURCES) $(coders_mtv_la_SOURCES) \
+	$(coders_mvg_la_SOURCES) $(coders_null_la_SOURCES) \
+	$(coders_otb_la_SOURCES) $(coders_palm_la_SOURCES) \
+	$(coders_pcd_la_SOURCES) $(coders_pcl_la_SOURCES) \
+	$(coders_pcx_la_SOURCES) $(coders_pdb_la_SOURCES) \
+	$(coders_pdf_la_SOURCES) $(coders_pict_la_SOURCES) \
+	$(coders_pix_la_SOURCES) $(coders_plasma_la_SOURCES) \
+	$(coders_png_la_SOURCES) $(coders_pnm_la_SOURCES) \
+	$(coders_preview_la_SOURCES) $(coders_ps_la_SOURCES) \
+	$(coders_ps2_la_SOURCES) $(coders_ps3_la_SOURCES) \
+	$(coders_psd_la_SOURCES) $(coders_pwp_la_SOURCES) \
+	$(coders_rgb_la_SOURCES) $(coders_rla_la_SOURCES) \
+	$(coders_rle_la_SOURCES) $(coders_sct_la_SOURCES) \
+	$(coders_sfw_la_SOURCES) $(coders_sgi_la_SOURCES) \
+	$(coders_stegano_la_SOURCES) $(coders_sun_la_SOURCES) \
+	$(coders_svg_la_SOURCES) $(coders_tga_la_SOURCES) \
+	$(coders_tiff_la_SOURCES) $(coders_tile_la_SOURCES) \
+	$(coders_tim_la_SOURCES) $(coders_topol_la_SOURCES) \
+	$(coders_ttf_la_SOURCES) $(coders_txt_la_SOURCES) \
+	$(coders_uil_la_SOURCES) $(coders_url_la_SOURCES) \
+	$(coders_uyvy_la_SOURCES) $(coders_vicar_la_SOURCES) \
+	$(coders_vid_la_SOURCES) $(coders_viff_la_SOURCES) \
+	$(coders_wbmp_la_SOURCES) $(coders_webp_la_SOURCES) \
+	$(coders_wmf_la_SOURCES) $(coders_wpg_la_SOURCES) \
+	$(coders_x_la_SOURCES) $(coders_xbm_la_SOURCES) \
+	$(coders_xc_la_SOURCES) $(coders_xcf_la_SOURCES) \
+	$(coders_xpm_la_SOURCES) $(coders_xwd_la_SOURCES) \
+	$(coders_yuv_la_SOURCES) $(filters_analyze_la_SOURCES) \
 	$(am__magick_libGraphicsMagick_la_SOURCES_DIST) \
 	$(wand_libGraphicsMagickWand_la_SOURCES) \
 	$(Magick___demo_analyze_SOURCES) \
@@ -2037,10 +2046,7 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
-	$(distdir).tar.xz
 GZIP_ENV = --best
-DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip
 distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
@@ -2082,6 +2088,7 @@ DOTDecodeDelegate = @DOTDecodeDelegate@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
 DVIDecodeDelegate = @DVIDecodeDelegate@
+DcrawExtraOptions = @DcrawExtraOptions@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
@@ -2148,6 +2155,7 @@ LIB_JPEG = @LIB_JPEG@
 LIB_LCMS = @LIB_LCMS@
 LIB_LZMA = @LIB_LZMA@
 LIB_MATH = @LIB_MATH@
+LIB_MTMALLOC = @LIB_MTMALLOC@
 LIB_OMP = @LIB_OMP@
 LIB_PNG = @LIB_PNG@
 LIB_THREAD = @LIB_THREAD@
@@ -2355,7 +2363,7 @@ xml2_config = @xml2_config@
 
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
-# nostdinc 
+# nostdinc
 AUTOMAKE_OPTIONS = 1.12 subdir-objects nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
 topincludedir = @includedir@/GraphicsMagick
 
@@ -2416,6 +2424,7 @@ TESTS_ENVIRONMENT = \
 # should want to concatenate them.
 CHANGELOGS = \
 	ChangeLog \
+	ChangeLog.2018 \
 	ChangeLog.2017 \
 	ChangeLog.2016 \
 	ChangeLog.2015 \
@@ -2531,6 +2540,7 @@ MAGICK_CODER_SRCS = \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \
+	coders/braille.c \
 	coders/cals.c \
 	coders/caption.c \
 	coders/cineon.c \
@@ -2629,6 +2639,7 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/art.la \
 @WITH_MODULES_TRUE@	coders/avs.la \
 @WITH_MODULES_TRUE@	coders/bmp.la \
+@WITH_MODULES_TRUE@	coders/braille.la \
 @WITH_MODULES_TRUE@	coders/cals.la \
 @WITH_MODULES_TRUE@	coders/caption.la \
 @WITH_MODULES_TRUE@	coders/cineon.la \
@@ -2735,6 +2746,12 @@ coders_bmp_la_SOURCES = coders/bmp.c
 coders_bmp_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_bmp_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_bmp_la_LIBADD = $(LIBMAGICK)
+
+# Braille coder module
+coders_braille_la_SOURCES = coders/braille.c
+coders_braille_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
+coders_braille_la_LDFLAGS = $(MODULECOMMONFLAGS)
+coders_braille_la_LIBADD = $(LIBMAGICK)
 
 # CALS coder module
 coders_cals_la_SOURCES = coders/cals.c
@@ -3346,9 +3363,7 @@ magick_libGraphicsMagick_la_LDFLAGS = \
 #magick_libGraphicsMagick_la_DEPENDENCIES = 
 @HasX11_TRUE@MAGICK_X11_BASE_SRCS = \
 @HasX11_TRUE@	magick/animate.c \
-@HasX11_TRUE@	magick/animate.h \
 @HasX11_TRUE@	magick/display.c \
-@HasX11_TRUE@	magick/display.h \
 @HasX11_TRUE@	magick/PreRvIcccm.c \
 @HasX11_TRUE@	magick/PreRvIcccm.h \
 @HasX11_TRUE@	magick/widget.c \
@@ -3590,16 +3605,16 @@ MAGICK_INCLUDE_HDRS = \
 
 MAGICK_NOINST_HDRS = \
 	magick/alpha_composite.h \
-	magick/animate.h \
 	magick/bit_stream.h \
-	magick/display.h \
 	magick/floats.h \
+	magick/image-private.h \
 	magick/locale_c.h \
 	magick/map.h \
 	magick/module_aliases.h \
 	magick/nt_base.h \
 	magick/nt_feature.h \
 	magick/omp_data_view.h \
+	magick/pixel_cache-private.h \
 	magick/prefetch.h \
 	magick/random-private.h \
 	magick/semaphore.h \
@@ -4001,6 +4016,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2015.html \
 	$(WWWDIR)/ChangeLog-2016.html \
 	$(WWWDIR)/ChangeLog-2017.html \
+	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -4118,6 +4134,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2015.html \
 	$(WWWDIR)/ChangeLog-2016.html \
 	$(WWWDIR)/ChangeLog-2017.html \
+	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -4349,7 +4366,8 @@ UTILITIES_TESTS = \
 	utilities/tests/list.tap \
 	utilities/tests/montage.tap \
 	utilities/tests/msl_composite.tap \
-	utilities/tests/preview.tap
+	utilities/tests/preview.tap \
+	utilities/tests/resize.tap
 
 UTILITIES_MANS = \
 	utilities/gm.1 \
@@ -4453,6 +4471,12 @@ DISTDIRS = locale scripts www PerlMagick TclMagick
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 @HAS_RPM_TRUE@	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm
+
+
+# Add zstd compression to output files
+DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
+	$(distdir).tar.xz $(distdir).tar.zst
 
 
 #
@@ -4775,6 +4799,11 @@ coders/coders_bmp_la-bmp.lo: coders/$(am__dirstamp) \
 
 coders/bmp.la: $(coders_bmp_la_OBJECTS) $(coders_bmp_la_DEPENDENCIES) $(EXTRA_coders_bmp_la_DEPENDENCIES) coders/$(am__dirstamp)
 	$(AM_V_CCLD)$(coders_bmp_la_LINK) $(am_coders_bmp_la_rpath) $(coders_bmp_la_OBJECTS) $(coders_bmp_la_LIBADD) $(LIBS)
+coders/coders_braille_la-braille.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
+
+coders/braille.la: $(coders_braille_la_OBJECTS) $(coders_braille_la_DEPENDENCIES) $(EXTRA_coders_braille_la_DEPENDENCIES) coders/$(am__dirstamp)
+	$(AM_V_CCLD)$(coders_braille_la_LINK) $(am_coders_braille_la_rpath) $(coders_braille_la_OBJECTS) $(coders_braille_la_LIBADD) $(LIBS)
 coders/coders_cals_la-cals.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 
@@ -5446,6 +5475,8 @@ coders/magick_libGraphicsMagick_la-avs.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-bmp.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
+coders/magick_libGraphicsMagick_la-braille.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-cals.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-caption.lo: coders/$(am__dirstamp) \
@@ -6039,6 +6070,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_art_la-art.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_avs_la-avs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_bmp_la-bmp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_braille_la-braille.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_cals_la-cals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_caption_la-caption.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/coders_cineon_la-cineon.Plo@am__quote@
@@ -6139,6 +6171,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-avs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-bmp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-braille.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-cals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-caption.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-cineon.Plo@am__quote@
@@ -6377,6 +6410,13 @@ coders/coders_bmp_la-bmp.lo: coders/bmp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/bmp.c' object='coders/coders_bmp_la-bmp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_bmp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/coders_bmp_la-bmp.lo `test -f 'coders/bmp.c' || echo '$(srcdir)/'`coders/bmp.c
+
+coders/coders_braille_la-braille.lo: coders/braille.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_braille_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/coders_braille_la-braille.lo -MD -MP -MF coders/$(DEPDIR)/coders_braille_la-braille.Tpo -c -o coders/coders_braille_la-braille.lo `test -f 'coders/braille.c' || echo '$(srcdir)/'`coders/braille.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/coders_braille_la-braille.Tpo coders/$(DEPDIR)/coders_braille_la-braille.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/braille.c' object='coders/coders_braille_la-braille.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_braille_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/coders_braille_la-braille.lo `test -f 'coders/braille.c' || echo '$(srcdir)/'`coders/braille.c
 
 coders/coders_cals_la-cals.lo: coders/cals.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_cals_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/coders_cals_la-cals.lo -MD -MP -MF coders/$(DEPDIR)/coders_cals_la-cals.Tpo -c -o coders/coders_cals_la-cals.lo `test -f 'coders/cals.c' || echo '$(srcdir)/'`coders/cals.c
@@ -7651,6 +7691,13 @@ coders/magick_libGraphicsMagick_la-bmp.lo: coders/bmp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/bmp.c' object='coders/magick_libGraphicsMagick_la-bmp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-bmp.lo `test -f 'coders/bmp.c' || echo '$(srcdir)/'`coders/bmp.c
+
+coders/magick_libGraphicsMagick_la-braille.lo: coders/braille.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-braille.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-braille.Tpo -c -o coders/magick_libGraphicsMagick_la-braille.lo `test -f 'coders/braille.c' || echo '$(srcdir)/'`coders/braille.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/magick_libGraphicsMagick_la-braille.Tpo coders/$(DEPDIR)/magick_libGraphicsMagick_la-braille.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/braille.c' object='coders/magick_libGraphicsMagick_la-braille.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-braille.lo `test -f 'coders/braille.c' || echo '$(srcdir)/'`coders/braille.c
 
 coders/magick_libGraphicsMagick_la-cals.lo: coders/cals.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-cals.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-cals.Tpo -c -o coders/magick_libGraphicsMagick_la-cals.lo `test -f 'coders/cals.c' || echo '$(srcdir)/'`coders/cals.c
@@ -9872,6 +9919,9 @@ uninstall-data-html:
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
+@MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2018.rst: $(top_srcdir)/ChangeLog.2018
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
@@ -10185,6 +10235,11 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo ==============================================================
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_RPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
+
+# Rules to build a .tar.zst tarball
+dist-zstd: distdir
+	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-19} zstd -c >$(distdir).tar.zst
+	$(am__post_remove_distdir)
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
@@ -10207,9 +10262,16 @@ coverity:
 	https://scan.coverity.com/builds?project=GraphicsMagick
 	$(RM) $(COVERITY_TARBALL)
 
+# Build symbols files to add 'gm' prefix to functions
 gmsymbols:
 	$(srcdir)/scripts/gmsymbols.sh magick/.libs/libGraphicsMagick.a MAGICK > $(GMMAGICKSYMBOLS)
 	$(srcdir)/scripts/gmsymbols.sh wand/.libs/libGraphicsMagickWand.a MAGICK_WAND > $(GMWANDSYMBOLS)
+
+# Convenient target to build release archive files and sign them.
+release: $(DIST_WINDOWS_SRC_7ZIP) distcheck
+	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
+	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

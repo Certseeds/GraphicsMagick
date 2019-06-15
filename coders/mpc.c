@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -782,32 +782,37 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
         register char
           *p;
 
+        size_t
+          directory_length;
+
         /*
           Image directory.
         */
-        image->directory=AllocateString((char *) NULL);
+        image->directory=MagickAllocateMemory(char *,MaxTextExtent);
         if (image->directory == (char *) NULL)
           ThrowMPCReaderException(CorruptImageError,UnableToReadImageData,image);
         p=image->directory;
+        directory_length=0;
         do
         {
           *p='\0';
-          if (((strlen(image->directory)+1) % MaxTextExtent) == 0)
+          if (((directory_length+1) % MaxTextExtent) == 0)
             {
               /*
                 Allocate more memory for the image directory.
               */
               MagickReallocMemory(char *,image->directory,
-                (strlen(image->directory)+MaxTextExtent+1));
+                (directory_length+MaxTextExtent+1));
               if (image->directory == (char *) NULL)
                 ThrowMPCReaderException(CorruptImageError,UnableToReadImageData,
                   image);
-              p=image->directory+strlen(image->directory);
+              p=image->directory+directory_length;
             }
           c=ReadBlobByte(image);
           if (c == EOF)
             break;
           *p++=c;
+          ++directory_length;
         } while (c != '\0');
       }
 
@@ -818,15 +823,34 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
       {
         for (i=0; i < (long) number_of_profiles; i++)
         {
-          if (profiles[i].length == 0)
-            continue;
-          profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
-          if (profiles[i].info == (unsigned char *) NULL)
-            ThrowMPCReaderException(CorruptImageError,UnableToReadGenericProfile,
-              image);
-          (void) ReadBlob(image,profiles[i].length,profiles[i].info);
-          (void) SetImageProfile(image,profiles[i].name,profiles[i].info,
-                                 profiles[i].length);
+          if (profiles[i].length > 0)
+            {
+              if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
+                  ((BlobIsSeekable(image)
+                    && (GetBlobSize(image) - TellBlob(image)) >
+                    (magick_off_t) profiles[i].length) ||
+                   (profiles[i].length < 15*1024*1024)))
+                {
+                  profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
+                  if (profiles[i].info == (unsigned char *) NULL)
+                    ThrowMPCReaderException(CorruptImageError,UnableToReadGenericProfile,
+                                             image);
+                  if (ReadBlob(image,profiles[i].length,profiles[i].info)
+                      != profiles[i].length)
+                    ThrowMPCReaderException(CorruptImageError,
+                                             UnexpectedEndOfFile,
+                                             image);
+                  (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
+                }
+              else
+                {
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Profile size %" MAGICK_SIZE_T_F "u is excessively large",
+                                        (MAGICK_SIZE_T ) profiles[i].length);
+                  ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,
+                                           image);
+                }
+            }
           MagickFreeMemory(profiles[i].name);
           MagickFreeMemory(profiles[i].info);
         }

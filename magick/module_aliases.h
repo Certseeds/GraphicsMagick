@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2019 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -12,22 +12,21 @@
 #ifndef _MAGICK_MODULE_ALIASES_H
 #define _MAGICK_MODULE_ALIASES_H
 
-typedef struct ModuleAlias
-{
-  char
-    *magick,
-    *name;
-  const unsigned int
-     magick_len;
-} ModuleAlias;
-
 /*
   This list must be ordered by 'magick' in an ascending order matching
   strcmp().
 */
-static ModuleAlias
-ModuleAliases[] =
-  {
+static const struct
+{
+    const char
+        magick[10],
+        name[10];
+
+    const unsigned char
+        magick_len;
+
+} ModuleAliases[] =
+{
 #define MODULEALIAS(magick,name) {magick,name,sizeof(magick)-1}
     MODULEALIAS("3FR","DCRAW"),
     MODULEALIAS("8BIM","META"),
@@ -41,6 +40,7 @@ ModuleAliases[] =
     MODULEALIAS("BIGTIFF","TIFF"),
     MODULEALIAS("BMP2","BMP"),
     MODULEALIAS("BMP3","BMP"),
+    MODULEALIAS("BRF","BRAILLE"),
     MODULEALIAS("C","GRAY"),
     MODULEALIAS("CAL","CALS"),
     MODULEALIAS("CIN","CINEON"),
@@ -83,6 +83,8 @@ ModuleAliases[] =
     MODULEALIAS("IPTC","META"),
     MODULEALIAS("IPTCTEXT","META"),
     MODULEALIAS("IPTCWTEXT","META"),
+    MODULEALIAS("ISOBRL","BRAILLE"),
+    MODULEALIAS("ISOBRL6","BRAILLE"),
     MODULEALIAS("J2C","JP2"),
     MODULEALIAS("JBG","JBIG"),
     MODULEALIAS("JNG","PNG"),
@@ -134,6 +136,8 @@ ModuleAliases[] =
     MODULEALIAS("SVGZ","SVG"),
     MODULEALIAS("TEXT","TXT"),
     MODULEALIAS("TIF","TIFF"),
+    MODULEALIAS("UBRL","BRAILLE"),
+    MODULEALIAS("UBRL6","BRAILLE"),
     MODULEALIAS("VDA","TGA"),
     MODULEALIAS("VST","TGA"),
     MODULEALIAS("X3F","DCRAW"),

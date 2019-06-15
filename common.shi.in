@@ -15,5 +15,7 @@ MAGICK_CONFIGURE_PATH='@abs_top_builddir@/config:@abs_top_srcdir@/config'
 MAGICK_FILTER_MODULE_PATH='@abs_top_builddir@/filters'
 MAGICK_CODER_STABILITY='BROKEN'
 
+MAGICK_FONT='@abs_top_srcdir@/PerlMagick/demo/Generic.ttf'
+
 PATH="@abs_top_builddir@/utilities:${PATH}"
 set +a

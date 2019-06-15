@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -144,16 +144,6 @@ typedef MagickPassFail (*CommandVectorHandler)(ImageInfo *image_info,
 
 typedef void (*UsageVectorHandler)(void);
 
-typedef struct _CommandInfo
-{
-  const char           *command;
-  const char           *description;
-  CommandVectorHandler  command_vector;
-  UsageVectorHandler    usage_vector;
-  int                   pass_metadata;
-  RunMode               support_mode;
-} CommandInfo;
-
 static void InitializeBatchOptions(MagickBool);
 static MagickBool GMCommandSingle(int argc, char **argv);
 static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options);
@@ -196,52 +186,60 @@ static MagickPassFail
   VersionCommand(ImageInfo *image_info,int argc,char **argv,
                  char **metadata,ExceptionInfo *exception);
 
-static const CommandInfo commands[] =
-  {
+static const struct
+{
+  const char            command[10];
+  const char * const    description;
+  CommandVectorHandler  command_vector;
+  UsageVectorHandler    usage_vector;
+  int                   pass_metadata;
+  RunMode               support_mode;
+}
+  commands[] =
+    {
 #if defined(HasX11)
-    { "animate", "animate a sequence of images",
-      AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
+      { "animate", "animate a sequence of images",
+        AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
 #endif
-    { "batch", "issue multiple commands in interactive or batch mode",
-      0, BatchUsage, 1, SingleMode },
-    { "benchmark", "benchmark one of the other commands",
-      BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
-    { "compare", "compare two images",
-      CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
-    { "composite", "composite images together",
-      CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
-    { "conjure", "execute a Magick Scripting Language (MSL) XML script",
-      ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
-    { "convert", "convert an image or sequence of images",
-      ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
+      { "batch", "issue multiple commands in interactive or batch mode",
+         0, BatchUsage, 1, SingleMode },
+      { "benchmark", "benchmark one of the other commands",
+         BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
+      { "compare", "compare two images",
+         CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
+      { "composite", "composite images together",
+         CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
+      { "conjure", "execute a Magick Scripting Language (MSL) XML script",
+         ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
+      { "convert", "convert an image or sequence of images",
+         ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
 #if defined(HasX11)
-    { "display", "display an image on a workstation running X",
-      DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
+      { "display", "display an image on a workstation running X",
+         DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
 #endif
-    { "help", "obtain usage message for named command",
-      HelpCommand, GMUsage, 0, SingleMode | BatchMode },
-    { "identify", "describe an image or image sequence",
-      IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
+      { "help", "obtain usage message for named command",
+         HelpCommand, GMUsage, 0, SingleMode | BatchMode },
+      { "identify", "describe an image or image sequence",
+         IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
 #if defined(HasX11)
-    { "import", "capture an application or X server screen",
-      ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
+      { "import", "capture an application or X server screen",
+         ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
 #endif
-    { "mogrify", "transform an image or sequence of images",
-      MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
-    { "montage", "create a composite image (in a grid) from separate images",
-      MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
-    { "set", "change batch mode option",
-      SetCommand, SetUsage, 1, BatchMode },
-    { "time", "time one of the other commands",
-      TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
-    { "version", "obtain release version",
-      VersionCommand, 0, 0, SingleMode | BatchMode },
+      { "mogrify", "transform an image or sequence of images",
+         MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
+      { "montage", "create a composite image (in a grid) from separate images",
+         MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
+      { "set", "change batch mode option",
+         SetCommand, SetUsage, 1, BatchMode },
+      { "time", "time one of the other commands",
+         TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
+      { "version", "obtain release version",
+         VersionCommand, 0, 0, SingleMode | BatchMode }
 #if defined(MSWINDOWS)
-    { "register", "register this application as the source of messages",
-      RegisterCommand, 0, 0, SingleMode | BatchMode },
+      ,{ "register", "register this application as the source of messages",
+         RegisterCommand, 0, 0, SingleMode | BatchMode }
 #endif
-    { 0, 0, 0, 0, 0, 0}
-  };
+    };
 
 static SemaphoreInfo
   *command_semaphore = (SemaphoreInfo *) NULL;
@@ -461,86 +459,66 @@ static void NormalizeSamplingFactor(ImageInfo *image_info)
 #if defined(HasX11)
 static void AnimateUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *buttons[]=
-    {
-      "Press any button to map or unmap the Command widget",
-      (char *) NULL
-    },
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-backdrop            display image centered on a backdrop",
-      "-colormap type       Shared or Private",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      display image to this X server",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred size and location of the Image window",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-map type            display image using this Standard Colormap",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-noop                do not apply options to image",
-      "-pause               seconds to pause before reanimating",
-      "-remote command      execute a command in a remote display process",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-size geometry       width and height of image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-visual type         display image using this visual type",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           display image to background of this window",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
   (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -name,\n");
-  (void) printf("-mattecolor, -shared-memory, or -title.\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
-  (void) printf("\nButtons: \n");
-  for (p=buttons; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -backdrop            display image centered on a backdrop");
+  (void) puts("  -colormap type       Shared or Private");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -delay value         display the next image after pausing");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -display server      display image to this X server");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -gamma value         level of gamma correction");
+  (void) puts("  -geometry geometry   preferred size and location of the Image window");
+  (void) puts("  -help                print program options");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -map type            display image using this Standard Colormap");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -noop                do not apply options to image");
+  (void) puts("  -pause               seconds to pause before reanimating");
+  (void) puts("  -remote command      execute a command in a remote display process");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scenes range        image scene range");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -visual type         display image using this visual type");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -window id           display image to background of this window");
+  (void) puts("");
+  (void) puts("In addition to those listed above, you can specify these standard X");
+  (void) puts("resources as command line options:  -background, -bordercolor,");
+  (void) puts("-borderwidth, -font, -foreground, -iconGeometry, -iconic, -name,");
+  (void) puts("-mattecolor, -shared-memory, or -title.");
+  (void) puts("");
+  (void) puts("By default, the image format of `file' is determined by its magic");
+  (void) puts("number.  To specify a particular image format, precede the filename");
+  (void) puts("with an image format name and a colon (i.e. ps:image) or specify the");
+  (void) puts("image type as the filename suffix (i.e. image.ps).  Specify 'file' as");
+  (void) puts("'-' for standard input or output.");
+  (void) puts("");
+  (void) puts("Buttons:");
+  (void) puts("  Press any button to map or unmap the Command widget");
 }
 #endif /* HasX11 */
 MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
@@ -1489,6 +1467,11 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   int ac;
   char *av[MAX_PARAM+1];
 
+#if defined(MSWINDOWS)
+  InitializeMagick((char *) NULL);
+#else
+  InitializeMagick(argv[0]);
+#endif
   {
     char client_name[MaxTextExtent];
     FormatString(client_name,"%.1024s %s", argv[0], argv[1]);
@@ -1501,6 +1484,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     if (result < 0 )
       {
         BatchUsage();
+        DestroyMagick();
         return result == OptionHelp;
       }
   }
@@ -1510,6 +1494,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     {
       (void) fprintf(stderr, "Error: unexpected parameter: %s\n", argv[result+1]);
       BatchUsage();
+      DestroyMagick();
       return MagickFail;
     }
 
@@ -1517,6 +1502,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     if (freopen(argv[result], "r", stdin) == (FILE *)NULL)
       {
         perror(argv[result]);
+        DestroyMagick();
         exit(1);
       }
 
@@ -1524,11 +1510,6 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   result = ProcessBatchOptions(argc-1, argv+1, &batch_options);
 
   run_mode = BatchMode;
-#if defined(MSWINDOWS)
-  InitializeMagick((char *) NULL);
-#else
-  InitializeMagick(argv[0]);
-#endif
 
   av[0] = argv[0];
   av[MAX_PARAM] = (char *)NULL;
@@ -1622,42 +1603,33 @@ static MagickPassFail BatchCommand(int argc, char **argv)
 */
 static void BatchOptionUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-echo on|off         echo command back to standard out, default is off",
-      "-escape unix|windows force use Unix or Windows escape format for command line",
-      "                     argument parsing, default is platform dependent",
-      "-fail text           when feedback is on, output the designated text if the",
-      "                     command returns error, default is 'FAIL'",
-      "-feedback on|off     print text (see -pass and -fail options) feedback after",
-      "                     each command to indicate the result, default is off",
-      "-help                print program options",
-      "-pass text           when feedback is on, output the designated text if the",
-      "                     command executed successfully, default is 'PASS'",
-      "-prompt text         use the given text as command prompt. use text 'off' or",
-      "                     empty string to turn off prompt. default to 'GM> ' if",
-      "                     and only if batch mode was entered with no file argument",
-      "-stop-on-error on|off",
-      "                     when turned on, batch execution quits prematurely when",
-      "                     any command returns error",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) puts("\nUnix escape allows the use backslash(\\), single quote(') and double quote(\") in");
-  (void) puts("the command line. Windows escape only uses double quote(\").  For example,");
-
-  (void) puts("\n    Orignal             Unix escape              Windows escape");
-  (void) puts("    [a\\b\\c\\d]           [a\\\\b\\\\c\\\\d]             [a\\b\\c\\d]");
-  (void) puts("    [Text with space]   [Text\\ with\\ space]      [\"Text with space\"]");
-  (void) puts("    [Text with (\")]     ['Text with (\")']        [\"Text with (\"\")\"]");
-  (void) puts("    [Mix: \"It's a (\\)\"] [\"Mix: \\\"It's a (\\\\)\\\"\"] [\"Mix: \"\"It's a (\\)\"\"\"]");
+  (void)
+    puts("\nWhere options include:\n"
+         "  -echo on|off         echo command back to standard out, default is off\n"
+         "  -escape unix|windows force use Unix or Windows escape format for command line\n"
+         "                       argument parsing, default is platform dependent\n"
+         "  -fail text           when feedback is on, output the designated text if the\n"
+         "                       command returns error, default is 'FAIL'\n"
+         "  -feedback on|off     print text (see -pass and -fail options) feedback after\n"
+         "                       each command to indicate the result, default is off\n"
+         "  -help                print program options\n"
+         "  -pass text           when feedback is on, output the designated text if the\n"
+         "                       command executed successfully, default is 'PASS'\n"
+         "  -prompt text         use the given text as command prompt. use text 'off' or\n"
+         "                       empty string to turn off prompt. default to 'GM> ' if\n"
+         "                       and only if batch mode was entered with no file argument\n"
+         "  -stop-on-error on|off\n"
+         "                       when turned on, batch execution quits prematurely when\n"
+         "                       any command returns error\n"
+         "\n"
+         "Unix escape allows the use backslash(\\), single quote(') and double quote(\") in\n"
+         "the command line. Windows escape only uses double quote(\").  For example,\n"
+         "\n"
+         "    Orignal             Unix escape              Windows escape\n"
+         "    [a\\b\\c\\d]           [a\\\\b\\\\c\\\\d]             [a\\b\\c\\d]\n"
+         "    [Text with space]   [Text\\ with\\ space]      [\"Text with space\"]\n"
+         "    [Text with (\")]     ['Text with (\")']        [\"Text with (\"\")\"]\n"
+         "    [Mix: \"It's a (\\)\"] [\"Mix: \\\"It's a (\\\\)\\\"\"] [\"Mix: \"\"It's a (\\)\"\"\"]");
 }
 
 
@@ -1711,31 +1683,20 @@ static void BatchUsage(void)
 */
 static void BenchmarkUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-concurrent         run multiple commands in parallel",
-      "-duration duration  duration to run benchmark (in seconds)",
-      "-iterations loops   number of command iterations per benchmark",
-      "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)",
-      "-stepthreads step   step benchmark with increasing number of threads",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s options command ... ",GetClientName());
-  (void) printf("\nWhere options include one of:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf("Followed by some other arbitrary GraphicsMagick command.\n\n"
-                "The -concurrent option requires use of -iterations or -duration.\n\n"
-                "Example usages:\n"
-                "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
-                "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
-                "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:\n");
+  (void) printf("Usage: %.1024s options command ...\n",GetClientName());
+  puts("Where options include one of:\n"
+       "-concurrent         run multiple commands in parallel\n"
+      "-duration duration  duration to run benchmark (in seconds)\n"
+      "-iterations loops   number of command iterations per benchmark\n"
+      "-rawcsv             CSV output (threads,iterations,user_time,elapsed_time)\n"
+      "-stepthreads step   step benchmark with increasing number of threads\n"
+       "Followed by some other arbitrary GraphicsMagick command.\n\n"
+       "The -concurrent option requires use of -iterations or -duration.\n\n"
+       "Example usages:\n"
+       "  gm benchmark -concurrent -duration 10 convert input.miff -minify output.miff\n"
+       "  gm benchmark -iterations 10 convert input.miff -minify output.miff\n"
+       "  gm benchmark -duration 3 -stepthreads 2 convert input.miff -minify null:");
 }
 
 /*
@@ -2109,14 +2070,14 @@ BenchmarkImageCommand(ImageInfo *image_info,
         if (raw_csv)
           {
             /* RAW CSV value output */
-            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.3f\"",
+            (void) fprintf(stderr,"\"%ld\",\"%ld\",\"%.2f\",\"%.6g\"",
                            threads_limit,iteration,user_time,elapsed_time);
           }
         else
           {
             /* Formatted and summarized output */
             (void) fprintf(stderr,
-                           "Results: %ld threads %ld iter %.2fs user %.2fs total %.3f iter/s "
+                           "Results: %ld threads %ld iter %.2fs user %.6fs total %.3f iter/s "
                            "%.3f iter/cpu",
                            threads_limit,iteration,user_time,elapsed_time,rate_total,rate_cpu);
             if (thread_bench)
@@ -2828,49 +2789,38 @@ CompareImageCommand(ImageInfo *image_info,
 */
 static void CompareUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-colorspace type     alternate image colorspace",
-      "-debug events        display copious debugging information",
-      "-define values       coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      get image or font from this X server",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-file filename       write difference image to this file",
-      "-help                print program options",
-      "-highlight-color color",
-      "                     color to use when annotating difference pixels",
-      "-highlight-style style",
-      "                     pixel highlight style (assign, threshold, tint, xor)",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-maximum-error       maximum total difference before returning error",
-      "-metric              comparison metric (MAE, MSE, PAE, PSNR, RMSE)",
-      "-monitor             show progress indication",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-size geometry       width and height of image",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] reference [options ...] compare"
-    " [options ...]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void) printf("Usage: %.1024s [options ...] reference [options ...] compare [options ...]\n",GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       coder/decoder specific options");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -display server      get image or font from this X server");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -file filename       write difference image to this file");
+  (void) puts("  -help                print program options");
+  (void) puts("  -highlight-color color");
+  (void) puts("                       color to use when annotating difference pixels");
+  (void) puts("  -highlight-style style");
+  (void) puts("                       pixel highlight style (assign, threshold, tint, xor)");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -maximum-error       maximum total difference before returning error");
+  (void) puts("  -metric              comparison metric (MAE, MSE, PAE, PSNR, RMSE)");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -type type           image type");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
 }
 
 /*
@@ -4095,89 +4045,80 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
 */
 static void CompositeUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-affine matrix       affine transform matrix",
-      "-authenticate value  decrypt image with this password",
-      "-blue-primary point  chomaticity blue primary point",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-displace geometry   shift image pixels defined by a displacement map",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dissolve value      dissolve the two images a given percent",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-filter type         use this filter when resizing an image",
-      "-font name           render text with this font",
-      "-geometry geometry   location of the composite image",
-      "-gravity type        which direction to gravitate towards",
-      "-green-primary point chomaticity green primary point",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          ssign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color ",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scene value         image scene number",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-stegano offset      hide watermark within an image",
-      "-stereo              combine two image to create a stereo anaglyph",
-      "-strip               strip all profiles and text attributes from image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile                repeat composite operation across image",
-      "-transform           affine transform image",
-      "-treedepth value     color tree depth",
-      "-type type           image type",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-watermark geometry  percent brightness and saturation of a watermark",
-      "-white-point point   chomaticity white point",
-      "-write filename      write image to this file",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] image [options ...] composite\n"
-    "  [ [options ...] mask ] [options ...] composite\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void) printf("Usage: %.1024s [options ...] image [options ...] composite\n",
+                GetClientName());
+  (void) puts("  [ [options ...] mask ] [options ...] composite");
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -affine matrix       affine transform matrix");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -blue-primary point  chomaticity blue primary point");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compose operator    composite operator");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -displace geometry   shift image pixels defined by a displacement map");
+  (void) puts("  -display server      get image or font from this X server");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dissolve value      dissolve the two images a given percent");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -encoding type       text encoding type");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -filter type         use this filter when resizing an image");
+  (void) puts("  -font name           render text with this font");
+  (void) puts("  -geometry geometry   location of the composite image");
+  (void) puts("  -gravity type        which direction to gravitate towards");
+  (void) puts("  -green-primary point chomaticity green primary point");
+  (void) puts("  -help                print program options");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -label name          ssign a label to an image");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -negate              replace every pixel with its complementary color ");
+  (void) puts("  +page                reset current page offsets to default");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  -profile filename    add ICM or IPTC information profile to image");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -recolor matrix      apply a color translation matrix to image channels");
+  (void) puts("  -red-primary point   chomaticity red primary point");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  +repage              reset current page offsets to default");
+  (void) puts("  -repage geometry     adjust current page offsets by geometry");
+  (void) puts("  -resize geometry     resize the image");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scene value         image scene number");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -sharpen geometry    sharpen the image");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -stegano offset      hide watermark within an image");
+  (void) puts("  -stereo              combine two image to create a stereo anaglyph");
+  (void) puts("  -strip               strip all profiles and text attributes from image");
+  (void) puts("  -thumbnail geometry  resize the image (optimized for thumbnails)");
+  (void) puts("  -tile                repeat composite operation across image");
+  (void) puts("  -transform           affine transform image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -type type           image type");
+  (void) puts("  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined");
+  (void) puts("  -unsharp geometry    sharpen the image");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -watermark geometry  percent brightness and saturation of a watermark");
+  (void) puts("  -white-point point   chomaticity white point");
+  (void) puts("  -write filename      write image to this file");
 }
 
 /*
@@ -6144,196 +6085,183 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
 */
 static void ConvertUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-affine matrix       affine transform matrix",
-      "-antialias           remove pixel-aliasing",
-      "-append              append an image sequence",
-      "-asc-cdl spec        apply ASC CDL transform",
-      "-authenticate value  decrypt image with this password",
-      "-auto-orient         orient (rotate) image so it is upright",
-      "-average             average an image sequence",
-      "-background color    background color",
-      "-black-threshold value",
-      "                     pixels below the threshold become black",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur geometry       blur the image",
-      "-border geometry     surround image with a border of color",
-      "-bordercolor color   border color",
-      "-box color           set the color of the annotation bounding box",
-      "-channel type        extract a particular color channel from image",
-      "-charcoal radius     simulate a charcoal drawing",
-      "-chop geometry       remove pixels from the image interior",
-      "-clip                apply first clipping path if the image has one",
-      "-clippath            apply named clipping path if the image has one",
-      "-coalesce            merge a sequence of images",
-      "-colorize value      colorize the image with the fill color",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-convolve kernel     convolve image with the specified convolution kernel",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-cycle amount        cycle the image colormap",
-      "-debug events        display copious debugging information",
-      "-deconstruct         break down an image sequence into constituent parts",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-edge radius         apply a filter to detect edges in the image",
-      "-emboss radius       emboss an image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-equalize            perform histogram equalization to an image",
-      "-extent              composite image on background color canvas image",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flatten             flatten a sequence of images",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           render text with this font",
-      "-frame geometry      surround image with an ornamental border",
-      "-fuzz distance       colors within this distance are considered equal",
-      "-gamma value         level of gamma correction",
-      "-gaussian geometry   gaussian blur an image",
-      "-geometry geometry   perferred size or location of the image",
-      "-green-primary point chomaticity green primary point",
-      "-gravity type        horizontal and vertical text/object placement",
-      "-hald-clut clut      apply a Hald CLUT to the image",
-      "-help                print program options",
-      "-implode amount      implode image pixels about the center",
-      "-intent type         Absolute, Perceptual, Relative, or Saturation",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-lat geometry        local adaptive thresholding",
-      "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-linewidth width     the line width for subsequent draw operations",
-      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
-      "                     or Type",
-      "-log format          format of debugging information",
-      "-loop iterations     add Netscape loop extension to your GIF animation",
-      "-magnify             interpolate image to double size",
-      "-map filename        transform image colors to match this set of colors",
-      "-mask filename       set the image clip mask",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    specify the color to be used with the -frame option",
-      "-median radius       apply a median filter to the image",
-      "-minify              interpolate the image to half size",
-      "-modulate value      vary the brightness, saturation, and hue",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-morph value         morph an image sequence",
-      "-mosaic              create a mosaic from an image sequence",
-      "-motion-blur radiusxsigma+angle",
-      "                     simulate motion blur",
-      "-negate              replace every pixel with its complementary color ",
-      "-noop                do not apply options to image",
-      "-noise radius        add or reduce noise in an image",
-      "-normalize           transform image to span the full range of colors",
-      "-opaque color        change this color to the fill color",
-      "-operator channel operator rvalue",
-      "                     apply a mathematical or bitwise operator to channel",
-      "-ordered-dither channeltype NxN",
-      "                     ordered dither the image",
-      "-orient orientation  set image orientation attribute",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-paint radius        simulate an oil painting",
-      "-ping                efficiently determine image attributes",
-      "-pointsize value     font point size",
-      "-preview type        image preview type",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-random-threshold channeltype LOWxHIGH",
-      "                     random threshold the image",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-region geometry     apply options to a portion of the image",
-      "-render              render vector graphics",
-      "+render              disable rendering vector graphics",
-      "-resample geometry   resample to horizontal and vertical resolution",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scale geometry      scale the image",
-      "-scene value         image scene number",
-      "-seed value          pseudo-random number generator seed value",
-      "-segment values      segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shade degrees       shade the image using a distant light source",
-      "-sharpen geometry    sharpen the image",
-      "-shave geometry      shave pixels from the image edges",
-      "-shear geometry      slide one edge of the image along the X or Y axis",
-      "-size geometry       width and height of image",
-      "-solarize threshold  negate all pixels above the threshold level",
-      "-spread amount       displace image pixels by a random amount",
-      "-stroke color        graphic primitive stroke color",
-      "-strokewidth value   graphic primitive stroke width",
-      "-strip               strip all profiles and text attributes from image",
-      "-swirl degrees       swirl image pixels about the center",
-      "-texture filename    name of texture to tile onto the image background",
-      "-threshold value     threshold the image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile filename       tile image when filling a graphic primitive",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-undercolor color    annotation bounding box color",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-view                FlashPix viewing transforms",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-wave geometry       alter an image along a sine wave",
-      "-white-point point   chomaticity white point",
-      "-white-threshold value",
-      "                     pixels above the threshold become white",
-      "-write filename      write image to this file",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] "
-    "file ...] [options ...] file\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...] [options ...] file\n",
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -adjoin              join images into a single multi-image file");
+  (void) puts("  -affine matrix       affine transform matrix");
+  (void) puts("  -antialias           remove pixel-aliasing");
+  (void) puts("  -append              append an image sequence");
+  (void) puts("  -asc-cdl spec        apply ASC CDL transform");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -auto-orient         orient (rotate) image so it is upright");
+  (void) puts("  -average             average an image sequence");
+  (void) puts("  -background color    background color");
+  (void) puts("  -black-threshold value");
+  (void) puts("                       pixels below the threshold become black");
+  (void) puts("  -blue-primary point  chomaticity blue primary point");
+  (void) puts("  -blur geometry       blur the image");
+  (void) puts("  -border geometry     surround image with a border of color");
+  (void) puts("  -bordercolor color   border color");
+  (void) puts("  -box color           set the color of the annotation bounding box");
+  (void) puts("  -channel type        extract a particular color channel from image");
+  (void) puts("  -charcoal radius     simulate a charcoal drawing");
+  (void) puts("  -chop geometry       remove pixels from the image interior");
+  (void) puts("  -clip                apply first clipping path if the image has one");
+  (void) puts("  -clippath            apply named clipping path if the image has one");
+  (void) puts("  -coalesce            merge a sequence of images");
+  (void) puts("  -colorize value      colorize the image with the fill color");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compose operator    composite operator");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -contrast            enhance or reduce the image contrast");
+  (void) puts("  -convolve kernel     convolve image with the specified convolution kernel");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -cycle amount        cycle the image colormap");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -deconstruct         break down an image sequence into constituent parts");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -delay value         display the next image after pausing");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -despeckle           reduce the speckles within an image");
+  (void) puts("  -display server      get image or font from this X server");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -draw string         annotate the image with a graphic primitive");
+  (void) puts("  -edge radius         apply a filter to detect edges in the image");
+  (void) puts("  -emboss radius       emboss an image");
+  (void) puts("  -encoding type       text encoding type");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -enhance             apply a digital filter to enhance a noisy image");
+  (void) puts("  -equalize            perform histogram equalization to an image");
+  (void) puts("  -extent              composite image on background color canvas image");
+  (void) puts("  -fill color          color to use when filling a graphic primitive");
+  (void) puts("  -filter type         use this filter when resizing an image");
+  (void) puts("  -flatten             flatten a sequence of images");
+  (void) puts("  -flip                flip image in the vertical direction");
+  (void) puts("  -flop                flop image in the horizontal direction");
+  (void) puts("  -font name           render text with this font");
+  (void) puts("  -frame geometry      surround image with an ornamental border");
+  (void) puts("  -fuzz distance       colors within this distance are considered equal");
+  (void) puts("  -gamma value         level of gamma correction");
+  (void) puts("  -gaussian geometry   gaussian blur an image");
+  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -green-primary point chomaticity green primary point");
+  (void) puts("  -gravity type        horizontal and vertical text/object placement");
+  (void) puts("  -hald-clut clut      apply a Hald CLUT to the image");
+  (void) puts("  -help                print program options");
+  (void) puts("  -implode amount      implode image pixels about the center");
+  (void) puts("  -intent type         Absolute, Perceptual, Relative, or Saturation");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -label name          assign a label to an image");
+  (void) puts("  -lat geometry        local adaptive thresholding");
+  (void) puts("  -level value         adjust the level of image contrast");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -linewidth width     the line width for subsequent draw operations");
+  (void) puts("  -list type           Color, Delegate, Format, Magic, Module, Resource,");
+  (void) puts("                       or Type");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -loop iterations     add Netscape loop extension to your GIF animation");
+  (void) puts("  -magnify             interpolate image to double size");
+  (void) puts("  -map filename        transform image colors to match this set of colors");
+  (void) puts("  -mask filename       set the image clip mask");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -mattecolor color    specify the color to be used with the -frame option");
+  (void) puts("  -median radius       apply a median filter to the image");
+  (void) puts("  -minify              interpolate the image to half size");
+  (void) puts("  -modulate value      vary the brightness, saturation, and hue");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -morph value         morph an image sequence");
+  (void) puts("  -mosaic              create a mosaic from an image sequence");
+  (void) puts("  -motion-blur radiusxsigma+angle");
+  (void) puts("                       simulate motion blur");
+  (void) puts("  -negate              replace every pixel with its complementary color ");
+  (void) puts("  -noop                do not apply options to image");
+  (void) puts("  -noise radius        add or reduce noise in an image");
+  (void) puts("  -normalize           transform image to span the full range of colors");
+  (void) puts("  -opaque color        change this color to the fill color");
+  (void) puts("  -operator channel operator rvalue");
+  (void) puts("                       apply a mathematical or bitwise operator to channel");
+  (void) puts("  -ordered-dither channeltype NxN");
+  (void) puts("                       ordered dither the image");
+  (void) puts("  -orient orientation  set image orientation attribute");
+  (void) puts("  +page                reset current page offsets to default");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  -paint radius        simulate an oil painting");
+  (void) puts("  -ping                efficiently determine image attributes");
+  (void) puts("  -pointsize value     font point size");
+  (void) puts("  -preview type        image preview type");
+  (void) puts("  -profile filename    add ICM or IPTC information profile to image");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -raise value         lighten/darken image edges to create a 3-D effect");
+  (void) puts("  -random-threshold channeltype LOWxHIGH");
+  (void) puts("                       random threshold the image");
+  (void) puts("  -recolor matrix      apply a color translation matrix to image channels");
+  (void) puts("  -red-primary point   chomaticity red primary point");
+  (void) puts("  -region geometry     apply options to a portion of the image");
+  (void) puts("  -render              render vector graphics");
+  (void) puts("  +render              disable rendering vector graphics");
+  (void) puts("  -resample geometry   resample to horizontal and vertical resolution");
+  (void) puts("  +repage              reset current page offsets to default");
+  (void) puts("  -repage geometry     adjust current page offsets by geometry");
+  (void) puts("  -resize geometry     resize the image");
+  (void) puts("  -roll geometry       roll an image vertically or horizontally");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sample geometry     scale image with pixel sampling");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scale geometry      scale the image");
+  (void) puts("  -scene value         image scene number");
+  (void) puts("  -seed value          pseudo-random number generator seed value");
+  (void) puts("  -segment values      segment an image");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -shade degrees       shade the image using a distant light source");
+  (void) puts("  -sharpen geometry    sharpen the image");
+  (void) puts("  -shave geometry      shave pixels from the image edges");
+  (void) puts("  -shear geometry      slide one edge of the image along the X or Y axis");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -solarize threshold  negate all pixels above the threshold level");
+  (void) puts("  -spread amount       displace image pixels by a random amount");
+  (void) puts("  -stroke color        graphic primitive stroke color");
+  (void) puts("  -strokewidth value   graphic primitive stroke width");
+  (void) puts("  -strip               strip all profiles and text attributes from image");
+  (void) puts("  -swirl degrees       swirl image pixels about the center");
+  (void) puts("  -texture filename    name of texture to tile onto the image background");
+  (void) puts("  -threshold value     threshold the image");
+  (void) puts("  -thumbnail geometry  resize the image (optimized for thumbnails)");
+  (void) puts("  -tile filename       tile image when filling a graphic primitive");
+  (void) puts("  -transform           affine transform image");
+  (void) puts("  -transparent color   make this color transparent within the image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -undercolor color    annotation bounding box color");
+  (void) puts("  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined");
+  (void) puts("  -unsharp geometry    sharpen the image");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -view                FlashPix viewing transforms");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -wave geometry       alter an image along a sine wave");
+  (void) puts("  -white-point point   chomaticity white point");
+  (void) puts("  -white-threshold value");
+  (void) puts("                       pixels above the threshold become white");
+  (void) puts("  -write filename      write image to this file");
+  (void) puts("");
+  (void) puts("By default, the image format of `file' is determined by its magic");
+  (void) puts("number.  To specify a particular image format, precede the filename");
+  (void) puts("with an image format name and a colon (i.e. ps:image) or specify the");
+  (void) puts("image type as the filename suffix (i.e. image.ps).  Specify 'file' as");
+  (void) puts("'-' for standard input or output.");
 }
 
 /*
@@ -6356,29 +6284,21 @@ static void ConvertUsage(void)
 */
 static void ConjureUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-debug events        display copious debugging information",
-      "-help                print program options",
-      "-log format          format of debugging information",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
   (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf("\nIn additiion, define any key value pairs required by "
-    "your script.  For\nexample,\n\n");
-  (void) printf("    conjure -size 100x100 -color blue -foo bar script.msl\n");
+           GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -help                print program options");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("");
+  (void) puts("In additiion, define any key value pairs required by your script.  For");
+  (void) puts("example,");
+  (void) puts("");
+  (void) puts("    conjure -size 100x100 -color blue -foo bar script.msl");
 }
 
 MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
@@ -6530,117 +6450,97 @@ MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
 #if defined(HasX11)
 static void DisplayUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *buttons[]=
-    {
-      "1    press to map or unmap the Command widget",
-      "2    press and drag to magnify a region of an image",
-      "3    press to load an image from a visual image directory",
-      (char *) NULL
-    },
-    *options[]=
-    {
-      "-authenticate value  decrypt image with this password",
-      "-backdrop            display image centered on a backdrop",
-      "-border geometry     surround image with a border of color",
-      "-colormap type       Shared or Private",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      display image to this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-edge factor         apply a filter to detect edges in the image",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-frame geometry      surround image with an ornamental border",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred size and location of the Image window",
-      "-help                print program options",
-      "-immutable           displayed image cannot be modified",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-map type            display image using this Standard Colormap",
-      "-matte               store matte channel if the image has one",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color",
-      "-noop                do not apply options to image",
-      "-page geometry       size and location of an image canvas",
-      "+progress            disable progress monitor and busy cursor",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-remote command      execute a command in an remote display process",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-segment value       segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-texture filename    name of texture to tile onto the image background",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-update seconds      detect when image file is modified and redisplay",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-visual type         display image using this visual type",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           display image to background of this window",
-      "-window_group id     exit program when this window id is destroyed",
-      "-write filename      write image to a file",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
   (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -foreground, -iconGeometry, -iconic, -mattecolor,\n");
-  (void) printf("-name, -shared-memory, -usePixmap, or -title.\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
-  (void) printf("\nButtons: \n");
-  for (p=buttons; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -backdrop            display image centered on a backdrop");
+  (void) puts("  -border geometry     surround image with a border of color");
+  (void) puts("  -colormap type       Shared or Private");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -contrast            enhance or reduce the image contrast");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -delay value         display the next image after pausing");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -despeckle           reduce the speckles within an image");
+  (void) puts("  -display server      display image to this X server");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -edge factor         apply a filter to detect edges in the image");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -enhance             apply a digital filter to enhance a noisy image");
+  (void) puts("  -filter type         use this filter when resizing an image");
+  (void) puts("  -flip                flip image in the vertical direction");
+  (void) puts("  -flop                flop image in the horizontal direction");
+  (void) puts("  -frame geometry      surround image with an ornamental border");
+  (void) puts("  -gamma value         level of gamma correction");
+  (void) puts("  -geometry geometry   preferred size and location of the Image window");
+  (void) puts("  -help                print program options");
+  (void) puts("  -immutable           displayed image cannot be modified");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -label name          assign a label to an image");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -map type            display image using this Standard Colormap");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -negate              replace every pixel with its complementary color");
+  (void) puts("  -noop                do not apply options to image");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  +progress            disable progress monitor and busy cursor");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -raise value         lighten/darken image edges to create a 3-D effect");
+  (void) puts("  -remote command      execute a command in an remote display process");
+  (void) puts("  -roll geometry       roll an image vertically or horizontally");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sample geometry     scale image with pixel sampling");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scenes range        image scene range");
+  (void) puts("  -segment value       segment an image");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -sharpen geometry    sharpen the image");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -texture filename    name of texture to tile onto the image background");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -update seconds      detect when image file is modified and redisplay");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -visual type         display image using this visual type");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -window id           display image to background of this window");
+  (void) puts("  -window_group id     exit program when this window id is destroyed");
+  (void) puts("  -write filename      write image to a file");
+  (void) puts("");
+  (void) puts("In addition to those listed above, you can specify these standard X");
+  (void) puts("resources as command line options:  -background, -bordercolor,");
+  (void) puts("-borderwidth, -font, -foreground, -iconGeometry, -iconic, -mattecolor,");
+  (void) puts("-name, -shared-memory, -usePixmap, or -title.");
+  (void) puts("");
+  (void) puts("By default, the image format of `file' is determined by its magic");
+  (void) puts("number.  To specify a particular image format, precede the filename");
+  (void) puts("with an image format name and a colon (i.e. ps:image) or specify the");
+  (void) puts("image type as the filename suffix (i.e. image.ps).  Specify 'file' as");
+  (void) puts("'-' for standard input or output.");
+  (void) puts("");
+  (void) puts("Buttons:");
+  (void) puts("  1    press to map or unmap the Command widget");
+  (void) puts("  2    press and drag to magnify a region of an image");
+  (void) puts("  3    press to load an image from a visual image directory");
 }
 #endif /* HasX11 */
 
@@ -8148,14 +8048,15 @@ static OptionStatus GetOnOffOptionValue(const char *option, const char *value,
 */
 static void GMUsage(void)
 {
-  int
+  unsigned int
     i;
 
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s command [options ...]\n",GetClientName());
-  (void) printf("\nWhere commands include: \n");
+  (void) printf("Usage: %.1024s command [options ...]\n"
+                "\n"
+                "Where commands include:\n",GetClientName());
 
-  for (i=0; commands[i].command != 0; i++)
+  for (i=0; i < ArraySize(commands); i++)
     {
       if (commands[i].support_mode & run_mode)
         (void) printf("%11s - %s\n",commands[i].command,
@@ -8206,10 +8107,10 @@ static MagickPassFail HelpCommand(ImageInfo *image_info,
   ARG_NOT_USED(exception);
   if (argc > 1)
     {
-      int
+      unsigned int
         i;
 
-      for (i=0; commands[i].command != 0; i++)
+      for (i=0; i < ArraySize(commands); i++)
         {
           if (!(commands[i].support_mode & run_mode))
             continue;
@@ -8686,40 +8587,30 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
 */
 static void IdentifyUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-format \"string\"   output formatted image characteristics",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-monitor             show progress indication",
-      "-ping                efficiently determine image attributes",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-size geometry       width and height of image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] file [ [options ...] "
-    "file ... ]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
+  (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ... ]\n",
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -format \"string\"     output formatted image characteristics");
+  (void) puts("  -help                print program options");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -ping                efficiently determine image attributes");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
 }
 
 
@@ -8839,14 +8730,14 @@ MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
   MagickPassFail
     status=MagickFail;
 
-  int
+  unsigned int
     i;
 
   option=argv[0];
   if (option[0] == '-')
     option++;
 
-  for (i=0; commands[i].command != 0; i++)
+  for (i=0; i < ArraySize(commands); i++)
     {
       if (!(commands[i].support_mode & run_mode))
         continue;
@@ -9111,7 +9002,8 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             DestroyImage(*image);
             *image=orient_image;
             continue;
-          }        break;
+          }
+        break;
       }
       case 'b':
       {
@@ -13728,188 +13620,175 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
 */
 static void MogrifyUsage(void)
 {
-  static const char
-    *options[]=
-    {
-      "-affine matrix       affine transform matrix",
-      "-antialias           remove pixel-aliasing",
-      "-asc-cdl spec        apply ASC CDL transform",
-      "-authenticate value  decrypt image with this password",
-      "-auto-orient         orient (rotate) image so it is upright",
-      "-background color    background color",
-      "-black-threshold value",
-      "                     pixels below the threshold become black",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur radius         blur the image",
-      "-border geometry     surround image with a border of color",
-      "-bordercolor color   border color",
-      "-box color           set the color of the annotation bounding box",
-      "-channel type        extract a particular color channel from image",
-      "-charcoal radius     simulate a charcoal drawing",
-      "-chop geometry       remove pixels from the image interior",
-      "-colorize value      colorize the image with the fill color",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-contrast            enhance or reduce the image contrast",
-      "-convolve kernel     convolve image with the specified convolution kernel",
-      "-create-directories  create output directories if required",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-cycle amount        cycle the image colormap",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-despeckle           reduce the speckles within an image",
-      "-display server      get image or font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-edge radius         apply a filter to detect edges in the image",
-      "-emboss radius       emboss an image",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-enhance             apply a digital filter to enhance a noisy image",
-      "-equalize            perform histogram equalization to an image",
-      "-extent              composite image on background color canvas image",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           render text with this font",
-      "-format type         image format type",
-      "-frame geometry      surround image with an ornamental border",
-      "-fuzz distance       colors within this distance are considered equal",
-      "-gamma value         level of gamma correction",
-      "-gaussian geometry   gaussian blur an image",
-      "-geometry geometry   perferred size or location of the image",
-      "-gravity type        horizontal and vertical text/object placement",
-      "-green-primary point chomaticity green primary point",
-      "-implode amount      implode image pixels about the center",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-hald-clut clut      apply a Hald CLUT to the image",
-      "-help                print program options",
-      "-label name          assign a label to an image",
-      "-lat geometry        local adaptive thresholding",
-      "-level value         adjust the level of image contrast",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-linewidth width     the line width for subsequent draw operations",
-      "-list type           Color, Delegate, Format, Magic, Module, Resource,",
-      "                     or Type",
-      "-log format          format of debugging information",
-      "-loop iterations     add Netscape loop extension to your GIF animation",
-      "-magnify             interpolate image to double size",
-      "-map filename        transform image colors to match this set of colors",
-      "-mask filename       set the image clip mask",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    specify the color to be used with the -frame option",
-      "-median radius       apply a median filter to the image",
-      "-minify              interpolate the image to half size",
-      "-modulate value      vary the brightness, saturation, and hue",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-motion-blur radiusxsigma+angle",
-      "                     simulate motion blur",
-      "-negate              replace every pixel with its complementary color ",
-      "-noop                do not apply options to image",
-      "-noise radius        add or reduce noise in an image",
-      "-normalize           transform image to span the full range of colors",
-      "-opaque color        change this color to the fill color",
-      "-operator channel operator rvalue",
-      "                     apply a mathematical or bitwise operator to channel",
-      "-ordered-dither channeltype NxN",
-      "                     ordered dither the image",
-      "-orient orientation  set image orientation attribute",
-      "-output-directory directory",
-      "                     write output files to directory",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-paint radius        simulate an oil painting",
-      "-fill color           color for annotating or changing opaque color",
-      "-pointsize value     font point size",
-      "-profile filename    add ICM or IPTC information profile to image",
-      "-preserve-timestamp  preserve original timestamps of the file",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-raise value         lighten/darken image edges to create a 3-D effect",
-      "-random-threshold channeltype LOWxHIGH",
-      "                     random threshold the image",
-      "-recolor matrix      apply a color translation matrix to image channels",
-      "-red-primary point   chomaticity red primary point",
-      "-region geometry     apply options to a portion of the image",
-      "-render              render vector graphics",
-      "+render              disable rendering vector graphics",
-      "-resample geometry   resample to horizontal and vertical resolution",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     perferred size or location of the image",
-      "-roll geometry       roll an image vertically or horizontally",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sample geometry     scale image with pixel sampling",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scale geometry      scale the image",
-      "-scene number        image scene number",
-      "-seed value          pseudo-random number generator seed value",
-      "-segment values      segment an image",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shade degrees       shade the image using a distant light source",
-      "-sharpen radius      sharpen the image",
-      "-shave geometry      shave pixels from the image edges",
-      "-shear geometry      slide one edge of the image along the X or Y axis",
-      "-size geometry       width and height of image",
-      "-solarize threshold  negate all pixels above the threshold level",
-      "-spread amount       displace image pixels by a random amount",
-      "-strip               strip all profiles and text attributes from image",
-      "-stroke color        graphic primitive stroke color",
-      "-strokewidth value   graphic primitive stroke width",
-      "-swirl degrees       swirl image pixels about the center",
-      "-texture filename    name of texture to tile onto the image background",
-      "-threshold value     threshold the image",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile filename       tile image when filling a graphic primitive",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-undercolor color    annotation bounding box color",
-      "-units type          PixelsPerInch, PixelsPerCentimeter, or Undefined",
-      "-unsharp geometry    sharpen the image",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-view                FlashPix viewing transforms",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-wave geometry       alter an image along a sine wave",
-      "-white-point point   chomaticity white point",
-      "-white-threshold value",
-      "                     pixels above the threshold become white",
-      (char *) NULL
-    };
-
-  const char
-    **p;
-
   PrintUsageHeader();
   (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -affine matrix       affine transform matrix");
+  (void) puts("  -antialias           remove pixel-aliasing");
+  (void) puts("  -asc-cdl spec        apply ASC CDL transform");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -auto-orient         orient (rotate) image so it is upright");
+  (void) puts("  -background color    background color");
+  (void) puts("  -black-threshold value");
+  (void) puts("                       pixels below the threshold become black");
+  (void) puts("  -blue-primary point  chomaticity blue primary point");
+  (void) puts("  -blur radius         blur the image");
+  (void) puts("  -border geometry     surround image with a border of color");
+  (void) puts("  -bordercolor color   border color");
+  (void) puts("  -box color           set the color of the annotation bounding box");
+  (void) puts("  -channel type        extract a particular color channel from image");
+  (void) puts("  -charcoal radius     simulate a charcoal drawing");
+  (void) puts("  -chop geometry       remove pixels from the image interior");
+  (void) puts("  -colorize value      colorize the image with the fill color");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compose operator    composite operator");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -contrast            enhance or reduce the image contrast");
+  (void) puts("  -convolve kernel     convolve image with the specified convolution kernel");
+  (void) puts("  -create-directories  create output directories if required");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -cycle amount        cycle the image colormap");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -delay value         display the next image after pausing");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -despeckle           reduce the speckles within an image");
+  (void) puts("  -display server      get image or font from this X server");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -draw string         annotate the image with a graphic primitive");
+  (void) puts("  -edge radius         apply a filter to detect edges in the image");
+  (void) puts("  -emboss radius       emboss an image");
+  (void) puts("  -encoding type       text encoding type");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -enhance             apply a digital filter to enhance a noisy image");
+  (void) puts("  -equalize            perform histogram equalization to an image");
+  (void) puts("  -extent              composite image on background color canvas image");
+  (void) puts("  -fill color          color to use when filling a graphic primitive");
+  (void) puts("  -filter type         use this filter when resizing an image");
+  (void) puts("  -flip                flip image in the vertical direction");
+  (void) puts("  -flop                flop image in the horizontal direction");
+  (void) puts("  -font name           render text with this font");
+  (void) puts("  -format type         image format type");
+  (void) puts("  -frame geometry      surround image with an ornamental border");
+  (void) puts("  -fuzz distance       colors within this distance are considered equal");
+  (void) puts("  -gamma value         level of gamma correction");
+  (void) puts("  -gaussian geometry   gaussian blur an image");
+  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -gravity type        horizontal and vertical text/object placement");
+  (void) puts("  -green-primary point chomaticity green primary point");
+  (void) puts("  -implode amount      implode image pixels about the center");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -hald-clut clut      apply a Hald CLUT to the image");
+  (void) puts("  -help                print program options");
+  (void) puts("  -label name          assign a label to an image");
+  (void) puts("  -lat geometry        local adaptive thresholding");
+  (void) puts("  -level value         adjust the level of image contrast");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -linewidth width     the line width for subsequent draw operations");
+  (void) puts("  -list type           Color, Delegate, Format, Magic, Module, Resource,");
+  (void) puts("                       or Type");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -loop iterations     add Netscape loop extension to your GIF animation");
+  (void) puts("  -magnify             interpolate image to double size");
+  (void) puts("  -map filename        transform image colors to match this set of colors");
+  (void) puts("  -mask filename       set the image clip mask");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -mattecolor color    specify the color to be used with the -frame option");
+  (void) puts("  -median radius       apply a median filter to the image");
+  (void) puts("  -minify              interpolate the image to half size");
+  (void) puts("  -modulate value      vary the brightness, saturation, and hue");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -motion-blur radiusxsigma+angle");
+  (void) puts("                       simulate motion blur");
+  (void) puts("  -negate              replace every pixel with its complementary color ");
+  (void) puts("  -noop                do not apply options to image");
+  (void) puts("  -noise radius        add or reduce noise in an image");
+  (void) puts("  -normalize           transform image to span the full range of colors");
+  (void) puts("  -opaque color        change this color to the fill color");
+  (void) puts("  -operator channel operator rvalue");
+  (void) puts("                       apply a mathematical or bitwise operator to channel");
+  (void) puts("  -ordered-dither channeltype NxN");
+  (void) puts("                       ordered dither the image");
+  (void) puts("  -orient orientation  set image orientation attribute");
+  (void) puts("  -output-directory directory");
+  (void) puts("                       write output files to directory");
+  (void) puts("  +page                reset current page offsets to default");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  -paint radius        simulate an oil painting");
+  (void) puts("  -fill color           color for annotating or changing opaque color");
+  (void) puts("  -pointsize value     font point size");
+  (void) puts("  -profile filename    add ICM or IPTC information profile to image");
+  (void) puts("  -preserve-timestamp  preserve original timestamps of the file");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -raise value         lighten/darken image edges to create a 3-D effect");
+  (void) puts("  -random-threshold channeltype LOWxHIGH");
+  (void) puts("                       random threshold the image");
+  (void) puts("  -recolor matrix      apply a color translation matrix to image channels");
+  (void) puts("  -red-primary point   chomaticity red primary point");
+  (void) puts("  -region geometry     apply options to a portion of the image");
+  (void) puts("  -render              render vector graphics");
+  (void) puts("  +render              disable rendering vector graphics");
+  (void) puts("  -resample geometry   resample to horizontal and vertical resolution");
+  (void) puts("  +repage              reset current page offsets to default");
+  (void) puts("  -repage geometry     adjust current page offsets by geometry");
+  (void) puts("  -resize geometry     perferred size or location of the image");
+  (void) puts("  -roll geometry       roll an image vertically or horizontally");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sample geometry     scale image with pixel sampling");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scale geometry      scale the image");
+  (void) puts("  -scene number        image scene number");
+  (void) puts("  -seed value          pseudo-random number generator seed value");
+  (void) puts("  -segment values      segment an image");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -shade degrees       shade the image using a distant light source");
+  (void) puts("  -sharpen radius      sharpen the image");
+  (void) puts("  -shave geometry      shave pixels from the image edges");
+  (void) puts("  -shear geometry      slide one edge of the image along the X or Y axis");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -solarize threshold  negate all pixels above the threshold level");
+  (void) puts("  -spread amount       displace image pixels by a random amount");
+  (void) puts("  -strip               strip all profiles and text attributes from image");
+  (void) puts("  -stroke color        graphic primitive stroke color");
+  (void) puts("  -strokewidth value   graphic primitive stroke width");
+  (void) puts("  -swirl degrees       swirl image pixels about the center");
+  (void) puts("  -texture filename    name of texture to tile onto the image background");
+  (void) puts("  -threshold value     threshold the image");
+  (void) puts("  -thumbnail geometry  resize the image (optimized for thumbnails)");
+  (void) puts("  -tile filename       tile image when filling a graphic primitive");
+  (void) puts("  -transform           affine transform image");
+  (void) puts("  -transparent color   make this color transparent within the image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -undercolor color    annotation bounding box color");
+  (void) puts("  -units type          PixelsPerInch, PixelsPerCentimeter, or Undefined");
+  (void) puts("  -unsharp geometry    sharpen the image");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -view                FlashPix viewing transforms");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -wave geometry       alter an image along a sine wave");
+  (void) puts("  -white-point point   chomaticity white point");
+  (void) puts("  -white-threshold value");
+  (void) puts("                       pixels above the threshold become white");
+  (void) puts("");
+  (void) puts("By default, the image format of `file' is determined by its magic");
+  (void) puts("number.  To specify a particular image format, precede the filename");
+  (void) puts("with an image format name and a colon (i.e. ps:image) or specify the");
+  (void) puts("image type as the filename suffix (i.e. image.ps).  Specify 'file' as");
+  (void) puts("'-' for standard input or output.");
 }
 
 /*
@@ -15125,118 +15004,102 @@ montage_cleanup_and_return:
 */
 static void MontageUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-affine matrix       affine transform matrix",
-      "-authenticate value  decrypt image with this password",
-      "-background color    background color",
-      "-blue-primary point  chomaticity blue primary point",
-      "-blur factor         apply a filter to blur the image",
-      "-bordercolor color   border color",
-      "-borderwidth geometry",
-      "                     border width",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorsapce",
-      "-comment string      annotate image with comment",
-      "-compose operator    composite operator",
-      "-compress type       image compression type",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-display server      query font from this X server",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-draw string         annotate the image with a graphic primitive",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-fill color          color to use when filling a graphic primitive",
-      "-filter type         use this filter when resizing an image",
-      "-flip                flip image in the vertical direction",
-      "-flop                flop image in the horizontal direction",
-      "-font name           font to use when annotating with text",
-      "-format string       output formatted image characteristics",
-      "-frame geometry      surround image with an ornamental border",
-      "-gamma value         level of gamma correction",
-      "-geometry geometry   preferred tile and border sizes",
-      "-gravity direction   which direction to gravitate towards",
-      "-green-primary point chomaticity green primary point",
-      "-help                print program options",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-matte               store matte channel if the image has one",
-      "-mattecolor color    color to be used with the -frame option",
-      "-mode type           Frame, Unframe, or Concatenate",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-noop                do not apply options to image",
-      "+page                reset current page offsets to default",
-      "-page geometry       size and location of an image canvas",
-      "-pointsize value     font point size",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-red-primary point   chomaticity red primary point",
-      "+repage              reset current page offsets to default",
-      "-repage geometry     adjust current page offsets by geometry",
-      "-resize geometry     resize the image",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scenes range        image scene range",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-shadow              add a shadow beneath a tile to simulate depth",
-      "-sharpen geometry    sharpen the image",
-      "-size geometry       width and height of image",
-      "-strip               strip all profiles and text attributes from image",
-      "-stroke color        color to use when stroking a graphic primitive",
-      "-strokewidth value   stroke (line) width",
-      "-texture filename    name of texture to tile onto the image background",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-tile geometry       number of tiles per row and column",
-      "-title string        thumbnail title",
-      "-transform           affine transform image",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-white-point point   chomaticity white point",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
   (void) printf("Usage: %.1024s [options ...] file [ [options ...] file ...]\n",
-    GetClientName());
-  (void) printf("\nWhere options include: \n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-    "\nIn addition to those listed above, you can specify these standard X\n");
-  (void) printf(
-    "resources as command line options:  -background, -bordercolor,\n");
-  (void) printf(
-    "-borderwidth, -font, -mattecolor, or -title\n");
-  (void) printf(
-    "\nBy default, the image format of `file' is determined by its magic\n");
-  (void) printf(
-    "number.  To specify a particular image format, precede the filename\n");
-  (void) printf(
-    "with an image format name and a colon (i.e. ps:image) or specify the\n");
-  (void) printf(
-    "image type as the filename suffix (i.e. image.ps).  Specify 'file' as\n");
-  (void) printf("'-' for standard input or output.\n");
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -adjoin              join images into a single multi-image file");
+  (void) puts("  -affine matrix       affine transform matrix");
+  (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -background color    background color");
+  (void) puts("  -blue-primary point  chomaticity blue primary point");
+  (void) puts("  -blur factor         apply a filter to blur the image");
+  (void) puts("  -bordercolor color   border color");
+  (void) puts("  -borderwidth geometry");
+  (void) puts("                       border width");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorsapce");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compose operator    composite operator");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -display server      query font from this X server");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -draw string         annotate the image with a graphic primitive");
+  (void) puts("  -encoding type       text encoding type");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -fill color          color to use when filling a graphic primitive");
+  (void) puts("  -filter type         use this filter when resizing an image");
+  (void) puts("  -flip                flip image in the vertical direction");
+  (void) puts("  -flop                flop image in the horizontal direction");
+  (void) puts("  -font name           font to use when annotating with text");
+  (void) puts("  -format string       output formatted image characteristics");
+  (void) puts("  -frame geometry      surround image with an ornamental border");
+  (void) puts("  -gamma value         level of gamma correction");
+  (void) puts("  -geometry geometry   preferred tile and border sizes");
+  (void) puts("  -gravity direction   which direction to gravitate towards");
+  (void) puts("  -green-primary point chomaticity green primary point");
+  (void) puts("  -help                print program options");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -label name          assign a label to an image");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -matte               store matte channel if the image has one");
+  (void) puts("  -mattecolor color    color to be used with the -frame option");
+  (void) puts("  -mode type           Frame, Unframe, or Concatenate");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -noop                do not apply options to image");
+  (void) puts("  +page                reset current page offsets to default");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  -pointsize value     font point size");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -red-primary point   chomaticity red primary point");
+  (void) puts("  +repage              reset current page offsets to default");
+  (void) puts("  -repage geometry     adjust current page offsets by geometry");
+  (void) puts("  -resize geometry     resize the image");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scenes range        image scene range");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -shadow              add a shadow beneath a tile to simulate depth");
+  (void) puts("  -sharpen geometry    sharpen the image");
+  (void) puts("  -size geometry       width and height of image");
+  (void) puts("  -strip               strip all profiles and text attributes from image");
+  (void) puts("  -stroke color        color to use when stroking a graphic primitive");
+  (void) puts("  -strokewidth value   stroke (line) width");
+  (void) puts("  -texture filename    name of texture to tile onto the image background");
+  (void) puts("  -thumbnail geometry  resize the image (optimized for thumbnails)");
+  (void) puts("  -tile geometry       number of tiles per row and column");
+  (void) puts("  -title string        thumbnail title");
+  (void) puts("  -transform           affine transform image");
+  (void) puts("  -transparent color   make this color transparent within the image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -white-point point   chomaticity white point");
+  (void) puts("");
+  (void) puts("In addition to those listed above, you can specify these standard X");
+  (void) puts("resources as command line options:  -background, -bordercolor,");
+  (void) puts("-borderwidth, -font, -mattecolor, or -title");
+  (void) puts("\nBy default, the image format of `file' is determined by its magic");
+  (void) puts("number.  To specify a particular image format, precede the filename");
+  (void) puts("with an image format name and a colon (i.e. ps:image) or specify the");
+  (void) puts("image type as the filename suffix (i.e. image.ps).  Specify 'file' as");
+  (void) puts("'-' for standard input or output.");
 }
 
 /*
@@ -16147,82 +16010,70 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
 #if defined(HasX11)
 static void ImportUsage(void)
 {
-  const char
-    **p;
-
-  static const char
-    *options[]=
-    {
-      "-adjoin              join images into a single multi-image file",
-      "-border              include image borders in the output image",
-      "-colors value        preferred number of colors in the image",
-      "-colorspace type     alternate image colorspace",
-      "-comment string      annotate image with comment",
-      "-compress type       image compression type",
-      "-crop geometry       preferred size and location of the cropped image",
-      "-debug events        display copious debugging information",
-      "-define values       Coder/decoder specific options",
-      "-delay value         display the next image after pausing",
-      "-density geometry    horizontal and vertical density of the image",
-      "-depth value         image depth",
-      "-descend             obtain image by descending window hierarchy",
-      "-display server      X server to contact",
-      "-dispose method      Undefined, None, Background, Previous",
-      "-dither              apply Floyd/Steinberg error diffusion to image",
-      "-frame               include window manager frame",
-      "-encoding type       text encoding type",
-      "-endian type         multibyte word order (LSB, MSB, or Native)",
-      "-geometry geometry   perferred size or location of the image",
-      "-interlace type      None, Line, Plane, or Partition",
-      "-help                print program options",
-      "-label name          assign a label to an image",
-      "-limit type value    Disk, File, Map, Memory, Pixels, Width, Height or",
-      "                     Threads resource limit",
-      "-log format          format of debugging information",
-      "-monitor             show progress indication",
-      "-monochrome          transform image to black and white",
-      "-negate              replace every pixel with its complementary color ",
-      "-page geometry       size and location of an image canvas",
-      "-pause value         seconds delay between snapshots",
-      "-pointsize value     font point size",
-      "-quality value       JPEG/MIFF/PNG compression level",
-      "-resize geometry     resize the image",
-      "-rotate degrees      apply Paeth rotation to the image",
-      "-sampling-factor HxV[,...]",
-      "                     horizontal and vertical sampling factors",
-      "-scene value         image scene number",
-      "-screen              select image from root window",
-      "-set attribute value set image attribute",
-      "+set attribute       unset image attribute",
-      "-silent              operate silently, i.e. don't ring any bells ",
-      "-snaps value         number of screen snapshots",
-      "-thumbnail geometry  resize the image (optimized for thumbnails)",
-      "-transparent color   make this color transparent within the image",
-      "-treedepth value     color tree depth",
-      "-trim                trim image edges",
-      "-type type           image type",
-      "-verbose             print detailed information about the image",
-      "-version             print version information",
-      "-virtual-pixel method",
-      "                     Constant, Edge, Mirror, or Tile",
-      "-window id           select window with this id or name",
-      (char *) NULL
-    };
-
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s [options ...] [ file ]\n",GetClientName());
-  (void) printf("\nWhere options include:\n");
-  for (p=options; *p != (char *) NULL; p++)
-    (void) printf("  %.1024s\n",*p);
-  (void) printf(
-  "\nBy default, 'file' is written in the MIFF image format.  To\n");
-  (void) printf(
-    "specify a particular image format, precede the filename with an image\n");
-  (void) printf(
-    "format name and a colon (i.e. ps:image) or specify the image type as\n");
-  (void) printf(
-    "the filename suffix (i.e. image.ps).  Specify 'file' as '-' for\n");
-  (void) printf("standard input or output.\n");
+  (void) printf("Usage: %.1024s [options ...] [ file ]\n",
+                GetClientName());
+  (void) puts("");
+  (void) puts("Where options include:");
+  (void) puts("  -adjoin              join images into a single multi-image file");
+  (void) puts("  -border              include image borders in the output image");
+  (void) puts("  -colors value        preferred number of colors in the image");
+  (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -comment string      annotate image with comment");
+  (void) puts("  -compress type       image compression type");
+  (void) puts("  -crop geometry       preferred size and location of the cropped image");
+  (void) puts("  -debug events        display copious debugging information");
+  (void) puts("  -define values       Coder/decoder specific options");
+  (void) puts("  -delay value         display the next image after pausing");
+  (void) puts("  -density geometry    horizontal and vertical density of the image");
+  (void) puts("  -depth value         image depth");
+  (void) puts("  -descend             obtain image by descending window hierarchy");
+  (void) puts("  -display server      X server to contact");
+  (void) puts("  -dispose method      Undefined, None, Background, Previous");
+  (void) puts("  -dither              apply Floyd/Steinberg error diffusion to image");
+  (void) puts("  -frame               include window manager frame");
+  (void) puts("  -encoding type       text encoding type");
+  (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
+  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -interlace type      None, Line, Plane, or Partition");
+  (void) puts("  -help                print program options");
+  (void) puts("  -label name          assign a label to an image");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
+  (void) puts("                       Threads resource limit");
+  (void) puts("  -log format          format of debugging information");
+  (void) puts("  -monitor             show progress indication");
+  (void) puts("  -monochrome          transform image to black and white");
+  (void) puts("  -negate              replace every pixel with its complementary color ");
+  (void) puts("  -page geometry       size and location of an image canvas");
+  (void) puts("  -pause value         seconds delay between snapshots");
+  (void) puts("  -pointsize value     font point size");
+  (void) puts("  -quality value       JPEG/MIFF/PNG compression level");
+  (void) puts("  -resize geometry     resize the image");
+  (void) puts("  -rotate degrees      apply Paeth rotation to the image");
+  (void) puts("  -sampling-factor HxV[,...]");
+  (void) puts("                       horizontal and vertical sampling factors");
+  (void) puts("  -scene value         image scene number");
+  (void) puts("  -screen              select image from root window");
+  (void) puts("  -set attribute value set image attribute");
+  (void) puts("  +set attribute       unset image attribute");
+  (void) puts("  -silent              operate silently, i.e. don't ring any bells ");
+  (void) puts("  -snaps value         number of screen snapshots");
+  (void) puts("  -thumbnail geometry  resize the image (optimized for thumbnails)");
+  (void) puts("  -transparent color   make this color transparent within the image");
+  (void) puts("  -treedepth value     color tree depth");
+  (void) puts("  -trim                trim image edges");
+  (void) puts("  -type type           image type");
+  (void) puts("  -verbose             print detailed information about the image");
+  (void) puts("  -version             print version information");
+  (void) puts("  -virtual-pixel method");
+  (void) puts("                       Constant, Edge, Mirror, or Tile");
+  (void) puts("  -window id           select window with this id or name");
+  (void) puts("");
+  (void) puts("By default, 'file' is written in the MIFF image format.  To");
+  (void) puts("specify a particular image format, precede the filename with an image");
+  (void) puts("format name and a colon (i.e. ps:image) or specify the image type as");
+  (void) puts("the filename suffix (i.e. image.ps).  Specify 'file' as '-' for");
+  (void) puts("standard input or output.");
 }
 #endif /* HasX11 */
 
@@ -16718,8 +16569,9 @@ static void SetUsage(void)
 static void TimeUsage(void)
 {
   PrintUsageHeader();
-  (void) printf("Usage: %.1024s command ... \n",GetClientName());
-  (void) printf("where 'command' is some other GraphicsMagick command\n");
+  (void) printf("Usage: %.1024s command ... \n"
+                "where 'command' is some other GraphicsMagick command\n",
+                GetClientName());
 }
 
 /*
@@ -16841,7 +16693,7 @@ TimeImageCommand(ImageInfo *image_info,
         }
     }
   (void) fprintf(stderr,
-                 "%s%.2fs user %.2fs system %.0f%% cpu %.3f total\n",
+                 "%s%.2fs user %.2fs system %.0f%% cpu %.6f total\n",
                  pad,user_time,0.0,100.0*user_time/elapsed_time,elapsed_time);
   (void) fflush(stderr);
 
@@ -17016,12 +16868,34 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 #endif /* defined(SupportMagickModules) */
   PrintFeature("Loadable Modules", supported);
 
+  /* Solaris libmtmalloc */
+  supported=MagickFalse;
+#if defined(HasMTMALLOC)
+  supported=MagickTrue;
+#endif /* defined(HasMTMALLOC) */
+  PrintFeature("Solaris mtmalloc", supported);
+
   /* OpenMP */
   supported=MagickFalse;
   text[0]='\0';
 #if defined(HAVE_OPENMP)
-  supported=MagickTrue;
-  FormatString(text,"%u",(unsigned int) _OPENMP);
+  {
+    const char *omp_ver;
+    switch((unsigned int) _OPENMP)
+      {
+      case 199810: omp_ver = "1.0"; break; /* 1.0 October 1998 */
+      case 200203: omp_ver = "2.0"; break; /* 2.0 March 2002 */
+      case 200505: omp_ver = "2.5"; break; /* 2.5 May 2005 */
+      case 200805: omp_ver = "3.0"; break; /* 3.0 May, 2008 */
+      case 201107: omp_ver = "3.1"; break; /* 3.1 July 2011 */
+      case 201307: omp_ver = "4.0"; break; /* 4.0 July 2013 */
+      case 201511: omp_ver = "4.5"; break; /* 4.5 Nov 2015 */
+      case 201811: omp_ver = "5.0"; break; /* 5.0 Nov 2018 */
+      default: omp_ver = "?"; break;
+      }
+    supported=MagickTrue;
+    FormatString(text,"%u \"%s\"",(unsigned int) _OPENMP, omp_ver);
+  }
 #endif /* defined(HAVE_OPENMP) */
   PrintFeatureTextual("OpenMP", supported, text);
 
@@ -17051,7 +16925,7 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 #if defined(HasUMEM)
   supported=MagickTrue;
 #endif /* defined(HasUMEM) */
-  PrintFeature("UMEM", supported);
+  PrintFeature("Solaris umem", supported);
 
   /* WebP */
   supported=MagickFalse;
@@ -17354,7 +17228,7 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
     /*
       Support traditional alternate names for GraphicsMagick subcommands.
     */
-    static const char *command_names [] =
+    static const char command_names[][10] =
       {
         "animate",
         "compare",
@@ -17365,19 +17239,18 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
         "identify",
         "import",
         "mogrify",
-        "montage",
-        NULL
+        "montage"
       };
 
     unsigned int
       i;
 
     GetPathComponent(argv[0],BasePath,command);
-    for (i=0; command_names[i]; i++)
+    for (i=0; i < ArraySize(command_names); i++)
       if (LocaleCompare(command,command_names[i]) == 0)
         break;
 
-    if (command_names[i])
+    if (i < ArraySize(command_names))
       {
         /*
           Set command name to alternate name.
