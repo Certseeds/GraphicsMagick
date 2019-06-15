@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to June 8 2019</p>
+<p>This file was last updated to reflect changes up to June 14 2019</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -149,6 +149,7 @@ many extra checks.</li>
 clone_info-&gt;magick when throwing exception due to no support for
 format.</li>
 <li>Magick++/lib/Magick++/Drawable.h: Fix use of clang diagnostic syntax.</li>
+<li>DIB: Preserve PseudoClass opaque representation if ICO mask is opaque.</li>
 <li>JPEG reader: Restore ability to access detailed image properties
 while in 'ping' mode.</li>
 <li>JPEG reader: Base test for &quot;Unreasonable dimensions&quot; on original
@@ -166,6 +167,8 @@ strings refer to existing exception character strings.</li>
 from a file in <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>&#64;</span>name</a>' syntax if the path <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>&#64;</span>name</a>' exists.
 Previously it would attempt to read a list of file names from 'name'
 even if <a class="reference external" href="mailto:'&#37;&#52;&#48;name">'<span>&#64;</span>name</a>' did exist.</li>
+<li>Rendering: Short-circuit path parsing and return and error
+immediately if an error occurs.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">

@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to June 8 2019
+This file was last updated to reflect changes up to June 14 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -104,6 +104,8 @@ Bug fixes:
 
 * Magick++/lib/Magick++/Drawable.h: Fix use of clang diagnostic syntax.
 
+* DIB: Preserve PseudoClass opaque representation if ICO mask is opaque.
+
 * JPEG reader: Restore ability to access detailed image properties
   while in 'ping' mode.
 
@@ -130,6 +132,9 @@ Bug fixes:
   from a file in '@name' syntax if the path '@name' exists.
   Previously it would attempt to read a list of file names from 'name'
   even if '@name' did exist.
+
+* Rendering: Short-circuit path parsing and return and error
+  immediately if an error occurs.
 
 New Features:
 
