@@ -875,7 +875,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
         index,
         severityindex;
 
-      unsigned int
+      size_t
         offset;
 
       register char
@@ -1095,12 +1095,12 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
       WriteBlobStringWithEOL(image,"static const unsigned short message_dat_offsets[] =");
       WriteBlobStringWithEOL(image,"  {");
       offset=0;
-      FormatString(text, "    %u,",offset);
+      FormatString(text, "    %" MAGICK_SIZE_T_F "u,",(MAGICK_SIZE_T) offset);
       WriteBlobStringWithEOL(image,text);
       /* message 0 is reserved as the generic windows event message */
       /* WriteBlobStringWithEOL(image,"    \"%1\","); */
       offset += strlen("%1")+1;
-      FormatString(text, "    %u,",offset);
+      FormatString(text, "    %" MAGICK_SIZE_T_F "u,",(MAGICK_SIZE_T) offset);
       WriteBlobStringWithEOL(image,text);
       for (i=0; i < count; i++)
       {
@@ -1122,7 +1122,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             }
             /* FormatString(text, "    \"%s\",",fields[4]); */
             offset += strlen(fields[4])+1;
-            FormatString(text, "    %u,",offset);
+            FormatString(text, "    %" MAGICK_SIZE_T_F "u,",(MAGICK_SIZE_T) offset);
             WriteBlobStringWithEOL(image,text);
           }
       }

@@ -1,3 +1,7 @@
+2019-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/locale.c (WriteLOCALEImage): Reduce compilation warnings.
+
 2019-06-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am (dist-zstd): Use the maximum possible compression
