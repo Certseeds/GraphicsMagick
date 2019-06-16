@@ -40,7 +40,9 @@
 <ul class="simple">
 <li>coders/bmp.c (WriteBMPImage): Detect arithmetic overflow of
 image_size. Add more tracing. Reduce compilation warnings.
-(EncodeImage): Reduce compilation warnings.</li>
+(EncodeImage): Reduce compilation warnings.
+(WriteBMPImage): Assure that chromaticity uses double-precision
+for multiply before casting to unsigned integer.</li>
 <li>coders/wpg.c (ReallocColormap): Reduce compilation warnings.</li>
 <li>coders/braille.c (WriteBRAILLEImage): Reduce compilation
 warnings.</li>

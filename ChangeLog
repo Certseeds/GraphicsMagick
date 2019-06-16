@@ -3,6 +3,8 @@
 	* coders/bmp.c (WriteBMPImage): Detect arithmetic overflow of
 	image_size. Add more tracing. Reduce compilation warnings.
 	(EncodeImage): Reduce compilation warnings.
+	(WriteBMPImage): Assure that chromaticity uses double-precision
+	for multiply before casting to unsigned integer.
 
 	* coders/wpg.c (ReallocColormap): Reduce compilation warnings.
 
