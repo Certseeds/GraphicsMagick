@@ -176,13 +176,13 @@ static unsigned int WriteBRAILLEImage(const ImageInfo *image_info,
   register const PixelPacket
     *p;
 
-  register ssize_t
+  register unsigned long
     x;
 
-  size_t
+  unsigned long
     cell_height = 4;
 
-  ssize_t
+  unsigned long
     y;
 
   /*
@@ -236,18 +236,18 @@ static unsigned int WriteBRAILLEImage(const ImageInfo *image_info,
   if (image->colors == 2)
     polarity=PixelIntensityToQuantum(&image->colormap[0]) >=
       PixelIntensityToQuantum(&image->colormap[1]);
-  for (y=0; y < (ssize_t) image->rows; y+=(ssize_t) cell_height)
+  for (y=0; y < image->rows; y+=cell_height)
   {
     if ((y+cell_height) > image->rows)
-      cell_height = (size_t) (image->rows-y);
+      cell_height = (image->rows-y);
     p=AcquireImagePixels(image,0,y,image->columns,cell_height,&image->exception);
     if (p == (const PixelPacket *) NULL)
       break;
     indexes=AccessImmutableIndexes(image);
-    for (x=0; x < (ssize_t) image->columns; x+=2)
+    for (x=0; x < image->columns; x+=2)
     {
       unsigned char cell = 0;
-      int two_columns = x+1 < (ssize_t) image->columns;
+      unsigned long two_columns = x+1 < image->columns;
 
       do
       {
