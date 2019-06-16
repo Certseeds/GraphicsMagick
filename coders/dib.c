@@ -395,16 +395,16 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
 %
 %
 */
-static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
+static size_t EncodeImage(Image *image,const size_t bytes_per_line,
   const unsigned char *pixels,unsigned char *compressed_pixels)
 {
-  long
+  unsigned long
     y;
 
   register const unsigned char
     *p;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -420,14 +420,14 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
   p=pixels;
   q=compressed_pixels;
   i=0;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
-    for (x=0; x < (long) bytes_per_line; x+=i)
+    for (x=0; x < bytes_per_line; x+=i)
     {
       /*
         Determine runlength.
       */
-      for (i=1; ((x+i) < (long) bytes_per_line); i++)
+      for (i=1; ((x+i) < bytes_per_line); i++)
         if ((*(p+i) != *p) || (i == 255U))
           break;
       *q++=(unsigned char) i;

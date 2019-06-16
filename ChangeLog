@@ -2,6 +2,7 @@
 
 	* coders/dib.c (WriteDIBImage): Detect arithmetic overflow of
 	image_size. Reduce compilation warnings.
+	(EncodeImage): Reduce compilation warnings.
 
 	* coders/locale.c (WriteLOCALEImage): Reduce compilation warnings.
 
