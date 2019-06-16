@@ -1662,13 +1662,13 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
   int
     logging;
 
-  long
+  unsigned long
     y;
 
   register const PixelPacket
     *p;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -1894,9 +1894,9 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                     "  Output %u-bit PseudoClass pixels",
                                     bmp_info.bits_per_pixel);
             ExportPixelAreaOptionsInit(&export_options);
-            export_options.pad_bytes=(bytes_per_line - ((image->columns+7)/8));
+            export_options.pad_bytes=(unsigned long) (bytes_per_line - ((image->columns+7)/8));
             export_options.pad_value=0x00;
-            for (y=0; y < (long) image->rows; y++)
+            for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
@@ -1929,9 +1929,9 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                     "  Output %u-bit PseudoClass pixels",
                                     bmp_info.bits_per_pixel);
             ExportPixelAreaOptionsInit(&export_options);
-            export_options.pad_bytes=(bytes_per_line - ((image->columns+1)/2));
+            export_options.pad_bytes=(unsigned long) (bytes_per_line - ((image->columns+1)/2));
             export_options.pad_value=0x00;
-            for (y=0; y < (long) image->rows; y++)
+            for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
@@ -1964,8 +1964,8 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                     "  Output %u-bit PseudoClass pixels",
                                     bmp_info.bits_per_pixel);
             ExportPixelAreaOptionsInit(&export_options);
-            export_options.pad_bytes=(bytes_per_line - image->columns);
-            for (y=0; y < (long) image->rows; y++)
+            export_options.pad_bytes=(unsigned long) (bytes_per_line - image->columns);
+            for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
@@ -1995,13 +1995,13 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "  Output %u-bit DirectClass pixels",
                                     bmp_info.bits_per_pixel);
-            for (y=0; y < (long) image->rows; y++)
+            for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
                   break;
                 q=pixels+(image->rows-y-1)*bytes_per_line;
-                for (x=0; x < (long) image->columns; x++)
+                for (x=0; x < image->columns; x++)
                   {
                     *q++=ScaleQuantumToChar(p->blue);
                     *q++=ScaleQuantumToChar(p->green);
@@ -2013,7 +2013,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 if (bmp_info.bits_per_pixel == 24)
                   {
                     /* initialize padding bytes */
-                    for (x=3*image->columns; x < (long) bytes_per_line; x++)
+                    for (x=3*image->columns; x < bytes_per_line; x++)
                       *q++=0x00;
                   }
                 if (image->previous == (Image *) NULL)
@@ -2162,30 +2162,30 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           (void) WriteBlobLSBLong(image,0xff000000UL);  /* Alpha mask */
           (void) WriteBlobLSBLong(image,0x00000001L);   /* CSType==Calib. RGB */
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.red_primary.x*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.red_primary.x*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.red_primary.y*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.red_primary.y*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) (1.000f-(image->chromaticity.red_primary.x
-                                                  +image->chromaticity.red_primary.y)*0x3ffffff));
+                                  (magick_uint32_t) (1.000f-(image->chromaticity.red_primary.x
+                                                             +image->chromaticity.red_primary.y)*0x3ffffff));
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.green_primary.x*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.green_primary.x*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.green_primary.y*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.green_primary.y*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) (1.000f-(image->chromaticity.green_primary.x
-                                                  +image->chromaticity.green_primary.y)*0x3ffffff));
+                                  (magick_uint32_t) (1.000f-(image->chromaticity.green_primary.x
+                                                             +image->chromaticity.green_primary.y)*0x3ffffff));
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.blue_primary.x*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.blue_primary.x*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) image->chromaticity.blue_primary.y*0x3ffffff);
+                                  (magick_uint32_t) image->chromaticity.blue_primary.y*0x3ffffff);
           (void) WriteBlobLSBLong(image,
-                                  (long) (1.000f-(image->chromaticity.blue_primary.x
-                                                  +image->chromaticity.blue_primary.y)*0x3ffffff));
+                                  (magick_uint32_t) (1.000f-(image->chromaticity.blue_primary.x
+                                                             +image->chromaticity.blue_primary.y)*0x3ffffff));
 
-          (void) WriteBlobLSBLong(image,(long) bmp_info.gamma_scale.x*0xffff);
-          (void) WriteBlobLSBLong(image,(long) bmp_info.gamma_scale.y*0xffff);
-          (void) WriteBlobLSBLong(image,(long) bmp_info.gamma_scale.z*0xffff);
+          (void) WriteBlobLSBLong(image,(magick_uint32_t) bmp_info.gamma_scale.x*0xffff);
+          (void) WriteBlobLSBLong(image,(magick_uint32_t) bmp_info.gamma_scale.y*0xffff);
+          (void) WriteBlobLSBLong(image,(magick_uint32_t) bmp_info.gamma_scale.z*0xffff);
           if ((image->rendering_intent != UndefinedIntent) ||
               (color_profile_length != 0))
             {
@@ -2246,7 +2246,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                    image);
             }
           q=bmp_colormap;
-          for (i=0; i < (long) Min(image->colors,bmp_info.number_colors); i++)
+          for (i=0; i < Min(image->colors,bmp_info.number_colors); i++)
             {
               *q++=ScaleQuantumToChar(image->colormap[i].blue);
               *q++=ScaleQuantumToChar(image->colormap[i].green);
@@ -2254,7 +2254,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               if (type > 2)
                 *q++=(Quantum) 0x0;
             }
-          for ( ; i < (1L << bmp_info.bits_per_pixel); i++)
+          for ( ; i < (1UL << bmp_info.bits_per_pixel); i++)
             {
               *q++=(Quantum) 0x0;
               *q++=(Quantum) 0x0;
@@ -2263,10 +2263,10 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 *q++=(Quantum) 0x0;
             }
           if (type <= 2)
-            (void) WriteBlob(image,3*(1L << bmp_info.bits_per_pixel),
+            (void) WriteBlob(image,3*(1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
           else
-            (void) WriteBlob(image,4*(1L << bmp_info.bits_per_pixel),
+            (void) WriteBlob(image,4*(1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
           MagickFreeMemory(bmp_colormap);
         }
