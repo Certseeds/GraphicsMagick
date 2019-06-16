@@ -450,7 +450,7 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
   */
   *q++=0;
   *q++=0x01;
-  return(q-compressed_pixels);
+  return((size_t) (q-compressed_pixels));
 }
 
 /*
