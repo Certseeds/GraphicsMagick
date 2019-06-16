@@ -1,5 +1,8 @@
 2019-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (WriteDIBImage): Detect arithmetic overflow of
+	image_size. Reduce compilation warnings.
+
 	* coders/locale.c (WriteLOCALEImage): Reduce compilation warnings.
 
 2019-06-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
