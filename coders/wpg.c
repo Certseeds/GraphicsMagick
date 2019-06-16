@@ -236,14 +236,15 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
 }
 
 
-static MagickPassFail ReallocColormap(Image *image,size_t colors)
+static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
 {
   PixelPacket *colormap;
 
   colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
   if (colormap != (PixelPacket *) NULL)
     {
-      (void) memcpy(colormap,image->colormap,Min(image->colors,colors)*sizeof(PixelPacket));
+      (void) memcpy(colormap,image->colormap,
+                    (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
       MagickFreeMemory(image->colormap);
       image->colormap = colormap;
       image->colors = colors;

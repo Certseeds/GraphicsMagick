@@ -1,5 +1,7 @@
 2019-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReallocColormap): Reduce compilation warnings.
+
 	* coders/braille.c (WriteBRAILLEImage): Reduce compilation
 	warnings.
 
