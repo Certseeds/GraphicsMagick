@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to June 15 2019
+This file was last updated to reflect changes up to June 15, 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
