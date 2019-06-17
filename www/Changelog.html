@@ -38,6 +38,12 @@
 <p>2019-06-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (RegisterPNGImage): Pass correct size value to
+strlcat().  Under Apple's OS X (and possibly other targets)
+strlcat() writes bytes beyond what it needs to (but within the
+range it is allowed to) causing a crash due to the wrong limit
+value.  Fixes SourceForge issue #609 <cite>gm identify foo.png</cite> crashes
+on macOS (v 1.3.32).</li>
 <li>www/Changes.rst: Update ChangeLog links due to new year, and
 1.3.32 release.</li>
 </ul>

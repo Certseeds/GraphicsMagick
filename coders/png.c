@@ -6427,26 +6427,26 @@ ModuleExport void RegisterPNGImage(void)
 
       *version='\0';
 #if defined(PNG_LIBPNG_VER_STRING)
-      (void) strlcat(version,"libpng ",MaxTextExtent);
-      (void) strlcat(version,PNG_LIBPNG_VER_STRING,MaxTextExtent);
+      (void) strlcat(version,"libpng ",sizeof(version));
+      (void) strlcat(version,PNG_LIBPNG_VER_STRING,sizeof(version));
 #if (PNG_LIBPNG_VER > 10005)
       if (LocaleCompare(PNG_LIBPNG_VER_STRING,png_get_header_ver(NULL)) != 0)
         {
-          (void) strlcat(version,",",MaxTextExtent);
-          (void) strlcat(version,png_get_libpng_ver(NULL),MaxTextExtent);
+          (void) strlcat(version,",",sizeof(version));
+          (void) strlcat(version,png_get_libpng_ver(NULL),sizeof(version));
         }
 #endif
 #endif
 
 #if defined(ZLIB_VERSION)
       if (*version != '\0')
-        (void) strlcat(version,", ",MaxTextExtent);
-      (void) strlcat(version,"zlib ",MaxTextExtent);
-      (void) strlcat(version,ZLIB_VERSION,MaxTextExtent);
+        (void) strlcat(version,", ",sizeof(version));
+      (void) strlcat(version,"zlib ",sizeof(version));
+      (void) strlcat(version,ZLIB_VERSION,sizeof(version));
       if (LocaleCompare(ZLIB_VERSION,zlib_version) != 0)
         {
-          (void) strlcat(version,",",MaxTextExtent);
-          (void) strlcat(version,zlib_version,MaxTextExtent);
+          (void) strlcat(version,",",sizeof(version));
+          (void) strlcat(version,zlib_version,sizeof(version));
         }
 #endif
 
