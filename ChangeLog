@@ -1,5 +1,9 @@
 2019-06-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/montage.c (MontageImages): Fix wrong length argument to
+	strlcat() when building montage directory, which could allow heap
+	overwrite.
+
 	* coders/png.c (RegisterPNGImage): Pass correct size value to
 	strlcat().  Under Apple's OS X (and possibly other targets)
 	strlcat() writes bytes beyond what it needs to (but within the
