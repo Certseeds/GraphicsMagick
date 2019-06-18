@@ -4517,6 +4517,10 @@ MagickExport size_t MagickStrlCat(char *dst, const char *src, const size_t size)
       char
         *p;
 
+#if defined(MAGICK_STRL_CHECK)
+      (void) memset(dst+length,0,size-length);
+#endif /* if defined(MAGICK_STRL_CHECK) */
+
       for ( p = dst + length ;
             (*q != 0) && (length < size - 1) ;
             length++, p++, q++ )
@@ -4586,6 +4590,9 @@ MagickExport size_t MagickStrlCpy(char *dst, const char *src, const size_t size)
   assert(size >= 1);
   /* assert(((dst+size) <= src) || (dst >= (src+size))); */
 
+#if defined(MAGICK_STRL_CHECK)
+  (void) memset(dst,0,size);
+#endif /* if defined(MAGICK_STRL_CHECK) */
 
   /*
     Copy src to dst within bounds of size-1.

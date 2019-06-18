@@ -1,5 +1,8 @@
 2019-06-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/utility.c (MagickStrlCat, MagickStrlCpy): Add debug
+	checks enabled by MAGICK_STRL_CHECK.
+
 	* magick/montage.c (MontageImages): Fix wrong length argument to
 	strlcat() when building montage directory, which could allow heap
 	overwrite.
