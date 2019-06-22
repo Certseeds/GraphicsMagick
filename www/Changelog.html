@@ -35,6 +35,29 @@
 <div class="document">
 
 
+<p>2019-06-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/animate.c (MagickXAnimateImages): Fix memory leak of
+scene_info.pixels.</li>
+<li>magick/display.c (MagickXDisplayImage): Fix heap overwrite of
+windows-&gt;image.name and windows-&gt;image.icon_name buffers.  It
+appears that the code assumed that CloneString() would always
+allocated a string at least MaxTextExtent in size. I assume that
+this issue has existed for a very long time since CloneString()
+was re-written many years ago.</li>
+<li>coders/caption.c (ReadCAPTIONImage): The CAPTION reader did not
+appear to work at all any more.  Now it works again, but still not
+very well.</li>
+<li>magick/command.c: Re-implement '&#64;' file inclusion support for
+-comment, -draw, -format, and -label which was removed for the
+1.3.32 release.  Note that arguments from untrusted sources will
+still need to be sanitized to detect attempts to subvert this
+feature to access file data, but this feature has always been
+supported by GraphicsMagick and it originated early in the
+development of ImageMagick.</li>
+</ul>
+</blockquote>
 <p>2019-06-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

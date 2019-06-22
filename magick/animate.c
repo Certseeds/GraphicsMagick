@@ -1987,7 +1987,7 @@ MagickXAnimateImages(Display *display,
             Copy X pixmap to Image window.
           */
           MagickXGetPixelPacket(display,visual_info,map_info,resource_info,
-            image_list[scene],&scene_info); /* FIXME leak here */
+            image_list[scene],&scene_info);
           windows->image.pixel_info=(&scene_info);
           windows->image.ximage->width=(unsigned int) image->columns;
           windows->image.ximage->height=(unsigned int) image->rows;
@@ -2668,6 +2668,7 @@ MagickXAnimateImages(Display *display,
   }
   MagickFreeMemory(windows->image.pixmaps);
   MagickFreeMemory(windows->image.matte_pixmaps);
+  MagickFreeMemory(scene_info.pixels);
   if (nexus == (Image *) NULL)
     {
       /*
