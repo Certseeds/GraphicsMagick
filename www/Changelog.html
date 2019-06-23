@@ -38,6 +38,10 @@
 <p>2019-06-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/attribute.c (GenerateEXIFAttribute): Added range checks
+and tracing.  Fixes oss-fuzz 14998
+&quot;graphicsmagick/coder_JPEG_fuzzer: Heap-buffer-overflow in
+Read32s&quot;.  This is a tiny read overflow.</li>
 <li>coders/miff.c (ReadMIFFImage): Similar fix as to mpc.c</li>
 <li>coders/mpc.c (ReadMPCImage): Fix faulty signed overflow logic
 for profiles[i].length which still allowed overflow.  Fixes

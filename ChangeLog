@@ -1,5 +1,10 @@
 2019-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/attribute.c (GenerateEXIFAttribute): Added range checks
+	and tracing.  Fixes oss-fuzz 14998
+	"graphicsmagick/coder_JPEG_fuzzer: Heap-buffer-overflow in
+	Read32s".  This is a tiny read overflow.
+
 	* coders/miff.c (ReadMIFFImage): Similar fix as to mpc.c
 
 	* coders/mpc.c (ReadMPCImage): Fix faulty signed overflow logic
