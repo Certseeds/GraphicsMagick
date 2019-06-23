@@ -2606,7 +2606,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     primitive_type=UndefinedPrimitive;
     current=graphic_context[n]->affine;
     IdentityAffine(&affine);
-    (void) memset(token,0,primitive_extent+1);
+    token[0]='\0';
     switch (*keyword)
     {
       case ';':
