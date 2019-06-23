@@ -1069,7 +1069,11 @@ produces an image comment of <strong>MIFF:bird.miff 512x480</strong> for an imag
 titled <strong>bird.miff</strong> and whose width is 512 and height is 480.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the first character of <em>string</em> is <em>@</em>, the image comment
-is read from a file titled by the remaining characters in the string.</font></td></tr></table>
+is read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since otherwise the content of an
+arbitrary readable file could be incorporated in a comment in the
+output file (a security risk).</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the -comment option appears multiple times, only the last comment is
 stored.</font></td></tr></table>
@@ -2154,8 +2158,10 @@ annotates the image with <tt>MIFF:bird.miff 512x480</tt> for an image titled
 <tt>bird.miff</tt>
 and whose width is 512 and height is 480.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-If the first character of <em>string</em> is <em>@</em>, the text is read from
-a file titled by the remaining characters in the string.</font></td></tr></table>
+If the first character of <em>string</em> is <em>@</em>, the text is read
+from a file titled by the remaining characters in the string.  Please
+note that if the string comes from an untrusted source that it should
+be sanitized before use (a security risk).</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 <strong>Rotate</strong> rotates subsequent shape primitives and text primitives about
 the origin of the main image. If the <strong>-region</strong> option precedes the
@@ -2615,8 +2621,11 @@ For example,</font></td></tr></table>
 displays <strong>MIFF:bird.miff 512x480</strong> for an image
 titled <strong>bird.miff</strong> and whose width is 512 and height is 480.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-If the first character of <em>string</em> is <strong>@</strong>, the format
-is read from a file titled by the remaining characters in the string.</font></td></tr></table>
+If the first character of <em>string</em> is <strong>@</strong>, the format is
+read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since this may be used to incorporate
+any readable file on the system (a security risk).</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The values of image type (<strong>%p</strong>) which may be returned include:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
@@ -3192,8 +3201,12 @@ produces an image label of <strong>MIFF:bird.miff 512x480</strong> for an image 
 <strong>bird.miff</strong>
 and whose width is 512 and height is 480.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-If the first character of <em>string</em> is <em>@</em>, the image label is
-read from a file titled by the remaining characters in the string.</font></td></tr></table>
+If the first character of <em>string</em> is <em>@</em>, the image label
+is read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since otherwise the content of an
+arbitrary readable file might be incorporated into the image
+label (a security risk).</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the -label option appears multiple times, only the last label is
 stored.</font></td></tr></table>

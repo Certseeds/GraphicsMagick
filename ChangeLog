@@ -1,3 +1,11 @@
+2019-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc: Add notes about security hazards due to
+	commands which support a '@filename' syntax.
+
+	* www/security.rst: Add notes about security hazards due to
+	commands which support a '@filename' syntax.
+
 2019-06-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Assure that 'token' is initialized.
