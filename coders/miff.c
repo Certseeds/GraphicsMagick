@@ -1446,7 +1446,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         {
           if (profiles[i].length > 0)
             {
-              if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
+              if ((((magick_off_t) profiles[i].length) > 0) &&
                   ((BlobIsSeekable(image)
                     && (GetBlobSize(image) - TellBlob(image)) >
                     (magick_off_t) profiles[i].length) ||

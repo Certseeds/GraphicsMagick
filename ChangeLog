@@ -1,5 +1,12 @@
 2019-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (ReadMIFFImage): Similar fix as to mpc.c
+
+	* coders/mpc.c (ReadMPCImage): Fix faulty signed overflow logic
+	for profiles[i].length which still allowed overflow.  Fixes
+	oss-fuzz issue 15190 "graphicsmagick/coder_MPC_fuzzer:
+	Out-of-memory in graphicsmagick_coder_MPC_fuzzer".
+
 	* doc/options.imdoc: Add notes about security hazards due to
 	commands which support a '@filename' syntax.
 

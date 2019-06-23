@@ -825,7 +825,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           if (profiles[i].length > 0)
             {
-              if ((profiles[i].length - ((magick_off_t) profiles[i].length) == 0) &&
+              if ((((magick_off_t) profiles[i].length) > 0) &&
                   ((BlobIsSeekable(image)
                     && (GetBlobSize(image) - TellBlob(image)) >
                     (magick_off_t) profiles[i].length) ||
