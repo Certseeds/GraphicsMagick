@@ -1,5 +1,9 @@
 2019-06-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Assure that 'token' is initialized.
+	Fixes oss-fuzz issue 14897 "graphicsmagick/coder_MVG_fuzzer:
+	Use-of-uninitialized-value in DrawImage".
+
 	* magick/animate.c (MagickXAnimateImages): Fix memory leak of
 	scene_info.pixels.
 
