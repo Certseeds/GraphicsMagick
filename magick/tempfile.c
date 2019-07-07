@@ -242,7 +242,7 @@ MagickExport int AcquireTemporaryFileDescriptor(char *filename)
     {
       "MAGICK_TMPDIR"
 #if defined(POSIX)
-      ,"TMPDIR",
+      ,"TMPDIR"
 #endif /* defined(POSIX) */
 #if defined(MSWINDOWS) || defined(__CYGWIN__)
       ,"TMP"

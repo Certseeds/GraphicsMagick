@@ -1,3 +1,9 @@
+2019-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/tempfile.c (AcquireTemporaryFileDescriptor): Fix
+	compilation under Cygwin.  Patch by Marco Atzeri and submitted via
+	email to the graphicsmagick-help mailing list on Fri, 5 Jul 2019.
+
 2019-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Added range checks
