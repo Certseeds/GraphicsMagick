@@ -1,5 +1,11 @@
 2019-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (WriteOnePNGImage): Fix saving to palette when
+	image has an alpha channel but no color is marked as transparent.
+	Patch submitted by Przemysław Sobala via SourceForge patch #61
+	"WriteOnePNGImage(): Fix saving to palette when image has an alpha
+	channel but no color is marked as transparent".
+
 	* doc/options.imdoc (characters): Fix -format documentation to
 	reflect that '%r' returns the image type.  Patch submitted by
 	Przemysław Sobala via SourceForge patch #60 "Fix documentation
