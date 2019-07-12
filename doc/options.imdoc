@@ -2441,7 +2441,7 @@ should be sanitized before use since this may be used to incorporate
 any readable file on the system (a security risk).</pp>
 
 <pp>
-The values of image type (<s>%p</s>) which may be returned include:</pp>
+The values of image type (<s>%r</s>) which may be returned include:</pp>
 
 <pp><pre>
      Bilevel
