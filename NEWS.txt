@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to July 19, 2019
+This file was last updated to reflect changes up to July 20, 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.33 (July ??, 2019)
+1.3.33 (July 20, 2019)
 ==========================
 
 Special Issues:
@@ -39,7 +39,7 @@ Security Fixes:
 
 * GraphicsMagick is now participating in Google's oss-fuzz project due
   to the contributions and assistance of Alex Gaynor. Since February 4
-  2018, ??? issues have been opened by oss-fuzz and ??? of those
+  2018, 353 issues have been opened by oss-fuzz and 338 of those
   issues have been resolved.  The issues list is available at
   https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
   "graphicsmagick".  Issues are available for anyone to view and
