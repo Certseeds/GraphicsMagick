@@ -40,6 +40,7 @@
 #include "magick/studio.h"
 #include "magick/attribute.h"
 #include "magick/blob.h"
+#include "magick/log.h"
 #include "magick/profile.h"
 #include "magick/render.h"
 #include "magick/tempfile.h"
@@ -1592,6 +1593,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     profile_length;
 
   MagickBool
+    logging,
     gpsfoundstack[DE_STACK_SIZE],
     gpsfound;
 
@@ -1599,7 +1601,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     debug=MagickFalse;
 
   assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
-
+  logging=IsEventLogging();;
   {
     const char *
       env_value;
@@ -1622,16 +1624,28 @@ GenerateEXIFAttribute(Image *image,const char *specification)
   final=AllocateString("");
   profile_info=GetImageProfile(image,"EXIF",&profile_length);
   if (profile_info == 0)
-    goto generate_attribute_failure;
+    {
+      if (logging)
+        (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                      "No EXIF profile present");
+      goto generate_attribute_failure;
+    }
   /*
     If EXIF data exists, then try to parse the request for a tag in
     the form "EXIF:key".
   */
   key=(char *) NULL;
   if (strlen(specification) > 5)
-    key=(char *) &specification[5]; /* "EXIF:key" */
+    {
+      key=(char *) &specification[5]; /* "EXIF:key" */
+    }
   else
-    goto generate_attribute_failure;
+    {
+      if (logging)
+        (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                              "No EXIF:key found");
+      goto generate_attribute_failure;
+    }
   while (isspace((int) (*key)))
     key++;
   all=0;
@@ -1668,7 +1682,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
         key++;
         n=strlen(key);
         if (n != 4)
-          goto generate_attribute_failure;
+          {
+            if (logging)
+              (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                    "EXIF: Hex tag not 4 bytes");
+            goto generate_attribute_failure;
+          }
         else
           {
             /*
@@ -1690,7 +1709,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                         if ((c >= 'a') && (c <= 'f'))
                           tag|=c-('a'-10);
                         else
-                          goto generate_attribute_failure;
+                          {
+                            if (logging)
+                              (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                    "EXIF: Failed to parse hex tag");
+                            goto generate_attribute_failure;
+                          }
                   }
               } while (*key != '\0');
           }
@@ -1702,13 +1726,19 @@ GenerateEXIFAttribute(Image *image,const char *specification)
           Try to match the text with a tag name instead.
         */
         tag=EXIFDescriptionToTag(key);
-        if (debug)
-          fprintf(stderr,"Found tag %d for key \"%s\"\n",tag,key);
+        if (logging && debug)
+          (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                "EXIF: Found tag %d for key \"%s\"\n",tag,key);
         break;
       }
     }
   if (tag < 0)
-    goto generate_attribute_failure;;
+    {
+      if (logging)
+        (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                              "EXIF: Negative tag value!");
+      goto generate_attribute_failure;;
+    }
   length=profile_length;
   info=(unsigned char *) profile_info;
   while (length != 0)
@@ -1728,7 +1758,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
       break;
     }
   if (length < 16)
-    goto generate_attribute_failure;
+    {
+      if (logging)
+        (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                              "EXIF: Tag length length < 16 (have %"MAGICK_SIZE_T_F"u )",
+                              (MAGICK_SIZE_T)length);
+      goto generate_attribute_failure;
+    }
   tiffp=info;
   tiffp_max=tiffp+length;
   id=Read16u(0,tiffp);
@@ -1739,15 +1775,32 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     if (id == 0x4D4D) /* MSB */
       morder=1;
     else
-      goto generate_attribute_failure;
+      {
+        if (logging)
+          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                "EXIF: Unknown byte order (%04x)",
+                                morder);
+        goto generate_attribute_failure;
+      }
   if (Read16u(morder,tiffp+2) != 0x002a)
-    goto generate_attribute_failure;
+    {
+      if (logging)
+          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                "EXIF: Expected 0x002a!");
+      goto generate_attribute_failure;
+    }
   /*
     This is the offset to the first IFD.
   */
   offset=Read32u(morder,tiffp+4);
   if (offset >= length)
-    goto generate_attribute_failure;
+    {
+      if (logging)
+        (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                              "EXIF: Offset (%lu) is > length (%"MAGICK_SIZE_T_F"u)!",
+                              offset, length);
+      goto generate_attribute_failure;
+    }
   /*
     Set the pointer to the first IFD and follow it were it leads.
   */
@@ -1771,7 +1824,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
         Limit the number of entries parsed to MAX_TAGS_PER_IFD.
       */
       if ((ifdp < tiffp) || (ifdp+2 > tiffp_max))
-        goto generate_attribute_failure;
+        {
+          if (logging)
+            (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                  "EXIF: ifdp out of range!");
+          goto generate_attribute_failure;
+        }
       nde=Read16u(morder,ifdp);
       if (nde > MAX_TAGS_PER_IFD)
         nde=MAX_TAGS_PER_IFD;
@@ -1792,8 +1850,9 @@ GenerateEXIFAttribute(Image *image,const char *specification)
           pde=(unsigned char *) (ifdp+2+(12*de));
           if (pde + 12 > tiffp + length)
             {
-              if (debug)
-                fprintf(stderr, "EXIF: Invalid Exif, entry is beyond metadata limit.\n");
+              if (logging)
+                (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                      "EXIF: Invalid Exif, entry is beyond metadata limit.");
               goto generate_attribute_failure;
             }
           t=Read16u(morder,pde); /* get tag value */
@@ -1804,8 +1863,9 @@ GenerateEXIFAttribute(Image *image,const char *specification)
           n=MagickArraySize(c,format_bytes[f]);
           if ((n == 0) && (c != 0) && (format_bytes[f] != 0))
             {
-              if (debug)
-                fprintf(stderr, "EXIF: Invalid Exif, too many components (%u).\n",c);
+              if (logging)
+                (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                      "EXIF: Invalid Exif, too many components (%u).",c);
               goto generate_attribute_failure;
             }
           if (n <= 4)
@@ -1874,7 +1934,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                 case EXIF_FMT_SBYTE:
                   {
                     /* 8-bit signed integer */
-                    FormatString(s,"%ld",(long) (*(char *) pval));
+                    FormatString(s,"%d",(int) (*(char *) pval));
                     value=AllocateString(s);
                     break;
                   }
@@ -1906,6 +1966,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                 case EXIF_FMT_SSHORT:
                   {
                     /* 16-bit signed integer */
+                    if ((pval+sizeof(magick_uint16_t)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%hd",Read16u(morder,pval));
                     value=AllocateString(s);
                     break;
@@ -1913,12 +1980,26 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                 case EXIF_FMT_USHORT:
                   {
                     /* 16-bit unsigned integer */
+                    if ((pval+sizeof(magick_uint16_t)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%hu",Read16s(morder,pval));
                     value=AllocateString(s);
                     break;
                   }
                 case EXIF_FMT_ULONG:
                   {
+                    if ((pval+sizeof(magick_uint32_t)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     offset=Read32u(morder,pval);
                     /*
                       Only report value if this tag was requested.
@@ -1934,6 +2015,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SLONG:
                   {
+                    if ((pval+sizeof(magick_uint32_t)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%d",(int) Read32s(morder,pval));
                     value=AllocateString(s);
                     break;
@@ -1945,6 +2033,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                          t == GPS_LONGITUDE ||
                          t == GPS_TIMESTAMP))
                       {
+                        if ((pval+6*sizeof(magick_uint32_t)) > tiffp_max)
+                          {
+                            if (logging)
+                              (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                    "EXIF: Offset out of address range!");
+                            goto generate_attribute_failure;
+                          }
                         FormatString(s,"%u/%u,%u/%u,%u/%u"
                                      ,(unsigned) Read32u(morder,pval),
                                      (unsigned) Read32u(morder,4+pval)
@@ -1956,6 +2051,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                       }
                     else
                       {
+                        if ((pval+2*sizeof(magick_uint32_t)) > tiffp_max)
+                          {
+                            if (logging)
+                              (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                    "EXIF: Offset out of address range!");
+                            goto generate_attribute_failure;
+                          }
                         FormatString(s,"%u/%u"
                                      ,(unsigned) Read32u(morder,pval),
                                      (unsigned) Read32u(morder,4+pval)
@@ -1966,6 +2068,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SRATIONAL:
                   {
+                    if ((pval+2*sizeof(magick_uint32_t)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%d/%d",(int) Read32s(morder,pval),
                                  (int) Read32s(morder,4+pval));
                     value=AllocateString(s);
@@ -1973,12 +2082,26 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SINGLE:
                   {
+                    if ((pval+sizeof(float)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%f",(double) *(float *) pval);
                     value=AllocateString(s);
                     break;
                   }
                 case EXIF_FMT_DOUBLE:
                   {
+                    if ((pval+sizeof(double)) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     FormatString(s,"%f",*(double *) pval);
                     value=AllocateString(s);
                     break;
@@ -1996,6 +2119,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                     MagickBool
                       binary=MagickFalse;
 
+                    if ((pval+n) > tiffp_max)
+                      {
+                        if (logging)
+                          (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
+                                                "EXIF: Offset out of address range!");
+                        goto generate_attribute_failure;
+                      }
                     allocation_size=n+1;
                     for (a=0; a < n; a++)
                       if (!(isprint((int) pval[a])))

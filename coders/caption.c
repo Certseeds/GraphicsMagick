@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -72,15 +72,30 @@
 %
 %
 */
+#define ThrowCAPTIONException(code_,reason_,image_) \
+do { \
+  if (draw_info)               \
+    DestroyDrawInfo(draw_info);                 \
+  MagickFreeMemory(caption); \
+  if (code_ > exception->severity) \
+    { \
+      ThrowException(exception,code_,reason_,image_ ? (image_)->filename : 0); \
+    } \
+  if (image_) \
+    { \
+       DestroyImageList(image_); \
+    } \
+  return((Image *) NULL); \
+} while (0);
 static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
   char
-    *caption,
+    *caption = (char *) NULL,
     geometry[MaxTextExtent];
 
   DrawInfo
-    *draw_info;
+    *draw_info = (DrawInfo *) NULL;
 
   Image
     *image;
@@ -89,13 +104,16 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
     *p,
     *q;
 
-  register long
+  size_t
+    length;
+
+  register size_t
     i;
 
   TypeMetric
     metrics;
 
-  unsigned int
+  MagickPassFail
     status;
 
   /*
@@ -107,39 +125,18 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   if (image->columns == 0)
-    ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+    ThrowCAPTIONException(OptionError,MustSpecifyImageSize,image);
   if (*image_info->filename != '@')
     caption=AllocateString(image_info->filename);
   else
     {
-      unsigned long
-        length;
-
       /*
         Read caption from file.
       */
       (void) strlcpy(image->filename,image_info->filename+1,MaxTextExtent);
-      status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-      if (status == False)
-        ThrowReaderException(FileOpenError,UnableToOpenFile,image);
-      length=MaxTextExtent;
-      caption=MagickAllocateMemory(char *,length);
-      p=caption;
-      if (caption != (char *) NULL)
-        while (ReadBlobString(image,p) != (char *) NULL)
-        {
-          p+=strlen(p);
-          if ((p-caption+MaxTextExtent+1) < (long) length)
-            continue;
-          length<<=1;
-          MagickReallocMemory(char *,caption,length);
-          if (caption == (char *) NULL)
-            break;
-          p=caption+strlen(caption);
-        }
+      caption=FileToBlob(image->filename,&length,exception);
       if (caption == (char *) NULL)
-        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-      CloseBlob(image);
+        ThrowCAPTIONException(FileOpenError,UnableToOpenFile,image);
     }
   /*
     Format caption.
@@ -153,12 +150,17 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   {
     *q++=(*p);
     *q='\0';
+    /*
+      FIXME: The algorithm to get the type metrics is not based on
+      new-line delimited strings.  Instead it seems call
+      GetTypeMetrics() for each character position.  This very slow!.
+    */
     status=GetTypeMetrics(image,draw_info,&metrics);
-    if (status == False)
+    if (status == MagickFail)
       {
         DestroyDrawInfo(draw_info);
         MagickFreeMemory(caption);
-        ThrowReaderException(TypeError,UnableToGetTypeMetrics,image);
+        ThrowCAPTIONException(TypeError,UnableToGetTypeMetrics,image);
       }
     if ((metrics.width+metrics.max_advance/2) < image->columns)
       continue;

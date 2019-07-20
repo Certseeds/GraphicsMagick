@@ -395,16 +395,16 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
 %
 %
 */
-static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
+static size_t EncodeImage(Image *image,const size_t bytes_per_line,
   const unsigned char *pixels,unsigned char *compressed_pixels)
 {
-  long
+  unsigned long
     y;
 
   register const unsigned char
     *p;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -420,14 +420,14 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
   p=pixels;
   q=compressed_pixels;
   i=0;
-  for (y=0; y < (long) image->rows; y++)
+  for (y=0; y < image->rows; y++)
   {
-    for (x=0; x < (long) bytes_per_line; x+=i)
+    for (x=0; x < bytes_per_line; x+=i)
     {
       /*
         Determine runlength.
       */
-      for (i=1; ((x+i) < (long) bytes_per_line); i++)
+      for (i=1; ((x+i) < bytes_per_line); i++)
         if ((*(p+i) != *p) || (i == 255U))
           break;
       *q++=(unsigned char) i;
@@ -450,7 +450,7 @@ static size_t EncodeImage(Image *image,const unsigned long bytes_per_line,
   */
   *q++=0;
   *q++=0x01;
-  return(q-compressed_pixels);
+  return((size_t) (q-compressed_pixels));
 }
 
 /*
@@ -1255,7 +1255,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
   DIBInfo
     dib_info;
 
-  long
+  unsigned long
     y;
 
   register const PixelPacket
@@ -1264,7 +1264,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
   register const IndexPacket
     *indexes;
 
-  register long
+  register unsigned long
     i,
     x;
 
@@ -1278,8 +1278,9 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
   unsigned int
     status;
 
-  unsigned long
-    bytes_per_line;
+  size_t
+    bytes_per_line,
+    image_size;
 
   ImageCharacteristics
     characteristics;
@@ -1338,12 +1339,15 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
     bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
   if (bytes_per_line == 0)
     ThrowWriterException(CoderError,ArithmeticOverflow,image);
+  image_size=MagickArraySize(bytes_per_line,image->rows);
+  if ((image_size == 0) || ((image_size & 0xffffffff) != image_size))
+    ThrowWriterException(CoderError,ArithmeticOverflow,image);
   dib_info.header_size=40;
   dib_info.width=(long) image->columns;
   dib_info.height=(long) image->rows;
   dib_info.planes=1;
   dib_info.compression=0;
-  dib_info.image_size=bytes_per_line*image->rows;
+  dib_info.image_size=(magick_uint32_t) image_size;
   dib_info.x_pixels=75*39;
   dib_info.y_pixels=75*39;
   if (image->units == PixelsPerInchResolution)
@@ -1374,7 +1378,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
       /*
         Convert PseudoClass image to a DIB monochrome image.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
       {
         p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
         if (p == (const PixelPacket *) NULL)
@@ -1383,7 +1387,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         q=pixels+(image->rows-y-1)*bytes_per_line;
         bit=0;
         byte=0;
-        for (x=0; x < (long) image->columns; x++)
+        for (x=0; x < image->columns; x++)
         {
           byte<<=1;
           byte|=indexes[x] ? 0x01 : 0x00;
@@ -1399,7 +1403,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
        if (bit != 0)
          *q++=byte << (8-bit);
        /* initialize padding bytes */
-       for (x=(long) (image->columns+7)/8; x < (long) bytes_per_line; x++)
+       for (x=(image->columns+7)/8; x < bytes_per_line; x++)
          *q++=0x00;
        if (image->previous == (Image *) NULL)
          if (QuantumTick(y,image->rows))
@@ -1415,20 +1419,20 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
       /*
         Convert PseudoClass packet to DIB pixel.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
       {
         p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
         if (p == (const PixelPacket *) NULL)
           break;
         indexes=AccessImmutableIndexes(image);
         q=pixels+(image->rows-y-1)*bytes_per_line;
-        for (x=0; x < (long) image->columns; x++)
+        for (x=0; x < image->columns; x++)
         {
           *q++=indexes[x];
           p++;
         }
        /* initialize padding bytes */
-       for (; x < (long) bytes_per_line; x++)
+       for (; x < bytes_per_line; x++)
          *q++=0x00;
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
@@ -1445,13 +1449,13 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
       /*
         Convert DirectClass packet to DIB RGB pixel.
       */
-      for (y=0; y < (long) image->rows; y++)
+      for (y=0; y < image->rows; y++)
       {
         p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
         if (p == (const PixelPacket *) NULL)
           break;
         q=pixels+(image->rows-y-1)*bytes_per_line;
-        for (x=0; x < (long) image->columns; x++)
+        for (x=0; x < image->columns; x++)
         {
           *q++=ScaleQuantumToChar(p->blue);
           *q++=ScaleQuantumToChar(p->green);
@@ -1464,7 +1468,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         if (dib_info.bits_per_pixel == 24)
           {
             /* initialize padding bytes */
-            for (x=3*image->columns; x < (long) bytes_per_line; x++)
+            for (x=3*image->columns; x < bytes_per_line; x++)
               *q++=0x00;
           }
         if (image->previous == (Image *) NULL)
@@ -1530,21 +1534,21 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
           ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
         }
       q=dib_colormap;
-      for (i=0; i < (long) Min(image->colors,dib_info.number_colors); i++)
+      for (i=0; i < Min(image->colors,dib_info.number_colors); i++)
       {
         *q++=ScaleQuantumToChar(image->colormap[i].blue);
         *q++=ScaleQuantumToChar(image->colormap[i].green);
         *q++=ScaleQuantumToChar(image->colormap[i].red);
         *q++=(Quantum) 0x0;
       }
-      for ( ; i < (1L << dib_info.bits_per_pixel); i++)
+      for ( ; i < (1U << dib_info.bits_per_pixel); i++)
       {
         *q++=(Quantum) 0x0;
         *q++=(Quantum) 0x0;
         *q++=(Quantum) 0x0;
         *q++=(Quantum) 0x0;
       }
-      (void) WriteBlob(image,4*(1 << dib_info.bits_per_pixel),
+      (void) WriteBlob(image,4*(1U << dib_info.bits_per_pixel),
         (char *) dib_colormap);
       MagickFreeMemory(dib_colormap);
     }

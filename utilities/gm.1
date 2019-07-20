@@ -1,4 +1,4 @@
-.TH gm 1 "2019/01/30" "GraphicsMagick"
+.TH gm 1 "2019/07/12" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -744,6 +744,10 @@ titled \fBbird.miff\fP and whose width is 512 and height is 480.
 
 If the first character of \fIstring\fP is \fI@\fP, the image comment
 is read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since otherwise the content of an
+arbitrary readable file could be incorporated in a comment in the
+output file (a security risk).
 
 If the -comment option appears multiple times, only the last comment is
 stored.
@@ -1131,11 +1135,26 @@ specified geometry extends beyond the dimensions of the input image.
 
 The events parameter specifies which events are to be logged.  It
 can be either None, All, or a comma-separated list
-consisting of one or more of the following domains: Annotate,
-Blob, Cache, Coder, Configure,
-Deprecate, Error, Exception, Locale,
-Render,Resource, TemporaryFile,
-Transform, Warning, X11, or User.
+consisting of one or more of the following domains:
+Annotate,
+Blob,
+Cache,
+Coder,
+Configure,
+Deprecate,
+Error,
+Exception,
+FatalError,
+Information,
+Locale,
+Option,
+Render,
+Resource,
+TemporaryFile,
+Transform,
+User.
+Warning, or
+X11,
 For example, to log cache and blob events, use
 
     gm convert -debug "Cache,Blob" rose: rose.png
@@ -2077,8 +2096,10 @@ annotates the image with MIFF:bird.miff 512x480 for an image titled
 bird.miff
 and whose width is 512 and height is 480.
 
-If the first character of \fIstring\fP is \fI@\fP, the text is read from
-a file titled by the remaining characters in the string.
+If the first character of \fIstring\fP is \fI@\fP, the text is read
+from a file titled by the remaining characters in the string.  Please
+note that if the string comes from an untrusted source that it should
+be sanitized before use (a security risk).
 
 \fBRotate\fP rotates subsequent shape primitives and text primitives about
 the origin of the main image. If the \fB-region\fP option precedes the
@@ -2402,10 +2423,13 @@ For example,
 displays \fBMIFF:bird.miff 512x480\fP for an image
 titled \fBbird.miff\fP and whose width is 512 and height is 480.
 
-If the first character of \fIstring\fP is \fB@\fP, the format
-is read from a file titled by the remaining characters in the string.
+If the first character of \fIstring\fP is \fB@\fP, the format is
+read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since this may be used to incorporate
+any readable file on the system (a security risk).
 
-The values of image type (\fB%p\fP) which may be returned include:
+The values of image type (\fB%r\fP) which may be returned include:
 
      Bilevel
      Grayscale
@@ -2827,8 +2851,12 @@ produces an image label of \fBMIFF:bird.miff 512x480\fP for an image titled
 \fBbird.miff\fP
 and whose width is 512 and height is 480.
 
-If the first character of \fIstring\fP is \fI@\fP, the image label is
-read from a file titled by the remaining characters in the string.
+If the first character of \fIstring\fP is \fI@\fP, the image label
+is read from a file titled by the remaining characters in the string.
+Please note that if the string comes from an untrusted source that it
+should be sanitized before use since otherwise the content of an
+arbitrary readable file might be incorporated into the image
+label (a security risk).
 
 If the -label option appears multiple times, only the last label is
 stored.

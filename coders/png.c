@@ -6427,26 +6427,26 @@ ModuleExport void RegisterPNGImage(void)
 
       *version='\0';
 #if defined(PNG_LIBPNG_VER_STRING)
-      (void) strlcat(version,"libpng ",MaxTextExtent);
-      (void) strlcat(version,PNG_LIBPNG_VER_STRING,MaxTextExtent);
+      (void) strlcat(version,"libpng ",sizeof(version));
+      (void) strlcat(version,PNG_LIBPNG_VER_STRING,sizeof(version));
 #if (PNG_LIBPNG_VER > 10005)
       if (LocaleCompare(PNG_LIBPNG_VER_STRING,png_get_header_ver(NULL)) != 0)
         {
-          (void) strlcat(version,",",MaxTextExtent);
-          (void) strlcat(version,png_get_libpng_ver(NULL),MaxTextExtent);
+          (void) strlcat(version,",",sizeof(version));
+          (void) strlcat(version,png_get_libpng_ver(NULL),sizeof(version));
         }
 #endif
 #endif
 
 #if defined(ZLIB_VERSION)
       if (*version != '\0')
-        (void) strlcat(version,", ",MaxTextExtent);
-      (void) strlcat(version,"zlib ",MaxTextExtent);
-      (void) strlcat(version,ZLIB_VERSION,MaxTextExtent);
+        (void) strlcat(version,", ",sizeof(version));
+      (void) strlcat(version,"zlib ",sizeof(version));
+      (void) strlcat(version,ZLIB_VERSION,sizeof(version));
       if (LocaleCompare(ZLIB_VERSION,zlib_version) != 0)
         {
-          (void) strlcat(version,",",MaxTextExtent);
-          (void) strlcat(version,zlib_version,MaxTextExtent);
+          (void) strlcat(version,",",sizeof(version));
+          (void) strlcat(version,zlib_version,sizeof(version));
         }
 #endif
 
@@ -7567,8 +7567,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                 if (trans_alpha[index] == 256)
                                   {
                                     (void) LogMagickEvent(CoderEvent,
-                                      GetMagickModule(),
-                                      "  Index=%d is transparent",(int) index);
+                                                          GetMagickModule(),
+                                                          "  Index=%d is transparent",
+                                                          (int) index);
                                     trans_alpha[index]=(png_byte) (255-
                                       ScaleQuantumToChar(p->opacity));
                                     num_alpha++;
@@ -7580,28 +7581,35 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
 
                       (void) LogMagickEvent(CoderEvent, GetMagickModule(),
                          "  num_alpha = %d",num_alpha);
-                      if (num_alpha == 1)
-                         ping_valid_trns=1;
+                      if (num_alpha == 0)
+                        {
+                          image_matte = MagickFalse;
+                          ping_valid_trns = 0;
+                        }
+                      else if (num_alpha == 1)
+                        {
+                          ping_valid_trns = 1;
+                        }
                       else
-                      {
-                         ping_colortype=PNG_COLOR_TYPE_RGB_ALPHA;
-                         ping_num_trans=0;
-                         if (ping_bit_depth < 8)
+                        {
+                          ping_colortype=PNG_COLOR_TYPE_RGB_ALPHA;
+                          ping_num_trans=0;
+                          if (ping_bit_depth < 8)
                             ping_bit_depth=8;
-                         ping_valid_trns = 0;
-                         png_set_invalid(ping, ping_info, PNG_INFO_PLTE);
-                         mng_info->IsPalette=MagickFalse;
-                         image_matte=MagickTrue;
-                         (void) SyncImage(image);
-                         if (logging)
-                           (void) LogMagickEvent(CoderEvent,
-                                                 GetMagickModule(),
-                                                 "    Cannot write image"
-                                                 " as indexed PNG,"
-                                                 " writing RGBA.");
-                       }
+                          ping_valid_trns = 0;
+                          png_set_invalid(ping, ping_info, PNG_INFO_PLTE);
+                          mng_info->IsPalette=MagickFalse;
+                          image_matte=MagickTrue;
+                          (void) SyncImage(image);
+                          if (logging)
+                            (void) LogMagickEvent(CoderEvent,
+                                                  GetMagickModule(),
+                                                  "    Cannot write image"
+                                                  " as indexed PNG,"
+                                                  " writing RGBA.");
+                        }
 
-                    if (ping_valid_trns != 0)
+                      if (ping_valid_trns != 0)
                       {
                         for (i=0; i < (long) number_colors; i++)
                           {
@@ -7611,33 +7619,34 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                               ping_num_trans=(unsigned short) (i+1);
                           }
                       (void) LogMagickEvent(CoderEvent, GetMagickModule(),
-                         "  ping_num_trans = %d",ping_num_trans);
+                                            "  ping_num_trans = %d",ping_num_trans);
                       }
-                    if (ping_num_trans == 0)
-                       ping_valid_trns = 0;
-                    else
-                       ping_valid_trns = 1;
-                    if (ping_valid_trns == 0)
-                       ping_num_trans=0;
+                      if (ping_num_trans == 0)
+                        ping_valid_trns = 0;
+                      else
+                        ping_valid_trns = 1;
+                      if (ping_valid_trns == 0)
+                        ping_num_trans=0;
 
-                    if (ping_valid_trns != 0)
-                      {
-                        ping_trans_alpha=MagickAllocateMemory(
-                          unsigned char *, number_colors);
-                        if (ping_trans_alpha == (unsigned char *) NULL)
-                          png_error(ping, "Could not allocate trans_alpha");
+                      if (ping_valid_trns != 0)
+                        {
+                          ping_trans_alpha=
+                            MagickAllocateMemory(unsigned char *, number_colors);
+                          if (ping_trans_alpha == (unsigned char *) NULL)
+                            png_error(ping, "Could not allocate trans_alpha");
 
-                        for (i=0; i<(int) number_colors; i++)
-                          {
-                            if (trans_alpha[i] == 256)
-                               ping_trans_alpha[i]=255;
-                            else
-                               ping_trans_alpha[i]=(png_byte) trans_alpha[i];
-                           (void) LogMagickEvent(CoderEvent, GetMagickModule(),
-                              "    Alpha[%d]=%d",(int) i, (int) trans_alpha[i]);
-                          }
-                      }
-                  }
+                          for (i=0; i<(int) number_colors; i++)
+                            {
+                              if (trans_alpha[i] == 256)
+                                ping_trans_alpha[i]=255;
+                              else
+                                ping_trans_alpha[i]=(png_byte) trans_alpha[i];
+                              (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                                                    "    Alpha[%d]=%d",(int) i,
+                                                    (int) trans_alpha[i]);
+                            }
+                        }
+                  } /* if (matte) */
 
                 /*
                   Identify which colormap entry is the background color.

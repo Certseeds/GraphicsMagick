@@ -32,6 +32,12 @@ done by the computer executing the SVG, which may be in a realm of
 trust (e.g. inside the firewall and able to access "localhost"
 addresses).
 
+The `-comment`, `-draw`, `-format`, and `-label` utility options
+support a `@filename` syntax to incorporate any readable file on the
+system as a convenience to the user.  If text from an untrusted source
+(e.g. a web page) is allowed to supply these options, then they may be
+used to read arbitrary files, creating a potential security hazard.
+
 The GraphicsMagick project is continually striving to eliminate
 conditions in the software which might pose a risk for its users while
 not constraining what its users may do with the software.
@@ -101,8 +107,9 @@ risk.  These are steps which can be taken:
 5. Normalize input file names or any other external inputs so that
    they are under your control and not controlled by an untrusted
    party.  This should include any file name specifications, which may
-   include arbitrary 'glob' patterns (wildcards), requiring hours or
-   days to complete if sufficiently close long file names exist.
+   include arbitrary 'glob' patterns (wildcards) (requiring hours or
+   days to complete if sufficiently close long file names exist), and
+   options supporting a `@filename` syntax.
 
 6. Enforce that uploaded files are passed to the expected reader.  For
    example, the uploaded file "file.jpg" is forced to be read by the

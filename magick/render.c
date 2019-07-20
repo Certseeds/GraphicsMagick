@@ -2526,12 +2526,16 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       MagickFreeMemory(graphic_context);
       return MagickFail;
     }
-
+  if (QueryColorDatabase("black",&start_color,&image->exception) != MagickPass)
+    {
+      MagickFreeMemory(primitive);
+      MagickFreeMemory(graphic_context);
+      return MagickFail;
+    }
   graphic_context[n]=CloneDrawInfo((ImageInfo *) NULL,draw_info);
   /* next two lines: don't need copy of primitive, just a buffer of the same size */
   token=MagickAllocateMemory(char *,primitive_extent+1);
   token_max_length=primitive_extent;
-  (void) QueryColorDatabase("black",&start_color,&image->exception);
   defsPushCount = 0;  /* not inside of <defs> ... </defs> */
   xTextCurrent = yTextCurrent = 0.0;  /* initialize current text position */
   /*
@@ -2602,6 +2606,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     primitive_type=UndefinedPrimitive;
     current=graphic_context[n]->affine;
     IdentityAffine(&affine);
+    token[0]='\0';
     switch (*keyword)
     {
       case ';':
@@ -2825,8 +2830,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
 
                 /* when setting new fill color, try to preserve fill-opacity */
                 Quantum FillOpacityOld = graphic_context[n]->fill.opacity;
-                (void) QueryColorDatabase(token,&graphic_context[n]->fill,&image->exception);
-
+                if (QueryColorDatabase(token,&graphic_context[n]->fill,&image->exception) != MagickPass)
+                  {
+                    status=MagickFail;
+                    break;
+                  }
                 if (graphic_context[n]->fill.opacity != TransparentOpacity)
                   {/*new fill color != 'none'*/
 

@@ -371,7 +371,7 @@ DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
 
 # Rules to build a .tar.zst tarball
 dist-zstd: distdir
-	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-19} zstd -c >$(distdir).tar.zst
+	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
 	$(am__post_remove_distdir)
 
 #
@@ -427,7 +427,7 @@ gmsymbols:
 	$(srcdir)/scripts/gmsymbols.sh wand/.libs/libGraphicsMagickWand.a MAGICK_WAND > $(GMWANDSYMBOLS)
 
 # Convenient target to build release archive files and sign them.
-release: $(DIST_WINDOWS_SRC_7ZIP) distcheck
-	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
+release: distcheck
+	for file in $(DIST_ARCHIVES) ; do \
 	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
 	done

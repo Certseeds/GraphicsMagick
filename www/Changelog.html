@@ -35,9 +35,127 @@
 <div class="document">
 
 
+<p>2019-07-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Updates in preparation for 1.3.33 release.</li>
+</ul>
+</blockquote>
+<p>2019-07-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Updated NEWS to reflect updates since last release.</li>
+</ul>
+</blockquote>
+<p>2019-07-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (WriteOnePNGImage): Fix saving to palette when
+image has an alpha channel but no color is marked as transparent.
+Patch submitted by Przemysław Sobala via SourceForge patch #61
+&quot;WriteOnePNGImage(): Fix saving to palette when image has an alpha
+channel but no color is marked as transparent&quot;.</li>
+<li>doc/options.imdoc (characters): Fix -format documentation to
+reflect that '%r' returns the image type.  Patch submitted by
+Przemysław Sobala via SourceForge patch #60 &quot;Fix documentation
+typo&quot;.</li>
+</ul>
+</blockquote>
+<p>2019-07-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/tempfile.c (AcquireTemporaryFileDescriptor): Fix
+compilation under Cygwin.  Patch by Marco Atzeri and submitted via
+email to the graphicsmagick-help mailing list on Fri, 5 Jul 2019.</li>
+</ul>
+</blockquote>
+<p>2019-06-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/attribute.c (GenerateEXIFAttribute): Added range checks
+and tracing.  Fixes oss-fuzz 14998
+&quot;graphicsmagick/coder_JPEG_fuzzer: Heap-buffer-overflow in
+Read32s&quot;.  This is a tiny read overflow.</li>
+<li>coders/miff.c (ReadMIFFImage): Similar fix as to mpc.c</li>
+<li>coders/mpc.c (ReadMPCImage): Fix faulty signed overflow logic
+for profiles[i].length which still allowed overflow.  Fixes
+oss-fuzz issue 15190 &quot;graphicsmagick/coder_MPC_fuzzer:
+Out-of-memory in graphicsmagick_coder_MPC_fuzzer&quot;.</li>
+<li>doc/options.imdoc: Add notes about security hazards due to
+commands which support a <a class="reference external" href="mailto:'&#37;&#52;&#48;filename">'<span>&#64;</span>filename</a>' syntax.</li>
+<li>www/security.rst: Add notes about security hazards due to
+commands which support a <a class="reference external" href="mailto:'&#37;&#52;&#48;filename">'<span>&#64;</span>filename</a>' syntax.</li>
+</ul>
+</blockquote>
+<p>2019-06-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawImage): Assure that 'token' is initialized.
+Fixes oss-fuzz issue 14897 &quot;graphicsmagick/coder_MVG_fuzzer:
+Use-of-uninitialized-value in DrawImage&quot;.</li>
+<li>magick/animate.c (MagickXAnimateImages): Fix memory leak of
+scene_info.pixels.</li>
+<li>magick/display.c (MagickXDisplayImage): Fix heap overwrite of
+windows-&gt;image.name and windows-&gt;image.icon_name buffers.  It
+appears that the code assumed that CloneString() would always
+allocated a string at least MaxTextExtent in size. I assume that
+this issue has existed for a very long time since CloneString()
+was re-written many years ago.</li>
+<li>coders/caption.c (ReadCAPTIONImage): The CAPTION reader did not
+appear to work at all any more.  Now it works again, but still not
+very well.</li>
+<li>magick/command.c: Re-implement '&#64;' file inclusion support for
+-comment, -draw, -format, and -label which was removed for the
+1.3.32 release.  Note that arguments from untrusted sources will
+still need to be sanitized to detect attempts to subvert this
+feature to access file data, but this feature has always been
+supported by GraphicsMagick and it originated early in the
+development of ImageMagick.</li>
+</ul>
+</blockquote>
+<p>2019-06-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/utility.c (MagickStrlCat, MagickStrlCpy): Add debug
+checks enabled by MAGICK_STRL_CHECK.</li>
+<li>magick/montage.c (MontageImages): Fix wrong length argument to
+strlcat() when building montage directory, which could allow heap
+overwrite.</li>
+<li>coders/png.c (RegisterPNGImage): Pass correct size value to
+strlcat().  Under Apple's OS X (and possibly other targets)
+strlcat() writes bytes beyond what it needs to (but within the
+range it is allowed to) causing a crash due to the wrong limit
+value.  Fixes SourceForge issue #609 <cite>gm identify foo.png</cite> crashes
+on macOS (v 1.3.32).</li>
+<li>www/Changes.rst: Update ChangeLog links due to new year, and
+1.3.32 release.</li>
+</ul>
+</blockquote>
+<p>2019-06-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/bmp.c (WriteBMPImage): Detect arithmetic overflow of
+image_size. Add more tracing. Reduce compilation warnings.
+(EncodeImage): Reduce compilation warnings.
+(WriteBMPImage): Assure that chromaticity uses double-precision
+for multiply before casting to unsigned integer.</li>
+<li>coders/wpg.c (ReallocColormap): Reduce compilation warnings.</li>
+<li>coders/braille.c (WriteBRAILLEImage): Reduce compilation
+warnings.</li>
+<li>coders/dib.c (WriteDIBImage): Detect arithmetic overflow of
+image_size. Reduce compilation warnings.
+(EncodeImage): Reduce compilation warnings.</li>
+<li>coders/locale.c (WriteLOCALEImage): Reduce compilation warnings.</li>
+</ul>
+</blockquote>
 <p>2019-06-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>Makefile.am (dist-zstd): Use the maximum possible compression
+level (22) when creating a Zstd-compressed tarball to get close to
+lzip/xz compression levels.</li>
+<li>coders/tiff.c (ReadTIFFImage): Fix typo in initialization of
+'tile' pointer variable.</li>
 <li>version.sh: Updates in preparation for 1.3.32 release.</li>
 </ul>
 </blockquote>

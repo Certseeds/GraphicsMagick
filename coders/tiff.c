@@ -2852,7 +2852,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read TIFF using tiled storage.
             */
             unsigned char
-              *tile = (unsigned char *) tile;
+              *tile = (unsigned char *) NULL;
 
             uint32
               tile_columns,

@@ -14035,7 +14035,8 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
   else
     {
       char
-        filename[MaxTextExtent];
+        filename[MaxTextExtent],
+        image_name[MaxTextExtent];
 
       register Image
         *q;
@@ -14049,21 +14050,26 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       (void ) CloneString(&windows->image.name,"");
       (void ) CloneString(&windows->image.icon_name,"");
       GetPathComponent(display_image->filename,TailPath,filename);
-      FormatString(windows->image.name,"%s: %.1024s[%lu]",MagickPackageName,
+      FormatString(image_name,"%s: %.1024s[%lu]",MagickPackageName,
                    filename,display_image->scene);
+      (void) CloneString(&windows->image.name,image_name);
       q=display_image;
       while (q->previous != (Image *) NULL)
         q=q->previous;
       for (count=1; q->next != (Image *) NULL; count++)
         q=q->next;
-      FormatString(windows->image.name,"%s: %.1024s[%lu of %lu]",
+      FormatString(image_name,"%s: %.1024s[%lu of %lu]",
                    MagickPackageName,filename,display_image->scene+1U,count);
+      (void) CloneString(&windows->image.name,image_name);
       if ((display_image->previous == (Image *) NULL) &&
           (display_image->next == (Image *) NULL) &&
           (display_image->scene == 0))
-        FormatString(windows->image.name,"%s: %.1024s",MagickPackageName,
-                     filename);
-      (void) strlcpy(windows->image.icon_name,filename,MaxTextExtent);
+        {
+          FormatString(image_name,"%s: %.1024s",MagickPackageName,
+                       filename);
+          (void) CloneString(&windows->image.name,image_name);
+        }
+      (void) CloneString(&windows->image.icon_name,filename);
     }
   if (resource_info->immutable)
     windows->image.immutable=True;

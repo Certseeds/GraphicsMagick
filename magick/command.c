@@ -266,6 +266,84 @@ static char commandline[MAX_PARAM_CHAR+2];
     PrintVersionAndCopyright(); \
 }
 
+/* Trim NL or CR/NL sequence from end of C string with specified
+   length (not including terminating null). */
+#define TrimStringNewLine(text,length)             \
+  do {                                             \
+  fprintf(stderr,"TrimStringNewLine\n"); \
+    if ((length > 1) && text[length-1] == '\n')    \
+      text[length-1]='\0';                         \
+    if ((length > 2) && text[length-2] == '\r')    \
+      text[length-2]='\0';                         \
+  } while(0)
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   A m p e r s a n d T r a n s l a t e T e x t                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method AmpersandTranslateText performs the functions of TranslateText()
+%  but with the added feature that if the text starts with a '@' that the
+%  text is replaced with the contents of the filename following the '@'
+%  character prior to additional substitutions using TranslateText().
+%  This function performs similarly to TranslateText() prior to the
+%  GraphicsMagick 1.3.32 release when file reading capability was
+%  removed.
+%
+%  The format of the AmpersandTranslateText method is:
+%
+%      char *AmpersandTranslateText(const ImageInfo *image_info,
+%                                   Image *image,
+%                                   const char *formatted_text)
+%
+%    o translated_text:  Method TranslateText returns the translated
+%      text string.
+%
+%    o image_info: The imageInfo (may be NULL!).
+%
+%    o image: The image.
+%
+%    o formatted_text: The address of a character string containing the embedded
+%      formatting characters.
+*/
+static char *AmpersandTranslateText(const ImageInfo *image_info,
+                                    Image *image,
+                                    const char *formatted_text)
+{
+  char
+    *text = NULL,
+    *translated_text = NULL;
+
+  size_t
+    length;
+
+  assert(formatted_text != (const char *) NULL);
+
+  text=(char *) formatted_text;
+
+  /*
+    If text starts with '@' then try to replace it with the content of
+    the file name which follows.
+  */
+  if ((*formatted_text == '@') && IsAccessible(formatted_text+1))
+    {
+      text=(char *) FileToBlob(formatted_text+1,&length,&image->exception);
+      if (text == (char *) NULL)
+        return((char *) NULL);
+      TrimStringNewLine(text,length);
+    }
+  translated_text=TranslateText(image_info,image,text);
+  if (text != (char *) formatted_text)
+    MagickFreeMemory(text);
+
+  return translated_text;
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4859,7 +4937,22 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
                 /*
                   Add definition to defines for use by 'info' coder.
                 */
-                (void) AddDefinition(image_info,"info","format",format,exception);
+                if ((*format == '@') && IsAccessible(format+1))
+                  {
+                    char *text;
+                    size_t length;
+                    text = FileToBlob(format+1,&length,exception);
+                    if (text != (char *) NULL)
+                      {
+                        TrimStringNewLine(text,length);
+                        (void) AddDefinition(image_info,"info","format",text,exception);
+                        MagickFreeMemory(text);
+                      }
+                  }
+                else
+                  {
+                    (void) AddDefinition(image_info,"info","format",format,exception);
+                  }
               }
             break;
           }
@@ -8254,10 +8347,20 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
     option=argv[i];
     if (LocaleCompare("-format",argv[i]) == 0)
       {
+        size_t length;
         i++;
         if (i == argc)
           ThrowIdentifyException(OptionError,MissingArgument,option);
-        (void) CloneString(&format,argv[i]);
+        if ((*argv[i] == '@') && IsAccessible(argv[i]+1))
+          {
+            MagickFreeMemory(format);
+            format=FileToBlob(argv[i]+1,&length,exception);
+            TrimStringNewLine(format,length);
+          }
+        else
+          {
+            (void) CloneString(&format,argv[i]);
+          }
         break;
       }
     else if (LocaleCompare("+ping",argv[i]) == 0)
@@ -9239,7 +9342,15 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           {
             (void) SetImageAttribute(*image,"comment",(char *) NULL);
             if (*option == '-')
-              (void) SetImageAttribute(*image,"comment",argv[++i]);
+              {
+                char *translated_text =
+                  AmpersandTranslateText(clone_info,*image,argv[++i]);
+                if (translated_text != (char *) NULL)
+                  {
+                    (void) SetImageAttribute(*image,"comment",translated_text);
+                    MagickFreeMemory(translated_text);
+                  }
+              }
             continue;
           }
         if (LocaleCompare("compose",option+1) == 0)
@@ -9475,7 +9586,8 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             /*
               Draw image.
             */
-            (void) CloneString(&draw_info->primitive,argv[++i]);
+            MagickFreeMemory(draw_info->primitive);
+            draw_info->primitive=AmpersandTranslateText(clone_info,*image,argv[++i]);
             (void) DrawImage(*image,draw_info);
             continue;
           }
@@ -9850,9 +9962,28 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
       {
         if (LocaleCompare("label",option+1) == 0)
           {
+            fprintf(stderr,"%d: Handling label\n",__LINE__);
             (void) SetImageAttribute(*image,"label",(char *) NULL);
             if (*option == '-')
-              (void) SetImageAttribute(*image,"label",argv[++i]);
+              {
+                const char *label = argv[++i];
+                if ((*label == '@') && IsAccessible(label+1))
+                  {
+                    char *text;
+                    size_t length;
+                    text = FileToBlob(label+1,&length,&(*image)->exception);
+                    if (text != (char *) NULL)
+                      {
+                        TrimStringNewLine(text,length);
+                        SetImageAttribute(*image,"label",text);
+                        MagickFreeMemory(text);
+                      }
+                  }
+                else
+                  {
+                    (void) SetImageAttribute(*image,"label",label);
+                  }
+              }
             continue;
           }
         if (LocaleCompare("lat",option+1) == 0)
@@ -12437,7 +12568,7 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
           }
         if (LocaleCompare("format",option+1) == 0)
           {
-            (void) CloneString(&format,(char *) NULL);
+            MagickFreeMemory(format);
             if (*option == '-')
               {
                 i++;
