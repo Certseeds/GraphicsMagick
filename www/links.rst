@@ -17,10 +17,6 @@ GraphicsMagick Topics
 
 `NetBSD/pkgsrc port <http://pkgsrc.se/graphics/GraphicsMagick/>`_ for GraphicsMagick.
 
-`Free (code) <http://freecode.com/projects/graphicsmagick>`_ GraphicsMagick Entry. (Frozen Site).
-
-`Gmane <http://dir.gmane.org/gmane.comp.video.graphicsmagick.announce>`_ GraphicsMagick Announce List.
-
 `Gentoo Sunrise <http://bugs.gentoo.org/show_bug.cgi?id=190372>`_ Bug Tracker Entry.
 
 `Red Hat Linux <https://bugzilla.redhat.com/buglist.cgi?component=GraphicsMagick&product=Fedora>`_ GraphicsMagick related bugs.
