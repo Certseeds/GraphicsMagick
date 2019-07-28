@@ -29,7 +29,7 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 
 `WikiPedia <http://en.wikipedia.org/wiki/GraphicsMagick>`_ GraphicsMagick Entry.
 
-`Black Duck | Open HUB <http://www.openhub.net/p/GraphicsMagick>`_ GraphicsMagick Entry.
+`Black Duck | Open HUB <https://www.openhub.net/p/graphics_magick>`_ GraphicsMagick Entry.
 
 `SourceForge <http://sourceforge.net/projects/graphicsmagick/>`_ GraphicsMagick Entry.
 
@@ -124,10 +124,6 @@ gamma-related topics:
 provides an excellent description of what gamma is, why it is good,
 and when you don't want it.
 
-`Gamma error in picture scaling
-<http://www.4p8.com/eric.brasseur/gamma.html>`_, provides a discussion
-of how image resize on gamma-corrected images can cause distortion.
-
 
 TIFF Related Topics
 ============================
@@ -182,12 +178,6 @@ library and sample tools for dealing with high dynamic-range (HDR) images.
 Motion Picture Links
 =========================
 
-`Light Illusion <http://www.lightillusion.com/home.htm>`_,
-white papers by Steve Shaw regarding HD video cameras, log color spaces, and digital intermediate.
-
-`Digital Intermediates <http://www.digitalintermediates.org/>`_,
-site by Jack James dedicated to the digital intermediate industry.
-
 `Digital Cinema Initiatives <http://www.dcimovies.com/>`_,
 DCI offers the first complete specification for digital cinema delivery.
 
@@ -206,17 +196,13 @@ Other Software Packages
 truly outstanding image viewing/browsing software for Microsoft Windows.
 Visere is based on GraphicsMagick.
 
-`CinePaint <http://www.cinepaint.org/>`_,
-GIMP-derived software targeted for the motion picture industry, and for other
-applications which require high color resolution.
-
 `eLynx lab <http://elynxlab.free.fr/en/index.html>`_ High resolution image processing tool.
 
 The `GIMP <http://www.gimp.org/>`_, interactive image editing software (like Photoshop).
 
 `ImageMagick <http://www.imagemagick.org/>`_, the ancestor of GraphicsMagick.
 
-`VIPS <http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS>`_, an image processing system also useful with
+`VIPS <https://github.com/libvips/>`_, an image processing system also useful with
 large images, and which comes with an unusual GUI.
 
 `FreeImage <http://freeimage.sourceforge.net/index.html>`_,
