@@ -26,7 +26,7 @@ The source code must be extracted prior to compilation as follows:
 .tar.bz2
 
     BZip2 compressed tar archive format. Requires that both the bzip2
-    (http://www.bzip.org/) and tar programs to be available. Extract
+    (http://www.sourceware.org/bzip2/) and tar programs to be available. Extract
     similar to::
 
       bzip2 -d GraphicsMagick-1.3.tar.bz | tar -xvf -

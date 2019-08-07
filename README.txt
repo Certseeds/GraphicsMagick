@@ -79,7 +79,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires the BZLIB library from
 
-    http://www.bzip.org/
+    http://www.sourceware.org/bzip2/
 
   to read and write BZip compressed MIFF images.
 
