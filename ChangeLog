@@ -1,3 +1,12 @@
+2019-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadPNGImage): Post-processing to convert the
+	image type in the PNG reader based on a specified magick prefix
+	string is now disabled.  This can (and should) be done after the
+	image has been returned.  Fixes oss-fuzz 16386
+	"graphicsmagick:coder_PNG8_fuzzer: Timeout in
+	graphicsmagick_coder_PNG8_fuzzer".
+
 2019-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updates in preparation for 1.3.33 release.

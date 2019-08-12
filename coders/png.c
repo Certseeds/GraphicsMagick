@@ -2982,6 +2982,12 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
                               "exit ReadPNGImage() with error.");
       return((Image *) NULL);
     }
+#if 0
+  /*
+    Post-processing to convert the image type in the reader based on a
+    specified magick prefix string is now disabled.  This can (and
+    should) be done after the image has been returned.
+  */
   if (LocaleCompare(image_info->magick,"PNG8") == 0)
     {
       (void) SetImageType(image,PaletteType);
@@ -2997,6 +3003,7 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
     }
   if (LocaleCompare(image_info->magick,"PNG32") == 0)
     (void) SetImageType(image,TrueColorMatteType);
+#endif
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"exit ReadPNGImage()");
   return (image);
