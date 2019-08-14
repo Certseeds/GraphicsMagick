@@ -6289,7 +6289,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
   while (image->previous != (Image *) NULL)
     image=image->previous;
 #ifdef MNG_COALESCE_LAYERS
-  if (insert_layers)
+  if (insert_layers && image->next)
     {
       Image
         *next_image,
@@ -6303,10 +6303,12 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                               "  Coalesce Images");
       scene=image->scene;
       next_image=CoalesceImages(image,exception);
-      if (next_image == (Image *) NULL)
-        MagickFatalError2(image->exception.severity,image->exception.reason,
-                          image->exception.description);
       DestroyImageList(image);
+      if (next_image == (Image *) NULL)
+        {
+          MngInfoFreeStruct(mng_info,&have_mng_structure);
+          return((Image *) NULL);
+        }
       image=next_image;
       for (next=image; next != (Image *) NULL; next=next_image)
         {

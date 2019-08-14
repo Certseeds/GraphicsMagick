@@ -1,3 +1,10 @@
+2019-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Skip coalescing layers if there is
+	only one layer.  Fixes oss-fuzz 16274
+	"graphicsmagick/coder_MNG_fuzzer: Unexpected-exit in
+	DefaultFatalErrorHandler".
+
 2019-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadPNGImage): Post-processing to convert the
