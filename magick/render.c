@@ -2030,6 +2030,8 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
           dash_polygon[0].coordinates=j;
           dash_polygon[j].primitive=UndefinedPrimitive;
           status&=DrawStrokePolygon(image,clone_info,dash_polygon);
+          if (status == MagickFail)
+            break;
         }
       if (draw_info->dash_pattern[n] != 0.0)
         n++;
@@ -2044,7 +2046,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
     dash_polygon[j].coordinates=1;
     j++;
   }
-  if ((total_length < maximum_length) && ((n & 0x01) == 0) && (j > 1))
+  if ((status != MagickFail) && (total_length < maximum_length) && ((n & 0x01) == 0) && (j > 1))
     {
       dash_polygon[j]=primitive_info[i-1];
       dash_polygon[j].point.x+=MagickEpsilon;
@@ -5927,7 +5929,12 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
       significantly different from that for the first path, so my suspicion is that
       that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
     */
-    stroke_polygon=TraceStrokePolygon(image,draw_info,p);
+    stroke_polygon=TraceStrokePolygon(image,draw_info,p);/* FIXME: oss-fuzz 15516 shows that stroke_polygon can be null */
+    if (stroke_polygon == (PrimitiveInfo *) NULL)
+      {
+        status=MagickFail;
+        break;
+      }
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
     MagickFreeMemory(stroke_polygon);
     if (status == MagickFail)

@@ -1,3 +1,13 @@
+2019-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawStrokePolygon): Handle case where
+	TraceStrokePolygon() returns NULL.  Addresses oss-fuzz 15516
+	"graphicsmagick/coder_MVG_fuzzer: ASSERT: primitive_info !=
+	(PrimitiveInfo *) NULL".
+	(DrawDashPolygon): Handle case where DrawStrokePolygon() returns
+	MagickFail. Also needed to address oss-fuzz 15516, since otherwise
+	test-cases run for a very long time.
+
 2019-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/memory.h (MagickMallocAlignedArray): Add function
