@@ -5929,7 +5929,7 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
       significantly different from that for the first path, so my suspicion is that
       that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
     */
-    stroke_polygon=TraceStrokePolygon(image,draw_info,p);/* FIXME: oss-fuzz 15516 shows that stroke_polygon can be null */
+    stroke_polygon=TraceStrokePolygon(image,draw_info,p);
     if (stroke_polygon == (PrimitiveInfo *) NULL)
       {
         status=MagickFail;
