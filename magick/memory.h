@@ -32,7 +32,7 @@ extern MagickExport void
 #if defined(MAGICK_IMPLEMENTATION)
 
 extern MagickExport void
-  *MagickMallocAlignedArray(const size_t alignment,const size_t count,const size_t size),
+  *MagickMallocAlignedArray(const size_t alignment,const size_t count,const size_t size) MAGICK_FUNC_MALLOC MAGICK_FUNC_ALLOC_SIZE_2ARG(2,3),
   *MagickMallocArray(const size_t count,const size_t size) MAGICK_FUNC_MALLOC MAGICK_FUNC_ALLOC_SIZE_2ARG(1,2);
 
 extern MagickExport size_t

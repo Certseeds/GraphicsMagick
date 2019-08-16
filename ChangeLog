@@ -1,3 +1,21 @@
+2019-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/memory.h (MagickMallocAlignedArray): Add function
+	attributes for added value and to quench GCC 9 warning with
+	special build options enabled.
+
+	* magick/deprecate.h (AcquireMemory): Add more function attributes
+	to quench GCC 9 warning with special build options enabled.
+
+	* magick/attribute.c (GenerateEXIFAttribute): Fix compilation
+	warning in 32-bit build.
+
+	* coders/dpx.c (AttributeToString): Eliminate annoying warnings
+	from GCC 9, although the code was correct.
+
+	* coders/msl.c (MSLStartElement): Fix defective opacity percentage
+	code revealed by GCC 9 warning.
+
 2019-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Skip coalescing layers if there is

@@ -3621,10 +3621,11 @@ STATIC void WriteRowSamples(const sample_t *samples,
 }
 
 /*
-  This macro uses strncpy on purpose.  The string is not required to
-  be null terminated, but any unused space should be filled with
-  nulls.  Don't even think about using strlcpy here because some ASCII
-  fields occupy the full space.
+  The attribute string is not null terminated, but any unused space
+  should be filled with nulls.  Don't even think about using strlcpy
+  here because some ASCII fields occupy the full space.  We used to
+  use strncpy here but then compilers started to complain about our
+  valid code because the result might not be null-terminated.
 */
 #define AttributeToString(image_info,image,key,member) \
 { \
@@ -3632,14 +3633,27 @@ STATIC void WriteRowSamples(const sample_t *samples,
     *attribute_; \
 \
   const char \
-    *definition_value_; \
+    *attribute_value_ = NULL; \
 \
-  if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
-    (void) strncpy(member,definition_value_,sizeof(member)); \
+  size_t \
+    attribute_value_length_ = 0; \
+\
+  if ((attribute_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
+    { \
+    } \
   else if ((attribute_=GetImageAttribute(image,key))) \
-    (void) strncpy(member,attribute_->value,sizeof(member)); \
-  else \
-    SET_UNDEFINED_ASCII(member); \
+    { \
+      attribute_value_=attribute_->value; \
+    } \
+\
+  if (attribute_value_) \
+    { \
+      attribute_value_length_=strlen(attribute_value_); \
+      attribute_value_length_=Min(attribute_value_length_,sizeof(member)); \
+      (void) memcpy(member,attribute_value_,attribute_value_length_);    \
+    } \
+    if (sizeof(member) > attribute_value_length_) \
+      (void) memset(member+attribute_value_length_,0,sizeof(member)-attribute_value_length_); \
 }
 
 /*

@@ -53,7 +53,7 @@ extern "C" {
   PushImagePixels(Image *,const QuantumType,const unsigned char *) MAGICK_FUNC_DEPRECATED;
 
   extern MagickExport void
-  *AcquireMemory(const size_t) MAGICK_FUNC_DEPRECATED;
+  *AcquireMemory(const size_t) MAGICK_FUNC_DEPRECATED MAGICK_FUNC_MALLOC MAGICK_FUNC_ALLOC_SIZE_1ARG(1);
 
   extern MagickExport void
   *CloneMemory(void *,const void *,const size_t) MAGICK_FUNC_DEPRECATED;

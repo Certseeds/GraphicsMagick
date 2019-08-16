@@ -1798,7 +1798,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
       if (logging)
         (void) LogMagickEvent(CorruptImageEvent,GetMagickModule(),
                               "EXIF: Offset (%lu) is > length (%"MAGICK_SIZE_T_F"u)!",
-                              offset, length);
+                              offset, (MAGICK_SIZE_T) length);
       goto generate_attribute_failure;
     }
   /*

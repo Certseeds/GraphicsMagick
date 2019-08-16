@@ -35,6 +35,22 @@
 <div class="document">
 
 
+<p>2019-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/memory.h (MagickMallocAlignedArray): Add function
+attributes for added value and to quench GCC 9 warning with
+special build options enabled.</li>
+<li>magick/deprecate.h (AcquireMemory): Add more function attributes
+to quench GCC 9 warning with special build options enabled.</li>
+<li>magick/attribute.c (GenerateEXIFAttribute): Fix compilation
+warning in 32-bit build.</li>
+<li>coders/dpx.c (AttributeToString): Eliminate annoying warnings
+from GCC 9, although the code was correct.</li>
+<li>coders/msl.c (MSLStartElement): Fix defective opacity percentage
+code revealed by GCC 9 warning.</li>
+</ul>
+</blockquote>
 <p>2019-08-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
