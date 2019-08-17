@@ -35,6 +35,15 @@
 <div class="document">
 
 
+<p>2019-08-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (TraceBezier): Detect arithmetic overflow and
+return errors via normal error path rather than exiting.  Fixes
+oss-fuzz 16450 &quot;graphicsmagick:coder_MVG_fuzzer: Unexpected-exit
+in DefaultFatalErrorHandler&quot;.</li>
+</ul>
+</blockquote>
 <p>2019-08-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -44,7 +53,10 @@ TraceStrokePolygon() returns NULL.  Addresses oss-fuzz 15516
 (PrimitiveInfo *) NULL&quot;.
 (DrawDashPolygon): Handle case where DrawStrokePolygon() returns
 MagickFail. Also needed to address oss-fuzz 15516, since otherwise
-test-cases run for a very long time.</li>
+test-cases run for a very long time.
+(ExtractTokensBetweenPushPop): Fix non-terminal parsing loop.
+Addresses oss-fuzz 15318 &quot;graphicsmagick/coder_MVG_fuzzer: Timeout
+in graphicsmagick_coder_MVG_fuzzer&quot;.</li>
 </ul>
 </blockquote>
 <p>2019-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

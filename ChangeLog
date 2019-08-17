@@ -1,3 +1,10 @@
+2019-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (TraceBezier): Detect arithmetic overflow and
+	return errors via normal error path rather than exiting.  Fixes
+	oss-fuzz 16450 "graphicsmagick:coder_MVG_fuzzer: Unexpected-exit
+	in DefaultFatalErrorHandler".
+
 2019-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawStrokePolygon): Handle case where
@@ -7,6 +14,9 @@
 	(DrawDashPolygon): Handle case where DrawStrokePolygon() returns
 	MagickFail. Also needed to address oss-fuzz 15516, since otherwise
 	test-cases run for a very long time.
+	(ExtractTokensBetweenPushPop): Fix non-terminal parsing loop.
+	Addresses oss-fuzz 15318 "graphicsmagick/coder_MVG_fuzzer: Timeout
+	in graphicsmagick_coder_MVG_fuzzer".
 
 2019-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

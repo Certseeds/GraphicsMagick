@@ -2096,7 +2096,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 %
 %
 */
-static inline MagickBool
+static MagickBool
 IsPoint(const char *point)
 {
   char
@@ -2208,6 +2208,12 @@ char *  ExtractTokensBetweenPushPop (
       if (LocaleCompare(token,"pop") == 0)
         {
           MagickGetToken(q,&pAfterPopString,token,token_max_length);
+          if ( q == pAfterPopString )
+            {
+              /* infinite loop detection */
+              pAfterPopString = q;  /* need this to be valid */
+              break;
+            }
           if (LocaleCompare(token,pop_string) == 0)
             break;  /* found "pop <pop_string>" */
         }
@@ -6254,13 +6260,13 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
 {
   double
     alpha,
-    *coefficients,
+    *coefficients = (double *) NULL,
     weight;
 
   PointInfo
     end,
     point,
-    *points;
+    *points = (PointInfo *) NULL;
 
   PrimitiveInfo
     *primitive_info,
@@ -6269,7 +6275,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   register PrimitiveInfo
     *p;
 
-  register long
+  register unsigned long
     i,
     j;
 
@@ -6289,20 +6295,34 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     Allocate coeficients.
   */
   quantum=number_coordinates;
-  for (i=0; i < (long) number_coordinates; i++)
+  for (i=0; i < number_coordinates; i++)
   {
-    for (j=i+1; j < (long) number_coordinates; j++)
+    for (j=i+1; j < number_coordinates; j++)
     {
       alpha=fabs(primitive_info[j].point.x-primitive_info[i].point.x);
+      if (alpha > (double) INT_MAX)
+        {
+          ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                          UnableToDrawOnImage);
+          status=MagickFail;
+          goto trace_bezier_done;
+        }
       if (alpha > quantum)
         quantum=(unsigned long) alpha;
       alpha=fabs(primitive_info[j].point.y-primitive_info[i].point.y);
+      if (alpha > (double) INT_MAX)
+        {
+          ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                          UnableToDrawOnImage);
+          status=MagickFail;
+          goto trace_bezier_done;
+        }
       if (alpha > quantum)
         quantum=(unsigned long) alpha;
     }
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
-  control_points=(size_t) quantum*number_coordinates;
+  control_points=MagickArraySize(quantum,number_coordinates);
 
   /* make sure we have enough space */
   if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
@@ -6310,24 +6330,35 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
+  if (coefficients == (double *) NULL)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
-  if ((coefficients == (double *) NULL) || (points == (PointInfo *) NULL))
-    MagickFatalError3(ResourceLimitError,MemoryAllocationFailed,
-      UnableToDrawOnImage);
+  if (points == (PointInfo *) NULL)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   /*
     Compute bezier points.
   */
   end=primitive_info[number_coordinates-1].point;
   weight=0.0;
-  for (i=0; i < (long) number_coordinates; i++)
-    coefficients[i]=Permutate((long) number_coordinates-1,i);
-  for (i=0; i < (long) control_points; i++)
+  for (i=0; i < number_coordinates; i++)
+    coefficients[i]=Permutate(number_coordinates-1,i);
+  for (i=0; i < control_points; i++)
   {
     p=primitive_info;
     point.x=0;
     point.y=0;
     alpha=pow((double) (1.0-weight),(double) number_coordinates-1);
-    for (j=0; j < (long) number_coordinates; j++)
+    for (j=0; j < number_coordinates; j++)
     {
       point.x+=alpha*coefficients[j]*p->point.x;
       point.y+=alpha*coefficients[j]*p->point.y;
@@ -6341,7 +6372,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     Bezier curves are just short segmented polys.
   */
   p=primitive_info;
-  for (i=0; i < (long) control_points; i++)
+  for (i=0; i < control_points; i++)
   {
     if ((status=TracePoint(p,points[i])) != MagickPass)
       goto trace_bezier_done;
@@ -6352,7 +6383,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
-  for (i=0; i < (long) primitive_info->coordinates; i++)
+  for (i=0; i < primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
     p--;
