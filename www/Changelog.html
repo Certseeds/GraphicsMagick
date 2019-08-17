@@ -38,10 +38,15 @@
 <p>2019-08-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>fuzzing/utils.cc (MemoryResource): Lessen the memory limit used
+for oss-fuzz testing in order to provide more headroom and margin
+for error.</li>
 <li>magick/render.c (TraceBezier): Detect arithmetic overflow and
 return errors via normal error path rather than exiting.  Fixes
 oss-fuzz 16450 &quot;graphicsmagick:coder_MVG_fuzzer: Unexpected-exit
-in DefaultFatalErrorHandler&quot;.</li>
+in DefaultFatalErrorHandler&quot;.
+(PrimitiveInfoRealloc): Implement more paranoid code related to
+primitive allocation.</li>
 </ul>
 </blockquote>
 <p>2019-08-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

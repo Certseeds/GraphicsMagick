@@ -2111,6 +2111,13 @@ IsPoint(const char *point)
   return(p != point);
 }
 
+// Add two size_t values and check for unsigned overflow.
+static MagickPassFail MagickAddSizeT(const size_t b, const size_t o, size_t *r)
+{
+  *r = b+o;
+  return (((*r < b) || (*r < o)) ? MagickFail : MagickPass);
+}
+
 static const char *recursion_key ="[DrawImageRecursion]";
 static long DrawImageGetCurrentRecurseLevel(Image *image)
 {
@@ -2334,12 +2341,28 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
   /* grow the PrimitiveInfo array if Needed elements are not available; return true if reallocated */
 
   /* ANSI C says that SIZE_MAX gives maximum value of size_t */
-  size_t NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100);  /* +100 for headroom */
-  if (NeedAllocCount > *p_PIMgr->p_AllocCount)
+  size_t NeedAllocCount;
+
+#if 0
+  fprintf(stderr,"Needed = %"MAGICK_SIZE_T_F"u\n",(MAGICK_SIZE_T) Needed);
+#endif
+  /* NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100 */
+  status &= MagickAddSizeT(p_PIMgr->StoreStartingAt, Needed, &NeedAllocCount); /* + Needed */
+  status &= MagickAddSizeT(NeedAllocCount, 100, &NeedAllocCount); /* +100 for headroom */
+
+  if (status != MagickPass)
+    ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,UnableToDrawOnImage);
+
+  if ((status == MagickPass) && (NeedAllocCount > *p_PIMgr->p_AllocCount))
     {
       const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
       const size_t needed_memory=MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo));
       const magick_uint64_t added_memory=needed_memory-have_memory;
+
+#if 0
+      fprintf(stderr,"have_memory=%"MAGICK_SIZE_T_F"u, needed_memory=%"MAGICK_SIZE_T_F"u, added_memory=%"MAGICK_SIZE_T_F"u\n",
+              (MAGICK_SIZE_T) have_memory, (MAGICK_SIZE_T) needed_memory, (MAGICK_SIZE_T) added_memory);
+#endif
 
       /* Need to realloc */
       if (((*p_PIMgr->p_AllocCount > 0) && (have_memory == 0)) ||
@@ -4189,8 +4212,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     if ((i+points_length) >= number_points)
       {
         double new_number_points = ceil(number_points+points_length+1);
-        size_t new_number_points_size_t = (size_t) new_number_points;
-        if (new_number_points_size_t != new_number_points)
+        size_t new_number_points_size_t;
+        if (new_number_points > SIZE_MAX)
           {
             /* new_number_points too big to be represented as a size_t */
             status=MagickFail;
@@ -4198,6 +4221,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                             MemoryAllocationFailed,UnableToDrawOnImage);
             break;
           }
+        new_number_points_size_t = (size_t) new_number_points;
 
         PIMgr.StoreStartingAt = i;  /* should already be this value; just bein' sure */
         if (PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points) == MagickFail)
@@ -6323,10 +6347,20 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
   control_points=MagickArraySize(quantum,number_coordinates);
+  if (control_points == 0)
+    {
+      ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
 
   /* make sure we have enough space */
   if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
-    return MagickFail;
+    {
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
@@ -6466,7 +6500,7 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
 
   /* make sure we have enough space */
   points_length = ceil(1.0 + ceil((angle.y - angle.x) / step));
-  if ((size_t) points_length < points_length)
+  if (points_length > SIZE_MAX)
     {
       /* points_length too big to be represented as a size_t */
       status=MagickFail;

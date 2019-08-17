@@ -1,9 +1,15 @@
 2019-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/utils.cc (MemoryResource): Lessen the memory limit used
+	for oss-fuzz testing in order to provide more headroom and margin
+	for error.
+
 	* magick/render.c (TraceBezier): Detect arithmetic overflow and
 	return errors via normal error path rather than exiting.  Fixes
 	oss-fuzz 16450 "graphicsmagick:coder_MVG_fuzzer: Unexpected-exit
 	in DefaultFatalErrorHandler".
+	(PrimitiveInfoRealloc): Implement more paranoid code related to
+	primitive allocation.
 
 2019-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
