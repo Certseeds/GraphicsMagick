@@ -2214,11 +2214,11 @@ char *  ExtractTokensBetweenPushPop (
         }
       if (LocaleCompare(token,"pop") == 0)
         {
+          pAfterPopString = q;
           MagickGetToken(q,&pAfterPopString,token,token_max_length);
           if ( q == pAfterPopString )
             {
               /* infinite loop detection */
-              pAfterPopString = q;  /* need this to be valid */
               break;
             }
           if (LocaleCompare(token,pop_string) == 0)

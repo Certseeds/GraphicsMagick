@@ -1,3 +1,10 @@
+2019-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ExtractTokensBetweenPushPop): Previous fix for
+	non-terminal loop was broken by a last-minute untested edit.
+	Finally addresses oss-fuzz 15318 "graphicsmagick/coder_MVG_fuzzer:
+	Timeout in graphicsmagick_coder_MVG_fuzzer".
+
 2019-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/utils.cc (MemoryResource): Lessen the memory limit used
