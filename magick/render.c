@@ -2080,6 +2080,19 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 %  can affect how text is drawn by setting one or more members of the draw
 %  info structure.
 %
+%  The format of the drawing primitive text is known as "MVG" ("Magick
+%  Vector Graphics"), which is a powerful yet simple drawing syntax fronted
+%  by the "MVG" coder, and substantially supporting W3C SVG 1.1
+%  (https://www.w3.org/TR/SVG11/) rendering when fronted by the "SVG" coder
+%  (which translates SVG into MVG).  The parser is non-validating and in fact
+%  is designed to attempt to skip over unhandled textual elements which may be
+%  passed through from the SVG coder. While being used as the basis of a useful
+%  W3C SVG implementation and while SVG is commonly used on the "web" as an
+%  untrusted input such as within web browsers, this implementation is not
+%  designed to handle arbitrary untrusted inputs delivered from the "Internet".
+%  The drawing capabilities are best used under controlled circumstances
+%  where drawing inputs can be reasonably trusted.
+%
 %  Note that this is a legacy interface. Authors of new code should consider
 %  using the Draw* methods defined by magick/draw.h since they are better
 %  documented and less error prone.
