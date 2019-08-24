@@ -1,3 +1,8 @@
+2019-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/environment.imdoc: Update documentation pertaining to HOME
+	and MAGICK_DEBUG environment variables.
+
 2019-08-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (DestroyLogInfo): Only output text to terminate an

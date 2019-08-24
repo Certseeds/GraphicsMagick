@@ -41,10 +41,13 @@ hostname:display.screen).</abs>
 
 <opt>HOME</opt>
 
-<abs>Location of user's home directory. GraphicsMagick searches for
-configuration files in $HOME/.magick if the directory exists. See
-<s>MAGICK_CODER_MODULE_PATH</s>, <s>MAGICK_CONFIGURE_PATH</s>, and
-<s>MAGICK_FILTER_MODULE_PATH</s> if more flexibility is needed.</abs>
+<abs>Location of user's home directory. For security reasons, now only
+observed by "uninstalled" builds of GraphicsMagick which do not have
+their location hard-coded or set by an installer.  When supported,
+GraphicsMagick searches for configuration files in $HOME/.magick if
+the directory exists. See <s>MAGICK_CODER_MODULE_PATH</s>,
+<s>MAGICK_CONFIGURE_PATH</s>, and <s>MAGICK_FILTER_MODULE_PATH</s> if
+more flexibility is needed.</abs>
 
 <opt>MAGICK_ACCESS_MONITOR</opt>
 
@@ -93,9 +96,11 @@ the default search path.</abs>
 
 <opt>MAGICK_DEBUG</opt>
 
-<abs>Debug options (see <s>-debug</s> for details).  Setting debug
-options via an environment variable is currently necessary to see the
-complete initialization process.</abs>
+<abs>Debug options (see <s>-debug</s> for details).  Setting the
+configure debug option via an environment variable
+(e.g. <s>MAGICK_DEBUG=configure</s>) is necessary to see the complete
+initialization process, which includes searching for configuration
+files.</abs>
 
 <opt>MAGICK_FILTER_MODULE_PATH</opt>
 

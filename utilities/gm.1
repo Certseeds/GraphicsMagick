@@ -1,4 +1,4 @@
-.TH gm 1 "2019/07/12" "GraphicsMagick"
+.TH gm 1 "2019/08/24" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -4818,10 +4818,13 @@ explicitly exported in order for GraphicsMagick to see it.
 hostname:display.screen).
 .TP
 .B "HOME"
-\fRLocation of user's home directory. GraphicsMagick searches for
-configuration files in $HOME/.magick if the directory exists. See
-\fBMAGICK_CODER_MODULE_PATH\fP, \fBMAGICK_CONFIGURE_PATH\fP, and
-\fBMAGICK_FILTER_MODULE_PATH\fP if more flexibility is needed.
+\fRLocation of user's home directory. For security reasons, now only
+observed by "uninstalled" builds of GraphicsMagick which do not have
+their location hard-coded or set by an installer.  When supported,
+GraphicsMagick searches for configuration files in $HOME/.magick if
+the directory exists. See \fBMAGICK_CODER_MODULE_PATH\fP,
+\fBMAGICK_CONFIGURE_PATH\fP, and \fBMAGICK_FILTER_MODULE_PATH\fP if
+more flexibility is needed.
 .TP
 .B "MAGICK_ACCESS_MONITOR"
 \fRWhen set to \fBTRUE\fP, command line monitor mode (enabled by
@@ -4865,9 +4868,11 @@ Microsoft Windows). This user specified search path is used before trying
 the default search path.
 .TP
 .B "MAGICK_DEBUG"
-\fRDebug options (see \fB-debug\fP for details).  Setting debug
-options via an environment variable is currently necessary to see the
-complete initialization process.
+\fRDebug options (see \fB-debug\fP for details).  Setting the
+configure debug option via an environment variable
+(e.g. \fBMAGICK_DEBUG=configure\fP) is necessary to see the complete
+initialization process, which includes searching for configuration
+files.
 .TP
 .B "MAGICK_FILTER_MODULE_PATH"
 \fRSearch path to use when searching for filter process modules
