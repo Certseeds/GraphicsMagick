@@ -38,6 +38,13 @@
 <p>2019-08-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/attribute.c (GenerateEXIFAttribute): Check that we are
+not being directed to read an IFD that we are already parsing and
+quit in order to avoid a loop.  Addresses oss-fuzz 15753
+&quot;graphicsmagick/coder_JPEG_fuzzer: Timeout in
+graphicsmagick_coder_JPEG_fuzzer&quot; and 16068
+&quot;graphicsmagick/coder_SFW_fuzzer: Timeout in
+graphicsmagick_coder_SFW_fuzzer&quot;.</li>
 <li>tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Eliminate
 irritating GCC 9 &quot;__builtin_strncpy' output may be truncated&quot;
 warnings due to copying MaxTextExtent-1 characters.  Instead
