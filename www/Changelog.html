@@ -38,6 +38,11 @@
 <p>2019-08-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Eliminate
+irritating GCC 9 &quot;__builtin_strncpy' output may be truncated&quot;
+warnings due to copying MaxTextExtent-1 characters.  Instead
+request copying all of the characters and also assure that string
+is still null terminated.</li>
 <li>doc/environment.imdoc: Update documentation pertaining to HOME
 and MAGICK_DEBUG environment variables.</li>
 </ul>

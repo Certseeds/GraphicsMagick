@@ -24,7 +24,7 @@ static void ScribbleImage ( Image *image)
     context;
 /* SetLogEventMask("Render"); */
   context = DrawAllocateContext((DrawInfo*)NULL, image);
-  
+
   DrawPushGraphicContext(context);
   {
     DrawSetViewbox(context,0,0,image->columns,image->rows);
@@ -54,11 +54,11 @@ static void ScribbleImage ( Image *image)
       DrawPopClipPath(context);
     }
     DrawPopDefs(context);
-    
+
     DrawPushGraphicContext(context);
     {
       DrawSetClipPath(context, "url(#clip_1)");
-      
+
       DrawPushGraphicContext(context);
       {
         DrawSetStrokeAntialias(context,True);
@@ -72,7 +72,7 @@ static void ScribbleImage ( Image *image)
         DrawRectangle(context,72,72,144,144);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         DrawSetStrokeAntialias(context,True);
@@ -86,7 +86,7 @@ static void ScribbleImage ( Image *image)
         DrawRoundRectangle(context,72,216,360,432,9,9);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[37] =
@@ -102,7 +102,7 @@ static void ScribbleImage ( Image *image)
           { 346,114.8 },   { 347.1,111.5 }, { 348.9,108.5 }, { 351.4,105.8 },
           { 378.1,81.72 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,2.016);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -114,7 +114,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,37,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         DrawSetStrokeAntialias(context,True);
@@ -128,7 +128,7 @@ static void ScribbleImage ( Image *image)
         DrawEllipse(context,489.6,424.8,72,129.6,0,360);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[48] =
@@ -146,7 +146,7 @@ static void ScribbleImage ( Image *image)
           { 204,55.3 },    { 204.3,44.35 }, { 204.9,39.6 },  { 205.9,35.42 },
           { 207.4,31.82 }, { 209.2,28.87 }, { 211.3,26.64},  { 213.8,25.13 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,3.024);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -158,7 +158,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,48,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         DrawSetStrokeAntialias(context,True);
@@ -193,7 +193,7 @@ static void ScribbleImage ( Image *image)
           { 180,504 }, { 282.7,578.6 }, { 243.5,699.4 }, { 116.5,699.4 },
           { 77.26,578.6 }, { 180,504 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,9);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -205,7 +205,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,6,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[11] =
@@ -214,7 +214,7 @@ static void ScribbleImage ( Image *image)
           { 243.5,699.4 }, { 180,666 },     { 116.5,699.4 }, { 128.7,628.7 },
           { 77.26,578.6 }, { 148.2,568.3 }, { 180,504 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,9);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -226,7 +226,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,11,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[15] =
@@ -236,7 +236,7 @@ static void ScribbleImage ( Image *image)
           { 525.6,93.6 },  { 496.8,158.4 }, { 532.8,136.8 }, { 518.4,180 },
           { 540,172.8 },   { 540,223.2 },   { 540,288 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,5.976);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -248,7 +248,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,15,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[7] =
@@ -256,7 +256,7 @@ static void ScribbleImage ( Image *image)
           { 57.6,640.8 }, { 57.6,784.8 }, { 194.4,799.2 }, { 259.2,777.6 },
           { 151.2,756 }, { 86.4,748.8 }, { 57.6,640.8 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,5.976);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -268,7 +268,7 @@ static void ScribbleImage ( Image *image)
         DrawPolygon(context,7,points);
       }
       DrawPopGraphicContext(context);
-      
+
       DrawPushGraphicContext(context);
       {
         const PointInfo points[193] =
@@ -287,7 +287,7 @@ static void ScribbleImage ( Image *image)
           { 428,531.2 },   { 434.6,532.9 }, { 436.7,533.8 }, { 437.8,534.9 },
           { 437.8,536.2 }, { 436.8,537.8 }, { 434.5,539.6 }, { 430.9,541.8 },
           { 419.3,547.6 }, { 401.3,555.2 }, { 342.4,577.9 }, {325.2,584.9 },
-          { 311,591.3 },   { 300,597.3 },   { 291.6,602.8 }, { 285.8,607.8 }, 
+          { 311,591.3 },   { 300,597.3 },   { 291.6,602.8 }, { 285.8,607.8 },
           { 282.3,612.3 }, { 281.4,614.4 }, { 280.9,616.2 }, { 281.2,619.6 },
           { 282.1,621.2 }, { 283.3,622.6 }, { 286.8,624.9 }, { 291.5,626.6 },
           { 297.1,627.8 }, { 303.6,628.3 }, { 310.5,628.3 }, { 317.9,627.6 },
@@ -323,7 +323,7 @@ static void ScribbleImage ( Image *image)
           { 27.86,597.4 }, { 27.29,595.2 }, { 26.64,588.7 }, { 26.86,578.8 },
           { 27.86,565.3 }
         };
-        
+
         DrawSetStrokeAntialias(context,True);
         DrawSetStrokeWidth(context,5.904);
         DrawSetStrokeLineCap(context,RoundCap);
@@ -359,8 +359,8 @@ int main ( int argc, char **argv )
       exit( 1 );
     }
 
+  (void) strncpy( outfile, argv[1], MaxTextExtent);
   outfile[MaxTextExtent-1]='\0';
-  (void) strncpy( outfile, argv[1], MaxTextExtent-1 );
 
   if (LocaleNCompare("drawtest",argv[0],7) == 0)
     InitializeMagick((char *) NULL);
@@ -394,8 +394,8 @@ int main ( int argc, char **argv )
   /*
    * Save image to file
    */
+  (void) strncpy( canvas->filename, outfile, MaxTextExtent);
   canvas->filename[MaxTextExtent-1]='\0';
-  (void) strncpy( canvas->filename, outfile, MaxTextExtent-1);
   (void) WriteImage ( image_info, canvas );
 
   DestroyExceptionInfo( &exception );

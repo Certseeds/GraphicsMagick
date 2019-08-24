@@ -175,9 +175,11 @@ int main ( int argc, char **argv )
       goto program_exit;
     }
 
-  (void) strncpy(infile, argv[arg], MaxTextExtent-1 );
+  (void) strncpy(infile, argv[arg], MaxTextExtent);
+  infile[MaxTextExtent-1]='\0';
   arg++;
-  (void) strncpy( format, argv[arg], MaxTextExtent-1 );
+  (void) strncpy( format, argv[arg], MaxTextExtent);
+  format[MaxTextExtent-1]='\0';
 
   magick_info=GetMagickInfo(format,&exception);
   if (magick_info == (MagickInfo *) NULL)
@@ -204,7 +206,8 @@ int main ( int argc, char **argv )
   imageInfo=CloneImageInfo(0);
   GetExceptionInfo( &exception );
   imageInfo->dither = 0;
-  (void) strncpy( imageInfo->filename, infile, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->filename, infile, MaxTextExtent );
+  imageInfo->filename[MaxTextExtent-1]='\0';
 
   if (!magick_info->adjoin && !check_for_added_frames)
     (void) strcat( imageInfo->filename, "[0]" );
@@ -247,7 +250,8 @@ int main ( int argc, char **argv )
    * Save image to BLOB
    */
   blob_length = 8192;
-  (void) strncpy( original->magick, format, MaxTextExtent-1 );
+  (void) strncpy( original->magick, format, MaxTextExtent );
+  original->magick[MaxTextExtent-1]='\0';
   (void) strcpy( imageInfo->filename, "" );
   original->delay = 10;
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -291,7 +295,8 @@ int main ( int argc, char **argv )
     MagickBool
       ping_error = MagickFalse;
 
-    (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+    (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+    imageInfo->magick[MaxTextExtent-1]='\0';
     (void) strcpy( imageInfo->filename, "" );
     if ( size[0] != '\0' )
       (void) CloneString( &imageInfo->size, size );
@@ -328,7 +333,8 @@ int main ( int argc, char **argv )
   /*
    * Read image back from BLOB
    */
-  (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+  imageInfo->magick[MaxTextExtent-1]='\0';
   (void) strcpy( imageInfo->filename, "" );
   if ( size[0] != '\0' )
     (void) CloneString( &imageInfo->size, size );
@@ -356,7 +362,8 @@ int main ( int argc, char **argv )
    * Save image to BLOB
    */
   blob_length = 8192;
-  (void) strncpy( original->magick, format, MaxTextExtent-1 );
+  (void) strncpy( original->magick, format, MaxTextExtent );
+  original->magick[MaxTextExtent-1]='\0';
   (void) strcpy( imageInfo->filename, "" );
   original->delay = 10;
   blob = (char *) ImageToBlob ( imageInfo, original, &blob_length,
@@ -382,7 +389,8 @@ int main ( int argc, char **argv )
   /*
    * Read image back from BLOB
    */
-  (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+  imageInfo->magick[MaxTextExtent-1]='\0';
   (void) strcpy( imageInfo->filename, "" );
   if ( size[0] != '\0' )
     (void) CloneString( &imageInfo->size, size );

@@ -1,5 +1,11 @@
 2019-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Eliminate
+	irritating GCC 9 "__builtin_strncpy' output may be truncated"
+	warnings due to copying MaxTextExtent-1 characters.  Instead
+	request copying all of the characters and also assure that string
+	is still null terminated.
+
 	* doc/environment.imdoc: Update documentation pertaining to HOME
 	and MAGICK_DEBUG environment variables.
 
