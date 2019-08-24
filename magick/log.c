@@ -243,7 +243,8 @@ MagickExport void DestroyLogInfo(void)
   if (log_info->file != (FILE *) NULL)
     if ((log_info->file != stdout) && (log_info->file != stderr))
       {
-        (void) fprintf(log_info->file,"</log>\n");
+        if (log_info->output_type == XMLFileOutput)
+          (void) fprintf(log_info->file,"</log>\n");
         (void) fclose(log_info->file);
         log_info->file=(FILE *) NULL;
       }
