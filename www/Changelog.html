@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2019-08-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (PRIMITIVE_INFO_POINTS_MAX): SIZE_MAX apparently
+rounds up by one when cast to a double on 64-bit systems.  Due to
+this, and in order to set more rational implementation limits, add
+a PRIMITIVE_INFO_POINTS_MAX definition which computes and
+constrains the maximum number of PrimitiveInfo entries allowed.</li>
+</ul>
+</blockquote>
 <p>2019-08-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

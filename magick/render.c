@@ -69,7 +69,11 @@
 /* Maximum amount of recursion allowed when executing MVG */
 #if !defined(MAX_DRAWIMAGE_RECURSION)
 #  define MAX_DRAWIMAGE_RECURSION 100
-#endif /* defined(MAX_DRAWIMAGE_RECURSION) */
+#endif /* !defined(MAX_DRAWIMAGE_RECURSION) */
+/* Maximum number of points to allocate in PrimitiveInfo array */
+#if !defined(PRIMITIVE_INFO_POINTS_MAX)
+#  define PRIMITIVE_INFO_POINTS_MAX ((~((size_t)0)) >> 8)
+#endif /* !defined(PRIMITIVE_INFO_POINTS_MAX) */
 
 /*
   Typedef declarations.
@@ -2366,6 +2370,13 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
   if (status != MagickPass)
     ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,UnableToDrawOnImage);
 
+  /* Check if we have exceeded primitive info allocation hard limit */
+  if (NeedAllocCount > PRIMITIVE_INFO_POINTS_MAX)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+      status = MagickFail;
+    }
+
   if ((status == MagickPass) && (NeedAllocCount > *p_PIMgr->p_AllocCount))
     {
       const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
@@ -4226,9 +4237,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         double new_number_points = ceil(number_points+points_length+1);
         size_t new_number_points_size_t;
-        if (new_number_points > SIZE_MAX)
+        if (new_number_points > (double) PRIMITIVE_INFO_POINTS_MAX)
           {
-            /* new_number_points too big to be represented as a size_t */
+            /* new_number_points too big */
             status=MagickFail;
             ThrowException3(&image->exception,ResourceLimitError,
                             MemoryAllocationFailed,UnableToDrawOnImage);
@@ -6513,9 +6524,9 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
 
   /* make sure we have enough space */
   points_length = ceil(1.0 + ceil((angle.y - angle.x) / step));
-  if (points_length > SIZE_MAX)
+  if (points_length > (double) PRIMITIVE_INFO_POINTS_MAX)
     {
-      /* points_length too big to be represented as a size_t */
+      /* points_length too big */
       status=MagickFail;
       ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,
                      MemoryAllocationFailed,UnableToDrawOnImage);
