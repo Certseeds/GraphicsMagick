@@ -121,17 +121,16 @@ gm - command-line utility to create, edit, compare, convert, or display images
 <p>
 <s>gm version</s></p>
 
-<p>
-The <s>gm</s> utility returns the exit code 0 to indicate success, or
-1 to indicate failure.</p>
 
 </sect>
 <sect NAME="desc">Description
 
-<p> GraphicsMagick's <s>gm</s> provides a suite of utilities for
-creating, comparing, converting, editing, and displaying images.  All
-of the utilities are provided as sub-commands of a single <s>gm</s>
-executable:</p>
+<p>
+GraphicsMagick's <s>gm</s> provides a suite of utilities for creating,
+comparing, converting, editing, and displaying images.  All of the
+utilities are provided as sub-commands of a single <s>gm</s>
+executable.  The <s>gm</s> executable returns the exit code 0 to
+indicate success, or 1 to indicate failure:</p>
 
 <p>
 <format type=man,tex>
