@@ -1,3 +1,7 @@
+2019-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/GraphicsMagick.imdoc: Document gm utility exit status codes.
+
 2019-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (PRIMITIVE_INFO_POINTS_MAX): SIZE_MAX apparently

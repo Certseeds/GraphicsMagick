@@ -121,6 +121,10 @@ gm - command-line utility to create, edit, compare, convert, or display images
 <p>
 <s>gm version</s></p>
 
+<p>
+The <s>gm</s> utility returns the exit code 0 to indicate success, or
+1 to indicate failure.</p>
+
 </sect>
 <sect NAME="desc">Description
 
