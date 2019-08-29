@@ -61,6 +61,13 @@ been made available.
 Reporting an issue will allow us to fix it so that future releases of
 the software won't suffer from the problem.
 
+The current state of free software is that security-sensitive free
+software projects have been undergoing automated testing by machines
+(and sometimes what might be hundreds of machines).  Machines do not
+need to work at a day job, take care of families, rest, or eat, but we
+do.  Any bug report which comes with a patch or changeset to fix the
+problem is greatly appreciated and helps to move the project forward.
+
 The remedy available to us is to submit a changeset to the
 GraphicsMagick Mercurial repository, and include the changes in the
 next release.  Regardless of how an issue becomes known to us, the
