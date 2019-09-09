@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
 <title>UNIX/Cygwin/MinGW Compilation</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
@@ -355,6 +355,11 @@ directory (only one can be used for development)</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--without-ttf</span></kbd></td>
 <td>disable TrueType support</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--with-tcmalloc</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>enable Google perftools tcmalloc (minimal) memory allocation
+library support</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-mtmalloc</span></kbd></td>
 </tr>
@@ -837,6 +842,20 @@ installing from source:</p>
 </tr>
 <tr><td>&nbsp;</td><td>Specify the directory containing MS-Windows-compatible fonts. This is
 not necessary when GraphicsMagick is running under MS-Windows.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--with-tcmalloc</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The GNU libc malloc and some other mallocs exhibits poor concurrency
+in multi-threaded OpenMP programs and this can severely impact
+OpenMP speedup.  The 'tcmalloc' library provided as part of Google
+<a class="reference external" href="https://github.com/gperftools/gperftools">gperftools</a> has been
+observed to perform far better than the default GNU libc memory
+allocator.  Overall performance improvements of up to a factor of
+two are observed for some algorithms (even with just 12 cores) and
+it is expected that the improvements will become much more apparent
+with larger numbers of cores (e.g. 64 cores).  Using tcmalloc may
+improve performance dramatically for some work-loads on modern
+multi-core systems.</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--with-umem</span></kbd></td>
 <td>The default Solaris memory allocator exhibits poor concurrency in

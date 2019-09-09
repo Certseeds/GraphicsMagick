@@ -329,6 +329,11 @@ Optional Packages/Options
 
     disable TrueType support
 
+--with-tcmalloc
+
+    enable Google perftools tcmalloc (minimal) memory allocation
+    library support
+
 --with-mtmalloc
 
     enable Solaris mtmalloc memory allocation library support
@@ -751,6 +756,20 @@ Several configure options require special note:
 
   Specify the directory containing MS-Windows-compatible fonts. This is
   not necessary when GraphicsMagick is running under MS-Windows.
+
+--with-tcmalloc
+
+  The GNU libc malloc and some other mallocs exhibits poor concurrency
+  in multi-threaded OpenMP programs and this can severely impact
+  OpenMP speedup.  The 'tcmalloc' library provided as part of Google
+  `gperftools <https://github.com/gperftools/gperftools>`_ has been
+  observed to perform far better than the default GNU libc memory
+  allocator.  Overall performance improvements of up to a factor of
+  two are observed for some algorithms (even with just 12 cores) and
+  it is expected that the improvements will become much more apparent
+  with larger numbers of cores (e.g. 64 cores).  Using tcmalloc may
+  improve performance dramatically for some work-loads on modern
+  multi-core systems.
 
 --with-umem
 

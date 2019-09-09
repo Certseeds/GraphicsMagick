@@ -435,6 +435,9 @@
 /* X11 server supports shared memory extension */
 #undef HasSharedMemory
 
+/* Define if you have Google perftools tcmalloc (minimal) library */
+#undef HasTCMALLOC
+
 /* Define if you have TIFF library */
 #undef HasTIFF
 

@@ -1,3 +1,23 @@
+2019-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Document new --with-tcmalloc option to
+	enable using Google gperftools tcmalloc library.
+
+	* configure.ac: Add support for using Google gperftools tcmalloc
+	library via the --with-tcmalloc option.
+
+	* scripts/rst2htmldeco.py: Port to Python 3 syntax and require at
+	least Python 2.6.
+
+	* scripts/relpath.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
+	* scripts/html_fragments.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
+	* scripts/format_c_api_doc.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
 2019-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* doc/GraphicsMagick.imdoc: Document gm utility exit status codes.
