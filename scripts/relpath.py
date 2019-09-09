@@ -6,6 +6,9 @@
 # All rights reserved.
 # License:  same as Python itself
 
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
+
 import sys
 import os, os.path
 
@@ -50,15 +53,15 @@ def rel_to_top(topdir, subdir):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print __doc__
+        print(__doc__)
         sys.exit(1)
 
     topdir = os.path.abspath(sys.argv[1])
     subdir = os.path.abspath(sys.argv[2])
     prefix = os.path.commonprefix([topdir, subdir])
     if prefix != topdir:
-        print >> sys.stderr, "'%s' is not a subordinate path of '%s'" % (subdir, topdir)
+        print("'%s' is not a subordinate path of '%s'" % (subdir, topdir), file=sys.stderr)
         sys.exit(1)
 
-    print rel_to_top(topdir, subdir)
+    print((rel_to_top(topdir, subdir)))
     sys.exit(0)
