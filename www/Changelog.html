@@ -35,9 +35,21 @@
 <div class="document">
 
 
+<p>2019-09-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/memory.c (MagickRealloc): Add a note that the behavior of
+this function is as described for BSD reallocf(3), which is now
+appearing in Linux's GNU libc and elsewhere.</li>
+</ul>
+</blockquote>
 <p>2019-09-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>www/OpenMP.rst: Document the significant OpenMP speed-up which
+may be obtained by using an alternate memory allocation library.
+Currently 'tcmalloc', 'mtmalloc', and 'umem' are supported as
+options.</li>
 <li>www/INSTALL-unix.rst: Document new --with-tcmalloc option to
 enable using Google gperftools tcmalloc library.</li>
 <li>configure.ac: Add support for using Google gperftools tcmalloc

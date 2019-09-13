@@ -1,4 +1,15 @@
+2019-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/memory.c (MagickRealloc): Add a note that the behavior of
+	this function is as described for BSD reallocf(3), which is now
+	appearing in Linux's GNU libc and elsewhere.
+
 2019-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/OpenMP.rst: Document the significant OpenMP speed-up which
+	may be obtained by using an alternate memory allocation library.
+	Currently 'tcmalloc', 'mtmalloc', and 'umem' are supported as
+	options.
 
 	* www/INSTALL-unix.rst: Document new --with-tcmalloc option to
 	enable using Google gperftools tcmalloc library.
