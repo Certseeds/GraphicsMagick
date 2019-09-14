@@ -1222,7 +1222,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return MagickFail;
     }
-  /* allocate space */ /* oss-fuzz 16906 unchecked size */
+  /* allocate space */
   if ((length == 0) || ((magick_uintptr_t) length*2 + sp >= ep))
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
