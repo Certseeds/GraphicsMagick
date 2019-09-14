@@ -1,3 +1,10 @@
+2019-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReallocColormap): Avoid dereferencing a null
+	pointer if image->colormap is null.  Fixes oss-fuzz 17004
+	"graphicsmagick:coder_WPG_fuzzer: Null-dereference READ in
+	ReallocColormap".
+
 2019-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/memory.c (MagickRealloc): Add a note that the behavior of

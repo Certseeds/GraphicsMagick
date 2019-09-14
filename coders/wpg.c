@@ -243,9 +243,12 @@ static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
   colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
   if (colormap != (PixelPacket *) NULL)
     {
-      (void) memcpy(colormap,image->colormap,
-                    (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
-      MagickFreeMemory(image->colormap);
+      if (image->colormap != (PixelPacket *) NULL)
+        {
+          (void) memcpy(colormap,image->colormap,
+                        (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
+          MagickFreeMemory(image->colormap);
+        }
       image->colormap = colormap;
       image->colors = colors;
       return MagickPass;
@@ -1667,6 +1670,7 @@ ModuleExport void RegisterWPGImage(void)
   entry->description="Word Perfect Graphics";
   entry->module="WPG";
   entry->seekable_stream=True;
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
