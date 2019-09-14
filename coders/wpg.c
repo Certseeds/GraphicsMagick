@@ -819,11 +819,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
 
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "ExtractPostscript(): PS_Offset=%"MAGICK_OFF_F"d, PS_Size=%ld",
+                          (magick_off_t) PS_Offset, PS_Size);
+
   /* Obtain temporary file */
   ps_file = AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
   if (!ps_file)
     {
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Gannot create file stream for PS image");
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Cannot create file stream for PS image");
       goto FINISH;
     }
 
@@ -834,6 +839,10 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
   {
 BAD_SEEK:
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
+                            (magick_off_t) PS_Offset);
     (void) fclose(ps_file);
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
     goto FINISH_UNL;
@@ -871,7 +880,7 @@ BAD_SEEK:
   }
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "Reading embedded \"%s\" content...", clone_info->magick);
+                        "Reading embedded \"%s\" content from temporary file \"%s\"...", clone_info->magick, postscript_file);
 
   /* Read nested image, forcing read as Postscript format */
   FormatString(clone_info->filename,"%s:%.1024s",clone_info->magick,postscript_file);
