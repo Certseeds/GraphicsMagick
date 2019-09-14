@@ -1146,6 +1146,9 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   register long
     i;
 
+  long
+    length_s;
+
   register unsigned char
     *dp;
 
@@ -1173,6 +1176,11 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
 
   sp=text[ii].text+1;
   ep=text[ii].text+text[ii].text_length;
+  if (ep <= sp)
+    {
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return MagickFail;
+    }
   /* look for newline */
   while ((sp < ep) && (*sp != '\n'))
     sp++;
@@ -1195,7 +1203,15 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return MagickFail;
     }
-  length=MagickAtoL(sp);
+  length_s = MagickAtoL(sp);
+  if ((length_s <= 0) || (length_s >= (ep-sp)))
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "invalid profile length %ld", length_s);
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return (MagickFail);
+    }
+  length=(png_uint_32) length_s;
   while ((sp < ep) && (*sp != ' ' && *sp != '\n'))
     sp++;
   if (sp == ep)
@@ -1206,11 +1222,11 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return MagickFail;
     }
-  /* allocate space */
-  if ((length == 0) || (length*2 + sp >= ep))
+  /* allocate space */ /* oss-fuzz 16906 unchecked size */
+  if ((length == 0) || ((magick_uintptr_t) length*2 + sp >= ep))
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "invalid profile length");
+                            "invalid profile length %u", (unsigned) length);
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return (MagickFail);
     }

@@ -38,6 +38,10 @@
 <p>2019-09-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (png_read_raw_profile): Fix validation of raw
+profile length.  Fixes oss-fuzz 16906
+&quot;graphicsmagick:coder_ICO_fuzzer: Out-of-memory in
+graphicsmagick_coder_ICO_fuzzer&quot;.</li>
 <li>coders/wpg.c (ReallocColormap): Avoid dereferencing a null
 pointer if image-&gt;colormap is null.  Fixes oss-fuzz 17004
 &quot;graphicsmagick:coder_WPG_fuzzer: Null-dereference READ in

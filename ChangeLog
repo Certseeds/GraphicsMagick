@@ -1,5 +1,10 @@
 2019-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (png_read_raw_profile): Fix validation of raw
+	profile length.  Fixes oss-fuzz 16906
+	"graphicsmagick:coder_ICO_fuzzer: Out-of-memory in
+	graphicsmagick_coder_ICO_fuzzer".
+
 	* coders/wpg.c (ReallocColormap): Avoid dereferencing a null
 	pointer if image->colormap is null.  Fixes oss-fuzz 17004
 	"graphicsmagick:coder_WPG_fuzzer: Null-dereference READ in
