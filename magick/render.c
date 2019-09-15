@@ -6213,8 +6213,9 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     }
   radii.x=fabs(arc.x);
   radii.y=fabs(arc.y);
-  if ((radii.x == 0.0) || (radii.y == 0.0))
+  if ((radii.x < MagickEpsilon) || (radii.y < MagickEpsilon))
     {
+      /* Substitute a lineto command */
       return (TraceLine(primitive_info,start,end));
     }
   cosine=cos(DegreesToRadians(fmod(angle,360.0)));
@@ -6234,6 +6235,11 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   points[1].y=cosine*end.y/radii.y-sine*end.x/radii.y;
   alpha=points[1].x-points[0].x;
   beta=points[1].y-points[0].y;
+  if (fabs(alpha*alpha+beta*beta) < MagickEpsilon)
+    {
+      /* Substitute a lineto command */
+      return (TraceLine(primitive_info,start,end));
+    }
   factor=1.0/(alpha*alpha+beta*beta)-0.25;
   if (factor <= 0.0)
     factor=0.0;
