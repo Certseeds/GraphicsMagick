@@ -1,3 +1,8 @@
+2019-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Report status of zstd (FaceBook Zstandard)
+	compression in configuration summary.
+
 2019-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (TraceArcPath): Substitute a lineto command when

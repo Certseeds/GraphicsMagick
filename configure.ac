@@ -3788,6 +3788,7 @@ printf "WMF               --with-wmf=$with_wmf          \t$have_wmf\n"
 printf "X11               --with-x=$with_x              \t$have_x\n"
 printf "XML               --with-xml=$with_xml          \t$have_xml\n"
 printf "ZLIB              --with-zlib=$with_zlib        \t$have_zlib\n"
+printf "ZSTD              --with-zstd=$with_zstd        \t$have_zstd\n"
 printf "\n"
 printf "X11 Configuration:\n"
 if test "$have_x" != 'no'
