@@ -61,6 +61,12 @@ Oss-fuzz issues pertaining to `GraphicsMagick`__.
 
 __ oss_fuzz_reports_
 
+Oss-fuzz build status for `GraphicsMagick`__.
+
+.. _oss_fuzz_build_status : https://oss-fuzz-build-logs.storage.googleapis.com/index.html#graphicsmagick
+
+__ oss_fuzz_build_status_
+
 
 Image Processing Topics
 ============================
