@@ -1,3 +1,10 @@
+2019-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c (OpenModule): Static module loader should use
+	upper-cased magick string when searching for a module alias.
+	Fixes SourceForge issue #613 "static module loader is still
+	case-sensitive".
+
 2019-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Report status of zstd (FaceBook Zstandard)

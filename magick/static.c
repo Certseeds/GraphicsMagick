@@ -312,11 +312,11 @@ OpenModule(const char *module,ExceptionInfo *exception)
                         "Magick \"%s\"", module_name);
   for (index=0; index < ArraySize(ModuleAliases);index++)
     {
-      if (ModuleAliases[index].magick[0] > module[0])
+      if (ModuleAliases[index].magick[0] > module_name[0])
         break;
-      if ((ModuleAliases[index].magick[0] == module[0]) &&
+      if ((ModuleAliases[index].magick[0] == module_name[0]) &&
           (ModuleAliases[index].magick_len == name_length) &&
-          (memcmp(ModuleAliases[index].magick,module,name_length) == 0))
+          (memcmp(ModuleAliases[index].magick,module_name,name_length) == 0))
         {
           name_length=strlcpy(module_name,ModuleAliases[index].name,MaxTextExtent);
           break;
