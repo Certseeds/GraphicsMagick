@@ -1,3 +1,8 @@
+2019-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Change by Alex Gaynor so that the
+	correct oss-fuzz fuzzing engine should be used.
+
 2019-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c (OpenModule): Static module loader should use

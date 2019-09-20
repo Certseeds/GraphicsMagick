@@ -100,7 +100,7 @@ for f in fuzzing/*_fuzzer.cc; do
 
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         "$f" -o "$OUT/${fuzzer}_fuzzer" \
-        -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
+        $LIB_FUZZING_ENGINE "$WORK/lib/libGraphicsMagick++.a" \
         "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
 done
 
@@ -117,7 +117,7 @@ for item in $("$WORK/coder_list"); do
 
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         fuzzing/coder_fuzzer.cc -o "${OUT}/coder_${coder}_fuzzer" \
-        $coder_flags -lFuzzingEngine "$WORK/lib/libGraphicsMagick++.a" \
+        $coder_flags $LIB_FUZZING_ENGINE "$WORK/lib/libGraphicsMagick++.a" \
         "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
 
     if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
