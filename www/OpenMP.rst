@@ -118,18 +118,18 @@ heavily-threaded programs since they are designed or optimized for
 single-threaded programs, or prioritize returning memory to the system
 over speed.  In order to help surmount this, the configure script
 offers support for use of Google `gperftools
-<https://github.com/gperftools/gperftools>`_ tcmalloc, Solaris
-mtmalloc, and Solaris umem libraries via the --with-tcmalloc,
---with-mtmalloc, and --with-umem options, respectively.  When the
-allocation functions are behaving badly, the memory
-allocation/deallocation performance does not scale as threads are
-added and thus additional threads spend more time sleeping (e.g. on a
-lock, or in munmap()) rather than doing more work.  Performance
-improvements of a factor of two are not uncommon even before
-contending with the hugh CPU core/thread counts available on modern
-CPUs.  Using more threads which are slowed by poorly-matched memory
-allocation functions is wasteful of memory, system resources, human
-patience, and electrical power.
+<https://github.com/gperftools/gperftools>`_ `'tcmalloc'
+<https://github.com/gperftools/gperftools/wiki>`_, Solaris mtmalloc,
+and Solaris umem libraries via the --with-tcmalloc, --with-mtmalloc,
+and --with-umem options, respectively.  When the allocation functions
+are behaving badly, the memory allocation/deallocation performance
+does not scale as threads are added and thus additional threads spend
+more time sleeping (e.g. on a lock, or in munmap()) rather than doing
+more work.  Performance improvements of a factor of two are not
+uncommon even before contending with the hugh CPU core/thread counts
+available on modern CPUs.  Using more threads which are slowed by
+poorly-matched memory allocation functions is wasteful of memory,
+system resources, human patience, and electrical power.
 
 Many modern CPUs support "Turbo" modes where the CPU clock rate is
 boosted if only a few cores are active.  When a CPU provides a "Turbo"
