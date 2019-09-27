@@ -1865,15 +1865,25 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             }
           t=Read16u(morder,pde); /* get tag value */
           f=Read16u(morder,pde+2); /* get the format */
-          if ((size_t) f >= ArraySize(format_bytes))
-            break;
+          if ((f == 0) || (size_t) f >= ArraySize(format_bytes))
+            {
+              if (logging)
+                (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                      "EXIF: Invalid Exif, unsupported format %u.",(unsigned) f);
+              break;
+            }
           c=Read32u(morder,pde+4); /* get number of components */
           n=MagickArraySize(c,format_bytes[f]);
+          if (logging && debug)
+            {
+              (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                    "EXIF: %u components, %u format_bytes", c,format_bytes[f]);
+            }
           if ((n == 0) && (c != 0) && (format_bytes[f] != 0))
             {
               if (logging)
                 (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                      "EXIF: Invalid Exif, too many components (%u).",c);
+                                      "EXIF: Invalid Exif, too many components (%u components).",c);
               goto generate_attribute_failure;
             }
           if (n <= 4)

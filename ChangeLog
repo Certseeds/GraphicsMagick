@@ -1,3 +1,10 @@
+2019-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Skip
+	unsupported/invalid format 0.  Fixes oss-fuzz issue 17597
+	"graphicsmagick:coder_SFW_fuzzer: Heap-buffer-overflow in
+	GenerateEXIFAttribute".
+
 2019-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Change by Alex Gaynor so that the
