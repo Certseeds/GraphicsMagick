@@ -113,11 +113,24 @@ Limitations
 ===========
 
 Often it is noticed that the memory allocation functions (e.g. from
-the standard C library such as GNU libc) are the bottleneck in
-heavily-threaded programs since they are designed or optimized for
-single-threaded programs, or prioritize returning memory to the system
-over speed.  In order to help surmount this, the configure script
-offers support for use of Google `gperftools
+the standard C library such as GNU libc) significantly hinder
+performance since they are designed or optimized for single-threaded
+programs, or prioritize returning memory to the system over speed.
+Memory allocators are usually designed and optimized for programs
+which perform thousands of small allocations, and if they make a large
+memory allocation, they retain that memory for a long time.
+GraphicsMagick performs large memory allocations for raster image
+storage interspersed with a limited number of smaller allocations for
+supportive data structures.  This memory is released very quickly
+since GraphicsMagick is highly optimized and thus the time between
+allocation and deallocation can be very short.  It has been observed
+that some memory allocators are much slower to allocate and deallocate
+large amounts of memory (e.g. a hundred megabytes) than alternative
+allocators, even in single-threaded programs.  Under these conditions,
+the program can spend considerable time mysteriously "sleeping".
+
+In order to help surmount problems with the default memory allocators,
+the configure script offers support for use of Google `gperftools
 <https://github.com/gperftools/gperftools>`_ `'tcmalloc'
 <https://github.com/gperftools/gperftools/wiki>`_, Solaris mtmalloc,
 and Solaris umem libraries via the --with-tcmalloc, --with-mtmalloc,
