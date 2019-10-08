@@ -169,6 +169,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
   if (status == False)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"failed to open blob!");
+      DestroyImage(image);
       return((Image *) NULL);
     }
   /*

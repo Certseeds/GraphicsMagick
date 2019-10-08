@@ -1,3 +1,8 @@
+2019-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dps.c (ReadDPSImage): Fix memory leak when OpenBlob()
+	reports failure.  Same as ImageMagick CVE CVE-2019-16709.
+
 2019-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Skip
