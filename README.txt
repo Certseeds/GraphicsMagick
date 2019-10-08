@@ -213,7 +213,19 @@ building under Microsoft Windows:
 
      http://www.ijg.org/
 
-  to read and write the JPEG v1 image format.
+  or libjpeg-turbo available from
+
+     https://libjpeg-turbo.org/ or https://github.com/libjpeg-turbo/libjpeg-turbo
+
+  to read and write the JPEG v1 image format.  The 'turbo' releases
+  are much faster than the IJG releases on certain targets (due to
+  using assembly code and other optimizations), but lack the
+  SmartScale JPEG extension introduced in IJG JPEG v8, and the
+  lossless coding mode JPEG extension introduced in IJG JPEG v9 (which
+  is not compatible with standard lossless JPEG!).
+
+  GraphicsMagick supports both 8-bit and 12-bit JPEG, but
+  unfortunately it does not yet support both at once.
 
   Apply this JPEG patch to Independent JPEG Group's (6b release!)
   source distribution if you want to read lossless jpeg-encoded DICOM
