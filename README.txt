@@ -286,8 +286,21 @@ building under Microsoft Windows:
   decreases the security of GraphicsMagick due to possible buffer
   overrun exploits.
 
+* GraphicsMagick may optionally use the 'tcmalloc' library provided as
+  part of Google gperftools available from
+
+     https://github.com/gperftools/gperftools
+
+  to provide enhanced versions of the standard memory allocation
+  facilities.  Use of tcmalloc may improve performance for both
+  single-threaded and multi-threaded programs.  Benchmarking under
+  Linux shows a doubling of performance with tcmalloc over the default
+  glibc malloc when images are repeatedly allocated, cleared, and
+  de-allocated.
+
 * GraphicsMagick may optionally use the umem memory allocation library
-  which is included in Sun's Solaris operating system or available from
+  which is included in Sun's Solaris operating system, and
+  OpenSolaris/Illumos derivatives, or available from
 
      https://labs.omniti.com/trac/portableumem
 

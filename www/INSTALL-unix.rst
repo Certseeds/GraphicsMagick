@@ -765,8 +765,8 @@ Several configure options require special note:
   `gperftools <https://github.com/gperftools/gperftools>`_ has been
   observed to perform far better than the default GNU libc memory
   allocator for multi-threaded use, and also for single-threaded use.
-  Overall performance improvements of up to a factor of two are
-  observed for some algorithms (even with just 12 cores) and it is
+  Overall benchmark performance improvements of up to a factor of two
+  are observed for some algorithms (even with just 12 cores) and it is
   expected that the improvements will become much more apparent with
   larger numbers of cores (e.g. 64 cores).  Using tcmalloc may improve
   performance dramatically for some work-loads on modern multi-core
