@@ -128,13 +128,13 @@ static unsigned int IsPNM(const unsigned char *magick,const size_t length)
 
 static unsigned int PNMInteger(Image *image,const unsigned int base)
 {
-#define P7Comment  "END_OF_COMMENTS\n"
-
   int
     c;
 
   unsigned long
     value;
+
+  static const char P7Comment[] = "END_OF_COMMENTS\n";
 
   /*
     Skip any leading whitespace.
@@ -149,6 +149,9 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
         char
           *comment;
 
+        const ImageAttribute
+          *comment_attr;
+
         ExtendedSignedIntegralType
           offset;
 
@@ -162,8 +165,21 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
         /*
           Read comment.
         */
+        if ((comment_attr=GetImageAttribute(image,"comment")) != (const ImageAttribute *) NULL)
+          {
+            /*
+              If existing comment text length exceeds arbitrary limit,
+              then do no further comment processing for this file.
+            */
+            if (comment_attr->length > MaxTextExtent*2)
+              {
+                for ( ; (c != EOF) && (c != '\n'); )
+                  c=ReadBlobByte(image);
+                return 0;
+              }
+          }
         length=MaxTextExtent;
-        comment=MagickAllocateMemory(char *,length+strlen(P7Comment)+1);
+        comment=MagickAllocateMemory(char *,length+sizeof(P7Comment));
         p=comment;
         offset=p-comment;
         if (comment != (char *) NULL)
@@ -171,12 +187,16 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
           {
             if ((size_t) (p-comment) >= length)
               {
+                size_t
+                  text_length;
+
+                text_length=(size_t) (p-comment);
                 length<<=1;
                 length+=MaxTextExtent;
-                MagickReallocMemory(char *,comment,length+strlen(P7Comment)+1);
+                MagickReallocMemory(char *,comment,length+sizeof(P7Comment));
                 if (comment == (char *) NULL)
                   break;
-                p=comment+strlen(comment);
+                p=comment+text_length;
               }
             c=ReadBlobByte(image);
             *p=c;
@@ -187,6 +207,10 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
         q=comment+offset;
         if (LocaleCompare(q,P7Comment) == 0)
           *q='\0';
+        /*
+          Implicitly extend existing comment attribute since comments
+          can span multiple lines.
+        */
         (void) SetImageAttribute(image,"comment",comment);
         MagickFreeMemory(comment);
         continue;
