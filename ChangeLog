@@ -1,5 +1,8 @@
 2019-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Implement subimage/subrange
+	support.
+
 	* coders/mat.c (ReadMATImage, ReadMATImageV4): Implement
 	subimage/subrange support.  Should resolve oss-fuzz 14999
 	"graphicsmagick/coder_MAT_fuzzer: Out-of-memory in

@@ -1428,6 +1428,10 @@ UnpackRaster:
                     }
                 }
 
+              if (image_info->subrange != 0)
+                if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                  goto Finish;
+
               /* Allocate next image structure. */
               AllocateNextImage(image_info,image);
               image->depth=8;
@@ -1630,6 +1634,9 @@ UnpackRaster:
                      Tx(2,2)=1; */
                 }
 
+              if (image_info->subrange != 0)
+                if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                  goto Finish;
 
               /* Allocate next image structure. */
               AllocateNextImage(image_info,image);
