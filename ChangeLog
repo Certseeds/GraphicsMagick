@@ -1,3 +1,15 @@
+2019-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (TIFFMapBlob): Fix compile problem if
+	LOG_TIFF_BLOB_IO is defined.
+
+	* coders/wpg.c (ExtractPostscript): Improve performance.  Avoid
+	temporary files if possible.  Avoid additional memory allocations
+	if possible.  Should address oss-fuzz issue 18173
+	"graphicsmagick:enhance_fuzzer: Timeout in enhance_fuzzer" and
+	oss-fuzz issue 17714 "graphicsmagick:coder_WPG_fuzzer: Timeout in
+	coder_WPG_fuzzer".
+
 2019-10-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pnm.c (PNMInteger): Place a generous arbitrary limit on
