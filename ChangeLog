@@ -1,5 +1,10 @@
 2019-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (ReadMATImage, ReadMATImageV4): Implement
+	subimage/subrange support.  Should resolve oss-fuzz 14999
+	"graphicsmagick/coder_MAT_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MAT_fuzzer".
+
 	* coders/tiff.c (TIFFMapBlob): Fix compile problem if
 	LOG_TIFF_BLOB_IO is defined.
 

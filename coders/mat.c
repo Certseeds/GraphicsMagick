@@ -703,7 +703,12 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     }
 
 skip_reading_current:
-        /* Allocate next image structure. */
+
+    if (image_info->subrange != 0)
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
+          break;
+
+    /* Allocate next image structure. */
     AllocateNextImage(image_info,image);
     if (image->next == (Image *) NULL) break;
     image=SyncNextImageInList(image);
@@ -1262,7 +1267,11 @@ skip_reading_current:
 
     if(image2==image) image2 = NULL;
 
-      /* Allocate next image structure. */
+    if (image_info->subrange != 0)
+      if (image->scene >= (image_info->subimage+image_info->subrange-1))
+        break;
+
+    /* Allocate next image structure. */
     AllocateNextImage(image_info,image);
     if (image->next == (Image *) NULL) break;
     image=SyncNextImageInList(image);
