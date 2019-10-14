@@ -1437,8 +1437,8 @@ AC_SUBST(LIB_THREAD)
 #
 # Check for Google perftools tcmalloc library
 #
-have_mtmalloc='no'
-LIB_MTMALLOC=''
+have_tcmalloc='no'
+LIB_TCMALLOC=''
 OLIBS="$LIBS"
 if test "$have_threads" = 'yes' -a "$with_tcmalloc" != 'no'
 then
