@@ -1,3 +1,10 @@
+2019-10-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Image properties are expected to
+	appear within the first 512 bytes of the XPM file header.  fixes
+	oss-fuzz 18267 "graphicsmagick:coder_PICON_fuzzer: Timeout in
+	coder_PICON_fuzzer".
+
 2019-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Fix tcmalloc configuration report.
