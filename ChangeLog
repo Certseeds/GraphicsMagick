@@ -1,3 +1,11 @@
+2019-10-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcx.c (ReadPCXImage): Verify that pixel region is not
+	negative. Assure that opacity channel is initialized to
+	opaqueOpacity.  Update DirectClass representation while
+	PseudoClass representation is updated.  Improve read performance
+	with uncompressed PCX.
+
 2019-10-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c (ReadXPMImage): Image properties are expected to

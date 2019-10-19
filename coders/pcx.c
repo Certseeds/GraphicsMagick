@@ -221,6 +221,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pcx_info;
 
   register IndexPacket
+    index,
     *indexes;
 
   register long
@@ -396,7 +397,9 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Validate rows, columns, bits
     */
-    if ((image->columns == 0) ||
+    if ((pcx_info.right < pcx_info.left) ||
+        (pcx_info.bottom < pcx_info.top) ||
+        (image->columns == 0) ||
         (image->rows == 0) ||
         ((pcx_info.bits_per_pixel != 1) &&
          (pcx_info.bits_per_pixel != 2) &&
@@ -435,6 +438,9 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if ((pcx_info.bits_per_pixel >= 8) || (pcx_info.planes != 1))
       {
         image->storage_class=DirectClass;
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "DirectClass image");
       }
     else
       {
@@ -447,23 +453,27 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 image->colors = 256;
             }
 
-      if (!AllocateImageColormap(image,image->colors))
-        ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+        if (!AllocateImageColormap(image,image->colors))
+          ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-      /*
-        256 color images have their color map at the end of the file.
-        Colormap for 1 bit/pixel images is explicitly initialized.
-      */
-      if (image->colors <= 16)
-        {
-          p=pcx_colormap;
-          for (i=0; i < image->colors; i++)
-            {
-              image->colormap[i].red=ScaleCharToQuantum(*p++);
-              image->colormap[i].green=ScaleCharToQuantum(*p++);
-              image->colormap[i].blue=ScaleCharToQuantum(*p++);
-            }
-        }
+        /*
+          256 color images have their color map at the end of the file.
+          Colormap for 1 bit/pixel images is explicitly initialized.
+        */
+        if (image->colors <= 16)
+          {
+            p=pcx_colormap;
+            for (i=0; i < image->colors; i++)
+              {
+                image->colormap[i].red=ScaleCharToQuantum(*p++);
+                image->colormap[i].green=ScaleCharToQuantum(*p++);
+                image->colormap[i].blue=ScaleCharToQuantum(*p++);
+                image->colormap[i].opacity=OpaqueOpacity;
+              }
+          }
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "PseudoClass image with %u colors", image->colors);
       }
 
     for (i=0; i < 54; i++)
@@ -509,8 +519,9 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pcx_packets=MagickArraySize(image->rows,
                                 MagickArraySize(pcx_info.bytes_per_line,
                                                 pcx_info.planes));
-    if ((size_t) (pcx_info.bits_per_pixel*pcx_info.planes*image->columns) >
-        (pcx_packets*8U))
+    if ((0 == pcx_packets) ||
+        ((size_t) (pcx_info.bits_per_pixel*pcx_info.planes*image->columns) >
+         (pcx_packets*8U)))
       ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
     pcx_pixels=MagickAllocateMemory(unsigned char *,pcx_packets);
     if (pcx_pixels == (unsigned char *) NULL)
@@ -527,16 +538,8 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Data is not compressed
         */
-        p=pcx_pixels;
-        while(pcx_packets != 0)
-          {
-            packet=ReadBlobByte(image);
-            if (EOFBlob(image))
-              ThrowPCXReaderException(CorruptImageError,CorruptImage,image);
-            *p++=packet;
-            pcx_packets--;
-            continue;
-          }
+        if (ReadBlob(image,pcx_packets,pcx_pixels) != pcx_packets)
+          ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
       }
     else
       {
@@ -548,7 +551,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             packet=ReadBlobByte(image);
             if (EOFBlob(image))
-              ThrowPCXReaderException(CorruptImageError,CorruptImage,image);
+              ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
             if ((packet & 0xc0) != 0xc0)
               {
                 *p++=packet;
@@ -558,7 +561,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             count=packet & 0x3f;
             packet=ReadBlobByte(image);
             if (EOFBlob(image))
-              ThrowPCXReaderException(CorruptImageError,CorruptImage,image);
+              ThrowPCXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
             for (; count != 0; count--)
               {
                 *p++=packet;
@@ -588,9 +591,11 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colormap[0].red=0;
               image->colormap[0].green=0;
               image->colormap[0].blue=0;
+              image->colormap[0].opacity=OpaqueOpacity;
               image->colormap[1].red=MaxRGB;
               image->colormap[1].green=MaxRGB;
               image->colormap[1].blue=MaxRGB;
+              image->colormap[1].opacity=OpaqueOpacity;
             }
           else
             if (image->colors > 16)
@@ -606,6 +611,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   image->colormap[i].red=ScaleCharToQuantum(*p++);
                   image->colormap[i].green=ScaleCharToQuantum(*p++);
                   image->colormap[i].blue=ScaleCharToQuantum(*p++);
+                  image->colormap[i].opacity=OpaqueOpacity;
                 }
             }
         }
@@ -740,7 +746,12 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       for (x=0; x < (long) image->columns; x++)
       {
         if (image->storage_class == PseudoClass)
-          indexes[x]=(*r++);
+          {
+            index=(*r++);
+            VerifyColormapIndex(image,index);
+            indexes[x]=index;
+            *q=image->colormap[index];
+          }
         else
           {
             q->red=ScaleCharToQuantum(*r++);
@@ -748,6 +759,8 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             q->blue=ScaleCharToQuantum(*r++);
             if (image->matte)
               q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*r++));
+            else
+              q->opacity=OpaqueOpacity;
           }
         q++;
       }
@@ -760,8 +773,6 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       image->columns,image->rows))
             break;
     }
-    if (image->storage_class == PseudoClass)
-      (void) SyncImage(image);
     MagickFreeMemory(scanline);
     MagickFreeMemory(pcx_pixels);
     if (EOFBlob(image))
