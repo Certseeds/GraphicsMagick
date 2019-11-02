@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
-<title>Changelog.rst</title>
+<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<title></title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
 <body>
@@ -35,6 +35,18 @@
 <div class="document">
 
 
+<p>2019-11-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/pixel_cache.c (SetNexus): Eliminate warning about
+possibly uninitialized variable from primordial GCC 3.4.3.</li>
+<li>magick/render.c (ConvertPrimitiveToPath): Eliminate warning that
+IsClosedSubPath might be used uninitialized.</li>
+<li>magick/common.h (&quot;MAGICK_FALLTHROUGH&quot;): Added a
+MAGICK_FALLTHROUGH macro to support the GCC/Clang fallthrough
+attribute when the time comes again that it would be useful.</li>
+</ul>
+</blockquote>
 <p>2019-10-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

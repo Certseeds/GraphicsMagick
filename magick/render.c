@@ -870,7 +870,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     coordinates;  /* number of points in subpath */
 
   MagickBool
-    IsClosedSubPath;
+    IsClosedSubPath = MagickFalse;
 
   ARG_NOT_USED(draw_info);
 

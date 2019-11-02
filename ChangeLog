@@ -1,3 +1,15 @@
+2019-11-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): Eliminate warning about
+	possibly uninitialized variable from primordial GCC 3.4.3.
+
+	* magick/render.c (ConvertPrimitiveToPath): Eliminate warning that
+	IsClosedSubPath might be used uninitialized.
+
+	* magick/common.h ("MAGICK_FALLTHROUGH"): Added a
+	MAGICK_FALLTHROUGH macro to support the GCC/Clang fallthrough
+	attribute when the time comes again that it would be useful.
+
 2019-10-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcx.c (ReadPCXImage): Verify that pixel region is not
