@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2017 GraphicsMagick Group */
+/* Copyright (C) 2003-2019 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1074,6 +1074,7 @@ WandExport void MagickClearException(MagickWand *wand)
 {
   assert(wand != (MagickWand *) NULL);
   assert(wand->signature == MagickSignature);
+  DestroyExceptionInfo(&wand->exception);
   GetExceptionInfo(&wand->exception);
 }
 

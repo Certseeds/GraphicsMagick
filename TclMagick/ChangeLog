@@ -1,5 +1,11 @@
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* generic/libttkcommon.c (myMagickError): Clear exception from the
+	Wand after it has been reported.  Addresses the fourth problem
+	noted by SourceForge issue #420 "TclMagick issues and patch".
+	However, MagickClearException() already clears an exception in the
+	Wand, so a new function is not needed.
+
 	* unix/m4/tcl.m4: Change hard-coded INSTALL path to point to
 	config/install-sh.  Re-generated/updated Autotools stuff by
 	executing the genconf.sh script.  Addresses the first problem

@@ -1,5 +1,15 @@
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* wand/magick_wand.c (MagickClearException): Destroy any existing
+	exception info before re-initializing the exception info or else
+	there will be a memory leak.
+
+	* TclMagick/generic/libttkcommon.c (myMagickError): Clear
+	exception from the Wand after it has been reported.  Addresses the
+	fourth problem noted by SourceForge issue #420 "TclMagick issues
+	and patch".  However, MagickClearException() already clears an
+	exception in the Wand, so a new function is not needed.
+
 	* TclMagick/unix/m4/tcl.m4: Change hard-coded INSTALL path to
 	point to config/install-sh.  Re-generated/updated Autotools stuff
 	by executing the genconf.sh script.  Addresses the first problem
