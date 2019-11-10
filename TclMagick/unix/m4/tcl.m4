@@ -3340,7 +3340,7 @@ AC_DEFUN([TEA_SETUP_COMPILER_CC], [
     AC_PROG_CC
     AC_PROG_CPP
 
-    INSTALL='$(SHELL) $(srcdir)/tclconfig/install-sh -c'
+    INSTALL='$(SHELL) $(srcdir)/config/install-sh -c'
     INSTALL_DATA_DIR='${INSTALL} -d -m 755'
     INSTALL_DATA='${INSTALL} -m 644'
     INSTALL_PROGRAM='${INSTALL}'
