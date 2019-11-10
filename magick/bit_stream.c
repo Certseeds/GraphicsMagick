@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003-2019 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -31,8 +31,9 @@ static const unsigned int BitAndMasks[33] =
 /*
   Initialize Bit Stream for reading
 */
-MagickExport void MagickBitStreamInitializeRead(BitStreamReadHandle *bit_stream,
-                                                const unsigned char *bytes)
+MagickExport
+void MagickBitStreamInitializeRead(BitStreamReadHandle * restrict bit_stream,
+                                   const unsigned char *bytes)
 {
   bit_stream->bytes          = bytes;
   bit_stream->bits_remaining = 8;
@@ -46,8 +47,9 @@ MagickExport void MagickBitStreamInitializeRead(BitStreamReadHandle *bit_stream,
   bit_stream      - already initialized bit stream.
   requested_bits  - number of bits to read
 */
-MagickExport unsigned int MagickBitStreamMSBRead(BitStreamReadHandle *bit_stream,
-                                                 const unsigned int requested_bits)
+MagickExport MAGICK_FUNC_HOT
+unsigned int MagickBitStreamMSBRead(BitStreamReadHandle * restrict bit_stream,
+                                    const unsigned int requested_bits)
 {
   register unsigned int
     remaining_quantum_bits,
@@ -87,8 +89,9 @@ MagickExport unsigned int MagickBitStreamMSBRead(BitStreamReadHandle *bit_stream
   bit_stream  - bit stream to initialize.
   bytes       - byte array to write bits to
 */
-MagickExport void MagickBitStreamInitializeWrite(BitStreamWriteHandle *bit_stream,
-                                                 unsigned char *bytes)
+MagickExport
+void MagickBitStreamInitializeWrite(BitStreamWriteHandle * restrict bit_stream,
+                                    unsigned char *bytes)
 {
   bit_stream->bytes          = bytes;
   bit_stream->bits_remaining = 8;
@@ -103,9 +106,10 @@ MagickExport void MagickBitStreamInitializeWrite(BitStreamWriteHandle *bit_strea
   requested_bits  - number of bits to write to stream.
   quantum         - value to write.
 */
-MagickExport void MagickBitStreamMSBWrite(BitStreamWriteHandle *bit_stream,
-                                          const unsigned int requested_bits,
-                                          const unsigned int quantum)
+MagickExport MAGICK_FUNC_HOT
+void MagickBitStreamMSBWrite(BitStreamWriteHandle * restrict bit_stream,
+                             const unsigned int requested_bits,
+                             const unsigned int quantum)
 {
   register unsigned int
     remaining_quantum_bits = requested_bits;
@@ -145,9 +149,10 @@ MagickExport void MagickBitStreamMSBWrite(BitStreamWriteHandle *bit_stream,
   read_func       - function to retrieve the next word.
   read_func_state - state to pass to read_func.
 */
-MagickExport void MagickWordStreamInitializeRead(WordStreamReadHandle *word_stream,
-                                                 WordStreamReadFunc read_func,
-                                                 void *read_func_state)
+MagickExport void
+MagickWordStreamInitializeRead(WordStreamReadHandle * restrict word_stream,
+                               WordStreamReadFunc read_func,
+                               void *read_func_state)
 {
   word_stream->word            = 0;
   word_stream->bits_remaining  = 0;
@@ -163,8 +168,9 @@ MagickExport void MagickWordStreamInitializeRead(WordStreamReadHandle *word_stre
   word_stream     - an initialized word reader stream.
   requested_bits  - number of bits to retrieve from the stream.
 */
-MagickExport unsigned int MagickWordStreamLSBRead(WordStreamReadHandle *word_stream,
-                                                  const unsigned int requested_bits)
+MagickExport MAGICK_FUNC_HOT
+unsigned int MagickWordStreamLSBRead(WordStreamReadHandle * restrict word_stream,
+                                     const unsigned int requested_bits)
 {
   register unsigned int
     remaining_quantum_bits,
@@ -204,9 +210,10 @@ MagickExport unsigned int MagickWordStreamLSBRead(WordStreamReadHandle *word_str
   write_func_state - state to pass to write_func.
   write_func        - function to retrieve the next word.
 */
-MagickExport void MagickWordStreamInitializeWrite(WordStreamWriteHandle *word_stream,
-                                                  WordStreamWriteFunc write_func,
-                                                  void *write_func_state)
+MagickExport void
+MagickWordStreamInitializeWrite(WordStreamWriteHandle * restrict word_stream,
+                                WordStreamWriteFunc write_func,
+                                void *write_func_state)
 {
   word_stream->word             = 0U;
   word_stream->bits_remaining   = 32U;
@@ -227,9 +234,10 @@ MagickExport void MagickWordStreamInitializeWrite(WordStreamWriteHandle *word_st
   requested_bits  - number of bits to write to stream.
   quantum         - value to write.
 */
-MagickExport void MagickWordStreamLSBWrite(WordStreamWriteHandle *word_stream,
-                                           const unsigned int requested_bits,
-                                           const unsigned int quantum)
+MagickExport MAGICK_FUNC_HOT
+void MagickWordStreamLSBWrite(WordStreamWriteHandle * restrict word_stream,
+                              const unsigned int requested_bits,
+                              const unsigned int quantum)
 {
   register unsigned int
     remaining_quantum_bits = requested_bits;
@@ -268,7 +276,8 @@ MagickExport void MagickWordStreamLSBWrite(WordStreamWriteHandle *word_stream,
 
   word_stream     - already initialized word stream.
 */
-MagickExport void MagickWordStreamLSBWriteFlush(WordStreamWriteHandle *word_stream)
+MagickExport void
+MagickWordStreamLSBWriteFlush(WordStreamWriteHandle * restrict word_stream)
 {
   if (word_stream->bits_remaining != 32U)
     MagickWordStreamLSBWrite(word_stream,word_stream->bits_remaining,0U);

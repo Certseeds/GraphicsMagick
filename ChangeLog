@@ -1,5 +1,8 @@
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/bit_stream.c: Add restrict declarations to slightly
+	improve performance and decrease code size.
+
 	* TclMagick/pkgIndex.tcl: Incorporate recommendations from third
 	problem noted in SourceForge issue #420 "TclMagick issues and
 	patch".  This is supposed to help support using an uninstalled
