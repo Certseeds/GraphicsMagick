@@ -1,5 +1,10 @@
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* pkgIndex.tcl: Incorporate recommendations from third problem
+	noted in SourceForge issue #420 "TclMagick issues and patch".
+	This is supposed to help support using an uninstalled
+	GraphicsMagick and allow the installation path to contain a space.
+
 	* generic/libttkcommon.c (myMagickError): Clear exception from the
 	Wand after it has been reported.  Addresses the fourth problem
 	noted by SourceForge issue #420 "TclMagick issues and patch".

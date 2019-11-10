@@ -1,5 +1,10 @@
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* TclMagick/pkgIndex.tcl: Incorporate recommendations from third
+	problem noted in SourceForge issue #420 "TclMagick issues and
+	patch".  This is supposed to help support using an uninstalled
+	GraphicsMagick and allow the installation path to contain a space.
+
 	* wand/magick_wand.c (MagickClearException): Destroy any existing
 	exception info before re-initializing the exception info or else
 	there will be a memory leak.

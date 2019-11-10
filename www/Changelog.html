@@ -38,6 +38,10 @@
 <p>2019-11-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>TclMagick/pkgIndex.tcl: Incorporate recommendations from third
+problem noted in SourceForge issue #420 &quot;TclMagick issues and
+patch&quot;.  This is supposed to help support using an uninstalled
+GraphicsMagick and allow the installation path to contain a space.</li>
 <li>wand/magick_wand.c (MagickClearException): Destroy any existing
 exception info before re-initializing the exception info or else
 there will be a memory leak.</li>
