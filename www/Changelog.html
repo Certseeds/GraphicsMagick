@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2019-11-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/compress.c (HuffmanDecodeImage): Fix signed overflow on
+range check which leads to heap overflow in 32-bit
+applications. Requires a relatively large file input to trigger.
+Problem reported to the graphicsmagick-security mail address by
+Justin Tripp on 2019-11-13.
+(Ascii85Tuple): Fix thread safety issue by requiring caller to
+pass in tuple buffer as an argument and having callers allocate
+tuple buffer on the stack.</li>
+</ul>
+</blockquote>
 <p>2019-11-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

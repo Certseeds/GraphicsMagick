@@ -1,3 +1,14 @@
+2019-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/compress.c (HuffmanDecodeImage): Fix signed overflow on
+	range check which leads to heap overflow in 32-bit
+	applications. Requires a relatively large file input to trigger.
+	Problem reported to the graphicsmagick-security mail address by
+	Justin Tripp on 2019-11-13.
+	(Ascii85Tuple): Fix thread safety issue by requiring caller to
+	pass in tuple buffer as an argument and having callers allocate
+	tuple buffer on the stack.
+
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/bit_stream.c: Add restrict declarations to slightly
