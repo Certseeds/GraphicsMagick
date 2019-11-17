@@ -2,7 +2,8 @@
 
 	* magick/compress.c (HuffmanDecodeImage): Fix signed overflow on
 	range check which leads to heap overflow in 32-bit
-	applications. Requires a relatively large file input to trigger.
+	applications. Requires a relatively large file input compared with
+	typical fuzzer files (greater than a megabyte) to trigger.
 	Problem reported to the graphicsmagick-security mail address by
 	Justin Tripp on 2019-11-13.
 	(Ascii85Tuple): Fix thread safety issue by requiring caller to
