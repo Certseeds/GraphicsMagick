@@ -5297,6 +5297,21 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               else
                 magn_methy=magn_methx;
 
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "MAGN chunk (%lu bytes): "
+                                      "First_magnified_object_id=%u, Last_magnified_object_id=%u, "
+                                      "MB=%u, ML=%u, MR=%u, MT=%u, MX=%u, MY=%u, "
+                                      "X_method=%u, Y_method=%u",
+                                      length,
+                                      (unsigned) magn_first, (unsigned) magn_last,
+                                      (unsigned) magn_mb,
+                                      (unsigned) magn_ml, (unsigned) magn_mr,
+                                      (unsigned) magn_mt,
+                                      (unsigned) magn_mx, (unsigned) magn_my,
+                                      (unsigned) magn_methx, (unsigned) magn_methy);
+
+
               if (magn_methx > 5 || magn_methy > 5)
                 if (!mng_info->magn_warning)
                   {
@@ -5313,6 +5328,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (magn_first == 0 || magn_last == 0)
                 {
                   /* Save the magnification factors for object 0 */
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "MAGN chunk factors saved for object 0");
                   mng_info->magn_mb=magn_mb;
                   mng_info->magn_ml=magn_ml;
                   mng_info->magn_mr=magn_mr;
@@ -5651,7 +5669,12 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           MngBox
             crop_box;
 
-          if (mng_info->magn_methx || mng_info->magn_methy)
+          /*
+            If magnifying and a supported method is requested then
+            magnify the image.
+          */
+          if (((mng_info->magn_methx > 0) && (mng_info->magn_methx <= 5)) &&
+              ((mng_info->magn_methy > 0) && (mng_info->magn_methy <= 5)))
             {
               png_uint_32
                 magnified_height,
@@ -5735,7 +5758,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "    Allocate magnified image");
+                                          "    Allocate magnified image (%lux%lu ==> %ux%u)",
+                                          image->columns, image->rows,
+                                          (unsigned) magnified_width,
+                                          (unsigned) magnified_height);
                   AllocateNextImage(image_info,image);
                   if (image->next == (Image *) NULL)
                     {

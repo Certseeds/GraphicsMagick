@@ -1,3 +1,13 @@
+2019-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Only magnify the image if the
+	requested magnification methods are supported.  Fixes oss-fuzz
+	issues 14485 "graphicsmagick/coder_MNG_fuzzer:
+	Heap-buffer-overflow in ReadMNGImage", 15039
+	"graphicsmagick/coder_MNG_fuzzer: ASSERT: yy < (long)
+	large_image->rows", and 16737 "graphicsmagick:coder_MNG_fuzzer:
+	Unknown signal in MagickMallocAligned".
+
 2019-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/compress.c (HuffmanDecodeImage): Fix signed overflow on
