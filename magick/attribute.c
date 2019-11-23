@@ -398,10 +398,10 @@ ReadMSBLong(unsigned char **p,size_t *length)
     (*length)--;
     buffer[i]=(unsigned char) c;
   }
-  value.u=(buffer[0] & 0xff) << 24;
-  value.u|=buffer[1] << 16;
-  value.u|=buffer[2] << 8;
-  value.u|=buffer[3];
+  value.u=(magick_uint32_t) (buffer[0] & 0xff) << 24;
+  value.u|=(magick_uint32_t) buffer[1] << 16;
+  value.u|=(magick_uint32_t) buffer[2] << 8;
+  value.u|=(magick_uint32_t) buffer[3];
   return(value.s);
 }
 
@@ -431,8 +431,8 @@ ReadMSBShort(unsigned char **p,size_t *length)
     (*length)--;
     buffer[i]=(unsigned char) c;
   }
-  value.u=(buffer[0] & 0xff) << 8;
-  value.u|=buffer[1];
+  value.u=(magick_uint32_t) (buffer[0] & 0xff) << 8;
+  value.u|=(magick_uint32_t) buffer[1];
   return(value.s);
 }
 
@@ -1495,9 +1495,11 @@ Read16u(int morder,unsigned char *ishort)
     value;
 
   if (morder)
-    value=((magick_uint16_t) ishort[0] << 8) | ishort[1];
+    value=((magick_uint16_t) ishort[0] << 8)
+      | (magick_uint16_t) ishort[1];
   else
-    value=((magick_uint16_t) ishort[1] << 8) | ishort[0];
+    value=((magick_uint16_t) ishort[1] << 8)
+      | (magick_uint16_t) ishort[0];
   return(value);
 }
 
@@ -1511,18 +1513,36 @@ Read32s(int morder,unsigned char *ilong)
   } value;
 
   if (morder)
-    value.u=((magick_uint32_t) ilong[0] << 24) | (ilong[1] << 16) |
-      (ilong[2] << 8) | (ilong[3]);
+    value.u=((magick_uint32_t) ilong[0] << 24)
+      | ((magick_uint32_t) ilong[1] << 16)
+      | ((magick_uint32_t) ilong[2] << 8)
+      | ((magick_uint32_t) ilong[3]);
   else
-    value.u=((magick_uint32_t) ilong[3] << 24) | (ilong[2] << 16) |
-      (ilong[1] << 8 ) | (ilong[0]);
+    value.u=((magick_uint32_t) ilong[3] << 24)
+      | ((magick_uint32_t) ilong[2] << 16)
+      | ((magick_uint32_t) ilong[1] << 8 )
+      | ((magick_uint32_t) ilong[0]);
   return(value.s);
 }
 
 static magick_uint32_t
 Read32u(int morder, unsigned char *ilong)
 {
-  return(Read32s(morder,ilong) & 0xffffffff);
+  magick_uint32_t
+    value;
+
+  if (morder)
+    value=((magick_uint32_t) ilong[0] << 24)
+      | ((magick_uint32_t) ilong[1] << 16)
+      | ((magick_uint32_t) ilong[2] << 8)
+      | ((magick_uint32_t) ilong[3]);
+  else
+    value=((magick_uint32_t) ilong[3] << 24)
+      | ((magick_uint32_t) ilong[2] << 16)
+      | ((magick_uint32_t) ilong[1] << 8 )
+      | ((magick_uint32_t) ilong[0]);
+
+  return value;
 }
 
 static void
@@ -1601,7 +1621,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     debug=MagickFalse;
 
   assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
-  logging=IsEventLogging();;
+  logging=IsEventLogging();
   {
     const char *
       env_value;
@@ -1630,6 +1650,10 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                       "No EXIF profile present");
       goto generate_attribute_failure;
     }
+  if (logging && debug)
+        (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                              "EXIF: profile_info=%p, profile_length=%"MAGICK_SIZE_T_F"u",
+                              profile_info, (MAGICK_SIZE_T) profile_length);
   /*
     If EXIF data exists, then try to parse the request for a tag in
     the form "EXIF:key".
@@ -1833,13 +1857,13 @@ GenerateEXIFAttribute(Image *image,const char *specification)
       nde=Read16u(morder,ifdp);
       if (logging && debug)
             (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                  "EXIF: IFD at offset %lu has %u tags", (unsigned long) (ifdp-tiffp), nde);
+                                  "EXIF: IFD at offset %"MAGICK_SSIZE_T_F"d has %u tags", (MAGICK_SSIZE_T) (ifdp-tiffp), nde);
       if (nde > MAX_TAGS_PER_IFD)
         {
           nde=MAX_TAGS_PER_IFD;
           if (logging && debug)
             (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                  "EXIF: Limiting IFD at offset %lu to %u tags!", (unsigned long) (ifdp-tiffp), nde);
+                                  "EXIF: Limiting IFD at offset %"MAGICK_SSIZE_T_F"d to %u tags!", (MAGICK_SSIZE_T) (ifdp-tiffp), nde);
         }
       for (; de < nde; de++)
         {
@@ -1856,7 +1880,10 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             *pval;
 
           pde=(unsigned char *) (ifdp+2+(12*de));
-          if (pde + 12 > tiffp + length)
+          if (logging && debug)
+            (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                  "EXIF: PDE offset %"MAGICK_SSIZE_T_F"d", (MAGICK_SSIZE_T) (pde-ifdp));
+          if ((pde < tiffp) || (pde + 12 > tiffp_max))
             {
               if (logging)
                 (void) LogMagickEvent(TransformEvent,GetMagickModule(),
@@ -1865,7 +1892,10 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             }
           t=Read16u(morder,pde); /* get tag value */
           f=Read16u(morder,pde+2); /* get the format */
-          if ((f == 0) || (size_t) f >= ArraySize(format_bytes))
+          if (logging && debug)
+            (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                  "EXIF: Tag %u, Format %u", t, f);
+          if (((size_t) f >= ArraySize(format_bytes)) || (format_bytes[f] == 0))
             {
               if (logging)
                 (void) LogMagickEvent(TransformEvent,GetMagickModule(),
@@ -1877,9 +1907,9 @@ GenerateEXIFAttribute(Image *image,const char *specification)
           if (logging && debug)
             {
               (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                    "EXIF: %u components, %u format_bytes", c,format_bytes[f]);
+                                    "EXIF: %u components, %u bytes per component", c,format_bytes[f]);
             }
-          if ((n == 0) && (c != 0) && (format_bytes[f] != 0))
+          if ((c > length) || (n > length) || ((n == 0) && (c != 0) && (format_bytes[f] != 0)))
             {
               if (logging)
                 (void) LogMagickEvent(TransformEvent,GetMagickModule(),
@@ -1887,18 +1917,27 @@ GenerateEXIFAttribute(Image *image,const char *specification)
               goto generate_attribute_failure;
             }
           if (n <= 4)
-            pval=(unsigned char *) pde+8;
+            {
+              pval=(unsigned char *) pde+8;
+            }
           else
             {
-              unsigned long
+              size_t
                 oval;
 
               /*
                 The directory entry contains an offset.
               */
               oval=Read32u(morder,pde+8);
-              if ((oval+n) > length)
-                continue;
+              if ((oval > length) || ((oval+n) > length)) /* Impossibly long! */
+                {
+                  if (logging && debug)
+                    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                          "EXIF: Invalid Exif directory entry!"
+                                          " (offset %"MAGICK_SIZE_T_F"u, %"MAGICK_SIZE_T_F"u components)",
+                                          (MAGICK_SIZE_T) oval, (MAGICK_SIZE_T) n);
+                  continue;
+                }
               pval=(unsigned char *)(tiffp+oval);
             }
 
@@ -1909,6 +1948,14 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                     "FormatDescr=\"%s\"  Components=%u",t,
                                     EXIFTagToDescription(t,tag_description),f,
                                     EXIFFormatToDescription(f),c);
+            }
+          if ((pval < tiffp) || (pval > tiffp_max))
+            {
+              if (logging)
+                (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                      "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                      (MAGICK_SSIZE_T) (pval-tiffp));
+              goto generate_attribute_failure;
             }
 
           if (gpsfound)
@@ -1984,11 +2031,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                 case EXIF_FMT_SSHORT:
                   {
                     /* 16-bit signed integer */
-                    if ((pval+sizeof(magick_uint16_t)) > tiffp_max)
+                    if (((pval < tiffp) || (pval+sizeof(magick_uint16_t)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%hd",Read16u(morder,pval));
@@ -1998,11 +2046,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                 case EXIF_FMT_USHORT:
                   {
                     /* 16-bit unsigned integer */
-                    if ((pval+sizeof(magick_uint16_t)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+sizeof(magick_uint16_t)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%hu",Read16s(morder,pval));
@@ -2011,11 +2060,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_ULONG:
                   {
-                    if ((pval+sizeof(magick_uint32_t)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+sizeof(magick_uint32_t)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     offset=Read32u(morder,pval);
@@ -2035,11 +2085,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SLONG:
                   {
-                    if ((pval+sizeof(magick_uint32_t)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+sizeof(magick_uint32_t)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%d",(int) Read32s(morder,pval));
@@ -2053,11 +2104,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                          t == GPS_LONGITUDE ||
                          t == GPS_TIMESTAMP))
                       {
-                        if ((pval+6*sizeof(magick_uint32_t)) > tiffp_max)
+                        if ((pval < tiffp) || ((pval+6*sizeof(magick_uint32_t)) > tiffp_max))
                           {
                             if (logging)
                               (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                    "EXIF: Offset out of address range!");
+                                                    "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                    (MAGICK_SSIZE_T) (pval-tiffp));
                             goto generate_attribute_failure;
                           }
                         FormatString(s,"%u/%u,%u/%u,%u/%u"
@@ -2071,11 +2123,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                       }
                     else
                       {
-                        if ((pval+2*sizeof(magick_uint32_t)) > tiffp_max)
+                        if ((pval < tiffp) || ((pval+2*sizeof(magick_uint32_t)) > tiffp_max))
                           {
                             if (logging)
                               (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                    "EXIF: Offset out of address range!");
+                                                    "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                    (MAGICK_SSIZE_T) (pval-tiffp));
                             goto generate_attribute_failure;
                           }
                         FormatString(s,"%u/%u"
@@ -2088,11 +2141,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SRATIONAL:
                   {
-                    if ((pval+2*sizeof(magick_uint32_t)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+2*sizeof(magick_uint32_t)) > tiffp_max))
                       {
                         if (logging)
-                          (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                              (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                                    "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                    (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%d/%d",(int) Read32s(morder,pval),
@@ -2102,11 +2156,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SINGLE:
                   {
-                    if ((pval+sizeof(float)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+sizeof(float)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%f",(double) *(float *) pval);
@@ -2115,11 +2170,12 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_DOUBLE:
                   {
-                    if ((pval+sizeof(double)) > tiffp_max)
+                    if ((pval < tiffp) || ((pval+sizeof(double)) > tiffp_max))
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     FormatString(s,"%f",*(double *) pval);
@@ -2139,17 +2195,25 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                     MagickBool
                       binary=MagickFalse;
 
-                    if ((pval+n) > tiffp_max)
+                    if (logging)
+                          (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                                                "EXIF: pval=%p (offset=%"MAGICK_SSIZE_T_F"d), n=%"MAGICK_SIZE_T_F"u",
+                                                pval, (MAGICK_SSIZE_T) (pval-tiffp), (MAGICK_SIZE_T) n);
+
+                    if ((pval < tiffp) || (pval+n) > tiffp_max)
                       {
                         if (logging)
                           (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                                                "EXIF: Offset out of address range!");
+                                                "EXIF: Offset %"MAGICK_SSIZE_T_F"d out of valid range!",
+                                                (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
                     allocation_size=n+1;
                     for (a=0; a < n; a++)
-                      if (!(isprint((int) pval[a])))
-                        allocation_size += 3;
+                      {
+                        if (!(isprint((int) pval[a])))
+                          allocation_size += 3;
+                      }
 
                     value=MagickAllocateMemory(char *,allocation_size);
                     if (value != (char *) NULL)

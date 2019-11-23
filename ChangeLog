@@ -1,12 +1,14 @@
+2019-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Fix oss-fuzz issue
+	17986 "graphicsmagick:coder_JPG_fuzzer: Heap-buffer-overflow in
+	GenerateEXIFAttribute".  This problem likely only happens in
+	32-bit builds.
+
 2019-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadMNGImage): Only magnify the image if the
-	requested magnification methods are supported.  Fixes oss-fuzz
-	issues 14485 "graphicsmagick/coder_MNG_fuzzer:
-	Heap-buffer-overflow in ReadMNGImage", 15039
-	"graphicsmagick/coder_MNG_fuzzer: ASSERT: yy < (long)
-	large_image->rows", and 16737 "graphicsmagick:coder_MNG_fuzzer:
-	Unknown signal in MagickMallocAligned".
+	requested magnification methods are supported.
 
 2019-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
