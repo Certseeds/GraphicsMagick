@@ -4,6 +4,8 @@
 	fill_pattern or stroke_pattern of cloned draw_info are not null.
 	Fixes oss-fuzz issue 18948 "graphicsmagick:coder_MVG_fuzzer:
 	Indirect-leak in CloneImage".
+	(PrimitiveInfoRealloc): Clear freshly-allocated PrimitiveInfo
+	memory.
 
 2019-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

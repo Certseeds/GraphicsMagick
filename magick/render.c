@@ -2384,8 +2384,13 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
       const magick_uint64_t added_memory=needed_memory-have_memory;
 
 #if 0
-      fprintf(stderr,"have_memory=%"MAGICK_SIZE_T_F"u, needed_memory=%"MAGICK_SIZE_T_F"u, added_memory=%"MAGICK_SIZE_T_F"u\n",
-              (MAGICK_SIZE_T) have_memory, (MAGICK_SIZE_T) needed_memory, (MAGICK_SIZE_T) added_memory);
+      fprintf(stderr,
+              "have_memory=%"MAGICK_SIZE_T_F"u (%"MAGICK_SIZE_T_F"u elem),"
+              " needed_memory=%"MAGICK_SIZE_T_F"u (%"MAGICK_SIZE_T_F"u elem),"
+              " added_memory=%"MAGICK_SIZE_T_F"u\n",
+              (MAGICK_SIZE_T) have_memory, (MAGICK_SIZE_T) *p_PIMgr->p_AllocCount,
+              (MAGICK_SIZE_T) needed_memory, (MAGICK_SIZE_T) NeedAllocCount,
+              (MAGICK_SIZE_T) added_memory);
 #endif
 
       /* Need to realloc */
@@ -2398,6 +2403,7 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
         }
       else
         {
+          /* Allocate/reallocate the memory */
           MagickReallocMemory(PrimitiveInfo *,*p_PIMgr->pp_PrimitiveInfo,needed_memory);
           if (*p_PIMgr->pp_PrimitiveInfo == (PrimitiveInfo *) NULL)
             {
@@ -2408,6 +2414,12 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
             }
           else
             {
+              /* Clear freshly-allocated memory */
+#if 0
+              fprintf(stderr,"memset start_offset=%zu size=%zu\n", *p_PIMgr->p_AllocCount, added_memory);
+#endif
+              (void) memset((unsigned char *)(*p_PIMgr->pp_PrimitiveInfo)+have_memory,0,added_memory);
+              /* Save new allocation count */
               *p_PIMgr->p_AllocCount = NeedAllocCount;
             }
         }
