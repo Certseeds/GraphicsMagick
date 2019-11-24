@@ -1,3 +1,10 @@
+2019-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPatternPath): Don't leak memory if
+	fill_pattern or stroke_pattern of cloned draw_info are not null.
+	Fixes oss-fuzz issue 18948 "graphicsmagick:coder_MVG_fuzzer:
+	Indirect-leak in CloneImage".
+
 2019-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (GenerateEXIFAttribute): Fix oss-fuzz issue

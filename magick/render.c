@@ -4698,7 +4698,9 @@ DrawPatternPath(Image *image,const DrawInfo *draw_info,const char *name,
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "begin pattern-path %.1024s %.1024s",name,geometry->value);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+  DestroyImage(clone_info->fill_pattern);
   clone_info->fill_pattern=(Image *) NULL;
+  DestroyImage(clone_info->stroke_pattern);
   clone_info->stroke_pattern=(Image *) NULL;
   (void) CloneString(&clone_info->primitive,path->value);
   status=DrawImage(*pattern,clone_info);
