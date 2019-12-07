@@ -1,5 +1,7 @@
 2019-12-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* lcms: lcms2 is updated to 2.9 release.
+
 	* tiff: libtiff is updated to 4.1.0 release.
 
 2019-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
