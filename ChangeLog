@@ -1,5 +1,7 @@
 2019-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* jbig: jbigkit is updated to 2.1 release.
+
 	* libxml: libxml2 is updated to 2.9.10 release.
 
 	* bzlib: bzip is updated to 1.0.8 release.

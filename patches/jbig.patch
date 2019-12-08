@@ -1,0 +1,165 @@
+diff -r -u jbigkit-2.1/libjbig/jbig.c jbig/libjbig/jbig.c
+--- jbigkit-2.1/libjbig/jbig.c	2014-03-27 13:47:15.000000000 +0000
++++ jbig/libjbig/jbig.c	2019-12-08 16:39:00.380244297 +0000
+@@ -30,6 +30,7 @@
+ #ifdef DEBUG
+ #include <stdio.h>
+ #else
++#undef NDEBUG
+ #define NDEBUG
+ #endif
+ 
+@@ -2735,7 +2736,7 @@
+ 	*cnt += s->comment_skip;
+ 	s->comment_skip = 0;
+       } else {
+-	s->comment_skip -= len - *cnt;
++	s->comment_skip -= (unsigned long) (len - *cnt);
+ 	*cnt = len;
+       }
+       continue;
+diff -r -u jbigkit-2.1/libjbig/jbig.h jbig/libjbig/jbig.h
+--- jbigkit-2.1/libjbig/jbig.h	2014-03-27 13:47:15.000000000 +0000
++++ jbig/libjbig/jbig.h	2019-12-08 16:14:58.168365711 +0000
+@@ -191,43 +191,82 @@
+ 
+ /* function prototypes */
+ 
+-void jbg_enc_init(struct jbg_enc_state *s, unsigned long x, unsigned long y,
+-		  int planes, unsigned char **p,
+-		  void (*data_out)(unsigned char *start, size_t len,
+-				   void *file),
+-		  void *file);
+-int jbg_enc_lrlmax(struct jbg_enc_state *s, unsigned long mwidth,
+-		   unsigned long mheight);
+-void jbg_enc_layers(struct jbg_enc_state *s, int d);
+-int  jbg_enc_lrange(struct jbg_enc_state *s, int dl, int dh);
+-void jbg_enc_options(struct jbg_enc_state *s, int order, int options,
+-		     unsigned long l0, int mx, int my);
+-void jbg_enc_out(struct jbg_enc_state *s);
+-void jbg_enc_free(struct jbg_enc_state *s);
+-
+-void jbg_dec_init(struct jbg_dec_state *s);
+-void jbg_dec_maxsize(struct jbg_dec_state *s, unsigned long xmax,
+-		     unsigned long ymax);
+-int  jbg_dec_in(struct jbg_dec_state *s, unsigned char *data, size_t len,
+-		size_t *cnt);
+-unsigned long jbg_dec_getwidth(const struct jbg_dec_state *s);
+-unsigned long jbg_dec_getheight(const struct jbg_dec_state *s);
+-unsigned char *jbg_dec_getimage(const struct jbg_dec_state *s, int plane);
+-unsigned long jbg_dec_getsize(const struct jbg_dec_state *s);
+-void jbg_dec_merge_planes(const struct jbg_dec_state *s, int use_graycode,
+-			  void (*data_out)(unsigned char *start, size_t len,
+-					   void *file), void *file);
+-unsigned long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
+-void jbg_dec_free(struct jbg_dec_state *s);
+-
+-const char *jbg_strerror(int errnum);
+-void jbg_int2dppriv(unsigned char *dptable, const char *internal);
+-void jbg_dppriv2int(char *internal, const unsigned char *dptable);
+-unsigned long jbg_ceil_half(unsigned long x, int n);
+-void jbg_split_planes(unsigned long x, unsigned long y, int has_planes,
+-		      int encode_planes,
+-		      const unsigned char *src, unsigned char **dest,
+-		      int use_graycode);
+-int jbg_newlen(unsigned char *bie, size_t len);
++/**
++ ** Borland C++ Builder defines
++ **/
++#if defined(__BORLANDC__)
++#  if defined(_DLL)
++#    define _JBIGDLL_
++#    define _JBIGLIB_
++#  else
++#    undef _JBIGDLL_
++#  endif
++#endif
++
++/**
++ * Under VISUALC we have single threaded static libraries, or
++ * multi-threaded DLLs using the multithreaded runtime DLLs.
++ **/
++
++#if defined(_MT) && defined(_DLL) && !defined(_JBIGDLL_) && !defined(_LIB)
++#   define _JBIGDLL_
++#endif
++#if defined(_JBIGDLL_)
++#   if defined(_VISUALC_)
++#       pragma warning( disable : 4273 )
++#   endif
++#   if !defined(_JBIGLIB_)
++#       define JBIGEXPORT __declspec(dllimport)
++#   else
++#       define JBIGEXPORT __declspec(dllexport)
++#   endif
++#else
++#   define JBIGEXPORT
++#endif
++
++#if defined(_VISUALC_)
++#   pragma warning( disable : 4018 )
++#   pragma warning( disable : 4244 )
++#   pragma warning( disable : 4142 )
++#endif
++
++extern JBIGEXPORT void jbg_enc_init(struct jbg_enc_state *s, unsigned long x, unsigned long y,
++                                    int planes, unsigned char **p,
++                                    void (*data_out)(unsigned char *start, size_t len,
++                                                     void *file),
++                                    void *file);
++extern JBIGEXPORT int jbg_enc_lrlmax(struct jbg_enc_state *s, unsigned long mwidth,
++                                     unsigned long mheight);
++extern JBIGEXPORT void jbg_enc_layers(struct jbg_enc_state *s, int d);
++extern JBIGEXPORT int  jbg_enc_lrange(struct jbg_enc_state *s, int dl, int dh);
++extern JBIGEXPORT void jbg_enc_options(struct jbg_enc_state *s, int order, int options,
++                                       unsigned long l0, int mx, int my);
++extern JBIGEXPORT void jbg_enc_out(struct jbg_enc_state *s);
++extern JBIGEXPORT void jbg_enc_free(struct jbg_enc_state *s);
++
++extern JBIGEXPORT void jbg_dec_init(struct jbg_dec_state *s);
++extern JBIGEXPORT void jbg_dec_maxsize(struct jbg_dec_state *s, unsigned long xmax,
++                                       unsigned long ymax);
++extern JBIGEXPORT int  jbg_dec_in(struct jbg_dec_state *s, unsigned char *data, size_t len,
++                                  size_t *cnt);
++extern JBIGEXPORT unsigned long jbg_dec_getwidth(const struct jbg_dec_state *s);
++extern JBIGEXPORT unsigned long jbg_dec_getheight(const struct jbg_dec_state *s);
++extern JBIGEXPORT unsigned char *jbg_dec_getimage(const struct jbg_dec_state *s, int plane);
++extern JBIGEXPORT unsigned long jbg_dec_getsize(const struct jbg_dec_state *s);
++extern JBIGEXPORT void jbg_dec_merge_planes(const struct jbg_dec_state *s, int use_graycode,
++                                            void (*data_out)(unsigned char *start, size_t len,
++                                                             void *file), void *file);
++extern JBIGEXPORT unsigned long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
++extern JBIGEXPORT void jbg_dec_free(struct jbg_dec_state *s);
++
++extern JBIGEXPORT const char *jbg_strerror(int errnum);
++extern JBIGEXPORT void jbg_int2dppriv(unsigned char *dptable, const char *internal);
++extern JBIGEXPORT void jbg_dppriv2int(char *internal, const unsigned char *dptable);
++extern JBIGEXPORT unsigned long jbg_ceil_half(unsigned long x, int n);
++extern JBIGEXPORT void jbg_split_planes(unsigned long x, unsigned long y, int has_planes,
++                                        int encode_planes,
++                                        const unsigned char *src, unsigned char **dest,
++                                        int use_graycode);
++extern JBIGEXPORT int jbg_newlen(unsigned char *bie, size_t len);
+ 
+ #endif /* JBG_H */
+diff -r -u jbigkit-2.1/libjbig/jbig85.c jbig/libjbig/jbig85.c
+--- jbigkit-2.1/libjbig/jbig85.c	2014-03-27 13:47:15.000000000 +0000
++++ jbig/libjbig/jbig85.c	2019-12-08 16:37:58.076693177 +0000
+@@ -30,6 +30,7 @@
+ #ifdef DEBUG
+ #include <stdio.h>
+ #else
++#undef NDEBUG
+ #define NDEBUG
+ #endif
+ 
+@@ -749,7 +750,7 @@
+ 	  line_h3 <<= 1;
+ 	} while ((++x & 7) && x < s->x0);
+       } /* if (s->options & JBG_LRLTWO) */
+-      *hp1++ = line_h1;
++      *hp1++ = (unsigned char) line_h1;
+       hp2++;
+       hp3++;
+     } /* while (x < s->x0) */
+Only in jbig/libjbig: jbig85.c~
