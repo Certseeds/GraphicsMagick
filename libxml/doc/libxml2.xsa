@@ -8,71 +8,65 @@
   </vendor>
   <product id="libxml2">
     <name>libxml2</name>
-    <version>v2.9.3</version>
-    <last-release> Nov 20 2015</last-release>
+    <version>v2.9.9</version>
+    <last-release> Jan 03 2019</last-release>
     <info-url>http://xmlsoft.org/</info-url>
     <changes>   - Security:
-  CVE-2015-8242 Buffer overead with HTML parser in push mode (Hugh Davenport),
-  CVE-2015-7500 Fix memory access error due to incorrect entities boundaries (Daniel Veillard),
-  CVE-2015-7499-2 Detect incoherency on GROW (Daniel Veillard),
-  CVE-2015-7499-1 Add xmlHaltParser() to stop the parser (Daniel Veillard),
-  CVE-2015-5312 Another entity expansion issue (David Drysdale),
-  CVE-2015-7497 Avoid an heap buffer overflow in xmlDictComputeFastQKey (David Drysdale),
-  CVE-2015-7498 Avoid processing entities after encoding conversion failures (Daniel Veillard),
-  CVE-2015-8035 Fix XZ compression support loop (Daniel Veillard),
-  CVE-2015-7942-2 Fix an error in previous Conditional section patch (Daniel Veillard),
-  CVE-2015-7942 Another variation of overflow in Conditional sections (Daniel Veillard),
-  CVE-2015-1819 Enforce the reader to run in constant memory (Daniel Veillard)
-  CVE-2015-7941_2 Cleanup conditional section error handling (Daniel Veillard),
-  CVE-2015-7941_1 Stop parsing on entities boundaries errors (Daniel Veillard),
+  CVE-2018-9251 CVE-2018-14567 Fix infinite loop in LZMA decompression (Nick Wellnhofer),
+  CVE-2018-14404 Fix nullptr deref with XPath logic ops (Nick Wellnhofer),
   
    - Documentation:
-  Correct spelling of "calling" (Alex Henrie),
-  Fix a small error in xmllint --format description (Fabien Degomme),
-  Avoid XSS on the search of xmlsoft.org (Daniel Veillard)
+  reader: Fix documentation comment (Mohammed Sadiq)
   
    - Portability:
-  threads: use forward declarations only for glibc (Michael Heimpold),
-  Update Win32 configure.js to search for configure.ac (Daniel Veillard)
+  Fix MSVC build with lzma (Nick Wellnhofer),
+  Variables need 'extern' in static lib on Cygwin (Michael Haubenwallner),
+  Really declare dllexport/dllimport for Cygwin (Michael Haubenwallner),
+  Merge branch 'patch-2' into 'master' (Nick Wellnhofer),
+  Change dir to $THEDIR after ACLOCAL_PATH check autoreconf creates aclocal.m4 in $srcdir (Vitaly Buka),
+  Improve error message if pkg.m4 couldn't be found (Nick Wellnhofer),
+  NaN and Inf fixes for pre-C99 compilers (Nick Wellnhofer)
   
    - Bug Fixes:
-  Bug on creating new stream from entity (Daniel Veillard),
-  Fix some loop issues embedding NEXT (Daniel Veillard),
-  Do not print error context when there is none (Daniel Veillard),
-  Avoid extra processing of MarkupDecl when EOF (Hugh Davenport),
-  Fix parsing short unclosed comment uninitialized access (Daniel Veillard),
-  Add missing Null check in xmlParseExternalEntityPrivate (Gaurav Gupta),
-  Fix a bug in CData error handling in the push parser (Daniel Veillard),
-  Fix a bug on name parsing at the end of current input buffer (Daniel Veillard),
-  Fix the spurious ID already defined error (Daniel Veillard),
-  Fix previous change to node sort order (Nick Wellnhofer),
-  Fix a self assignment issue raised by clang (Scott Graham),
-  Fail parsing early on if encoding conversion failed (Daniel Veillard),
-  Do not process encoding values if the declaration if broken (Daniel Veillard),
-  Silence clang's -Wunknown-attribute (Michael Catanzaro),
-  xmlMemUsed is not thread-safe (Martin von Gagern),
-  Fix support for except in nameclasses (Daniel Veillard),
-  Fix order of root nodes (Nick Wellnhofer),
-  Allow attributes on descendant-or-self axis (Nick Wellnhofer),
-  Fix the fix to Windows locking (Steve Nairn),
-  Fix timsort invariant loop re: Envisage article (Christopher Swenson),
-  Don't add IDs in xmlSetTreeDoc (Nick Wellnhofer),
-  Account for ID attributes in xmlSetTreeDoc (Nick Wellnhofer),
-  Remove various unused value assignments (Philip Withnall),
-  Fix missing entities after CVE-2014-3660 fix (Daniel Veillard),
-  Revert "Missing initialization for the catalog module" (Daniel Veillard)
+  Revert "Support xmlTextReaderNextSibling w/o preparsed doc" (Nick Wellnhofer),
+  Fix building relative URIs (Thomas Holder),
+  Problem with data in interleave in RelaxNG validation (Nikolai Weibull),
+  Fix memory leak in xmlSwitchInputEncodingInt error path (Nick Wellnhofer),
+  Set doc on element obtained from freeElems (Nick Wellnhofer),
+  Fix HTML serialization with UTF-8 encoding (Nick Wellnhofer),
+  Use actual doc in xmlTextReaderRead*Xml (Nick Wellnhofer),
+  Unlink node before freeing it in xmlSAX2StartElement (Nick Wellnhofer),
+  Check return value of nodePush in xmlSAX2StartElement (Nick Wellnhofer),
+  Free input buffer in xmlHaltParser (Nick Wellnhofer),
+  Reset HTML parser input pointers on encoding failure (Nick Wellnhofer),
+  Don't run icu_parse_test if EUC-JP is unsupported (Nick Wellnhofer),
+  Fix xmlSchemaValidCtxtPtr reuse memory leak (Greg Hildstrom),
+  Fix xmlTextReaderNext with preparsed document (Felix Bünemann),
+  Remove stray character from comment (Nick Wellnhofer),
+  Remove a misleading line from xmlCharEncOutput (Andrey Bienkowski),
+  HTML noscript should not close p (Daniel Veillard),
+  Don't change context node in xmlXPathRoot (Nick Wellnhofer),
+  Stop using XPATH_OP_RESET (Nick Wellnhofer),
+  Revert "Change calls to xmlCharEncInput to set flush false" (Nick Wellnhofer)
   
    - Improvements:
-  Reuse xmlHaltParser() where it makes sense (Daniel Veillard),
-  xmlStopParser reset errNo (Daniel Veillard),
-  Reenable xz support by default (Daniel Veillard),
-  Recover unescaped less-than character in HTML recovery parsing (Daniel Veillard),
-  Allow HTML serializer to output HTML5 DOCTYPE (Shaun McCance),
-  Regression test for bug #695699 (Nick Wellnhofer),
-  Add a couple of XPath tests (Nick Wellnhofer),
-  Add Python 3 rpm subpackage (Tomas Radej),
-  libxml2-config.cmake.in: update include directories (Samuel Martin),
-  Adding example from bugs 738805 to regression tests (Daniel Veillard)
+  Fix "Problem with data in interleave in RelaxNG validation" (Nikolai Weibull),
+  cleanup: remove some unreachable code (Thomas Holder),
+  add --relative to testURI (Thomas Holder),
+  Remove redefined starts and defines inside include elements (Nikolai Weibull),
+  Allow choice within choice in nameClass in RELAX NG (Nikolai Weibull),
+  Look inside divs for starts and defines inside include (Nikolai Weibull),
+  Add compile and libxml2-config.cmake to .gitignore (Nikolai Weibull),
+  Stop using doc-&gt;charset outside parser code (Nick Wellnhofer),
+  Add newlines to 'xmllint --xpath' output (Nick Wellnhofer),
+  Don't include SAX.h from globals.h (Nick Wellnhofer),
+  Support xmlTextReaderNextSibling w/o preparsed doc (Felix Bünemann),
+  Don't instruct user to run make when autogen.sh failed (林博仁(Buo-ren Lin)),
+  Run Travis ASan tests with "sudo: required" (Nick Wellnhofer),
+  Improve restoring of context size and position (Nick Wellnhofer),
+  Simplify and harden nodeset filtering (Nick Wellnhofer),
+  Avoid unnecessary backups of the context node (Nick Wellnhofer),
+  Fix inconsistency in xmlXPathIsInf (Nick Wellnhofer)
   
    - Cleanups:
   
