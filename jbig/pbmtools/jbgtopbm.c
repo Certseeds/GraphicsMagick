@@ -1,14 +1,13 @@
 /*
  *  jbgtopbm - JBIG to Portable Bitmap converter
  *
- *  Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/jbigkit/
- *
- *  $Id$
+ *  Markus Kuhn - http://www.cl.cam.ac.uk/~mgk25/jbigkit/
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <limits.h>
 #include "jbig.h"
 
 char *progname;                  /* global pointer to argv[0] */
@@ -97,31 +96,52 @@ void read_file(unsigned char **buf, size_t *buflen, size_t *len, FILE *f)
 
 
 /*
+ * Output (prefix of) a short byte sequence in hexadecimal
+ * for diagnostic purposes
+ */
+void fprint_bytes(FILE *f, unsigned char *p, size_t len, int width)
+{
+  size_t i;
+  size_t max = width / 3;
+  if (len > max)
+    max -= 7;
+  for (i = 0; i < len && i < max; i++)
+    fprintf(f, "%02x ", p[i]);
+  if (len > i)
+    fprintf(f, "... %lu bytes total", (unsigned long) len);
+  fprintf(f, "\n");
+}
+
+/*
  * Read BIE and output human readable description of content
  */
-void diagnose_bie(FILE *f)
+void diagnose_bie(FILE *fin)
 {
-  unsigned char *bie, *p;
+  unsigned char *bie, *p, *pnext;
   size_t buflen = 0, len;
   unsigned long xd, yd, l0;
-  FILE *d = stdout;
+  int dl, d;
+  FILE *f = stdout;
   extern unsigned char *jbg_next_pscdms(unsigned char *p, size_t len);
+  extern unsigned long jbg_stripes(unsigned long l0, unsigned long yd,
+				   unsigned long d);
   unsigned long stripes;
-  int layers, planes, sde = 0;
+  int layers, planes;
+  unsigned long sdes, sde = 0;
   
   /* read BIH */
-  read_file(&bie, &buflen, &len, f);
+  read_file(&bie, &buflen, &len, fin);
   if (len < 20) {
-    fprintf(d, "Error: Input file is %d < 20 bytes long and therefore "
-	    "does not contain an intact BIE header!\n", len);
+    fprintf(f, "Error: Input file is %lu < 20 bytes long and therefore "
+	    "does not contain an intact BIE header!\n", (unsigned long) len);
     return;
   }
 
   /* parse BIH */
-  fprintf(d, "BIH:\n\n  DL = %d\n  D  = %d\n  P  = %d\n"
+  fprintf(f, "BIH:\n\n  DL = %d\n  D  = %d\n  P  = %d\n"
 	  "  -  = %d\n  XD = %lu\n  YD = %lu\n  L0 = %lu\n  MX = %d\n"
 	  "  MY = %d\n",
-	  bie[0], bie[1], bie[2], bie[3],
+	  dl = bie[0], d = bie[1], planes = bie[2], bie[3],
 	  xd = ((unsigned long)bie[ 4] << 24) | ((unsigned long)bie[ 5] << 16)|
 	  ((unsigned long) bie[ 6] <<  8) | ((unsigned long) bie[ 7]),
 	  yd = ((unsigned long)bie[ 8] << 24) | ((unsigned long)bie[ 9] << 16)|
@@ -129,13 +149,13 @@ void diagnose_bie(FILE *f)
 	  l0 = ((unsigned long)bie[12] << 24) | ((unsigned long)bie[13] << 16)|
 	  ((unsigned long) bie[14] <<  8) | ((unsigned long) bie[15]),
 	  bie[16], bie[17]);
-  fprintf(d, "  order   = %d %s%s%s%s%s\n", bie[18],
+  fprintf(f, "  order   = %d %s%s%s%s%s\n", bie[18],
 	  bie[18] & JBG_HITOLO ? " HITOLO" : "",
 	  bie[18] & JBG_SEQ ? " SEQ" : "",
 	  bie[18] & JBG_ILEAVE ? " ILEAVE" : "",
 	  bie[18] & JBG_SMID ? " SMID" : "",
 	  bie[18] & 0xf0 ? " other" : "");
-  fprintf(d, "  options = %d %s%s%s%s%s%s%s%s\n", bie[19],
+  fprintf(f, "  options = %d %s%s%s%s%s%s%s%s\n", bie[19],
 	  bie[19] & JBG_LRLTWO ? " LRLTWO" : "",
 	  bie[19] & JBG_VLENGTH ? " VLENGTH" : "",
 	  bie[19] & JBG_TPDON ? " TPDON" : "",
@@ -144,77 +164,107 @@ void diagnose_bie(FILE *f)
 	  bie[19] & JBG_DPPRIV ? " DPPRIV" : "",
 	  bie[19] & JBG_DPLAST ? " DPLAST" : "",
 	  bie[19] & 0x80 ? " other" : "");
-  stripes = ((yd >> bie[1]) + 
-	     ((((1UL << bie[1]) - 1) & xd) != 0) + l0 - 1) / l0;
-  layers = bie[1] - bie[0] + 1;
-  planes = bie[2];
-  fprintf(d, "\n  %lu stripes, %d layers, %d planes = %lu SDEs\n\n",
-	  stripes, layers, planes, stripes * layers * planes);
+  stripes = jbg_stripes(l0, yd, d);
+  layers = d - dl + 1;
+  fprintf(f, "\n  %lu stripes, %d layers, %d planes => ",
+	  stripes, layers, planes);
+  if ((ULONG_MAX / layers) / planes >= stripes) {
+    sdes = stripes * layers * planes;
+    fprintf(f, "%lu SDEs\n\n", sdes);
+  } else {
+    /* handle integer overflow */
+    fprintf(f, ">%lu SDEs!\n", ULONG_MAX);
+    return;
+  }
 
   /* parse BID */
-  fprintf(d, "BID:\n\n");
+  fprintf(f, "BID:\n\n");
   p = bie + 20; /* skip BIH */
   if ((bie[19] & (JBG_DPON | JBG_DPPRIV | JBG_DPLAST))
       == (JBG_DPON | JBG_DPPRIV))
     p += 1728;  /* skip DPTABLE */
   if (p > bie + len) {
-    fprintf(d, "Error: Input file is %d < 20+1728 bytes long and therefore "
-	    "does not contain an intact BIE header with DPTABLE!\n", len);
+    fprintf(f, "Error: Input file is %lu < 20+1728 bytes long and therefore "
+	    "does not contain an intact BIE header with DPTABLE!\n",
+	    (unsigned long) len);
     return;
   }
   while (p != bie + len) {
     if (p > bie + len - 2) {
-      fprintf(d, "%06x: Error: single byte 0x%02x left\n", p - bie, *p);
+      fprintf(f, "%06lx: Error: single byte 0x%02x left\n",
+	      (long) (p - bie), *p);
       return;
     }
+    pnext = jbg_next_pscdms(p, len - (p - bie));
     if (p[0] != MARKER_ESC || p[1] == MARKER_STUFF) {
-      fprintf(d, "%06x: PSCD\n", p - bie);
+      fprintf(f, "%06lx: PSCD: ", (long) (p - bie));
+      fprint_bytes(f, p, pnext ? (size_t) (pnext - p) : len - (p - bie), 60);
+      if (!pnext) {
+	fprintf(f, "Error: PSCD not terminated by SDNORM or SDRST marker\n");
+	return;
+      }
     } else
       switch (p[1]) {
       case MARKER_SDNORM:
-	fprintf(d, "%06x: ESC SDNORM #%d\n", p - bie, sde++);
-	break;
       case MARKER_SDRST:
-	fprintf(d, "%06x: ESC SDRST #%d\n", p - bie, sde++);
+	fprintf(f, "%06lx: ESC %s, ending SDE #%lu", (long) (p - bie),
+		(p[1] == MARKER_SDNORM) ? "SDNORM" : "SDRST", ++sde);
+	if (sde == sdes)
+	  fprintf(f, " (final SDE)");
+	else if (sde == sdes + 1)
+	  fprintf(f, " (first surplus SDE, VLENGTH = %d)",
+		  (bie[19] & JBG_VLENGTH) > 0);
+	fprintf(f, "\n");
 	break;
       case MARKER_ABORT:
-	fprintf(d, "%06x: ESC ABORT\n", p - bie);
+	fprintf(f, "%06lx: ESC ABORT\n", (long) (p - bie));
 	break;
       case MARKER_NEWLEN:
-	fprintf(d, "%06x: ESC NEWLEN ", p - bie);
-	if (p + 5 < bie + len)
-	  fprintf(d, "YD = %lu\n",
-		  (((long) p[2] << 24) | ((long) p[3] << 16) |
-		   ((long) p[4] <<  8) |  (long) p[5]));
-	else
-	  fprintf(d, "unexpected EOF\n");
+	fprintf(f, "%06lx: ESC NEWLEN ", (long) (p - bie));
+	if (p + 5 < bie + len) {
+	  fprintf(f, "YD = %lu\n",
+		  yd = (((long) p[2] << 24) | ((long) p[3] << 16) |
+			((long) p[4] <<  8) |  (long) p[5]));
+	  stripes = jbg_stripes(l0, yd, d);
+	  fprintf(f, "        %lu stripes, %d layers, %d planes => ",
+		  stripes, layers, planes);
+	  if ((ULONG_MAX / layers) / planes >= stripes) {
+	    sdes = stripes * layers * planes;
+	    fprintf(f, "%lu SDEs\n", sdes);
+	  } else {
+	    /* handle integer overflow */
+	    fprintf(f, ">%lu SDEs!\n", ULONG_MAX);
+	    return;
+	  }
+	} else
+	  fprintf(f, "unexpected EOF\n");
 	break;
       case MARKER_ATMOVE:
-	fprintf(d, "%06x: ESC ATMOVE ", p - bie);
+	fprintf(f, "%06lx: ESC ATMOVE ", (long) (p - bie));
 	if (p + 7 < bie + len)
-	  fprintf(d, "YAT = %lu, tX = %d, tY = %d\n",
+	  fprintf(f, "YAT = %lu, tX = %d, tY = %d\n",
 		  (((long) p[2] << 24) | ((long) p[3] << 16) |
 		   ((long) p[4] <<  8) |  (long) p[5]), p[6], p[7]);
 	else
-	  fprintf(d, "unexpected EOF\n");
+	  fprintf(f, "unexpected EOF\n");
 	break;
       case MARKER_COMMENT:
-	fprintf(d, "%06x: ESC COMMENT ", p - bie);
+	fprintf(f, "%06lx: ESC COMMENT ", (long) (p - bie));
 	if (p + 5 < bie + len)
-	  fprintf(d, "LC = %lu\n",
+	  fprintf(f, "LC = %lu\n",
 		  (((long) p[2] << 24) | ((long) p[3] << 16) |
 		   ((long) p[4] <<  8) |  (long) p[5]));
 	else
-	  fprintf(d, "unexpected EOF\n");
+	  fprintf(f, "unexpected EOF\n");
 	break;
       default:
-	fprintf(d, "%06x: ESC 0x%02x\n", p - bie, p[1]);
+	fprintf(f, "%06lx: ESC 0x%02x\n", (long) (p - bie), p[1]);
       }
-    p = jbg_next_pscdms(p, len - (p - bie));
-    if (!p) {
-      fprintf(d, "Error encountered!\n");
+    if (!pnext) {
+      fprintf(f, "Error encountered!\n");
       return;
     }
+    p = pnext;
   }
 
   free(bie);
@@ -232,6 +282,7 @@ int main (int argc, char **argv)
   struct jbg_dec_state s;
   unsigned char *buffer, *p;
   size_t buflen, len, cnt;
+  size_t bytes_read = 0;
   unsigned long xmax = 4294967295UL, ymax = 4294967295UL, max;
   int plane = -1, use_graycode = 1, diagnose = 0, multi = 0;
 
@@ -319,8 +370,8 @@ int main (int argc, char **argv)
   /* read BIH first to check VLENGTH */
   len = fread(buffer, 1, 20, fin);
   if (len < 20) {
-    fprintf(stderr, "Input file '%s' (%d bytes) must be at least "
-	    "20 bytes long\n", fnin, len);
+    fprintf(stderr, "Input file '%s' (%lu bytes) must be at least "
+	    "20 bytes long\n", fnin, (unsigned long) len);
     if (fout != stdout) {
       fclose(fout);
       remove(fnout);
@@ -342,6 +393,7 @@ int main (int argc, char **argv)
 	result = jbg_dec_in(&s, p, len, &cnt);
 	p += cnt;
 	len -= cnt;
+	bytes_read += cnt;
       }
     }
   } else {
@@ -355,6 +407,7 @@ int main (int argc, char **argv)
 	result = jbg_dec_in(&s, p, len, &cnt);
 	p += cnt;
 	len -= cnt;
+	bytes_read += cnt;
       }
       if (!(result == JBG_EAGAIN || (result == JBG_EOK && multi)))
 	break;
@@ -371,8 +424,10 @@ int main (int argc, char **argv)
     }
   }
   if (result != JBG_EOK && result != JBG_EOK_INTR) {
-    fprintf(stderr, "Problem with input file '%s': %s\n",
-	    fnin, jbg_strerror(result, JBG_EN));
+    fprintf(stderr, "Problem with input file '%s': %s\n"
+            "(error code 0x%02x, %lu = 0x%04lx BIE bytes processed)\n",
+ 	    fnin, jbg_strerror(result), result,
+	    (unsigned long) bytes_read, (unsigned long) bytes_read);
     if (fout != stdout) {
       fclose(fout);
       remove(fnout);
@@ -390,7 +445,7 @@ int main (int argc, char **argv)
 
   if (jbg_dec_getplanes(&s) == 1 || plane >= 0) {
     /* write PBM output file */
-    fprintf(fout, "P4\n%ld %ld\n", jbg_dec_getwidth(&s),
+    fprintf(fout, "P4\n%10lu\n%10lu\n", jbg_dec_getwidth(&s),
 	    jbg_dec_getheight(&s));
     fwrite(jbg_dec_getimage(&s, plane < 0 ? 0 : plane), 1,
 	   jbg_dec_getsize(&s), fout);
@@ -408,7 +463,7 @@ int main (int argc, char **argv)
     max = 0;
     for (i = jbg_dec_getplanes(&s); i > 0; i--)
       max = (max << 1) | 1;
-    fprintf(fout, "P5\n%ld %ld\n%lu\n", jbg_dec_getwidth(&s),
+    fprintf(fout, "P5\n%10lu\n%10lu\n%lu\n", jbg_dec_getwidth(&s),
 	    jbg_dec_getheight(&s), max);
     jbg_dec_merge_planes(&s, use_graycode, write_it, fout);
   }

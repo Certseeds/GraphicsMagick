@@ -2,11 +2,22 @@
 Using the JBIG-KIT library
 --------------------------
 
-Markus Kuhn -- 2004-06-10
+Markus Kuhn -- 2013-09-10
 
 
 This text explains how to use the functions provided by the JBIG-KIT
-portable image compression library in your application software.
+portable image compression library jbig.c in your application
+software. The jbig.c library is a full-featured implementation of the
+JBIG1 standard aimed at applications that can hold the entire
+uncompressed and compressed image in RAM.
+
+[For applications that require only the single-bit-per-pixel "fax
+subset" of the JBIG1 standard defined in ITU-T Recommendation T.85
+<http://www.itu.int/rec/T-REC-T.85/en>, the alternative implementation
+found in jbig85.c may be preferable. It keeps not more than three
+lines of the uncompressed image in RAM, which makes it particularly
+suitable for embedded applications. For information on how to use
+jbig85.c, please refer to the separate documentation file jbig85.txt.]
 
 
 1  Introduction to JBIG
@@ -14,7 +25,8 @@ portable image compression library in your application software.
 We start with a short introduction to JBIG1. More detailed information
 is provided in the "Introduction and overview" section of the JBIG1
 standard. Information on how to obtain a copy of the standard is
-available from <http://www.itu.int/> or <http://www.iso.ch/>.
+available from <http://www.itu.int/rec/T-REC-T.82/en> or
+<http://www.iso.ch/>.
 
 Image data encoded with the JBIG algorithm is separated into planes,
 layers, and stripes. Each plane contains one bit per pixel. The number
@@ -91,14 +103,14 @@ standard and indicated by four bits in the header.
 
 It is possible to use the raw BIE data stream as specified by the JBIG
 standard directly as the format of a file used for storing images.
-This is what the pbmtojbg and jbgtopbm conversion tools do that are
-provided in this package as demonstration applications. However, as
-the BIE format has been designed for a large number of very different
-applications, and to allow efficient direct processing by special JBIG
-hardware chip implementations, the BIE header contains only the
-minimum amount of information absolutely required by the decompression
-algorithm. Many features expected from a good file format are missing
-in the BIE data stream:
+This is what the pbmtojbg, jbgtopbm, pbmtojbg85, and jbgtopbm85
+conversion tools do that are provided in this package as demonstration
+applications. However, as the BIE format has been designed for a large
+number of very different applications, and to allow efficient direct
+processing by special JBIG hardware chip implementations, the BIE
+header contains only the minimum amount of information absolutely
+required by the decompression algorithm. Many features expected from a
+good file format are missing in the BIE data stream:
 
   - no "magic code" in the first few bytes to allow identification
     of the file format on a typeless file system and to allow
@@ -122,22 +134,22 @@ Existing established multi-purpose file formats with a rich set of
 auxiliary information attributes like TIFF could be extended easily to
 also hold JBIG compressed data.
 
-On the other hand, in database applications for instance, a BIE might
-be stored directly in a variable length field. Auxiliary information
-would then be stored in other fields of the same record, to simply
-search operations.
+On the other hand, in e.g. database applications, a BIE might be
+stored directly in a binary variable-length field. Auxiliary
+information would then be stored in other fields of the same record,
+to simplify search operations.
 
 
 2  Compressing an image
 
 2.1  Format of the source image
 
-To be processed by the JBIG-KIT encoder, the image has to be present
-in memory as separate bitmap planes. Each byte of a bitmap contains
-eight pixels, where the most significant bit represents the leftmost
-of these. Each line of a bitmap has to be stored in an integral number
-of bytes. If the image width is not an integral multiple of eight,
-then the final byte has to be padded with zero bits.
+To be processed by the jbig.c encoder, the image has to be present in
+memory as separate bitmap planes. Each byte of a bitmap contains eight
+pixels, where the most significant bit represents the leftmost of
+these. Each line of a bitmap has to be stored in an integral number of
+bytes. If the image width is not an integral multiple of eight, then
+the final byte has to be padded with zero bits.
 
 For example the 23x5 pixels large single plane image:
 
@@ -162,18 +174,18 @@ or in hexadecimal notation
 This is the format used in binary PBM files and it can also be handled
 directly by the Xlib library of the X Window System.
 
-As JBIG can also handle images with multiple bit planes, the JBIG-KIT
+As JBIG can also handle images with multiple bit planes, the jbig.c
 library functions accept and return always arrays of pointers to
 bitmaps with one pointer per plane.
 
 For single-plane images, the standard recommends that a 0 pixel
 represents the background and a 1 pixel represents the foreground
-color of an image, in other words, 0 is white and 1 is black for
+colour of an image, in other words, 0 is white and 1 is black for
 scanned paper documents. For images with several bits per pixel, the
-JBIG standard makes no recommendations about how various colors should
+JBIG standard makes no recommendations about how various colours should
 be encoded.
 
-For greyscale images, by using a Gray code instead of a simple binary
+For grey-scale images, by using a Gray code instead of a simple binary
 weighted representation of the pixel intensity, some increase in
 coding efficiency can be reached.
 
@@ -200,7 +212,7 @@ half of the code (numbers 4 - 7) is simply the mirrored first half
 (numbers 3 - 0) with the first bit set to one. This way, arbitrarily
 large Gray codes can be generated quickly by mirroring the above
 example and prefixing the first half with zeros and the second half
-with ones as often as required. In greyscale images, it is common
+with ones as often as required. In grey-scale images, it is common
 practise to use the all-0 code for black and the all-1 code for white.
 
 No matter whether a Gray code or a binary code is used for encoding a
@@ -214,7 +226,7 @@ during the transmission.
 
 2.2  A simple compression application
 
-In order to use JBIG-KIT in your application, just link libjbig.a to
+In order to use jbig.c in your application, just link libjbig.a to
 your executable (on Unix systems just add -ljbig and -L. to the
 command line options of your compiler, on other systems you will have
 to write a new Makefile anyway), copy the file jbig.h into your source
@@ -227,7 +239,7 @@ into your source code.
 The library interface follows object-oriented programming principles.
 You have to declare a variable (object)
 
-  struct jbg_enc_state se;
+  struct jbg_enc_state s;
 
 which contains the current status of an encoder. Then you initialize
 the encoder by calling the constructor function
@@ -240,12 +252,12 @@ the encoder by calling the constructor function
 
 The parameters have the following meaning:
 
-  s             A pointer to the jbg_enc_state structure which you want
+  s             A pointer to the jbg_enc_state structure that you want
                 to initialize.
 
-  x             The width of your image.
+  x             The width of your image in pixels.
 
-  y             The height of your image.
+  y             The height of your image in pixels (lines).
 
   pl            the number of bitmap planes you want to encode.
 
@@ -253,16 +265,16 @@ The parameters have the following meaning:
                 pointing to the first byte of a bitmap as described in
                 section 2.1.
 
-  data_out      This is a call-back function which will be called during
-                the compression process by libjbig in order to deliver
-                the BIE data to the application. The parameters of the
-                function data_out are a pointer start to the new block
-                of data to be delivered, as well as the number len of
-                delivered bytes. The pointer file is transparently
-                delivered to data_out, as specified in jbg_enc_init().
-                Typically, data_out will write the BIE portion to a
-                file, send it to a network connection, or append it to
-                some memory buffer.
+  data_out      This is a call-back function that the encoder will
+                call during the compression process by in order to
+                deliver the BIE data to your application. The
+                parameters of the function data_out are a pointer
+                start to the new block of data being delivered, as
+                well as the number len of delivered bytes. The pointer
+                file is transparently delivered to data_out, as
+                specified in jbg_enc_init(). Typically, data_out will
+                write the BIE portion to a file, send it to a network
+                connection, or append it to some memory buffer.
 
   file          A pointer parameter that is passed on to data_out()
                 and can be used, for instance, to allow data_out() to
@@ -282,8 +294,8 @@ After jbg_enc_out has returned, a call to the destructor function
 will release any heap memory allocated by the previous functions.
 
 
-A minimal example application which sends the BIE of the above
-bitmap to stdout looks like this:
+A minimal example application, which sends the BIE of the above bitmap
+to stdout, looks like this:
 
 ---------------------------------------------------------------------------
 /* A sample JBIG encoding application */
@@ -430,7 +442,7 @@ the SDEs are stored in the BIE. The bits have the following meaning:
                to a database which can easily reorder the SDEs before
                sending them to a decoder. Warning: JBIG decoders are
                not expected to support the HITOLO option (e.g. the
-               JBIG-KIT decoder currently does not) so you should
+               jbig.c decoder currently does not) so you should
                normally not use it.
 
   JBG_SEQ      Usually, at first all stripes of one resolution layer
@@ -439,7 +451,7 @@ the SDEs are stored in the BIE. The bits have the following meaning:
                all layers of the first stripe will be written,
                followed by all layers of the second stripe, etc. This
                option also should normally never be required and is
-               not supported by the current JBIG-KIT decoder.
+               not supported by the current jbig.c decoder.
 
   JBG_SMID     In case there exist several bit planes, then the order of
                the stripes is determined by three loops over all stripes,
@@ -487,12 +499,12 @@ some of the optional algorithms defined by JBIG:
                  the slightly faster but 5% less well compressing two
                  line alternative is selected. God bless the committees.
                  Although probably nobody will ever need this option,
-                 it has been implemented in JBIG-KIT and is off by
+                 it has been implemented in jbig.c and is off by
                  default.
 
   JBG_TPDON      This activates the "typical prediction" algorithm
                  for differential layers which avoids that large
-                 areas of equal color have to be encoded at all.
+                 areas of equal colour have to be encoded at all.
                  This is on by default and there is no good reason to
                  switch it off except for debugging or preparing data
                  for cheap JBIG hardware that might not support this
@@ -506,7 +518,7 @@ some of the optional algorithms defined by JBIG:
                  layers the "deterministic prediction" algorithm,
                  which avoids that higher resolution layer pixels are
                  encoded when their value can already be determined
-                 with the knowledge of the neighbor pixels, the
+                 with the knowledge of the neighbour pixels, the
                  corresponding lower resolution pixels and the
                  resolution reduction algorithm. This is also
                  activated by default and one reason for deactivating
@@ -544,7 +556,7 @@ jbg_int2dppriv and jbg_dppriv2int are provided in order to convert the
 DPTABLE data from the format used in the standard into the more
 efficient format used internally by JBIG-KIT.
 
-If you want to encode a greyscale image, you can use the library
+If you want to encode a grey-scale image, you can use the library
 function
 
   void jbg_split_planes(unsigned long x, unsigned long y, int has_planes,
@@ -574,7 +586,7 @@ the pixel integer values will be used instead of the Gray code. Plane
 
 3  Decompressing an image
 
-Like with the compression functions, if you want to use the JBIG-KIT
+Like with the compression functions, if you want to use the jbig.c
 library, you have to put the line
 
   #include "jbig.h"
@@ -609,19 +621,19 @@ will return the error JBG_ENOCONT after the header of the new BIE has
 been received completely.
 
 If pointer cnt is not NULL, then the number of bytes actually read
-from the data block is stored there. In case the data block did not
-contain the end of the BIE, then the value JBG_EAGAIN will be returned
-and *cnt equals len.
+from the data block will be stored there. In case the data block did
+not contain the end of the BIE, then the value JBG_EAGAIN will be
+returned and *cnt equals len.
 
 Once the end of a BIE has been reached, the return value of
 jbg_dec_in() will be JBG_EOK. After this has happened, the functions
 and macros
 
-  long jbg_dec_getwidth(struct jbg_dec_state *s);
-  long jbg_dec_getheight(struct jbg_dec_state *s);
+  unsigned long jbg_dec_getwidth(struct jbg_dec_state *s);
+  unsigned long jbg_dec_getheight(struct jbg_dec_state *s);
   int jbg_dec_getplanes(struct jbg_dec_state *s);
   unsigned char *jbg_dec_getimage(struct jbg_dec_state *s, int plane);
-  long jbg_dec_getsize(struct jbg_dec_state *s);
+  unsigned long jbg_dec_getsize(struct jbg_dec_state *s);
 
 can be used to query the dimensions of the now completely decoded
 image and to get a pointer to all bitmap planes. The bitmaps are
@@ -641,7 +653,7 @@ zero, then a binary encoding will be used. The output array will be
 delivered via the callback function data_out, exactly in the same way
 in which the encoder provides the BIE. The function
 
-  long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
+  unsigned long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
 
 determines how long the data array delivered by jbg_dec_merge_planes()
 is going to be.
@@ -689,21 +701,23 @@ and the memory can be released.
 
 The function
 
-  const char *jbg_strerror(int errnum, int language);
+  const char *jbg_strerror(int errnum);
 
-returns a pointer to a short single line test message which explains
+returns a pointer to a short single line test message that explains
 the return value of jbg_dec_in(). This message can be used in order to
 provide the user a brief informative message about what when wrong
-while decompressing the JBIG image. The error messages are available
-in several languages and in several character sets. Currently
-supported are the following values for the language parameter:
+while decompressing a JBIG image. The po/ subdirectory contains *.po
+files that translate the English ASCII strings returned by
+jbg_strerror() into other languages (e.g., for use with GNU gettext).
+The four least-significant bits of the return value of jbg_dec_in()
+may contain additional detailed technical information about the exact
+test that spotted the error condition (see source code for details),
+i.e. more than the text message returned by jbg_strerror() reveals.
+Therefore it may be useful to display the return value itself as a
+hexadecimal number, in addition to the string returned by
+jbg_strerror().
 
-  JBG_EN              English messages in ASCII
-  JBG_DE_8859_1       German messages in ISO 8859-1 Latin 1 character set
-  JBG_DE_UTF_8        German messages in ISO 10646/Unicode UTF-8 encoding
-
-
-The current implementation of the JBIG-KIT decoder has the following
+The current implementation of the jbig.c decoder has the following
 limitations:
 
   - The maximal vertical offset MY of the adaptive template pixel
@@ -720,11 +734,25 @@ None of the above limitations can be exceeded by a JBIG data stream
 that conforms to the ITU-T T.85 application profile for the use of
 JBIG1 in fax machines.
 
+The current implementation of the jbig.c decoder does not impose any
+limits on the image size that it will process, as long as malloc() is
+able to allocate enough heap space for the resulting bitmaps. The only
+exception is that jbg_dec_in() will return "Input data stream uses
+unimplemented JBIG features" (JBG_EIMPL | 1) if Y_D equals 0xffffffff,
+which is an extreme value commonly used to encode images according to
+ITU-T T.85 where the height was unknown when the BIH was emitted.
+After jbg_dec_in() received the 20-byte long BIH at the start of the
+BIE, it will malloc() to allocate enough memory to hold the requested
+image planes and layers. If you want to defend your application
+against excessive image-size parameters in a received BIH, then do
+make sure that you check X_D, Y_D, and P against appropriate safety
+limits before handing over the BIH to jbg_dec_in().
+
 There are two more limitations of the current implementation of the
-JBIG-KIT decoder that might cause problems with processing JBIG data
+jbig.c decoder that might cause problems with processing JBIG data
 stream that conform to ITU-T T.85:
 
-  - The JBIG-KIT decoder was designed to operate incrementally.
+  - The jbig.c decoder was designed to operate incrementally.
     Each received byte is processed immediately as soon as it arrives.
     As a result, it does not look beyond the SDRST/SDNORM at the end
     of all stripes for any immediately following NEWLEN marker that
@@ -743,7 +771,7 @@ stream that conform to ITU-T T.85:
     start of the transmission) cannot be decoded directly by this
     version.
 
-For both issues, there is a very simple workaround:
+For both issues, there is a workaround available:
 
 If you encounter a BIE that has in the header the VLENGTH=1 option bit
 set, then first wait until you have received the entire BIE and stored
@@ -762,12 +790,16 @@ was encountered, and JBG_EABORT if an ABORT marker segment was found.
 After having patched the image-height value in the BIE using
 jbg_newlen(), simply hand over the BIE as usual to jbg_dec_in().
 
+In general, for applications where NEWLEN markers can appear, in
+particular fax reception, you should consider using the jbig85.c
+decoder instead, as it can process BIEs with NEWLEN markers in a
+single pass.
 
 A more detailed description of the JBIG-KIT implementation is
 
   Markus Kuhn: Effiziente Kompression von bi-level Bilddaten durch
   kontextsensitive arithmetische Codierung. Studienarbeit, Lehrstuhl
-  für Betriebssysteme, IMMD IV, Universität Erlangen-Nürnberg,
+  fÃ¼r Betriebssysteme, IMMD IV, UniversitÃ¤t Erlangen-NÃ¼rnberg,
   Erlangen, July 1995. (German, 62 pages)
   <http://www.cl.cam.ac.uk/~mgk25/kuhn-sta.pdf>
 
