@@ -1,5 +1,7 @@
 2019-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* zlib: zlib is updated to 1.2.11 release.
+
 	* png: libpng is updated to 1.6.37 release.
 
 2019-12-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
