@@ -1,38 +1,8 @@
 Only in libxml: config.h
-diff -u -r libxml2-2.9.4/dict.c libxml/dict.c
---- libxml2-2.9.4/dict.c	2016-05-21 20:49:02.000000000 -0500
-+++ libxml/dict.c	2016-08-14 16:54:52.529789995 -0500
-@@ -48,7 +48,7 @@
- #else
- #ifdef HAVE_INTTYPES_H
- #include <inttypes.h>
--#elif defined(WIN32)
-+#elif defined(WIN32) || defined(WIN64)
- typedef unsigned __int32 uint32_t;
- #endif
- #endif
-@@ -249,7 +249,7 @@
- #endif
-     pool = dict->strings;
-     while (pool != NULL) {
--	if (pool->end - pool->free > namelen)
-+	if ((unsigned int) (pool->end - pool->free) > namelen)
- 	    goto found_pool;
- 	if (pool->size > size) size = pool->size;
-         limit += pool->size;
-@@ -317,7 +317,7 @@
- #endif
-     pool = dict->strings;
-     while (pool != NULL) {
--	if (pool->end - pool->free > namelen + plen + 1)
-+	if ((unsigned int) (pool->end - pool->free) > namelen + plen + 1)
- 	    goto found_pool;
- 	if (pool->size > size) size = pool->size;
-         limit += pool->size;
-diff -u -r libxml2-2.9.4/encoding.c libxml/encoding.c
---- libxml2-2.9.4/encoding.c	2016-05-23 02:25:25.000000000 -0500
-+++ libxml/encoding.c	2016-08-14 16:54:52.531400267 -0500
-@@ -2402,6 +2402,7 @@
+diff -r -u libxml2-2.9.10/encoding.c libxml/encoding.c
+--- libxml2-2.9.10/encoding.c	2019-10-22 13:46:01.000000000 +0000
++++ libxml/encoding.c	2019-12-08 15:27:35.072470506 +0000
+@@ -2389,6 +2389,7 @@
   *     -2 if the transcoding fails (for *in is not valid utf8 string or
   *        the result of transformation can't fit into the encoding we want), or
   */
@@ -40,7 +10,7 @@ diff -u -r libxml2-2.9.4/encoding.c libxml/encoding.c
  int
  xmlCharEncOutput(xmlOutputBufferPtr output, int init)
  {
-@@ -2840,7 +2841,7 @@
+@@ -2707,7 +2708,7 @@
      }
      return(ret);
  }
@@ -48,10 +18,10 @@ diff -u -r libxml2-2.9.4/encoding.c libxml/encoding.c
 +#endif
  /**
   * xmlCharEncCloseFunc:
-  * @handler:	char enconding transformation data structure
-diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlversion.h
---- libxml2-2.9.4/include/libxml/xmlversion.h	2016-05-23 03:00:40.000000000 -0500
-+++ libxml/include/libxml/xmlversion.h	2016-08-14 16:54:52.539661426 -0500
+  * @handler:	char encoding transformation data structure
+diff -r -u libxml2-2.9.10/include/libxml/xmlversion.h libxml/include/libxml/xmlversion.h
+--- libxml2-2.9.10/include/libxml/xmlversion.h	2019-10-30 14:14:29.000000000 +0000
++++ libxml/include/libxml/xmlversion.h	2019-12-08 15:27:35.104911541 +0000
 @@ -10,6 +10,13 @@
  #ifndef __XML_VERSION_H__
  #define __XML_VERSION_H__
@@ -66,16 +36,19 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #include <libxml/xmlexports.h>
  
  #ifdef __cplusplus
-@@ -90,7 +97,7 @@
+@@ -90,9 +97,11 @@
   *
   * Whether the thread support is configured in
   */
--#if 1
 +#if defined(_MT) /* Defined by GraphicsMagick for multi-thread builds */
- #if defined(_REENTRANT) || defined(__MT__) || \
-     (defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE - 0 >= 199506L))
+ #if 1
  #define LIBXML_THREAD_ENABLED
-@@ -111,7 +118,7 @@
+ #endif
++#endif
+ 
+ /**
+  * LIBXML_THREAD_ALLOC_ENABLED:
+@@ -108,7 +117,7 @@
   *
   * Whether the DOM like tree manipulation API support is configured in
   */
@@ -84,7 +57,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_TREE_ENABLED
  #endif
  
-@@ -120,7 +127,7 @@
+@@ -117,7 +126,7 @@
   *
   * Whether the serialization/saving support is configured in
   */
@@ -93,7 +66,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_OUTPUT_ENABLED
  #endif
  
-@@ -138,7 +145,7 @@
+@@ -135,7 +144,7 @@
   *
   * Whether the xmlReader parsing interface is configured in
   */
@@ -102,7 +75,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_READER_ENABLED
  #endif
  
-@@ -147,7 +154,7 @@
+@@ -144,7 +153,7 @@
   *
   * Whether the xmlPattern node selection interface is configured in
   */
@@ -111,7 +84,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_PATTERN_ENABLED
  #endif
  
-@@ -156,7 +163,7 @@
+@@ -153,7 +162,7 @@
   *
   * Whether the xmlWriter saving interface is configured in
   */
@@ -120,7 +93,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_WRITER_ENABLED
  #endif
  
-@@ -192,7 +199,7 @@
+@@ -189,7 +198,7 @@
   *
   * Whether the DTD validation support is configured in
   */
@@ -129,7 +102,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_VALID_ENABLED
  #endif
  
-@@ -201,7 +208,7 @@
+@@ -198,7 +207,7 @@
   *
   * Whether the HTML support is configured in
   */
@@ -138,7 +111,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_HTML_ENABLED
  #endif
  
-@@ -210,7 +217,7 @@
+@@ -207,7 +216,7 @@
   *
   * Whether the deprecated APIs are compiled in for compatibility
   */
@@ -147,7 +120,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_LEGACY_ENABLED
  #endif
  
-@@ -219,7 +226,7 @@
+@@ -216,7 +225,7 @@
   *
   * Whether the Canonicalization support is configured in
   */
@@ -156,7 +129,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_C14N_ENABLED
  #endif
  
-@@ -228,7 +235,7 @@
+@@ -225,7 +234,7 @@
   *
   * Whether the Catalog support is configured in
   */
@@ -165,7 +138,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_CATALOG_ENABLED
  #endif
  
-@@ -237,7 +244,7 @@
+@@ -234,7 +243,7 @@
   *
   * Whether the SGML Docbook support is configured in
   */
@@ -174,7 +147,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_DOCB_ENABLED
  #endif
  
-@@ -246,7 +253,7 @@
+@@ -243,7 +252,7 @@
   *
   * Whether XPath is configured in
   */
@@ -183,7 +156,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_XPATH_ENABLED
  #endif
  
-@@ -255,7 +262,7 @@
+@@ -252,7 +261,7 @@
   *
   * Whether XPointer is configured in
   */
@@ -192,7 +165,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_XPTR_ENABLED
  #endif
  
-@@ -264,7 +271,7 @@
+@@ -261,7 +270,7 @@
   *
   * Whether XInclude is configured in
   */
@@ -201,7 +174,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_XINCLUDE_ENABLED
  #endif
  
-@@ -273,7 +280,7 @@
+@@ -270,7 +279,7 @@
   *
   * Whether iconv support is available
   */
@@ -210,7 +183,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_ICONV_ENABLED
  #endif
  
-@@ -291,7 +298,7 @@
+@@ -288,7 +297,7 @@
   *
   * Whether ISO-8859-* support is made available in case iconv is not
   */
@@ -219,7 +192,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_ISO8859X_ENABLED
  #endif
  
-@@ -300,7 +307,7 @@
+@@ -297,7 +306,7 @@
   *
   * Whether Debugging module is configured in
   */
@@ -228,7 +201,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_DEBUG_ENABLED
  #endif
  
-@@ -327,7 +334,7 @@
+@@ -324,7 +333,7 @@
   *
   * Whether the Unicode related interfaces are compiled in
   */
@@ -237,7 +210,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_UNICODE_ENABLED
  #endif
  
-@@ -336,7 +343,7 @@
+@@ -333,7 +342,7 @@
   *
   * Whether the regular expressions interfaces are compiled in
   */
@@ -246,7 +219,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_REGEXP_ENABLED
  #endif
  
-@@ -345,7 +352,7 @@
+@@ -342,7 +351,7 @@
   *
   * Whether the automata interfaces are compiled in
   */
@@ -255,16 +228,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_AUTOMATA_ENABLED
  #endif
  
-@@ -354,7 +361,7 @@
-  *
-  * Whether the formal expressions interfaces are compiled in
-  */
--#if 1
-+#if 0
- #define LIBXML_EXPR_ENABLED
- #endif
- 
-@@ -363,7 +370,7 @@
+@@ -362,7 +371,7 @@
   *
   * Whether the Schemas validation interfaces are compiled in
   */
@@ -273,7 +237,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_SCHEMAS_ENABLED
  #endif
  
-@@ -372,7 +379,7 @@
+@@ -371,7 +380,7 @@
   *
   * Whether the Schematron validation interfaces are compiled in
   */
@@ -282,7 +246,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_SCHEMATRON_ENABLED
  #endif
  
-@@ -381,7 +388,7 @@
+@@ -380,7 +389,7 @@
   *
   * Whether the module interfaces are compiled in
   */
@@ -291,7 +255,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_MODULES_ENABLED
  /**
   * LIBXML_MODULE_EXTENSION:
-@@ -396,7 +403,7 @@
+@@ -395,7 +404,7 @@
   *
   * Whether the Zlib support is compiled in
   */
@@ -300,7 +264,7 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_ZLIB_ENABLED
  #endif
  
-@@ -405,7 +412,7 @@
+@@ -404,7 +413,7 @@
   *
   * Whether the Lzma support is compiled in
   */
@@ -309,10 +273,10 @@ diff -u -r libxml2-2.9.4/include/libxml/xmlversion.h libxml/include/libxml/xmlve
  #define LIBXML_LZMA_ENABLED
  #endif
  
-diff -u -r libxml2-2.9.4/include/win32config.h libxml/include/win32config.h
---- libxml2-2.9.4/include/win32config.h	2016-02-09 04:17:32.000000000 -0600
-+++ libxml/include/win32config.h	2016-08-14 16:54:52.539875261 -0500
-@@ -101,7 +101,9 @@
+diff -r -u libxml2-2.9.10/include/win32config.h libxml/include/win32config.h
+--- libxml2-2.9.10/include/win32config.h	2019-10-22 13:46:01.000000000 +0000
++++ libxml/include/win32config.h	2019-12-08 15:27:35.107047411 +0000
+@@ -95,7 +95,9 @@
  #define snprintf _snprintf
  #endif
  #if _MSC_VER < 1500
@@ -323,89 +287,28 @@ diff -u -r libxml2-2.9.4/include/win32config.h libxml/include/win32config.h
  #endif
  #elif defined(__MINGW32__)
  #define mkdir(p,m) _mkdir(p)
-diff -u -r libxml2-2.9.4/libxml.h libxml/libxml.h
---- libxml2-2.9.4/libxml.h	2016-05-23 02:25:25.000000000 -0500
-+++ libxml/libxml.h	2016-08-14 16:54:52.540076398 -0500
-@@ -109,7 +109,7 @@
- #endif
- #endif
- #endif
--#if !defined(PIC) && !defined(NOLIBTOOL)
-+#if !defined(PIC) && !defined(NOLIBTOOL) &&!defined(LIBXML_STATIC)
- #  define LIBXML_STATIC
- #endif
- #endif /* ! __XML_LIBXML_H__ */
-Only in libxml: libxml.h.orig
-diff -u -r libxml2-2.9.4/nanohttp.c libxml/nanohttp.c
---- libxml2-2.9.4/nanohttp.c	2016-02-09 04:17:33.000000000 -0600
-+++ libxml/nanohttp.c	2016-08-14 16:54:52.540751638 -0500
-@@ -1038,16 +1038,18 @@
- static SOCKET
- xmlNanoHTTPConnectHost(const char *host, int port)
- {
-+#if !defined(HAVE_GETADDRINFO)
-     struct hostent *h;
--    struct sockaddr *addr = NULL;
-     struct in_addr ia;
-+    int i;
-+#endif
-+    struct sockaddr *addr = NULL;
-     struct sockaddr_in sockin;
- 
- #ifdef SUPPORT_IP6
-     struct in6_addr ia6;
-     struct sockaddr_in6 sockin6;
- #endif
--    int i;
-     SOCKET s;
- 
-     memset (&sockin, 0, sizeof(sockin));
-diff -u -r libxml2-2.9.4/parser.c libxml/parser.c
---- libxml2-2.9.4/parser.c	2016-05-23 02:25:25.000000000 -0500
-+++ libxml/parser.c	2016-08-14 16:54:52.544666831 -0500
-@@ -33,7 +33,7 @@
+Only in libxml2-2.9.10/m4: lt~obsolete.m4
+diff -r -u libxml2-2.9.10/parser.c libxml/parser.c
+--- libxml2-2.9.10/parser.c	2019-10-30 13:52:27.000000000 +0000
++++ libxml/parser.c	2019-12-08 15:27:35.154586490 +0000
+@@ -38,7 +38,7 @@
  #define IN_LIBXML
  #include "libxml.h"
  
--#if defined(WIN32) && !defined (__CYGWIN__)
+-#if defined(_WIN32) && !defined (__CYGWIN__)
 +#if (defined(WIN32) || defined(WIN64)) && !defined (__CYGWIN__)
  #define XML_DIR_SEP '\\'
  #else
  #define XML_DIR_SEP '/'
-diff -u -r libxml2-2.9.4/parserInternals.c libxml/parserInternals.c
---- libxml2-2.9.4/parserInternals.c	2016-05-23 02:25:25.000000000 -0500
-+++ libxml/parserInternals.c	2016-08-14 16:54:52.545515759 -0500
+diff -r -u libxml2-2.9.10/parserInternals.c libxml/parserInternals.c
+--- libxml2-2.9.10/parserInternals.c	2019-10-22 13:46:01.000000000 +0000
++++ libxml/parserInternals.c	2019-12-08 15:27:35.157196409 +0000
 @@ -10,7 +10,7 @@
  #define IN_LIBXML
  #include "libxml.h"
  
--#if defined(WIN32) && !defined (__CYGWIN__)
+-#if defined(_WIN32) && !defined (__CYGWIN__)
 +#if (defined(WIN32) || defined(WIN64)) && !defined (__CYGWIN__)
  #define XML_DIR_SEP '\\'
  #else
  #define XML_DIR_SEP '/'
-diff -u -r libxml2-2.9.4/save.h libxml/save.h
---- libxml2-2.9.4/save.h	2016-02-09 04:17:34.000000000 -0600
-+++ libxml/save.h	2016-08-14 16:54:52.550073411 -0500
-@@ -25,8 +25,8 @@
- void xmlBufDumpElementDecl(xmlBufPtr buf, xmlElementPtr elem);
- void xmlBufDumpAttributeDecl(xmlBufPtr buf, xmlAttributePtr attr);
- void xmlBufDumpEntityDecl(xmlBufPtr buf, xmlEntityPtr ent);
--xmlChar *xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input);
- #endif
-+xmlChar *xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input);
- 
- #ifdef __cplusplus
- }
-diff -u -r libxml2-2.9.4/timsort.h libxml/timsort.h
---- libxml2-2.9.4/timsort.h	2016-02-09 04:17:34.000000000 -0600
-+++ libxml/timsort.h	2016-08-14 16:54:52.550326647 -0500
-@@ -24,7 +24,7 @@
- #else
- #ifdef HAVE_INTTYPES_H
- #include <inttypes.h>
--#elif defined(WIN32)
-+#elif defined(WIN32) || defined(WIN64)
- typedef __int64 int64_t;
- typedef unsigned __int64 uint64_t;
- #endif
