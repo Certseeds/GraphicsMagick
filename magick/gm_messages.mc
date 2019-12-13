@@ -569,6 +569,18 @@ Unsupported cell type in the matrix
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedNumberOfColumns
+Language        = English
+Unsupported number of columns
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedNumberOfRows
+Language        = English
+Unsupported number of columns
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedSamplesPerPixel
 Language        = English
 Unsupported samples per pixel

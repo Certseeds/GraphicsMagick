@@ -1,3 +1,9 @@
+2019-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (WritePICTImage): Throw a writer exception if the
+	PICT width limit is exceeded. Fixes SourceForge issue 617
+	"heap-buffer-overflow in function EncodeImage of coders/pict.c".
+
 2019-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* jbig: jbigkit is updated to 2.1 release.

@@ -339,6 +339,12 @@
       <Message name="UnsupportedSamplesPerPixel">
         Unsupported samples per pixel
       </Message>
+      <Message name="UnsupportedNumberOfColumns">
+        Unsupported number of columns
+      </Message>
+      <Message name="UnsupportedNumberOfRows">
+        Unsupported number of columns
+      </Message>
       <Message name="ArithmeticOverflow">
         Arithmetic overflow
       </Message>

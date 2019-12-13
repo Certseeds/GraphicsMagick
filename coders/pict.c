@@ -1028,7 +1028,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
 %
 */
 static size_t EncodeImage(Image *image,const unsigned char *scanline,
-  const unsigned long bytes_per_line,unsigned char *pixels)
+  const size_t bytes_per_line,unsigned char *pixels)
 {
 #define MaxCount  128U
 #define MaxPackbitsRunlength  128
@@ -2121,6 +2121,8 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
     bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
+  if ((bytes_per_line ==0) || (bytes_per_line > 0x7FFF))
+    ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);
   packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount);
   scanline=MagickAllocateMemory(unsigned char *,row_bytes);
