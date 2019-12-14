@@ -20,9 +20,6 @@ extern "C" {
 */
 
 extern MagickExport MagickPassFail
-  ListModuleInfo(FILE *file,ExceptionInfo *exception);
-
-extern MagickExport MagickPassFail
   ExecuteModuleProcess(const char *tag,Image **image,
                        const int argc,char **argv);
 

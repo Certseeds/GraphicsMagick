@@ -35,6 +35,28 @@
 <div class="document">
 
 
+<p>2019-12-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>rungm.sh.in (DIRSEP): DIRSEP should always use Unix conventions for
+Autotools-based builds.</li>
+<li>magick/module.h (&quot;C&quot;): Eliminiate redundant and conflicting
+ListModuleInfo() prototype.</li>
+<li>coders/miff.c (ReadMIFFImage): Eliminate warnings in trace
+statements.</li>
+<li>coders/dib.c (DecodeImage): Eliminate warnings in trace
+statements.</li>
+<li>coders/bmp.c (DecodeImage): Eliminate warnings in trace
+statements.</li>
+<li>magick/studio.h (SupportMagickModules): Fix the preprocessor
+logic controlling SupportMagickModules, which became broken for
+GCC MinGW-based builds starting in the 1.3.29 release when a
+&quot;static&quot; module loader was implemented.  Due to an error in the
+preprocessor logic, only the &quot;modules&quot; based build was working for
+MinGW.  Much thanks to Giovanni Remigi for making us aware of this
+issue.</li>
+</ul>
+</blockquote>
 <p>2019-12-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

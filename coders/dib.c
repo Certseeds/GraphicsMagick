@@ -192,7 +192,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "  Decoding RLE compressed pixels to"
                           " %" MAGICK_SIZE_T_F "u bytes",
-                          image->rows*image->columns);
+                          (MAGICK_SIZE_T) image->rows*image->columns);
 
   byte=0;
   x=0;
@@ -215,7 +215,8 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                                   "  Decode buffer full (y=%lu, "
                                   "pixels_size=%" MAGICK_SIZE_T_F "u, "
                                   "pixels=%p, q=%p, end=%p)",
-                                  y, (MAGICK_SIZE_T) pixels_size, pixels, q, end);
+                                  y, (MAGICK_SIZE_T) pixels_size,
+                                  pixels, q, end);
           break;
         }
       count=ReadBlobByte(image);

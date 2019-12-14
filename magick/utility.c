@@ -4075,7 +4075,7 @@ MagickSpawnVP(const unsigned int verbose,const char *file, char *const argv[])
 #if defined(HAVE_SPAWNVP)
   {
     /* int spawnvp(int mode, const char *path, const char * const *argv); */
-    status = spawnvp(_P_WAIT, file, (const char * const *) argv);
+    status = spawnvp(_P_WAIT, file, /*(const char * const *)*/ (char * const *) argv);
   }
 #else
   {

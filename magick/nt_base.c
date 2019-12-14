@@ -909,6 +909,7 @@ MagickExport void *NTdlsym(void *handle,const char *name)
   LPFNDLLFUNC1
     lpfnDllFunc1;
 
+  /* FARPROC GetProcAddress(HMODULE hModule,LPCSTR lpProcName); */
   lpfnDllFunc1=(LPFNDLLFUNC1) GetProcAddress(handle,name);
   if (!lpfnDllFunc1)
     return((void *) NULL);

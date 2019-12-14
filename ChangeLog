@@ -1,3 +1,28 @@
+2019-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* rungm.sh.in (DIRSEP): DIRSEP should always use Unix conventions for
+	Autotools-based builds.
+
+	* magick/module.h ("C"): Eliminiate redundant and conflicting
+	ListModuleInfo() prototype.
+
+	* coders/miff.c (ReadMIFFImage): Eliminate warnings in trace
+	statements.
+
+	* coders/dib.c (DecodeImage): Eliminate warnings in trace
+	statements.
+
+	* coders/bmp.c (DecodeImage): Eliminate warnings in trace
+	statements.
+
+	* magick/studio.h (SupportMagickModules): Fix the preprocessor
+	logic controlling SupportMagickModules, which became broken for
+	GCC MinGW-based builds starting in the 1.3.29 release when a
+	"static" module loader was implemented.  Due to an error in the
+	preprocessor logic, only the "modules" based build was working for
+	MinGW.  Much thanks to Giovanni Remigi for making us aware of this
+	issue.
+
 2019-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (WritePICTImage): Throw a writer exception if the

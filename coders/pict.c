@@ -2125,7 +2125,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
     ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);
   packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount);
-  scanline=MagickAllocateMemory(unsigned char *,row_bytes);
+  scanline=MagickAllocateMemory(unsigned char *,row_bytes); /*FIXME: GCC says row_bytes huge*/
   if ((bytes_per_line == 0) ||
       (buffer == (unsigned char *) NULL) ||
       (packed_scanline == (unsigned char *) NULL) ||
