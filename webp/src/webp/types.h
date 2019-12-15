@@ -45,10 +45,10 @@ typedef long long int int64_t;
 #       pragma warning( disable : 4273 )
 #   endif
 #   if !defined(_WEBPLIB_)
-#       define WEBP_EXTERN(type) extern __declspec(dllimport) type
+#       define WEBP_EXTERN extern __declspec(dllimport)
 #       pragma message( "libwebp compiling as DLL import" )
 #   else
-#       define WEBP_EXTERN(type) extern __declspec(dllexport) type
+#       define WEBP_EXTERN extern __declspec(dllexport)
 #       pragma message( "libwebp compiling as DLL export" )
 #   endif
 #endif
@@ -58,13 +58,13 @@ typedef long long int int64_t;
 // This explicitly marks library functions and allows for changing the
 // signature for e.g., Windows DLL builds.
 # if defined(__GNUC__) && __GNUC__ >= 4
-#  define WEBP_EXTERN(type) extern __attribute__ ((visibility ("default"))) type
+#  define WEBP_EXTERN extern __attribute__ ((visibility ("default")))
 # else
-#  define WEBP_EXTERN(type) extern type
+#  define WEBP_EXTERN extern
 # endif  /* __GNUC__ >= 4 */
 #endif  /* WEBP_EXTERN */
 
 // Macro to check ABI compatibility (same major revision number)
 #define WEBP_ABI_IS_INCOMPATIBLE(a, b) (((a) >> 8) != ((b) >> 8))
 
-#endif  /* WEBP_WEBP_TYPES_H_ */
+#endif  // WEBP_WEBP_TYPES_H_
