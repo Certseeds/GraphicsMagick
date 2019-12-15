@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1264,7 +1264,7 @@ GetModuleInfo(const char *name,ExceptionInfo *exception)
 %
 %
 */
-MagickExport unsigned int
+unsigned int
 ListModuleInfo(FILE *file,ExceptionInfo *exception)
 {
   register const ModuleInfo
