@@ -1,8 +1,8 @@
 Only in jp2: images
 Only in jp2: jasper.def
-diff -r -u jasper-1.900.1/src/appl/jasper.c jp2/src/appl/jasper.c
---- jasper-1.900.1/src/appl/jasper.c	2007-01-19 15:43:08.000000000 -0600
-+++ jp2/src/appl/jasper.c	2015-09-19 17:09:46.453940772 -0500
+diff -u -r jasper-1.900.1/src/appl/jasper.c jp2/src/appl/jasper.c
+--- jasper-1.900.1/src/appl/jasper.c	2007-01-19 15:43:08.000000000 +0000
++++ jp2/src/appl/jasper.c	2015-11-28 15:06:24.530829787 +0000
 @@ -447,12 +447,12 @@
  
  int addopt(char *optstr, int maxlen, char *s)
@@ -19,9 +19,9 @@ diff -r -u jasper-1.900.1/src/appl/jasper.c jp2/src/appl/jasper.c
  		return 1;
  	}
  	if (n > 0) {
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_debug.c jp2/src/libjasper/base/jas_debug.c
---- jasper-1.900.1/src/libjasper/base/jas_debug.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_debug.c	2016-08-21 13:05:24.667829189 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_debug.c jp2/src/libjasper/base/jas_debug.c
+--- jasper-1.900.1/src/libjasper/base/jas_debug.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_debug.c	2017-05-21 15:15:14.687108854 +0000
 @@ -125,7 +125,7 @@
  	uchar *dp;
  	dp = data;
@@ -31,9 +31,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_debug.c jp2/src/libjasper/base/
  		for (j = 0; j < 16; ++j) {
  			if (i + j < len) {
  				fprintf(out, " %02x", dp[i + j]);
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_icc.c jp2/src/libjasper/base/jas_icc.c
---- jasper-1.900.1/src/libjasper/base/jas_icc.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_icc.c	2015-09-19 17:09:46.455169737 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_icc.c jp2/src/libjasper/base/jas_icc.c
+--- jasper-1.900.1/src/libjasper/base/jas_icc.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_icc.c	2015-11-28 15:06:24.544575571 +0000
 @@ -1112,7 +1112,7 @@
  	txtdesc->maclen = c;
  	if (jas_stream_read(in, txtdesc->macdata, 67) != 67)
@@ -61,9 +61,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_icc.c jp2/src/libjasper/base/ja
  }
  
  static int jas_icctxt_output(jas_iccattrval_t *attrval, jas_stream_t *out)
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_init.c jp2/src/libjasper/base/jas_init.c
---- jasper-1.900.1/src/libjasper/base/jas_init.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_init.c	2011-05-28 12:13:25.871757347 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_init.c jp2/src/libjasper/base/jas_init.c
+--- jasper-1.900.1/src/libjasper/base/jas_init.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_init.c	2014-08-12 20:34:17.814875631 +0000
 @@ -151,7 +151,7 @@
  	at least one memory allocation is performed.  This is desirable
  	as it ensures that the JasPer exit handler is called before the
@@ -73,9 +73,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_init.c jp2/src/libjasper/base/j
  
  	return 0;
  }
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_seq.c jp2/src/libjasper/base/jas_seq.c
---- jasper-1.900.1/src/libjasper/base/jas_seq.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_seq.c	2015-09-19 17:09:46.455902366 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_seq.c jp2/src/libjasper/base/jas_seq.c
+--- jasper-1.900.1/src/libjasper/base/jas_seq.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_seq.c	2015-11-28 15:06:24.545414574 +0000
 @@ -421,7 +421,7 @@
  	jas_seqent_t x;
  	char buf[MAXLINELEN + 1];
@@ -85,9 +85,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_seq.c jp2/src/libjasper/base/ja
  
  	fprintf(out, "%d %d\n", jas_seq2d_xstart(matrix),
  	  jas_seq2d_ystart(matrix));
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_stream.c jp2/src/libjasper/base/jas_stream.c
---- jasper-1.900.1/src/libjasper/base/jas_stream.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_stream.c	2015-09-19 17:09:46.456788910 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_stream.c jp2/src/libjasper/base/jas_stream.c
+--- jasper-1.900.1/src/libjasper/base/jas_stream.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_stream.c	2015-11-28 15:06:24.546340998 +0000
 @@ -1125,14 +1125,14 @@
  {
  	FILE *fp;
@@ -105,9 +105,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_stream.c jp2/src/libjasper/base
  }
  
  static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)
-diff -r -u jasper-1.900.1/src/libjasper/base/jas_string.c jp2/src/libjasper/base/jas_string.c
---- jasper-1.900.1/src/libjasper/base/jas_string.c	2007-01-19 15:43:05.000000000 -0600
-+++ jp2/src/libjasper/base/jas_string.c	2015-09-19 17:09:46.457369156 -0500
+diff -u -r jasper-1.900.1/src/libjasper/base/jas_string.c jp2/src/libjasper/base/jas_string.c
+--- jasper-1.900.1/src/libjasper/base/jas_string.c	2007-01-19 15:43:05.000000000 +0000
++++ jp2/src/libjasper/base/jas_string.c	2015-11-28 15:06:24.546948183 +0000
 @@ -85,7 +85,7 @@
  
  char *jas_strdup(const char *s)
@@ -117,22 +117,9 @@ diff -r -u jasper-1.900.1/src/libjasper/base/jas_string.c jp2/src/libjasper/base
  	char *p;
  	n = strlen(s) + 1;
  	if (!(p = jas_malloc(n * sizeof(char)))) {
-diff -r -u jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h jp2/src/libjasper/include/jasper/jas_config2.h
---- jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h	2007-01-19 15:43:04.000000000 -0600
-+++ jp2/src/libjasper/include/jasper/jas_config2.h	2011-05-28 12:13:25.885523923 -0500
-@@ -74,7 +74,9 @@
- #define	ushort		unsigned short
- #define	uint		unsigned int
- #define	ulong		unsigned long
-+#undef longlong
- #define	longlong	long long
-+#undef ulonglong
- #define	ulonglong	unsigned long long
- /*#define	ssize_t		int*/
- 
-diff -r -u jasper-1.900.1/src/libjasper/include/jasper/jas_config.h jp2/src/libjasper/include/jasper/jas_config.h
---- jasper-1.900.1/src/libjasper/include/jasper/jas_config.h	2007-01-19 15:54:59.000000000 -0600
-+++ jp2/src/libjasper/include/jasper/jas_config.h	2014-03-23 17:30:39.159094581 -0500
+diff -u -r jasper-1.900.1/src/libjasper/include/jasper/jas_config.h jp2/src/libjasper/include/jasper/jas_config.h
+--- jasper-1.900.1/src/libjasper/include/jasper/jas_config.h	2007-01-19 15:54:59.000000000 +0000
++++ jp2/src/libjasper/include/jasper/jas_config.h	2014-08-12 20:34:17.853533339 +0000
 @@ -14,6 +14,15 @@
  /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
    unless the JasPer software is being built under Microsoft Windows
@@ -149,9 +136,22 @@ diff -r -u jasper-1.900.1/src/libjasper/include/jasper/jas_config.h jp2/src/libj
  #if !defined(JAS_WIN_MSVC_BUILD)
  /* A configure-based build is being used. */
  
-diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_enc.c jp2/src/libjasper/jpc/jpc_enc.c
---- jasper-1.900.1/src/libjasper/jpc/jpc_enc.c	2007-01-19 15:43:07.000000000 -0600
-+++ jp2/src/libjasper/jpc/jpc_enc.c	2015-09-19 17:09:46.458932474 -0500
+diff -u -r jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h jp2/src/libjasper/include/jasper/jas_config2.h
+--- jasper-1.900.1/src/libjasper/include/jasper/jas_config2.h	2007-01-19 15:43:04.000000000 +0000
++++ jp2/src/libjasper/include/jasper/jas_config2.h	2014-08-12 20:34:17.856506779 +0000
+@@ -74,7 +74,9 @@
+ #define	ushort		unsigned short
+ #define	uint		unsigned int
+ #define	ulong		unsigned long
++#undef longlong
+ #define	longlong	long long
++#undef ulonglong
+ #define	ulonglong	unsigned long long
+ /*#define	ssize_t		int*/
+ 
+diff -u -r jasper-1.900.1/src/libjasper/jpc/jpc_enc.c jp2/src/libjasper/jpc/jpc_enc.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_enc.c	2007-01-19 15:43:07.000000000 +0000
++++ jp2/src/libjasper/jpc/jpc_enc.c	2015-11-28 15:06:24.548761963 +0000
 @@ -960,7 +960,7 @@
  	}
  	sprintf(buf, "Creator: JasPer Version %s", jas_getversion());
@@ -161,9 +161,9 @@ diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_enc.c jp2/src/libjasper/jpc/jpc_
  	com->regid = JPC_COM_LATIN;
  	if (!(com->data = JAS_CAST(uchar *, jas_strdup(buf)))) {
  		abort();
-diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c jp2/src/libjasper/jpc/jpc_mqdec.c
---- jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c	2007-01-19 15:43:07.000000000 -0600
-+++ jp2/src/libjasper/jpc/jpc_mqdec.c	2016-08-21 13:05:24.668935963 -0500
+diff -u -r jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c jp2/src/libjasper/jpc/jpc_mqdec.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c	2007-01-19 15:43:07.000000000 +0000
++++ jp2/src/libjasper/jpc/jpc_mqdec.c	2017-05-21 15:15:14.688100920 +0000
 @@ -300,7 +300,7 @@
  	fprintf(out, "MQDEC A = %08lx, C = %08lx, CT=%08lx, ",
  	  (unsigned long) mqdec->areg, (unsigned long) mqdec->creg,
@@ -175,9 +175,9 @@ diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_mqdec.c jp2/src/libjasper/jpc/jp
 +	fprintf(out, "IND %d, MPS %d, QEVAL %x\n", (int) (*mqdec->curctx -
 +	  jpc_mqstates), (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
  }
-diff -r -u jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c jp2/src/libjasper/jpc/jpc_mqenc.c
---- jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c	2007-01-19 15:43:07.000000000 -0600
-+++ jp2/src/libjasper/jpc/jpc_mqenc.c	2016-08-21 13:05:24.669741641 -0500
+diff -u -r jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c jp2/src/libjasper/jpc/jpc_mqenc.c
+--- jasper-1.900.1/src/libjasper/jpc/jpc_mqenc.c	2007-01-19 15:43:07.000000000 +0000
++++ jp2/src/libjasper/jpc/jpc_mqenc.c	2017-05-21 15:15:14.688816264 +0000
 @@ -386,7 +386,7 @@
  	fprintf(out, "AREG = %08x, CREG = %08x, CTREG = %d\n",
  	  mqenc->areg, mqenc->creg, mqenc->ctreg);

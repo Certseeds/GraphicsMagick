@@ -473,7 +473,7 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #  define SupportMagickModules
 #elif !defined(__MINGW32__) && !defined(__MINGW64__)
 #  if defined(MSWINDOWS) && defined(_DLL)
-     define SupportMagickModules
+#    define SupportMagickModules
 #  endif
 #endif
 
