@@ -1,6 +1,6 @@
 2019-12-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
-        *magick\nt_base.c Fix user only installation of Ghostscript.
 
+	* magick/nt_base.c Fix user only installation of Ghostscript.
 
 2019-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
