@@ -1,3 +1,17 @@
+2019-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfo): Using the compiled-in
+	defaults, always log to stderr by default, even under Microsoft
+	Windows.  The logging output may then be diverted to
+	'win32eventlog' as soon as a log.mgk file is loaded if that is
+	desired.  This should not be much of a problem because loading a
+	log.mgk file is the first thing that the library attempts to do.
+	This change is made due to users and developers being baffled at
+	not seeing any log output due to the log output going to the (very
+	unfriendly) Windows application log.
+
+	* webp: libwebp is updated to the 1.0.3 release.
+
 2019-12-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* magick/nt_base.c Fix user only installation of Ghostscript.

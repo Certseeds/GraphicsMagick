@@ -311,11 +311,7 @@ InitializeLogInfo(void)
   log_info->generation=0;
   log_info->count=0;
   log_info->events=NoEventsMask;
-#if defined(MSWINDOWS)
-  log_info->output_type=Win32EventlogOutput;
-#else
   log_info->output_type=StderrOutput;
-#endif
   log_info->method=0;
   log_info->log_configured=MagickFalse;
 
