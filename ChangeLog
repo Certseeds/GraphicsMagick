@@ -1,3 +1,8 @@
+2019-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/nt_base.h ("C"): Assume that float versions of functions
+	became available in Visual Studio 2008.
+
 2019-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (InitializeLogInfo): Using the compiled-in

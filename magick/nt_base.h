@@ -122,7 +122,8 @@ extern "C" {
 
 // We do not yet know what CRT versions have these float functions or if
 // special-handling (e.g. mapping to underscore version) is needed.
-#if defined(_VISUALC_)
+// It is known that Visual Studio 2003 does not offer these functions.
+#if (defined(_MSC_VER) && _MSC_VER >= 1500)
 
 /* Define to 1 if you have the `cosf' function. */
 #define HAVE_COSF 1
@@ -170,17 +171,19 @@ extern "C" {
   Visual C++ 7.0 supports GlobalMemoryStatusEx but MinGW headers and
   Visual C++ 6.0 lack support for it.
 
-  _MSC_VER values:
+  _MSC_VER values (see https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B):
     1100 MSVC 5.0
     1200 MSVC 6.0
     1300 MSVC 7.0 Visual C++ .NET 2002
-    1310 Visual c++ .NET 2003
+    1310 Visual C++ .NET 2003
     1400 Visual C++ 2005
     1500 Visual C++ 2008
     1600 Visual C++ 2010
     1700 Visual C++ 2012
     1800 Visual C++ 2013
     1900 Visual C++ 2015
+    1910 Visual C++ 2017
+    1920 Visual C++ 2019
 
   Should look at __CLR_VER ("Defines the version of the common language
   runtime used when the application was compiled.") as well.
