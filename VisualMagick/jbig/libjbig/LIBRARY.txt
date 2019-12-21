@@ -1,1 +1,6 @@
-This is a placeholder to make sure that this directory exists.
+#ECF - this file contains additional configuration info.
+DEFINE = _JBIGLIB_
+DEFINE = _CRT_SECURE_NO_WARNINGS
+EXCLUDE = tstcodec.c
+EXCLUDE = tstcodec85.c
+SOURCE = jbig.rc

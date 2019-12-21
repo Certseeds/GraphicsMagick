@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-2014 GraphicsMagick Group
+// Copyright (C) 2002-2019 GraphicsMagick Group
 //
 // This program is covered by multiple licenses, which are described in
 // Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -104,7 +104,7 @@ string get_full_path(string root,string part)
       string combined;
 
       combined = root + part;
-    
+
       if( _fullpath( full, combined.c_str(), _MAX_PATH ) != NULL )
         {
 #ifdef _DEBUG
@@ -133,7 +133,7 @@ string get_project_name(int project, int runtime,
   filename += "\\";
   filename += prefix.c_str();
   filename += name.c_str();
-  
+
   switch (project)
     {
     case DLLPROJECT:
@@ -632,7 +632,7 @@ int CConfigureApp::load_environment_file(const char *inputfile, int runtime)
       }
       if ( !inpStream.good() ||
            !process_one_entry( szBuf, nLinesRead, runtime) )
-        return false;      
+        return false;
       nLinesRead++;
     }
   }
@@ -667,9 +667,9 @@ void CConfigureApp::replace_keywords(std::string fileName)
         str += line + "\n";
       }
 
-	/* WEBP is not compatible with Visual Studio 6, undef it.
-           Note: This fix will not impact newer Visual Studio versions. */
-      if(!visualStudio7)
+      /* WEBP is not compatible with Visual Studio 6, undef it.
+         Note: This fix will not impact newer Visual Studio versions. */
+      if (!visualStudio7)
       {
         str += "\n";
         str += "#if defined(_MSC_VER) && (_MSC_VER<=1200)\n";
@@ -1033,6 +1033,8 @@ void CConfigureApp::process_library( const char *root,
   add_includes(includes_list, extra, levels-2);
   extra = "..\\bzlib";
   add_includes(includes_list, extra, levels-2);
+  extra = "..\\jbig\\libjbig";
+  add_includes(includes_list, extra, levels-2);
   extra = "..\\jpeg";
   add_includes(includes_list, extra, levels-2);
   //extra = "..\\tiff\\libtiff";
@@ -1043,7 +1045,7 @@ void CConfigureApp::process_library( const char *root,
   add_includes(includes_list, extra, levels-2);
   extra = "..\\ttf\\include";
   add_includes(includes_list, extra, levels-2);
-  if(visualStudio7)
+  if (visualStudio7)
   {
     extra = "..\\webp\\src";
     add_includes(includes_list, extra, levels-2);
@@ -1133,7 +1135,7 @@ void CConfigureApp::process_library( const char *root,
           workspace->write_project_dependency(project,"CORE_jp2");
           workspace->write_project_dependency(project,"CORE_png");
           workspace->write_project_dependency(project,"CORE_libxml");
-          if(visualStudio7)
+          if (visualStudio7)
             workspace->write_project_dependency(project,"CORE_webp");
           workspace->write_project_dependency(project,"CORE_tiff");
           workspace->write_project_dependency(project,"CORE_wmf");
@@ -1187,14 +1189,17 @@ void CConfigureApp::process_library( const char *root,
       // PNG module depends on zlib
       if (name.compare("png") == 0)
         {
-	      workspace->write_project_dependency(project,"CORE_lcms");
+          workspace->write_project_dependency(project,"CORE_lcms");
           workspace->write_project_dependency(project,"CORE_zlib");
         }
-      // TIFF module depends on jbig, jpeg, and zlib
+      // TIFF module depends on jbig, jpeg, webp, and zlib
       if (name.compare("tiff") == 0)
         {
-	  workspace->write_project_dependency(project,"CORE_jbig");
+          // Note that if JBIG adds GPL-copyleft to libtiff if enabled!
+          workspace->write_project_dependency(project,"CORE_jbig");
           workspace->write_project_dependency(project,"CORE_jpeg");
+          if (visualStudio7)
+            workspace->write_project_dependency(project,"CORE_webp");
           workspace->write_project_dependency(project,"CORE_zlib");
         }
       // Wand library depends on core magick library
@@ -1243,7 +1248,7 @@ void CConfigureApp::process_module( const char *root,
     return;
 
   if (project_type == MODULE)
-    prefix = MODULE_PREFIX;    
+    prefix = MODULE_PREFIX;
 
   lib_release_list.clear();
   lib_debug_list.clear();
@@ -1642,10 +1647,14 @@ void CConfigureApp::process_3rd_party_library( const char *root,
                     workspace->write_project_dependency(project,"CORE_zlib");
                   }
 #endif
+                // TIFF module depends on jbig, jpeg, webp, and zlib
                 if (name.compare("tiff") == 0)
                   {
-		    workspace->write_project_dependency(project,"CORE_jbig");
+                    // Note that if JBIG adds GPL-copyleft to libtiff if enabled!
+                    workspace->write_project_dependency(project,"CORE_jbig");
                     workspace->write_project_dependency(project,"CORE_jpeg");
+                    if (visualStudio7)
+                      workspace->write_project_dependency(project,"CORE_webp");
                     workspace->write_project_dependency(project,"CORE_zlib");
                   }
                 workspace->write_end_project(project);
@@ -1656,7 +1665,7 @@ void CConfigureApp::process_3rd_party_library( const char *root,
                 workspace->write_begin_project(project, pname.c_str(), projectname.c_str());
                 workspace->write_end_project(project);
                 break;
-              }  
+              }
             }
         }
     }
@@ -1882,7 +1891,7 @@ void GetFileTime(LPFILETIME lpft)
 
   GetLocalTime(&st);
 
-  if (st.wMinute > 30)  
+  if (st.wMinute > 30)
     st.wMinute = 30;
   else
     st.wMinute =  0;
@@ -2153,7 +2162,7 @@ public:
     nCurrent = 1;
     nTotal = 10;
     nPercent = 0;
-	 canPump = TRUE;
+    canPump = TRUE;
   }
 
   void Pumpit()
@@ -2462,9 +2471,9 @@ BOOL CRegistry::EnumerateKeys( const DWORD subkey_index,
   ::ZeroMemory( subkey_name_string, sizeof( subkey_name_string ) );
   ::ZeroMemory( class_name_string,  sizeof( class_name_string  ) );
 
-  m_ErrorCode = ::RegEnumKeyEx( m_KeyHandle, 
-                                subkey_index, 
-                                subkey_name_string, 
+  m_ErrorCode = ::RegEnumKeyEx( m_KeyHandle,
+                                subkey_index,
+                                subkey_name_string,
                                 &size_of_subkey_name_string,
                                 NULL,
                                 class_name_string,
@@ -2484,8 +2493,8 @@ BOOL CRegistry::EnumerateKeys( const DWORD subkey_index,
     }
 }
 
-BOOL CRegistry::EnumerateValues( const DWORD    value_index, 
-                                 string&        name_of_value, 
+BOOL CRegistry::EnumerateValues( const DWORD    value_index,
+                                 string&        name_of_value,
                                  KeyValueTypes& type_code,
                                  LPBYTE         data_buffer,
                                  DWORD&         size_of_data_buffer )
@@ -2694,7 +2703,7 @@ BOOL CRegistry::GetStringArrayValue( LPCTSTR name_of_value, CStringArray& return
   else
     return_value = FALSE;
 
-  delete [] memory_buffer;  
+  delete [] memory_buffer;
   return( return_value );
 }
 
@@ -2778,7 +2787,7 @@ BOOL CRegistry::QueryInfo( void )
   TCHAR class_name[ 2048 ];
 
   ::ZeroMemory( class_name, sizeof( class_name ) );
-  DWORD size_of_class_name = DIMENSION_OF( class_name ) - 1; 
+  DWORD size_of_class_name = DIMENSION_OF( class_name ) - 1;
   m_ErrorCode = ::RegQueryInfoKey( m_KeyHandle,
                                    class_name,
                                    &size_of_class_name,
@@ -2803,9 +2812,9 @@ BOOL CRegistry::QueryInfo( void )
     }
 }
 
-BOOL CRegistry::QueryValue( LPCTSTR        name_of_value, 
-                            KeyValueTypes& value_type, 
-                            LPBYTE         address_of_buffer, 
+BOOL CRegistry::QueryValue( LPCTSTR        name_of_value,
+                            KeyValueTypes& value_type,
+                            LPBYTE         address_of_buffer,
                             DWORD&         size_of_buffer )
 {
   /*
@@ -3098,7 +3107,7 @@ BOOL CConfigureApp::InitInstance()
       lib_shared_list.push_back("wsock32.lib");
       lib_shared_list.push_back("advapi32.lib");
       //lib_shared_list.push_back("scrnsave.lib");
-	  
+
 
 
       ConfigureProject *dummy_project;
@@ -3302,7 +3311,7 @@ ConfigureProject *CConfigureApp::write_project_lib( bool dll,
   if (dll && isCOMproject)
     {
       string trigger, target;
-    
+
       trigger = get_full_path(root + "\\",release_path);
       trigger += libname;
       trigger += "\\regsvr32.trg";
@@ -3345,12 +3354,12 @@ ConfigureProject *CConfigureApp::write_project_lib( bool dll,
                            bNeedsRelo,lib_shared_list,lib_debug_list,
                            get_full_path(root + "\\",lib_path).c_str(),
                            dll?get_full_path(root + "\\",bin_path).c_str():get_full_path(root + "\\",lib_path).c_str(),
-                           runtime, project_type, dll?DLLPROJECT:LIBPROJECT, 1);  
+                           runtime, project_type, dll?DLLPROJECT:LIBPROJECT, 1);
 
   if (dll && isCOMproject)
     {
       string trigger, target;
-    
+
       trigger = get_full_path(root + "\\",debug_path);
       trigger += libname;
       trigger += "\\regsvr32.trg";
@@ -3581,31 +3590,31 @@ ConfigureProject *CConfigureApp::write_project_exe(
 
    /* Nasty fix - MSVC cannot process correctly absolute paths - help it a little bit. */
    unsigned int LibCount = lib_shared_list.size();
-   if(lib_loc.length()>=3)
+   if (lib_loc.length()>=3)
    {
-	 if(isalpha(lib_loc[0]) && lib_loc[1]==':' && lib_loc[2]=='\\')
-	 {
-	   lib_shared_list.push_back("CORE_RL_zlib_.lib");
-	   lib_shared_list.push_back("CORE_RL_bzlib_.lib");
-	   lib_shared_list.push_back("CORE_RL_jpeg_.lib");
-           lib_shared_list.push_back("CORE_RL_jp2_.lib");
-	   lib_shared_list.push_back("CORE_RL_png_.lib");
-	   lib_shared_list.push_back("CORE_RL_ttf_.lib");
-	   lib_shared_list.push_back("CORE_RL_jbig_.lib");
-	   lib_shared_list.push_back("CORE_RL_lcms_.lib");
-	   lib_shared_list.push_back("CORE_RL_tiff_.lib");
-	   lib_shared_list.push_back("CORE_RL_wand_.lib");
-	   lib_shared_list.push_back("CORE_RL_xlib_.lib");
-	   lib_shared_list.push_back("CORE_RL_filters_.lib");
-	   lib_shared_list.push_back("CORE_RL_coders_.lib");
-	   lib_shared_list.push_back("CORE_RL_libxml_.lib");
-       if(visualStudio7)
-	     lib_shared_list.push_back("CORE_RL_webp_.lib");
-	   lib_shared_list.push_back("CORE_RL_wmf_.lib");
-	   lib_shared_list.push_back("CORE_RL_magick_.lib");
-	 }
+     if (isalpha(lib_loc[0]) && lib_loc[1]==':' && lib_loc[2]=='\\')
+       {
+         lib_shared_list.push_back("CORE_RL_zlib_.lib");
+         lib_shared_list.push_back("CORE_RL_bzlib_.lib");
+         lib_shared_list.push_back("CORE_RL_jpeg_.lib");
+         lib_shared_list.push_back("CORE_RL_jp2_.lib");
+         lib_shared_list.push_back("CORE_RL_png_.lib");
+         lib_shared_list.push_back("CORE_RL_ttf_.lib");
+         lib_shared_list.push_back("CORE_RL_jbig_.lib");
+         lib_shared_list.push_back("CORE_RL_lcms_.lib");
+         lib_shared_list.push_back("CORE_RL_tiff_.lib");
+         lib_shared_list.push_back("CORE_RL_wand_.lib");
+         lib_shared_list.push_back("CORE_RL_xlib_.lib");
+         lib_shared_list.push_back("CORE_RL_filters_.lib");
+         lib_shared_list.push_back("CORE_RL_coders_.lib");
+         lib_shared_list.push_back("CORE_RL_libxml_.lib");
+         if (visualStudio7)
+           lib_shared_list.push_back("CORE_RL_webp_.lib");
+         lib_shared_list.push_back("CORE_RL_wmf_.lib");
+         lib_shared_list.push_back("CORE_RL_magick_.lib");
+       }
    }
-   /* End of fix. */ 
+   /* End of fix. */
 
   project->write_link_tool(root,extra_path,module_definition_file,outname,bNeedsMagickpp,
                            false,lib_shared_list,lib_release_list,
@@ -3637,7 +3646,7 @@ ConfigureProject *CConfigureApp::write_project_exe(
   project->write_cpp_compiler_tool(root,extra_path,
                                    includes_list,standard_includes_list,defines_list,
                                    runtime, project_type, EXEPROJECT, 1);
-  
+
   project->write_midl_compiler_tool(root,extra_path,
                                     outname,get_full_path(root + "\\",lib_path).c_str(),
                                     runtime, project_type, EXEPROJECT, 1, false);
@@ -3645,32 +3654,32 @@ ConfigureProject *CConfigureApp::write_project_exe(
   project->write_res_compiler_tool(root,extra_path,
                                    runtime, project_type, EXEPROJECT, 1);
 
-  /* Nasty fix - MSVC cannot process correctly absolute paths - help it a little bit. */   
-   if(lib_loc.length()>=3)
-   {
-	 if(isalpha(lib_loc[0]) && lib_loc[1]==':' && lib_loc[2]=='\\')
-	 {
-	   lib_shared_list.push_back("CORE_DB_zlib_.lib");
-	   lib_shared_list.push_back("CORE_DB_bzlib_.lib");
-	   lib_shared_list.push_back("CORE_DB_jpeg_.lib");
-           lib_shared_list.push_back("CORE_DB_jp2_.lib");
-	   lib_shared_list.push_back("CORE_DB_png_.lib");
-	   lib_shared_list.push_back("CORE_DB_ttf_.lib");
-	   lib_shared_list.push_back("CORE_DB_jbig_.lib");
-	   lib_shared_list.push_back("CORE_DB_lcms_.lib");
-	   lib_shared_list.push_back("CORE_DB_tiff_.lib");
-	   lib_shared_list.push_back("CORE_DB_wand_.lib");
-	   lib_shared_list.push_back("CORE_DB_xlib_.lib");
-	   lib_shared_list.push_back("CORE_DB_filters_.lib");
-	   lib_shared_list.push_back("CORE_DB_coders_.lib");
-	   lib_shared_list.push_back("CORE_DB_libxml_.lib");
-	   lib_shared_list.push_back("CORE_DB_wmf_.lib");
-       if(visualStudio7)
-	     lib_shared_list.push_back("CORE_DB_webp_.lib");
-	   lib_shared_list.push_back("CORE_DB_magick_.lib");
-	 }
-   }
-  /* End of fix. */ 
+  /* Nasty fix - MSVC cannot process correctly absolute paths - help it a little bit. */
+  if (lib_loc.length()>=3)
+    {
+      if(isalpha(lib_loc[0]) && lib_loc[1]==':' && lib_loc[2]=='\\')
+        {
+          lib_shared_list.push_back("CORE_DB_zlib_.lib");
+          lib_shared_list.push_back("CORE_DB_bzlib_.lib");
+          lib_shared_list.push_back("CORE_DB_jpeg_.lib");
+          lib_shared_list.push_back("CORE_DB_jp2_.lib");
+          lib_shared_list.push_back("CORE_DB_png_.lib");
+          lib_shared_list.push_back("CORE_DB_ttf_.lib");
+          lib_shared_list.push_back("CORE_DB_jbig_.lib");
+          lib_shared_list.push_back("CORE_DB_lcms_.lib");
+          lib_shared_list.push_back("CORE_DB_tiff_.lib");
+          lib_shared_list.push_back("CORE_DB_wand_.lib");
+          lib_shared_list.push_back("CORE_DB_xlib_.lib");
+          lib_shared_list.push_back("CORE_DB_filters_.lib");
+          lib_shared_list.push_back("CORE_DB_coders_.lib");
+          lib_shared_list.push_back("CORE_DB_libxml_.lib");
+          lib_shared_list.push_back("CORE_DB_wmf_.lib");
+          if(visualStudio7)
+            lib_shared_list.push_back("CORE_DB_webp_.lib");
+          lib_shared_list.push_back("CORE_DB_magick_.lib");
+        }
+    }
+  /* End of fix. */
 
   project->write_link_tool(root,extra_path,module_definition_file,outname,bNeedsMagickpp,
                            false,lib_shared_list,lib_debug_list,
@@ -3855,10 +3864,10 @@ ConfigureProject::ConfigureProject()
 {
   UuidCreate((UUID *)&m_guid);
   wsprintf(
-           m_GuidText, 
+           m_GuidText,
            "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-           m_guid.Data1, 
-           m_guid.Data2, 
+           m_guid.Data1,
+           m_guid.Data2,
            m_guid.Data3,
            m_guid.Data4[0], m_guid.Data4[1],
            m_guid.Data4[2], m_guid.Data4[3], m_guid.Data4[4], m_guid.Data4[5], m_guid.Data4[6], m_guid.Data4[7]
@@ -3869,12 +3878,12 @@ ConfigureWorkspace::ConfigureWorkspace()
 {
   UuidCreate((UUID *)&m_guid);
   wsprintf(
-           m_GuidText, 
+           m_GuidText,
            //"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
            //"%04X-%02X-%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
            "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942",
-           m_guid.Data1, 
-           m_guid.Data2, 
+           m_guid.Data1,
+           m_guid.Data2,
            m_guid.Data3,
            m_guid.Data4[0], m_guid.Data4[1],
            m_guid.Data4[2], m_guid.Data4[3], m_guid.Data4[4], m_guid.Data4[5], m_guid.Data4[6], m_guid.Data4[7]
@@ -4113,7 +4122,7 @@ void ConfigureVS6Project::write_midl_compiler_tool( string &root, string &extra_
           if ((type==DLLPROJECT) && isCOMproject)
             {
               string sources;
-            
+
               sources = "..\\";
               sources += extra_path;
               sources += root;
@@ -4131,7 +4140,7 @@ void ConfigureVS6Project::write_midl_compiler_tool( string &root, string &extra_
           if ((type==DLLPROJECT) && isCOMproject)
             {
               string sources;
-            
+
               sources = "..\\";
               sources += extra_path;
               sources += root;
@@ -4147,7 +4156,7 @@ void ConfigureVS6Project::write_midl_compiler_tool( string &root, string &extra_
           break;
         }
       // --------------------------------------------------------------------------------------------------------
-      break;    
+      break;
 
     case EXEPROJECT:
       // --------------------------------------------------------------------------------------------------------
@@ -4197,7 +4206,7 @@ void ConfigureVS6Project::write_custom_tool( const char *trigger, const char *ta
           break;
         }
       // --------------------------------------------------------------------------------------------------------
-      break;    
+      break;
 
     case LIBPROJECT:
     case EXEPROJECT:
@@ -4654,12 +4663,12 @@ void ConfigureVS7Workspace::write_end()
         {
           ConfigureProject *dependent_project = find_project((*it));
 #ifdef _DEBUG
-          debuglog << "write_end:" << project->name.c_str() << ", " << 
+          debuglog << "write_end:" << project->name.c_str() << ", " <<
             ((dependent_project==NULL)?" *NONE* ":dependent_project->name.c_str()) << endl;
 #endif
           if (dependent_project)
             {
-              m_stream << "\t\t{" 
+              m_stream << "\t\t{"
                        << project->m_GuidText
                        << "}." << counter++ << " = {"
                        << dependent_project->m_GuidText
@@ -4823,7 +4832,7 @@ void ConfigureVS7Project::write_midl_compiler_tool( string &root,
       if (isCOMproject)
         {
           string sources;
-        
+
           sources = "..\\";
           sources += extra_path;
           sources += root;
@@ -4847,7 +4856,7 @@ void ConfigureVS7Project::write_midl_compiler_tool( string &root,
           m_stream << "      <Tool" << endl;
           m_stream << "        Name=\"VCMIDLTool\"/>" << endl;
         }
-      break;    
+      break;
 
     case LIBPROJECT:
     case EXEPROJECT:
@@ -4883,7 +4892,7 @@ void ConfigureVS7Project::write_custom_tool( const char *trigger,
           m_stream << "      <Tool" << endl;
           m_stream << "        Name=\"VCMIDLTool\"/>" << endl;
         }
-      break;    
+      break;
 
     case LIBPROJECT:
     case EXEPROJECT:
@@ -4976,12 +4985,12 @@ void ConfigureVS7Project::write_cpp_compiler_tool_options( int type,
   //m_stream << "        ShowIncludes=\"TRUE\"" << endl;
   m_stream << "        EnableFunctionLevelLinking=\"TRUE\"" << endl; // /Gy
   m_stream << "        WarningLevel=\"3\"" << endl; // /W3
-  // pchNone 0,pchCreateUsingSpecific 1,pchGenerateAuto 2,pchUseUsingSpecific 3 
+  // pchNone 0,pchCreateUsingSpecific 1,pchGenerateAuto 2,pchUseUsingSpecific 3
   m_stream << "        UsePrecompiledHeader=\"0\"" << endl;
   m_stream << "        SuppressStartupBanner=\"TRUE\"" << endl; // /nologo
-  // compileAsDefault 0,compileAsC 1,compileAsCPlusPlus 2 
+  // compileAsDefault 0,compileAsC 1,compileAsCPlusPlus 2
   m_stream << "        CompileAs=\"0\"" << endl; // C or C++ compile
-  // expandDisable 0,expandOnlyInline 1,expandAnySuitable 2 
+  // expandDisable 0,expandOnlyInline 1,expandAnySuitable 2
   m_stream << "        InlineFunctionExpansion=\"2\"" << endl;
   if (openMP)
     m_stream << "        OpenMP=\"TRUE\"" << endl;
@@ -4989,25 +4998,25 @@ void ConfigureVS7Project::write_cpp_compiler_tool_options( int type,
     {
     case 0:
 #ifndef SYMBOLS_ALWAYS
-      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4 
+      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4
       m_stream << "        DebugInformationFormat=\"0\"" << endl; // /Z7,/Zd,/Zi,/ZI
 #else
-      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4 
+      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4
       m_stream << "        DebugInformationFormat=\"3\"" << endl; // /Z7,/Zd,/Zi,/ZI
 #endif
-      // runtimeBasicCheckNone 0,runtimeCheckStackFrame 1,runtimeCheckUninitVariables 2,runtimeBasicCheckAll 3 
+      // runtimeBasicCheckNone 0,runtimeCheckStackFrame 1,runtimeCheckUninitVariables 2,runtimeBasicCheckAll 3
       m_stream << "        BasicRuntimeChecks=\"0\"" << endl;
       m_stream << "        OmitFramePointers=\"TRUE\"" << endl; // /nologo
-      // optimizeDisabled 0,optimizeMinSpace 1,optimizeMaxSpeed 2,optimizeFull 3,optimizeCustom 4 
+      // optimizeDisabled 0,optimizeMinSpace 1,optimizeMaxSpeed 2,optimizeFull 3,optimizeCustom 4
       m_stream << "        Optimization=\"3\"" << endl;
       break;
     case 1:
-      // runtimeBasicCheckNone 0,runtimeCheckStackFrame 1,runtimeCheckUninitVariables 2,runtimeBasicCheckAll 3 
+      // runtimeBasicCheckNone 0,runtimeCheckStackFrame 1,runtimeCheckUninitVariables 2,runtimeBasicCheckAll 3
       m_stream << "        BasicRuntimeChecks=\"3\"" << endl;
       m_stream << "        OmitFramePointers=\"FALSE\"" << endl; // /nologo
-      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4 
+      // debugDisabled 0,debugOldStyleInfo 1,debugLineInfoOnly 2,debugEnabled 3,debugEditAndContinue 4
       m_stream << "        DebugInformationFormat=\"3\"" << endl; // /Z7,/Zd,/Zi,/ZI
-      // optimizeDisabled 0,optimizeMinSpace 1,optimizeMaxSpeed 2,optimizeFull 3,optimizeCustom 4 
+      // optimizeDisabled 0,optimizeMinSpace 1,optimizeMaxSpeed 2,optimizeFull 3,optimizeCustom 4
       m_stream << "        Optimization=\"0\"" << endl;
       break;
     }
@@ -5271,7 +5280,7 @@ void ConfigureVS7Project::write_link_tool_options( bool bNeedsRelo,
                                                    const string &defs_path)
 {
   m_stream << "        SuppressStartupBanner=\"TRUE\"" << endl; // /nologo
-  // linkIncrementalDefault 0, linkIncrementalNo 1, linkIncrementalYes 2 
+  // linkIncrementalDefault 0, linkIncrementalNo 1, linkIncrementalYes 2
   m_stream << "        LinkIncremental=\"1\"" << endl;
   m_stream << "        TargetMachine=\"" << (build64Bit ? "17" : "1") << "\"" << endl;
 

@@ -1,3 +1,17 @@
+2019-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tiff/libtiff/tiffconf.h: Add standard/common libtiff 'SUPPORT'
+	options which are used in full-fledged Autoconf/Cmake libtiff
+	builds but were missing from the Visual C template file.  In
+	particular, WebP is now supported and JBIG is somewhat supported.
+
+	* VisualMagick/jbig/libjbig/LIBRARY.txt (EXCLUDE): Remove
+	tstcodec85.c from JBIG library build.
+
+	* VisualMagick/configure/configure.cpp: Add JBIG library to
+	include path when building libraries.  Add WebP as a dependency
+	when building libtiff.
+
 2019-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/nt_base.h ("C"): Assume that float versions of functions

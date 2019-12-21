@@ -125,6 +125,7 @@ www/Magick\+\+/ChangeLog.rst
 ^VisualMagick/.+\.dep
 ^VisualMagick/.+\.exp
 ^VisualMagick/.+\.idb
+^VisualMagick/.+\.ilk
 ^VisualMagick/.+\.intermediate\.manifest
 ^VisualMagick/.+\.ncb
 ^VisualMagick/.+\.pch

@@ -84,7 +84,7 @@
 #undef CHUNKY_STRIP_READ_SUPPORT
 
 /* Support JBIG compression (requires JBIG-KIT library) */
-/* #undef JBIG_SUPPORT */
+#define JBIG_SUPPORT 1
 
 /* Support JPEG compression (requires IJG JPEG library) */
 #define JPEG_SUPPORT 1
@@ -99,7 +99,7 @@
 #define LZW_SUPPORT 1
 
 /* Support Microsoft Document Imaging format */
-#undef MDI_SUPPORT
+#define MDI_SUPPORT 1
 
 /* Support NeXT 2-bit RLE algorithm */
 #define NEXT_SUPPORT 1
@@ -120,7 +120,7 @@
 #define THUNDER_SUPPORT 1
 
 /* Support webp compression */
-#undef WEBP_SUPPORT
+#define WEBP_SUPPORT 1
 
 /* Support Deflate compression */
 #define ZIP_SUPPORT 1
