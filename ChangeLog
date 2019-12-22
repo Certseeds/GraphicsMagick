@@ -1,5 +1,7 @@
 2019-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update with changes since the last GM release.
+
 	* coders/png.c (png_read_raw_profile): Use size_t type to store
 	profile length and 'nibbles'.  Use safer way to test for profile
 	buffer overflow.
