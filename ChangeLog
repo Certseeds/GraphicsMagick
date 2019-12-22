@@ -3,9 +3,9 @@
 	* coders/png.c (png_read_raw_profile): Use size_t type to store
 	profile length and 'nibbles'.  Use safer way to test for profile
 	buffer overflow.
-	(ReadOnePNGImage): Use size_t type to store 'ping_rowbytes'.
-	Check png_pixels allocation for arithemetic overflow when
-	computing the required allocation size.
+	(ReadOnePNGImage): Use size_t type to store 'ping_rowbytes',
+	'length', and 'row_offset'.  Check png_pixels allocation for
+	arithemetic overflow when computing the required allocation size.
 
 	* coders/tiff.c (WriteNewsProfile): Use size_t type to store
 	profile length.

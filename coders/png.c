@@ -1497,7 +1497,9 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
      ping_trans_alpha;
 
   size_t
-    ping_rowbytes;
+    length,
+    ping_rowbytes,
+    row_offset;
 
   int
     logging,
@@ -1535,10 +1537,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
   register PixelPacket
     *q;
-
-  unsigned long
-    length,
-    row_offset;
 
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
   png_byte unused_chunks[]=
