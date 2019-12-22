@@ -149,7 +149,7 @@ the XPM file header.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
-<li>None</li>
+<li>Visual Studio build supports JBIG and WebP compression in TIFF format.</li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">
@@ -195,6 +195,11 @@ based on a specified magick prefix string is now disabled.  This can
 (and should) be done after theimage has been returned.</li>
 <li>Trace Logging: The compiled-in logging default is always to stderr,
 which may be over-ridden using log.mgk as soon as it is loaded.</li>
+<li>Windows Build: Search registry key HKEY_CURRENT_USER as well as
+HKEY_LOCAL_MACHINE when searching for Ghostscript.  By following the
+procedure documented in SourceForge bug 615 &quot;GhostScript
+installation check&quot;, this allows for local user installations
+without &quot;administrator&quot; privileges.</li>
 </ul>
 </div>
 <div class="section" id="july-20-2019">

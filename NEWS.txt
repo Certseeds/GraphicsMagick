@@ -100,7 +100,7 @@ Bug fixes:
 
 New Features:
 
-* None
+* Visual Studio build supports JBIG and WebP compression in TIFF format.
 
 API Updates:
 
@@ -159,6 +159,12 @@ Behavior Changes:
 
 * Trace Logging: The compiled-in logging default is always to stderr,
   which may be over-ridden using log.mgk as soon as it is loaded.
+
+* Windows Build: Search registry key HKEY_CURRENT_USER as well as
+  HKEY_LOCAL_MACHINE when searching for Ghostscript.  By following the
+  procedure documented in SourceForge bug 615 "GhostScript
+  installation check", this allows for local user installations
+  without "administrator" privileges.
 
 1.3.33 (July 20, 2019)
 ==========================
