@@ -1143,8 +1143,12 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   unsigned char
     *info;
 
-  register long
+  register size_t
     i;
+
+  size_t
+    length,
+    nibbles;
 
   long
     length_s;
@@ -1157,10 +1161,6 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
 
   png_charp
     ep;
-
-  png_uint_32
-    length,
-    nibbles;
 
   static const unsigned char
     unhex[103]={0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,
@@ -1211,7 +1211,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return (MagickFail);
     }
-  length=(png_uint_32) length_s;
+  length=(size_t) length_s;
   while ((sp < ep) && (*sp != ' ' && *sp != '\n'))
     sp++;
   if (sp == ep)
@@ -1223,10 +1223,10 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       return MagickFail;
     }
   /* allocate space */
-  if ((length == 0) || ((magick_uintptr_t) length*2 + sp >= ep))
+  if ((length == 0) || ((magick_uintptr_t) (ep-sp) <= length*2))
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "invalid profile length %u", (unsigned) length);
+                            "invalid profile length %"MAGICK_SIZE_T_F"u", (MAGICK_SIZE_T) length);
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return (MagickFail);
     }
@@ -1240,7 +1240,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   /* copy profile, skipping white space and column 1 "=" signs */
   dp=info;
   nibbles=length*2;
-  for (i=0; i < (long) nibbles; i++)
+  for (i=0; i < nibbles; i++)
     {
       while (*sp < '0' || (*sp > '9' && *sp < 'a') || *sp > 'f')
         {
@@ -1483,6 +1483,22 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   Image
     *image;
 
+  png_info
+    *end_info,
+    *ping_info;
+
+  png_struct
+    *ping;
+
+  png_textp
+    text;
+
+  png_bytep
+     ping_trans_alpha;
+
+  size_t
+    ping_rowbytes;
+
   int
     logging,
     num_text,
@@ -1499,27 +1515,13 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   LongPixelPacket
     transparent_color;
 
-  png_bytep
-     ping_trans_alpha;
-
   png_color_16p
      ping_background,
      ping_trans_color;
 
-  png_info
-    *end_info,
-    *ping_info;
-
-  png_struct
-    *ping;
-
   png_uint_32
-    ping_rowbytes,
     ping_width,
     ping_height;
-
-  png_textp
-    text;
 
   long
     y;
@@ -2174,7 +2176,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
   png_read_update_info(ping,ping_info);
 
-  ping_rowbytes=(png_uint_32) png_get_rowbytes(ping,ping_info);
+  ping_rowbytes=(size_t) png_get_rowbytes(ping,ping_info);
 
   /*
     Initialize image structure.
@@ -2302,8 +2304,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   if (num_passes > 1)
   {
     if (ping_rowbytes < GetMagickResourceLimit(MemoryResource)/image->rows)
-      mng_info->png_pixels=MagickAllocateMemory(unsigned char *,
-               ping_rowbytes*image->rows);
+      mng_info->png_pixels=MagickAllocateArray(unsigned char *,
+                                               ping_rowbytes,image->rows);
     else
       png_error(ping, "png_pixels array exceeds MemoryResource");
   }

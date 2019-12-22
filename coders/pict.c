@@ -2121,13 +2121,21 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
     bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
-  if ((bytes_per_line ==0) || (bytes_per_line > 0x7FFF))
+  if ((bytes_per_line == 0) || (bytes_per_line > 0x7FFF))
     ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
+#if defined(PTRDIFF_MAX)
+  /*
+    Without this limit check we get the following warning from GCC when allocating row_bytes:
+
+    warning: argument 1 value ‘18446744073709551488’ exceeds maximum object size 9223372036854775807 [-Walloc-size-larger-than=]
+  */
+  if (!(row_bytes <= PTRDIFF_MAX))
+    ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+#endif /* if defined(PTRDIFF_MAX) */
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);
   packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount);
-  scanline=MagickAllocateMemory(unsigned char *,row_bytes); /*FIXME: GCC says row_bytes huge*/
-  if ((bytes_per_line == 0) ||
-      (buffer == (unsigned char *) NULL) ||
+  scanline=MagickAllocateMemory(unsigned char *,row_bytes);
+  if ((buffer == (unsigned char *) NULL) ||
       (packed_scanline == (unsigned char *) NULL) ||
       (scanline == (unsigned char *) NULL))
     ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);

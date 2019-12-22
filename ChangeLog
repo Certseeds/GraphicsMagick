@@ -1,3 +1,18 @@
+2019-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (png_read_raw_profile): Use size_t type to store
+	profile length and 'nibbles'.  Use safer way to test for profile
+	buffer overflow.
+	(ReadOnePNGImage): Use size_t type to store 'ping_rowbytes'.
+	Check png_pixels allocation for arithemetic overflow when
+	computing the required allocation size.
+
+	* coders/tiff.c (WriteNewsProfile): Use size_t type to store
+	profile length.
+
+	* coders/pict.c (WritePICTImage): Avoid 'alloc-size-larger-than'
+	warning from GCC when allocating row_bytes.
+
 2019-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tiff/libtiff/tiffconf.h: Add standard/common libtiff 'SUPPORT'

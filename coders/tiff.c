@@ -4149,7 +4149,7 @@ WriteNewsProfile(TIFF *tiff,
   unsigned char
     *profile=0;
 
-  uint32
+  size_t
     length;
 
   assert(tiff != (TIFF *) NULL);
@@ -4177,8 +4177,9 @@ WriteNewsProfile(TIFF *tiff,
 
       /* Tag is type TIFF_LONG so byte length is divided by four */
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "TIFFSetField(tiff=0x%p,tag=%d,length=%lu,data=0x%p)",
-                            tiff,profile_tag,(unsigned long) length/4,profile);
+                            "TIFFSetField(tiff=0x%p,tag=%d,"
+                            "length=%"MAGICK_SIZE_T_F"u,data=0x%p)",
+                            tiff,profile_tag,(MAGICK_SIZE_T) length/4,profile);
       (void) TIFFSetField(tiff,profile_tag,(uint32) length/4,(void *) profile);
     }
   else if (profile_tag == TIFFTAG_PHOTOSHOP)
@@ -4207,8 +4208,9 @@ WriteNewsProfile(TIFF *tiff,
       (void) memcpy(profile,profile_data,profile_length);
 #endif
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "TIFFSetField(tiff=0x%p,tag=%d,length=%lu,data=0x%p)",
-                            tiff,profile_tag,(unsigned long) length,profile);
+                            "TIFFSetField(tiff=0x%p,tag=%d,"
+                            "length=%"MAGICK_SIZE_T_F"u,data=0x%p)",
+                            tiff,profile_tag,(MAGICK_SIZE_T) length,profile);
       (void) TIFFSetField(tiff,profile_tag,(uint32) length,(void *) profile);
     }
 

@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2019-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (png_read_raw_profile): Use size_t type to store
+profile length and 'nibbles'.  Use safer way to test for profile
+buffer overflow.
+(ReadOnePNGImage): Use size_t type to store 'ping_rowbytes'.
+Check png_pixels allocation for arithemetic overflow when
+computing the required allocation size.</li>
+<li>coders/tiff.c (WriteNewsProfile): Use size_t type to store
+profile length.</li>
+<li>coders/pict.c (WritePICTImage): Avoid 'alloc-size-larger-than'
+warning from GCC when allocating row_bytes.</li>
+</ul>
+</blockquote>
 <p>2019-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
