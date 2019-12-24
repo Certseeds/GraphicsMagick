@@ -4,8 +4,6 @@
  *  Run this test sequence after each modification on the JBIG library.
  *
  *  Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/
- *
- *  $Id$
  */
 
 #include <stdio.h>
@@ -64,8 +62,8 @@ static void testbuf_writel(unsigned char *start, size_t len, void *dummy)
     unsigned sum = 0;
     
     for (p = start; p - start < (ptrdiff_t) len; sum = (sum ^ *p++) << 1);
-    printf("  testbuf_writel: %4d bytes, checksum %04x\n",
-	   len, sum & 0xffff);
+    printf("  testbuf_writel: %4lu bytes, checksum %04x\n",
+	   (unsigned long) len, sum & 0xffff);
   }
 #endif
 
@@ -174,7 +172,7 @@ static int test_cycle(unsigned char **orig_image, int width, int height,
   result = jbg_dec_in(&sjd, testbuf, testbuf_len, NULL);
   if (result != JBG_EOK) {
     printf("Decoder complained with return value %d: " FAILED "\n"
-	   "Cause: '%s'\n", result, jbg_strerror(result, JBG_EN));
+	   "Cause: '%s'\n", result, jbg_strerror(result));
     trouble++;
   } else {
     printf("Image comparison: ");
@@ -199,7 +197,7 @@ static int test_cycle(unsigned char **orig_image, int width, int height,
     result = jbg_dec_in(&sjd, testbuf + l, 1, NULL);
     if (l < testbuf_len - 1 && result != JBG_EAGAIN) {
       printf("Decoder complained with return value %d at byte %ld: " FAILED
-	     "\nCause: '%s'\n", result, l, jbg_strerror(result, JBG_EN));
+	     "\nCause: '%s'\n", result, l, jbg_strerror(result));
       trouble++;
       break;
     }
@@ -207,7 +205,7 @@ static int test_cycle(unsigned char **orig_image, int width, int height,
   if (l == testbuf_len) {
     if (result != JBG_EOK) {
       printf("Decoder complained with return value %d at final byte: " FAILED
-	     "\nCause: '%s'\n", result, jbg_strerror(result, JBG_EN));
+	     "\nCause: '%s'\n", result, jbg_strerror(result));
       trouble++;
     } else {
       printf("Image comparison: ");
@@ -314,7 +312,7 @@ int main(int argc, char **argv)
   printf("\nAutomatic JBIG Compatibility Test Suite\n"
 	 "---------------------------------------\n\n"
 	 "JBIG-KIT Version " JBG_VERSION
-	 " -- This test will take a few minutes.\n\n\n");
+	 " -- This test may take a few minutes.\n\n\n");
 
   /* allocate test buffer memory */
   testbuf = (unsigned char *) checkedmalloc(TESTBUF_SIZE);
@@ -358,7 +356,7 @@ int main(int argc, char **argv)
 #if 0
     fprintf(f, "# Test image as defined in ITU-T T.82, clause 7.2.1\n");
 #endif
-    fprintf(f, "1960 1951\n");
+    fprintf(f, "%10lu\n%10lu\n", 1960LU, 1951LU);
     fwrite(testpic, 1, TESTPIC_SIZE, f);
     fclose(f);
     exit(0);
@@ -399,18 +397,20 @@ int main(int argc, char **argv)
   for (i = 0; i < 16 * 16 && !trouble; i++) {
     pix = arith_decode(sd, (t82cx[i >> 4] >> ((15 - i) & 15)) & 1);
     if (pix < 0) {
-      printf("Problem at Pixel %ld, result code %d.\n\n", i+1, sd->result);
+      printf("Problem at pixel %ld, byte %ld.\n\n",
+	     i+1, (long) (sd->pscd_ptr - sd->pscd_end));
       trouble++;
       break;
     }
     if (pix != ((t82pix[i >> 4] >> ((15 - i) & 15)) & 1)) {
-      printf("Wrong PIX answer at Pixel %ld.\n\n", i+1);
+      printf("Wrong PIX answer (%d) at pixel %ld.\n\n", pix, i+1);
       trouble++;
       break;
     }
   }
-  if (!trouble && sd->result != JBG_READY) {
-    printf("Result is %d instead of JBG_READY.\n\n", sd->result);
+  if (!trouble && sd->pscd_ptr != sd->pscd_end - 2) {
+    printf("%ld bytes left after decoder finished.\n\n",
+	   (long) (sd->pscd_end - sd->pscd_ptr - 2));
     trouble++;
   }
   printf("Test result: ");
@@ -429,29 +429,28 @@ int main(int argc, char **argv)
   trouble = 0;
   for (i = 0; i < 16 * 16 && !trouble; i++) {
     pix = arith_decode(sd, (t82cx[i >> 4] >> ((15 - i) & 15)) & 1);
-    while ((sd->result == JBG_MORE || sd->result == JBG_MARKER) &&
-	   sd->pscd_end < t82sde + 32) {
+    while (pix < 0 && sd->pscd_end < t82sde + 32) {
       pp++;
-      sd->pscd_end = pp + 1;
-      if (sd->result == JBG_MARKER)
-	sd->pscd_ptr = pp - 1;
-      else
+      if (sd->pscd_ptr != pp - 1)
 	sd->pscd_ptr = pp;
+      sd->pscd_end = pp + 1;
       pix = arith_decode(sd, (t82cx[i >> 4] >> ((15 - i) & 15)) & 1);
     }
     if (pix < 0) {
-      printf("Problem at Pixel %ld, result code %d.\n\n", i+1, sd->result);
+      printf("Problem at pixel %ld, byte %ld.\n\n",
+	     i+1, (long) (sd->pscd_ptr - sd->pscd_end));
       trouble++;
       break;
     }
     if (pix != ((t82pix[i >> 4] >> ((15 - i) & 15)) & 1)) {
-      printf("Wrong PIX answer at Pixel %ld.\n\n", i+1);
+      printf("Wrong PIX answer (%d) at pixel %ld.\n\n", pix, i+1);
       trouble++;
       break;
     }
   }
-  if (!trouble && sd->result != JBG_READY) {
-    printf("Result is %d instead of JBG_READY.\n\n", sd->result);
+  if (!trouble && sd->pscd_ptr != sd->pscd_end - 2) {
+    printf("%ld bytes left after decoder finished.\n\n",
+	   (long) (sd->pscd_end - sd->pscd_ptr - 2));
     trouble++;
   }
   printf("Test result: ");
@@ -469,29 +468,58 @@ int main(int argc, char **argv)
   putchar('\n');
   pp = testpic;
 
-  puts("Test 3.1: TPBON=0, Mx=0, LRLTWO=0, L0=1951");
+  puts("Test 3.1: TPBON=0, Mx=0, LRLTWO=0, L0=1951, 0 layers");
   problems += test_cycle(&pp, 1960, 1951, JBG_DELAY_AT,
 			 0, 0, 1, 1951, 0, 317384L, "3.1");
-  puts("Test 3.2: TPBON=0, Mx=0, LRLTWO=1, L0=1951");
+  puts("Test 3.2: TPBON=0, Mx=0, LRLTWO=1, L0=1951, 0 layers");
   problems += test_cycle(&pp, 1960, 1951, JBG_DELAY_AT | JBG_LRLTWO,
 			 0, 0, 1, 1951, 0, 317132L, "3.2");
-  puts("Test 3.3: TPBON=1, DPON=1, TPDON=1, Mx=8, LRLTWO=0, L0=128");
+  puts("Test 3.3: TPBON=1, Mx=8, LRLTWO=0, L0=128, 0 layers");
   problems += test_cycle(&pp, 1960, 1951, JBG_DELAY_AT | JBG_TPBON,
 			 0, 0, 1, 128, 8, 253653L, "3.3");
   puts("Test 3.4: TPBON=1, DPON=1, TPDON=1, Mx=8, LRLTWO=0, L0=2, 6 layers");
   problems += test_cycle(&pp, 1960, 1951,
 			 JBG_DELAY_AT | JBG_TPBON | JBG_TPDON | JBG_DPON,
 			 0, 6, 1, 2, 8, 279314L, "3.4");
-#if 0
-  puts("Test 3.5: as TEST 4 but with order bit SEQ set");
+  puts("Test 3.5: as Test 3.4 but with DPPRIV=1");
+  problems += test_cycle(&pp, 1960, 1951,
+			 JBG_DELAY_AT | JBG_TPBON | JBG_TPDON | JBG_DPON |
+			 JBG_DPPRIV,
+			 0, 6, 1, 2, 8, 279314L + 1728, "3.5");
+#if 0 /* Note: option SEQ is currently not supported by the decoder */
+  puts("Test 3.6: as Test 3.4 but with order bit SEQ set");
   problems += test_cycle(&pp, 1960, 1951,
 			 JBG_DELAY_AT | JBG_TPBON | JBG_TPDON | JBG_DPON,
-			 JBG_SEQ, 6, 1, 2, 8, 279314L, "3.5");
+			 JBG_SEQ, 6, 1, 2, 8, 279314L, "3.6");
 #endif
 #endif
 
-  puts("4) Additional regression tests\n"
-       "------------------------------\n");
+  puts("4) Same T.82 tests with SDRST instead of SDNORM\n"
+       "-----------------------------------------------\n");
+
+  puts("Test 4.0: TPBON=1, Mx=8, LRLTWO=0, L0=128, 0 layers");
+  problems += test_cycle(&pp, 1960, 1951, JBG_SDRST | JBG_TPBON,
+			 0, 0, 1, 128, 8, -1, "4.0");
+
+  puts("Test 4.1: TPBON=0, Mx=0, LRLTWO=0, L0=1951, 0 layers");
+  problems += test_cycle(&pp, 1960, 1951, JBG_SDRST,
+			 0, 0, 1, 1951, 0, -1, "4.1");
+  puts("Test 4.2: TPBON=0, Mx=0, LRLTWO=1, L0=1951, 0 layers");
+  problems += test_cycle(&pp, 1960, 1951, JBG_LRLTWO | JBG_SDRST,
+			 0, 0, 1, 1951, 0, -1, "4.2");
+  puts("Test 4.3: TPBON=1, Mx=8, LRLTWO=0, L0=128, 0 layers");
+  problems += test_cycle(&pp, 1960, 1951, JBG_TPBON | JBG_SDRST,
+			 0, 0, 1, 128, 8, -1, "4.3");
+  puts("Test 4.4: TPBON=1, DPON=1, TPDON=1, Mx=8, LRLTWO=0, L0=2, 6 layers");
+  problems += test_cycle(&pp, 1960, 1951,
+			 JBG_TPBON | JBG_TPDON |
+			 JBG_DPON | JBG_SDRST,
+			 0, 6, 1, 2, 8, -1, "4.4");
+
+  puts("5) Small test image, 0-3 layers, 4 planes, different orders\n"
+       "-----------------------------------------------------------\n");
+  
+  /* test a simple multi-plane image */
   ppp[0] = jbig_normal;
   ppp[1] = jbig_upsidedown;
   ppp[2] = jbig_inverse;
@@ -500,7 +528,7 @@ int main(int argc, char **argv)
   i = 0;
   for (layers = 0; layers <= 3; layers++)
     for (order = 0; order < (int) (sizeof(orders)/sizeof(int)); order++) {
-      sprintf(test, "4.%ld", ++i);
+      sprintf(test, "5.%ld", ++i);
       printf("Test %s: order=%d, %d layers, 4 planes", test, orders[order],
 	     layers);
       problems += test_cycle(ppp, 23, 5*4, JBG_TPBON | JBG_TPDON | JBG_DPON,
@@ -514,7 +542,7 @@ int main(int argc, char **argv)
     puts("This is bad. If you cannot identify the problem yourself, please "
 	 "send\nthis output plus a detailed description of your "
 	 "compile environment\n(OS, compiler, version, options, etc.) to "
-	 "Markus Kuhn <http://www.cl.cam.ac.uk/~mgk25/>.");
+	 "Markus Kuhn\n<http://www.cl.cam.ac.uk/~mgk25/>.");
   else
     puts("Congratulations, everything is fine.\n");
 

@@ -1,21 +1,32 @@
 /*
- *  Header file for the portable free JBIG compression library
+ *  Header file for the portable JBIG compression library
  *
- *  Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/
- *
- *  $Id$
+ *  Copyright 1995-2014 -- Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/
  */
 
 #ifndef JBG_H
 #define JBG_H
 
 #include <stddef.h>
+#include "jbig_ar.h"
 
 /*
  * JBIG-KIT version number
  */
 
-#define JBG_VERSION    "1.6"
+#define JBG_VERSION    "2.1"
+#define JBG_VERSION_MAJOR 2
+#define JBG_VERSION_MINOR 1
+
+/*
+ * JBIG-KIT licence agreement reference code:
+ * If you use JBIG-KIT under a commercial licence, please replace
+ * below the letters GPL with the reference code that you received
+ * with your licence agreement. (This code is typically a letter "A"
+ * followed by four decimal digits, e.g. "A1234".)
+ */
+
+#define JBG_LICENCE    "GPL"
 
 /*
  * Buffer block for SDEs which are temporarily stored by encoder
@@ -56,84 +67,30 @@ struct jbg_buf {
 #define JBG_DPPRIV     0x02
 #define JBG_DPLAST     0x01
 
-#define JBG_DELAY_AT   0x100  /* delay ATMOVE until the first line of the next
-			       * stripe. Option available for compatibility
-			       * with conformance test example in clause 7.2.*/
+/* encoding options that will not be indicated in the header */
 
+#define JBG_DELAY_AT   0x100  /* Delay ATMOVE until the first line of the next
+			       * stripe. Option available for compatibility
+			       * with conformance test example in clause 7.2. */
+
+#define JBG_SDRST      0x200  /* Use SDRST instead of SDNORM. This option is
+			       * there for anyone who needs to generate
+			       * test data that covers the SDRST cases. */
 
 /*
  * Possible error code return values
  */
 
-#define JBG_EOK        0
-#define JBG_EOK_INTR   1
-#define JBG_EAGAIN     2
-#define JBG_ENOMEM     3
-#define JBG_EABORT     4
-#define JBG_EMARKER    5
-#define JBG_ENOCONT    6
-#define JBG_EINVAL     7
-#define JBG_EIMPL      8
+#define JBG_EOK        (0 << 4)
+#define JBG_EOK_INTR   (1 << 4)
+#define JBG_EAGAIN     (2 << 4)
+#define JBG_ENOMEM     (3 << 4)
+#define JBG_EABORT     (4 << 4)
+#define JBG_EMARKER    (5 << 4)
+#define JBG_EINVAL     (6 << 4)
+#define JBG_EIMPL      (7 << 4)
+#define JBG_ENOCONT    (8 << 4)
 
-/*
- * Language code for error message strings (based on ISO 639 2-letter
- * standard language name abbreviations).
- */ 
-
-#define JBG_EN         0        /* English */
-#define JBG_DE_8859_1  1        /* German in ISO Latin 1 character set */
-#define JBG_DE_UTF_8   2        /* German in Unicode UTF-8 encoding */
-
-/*
- * Status description of an arithmetic encoder
- */
-
-struct jbg_arenc_state {
-  unsigned char st[4096];    /* probability status for contexts, MSB = MPS */
-  unsigned long c;                /* C register, base of coding intervall, *
-                                   * layout as in Table 23                 */
-  unsigned long a;      /* A register, normalized size of coding intervall */
-  long sc;        /* counter for buffered 0xff values which might overflow */
-  int ct;  /* bit shift counter, determines when next byte will be written */
-  int buffer;                /* buffer for most recent output byte != 0xff */
-  void (*byte_out)(int, void *); /* function which receives all PSCD bytes */
-  void *file;                              /* parameter passed to byte_out */
-};
-
-
-/*
- * Status description of an arithmetic decoder
- */
-
-enum jbg_ardec_result {
-  JBG_OK,                          /* symbol has been successfully decoded */
-  JBG_READY,               /* no more bytes of this PSCD required, marker  *
-			    * encountered, probably more symbols available */
-  JBG_MORE,            /* more PSCD data bytes required to decode a symbol */
-  JBG_MARKER     /* more PSCD data bytes required, ignored final 0xff byte */
-};
-
-struct jbg_ardec_state {
-  unsigned char st[4096];    /* probability status for contexts, MSB = MPS */
-  unsigned long c;                /* C register, base of coding intervall, *
-                                   * layout as in Table 25                 */
-  unsigned long a;      /* A register, normalized size of coding intervall */
-  int ct;     /* bit shift counter, determines when next byte will be read */
-  unsigned char *pscd_ptr;               /* pointer to next PSCD data byte */
-  unsigned char *pscd_end;                   /* pointer to byte after PSCD */
-  enum jbg_ardec_result result;          /* result of previous decode call */
-  int startup;                            /* controls initial fill of s->c */
-};
-
-#ifdef TEST_CODEC
-void arith_encode_init(struct jbg_arenc_state *s, int reuse_st);
-void arith_encode_flush(struct jbg_arenc_state *s);
-void arith_encode(struct jbg_arenc_state *s, int cx, int pix);
-void arith_decode_init(struct jbg_ardec_state *s, int reuse_st);
-int arith_decode(struct jbg_ardec_state *s, int cx);
-#endif
-
- 
 /*
  * Status of a JBIG encoder
  */
@@ -165,6 +122,10 @@ struct jbg_enc_state {
                                                     /* data write callback */
   void *file;                            /* parameter passed to data_out() */
   char *tp;    /* buffer for temp. values used by diff. typical prediction */
+  unsigned char *comment; /* content of comment marker segment to be added
+                             at next opportunity (will be reset to NULL
+                             as soon as comment has been written)          */
+  unsigned long comment_len;       /* length of data pointed to by comment */
 };
 
 
@@ -239,14 +200,14 @@ struct jbg_dec_state {
 #    define _JBIGLIB_
 #  else
 #    undef _JBIGDLL_
-#  endif   
+#  endif
 #endif
 
 /**
  * Under VISUALC we have single threaded static libraries, or
  * multi-threaded DLLs using the multithreaded runtime DLLs.
  **/
- 
+
 #if defined(_MT) && defined(_DLL) && !defined(_JBIGDLL_) && !defined(_LIB)
 #   define _JBIGDLL_
 #endif
@@ -288,17 +249,17 @@ extern JBIGEXPORT void jbg_dec_maxsize(struct jbg_dec_state *s, unsigned long xm
                                        unsigned long ymax);
 extern JBIGEXPORT int  jbg_dec_in(struct jbg_dec_state *s, unsigned char *data, size_t len,
                                   size_t *cnt);
-extern JBIGEXPORT long jbg_dec_getwidth(const struct jbg_dec_state *s);
-extern JBIGEXPORT long jbg_dec_getheight(const struct jbg_dec_state *s);
+extern JBIGEXPORT unsigned long jbg_dec_getwidth(const struct jbg_dec_state *s);
+extern JBIGEXPORT unsigned long jbg_dec_getheight(const struct jbg_dec_state *s);
 extern JBIGEXPORT unsigned char *jbg_dec_getimage(const struct jbg_dec_state *s, int plane);
-extern JBIGEXPORT long jbg_dec_getsize(const struct jbg_dec_state *s);
+extern JBIGEXPORT unsigned long jbg_dec_getsize(const struct jbg_dec_state *s);
 extern JBIGEXPORT void jbg_dec_merge_planes(const struct jbg_dec_state *s, int use_graycode,
                                             void (*data_out)(unsigned char *start, size_t len,
                                                              void *file), void *file);
-extern JBIGEXPORT long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
+extern JBIGEXPORT unsigned long jbg_dec_getsize_merged(const struct jbg_dec_state *s);
 extern JBIGEXPORT void jbg_dec_free(struct jbg_dec_state *s);
 
-extern JBIGEXPORT const char *jbg_strerror(int errnum, int language);
+extern JBIGEXPORT const char *jbg_strerror(int errnum);
 extern JBIGEXPORT void jbg_int2dppriv(unsigned char *dptable, const char *internal);
 extern JBIGEXPORT void jbg_dppriv2int(char *internal, const unsigned char *dptable);
 extern JBIGEXPORT unsigned long jbg_ceil_half(unsigned long x, int n);

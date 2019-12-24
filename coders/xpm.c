@@ -319,12 +319,12 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (xpm_buffer == (char *) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
-    Remove comments.
+    Parse image properties from file header while skipping over comment markers.
   */
   count=0;
-  for (p=xpm_buffer; *p != '\0'; p++)
+  for (p=xpm_buffer; ((p - xpm_buffer) < 512) && (*p != '\0'); p++)
   {
-    if (*p != '"')
+    if ((*p != '"') || !isdigit((int) *(p+1)))
       continue;
     count=sscanf(p+1,"%lu %lu %u %lu",&image->columns,&image->rows,
       &image->colors,&width);

@@ -7,15 +7,6 @@
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
-/* Define to 1 if the system has the type `int16'. */
-/* #undef HAVE_INT16 */
-
-/* Define to 1 if the system has the type `int32'. */
-/* #undef HAVE_INT32 */
-
-/* Define to 1 if the system has the type `int8'. */
-/* #undef HAVE_INT8 */
-
 /* The size of a `int', as computed by sizeof. */
 #define SIZEOF_INT 4
 
@@ -89,23 +80,31 @@
 /* Support CCITT Group 3 & 4 algorithms */
 #define CCITT_SUPPORT 1
 
-/* Support JPEG compression (requires IJG JPEG library) */
-#define JPEG_SUPPORT 1
+/* enable partial strip reading for large strips (experimental) */
+#undef CHUNKY_STRIP_READ_SUPPORT
 
 /* Support JBIG compression (requires JBIG-KIT library) */
-/* #undef JBIG_SUPPORT */
+#define JBIG_SUPPORT 1
+
+/* Support JPEG compression (requires IJG JPEG library) */
+#define JPEG_SUPPORT 1
 
 /* Support LogLuv high dynamic range encoding */
 #define LOGLUV_SUPPORT 1
 
+/* Support LZMA2 compression */
+#undef LZMA_SUPPORT
+
 /* Support LZW algorithm */
 #define LZW_SUPPORT 1
+
+/* Support Microsoft Document Imaging format */
+#define MDI_SUPPORT 1
 
 /* Support NeXT 2-bit RLE algorithm */
 #define NEXT_SUPPORT 1
 
-/* Support Old JPEG compresson (read contrib/ojpeg/README first! Compilation
-   fails with unpatched IJG JPEG library) */
+/* Support Old JPEG compresson (read-only) */
 #define OJPEG_SUPPORT 1
 
 /* Support Macintosh PackBits algorithm */
@@ -114,18 +113,25 @@
 /* Support Pixar log-format algorithm (requires Zlib) */
 #define PIXARLOG_SUPPORT 1
 
+/* Enable SubIFD tag (330) support */
+#define SUBIFD_SUPPORT 1
+
 /* Support ThunderScan 4-bit RLE algorithm */
 #define THUNDER_SUPPORT 1
 
+/* Support webp compression */
+#define WEBP_SUPPORT 1
+
 /* Support Deflate compression */
 #define ZIP_SUPPORT 1
+
+/* Support zstd compression */
+#undef ZSTD_SUPPORT
 
 /* Support strip chopping (whether or not to convert single-strip uncompressed
    images to mutiple strips of ~8Kb to reduce memory usage) */
 #define STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
-/* Enable SubIFD tag (330) support */
-#define SUBIFD_SUPPORT 1
 
 /* Treat extra sample as alpha (default enabled). The RGBA interface will
    treat a fourth sample with no EXTRASAMPLE_ value as being ASSOCALPHA. Many

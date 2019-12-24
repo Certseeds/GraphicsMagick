@@ -35,5 +35,7 @@ EXCLUDE = dummy.c
 EXCLUDE = getopt.c
 EXCLUDE = lfind.c
 EXCLUDE = strcasecmp.c
+EXCLUDE = strtol.c
+EXCLUDE = strtoll.c
 EXCLUDE = strtoul.c
 EXCLUDE = strtoull.c

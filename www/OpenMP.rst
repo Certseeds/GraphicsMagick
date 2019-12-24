@@ -112,6 +112,38 @@ CPU efficiency as threads are added.
 Limitations
 ===========
 
+Often it is noticed that the memory allocation functions (e.g. from
+the standard C library such as GNU libc) significantly hinder
+performance since they are designed or optimized for single-threaded
+programs, or prioritize returning memory to the system over speed.
+Memory allocators are usually designed and optimized for programs
+which perform thousands of small allocations, and if they make a large
+memory allocation, they retain that memory for a long time.
+GraphicsMagick performs large memory allocations for raster image
+storage interspersed with a limited number of smaller allocations for
+supportive data structures.  This memory is released very quickly
+since GraphicsMagick is highly optimized and thus the time between
+allocation and deallocation can be very short.  It has been observed
+that some memory allocators are much slower to allocate and deallocate
+large amounts of memory (e.g. a hundred megabytes) than alternative
+allocators, even in single-threaded programs.  Under these conditions,
+the program can spend considerable time mysteriously "sleeping".
+
+In order to help surmount problems with the default memory allocators,
+the configure script offers support for use of Google `gperftools
+<https://github.com/gperftools/gperftools>`_ `'tcmalloc'
+<https://github.com/gperftools/gperftools/wiki>`_, Solaris mtmalloc,
+and Solaris umem libraries via the --with-tcmalloc, --with-mtmalloc,
+and --with-umem options, respectively.  When the allocation functions
+are behaving badly, the memory allocation/deallocation performance
+does not scale as threads are added and thus additional threads spend
+more time sleeping (e.g. on a lock, or in munmap()) rather than doing
+more work.  Performance improvements of a factor of two are not
+uncommon even before contending with the hugh CPU core/thread counts
+available on modern CPUs.  Using more threads which are slowed by
+poorly-matched memory allocation functions is wasteful of memory,
+system resources, human patience, and electrical power.
+
 Many modern CPUs support "Turbo" modes where the CPU clock rate is
 boosted if only a few cores are active.  When a CPU provides a "Turbo"
 mode, this decreases the apparent speed-up compared to using one

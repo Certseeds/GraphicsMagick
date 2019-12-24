@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-# This script generates 'WebP.framework'. An iOS app can decode WebP images
-# by including 'WebP.framework'.
+# This script generates 'WebP.framework' and 'WebPDecoder.framework'. An iOS
+# app can decode WebP images by including 'WebPDecoder.framework' and both
+# encode and decode WebP images by including 'WebP.framework'.
 #
-# Run ./iosbuild.sh to generate 'WebP.framework' under the current directory
-# (previous build will be erased if it exists).
+# Run ./iosbuild.sh to generate the frameworks under the current directory
+# (the previous build will be erased if it exists).
 #
 # This script is inspired by the build script written by Carson McDonald.
 # (http://www.ioncannon.net/programming/1483/using-webp-to-reduce-native-ios-app-size/).
@@ -33,10 +34,16 @@ readonly SRCDIR=$(dirname $0)
 readonly TOPDIR=$(pwd)
 readonly BUILDDIR="${TOPDIR}/iosbuild"
 readonly TARGETDIR="${TOPDIR}/WebP.framework"
+readonly DECTARGETDIR="${TOPDIR}/WebPDecoder.framework"
+readonly MUXTARGETDIR="${TOPDIR}/WebPMux.framework"
+readonly DEMUXTARGETDIR="${TOPDIR}/WebPDemux.framework"
 readonly DEVELOPER=$(xcode-select --print-path)
 readonly PLATFORMSROOT="${DEVELOPER}/Platforms"
 readonly LIPO=$(xcrun -sdk iphoneos${SDK} -find lipo)
 LIBLIST=''
+DECLIBLIST=''
+MUXLIBLIST=''
+DEMUXLIBLIST=''
 
 if [[ -z "${SDK}" ]]; then
   echo "iOS SDK not available"
@@ -50,10 +57,10 @@ else
   echo "iOS SDK Version ${SDK}"
 fi
 
-rm -rf ${BUILDDIR}
-rm -rf ${TARGETDIR}
-mkdir -p ${BUILDDIR}
-mkdir -p ${TARGETDIR}/Headers/
+rm -rf ${BUILDDIR} ${TARGETDIR} ${DECTARGETDIR} \
+    ${MUXTARGETDIR} ${DEMUXTARGETDIR}
+mkdir -p ${BUILDDIR} ${TARGETDIR}/Headers/ ${DECTARGETDIR}/Headers/ \
+    ${MUXTARGETDIR}/Headers/ ${DEMUXTARGETDIR}/Headers/
 
 if [[ ! -e ${SRCDIR}/configure ]]; then
   if ! (cd ${SRCDIR} && sh autogen.sh); then
@@ -104,15 +111,19 @@ for PLATFORM in ${PLATFORMS}; do
     --build=$(${SRCDIR}/config.guess) \
     --disable-shared --enable-static \
     --enable-libwebpdecoder --enable-swap-16bit-csp \
+    --enable-libwebpmux \
     CFLAGS="${CFLAGS}"
   set +x
 
-  # run make only in the src/ directory to create libwebpdecoder.a
+  # run make only in the src/ directory to create libwebp.a/libwebpdecoder.a
   cd src/
   make V=0
   make install
 
-  LIBLIST+=" ${ROOTDIR}/lib/libwebpdecoder.a"
+  LIBLIST+=" ${ROOTDIR}/lib/libwebp.a"
+  DECLIBLIST+=" ${ROOTDIR}/lib/libwebpdecoder.a"
+  MUXLIBLIST+=" ${ROOTDIR}/lib/libwebpmux.a"
+  DEMUXLIBLIST+=" ${ROOTDIR}/lib/libwebpdemux.a"
 
   make clean
   cd ..
@@ -120,5 +131,20 @@ for PLATFORM in ${PLATFORMS}; do
   export PATH=${OLDPATH}
 done
 
-cp -a ${SRCDIR}/src/webp/*.h ${TARGETDIR}/Headers/
+echo "LIBLIST = ${LIBLIST}"
+cp -a ${SRCDIR}/src/webp/{decode,encode,types}.h ${TARGETDIR}/Headers/
 ${LIPO} -create ${LIBLIST} -output ${TARGETDIR}/WebP
+
+echo "DECLIBLIST = ${DECLIBLIST}"
+cp -a ${SRCDIR}/src/webp/{decode,types}.h ${DECTARGETDIR}/Headers/
+${LIPO} -create ${DECLIBLIST} -output ${DECTARGETDIR}/WebPDecoder
+
+echo "MUXLIBLIST = ${MUXLIBLIST}"
+cp -a ${SRCDIR}/src/webp/{types,mux,mux_types}.h \
+    ${MUXTARGETDIR}/Headers/
+${LIPO} -create ${MUXLIBLIST} -output ${MUXTARGETDIR}/WebPMux
+
+echo "DEMUXLIBLIST = ${DEMUXLIBLIST}"
+cp -a ${SRCDIR}/src/webp/{decode,types,mux_types,demux}.h \
+    ${DEMUXTARGETDIR}/Headers/
+${LIPO} -create ${DEMUXLIBLIST} -output ${DEMUXTARGETDIR}/WebPDemux

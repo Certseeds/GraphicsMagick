@@ -1143,8 +1143,15 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   unsigned char
     *info;
 
-  register long
+  register size_t
     i;
+
+  size_t
+    length,
+    nibbles;
+
+  long
+    length_s;
 
   register unsigned char
     *dp;
@@ -1154,10 +1161,6 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
 
   png_charp
     ep;
-
-  png_uint_32
-    length,
-    nibbles;
 
   static const unsigned char
     unhex[103]={0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,
@@ -1173,6 +1176,11 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
 
   sp=text[ii].text+1;
   ep=text[ii].text+text[ii].text_length;
+  if (ep <= sp)
+    {
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return MagickFail;
+    }
   /* look for newline */
   while ((sp < ep) && (*sp != '\n'))
     sp++;
@@ -1195,7 +1203,15 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return MagickFail;
     }
-  length=MagickAtoL(sp);
+  length_s = MagickAtoL(sp);
+  if ((length_s <= 0) || (length_s >= (ep-sp)))
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "invalid profile length %ld", length_s);
+      ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
+      return (MagickFail);
+    }
+  length=(size_t) length_s;
   while ((sp < ep) && (*sp != ' ' && *sp != '\n'))
     sp++;
   if (sp == ep)
@@ -1207,10 +1223,10 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
       return MagickFail;
     }
   /* allocate space */
-  if ((length == 0) || (length*2 + sp >= ep))
+  if ((length == 0) || ((magick_uintptr_t) (ep-sp) <= length*2))
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-          "invalid profile length");
+                            "invalid profile length %"MAGICK_SIZE_T_F"u", (MAGICK_SIZE_T) length);
       ThrowException(exception,CorruptImageWarning,UnableToParseEmbeddedProfile,image->filename);
       return (MagickFail);
     }
@@ -1224,7 +1240,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   /* copy profile, skipping white space and column 1 "=" signs */
   dp=info;
   nibbles=length*2;
-  for (i=0; i < (long) nibbles; i++)
+  for (i=0; i < nibbles; i++)
     {
       while (*sp < '0' || (*sp > '9' && *sp < 'a') || *sp > 'f')
         {
@@ -1467,6 +1483,24 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   Image
     *image;
 
+  png_info
+    *end_info,
+    *ping_info;
+
+  png_struct
+    *ping;
+
+  png_textp
+    text;
+
+  png_bytep
+     ping_trans_alpha;
+
+  size_t
+    length,
+    ping_rowbytes,
+    row_offset;
+
   int
     logging,
     num_text,
@@ -1483,27 +1517,13 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   LongPixelPacket
     transparent_color;
 
-  png_bytep
-     ping_trans_alpha;
-
   png_color_16p
      ping_background,
      ping_trans_color;
 
-  png_info
-    *end_info,
-    *ping_info;
-
-  png_struct
-    *ping;
-
   png_uint_32
-    ping_rowbytes,
     ping_width,
     ping_height;
-
-  png_textp
-    text;
 
   long
     y;
@@ -1517,10 +1537,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
   register PixelPacket
     *q;
-
-  unsigned long
-    length,
-    row_offset;
 
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
   png_byte unused_chunks[]=
@@ -2158,7 +2174,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
   png_read_update_info(ping,ping_info);
 
-  ping_rowbytes=(png_uint_32) png_get_rowbytes(ping,ping_info);
+  ping_rowbytes=(size_t) png_get_rowbytes(ping,ping_info);
 
   /*
     Initialize image structure.
@@ -2286,8 +2302,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   if (num_passes > 1)
   {
     if (ping_rowbytes < GetMagickResourceLimit(MemoryResource)/image->rows)
-      mng_info->png_pixels=MagickAllocateMemory(unsigned char *,
-               ping_rowbytes*image->rows);
+      mng_info->png_pixels=MagickAllocateArray(unsigned char *,
+                                               ping_rowbytes,image->rows);
     else
       png_error(ping, "png_pixels array exceeds MemoryResource");
   }
@@ -2982,6 +2998,12 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
                               "exit ReadPNGImage() with error.");
       return((Image *) NULL);
     }
+#if 0
+  /*
+    Post-processing to convert the image type in the reader based on a
+    specified magick prefix string is now disabled.  This can (and
+    should) be done after the image has been returned.
+  */
   if (LocaleCompare(image_info->magick,"PNG8") == 0)
     {
       (void) SetImageType(image,PaletteType);
@@ -2997,6 +3019,7 @@ static Image *ReadPNGImage(const ImageInfo *image_info,
     }
   if (LocaleCompare(image_info->magick,"PNG32") == 0)
     (void) SetImageType(image,TrueColorMatteType);
+#endif
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"exit ReadPNGImage()");
   return (image);
@@ -5274,6 +5297,21 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               else
                 magn_methy=magn_methx;
 
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "MAGN chunk (%lu bytes): "
+                                      "First_magnified_object_id=%u, Last_magnified_object_id=%u, "
+                                      "MB=%u, ML=%u, MR=%u, MT=%u, MX=%u, MY=%u, "
+                                      "X_method=%u, Y_method=%u",
+                                      length,
+                                      (unsigned) magn_first, (unsigned) magn_last,
+                                      (unsigned) magn_mb,
+                                      (unsigned) magn_ml, (unsigned) magn_mr,
+                                      (unsigned) magn_mt,
+                                      (unsigned) magn_mx, (unsigned) magn_my,
+                                      (unsigned) magn_methx, (unsigned) magn_methy);
+
+
               if (magn_methx > 5 || magn_methy > 5)
                 if (!mng_info->magn_warning)
                   {
@@ -5290,6 +5328,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (magn_first == 0 || magn_last == 0)
                 {
                   /* Save the magnification factors for object 0 */
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "MAGN chunk factors saved for object 0");
                   mng_info->magn_mb=magn_mb;
                   mng_info->magn_ml=magn_ml;
                   mng_info->magn_mr=magn_mr;
@@ -5628,7 +5669,12 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           MngBox
             crop_box;
 
-          if (mng_info->magn_methx || mng_info->magn_methy)
+          /*
+            If magnifying and a supported method is requested then
+            magnify the image.
+          */
+          if (((mng_info->magn_methx > 0) && (mng_info->magn_methx <= 5)) &&
+              ((mng_info->magn_methy > 0) && (mng_info->magn_methy <= 5)))
             {
               png_uint_32
                 magnified_height,
@@ -5712,7 +5758,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "    Allocate magnified image");
+                                          "    Allocate magnified image (%lux%lu ==> %ux%u)",
+                                          image->columns, image->rows,
+                                          (unsigned) magnified_width,
+                                          (unsigned) magnified_height);
                   AllocateNextImage(image_info,image);
                   if (image->next == (Image *) NULL)
                     {
@@ -6282,7 +6331,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
   while (image->previous != (Image *) NULL)
     image=image->previous;
 #ifdef MNG_COALESCE_LAYERS
-  if (insert_layers)
+  if (insert_layers && image->next)
     {
       Image
         *next_image,
@@ -6296,10 +6345,12 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                               "  Coalesce Images");
       scene=image->scene;
       next_image=CoalesceImages(image,exception);
-      if (next_image == (Image *) NULL)
-        MagickFatalError2(image->exception.severity,image->exception.reason,
-                          image->exception.description);
       DestroyImageList(image);
+      if (next_image == (Image *) NULL)
+        {
+          MngInfoFreeStruct(mng_info,&have_mng_structure);
+          return((Image *) NULL);
+        }
       image=next_image;
       for (next=image; next != (Image *) NULL; next=next_image)
         {

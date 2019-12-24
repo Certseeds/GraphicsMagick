@@ -3270,16 +3270,13 @@ MSLStartElement(void *context,const xmlChar *name,
                     {
                       if (LocaleCompare(keyword, "opacity") == 0)
                         {
-                          int  opac = OpaqueOpacity,
-                            len = (int) strlen( value );
+                          int  opac = OpaqueOpacity;
+                          size_t len = strlen( value );
 
-                          if (value[len-1] == '%') {
-                            char  tmp[100];
-                            (void) strncpy(tmp, value, (size_t) (len-1));
-                            opac = MagickAtoI( tmp );
+                          opac = MagickAtoI( value );
+                          if ((opac > 0) && (len > 1) && value[len-1] == '%')
                             opac = (int)(MaxRGB * ((float)opac/100));
-                          } else
-                            opac = MagickAtoI( value );
+
                           SetImageOpacity( msl_info->image[n], opac );
                           break;
                         }

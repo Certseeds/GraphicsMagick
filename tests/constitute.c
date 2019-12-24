@@ -165,9 +165,11 @@ int main ( int argc, char **argv )
       goto program_exit;
     }
 
-  (void) strncpy(infile, argv[arg], MaxTextExtent-1 );
+  (void) strncpy(infile, argv[arg], MaxTextExtent );
+  infile[MaxTextExtent-1]='\0';
   arg++;
-  (void) strncpy( map, argv[arg], MaxTextExtent-1 );
+  (void) strncpy( map, argv[arg], MaxTextExtent );
+  map[MaxTextExtent-1]='\0';
 
 /*   for (arg=0; arg < argc; arg++) */
 /*     (void) printf("%s ", argv[arg]); */
@@ -179,7 +181,8 @@ int main ( int argc, char **argv )
    */
   GetExceptionInfo( &exception );
   imageInfo->dither = 0;
-  (void) strncpy( imageInfo->filename, infile, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->filename, infile, MaxTextExtent );
+  imageInfo->filename[MaxTextExtent-1]='\0';
   (void) strcat( imageInfo->filename,"[0]" );
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading image %s", imageInfo->filename);

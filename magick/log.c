@@ -243,7 +243,8 @@ MagickExport void DestroyLogInfo(void)
   if (log_info->file != (FILE *) NULL)
     if ((log_info->file != stdout) && (log_info->file != stderr))
       {
-        (void) fprintf(log_info->file,"</log>\n");
+        if (log_info->output_type == XMLFileOutput)
+          (void) fprintf(log_info->file,"</log>\n");
         (void) fclose(log_info->file);
         log_info->file=(FILE *) NULL;
       }
@@ -310,11 +311,7 @@ InitializeLogInfo(void)
   log_info->generation=0;
   log_info->count=0;
   log_info->events=NoEventsMask;
-#if defined(MSWINDOWS)
-  log_info->output_type=Win32EventlogOutput;
-#else
   log_info->output_type=StderrOutput;
-#endif
   log_info->method=0;
   log_info->log_configured=MagickFalse;
 

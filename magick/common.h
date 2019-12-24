@@ -201,6 +201,24 @@ extern "C" {
 #      define MAGICK_OPTIMIZE_FUNC(opt) MAGICK_ATTRIBUTE((__optimize__ (opt)))
 #    endif
   /*
+    GCC 7 and later support a fallthrough attribute to mark switch statement
+    cases which are intended to fall through.  Clang 3.5.0 supports a
+    clang::fallthrough statement attribute while Clang 10 supports the same
+    attribute as GCC 7.  Some compilers support a FALLTHROUGH (or FALLTHRU)
+    pre-processor comment.  C++ 17 supports a standard fallthrough attribute
+    of the form "[[fallthrough]]".  See
+    https://developers.redhat.com/blog/2017/03/10/wimplicit-fallthrough-in-gcc-7/,
+    https://gcc.gnu.org/onlinedocs/gcc/Statement-Attributes.html,
+    https://clang.llvm.org/docs/AttributeReference.html#fallthrough, and
+    https://releases.llvm.org/3.7.0/tools/clang/docs/AttributeReference.html#fallthrough-clang-fallthrough
+
+    Usage is to put "MAGICK_FALLTHROUGH;" where a "break;" would go.
+  */
+#    if ((MAGICK_HAS_ATTRIBUTE(__fallthrough__)) || \
+         ((__GNUC__) >= 7))  /* 7+ */
+#      define MAGICK_FALLTHROUGH MAGICK_ATTRIBUTE((__fallthrough__))
+#    endif
+  /*
     https://code.google.com/p/address-sanitizer/wiki/AddressSanitizer#Introduction
 
     To ignore certain functions, one can use the no_sanitize_address attribute
@@ -264,6 +282,9 @@ extern "C" {
 #endif
 #if !defined(MAGICK_OPTIMIZE_FUNC)
 #  define MAGICK_OPTIMIZE_FUNC(opt) /*nothing*/
+#endif
+#if !defined(MAGICK_FALLTHROUGH)
+#  define MAGICK_FALLTHROUGH /*nothing*/
 #endif
 
   /*

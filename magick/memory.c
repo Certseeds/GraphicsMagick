@@ -472,6 +472,9 @@ MagickExport void *MagickCloneMemory(void *destination,const void *source,
 %  freed and a NULL value is returned.  If the memory allocation fails, then
 %  the existing memory is freed, and a NULL value is returned.
 %
+%  Note that the behavior of this function is similar to BSD reallocf(3),
+%  see https://www.freebsd.org/cgi/man.cgi?query=reallocf
+%
 %  The format of the MagickRealloc method is:
 %
 %      void *MagickRealloc(void *memory,const size_t size)

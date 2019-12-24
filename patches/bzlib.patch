@@ -1,0 +1,96 @@
+diff -u bzip2-1.0.8/bzlib.c bzlib/bzlib.c
+--- bzip2-1.0.8/bzlib.c	2019-07-13 12:50:05.000000000 +0000
++++ bzlib/bzlib.c	2019-12-08 09:55:40.218635998 +0000
+@@ -993,7 +993,7 @@
+ 
+       if (bzf->strm.avail_out < BZ_MAX_UNUSED) {
+          n = BZ_MAX_UNUSED - bzf->strm.avail_out;
+-         n2 = fwrite ( (void*)(bzf->buf), sizeof(UChar), 
++         n2 = (Int32) fwrite ( (void*)(bzf->buf), sizeof(UChar),
+                        n, bzf->handle );
+          if (n != n2 || ferror(bzf->handle))
+             { BZ_SETERR(BZ_IO_ERROR); return; };
+@@ -1052,7 +1052,7 @@
+ 
+          if (bzf->strm.avail_out < BZ_MAX_UNUSED) {
+             n = BZ_MAX_UNUSED - bzf->strm.avail_out;
+-            n2 = fwrite ( (void*)(bzf->buf), sizeof(UChar), 
++            n2 = (Int32) fwrite ( (void*)(bzf->buf), sizeof(UChar),
+                           n, bzf->handle );
+             if (n != n2 || ferror(bzf->handle))
+                { BZ_SETERR(BZ_IO_ERROR); return; };
+@@ -1187,7 +1187,7 @@
+          { BZ_SETERR(BZ_IO_ERROR); return 0; };
+ 
+       if (bzf->strm.avail_in == 0 && !myfeof(bzf->handle)) {
+-         n = fread ( bzf->buf, sizeof(UChar), 
++         n = (Int32) fread ( bzf->buf, sizeof(UChar),
+                      BZ_MAX_UNUSED, bzf->handle );
+          if (ferror(bzf->handle))
+             { BZ_SETERR(BZ_IO_ERROR); return 0; };
+Only in bzlib: bzlib.c.orig
+diff -u bzip2-1.0.8/bzlib.h bzlib/bzlib.h
+--- bzip2-1.0.8/bzlib.h	2019-07-13 12:50:05.000000000 +0000
++++ bzlib/bzlib.h	2019-12-08 09:55:40.219035180 +0000
+@@ -65,30 +65,32 @@
+    } 
+    bz_stream;
+ 
+-
+-#ifndef BZ_IMPORT
+-#define BZ_EXPORT
+-#endif
+-
+ #ifndef BZ_NO_STDIO
+ /* Need a definitition for FILE */
+ #include <stdio.h>
+ #endif
+ 
+-#ifdef _WIN32
+-#   include <windows.h>
+-#   ifdef small
+-      /* windows.h define small to char */
+-#      undef small
+-#   endif
+-#   ifdef BZ_EXPORT
+-#   define BZ_API(func) WINAPI func
+-#   define BZ_EXTERN extern
++#if defined(WIN32) || defined(WIN64)
++# include <windows.h>
++# ifdef small
++    /* windows.h define small to char */
++#    undef small
++# endif
++# if defined(_DLL) && !defined(_LIB)
++#   if !defined(BZ_EXPORT)
++#     pragma message( "BZIP compiling as DLL import" ) 
++#     define BZ_API(func) func
++#     define BZ_EXTERN __declspec(dllimport)
+ #   else
+-   /* import windows dll dynamically */
+-#   define BZ_API(func) (WINAPI * func)
+-#   define BZ_EXTERN
++#     pragma message( "BZIP compiling as DLL export" ) 
++#     define BZ_API(func) func
++#     define BZ_EXTERN extern __declspec(dllexport)
+ #   endif
++# else
++#   pragma message( "BZIP compiling as library" ) 
++#   define BZ_API(func) func
++#   define BZ_EXTERN extern
++# endif
+ #else
+ #   define BZ_API(func) func
+ #   define BZ_EXTERN extern
+diff -u bzip2-1.0.8/compress.c bzlib/compress.c
+--- bzip2-1.0.8/compress.c	2019-07-13 12:50:05.000000000 +0000
++++ bzlib/compress.c	2019-12-08 09:55:40.226323662 +0000
+@@ -202,7 +202,7 @@
+                *ryy_j = rtmp2;
+             };
+             yy[0] = rtmp;
+-            j = ryy_j - &(yy[0]);
++            j = (Int32) (ryy_j - &(yy[0]));
+             mtfv[wr] = j+1; wr++; s->mtfFreq[j+1]++;
+          }
+ 

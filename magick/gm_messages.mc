@@ -569,6 +569,18 @@ Unsupported cell type in the matrix
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedNumberOfColumns
+Language        = English
+Unsupported number of columns
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorUnsupportedNumberOfRows
+Language        = English
+Unsupported number of columns
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedSamplesPerPixel
 Language        = English
 Unsupported samples per pixel
@@ -1205,6 +1217,12 @@ Already pushing pattern definition
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorArithmeticOverflow
+Language        = English
+arithmetic overflow
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorDrawingRecursionDetected
 Language        = English
 drawing recursion detected
@@ -1244,6 +1262,12 @@ MessageId       = +1
 SymbolicName    = DrawErrorTooManyCoordinates
 Language        = English
 too many coordinates
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorUnableToDrawOnImage
+Language        = English
+unable to draw on image
 .
 
 MessageId       = +1

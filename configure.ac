@@ -748,6 +748,16 @@ if test "$with_ttf" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-ttf=$with_ttf "
 fi
 
+# Enable use of Google tcmalloc library.
+AC_ARG_WITH(tcmalloc,
+              AS_HELP_STRING([--with-tcmalloc],
+                             [enable Google perftools tcmalloc (minimal) memory allocation library support]),
+              [with_tcmalloc=$withval],
+              [with_tcmalloc='no'])
+if test "$with_tcmalloc" != 'no' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-tcmalloc=$with_tcmalloc "
+fi
+
 # Enable use of Solaris mtmalloc library.
 AC_ARG_WITH(mtmalloc,
               AS_HELP_STRING([--with-mtmalloc],
@@ -1424,6 +1434,39 @@ then
 fi
 AC_SUBST(LIB_THREAD)
 
+#
+# Check for Google perftools tcmalloc library
+#
+have_tcmalloc='no'
+LIB_TCMALLOC=''
+OLIBS="$LIBS"
+if test "$have_threads" = 'yes' -a "$with_tcmalloc" != 'no'
+then
+    AC_MSG_CHECKING([Google perftools tcmalloc (minimal) library support ])
+    AC_MSG_RESULT([])
+    failed=0
+    passed=0
+
+    AC_CHECK_LIB([tcmalloc_minimal],[mallinfo],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+
+    if test $passed -gt 0
+    then
+        if test $failed -gt 0
+        then
+            have_tcmalloc='no (some components failed test)'
+        else
+            LIB_TCMALLOC=-ltcmalloc_minimal
+            LIBS="$LIB_TCMALLOC $LIBS"
+            CFLAGS="$CFLAGS -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free"
+            AC_DEFINE([HasTCMALLOC],[1],[Define if you have Google perftools tcmalloc (minimal) library])
+            have_tcmalloc='yes'
+        fi
+    fi
+    AC_MSG_CHECKING([if Google perftools tcmalloc (minimal) memory allocation library is complete ])
+    AC_MSG_RESULT([$have_tcmalloc])
+fi
+AM_CONDITIONAL([HasTCMALLOC], [test "$have_tcmalloc" = 'yes'])
+AC_SUBST([LIB_TCMALLOC])
 
 #
 # Check for Solaris-derived libumem
@@ -3589,9 +3632,9 @@ fi
 
 if test "$build_modules" != 'no'
 then
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_MTMALLOC $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_UMEM $LIB_MTMALLOC $LIB_THREAD"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST(MAGICK_DEP_LIBS)
@@ -3729,6 +3772,7 @@ printf "PNG               --with-png=$with_png          \t$have_png ($LIB_PNG)\n
 else
 printf "PNG               --with-png=$with_png          \t$have_png\n"
 fi
+printf "Google tcmalloc   --with-tcmalloc=$with_tcmalloc\t\t$have_tcmalloc\n"
 printf "Solaris mtmalloc  --with-mtmalloc=$with_mtmalloc\t\t$have_mtmalloc\n"
 printf "Solaris umem      --with-umem=$with_umem        \t$have_umem\n"
 printf "TIFF              --with-tiff=$with_tiff        \t$have_tiff\n"
@@ -3744,6 +3788,7 @@ printf "WMF               --with-wmf=$with_wmf          \t$have_wmf\n"
 printf "X11               --with-x=$with_x              \t$have_x\n"
 printf "XML               --with-xml=$with_xml          \t$have_xml\n"
 printf "ZLIB              --with-zlib=$with_zlib        \t$have_zlib\n"
+printf "ZSTD              --with-zstd=$with_zstd        \t$have_zstd\n"
 printf "\n"
 printf "X11 Configuration:\n"
 if test "$have_x" != 'no'

@@ -1,14 +1,13 @@
 /*
  *  pbmtojbg - Portable Bitmap to JBIG converter
  *
- *  Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/jbigkit/
- *
- *  $Id$
+ *  Markus Kuhn - http://www.cl.cam.ac.uk/~mgk25/jbigkit/
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "jbig.h"
 
 
@@ -41,12 +40,17 @@ static void usage(void)
      "  -o number\torder byte value: add 1=SMID, 2=ILEAVE, 4=SEQ, 8=HITOLO\n"
      "\t\t(default 3 = ILEAVE+SMID)\n"
      "  -p number\toptions byte value: add DPON=4, TPBON=8, TPDON=16, LRLTWO=64\n"
-     "\t\t(default 28 = DPON+TPBON+TPDON)\n"
-     "  -c\t\tdelay adaptive template changes to first line of next stripe\n"
-	  "\t\t(only provided for a conformance test)\n");
+     "\t\t(default 28 = DPON+TPBON+TPDON)\n");
   fprintf(stderr,
-     "  -Y number\t\tannounce in header initially this larger image height\n"
+     "  -C string\tadd the provided string as a comment marker segment\n"
+     "  -c\t\tdelay adaptive template changes to first line of next stripe\n"
+	  "\t\t(only provided for a conformance test)\n"
+     "  -r\t\tterminate each stripe with SDRST marker\n"
+	  "\t\t(only intended for decoder testing)\n" );
+  fprintf(stderr,
+     "  -Y number\tannounce in header initially this larger image height\n"
      "\t\t(only for generating test files with NEWLEN and VLENGTH=1)\n"
+     "  -f\t\tchose encoding options for T.85 fax profile complianance\n"
      "  -v\t\tverbose output\n\n");
   exit(1);
 }
@@ -115,13 +119,13 @@ int main (int argc, char **argv)
   char type;
   unsigned char **bitmap, *p, *image;
   struct jbg_enc_state s;
-  int verbose = 0, delay_at = 0, use_graycode = 1;
+  int verbose = 0, delay_at = 0, reset = 0, use_graycode = 1;
   long mwidth = 640, mheight = 480;
   int dl = -1, dh = -1, d = -1, mx = -1;
   unsigned long l0 = 0, y1 = 0;
+  char *comment = NULL;
   int options = JBG_TPDON | JBG_TPBON | JBG_DPON;
   int order = JBG_ILEAVE | JBG_SMID;
-
 
   /* parse command line arguments */
   progname = argv[0];
@@ -146,6 +150,17 @@ int main (int argc, char **argv)
 	    break;
 	  case 'c':
 	    delay_at = 1;
+	    break;
+	  case 'r':
+	    reset = 1;
+	    break;
+	  case 'f':
+	    d = 0;
+	    order = 0;
+            options = 8;
+	    l0 = 128;
+	    encode_planes = 1;
+	    mx = 127;
 	    break;
 	  case 'x':
 	    if (++i >= argc) usage();
@@ -205,6 +220,11 @@ int main (int argc, char **argv)
 	    j = -1;
 	    mx = atoi(argv[i]);
 	    break;
+	  case 'C':
+	    if (++i >= argc) usage();
+	    j = -1;
+	    comment = argv[i];
+	    break;
 	  default:
 	    usage();
 	  }
@@ -252,7 +272,7 @@ int main (int argc, char **argv)
     max = getint(fin);
   else
     max = 1;
-  for (planes = 0, v = max; v; planes++, v >>= 1);
+  for (planes = 0, v = max; v; planes++, v >>= 1) ;
   bpp = (planes + 7) / 8;
   if (encode_planes < 0 || encode_planes > planes)
     encode_planes = planes;
@@ -312,6 +332,16 @@ int main (int argc, char **argv)
     exit(1);
   }
 
+  /* Test for valid parameters */
+  if (width < 1 || height < 1) {
+    fprintf(stderr, "Image dimensions must be positive!\n");
+    exit(1);
+  }
+  if (encode_planes < 1 || encode_planes > 255) {
+    fprintf(stderr, "Number of planes must be in range 1-255!\n");
+    exit(1);
+  }
+
   /* Test the final byte in each image line for correct zero padding */
   if ((width & 7) && type == '4') {
     for (y = 0; y < height; y++)
@@ -337,6 +367,12 @@ int main (int argc, char **argv)
   /* Specify a few other options (each is ignored if negative) */
   if (delay_at)
     options |= JBG_DELAY_AT;
+  if (reset)
+    options |= JBG_SDRST;
+  if (comment) {
+    s.comment_len = strlen(comment);
+    s.comment = (unsigned char *) comment;
+  }
   if (y1)
     s.yd1 = y1;
   jbg_enc_lrange(&s, dl, dh);

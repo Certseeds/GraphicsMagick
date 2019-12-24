@@ -5,6 +5,8 @@
 # Copyright 2008 Mark Mitchell
 # License: see __license__ below.
 
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
 
 __doc__ = """
 Reads a GraphicsMagick source file and parses the specially formatted
@@ -69,7 +71,6 @@ import getopt
 import os, os.path
 import re
 import textwrap
-
 
 # Key words to replace with HTML links
 keywords = {
@@ -139,10 +140,10 @@ state_found_private = 6
 state_parmdescr = 7
 
 def warn(msg):
-    print >> sys.stderr, msg
+    print(msg, file=sys.stderr)
 
 def debugtrace(msg):
-    print >> sys.stdout, msg
+    print(msg, file=sys.stdout)
 
 def nodebugtrace(msg):
     pass
@@ -198,7 +199,7 @@ class Prototype:
         # escape all the '_' chars
         proto = re.sub(r'_', '\\_', proto)
         # now replace keywords with hyperlinks
-        for k,v in keywords.iteritems():
+        for k,v in keywords.items():
             proto = re.sub(r'^%s ' % k, '%s ' % v, proto)
             proto = re.sub(r' %s ' % k, ' %s ' % v, proto)
 
@@ -288,7 +289,7 @@ def parse(srcfilepath):
     state = state_init
     linecnt = 0
     ftitle = None
-    f = file(srcfilepath, 'r')
+    f = open(srcfilepath, 'r')
     for line in f:
         linecnt += 1
         if not (line.startswith('%') or line.startswith('+') or re.search(r'\*/', line)):
@@ -499,23 +500,23 @@ def parse(srcfilepath):
 def process_srcfile(srcfilepath, basename, whatis, outfile, include_rst):
     """outfile is a file object open for writing"""
     functions = parse(srcfilepath)
-    print >> outfile, "=" * len(basename)
-    print >> outfile, basename
-    print >> outfile, "=" * len(basename)
+    print("=" * len(basename), file=outfile)
+    print(basename, file=outfile)
+    print("=" * len(basename), file=outfile)
     if whatis:
-        print >> outfile, "-" * len(whatis)
-        print >> outfile, whatis
-        print >> outfile, "-" * len(whatis)
-    print >> outfile
-    print >> outfile, '.. contents:: :depth: 1'
-    print >> outfile
+        print("-" * len(whatis), file=outfile)
+        print(whatis, file=outfile)
+        print("-" * len(whatis), file=outfile)
+    print(file=outfile)
+    print('.. contents:: :depth: 1', file=outfile)
+    print(file=outfile)
     for x in include_rst:
-        print >> outfile, '.. include:: %s' % x
-    print >> outfile
+        print('.. include:: %s' % x, file=outfile)
+    print(file=outfile)
 
     # print all functions found in this source file
     for func in functions:
-        print >> outfile, func
+        print(func, file=outfile)
 
         #para = para.strip() # trim leading and trailing whitespace
         #para = re.sub(r'\s+', ' ', para) # canonicalize inner whitespace
@@ -525,7 +526,7 @@ def process_srcfile(srcfilepath, basename, whatis, outfile, include_rst):
 
 def find_val(key, keyval_file):
     val = None
-    f = file(keyval_file, 'r')
+    f = open(keyval_file, 'r')
     cnt = 0
     for line in f:
         cnt += 1
@@ -536,7 +537,7 @@ def find_val(key, keyval_file):
         try:
             k, v = line.split(None, 1)
         except ValueError:
-            print >> sys.stderr, "Line %u of %s: improper format" % (cnt, keyval_file)
+            print("Line %u of %s: improper format" % (cnt, keyval_file), file=sys.stderr)
             return None
 
         if k == key:
@@ -558,9 +559,9 @@ def main(argv=None):
                                         'whatis-file=',
                                         'include-rst=',
                                         ])
-    except getopt.GetoptError, msg:
-         print msg
-         print __doc__
+    except getopt.GetoptError as msg:
+         print(msg)
+         print(__doc__)
          return 1
 
     # process options
@@ -569,7 +570,7 @@ def main(argv=None):
 
     for opt, val in opts:
         if opt in ("-h", "--help"):
-            print __doc__
+            print(__doc__)
             return 0
 
         if opt in ("-w", "--whatis-file"):
@@ -579,8 +580,8 @@ def main(argv=None):
             include_rst = [x for x in val.split(',') if x]
 
     if len(posn_args) != 2:
-        print >> sys.stderr, 'Missing arguments'
-        print >> sys.stderr, __doc__
+        print('Missing arguments', file=sys.stderr)
+        print(__doc__, file=sys.stderr)
         return 1
 
     srcfile_path = posn_args[0]
@@ -592,7 +593,7 @@ def main(argv=None):
         whatis = find_val(srcfile, whatis_file)
     else:
         whatis = None
-    fout = file(outfile_path, 'w')
+    fout = open(outfile_path, 'w')
     process_srcfile(srcfile_path, base, whatis, fout, include_rst)
     fout.close()
     return 0

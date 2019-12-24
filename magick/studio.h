@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2017 GraphicsMagick Group
+  Copyright (C) 2003 - 2019 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -449,8 +449,32 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #  define PATH_MAX 4096
 #endif
 
-#if defined(HasLTDL) || ( defined(MSWINDOWS) && defined(_DLL) )
+/*
+  When using Autoconf configure script, BuildMagickModules is defined by
+  magick/magick_config.h when modules are to be built.  Building modules
+  requires that support for shared libraries be enabled.
+
+  When using Visual Studio and when using the Autoconf configure script with
+  MinGW these options are supplied when compiling the associated components:
+
+    libMagick:           _DLL _MAGICKMOD_ _MAGICKLIB_
+    module:              _DLL
+    executable/Magick++: _DLL _MAGICKMOD_
+
+  The Visual Studio build only knows how to build a static build, or a DLL
+  modules-based build.  The Autotools-based build knows how to build static,
+  shared, and modules builds.
+
+  Libtool's libltdl is required to build modules when the Autoconf configure
+  script is used.
+*/
+
+#if defined(HasLTDL)
 #  define SupportMagickModules
+#elif !defined(__MINGW32__) && !defined(__MINGW64__)
+#  if defined(MSWINDOWS) && defined(_DLL)
+#    define SupportMagickModules
+#  endif
 #endif
 
 #if defined(_MAGICKMOD_)

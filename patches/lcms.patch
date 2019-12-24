@@ -1,8 +1,8 @@
-diff -u -r lcms2-2.8/include/lcms2.h lcms/include/lcms2.h
---- lcms2-2.8/include/lcms2.h	2016-07-20 02:46:01.000000000 -0500
-+++ lcms/include/lcms2.h	2016-08-14 16:21:48.769795413 -0500
+diff -r -u lcms2-2.9/include/lcms2.h lcms/include/lcms2.h
+--- lcms2-2.9/include/lcms2.h	2017-11-20 14:59:38.000000000 +0000
++++ lcms/include/lcms2.h	2019-12-07 10:04:39.961350037 +0000
 @@ -26,6 +26,20 @@
- // Version 2.8
+ // Version 2.9rc3
  //
  
 +//
@@ -22,4 +22,4 @@ diff -u -r lcms2-2.8/include/lcms2.h lcms/include/lcms2.h
  #ifndef _lcms2_H
  
  // ********** Configuration toggles ****************************************
-Only in lcms/include: lcms2.h.orig
+Only in lcms2-2.9/m4: lt~obsolete.m4

@@ -1,7 +1,7 @@
-diff -u -r libwebp-0.5.1/src/utils/endian_inl.h webp/src/utils/endian_inl.h
---- libwebp-0.5.1/src/utils/endian_inl.h	2016-07-06 20:00:16.000000000 -0500
-+++ webp/src/utils/endian_inl.h	2016-08-14 18:23:06.889053509 -0500
-@@ -73,7 +73,7 @@
+diff -u -r libwebp-1.0.3/src/utils/endian_inl_utils.h webp/src/utils/endian_inl_utils.h
+--- libwebp-1.0.3/src/utils/endian_inl_utils.h	2019-07-04 14:32:37.000000000 +0000
++++ webp/src/utils/endian_inl_utils.h	2019-12-15 10:18:18.498471120 +0000
+@@ -66,7 +66,7 @@
    uint32_t swapped_bytes;
    __asm__ volatile("bswap %0" : "=r"(swapped_bytes) : "0"(x));
    return swapped_bytes;
@@ -10,9 +10,10 @@ diff -u -r libwebp-0.5.1/src/utils/endian_inl.h webp/src/utils/endian_inl.h
    return (uint32_t)_byteswap_ulong(x);
  #else
    return (x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) | (x << 24);
-diff -u -r libwebp-0.5.1/src/webp/types.h webp/src/webp/types.h
---- libwebp-0.5.1/src/webp/types.h	2016-07-06 20:00:16.000000000 -0500
-+++ webp/src/webp/types.h	2016-08-14 18:23:06.889694772 -0500
+Only in webp/src/utils: endian_inl_utils.h.orig
+diff -u -r libwebp-1.0.3/src/webp/types.h webp/src/webp/types.h
+--- libwebp-1.0.3/src/webp/types.h	2019-07-04 14:32:37.000000000 +0000
++++ webp/src/webp/types.h	2019-12-15 12:43:07.485829101 +0000
 @@ -36,6 +36,24 @@
  #define WEBP_INLINE __forceinline
  #endif  /* _MSC_VER */
@@ -26,10 +27,10 @@ diff -u -r libwebp-0.5.1/src/webp/types.h webp/src/webp/types.h
 +#       pragma warning( disable : 4273 )
 +#   endif
 +#   if !defined(_WEBPLIB_)
-+#       define WEBP_EXTERN(type) extern __declspec(dllimport) type
++#       define WEBP_EXTERN extern __declspec(dllimport)
 +#       pragma message( "libwebp compiling as DLL import" )
 +#   else
-+#       define WEBP_EXTERN(type) extern __declspec(dllexport) type
++#       define WEBP_EXTERN extern __declspec(dllexport)
 +#       pragma message( "libwebp compiling as DLL export" )
 +#   endif
 +#endif

@@ -127,10 +127,12 @@ color="#00B04F"><font size="+1">
 </font></font></font></b></td></tr></table>
 <table width="94%" border="0" cellspacing="0" cellpadding="8">
 <tr><td width="3%"><br></td><td>
-<p> GraphicsMagick's <strong>gm</strong> provides a suite of utilities for
-creating, comparing, converting, editing, and displaying images.  All
-of the utilities are provided as sub-commands of a single <strong>gm</strong>
-executable:
+<p>
+GraphicsMagick's <strong>gm</strong> provides a suite of utilities for creating,
+comparing, converting, editing, and displaying images.  All of the
+utilities are provided as sub-commands of a single <strong>gm</strong>
+executable.  The <strong>gm</strong> executable returns the exit code 0 to
+indicate success, or 1 to indicate failure:
 <p>
 <a href="animate.html"><strong>animate</strong></a>
 displays an animation (e.g. a GIF file) on any workstation display
@@ -5952,10 +5954,13 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     HOME
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Location of user's home directory. GraphicsMagick searches for
-configuration files in $HOME/.magick if the directory exists. See
-<strong>MAGICK_CODER_MODULE_PATH</strong>, <strong>MAGICK_CONFIGURE_PATH</strong>, and
-<strong>MAGICK_FILTER_MODULE_PATH</strong> if more flexibility is needed.</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Location of user's home directory. For security reasons, now only
+observed by "uninstalled" builds of GraphicsMagick which do not have
+their location hard-coded or set by an installer.  When supported,
+GraphicsMagick searches for configuration files in $HOME/.magick if
+the directory exists. See <strong>MAGICK_CODER_MODULE_PATH</strong>,
+<strong>MAGICK_CONFIGURE_PATH</strong>, and <strong>MAGICK_FILTER_MODULE_PATH</strong> if
+more flexibility is needed.</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -6039,9 +6044,11 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     MAGICK_DEBUG
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Debug options (see <strong>-debug</strong> for details).  Setting debug
-options via an environment variable is currently necessary to see the
-complete initialization process.</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Debug options (see <strong>-debug</strong> for details).  Setting the
+configure debug option via an environment variable
+(e.g. <strong>MAGICK_DEBUG=configure</strong>) is necessary to see the complete
+initialization process, which includes searching for configuration
+files.</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 

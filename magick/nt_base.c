@@ -68,6 +68,19 @@ static MagickPassFail NTstrerror_r(LONG errnum, char *strerrbuf, size_t  buflen)
 extern "C" BOOL WINAPI
   DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved);
 #endif
+
+static const struct
+  {
+    const HKEY hkey;
+    const char *name;
+  }
+hkeys[2] =
+    {
+      { HKEY_CURRENT_USER,  "HKEY_CURRENT_USER"  },
+      { HKEY_LOCAL_MACHINE, "HKEY_LOCAL_MACHINE" }
+    };
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -909,6 +922,7 @@ MagickExport void *NTdlsym(void *handle,const char *name)
   LPFNDLLFUNC1
     lpfnDllFunc1;
 
+  /* FARPROC GetProcAddress(HMODULE hModule,LPCSTR lpProcName); */
   lpfnDllFunc1=(LPFNDLLFUNC1) GetProcAddress(handle,name);
   if (!lpfnDllFunc1)
     return((void *) NULL);
@@ -1238,7 +1252,8 @@ NTGhostscriptFind(const char **gs_productfamily,
     };
 
   unsigned int
-    product_index;
+    product_index,
+    whence;
 
   MagickPassFail
     status;
@@ -1252,15 +1267,15 @@ NTGhostscriptFind(const char **gs_productfamily,
   /* Minimum version of Ghostscript is 5.50 */
   *gs_major_version=5;
   *gs_minor_version=49;
-  for (product_index=0; product_index < sizeof(products)/sizeof(products[0]);
-       ++product_index)
-    {
-      HKEY
-        hkey,
-        hkeyroot;
+  for(whence=0; whence<=1; whence++)
+  {
+    const HKEY hkeyroot = hkeys[whence].hkey;
+    const char *KeyRootStr = hkeys[whence].name;
 
-      LONG
-        winstatus;
+    for(product_index=0; product_index < sizeof(products)/sizeof(products[0]); ++product_index)
+    {
+      HKEY hkey;
+      LONG winstatus;
 
       REGSAM
         open_key_mode;
@@ -1273,7 +1288,7 @@ NTGhostscriptFind(const char **gs_productfamily,
                             "  Searching for %s...",
                             products[product_index]);
       FormatString(key,"SOFTWARE\\%s",products[product_index]);
-      hkeyroot = HKEY_LOCAL_MACHINE;
+      
       /*
         long WINAPI RegOpenKeyEx(const HKEY hKey, const LPCTSTR
         lpSubKey, const DWORD ulOptions, const REGSAM samDesired,
@@ -1291,8 +1306,8 @@ NTGhostscriptFind(const char **gs_productfamily,
 
           (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
                                 "    RegOpenKeyExA() opened "
-                                "\"HKEY_LOCAL_MACHINE\\%s\"",
-                                key);
+                                "\"%s\\%s\"",
+                                KeyRootStr, key);
           /* Now enumerate the keys */
           cbData = sizeof(key) / sizeof(char);
           n=0;
@@ -1361,10 +1376,12 @@ NTGhostscriptFind(const char **gs_productfamily,
           (void) NTstrerror_r(winstatus,last_error_msg,sizeof(last_error_msg));
           (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
                                 "    RegOpenKeyExA() failed to open "
-                                "\"HKEY_LOCAL_MACHINE\\%s\" (%s)",
+                                "\"%s\\%s\" (%s)", KeyRootStr,
                                 key,last_error_msg);
         }
     }
+  }
+
   if (status != MagickFail)
     {
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
@@ -1395,18 +1412,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   static int
     gs_major_version=0,
-    gs_minor_version=0;
-
-  struct
-  {
-    const HKEY hkey;
-    const char *name;
-  }
-  hkeys[2] =
-    {
-      { HKEY_CURRENT_USER,  "HKEY_CURRENT_USER"  },
-      { HKEY_LOCAL_MACHINE, "HKEY_LOCAL_MACHINE" }
-    };
+    gs_minor_version=0;  
 
   unsigned int
     i;

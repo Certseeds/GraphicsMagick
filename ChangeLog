@@ -1,3 +1,406 @@
+2019-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updates in preparation for 1.3.34 release.
+
+2019-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes since the last GM release.
+
+	* coders/png.c (png_read_raw_profile): Use size_t type to store
+	profile length and 'nibbles'.  Use safer way to test for profile
+	buffer overflow.
+	(ReadOnePNGImage): Use size_t type to store 'ping_rowbytes',
+	'length', and 'row_offset'.  Check png_pixels allocation for
+	arithemetic overflow when computing the required allocation size.
+
+	* coders/tiff.c (WriteNewsProfile): Use size_t type to store
+	profile length.
+
+	* coders/pict.c (WritePICTImage): Avoid 'alloc-size-larger-than'
+	warning from GCC when allocating row_bytes.
+
+2019-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tiff/libtiff/tiffconf.h: Add standard/common libtiff 'SUPPORT'
+	options which are used in full-fledged Autoconf/Cmake libtiff
+	builds but were missing from the Visual C template file.  In
+	particular, WebP is now supported and JBIG is somewhat supported.
+
+	* VisualMagick/jbig/libjbig/LIBRARY.txt (EXCLUDE): Remove
+	tstcodec85.c from JBIG library build.
+
+	* VisualMagick/configure/configure.cpp: Add JBIG library to
+	include path when building libraries.  Add WebP as a dependency
+	when building libtiff.
+
+2019-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/nt_base.h ("C"): Assume that float versions of functions
+	became available in Visual Studio 2008.
+
+2019-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfo): Using the compiled-in
+	defaults, always log to stderr by default, even under Microsoft
+	Windows.  The logging output may then be diverted to
+	'win32eventlog' as soon as a log.mgk file is loaded if that is
+	desired.  This should not be much of a problem because loading a
+	log.mgk file is the first thing that the library attempts to do.
+	This change is made due to users and developers being baffled at
+	not seeing any log output due to the log output going to the (very
+	unfriendly) Windows application log.
+
+	* webp: libwebp is updated to the 1.0.3 release.
+
+2019-12-15  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* magick/nt_base.c Fix user only installation of Ghostscript.
+
+2019-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* rungm.sh.in (DIRSEP): DIRSEP should always use Unix conventions for
+	Autotools-based builds.
+
+	* magick/module.h ("C"): Eliminiate redundant and conflicting
+	ListModuleInfo() prototype.
+
+	* coders/miff.c (ReadMIFFImage): Eliminate warnings in trace
+	statements.
+
+	* coders/dib.c (DecodeImage): Eliminate warnings in trace
+	statements.
+
+	* coders/bmp.c (DecodeImage): Eliminate warnings in trace
+	statements.
+
+	* magick/studio.h (SupportMagickModules): Fix the preprocessor
+	logic controlling SupportMagickModules, which became broken for
+	GCC MinGW-based builds starting in the 1.3.29 release when a
+	"static" module loader was implemented.  Due to an error in the
+	preprocessor logic, only the "modules" based build was working for
+	MinGW.  Much thanks to Giovanni Remigi for making us aware of this
+	issue.
+
+2019-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (WritePICTImage): Throw a writer exception if the
+	PICT width limit is exceeded. Fixes SourceForge issue 617
+	"heap-buffer-overflow in function EncodeImage of coders/pict.c".
+
+2019-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* jbig: jbigkit is updated to 2.1 release.
+
+	* libxml: libxml2 is updated to 2.9.10 release.
+
+	* bzlib: bzip is updated to 1.0.8 release.
+
+	* zlib: zlib is updated to 1.2.11 release.
+
+	* png: libpng is updated to 1.6.37 release.
+
+2019-12-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* lcms: lcms2 is updated to 2.9 release.
+
+	* tiff: libtiff is updated to 4.1.0 release.
+
+2019-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPatternPath): Don't leak memory if
+	fill_pattern or stroke_pattern of cloned draw_info are not null.
+	Fixes oss-fuzz issue 18948 "graphicsmagick:coder_MVG_fuzzer:
+	Indirect-leak in CloneImage".
+	(PrimitiveInfoRealloc): Clear freshly-allocated PrimitiveInfo
+	memory.
+
+2019-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Fix oss-fuzz issue
+	17986 "graphicsmagick:coder_JPG_fuzzer: Heap-buffer-overflow in
+	GenerateEXIFAttribute".  This problem likely only happens in
+	32-bit builds.
+
+2019-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Only magnify the image if the
+	requested magnification methods are supported.
+
+2019-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/compress.c (HuffmanDecodeImage): Fix signed overflow on
+	range check which leads to heap overflow in 32-bit
+	applications. Requires a relatively large file input compared with
+	typical fuzzer files (greater than a megabyte) to trigger.
+	Problem reported to the graphicsmagick-security mail address by
+	Justin Tripp on 2019-11-13.
+	(Ascii85Tuple): Fix thread safety issue by requiring caller to
+	pass in tuple buffer as an argument and having callers allocate
+	tuple buffer on the stack.
+
+2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/bit_stream.c: Add restrict declarations to slightly
+	improve performance and decrease code size.
+
+	* TclMagick/pkgIndex.tcl: Incorporate recommendations from third
+	problem noted in SourceForge issue #420 "TclMagick issues and
+	patch".  This is supposed to help support using an uninstalled
+	GraphicsMagick and allow the installation path to contain a space.
+
+	* wand/magick_wand.c (MagickClearException): Destroy any existing
+	exception info before re-initializing the exception info or else
+	there will be a memory leak.
+
+	* TclMagick/generic/libttkcommon.c (myMagickError): Clear
+	exception from the Wand after it has been reported.  Addresses the
+	fourth problem noted by SourceForge issue #420 "TclMagick issues
+	and patch".  However, MagickClearException() already clears an
+	exception in the Wand, so a new function is not needed.
+
+	* TclMagick/unix/m4/tcl.m4: Change hard-coded INSTALL path to
+	point to config/install-sh.  Re-generated/updated Autotools stuff
+	by executing the genconf.sh script.  Addresses the first problem
+	noted by SourceForge issue #420 "TclMagick issues and patch".
+
+2019-11-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (SetNexus): Eliminate warning about
+	possibly uninitialized variable from primordial GCC 3.4.3.
+
+	* magick/render.c (ConvertPrimitiveToPath): Eliminate warning that
+	IsClosedSubPath might be used uninitialized.
+
+	* magick/common.h ("MAGICK_FALLTHROUGH"): Added a
+	MAGICK_FALLTHROUGH macro to support the GCC/Clang fallthrough
+	attribute when the time comes again that it would be useful.
+
+2019-10-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pcx.c (ReadPCXImage): Verify that pixel region is not
+	negative. Assure that opacity channel is initialized to
+	opaqueOpacity.  Update DirectClass representation while
+	PseudoClass representation is updated.  Improve read performance
+	with uncompressed PCX.
+
+2019-10-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Image properties are expected to
+	appear within the first 512 bytes of the XPM file header.  fixes
+	oss-fuzz 18267 "graphicsmagick:coder_PICON_fuzzer: Timeout in
+	coder_PICON_fuzzer".
+
+2019-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Fix tcmalloc configuration report.
+
+2019-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): Implement subimage/subrange
+	support.
+
+	* coders/mat.c (ReadMATImage, ReadMATImageV4): Implement
+	subimage/subrange support.  Should resolve oss-fuzz 14999
+	"graphicsmagick/coder_MAT_fuzzer: Out-of-memory in
+	graphicsmagick_coder_MAT_fuzzer".
+
+	* coders/tiff.c (TIFFMapBlob): Fix compile problem if
+	LOG_TIFF_BLOB_IO is defined.
+
+	* coders/wpg.c (ExtractPostscript): Improve performance.  Avoid
+	temporary files if possible.  Avoid additional memory allocations
+	if possible.  Should address oss-fuzz issue 18173
+	"graphicsmagick:enhance_fuzzer: Timeout in enhance_fuzzer" and
+	oss-fuzz issue 17714 "graphicsmagick:coder_WPG_fuzzer: Timeout in
+	coder_WPG_fuzzer".
+
+2019-10-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pnm.c (PNMInteger): Place a generous arbitrary limit on
+	the amount of PNM comment text to avoid denial of service
+	opportunity.  Fixes oss-fuzz 18162 "Timeout · coder_PNM_fuzzer".
+
+2019-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dps.c (ReadDPSImage): Fix memory leak when OpenBlob()
+	reports failure.  Same as ImageMagick CVE CVE-2019-16709.
+
+2019-09-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Skip
+	unsupported/invalid format 0.  Fixes oss-fuzz issue 17597
+	"graphicsmagick:coder_SFW_fuzzer: Heap-buffer-overflow in
+	GenerateEXIFAttribute".
+
+2019-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Change by Alex Gaynor so that the
+	correct oss-fuzz fuzzing engine should be used.
+
+2019-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c (OpenModule): Static module loader should use
+	upper-cased magick string when searching for a module alias.
+	Fixes SourceForge issue #613 "static module loader is still
+	case-sensitive".
+
+2019-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Report status of zstd (FaceBook Zstandard)
+	compression in configuration summary.
+
+2019-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (TraceArcPath): Substitute a lineto command when
+	tracing arc is impossible.  Fixes oss-fuzz 10765
+	"graphicsmagick/coder_MVG_fuzzer: Divide-by-zero in TraceArcPath".
+
+2019-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (png_read_raw_profile): Fix validation of raw
+	profile length.  Fixes oss-fuzz 16906
+	"graphicsmagick:coder_ICO_fuzzer: Out-of-memory in
+	graphicsmagick_coder_ICO_fuzzer".
+
+	* coders/wpg.c (ReallocColormap): Avoid dereferencing a null
+	pointer if image->colormap is null.  Fixes oss-fuzz 17004
+	"graphicsmagick:coder_WPG_fuzzer: Null-dereference READ in
+	ReallocColormap".
+
+2019-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/memory.c (MagickRealloc): Add a note that the behavior of
+	this function is as described for BSD reallocf(3), which is now
+	appearing in Linux's GNU libc and elsewhere.
+
+2019-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/OpenMP.rst: Document the significant OpenMP speed-up which
+	may be obtained by using an alternate memory allocation library.
+	Currently 'tcmalloc', 'mtmalloc', and 'umem' are supported as
+	options.
+
+	* www/INSTALL-unix.rst: Document new --with-tcmalloc option to
+	enable using Google gperftools tcmalloc library.
+
+	* configure.ac: Add support for using Google gperftools tcmalloc
+	library via the --with-tcmalloc option.
+
+	* scripts/rst2htmldeco.py: Port to Python 3 syntax and require at
+	least Python 2.6.
+
+	* scripts/relpath.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
+	* scripts/html_fragments.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
+	* scripts/format_c_api_doc.py: Port to Python 3 syntax and require
+	at least Python 2.6.
+
+2019-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/GraphicsMagick.imdoc: Document gm utility exit status codes.
+
+2019-08-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (PRIMITIVE_INFO_POINTS_MAX): SIZE_MAX apparently
+	rounds up by one when cast to a double on 64-bit systems.  Due to
+	this, and in order to set more rational implementation limits, add
+	a PRIMITIVE_INFO_POINTS_MAX definition which computes and
+	constrains the maximum number of PrimitiveInfo entries allowed.
+
+2019-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GenerateEXIFAttribute): Check that we are
+	not being directed to read an IFD that we are already parsing and
+	quit in order to avoid a loop.  Addresses oss-fuzz 15753
+	"graphicsmagick/coder_JPEG_fuzzer: Timeout in
+	graphicsmagick_coder_JPEG_fuzzer" and 16068
+	"graphicsmagick/coder_SFW_fuzzer: Timeout in
+	graphicsmagick_coder_SFW_fuzzer".
+
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Eliminate
+	irritating GCC 9 "__builtin_strncpy' output may be truncated"
+	warnings due to copying MaxTextExtent-1 characters.  Instead
+	request copying all of the characters and also assure that string
+	is still null terminated.
+
+	* doc/environment.imdoc: Update documentation pertaining to HOME
+	and MAGICK_DEBUG environment variables.
+
+2019-08-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (DestroyLogInfo): Only output text to terminate an
+	XML format log file if XML format is active.
+
+2019-08-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ExtractTokensBetweenPushPop): Previous fix for
+	non-terminal loop was broken by a last-minute untested edit.
+	Finally addresses oss-fuzz 15318 "graphicsmagick/coder_MVG_fuzzer:
+	Timeout in graphicsmagick_coder_MVG_fuzzer".
+
+2019-08-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/utils.cc (MemoryResource): Lessen the memory limit used
+	for oss-fuzz testing in order to provide more headroom and margin
+	for error.
+
+	* magick/render.c (TraceBezier): Detect arithmetic overflow and
+	return errors via normal error path rather than exiting.  Fixes
+	oss-fuzz 16450 "graphicsmagick:coder_MVG_fuzzer: Unexpected-exit
+	in DefaultFatalErrorHandler".
+	(PrimitiveInfoRealloc): Implement more paranoid code related to
+	primitive allocation.
+
+2019-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawStrokePolygon): Handle case where
+	TraceStrokePolygon() returns NULL.  Addresses oss-fuzz 15516
+	"graphicsmagick/coder_MVG_fuzzer: ASSERT: primitive_info !=
+	(PrimitiveInfo *) NULL".
+	(DrawDashPolygon): Handle case where DrawStrokePolygon() returns
+	MagickFail. Also needed to address oss-fuzz 15516, since otherwise
+	test-cases run for a very long time.
+	(ExtractTokensBetweenPushPop): Fix non-terminal parsing loop.
+	Addresses oss-fuzz 15318 "graphicsmagick/coder_MVG_fuzzer: Timeout
+	in graphicsmagick_coder_MVG_fuzzer".
+
+2019-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/memory.h (MagickMallocAlignedArray): Add function
+	attributes for added value and to quench GCC 9 warning with
+	special build options enabled.
+
+	* magick/deprecate.h (AcquireMemory): Add more function attributes
+	to quench GCC 9 warning with special build options enabled.
+
+	* magick/attribute.c (GenerateEXIFAttribute): Fix compilation
+	warning in 32-bit build.
+
+	* coders/dpx.c (AttributeToString): Eliminate annoying warnings
+	from GCC 9, although the code was correct.
+
+	* coders/msl.c (MSLStartElement): Fix defective opacity percentage
+	code revealed by GCC 9 warning.
+
+2019-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Skip coalescing layers if there is
+	only one layer.  Fixes oss-fuzz 16274
+	"graphicsmagick/coder_MNG_fuzzer: Unexpected-exit in
+	DefaultFatalErrorHandler".
+
+2019-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadPNGImage): Post-processing to convert the
+	image type in the PNG reader based on a specified magick prefix
+	string is now disabled.  This can (and should) be done after the
+	image has been returned.  Fixes oss-fuzz 16386
+	"graphicsmagick:coder_PNG8_fuzzer: Timeout in
+	graphicsmagick_coder_PNG8_fuzzer".
+
 2019-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updates in preparation for 1.3.33 release.

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
 <title>memory</title>
 <link rel="stylesheet" href="../docutils-api.css" type="text/css" />
 </head>
@@ -204,6 +204,8 @@ the (possibly moved) block.  The contents will be unchanged up to the
 lesser of the new and old sizes.  If size is zero, then the memory is
 freed and a NULL value is returned.  If the memory allocation fails, then
 the existing memory is freed, and a NULL value is returned.</p>
+<p>Note that the behavior of this function is similar to BSD reallocf(3),
+see <a class="reference external" href="https://www.freebsd.org/cgi/man.cgi?query=reallocf">https://www.freebsd.org/cgi/man.cgi?query=reallocf</a></p>
 <p>The format of the MagickRealloc method is:</p>
 <pre class="literal-block">
 void *MagickRealloc( void *memory, const size_t size );

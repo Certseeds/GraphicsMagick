@@ -69,7 +69,11 @@
 /* Maximum amount of recursion allowed when executing MVG */
 #if !defined(MAX_DRAWIMAGE_RECURSION)
 #  define MAX_DRAWIMAGE_RECURSION 100
-#endif /* defined(MAX_DRAWIMAGE_RECURSION) */
+#endif /* !defined(MAX_DRAWIMAGE_RECURSION) */
+/* Maximum number of points to allocate in PrimitiveInfo array */
+#if !defined(PRIMITIVE_INFO_POINTS_MAX)
+#  define PRIMITIVE_INFO_POINTS_MAX ((~((size_t)0)) >> 8)
+#endif /* !defined(PRIMITIVE_INFO_POINTS_MAX) */
 
 /*
   Typedef declarations.
@@ -866,7 +870,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
     coordinates;  /* number of points in subpath */
 
   MagickBool
-    IsClosedSubPath;
+    IsClosedSubPath = MagickFalse;
 
   ARG_NOT_USED(draw_info);
 
@@ -2030,6 +2034,8 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
           dash_polygon[0].coordinates=j;
           dash_polygon[j].primitive=UndefinedPrimitive;
           status&=DrawStrokePolygon(image,clone_info,dash_polygon);
+          if (status == MagickFail)
+            break;
         }
       if (draw_info->dash_pattern[n] != 0.0)
         n++;
@@ -2044,7 +2050,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
     dash_polygon[j].coordinates=1;
     j++;
   }
-  if ((total_length < maximum_length) && ((n & 0x01) == 0) && (j > 1))
+  if ((status != MagickFail) && (total_length < maximum_length) && ((n & 0x01) == 0) && (j > 1))
     {
       dash_polygon[j]=primitive_info[i-1];
       dash_polygon[j].point.x+=MagickEpsilon;
@@ -2078,6 +2084,19 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 %  can affect how text is drawn by setting one or more members of the draw
 %  info structure.
 %
+%  The format of the drawing primitive text is known as "MVG" ("Magick
+%  Vector Graphics"), which is a powerful yet simple drawing syntax fronted
+%  by the "MVG" coder, and substantially supporting W3C SVG 1.1
+%  (https://www.w3.org/TR/SVG11/) rendering when fronted by the "SVG" coder
+%  (which translates SVG into MVG).  The parser is non-validating and in fact
+%  is designed to attempt to skip over unhandled textual elements which may be
+%  passed through from the SVG coder. While being used as the basis of a useful
+%  W3C SVG implementation and while SVG is commonly used on the "web" as an
+%  untrusted input such as within web browsers, this implementation is not
+%  designed to handle arbitrary untrusted inputs delivered from the "Internet".
+%  The drawing capabilities are best used under controlled circumstances
+%  where drawing inputs can be reasonably trusted.
+%
 %  Note that this is a legacy interface. Authors of new code should consider
 %  using the Draw* methods defined by magick/draw.h since they are better
 %  documented and less error prone.
@@ -2094,7 +2113,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 %
 %
 */
-static inline MagickBool
+static MagickBool
 IsPoint(const char *point)
 {
   char
@@ -2107,6 +2126,13 @@ IsPoint(const char *point)
   value=strtod(point,&p);
   (void) value;
   return(p != point);
+}
+
+// Add two size_t values and check for unsigned overflow.
+static MagickPassFail MagickAddSizeT(const size_t b, const size_t o, size_t *r)
+{
+  *r = b+o;
+  return (((*r < b) || (*r < o)) ? MagickFail : MagickPass);
 }
 
 static const char *recursion_key ="[DrawImageRecursion]";
@@ -2205,7 +2231,13 @@ char *  ExtractTokensBetweenPushPop (
         }
       if (LocaleCompare(token,"pop") == 0)
         {
+          pAfterPopString = q;
           MagickGetToken(q,&pAfterPopString,token,token_max_length);
+          if ( q == pAfterPopString )
+            {
+              /* infinite loop detection */
+              break;
+            }
           if (LocaleCompare(token,pop_string) == 0)
             break;  /* found "pop <pop_string>" */
         }
@@ -2326,12 +2358,40 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
   /* grow the PrimitiveInfo array if Needed elements are not available; return true if reallocated */
 
   /* ANSI C says that SIZE_MAX gives maximum value of size_t */
-  size_t NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100);  /* +100 for headroom */
-  if (NeedAllocCount > *p_PIMgr->p_AllocCount)
+  size_t NeedAllocCount;
+
+#if 0
+  fprintf(stderr,"Needed = %"MAGICK_SIZE_T_F"u\n",(MAGICK_SIZE_T) Needed);
+#endif
+  /* NeedAllocCount = p_PIMgr->StoreStartingAt + Needed + ((size_t)100 */
+  status &= MagickAddSizeT(p_PIMgr->StoreStartingAt, Needed, &NeedAllocCount); /* + Needed */
+  status &= MagickAddSizeT(NeedAllocCount, 100, &NeedAllocCount); /* +100 for headroom */
+
+  if (status != MagickPass)
+    ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,UnableToDrawOnImage);
+
+  /* Check if we have exceeded primitive info allocation hard limit */
+  if (NeedAllocCount > PRIMITIVE_INFO_POINTS_MAX)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
+      status = MagickFail;
+    }
+
+  if ((status == MagickPass) && (NeedAllocCount > *p_PIMgr->p_AllocCount))
     {
       const size_t have_memory=MagickArraySize(*p_PIMgr->p_AllocCount,sizeof(PrimitiveInfo));
       const size_t needed_memory=MagickArraySize(NeedAllocCount,sizeof(PrimitiveInfo));
       const magick_uint64_t added_memory=needed_memory-have_memory;
+
+#if 0
+      fprintf(stderr,
+              "have_memory=%"MAGICK_SIZE_T_F"u (%"MAGICK_SIZE_T_F"u elem),"
+              " needed_memory=%"MAGICK_SIZE_T_F"u (%"MAGICK_SIZE_T_F"u elem),"
+              " added_memory=%"MAGICK_SIZE_T_F"u\n",
+              (MAGICK_SIZE_T) have_memory, (MAGICK_SIZE_T) *p_PIMgr->p_AllocCount,
+              (MAGICK_SIZE_T) needed_memory, (MAGICK_SIZE_T) NeedAllocCount,
+              (MAGICK_SIZE_T) added_memory);
+#endif
 
       /* Need to realloc */
       if (((*p_PIMgr->p_AllocCount > 0) && (have_memory == 0)) ||
@@ -2343,6 +2403,7 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
         }
       else
         {
+          /* Allocate/reallocate the memory */
           MagickReallocMemory(PrimitiveInfo *,*p_PIMgr->pp_PrimitiveInfo,needed_memory);
           if (*p_PIMgr->pp_PrimitiveInfo == (PrimitiveInfo *) NULL)
             {
@@ -2353,6 +2414,12 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
             }
           else
             {
+              /* Clear freshly-allocated memory */
+#if 0
+              fprintf(stderr,"memset start_offset=%zu size=%zu\n", *p_PIMgr->p_AllocCount, added_memory);
+#endif
+              (void) memset((unsigned char *)(*p_PIMgr->pp_PrimitiveInfo)+have_memory,0,added_memory);
+              /* Save new allocation count */
               *p_PIMgr->p_AllocCount = NeedAllocCount;
             }
         }
@@ -4181,15 +4248,16 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     if ((i+points_length) >= number_points)
       {
         double new_number_points = ceil(number_points+points_length+1);
-        size_t new_number_points_size_t = (size_t) new_number_points;
-        if (new_number_points_size_t != new_number_points)
+        size_t new_number_points_size_t;
+        if (new_number_points > (double) PRIMITIVE_INFO_POINTS_MAX)
           {
-            /* new_number_points too big to be represented as a size_t */
+            /* new_number_points too big */
             status=MagickFail;
             ThrowException3(&image->exception,ResourceLimitError,
                             MemoryAllocationFailed,UnableToDrawOnImage);
             break;
           }
+        new_number_points_size_t = (size_t) new_number_points;
 
         PIMgr.StoreStartingAt = i;  /* should already be this value; just bein' sure */
         if (PrimitiveInfoRealloc(&PIMgr,new_number_points_size_t-number_points) == MagickFail)
@@ -4642,7 +4710,9 @@ DrawPatternPath(Image *image,const DrawInfo *draw_info,const char *name,
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),
     "begin pattern-path %.1024s %.1024s",name,geometry->value);
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+  DestroyImage(clone_info->fill_pattern);
   clone_info->fill_pattern=(Image *) NULL;
+  DestroyImage(clone_info->stroke_pattern);
   clone_info->stroke_pattern=(Image *) NULL;
   (void) CloneString(&clone_info->primitive,path->value);
   status=DrawImage(*pattern,clone_info);
@@ -5928,6 +5998,11 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
       that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
     */
     stroke_polygon=TraceStrokePolygon(image,draw_info,p);
+    if (stroke_polygon == (PrimitiveInfo *) NULL)
+      {
+        status=MagickFail;
+        break;
+      }
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
     MagickFreeMemory(stroke_polygon);
     if (status == MagickFail)
@@ -6152,8 +6227,9 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
     }
   radii.x=fabs(arc.x);
   radii.y=fabs(arc.y);
-  if ((radii.x == 0.0) || (radii.y == 0.0))
+  if ((radii.x < MagickEpsilon) || (radii.y < MagickEpsilon))
     {
+      /* Substitute a lineto command */
       return (TraceLine(primitive_info,start,end));
     }
   cosine=cos(DegreesToRadians(fmod(angle,360.0)));
@@ -6173,6 +6249,11 @@ TraceArcPath(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
   points[1].y=cosine*end.y/radii.y-sine*end.x/radii.y;
   alpha=points[1].x-points[0].x;
   beta=points[1].y-points[0].y;
+  if (fabs(alpha*alpha+beta*beta) < MagickEpsilon)
+    {
+      /* Substitute a lineto command */
+      return (TraceLine(primitive_info,start,end));
+    }
   factor=1.0/(alpha*alpha+beta*beta)-0.25;
   if (factor <= 0.0)
     factor=0.0;
@@ -6247,13 +6328,13 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
 {
   double
     alpha,
-    *coefficients,
+    *coefficients = (double *) NULL,
     weight;
 
   PointInfo
     end,
     point,
-    *points;
+    *points = (PointInfo *) NULL;
 
   PrimitiveInfo
     *primitive_info,
@@ -6262,7 +6343,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   register PrimitiveInfo
     *p;
 
-  register long
+  register unsigned long
     i,
     j;
 
@@ -6282,45 +6363,80 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     Allocate coeficients.
   */
   quantum=number_coordinates;
-  for (i=0; i < (long) number_coordinates; i++)
+  for (i=0; i < number_coordinates; i++)
   {
-    for (j=i+1; j < (long) number_coordinates; j++)
+    for (j=i+1; j < number_coordinates; j++)
     {
       alpha=fabs(primitive_info[j].point.x-primitive_info[i].point.x);
+      if (alpha > (double) INT_MAX)
+        {
+          ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                          UnableToDrawOnImage);
+          status=MagickFail;
+          goto trace_bezier_done;
+        }
       if (alpha > quantum)
         quantum=(unsigned long) alpha;
       alpha=fabs(primitive_info[j].point.y-primitive_info[i].point.y);
+      if (alpha > (double) INT_MAX)
+        {
+          ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                          UnableToDrawOnImage);
+          status=MagickFail;
+          goto trace_bezier_done;
+        }
       if (alpha > quantum)
         quantum=(unsigned long) alpha;
     }
   }
   quantum=Min(quantum/number_coordinates,BezierQuantum);
-  control_points=(size_t) quantum*number_coordinates;
+  control_points=MagickArraySize(quantum,number_coordinates);
+  if (control_points == 0)
+    {
+      ThrowException3(p_PIMgr->p_Exception,DrawError,ArithmeticOverflow,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
 
   /* make sure we have enough space */
   if (PrimitiveInfoRealloc(p_PIMgr,control_points+1) == MagickFail)
-    return MagickFail;
+    {
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
+  if (coefficients == (double *) NULL)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
-  if ((coefficients == (double *) NULL) || (points == (PointInfo *) NULL))
-    MagickFatalError3(ResourceLimitError,MemoryAllocationFailed,
-      UnableToDrawOnImage);
+  if (points == (PointInfo *) NULL)
+    {
+      ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      status=MagickFail;
+      goto trace_bezier_done;
+    }
   /*
     Compute bezier points.
   */
   end=primitive_info[number_coordinates-1].point;
   weight=0.0;
-  for (i=0; i < (long) number_coordinates; i++)
-    coefficients[i]=Permutate((long) number_coordinates-1,i);
-  for (i=0; i < (long) control_points; i++)
+  for (i=0; i < number_coordinates; i++)
+    coefficients[i]=Permutate(number_coordinates-1,i);
+  for (i=0; i < control_points; i++)
   {
     p=primitive_info;
     point.x=0;
     point.y=0;
     alpha=pow((double) (1.0-weight),(double) number_coordinates-1);
-    for (j=0; j < (long) number_coordinates; j++)
+    for (j=0; j < number_coordinates; j++)
     {
       point.x+=alpha*coefficients[j]*p->point.x;
       point.y+=alpha*coefficients[j]*p->point.y;
@@ -6334,7 +6450,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     Bezier curves are just short segmented polys.
   */
   p=primitive_info;
-  for (i=0; i < (long) control_points; i++)
+  for (i=0; i < control_points; i++)
   {
     if ((status=TracePoint(p,points[i])) != MagickPass)
       goto trace_bezier_done;
@@ -6345,7 +6461,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   p+=p->coordinates;
   primitive_info->coordinates=p-primitive_info;
   PRIMINF_CLEAR_FLAGS(primitive_info);
-  for (i=0; i < (long) primitive_info->coordinates; i++)
+  for (i=0; i < primitive_info->coordinates; i++)
   {
     p->primitive=primitive_info->primitive;
     p--;
@@ -6428,9 +6544,9 @@ TraceEllipse(PrimitiveInfoMgr *p_PIMgr,const PointInfo start,
 
   /* make sure we have enough space */
   points_length = ceil(1.0 + ceil((angle.y - angle.x) / step));
-  if ((size_t) points_length < points_length)
+  if (points_length > (double) PRIMITIVE_INFO_POINTS_MAX)
     {
-      /* points_length too big to be represented as a size_t */
+      /* points_length too big */
       status=MagickFail;
       ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,
                      MemoryAllocationFailed,UnableToDrawOnImage);

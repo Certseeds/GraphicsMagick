@@ -26,7 +26,7 @@ The source code must be extracted prior to compilation as follows:
 .tar.bz2
 
     BZip2 compressed tar archive format. Requires that both the bzip2
-    (http://www.bzip.org/) and tar programs to be available. Extract
+    (http://www.sourceware.org/bzip2/) and tar programs to be available. Extract
     similar to::
 
       bzip2 -d GraphicsMagick-1.3.tar.bz | tar -xvf -
@@ -328,6 +328,11 @@ Optional Packages/Options
 --without-ttf
 
     disable TrueType support
+
+--with-tcmalloc
+
+    enable Google perftools tcmalloc (minimal) memory allocation
+    library support
 
 --with-mtmalloc
 
@@ -751,6 +756,21 @@ Several configure options require special note:
 
   Specify the directory containing MS-Windows-compatible fonts. This is
   not necessary when GraphicsMagick is running under MS-Windows.
+
+--with-tcmalloc
+
+  The GNU libc malloc and some other mallocs exhibits poor concurrency
+  in multi-threaded OpenMP programs and this can severely impact
+  OpenMP speedup.  The 'tcmalloc' library provided as part of Google
+  `gperftools <https://github.com/gperftools/gperftools>`_ has been
+  observed to perform far better than the default GNU libc memory
+  allocator for multi-threaded use, and also for single-threaded use.
+  Overall benchmark performance improvements of up to a factor of two
+  are observed for some algorithms (even with just 12 cores) and it is
+  expected that the improvements will become much more apparent with
+  larger numbers of cores (e.g. 64 cores).  Using tcmalloc may improve
+  performance dramatically for some work-loads on modern multi-core
+  systems.
 
 --with-umem
 

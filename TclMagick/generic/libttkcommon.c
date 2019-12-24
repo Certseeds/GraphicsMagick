@@ -78,6 +78,7 @@ int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
     if( description != NULL ) {
         MagickRelinquishMemory(description);
     }
+    MagickClearException(wandPtr);
     /*
      * if(severity < ErrorException) --> warning
      * return TCL_OK ???

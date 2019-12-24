@@ -2,6 +2,101 @@
 JBIG-KIT revision history
 -------------------------
 
+Changes in version 2.1 (2014-04-08)
+
+This is a security-critical bug-fix release that remains API and ABI
+backwards compatible to version 2.0. Users who process BIE data from
+untrusted sources should upgrade.
+
+  - fixed a buffer-overflow vulnerability in the jbig.c decoder,
+    reported by Florian Weimer (Red Hat): CVE-2013-6369
+    
+  - fixed ability of corrupted input data to force jbig85.c decoder
+    into an end-less loop
+
+  - fixed a bug in the processing of private deterministic-prediction
+    tables (DPPRIV=1) in jbig.c decoder
+
+  - fixed integer-type mismatches in printf arguments on 64-bit systems
+
+  - fuzz-testing script added
+
+Changes in version 2.0 (2008-08-30)
+
+Main new features of release 2.0:
+
+  - This release adds a separate lightweight "T.85" version of the
+    encoder and decoder library (jbig85.c, jbig85.h). This new T.85
+    library is optimized for embedded low-memory applications, such as
+    printers and fax machines. It implements only the subset of the
+    JBIG standard that is required by the ITU-T T.85 fax profile,
+    namely only a single bit plane (P = 1) and no differential layers
+    (DL = D = HITOLO = SEQ = ILEAVE = SMID = TPDON = DPON = DPON =
+    DPLAST = 0) and some other restrictions (MY = 0, MX < 128).
+
+    The T.85 library requires only three pixel rows of the
+    uncompressed image to reside in memory at any time. This 3-line
+    buffer has to be allocated by the calling application, therefore
+    the T.85 library will not call any heap management functions such
+    as malloc() or free() itself.
+
+  - There are also two new example applications pbmtojbg85 and
+    jbgtopbm85 included that provide command-line access to the new
+    T.85 library. (Note to distribution maintainers: there is probably
+    little point in adding pbmtojbg85 and jbgtopbm85 to precompiled
+    JBIG-KIT packages for workstation operating systems, as these two
+    programs do not really provide the end user much additional
+    functionality beyond what pbmtojbg and jbgtopbm already do, which
+    use the full library instead.)
+
+Changes to the original full jbig.c library from version 1.6:
+
+  - the arithmetic codec routines are now located in a separate source
+    file (they are now used by both the full library jbig.c and the new
+    T.85 library jbig85.c, and might also be of use to other applications)
+
+  - arithmetic decoder behaviour slightly changed to enable the
+    lookahead needed to handle T.85-style NEWLEN after the final
+    stripe
+
+  - added encoder support for adding comment marker segment
+
+  - added encoder option for using SDRST marker instead of SDNORM
+    (only useful to make encoder able to generate a wider range
+    of test data)
+
+  - added pbmtojbg options -C and -r, which provide command-line
+    access to the previous two extensions
+
+  - slightly improved diagnostic output of jbgtopbm option -d
+
+  - non-English translations of error messages are now provided
+    in a separate PO file (e.g., for use with GNU gettext),
+    jbg_strerror() no longer has a language attribute and the
+    JBG_EN, JBG_DE_8859_1, JBG_DE_UTF_8 constants no longer exist
+
+  - jbg_dec_in() return values changed; the least significant bits of
+    the error codes now provide more information about what caused the
+    error, beyond what the more general error text messages returned by
+    jbg_strerror() reveal
+
+  - pbmtojbg has a new option -f as a shortcut for all the options
+    needed to make the output comply to the basic ITU-T T.85 fax
+    profile
+
+  - jbg_dec_getwidth(), jbg_dec_getheight(), jbg_dec_getsize(), and
+    jbg_dec_getsize_merged() return now an unsigned long value
+    (was: long), and return 0 (was: -1) if no image is available yet
+
+  - jbgtopbm now outputs image dimensions in header padded to 10
+    digits fixed width, for consistency with jbgtopbm85
+    to allow for later in-place update of height due to NEWLEN
+
+  - macro JBG_LICENCE can be changed from the default value "GPL" to a
+    licence agreement reference code to if the library is used under a
+    commercial licence, to clarify under which exact licence the
+    library is used in a particular application
+
 Changes in version 1.6 (2004-06-11)
 
   - various small changes to reduce the risk of 32-bit unsigned

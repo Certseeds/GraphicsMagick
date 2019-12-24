@@ -5,6 +5,8 @@
 #* Copyright 2005-2008  Mark Mitchell, All Rights Reserved
 #* License: see __license__ below.
 
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
 
 __doc__ = """
 Renders reStructuredText files to HTML using the custom docutils writer
@@ -176,9 +178,9 @@ def main(argv=None):
                                         'link-stylesheet=',
                                         'url-prefix=',
                                         ])
-    except getopt.GetoptError, msg:
-         print msg
-         print __doc__
+    except getopt.GetoptError as msg:
+         print(msg)
+         print(__doc__)
          return 1
 
     # process options
@@ -189,7 +191,7 @@ def main(argv=None):
 
     for opt, val in opts:
         if opt in ("-h", "--help"):
-            print __doc__
+            print(__doc__)
             return 0
 
         if opt in ("-e", "--embed-stylesheet"):

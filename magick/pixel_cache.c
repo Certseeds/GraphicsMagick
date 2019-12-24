@@ -607,9 +607,6 @@ SetNexus(const Image * restrict image,const long x,const long y,
   char
     message[MaxTextExtent];
 
-  magick_uint64_t
-    number_pixels;
-
   size_t
     length,
     packet_size,
@@ -756,6 +753,9 @@ SetNexus(const Image * restrict image,const long x,const long y,
     {
       magick_off_t
         offset;
+
+      magick_uint64_t
+        number_pixels = 0;
 
       offset=y*(magick_off_t) cache_info->columns+x;
       if (offset >= 0)

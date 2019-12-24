@@ -3,6 +3,9 @@
 #* Author: Mark Mitchell
 #* License: Same as GraphicsMagick.
 
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
+
 __doc__ = """
 HTML fragments which are used as the banner and navigation menu in
 GraphicsMagick web site pages.
@@ -81,5 +84,5 @@ footer = None
 
 # test
 if __name__ == '__main__':
-    print make_banner()
-    print make_nav()
+    print((make_banner()))
+    print((make_nav()))

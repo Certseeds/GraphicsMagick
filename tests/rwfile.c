@@ -191,9 +191,11 @@ int main ( int argc, char **argv )
       goto program_exit;
     }
 
-  (void) strncpy(infile, argv[arg], MaxTextExtent-1 );
+  (void) strncpy(infile, argv[arg], MaxTextExtent );
+  infile[MaxTextExtent-1]='\0';
   arg++;
-  (void) strncpy( format, argv[arg], MaxTextExtent-1 );
+  (void) strncpy( format, argv[arg], MaxTextExtent );
+  format[MaxTextExtent-1]='\0';
 
   magick_info=GetMagickInfo(format,&exception);
   if (magick_info == (MagickInfo *) NULL)
@@ -228,7 +230,8 @@ int main ( int argc, char **argv )
     }
   else
     {
-      (void) strncpy( imageInfo->filename, infile, MaxTextExtent-1 );
+      (void) strncpy( imageInfo->filename, infile, MaxTextExtent );
+      imageInfo->filename[MaxTextExtent-1]='\0';
       if (!magick_info->adjoin || !check_for_added_frames)
         (void) strcat( imageInfo->filename, "[0]" );
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -296,7 +299,8 @@ int main ( int argc, char **argv )
   /*
    * Save image to file
    */
-  (void) strncpy( original->magick, format, MaxTextExtent-1 );
+  (void) strncpy( original->magick, format, MaxTextExtent );
+  original->magick[MaxTextExtent-1]='\0';
   (void) fflush(stdout);
 
   strcpy(imageInfo->filename,"");
@@ -308,7 +312,8 @@ int main ( int argc, char **argv )
     }
   else
     {
-      (void) strncpy( original->filename, filename, MaxTextExtent-1 );
+      (void) strncpy( original->filename, filename, MaxTextExtent );
+      original->filename[MaxTextExtent-1]='\0';
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Writing image %s", original->filename);
     }
@@ -341,14 +346,16 @@ int main ( int argc, char **argv )
       ping_error = MagickFalse;
 
     strcpy(imageInfo->filename,"");
-    (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+    (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+    imageInfo->magick[MaxTextExtent-1]='\0';
     if (use_stdio)
       {
         imageInfo->file=fopen(filename,"rb");
       }
     else
       {
-        strncpy( imageInfo->filename, filename, MaxTextExtent-1 );
+        strncpy( imageInfo->filename, filename, MaxTextExtent );
+        imageInfo->filename[MaxTextExtent-1]='\0';
       }
     if ( size[0] != '\0' )
       (void) CloneString( &imageInfo->size, size );
@@ -390,7 +397,8 @@ int main ( int argc, char **argv )
   /*
    * Read image back from file
    */
-  (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+  imageInfo->magick[MaxTextExtent-1]='\0';
   strcpy(imageInfo->filename,"");
   if (use_stdio)
     {
@@ -398,7 +406,8 @@ int main ( int argc, char **argv )
     }
   else
     {
-      strncpy( imageInfo->filename, filename, MaxTextExtent-1 );
+      strncpy( imageInfo->filename, filename, MaxTextExtent );
+      imageInfo->filename[MaxTextExtent-1]='\0';
     }
   if ( size[0] != '\0' )
     (void) CloneString( &imageInfo->size, size );
@@ -433,7 +442,8 @@ int main ( int argc, char **argv )
   (void) remove(filename);
 
   (void) sprintf( filename, filespec, 2, format );
-  (void) strncpy( original->magick, format, MaxTextExtent-1 );
+  (void) strncpy( original->magick, format, MaxTextExtent );
+  original->magick[MaxTextExtent-1]='\0';
   strcpy(imageInfo->filename,"");
   if (use_stdio)
     {
@@ -443,7 +453,8 @@ int main ( int argc, char **argv )
     }
   else
     {
-      (void) strncpy( original->filename, filename, MaxTextExtent-1 );
+      (void) strncpy( original->filename, filename, MaxTextExtent );
+      original->filename[MaxTextExtent-1]='\0';
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Writing stdio image %s", original->filename);
     }
@@ -466,7 +477,8 @@ int main ( int argc, char **argv )
   /*
    * Read image back from file
    */
-  (void) strncpy( imageInfo->magick, format, MaxTextExtent-1 );
+  (void) strncpy( imageInfo->magick, format, MaxTextExtent );
+  imageInfo->magick[MaxTextExtent-1]='\0';
   strcpy(imageInfo->filename,"");
   if (use_stdio)
     {
@@ -474,7 +486,8 @@ int main ( int argc, char **argv )
     }
   else
     {
-      (void) strncpy( imageInfo->filename, filename, MaxTextExtent-1 );
+      (void) strncpy( imageInfo->filename, filename, MaxTextExtent );
+      imageInfo->filename[MaxTextExtent-1]='\0';
     }
   if ( size[0] != '\0' )
     (void) CloneString( &imageInfo->size, size );

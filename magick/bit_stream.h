@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003, 2005, 2009 GraphicsMagick Group
+  Copyright (C) 2003-2019 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -74,43 +74,43 @@ extern "C" {
   } WordStreamWriteHandle;
 
   extern MagickExport void
-  MagickBitStreamInitializeRead(BitStreamReadHandle *bit_stream,
+  MagickBitStreamInitializeRead(BitStreamReadHandle * restrict bit_stream,
                                 const unsigned char *bytes);
 
   extern MagickExport unsigned int
-  MagickBitStreamMSBRead(BitStreamReadHandle *bit_stream,
+  MagickBitStreamMSBRead(BitStreamReadHandle * restrict bit_stream,
                          const unsigned int requested_bits);
 
   extern MagickExport void
-  MagickBitStreamInitializeWrite(BitStreamWriteHandle *bit_stream,
+  MagickBitStreamInitializeWrite(BitStreamWriteHandle * restrict bit_stream,
                                  unsigned char *bytes);
 
   extern MagickExport void
-  MagickBitStreamMSBWrite(BitStreamWriteHandle *bit_stream,
+  MagickBitStreamMSBWrite(BitStreamWriteHandle * restrict bit_stream,
                           const unsigned int requested_bits,
                           const unsigned int quantum);
 
   extern MagickExport void
-  MagickWordStreamInitializeRead(WordStreamReadHandle *word_stream,
+  MagickWordStreamInitializeRead(WordStreamReadHandle * restrict word_stream,
                                  WordStreamReadFunc read_func,
-                                 void *read_func_state);
+                                 void * restrict read_func_state);
 
   extern MagickExport unsigned int
-  MagickWordStreamLSBRead(WordStreamReadHandle *word_stream,
+  MagickWordStreamLSBRead(WordStreamReadHandle * restrict word_stream,
                           const unsigned int requested_bits);
 
   extern MagickExport void
-  MagickWordStreamInitializeWrite(WordStreamWriteHandle *word_stream,
+  MagickWordStreamInitializeWrite(WordStreamWriteHandle * restrict word_stream,
                                   WordStreamWriteFunc write_func,
-                                  void *write_func_state);
+                                  void * restrict write_func_state);
 
   extern MagickExport void
-  MagickWordStreamLSBWrite(WordStreamWriteHandle *word_stream,
+  MagickWordStreamLSBWrite(WordStreamWriteHandle * restrict word_stream,
                            const unsigned int requested_bits,
                            const unsigned int quantum);
 
   extern MagickExport void
-  MagickWordStreamLSBWriteFlush(WordStreamWriteHandle *word_stream);
+  MagickWordStreamLSBWriteFlush(WordStreamWriteHandle * restrict word_stream);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

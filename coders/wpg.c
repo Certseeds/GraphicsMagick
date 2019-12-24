@@ -243,9 +243,12 @@ static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
   colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
   if (colormap != (PixelPacket *) NULL)
     {
-      (void) memcpy(colormap,image->colormap,
-                    (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
-      MagickFreeMemory(image->colormap);
+      if (image->colormap != (PixelPacket *) NULL)
+        {
+          (void) memcpy(colormap,image->colormap,
+                        (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
+          MagickFreeMemory(image->colormap);
+        }
       image->colormap = colormap;
       image->colors = colors;
       return MagickPass;
@@ -790,14 +793,9 @@ unsigned Flags;
 
 
 static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
-                                ExtendedSignedIntegralType PS_Offset,long PS_Size,ExceptionInfo *exception)
+                                ExtendedSignedIntegralType PS_Offset,
+                                size_t PS_Size,ExceptionInfo *exception)
 {
-  char
-    postscript_file[MaxTextExtent];
-
-  FILE
-    *ps_file;
-
   ImageInfo
     *clone_info;
 
@@ -805,77 +803,151 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     *image2;
 
   unsigned char
-    magick[2*MaxTextExtent];
+    header_magick[2*MaxTextExtent];
+
+  void
+    *ps_data,
+    *ps_data_alloc = (unsigned char *) NULL;
+
+  char
+    format[MaxTextExtent];
 
   size_t
-    magick_size;
+    header_magick_size;
 
+  magick_off_t
+    filesize;
 
-  if ((clone_info=CloneImageInfo(image_info)) == NULL)
-    return(image);
-  clone_info->blob=(void *) NULL;
-  clone_info->length=0;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "ExtractPostscript(): PS_Offset=%"MAGICK_OFF_F"d, PS_Size=%"MAGICK_SIZE_T_F"u",
+                          (magick_off_t) PS_Offset, (MAGICK_SIZE_T) PS_Size);
 
-  /* Obtain temporary file */
-  ps_file = AcquireTemporaryFileStream(postscript_file,BinaryFileIOMode);
-  if (!ps_file)
+  /*
+    Validate that claimed subordinate image data is contained in file size
+  */
+  filesize = GetBlobSize(image);
+  if ((PS_Offset > filesize) || ((size_t) (filesize - PS_Offset) < PS_Size))
     {
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Gannot create file stream for PS image");
-      goto FINISH;
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
+                              (magick_off_t) PS_Offset);
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
     }
 
-  /* Copy postscript to temporary file */
-  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset) goto BAD_SEEK;
-  magick_size = ReadBlob(image, sizeof(magick), magick);
-
-  if(SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
-  {
-BAD_SEEK:
-    (void) fclose(ps_file);
-    ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
-    goto FINISH_UNL;
-  }
-
-  while(PS_Size-- > 0)
+  /*
+    Get subordinate file header magick and use it to identify file format
+  */
+  if (SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
     {
-      int c;
-      if ((c = ReadBlobByte(image)) == EOF)
-        {
-          (void) fclose(ps_file);
-          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
-          goto FINISH_UNL;
-        }
-      (void) fputc(c,ps_file);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
+                              (magick_off_t) PS_Offset);
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
     }
-  (void) fclose(ps_file);
-
-  /* Detect file format - Check magic.mgk configuration file. */
-  if (GetMagickFileFormat(magick,magick_size,clone_info->magick,
-          MaxTextExtent,exception) == MagickFail)
+  header_magick_size = ReadBlob(image, Min(sizeof(header_magick),PS_Size), header_magick);
+  format[0]='\0';
+  /*
+    MagickExport MagickPassFail
+    GetMagickFileFormat(const unsigned char *header, const size_t header_length,
+      char *format, const size_t format_length,
+      ExceptionInfo *exception)
+  */
+  if (GetMagickFileFormat(header_magick,header_magick_size,format,
+                          sizeof(format),exception) == MagickFail)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Failed to identify embedded file type!");
       ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
-      goto FINISH_UNL;
+      return image;
     }
 
-  if(!ApproveFormatForWPG(clone_info->magick))
+  /*
+    Verify if this is an allowed subordinate image format
+  */
+  if(!ApproveFormatForWPG(format))
   {
     (void) LogMagickEvent(CoderEvent, GetMagickModule(),
-                        "Format \"%s\" cannot be embedded inside WPG.", clone_info->magick);
+                        "Format \"%s\" cannot be embedded inside WPG.", format);
     ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
-    goto FINISH_UNL;
+    return image;
   }
 
+  /*
+    Restore seek offset after reading header
+  */
+  if (SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
+                              (magick_off_t) PS_Offset);
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
+    }
+  /*
+    Allocate buffer if zero-copy read is not possible.
+  */
+  if (GetBlobStreamData(image) == (unsigned char *) NULL)
+    {
+      ps_data_alloc=MagickAllocateMemory(unsigned char *, PS_Size);
+      if (ps_data_alloc == (unsigned char *) NULL)
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "ExtractPostscript(): Failed to allocate "
+                                  "%"MAGICK_SIZE_T_F"u bytes of memory",
+                                  (MAGICK_SIZE_T) PS_Size);
+          ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
+          return image;
+        }
+    }
+  /*
+    Use a zero-copy read when possible to access data
+  */
+  ps_data=ps_data_alloc;
+  if (ReadBlobZC(image,PS_Size,&ps_data) != PS_Size)
+    {
+      MagickFreeMemory(ps_data_alloc);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "ExtractPostscript(): Failed to read %"MAGICK_SIZE_T_F"u bytes of data at"
+                              " offset=%"MAGICK_OFF_F"d",
+                              (MAGICK_SIZE_T) PS_Size, (magick_off_t) PS_Offset);
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image; /* return (Image *) NULL; */
+    }
+  if (ps_data_alloc != ps_data)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "ExtractPostscript(): Zero copy read.");
+    }
+
+  /*
+    Read nested image from blob, forcing read as Postscript format
+  */
+  if ((clone_info=CloneImageInfo(image_info)) == NULL)
+    {
+      MagickFreeMemory(ps_data_alloc);
+      return(image);
+    }
+  clone_info->blob=(void *) NULL;
+  /* clone_info->length=0; */
+  (void) strlcpy(clone_info->magick, format, sizeof(clone_info->magick));
+  (void) strcpy(clone_info->filename, "");
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "Reading embedded \"%s\" content...", clone_info->magick);
-
-  /* Read nested image, forcing read as Postscript format */
-  FormatString(clone_info->filename,"%s:%.1024s",clone_info->magick,postscript_file);
-  image2 = ReadImage(clone_info,exception);
-
+                        "Reading embedded \"%s\" content from blob...", clone_info->magick);
+  image2 = BlobToImage(clone_info, ps_data, PS_Size, &image->exception );
+  MagickFreeMemory(ps_data_alloc);
   if (!image2)
-    goto FINISH_UNL;
+    {
+      goto FINISH_UNL;
+    }
   if(exception->severity>=ErrorException) /* When exception is raised, destroy image2 read. */
   {
     CloseBlob(image2);
@@ -925,8 +997,6 @@ BAD_SEEK:
     image = image->next;                /* Rewind the cursor to the end. */
 
  FINISH_UNL:
-  (void) LiberateTemporaryFile(postscript_file);
- FINISH:
   DestroyImageInfo(clone_info);
   return(image);
 }
@@ -1130,12 +1200,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
           "File type: %d", Header.FileType);
 
-        /* Determine file size. */
+  /* Determine file size. */
   filesize = GetBlobSize(image);              /* zero is returned if the size cannot be determined. */
   if(filesize>0 && BlobIsSeekable(image))
   {
     if(filesize > (magick_off_t)0xFFFFFFFF)
-        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in MAT! */
+        filesize = (magick_off_t)0xFFFFFFFF;  /* More than 4GiB are not supported in WPG! */
   }
   else
   {
@@ -1222,7 +1292,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               if(Rec.RecordLength > 8)
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+8,   /* skip PS header in the wpg */
-                                        (long) Rec.RecordLength-8,exception);
+                                        (size_t) (Rec.RecordLength-8),exception);
               break;
 
             case 0x14:  /* bitmap type 2 */
@@ -1358,6 +1428,10 @@ UnpackRaster:
                     }
                 }
 
+              if (image_info->subrange != 0)
+                if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                  goto Finish;
+
               /* Allocate next image structure. */
               AllocateNextImage(image_info,image);
               image->depth=8;
@@ -1372,7 +1446,7 @@ UnpackRaster:
               if(Rec.RecordLength>0x3C)
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+0x3C,   /* skip PS l2 header in the wpg */
-                                        (long) Rec.RecordLength-0x3C,exception);
+                                        (size_t) (Rec.RecordLength-0x3C),exception);
               break;
             }
         }
@@ -1560,6 +1634,9 @@ UnpackRaster:
                      Tx(2,2)=1; */
                 }
 
+              if (image_info->subrange != 0)
+                if (image->scene >= (image_info->subimage+image_info->subrange-1))
+                  goto Finish;
 
               /* Allocate next image structure. */
               AllocateNextImage(image_info,image);
@@ -1573,10 +1650,10 @@ UnpackRaster:
 
             case 0x12:  /* Postscript WPG2*/
               i=ReadBlobLSBShort(image);
-              if(Rec2.RecordLength > (unsigned int) i)
+              if(Rec2.RecordLength > ((unsigned long) i+2))
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+i,              /*skip PS header in the wpg2*/
-                                        (long) (Rec2.RecordLength-i-2),exception);
+                                        (size_t) (Rec2.RecordLength-i-2),exception);
               break;
 
             case 0x1B:          /*bitmap rectangle*/
@@ -1667,6 +1744,7 @@ ModuleExport void RegisterWPGImage(void)
   entry->description="Word Perfect Graphics";
   entry->module="WPG";
   entry->seekable_stream=True;
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 

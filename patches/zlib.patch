@@ -1,0 +1,15 @@
+diff -r zlib-1.2.11/zconf.h zlib/zconf.h
+330a331,343
+> /* This part added for GraphicsMagick */
+> #if defined (_VISUALC_)
+> #  if defined(_MT) && defined(_DLL) && !defined(_LIB)
+> #    define ZLIB_DLL
+> #else
+> #    define ZLIB_LIB
+> #  endif
+> // Disable deprecation warning for POSIX calls
+> #  pragma warning(disable : 4996 )
+> #include <io.h> // Needed for open, close, read, write
+> #endif
+> /* End of GraphicsMagick part. */
+> 

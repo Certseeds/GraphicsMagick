@@ -1,13 +1,13 @@
 /*
   Copyright (C) 2003, 2005, 2009 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
-  Bitstream benchmarks and tests.  
+  Bitstream benchmarks and tests.
   Written by Bob Friesenhahn, September 2003
- 
+
 */
 
 #include <magick/studio.h>
@@ -167,7 +167,7 @@ int main ( int argc, char *argv[])
             allocated_bytes *= 2;
           if (bits > 16)
             allocated_bytes *= 2;
-          
+
           bytes=(unsigned char *)malloc(allocated_bytes);
           if (!bytes)
             {
@@ -175,10 +175,10 @@ int main ( int argc, char *argv[])
               exit(1);
             }
           (void) memset(bytes,0xff,allocated_bytes);
-          
+
           MagickBitStreamInitializeWrite(&write_stream,bytes);
           MagickBitStreamInitializeRead(&read_stream,bytes);
-          
+
           for (write_quantum=0; write_quantum < max_quantum; write_quantum++)
             {
               MagickBitStreamMSBWrite(&write_stream,bits,write_quantum);
@@ -189,7 +189,7 @@ int main ( int argc, char *argv[])
                          bits,write_quantum,read_quantum);
                 }
             }
-          
+
           free(bytes);
         }
     }

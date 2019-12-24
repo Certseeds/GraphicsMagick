@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
 <title>Installing GraphicsMagick</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
@@ -112,7 +112,7 @@ building under Microsoft Windows:</p>
 <ul>
 <li><p class="first">GraphicsMagick requires the BZLIB library from</p>
 <blockquote>
-<p><a class="reference external" href="http://www.bzip.org/">http://www.bzip.org/</a></p>
+<p><a class="reference external" href="http://www.sourceware.org/bzip2/">http://www.sourceware.org/bzip2/</a></p>
 </blockquote>
 <p>to read and write BZip compressed MIFF images.</p>
 </li>
@@ -242,7 +242,18 @@ available from</p>
 <blockquote>
 <p><a class="reference external" href="http://www.ijg.org/">http://www.ijg.org/</a></p>
 </blockquote>
-<p>to read and write the JPEG v1 image format.</p>
+<p>or libjpeg-turbo available from</p>
+<blockquote>
+<p><a class="reference external" href="https://libjpeg-turbo.org/">https://libjpeg-turbo.org/</a> or <a class="reference external" href="https://github.com/libjpeg-turbo/libjpeg-turbo">https://github.com/libjpeg-turbo/libjpeg-turbo</a></p>
+</blockquote>
+<p>to read and write the JPEG v1 image format.  The 'turbo' releases
+are much faster than the IJG releases on certain targets (due to
+using assembly code and other optimizations), but lack the
+SmartScale JPEG extension introduced in IJG JPEG v8, and the
+lossless coding mode JPEG extension introduced in IJG JPEG v9 (which
+is not compatible with standard lossless JPEG!).</p>
+<p>GraphicsMagick supports both 8-bit and 12-bit JPEG, but
+unfortunately it does not yet support both at once.</p>
 <p>Apply this JPEG patch to Independent JPEG Group's (6b release!)
 source distribution if you want to read lossless jpeg-encoded DICOM
 (medical) images:</p>
@@ -303,8 +314,21 @@ replacement) is not used, then vsprintf is used instead, which
 decreases the security of GraphicsMagick due to possible buffer
 overrun exploits.</p>
 </li>
+<li><p class="first">GraphicsMagick may optionally use the 'tcmalloc' library provided as
+part of Google gperftools available from</p>
+<blockquote>
+<p><a class="reference external" href="https://github.com/gperftools/gperftools">https://github.com/gperftools/gperftools</a></p>
+</blockquote>
+<p>to provide enhanced versions of the standard memory allocation
+facilities.  Use of tcmalloc may improve performance for both
+single-threaded and multi-threaded programs.  Benchmarking under
+Linux shows a doubling of performance with tcmalloc over the default
+glibc malloc when images are repeatedly allocated, cleared, and
+de-allocated.</p>
+</li>
 <li><p class="first">GraphicsMagick may optionally use the umem memory allocation library
-which is included in Sun's Solaris operating system or available from</p>
+which is included in Sun's Solaris operating system, and
+OpenSolaris/Illumos derivatives, or available from</p>
 <blockquote>
 <p><a class="reference external" href="https://labs.omniti.com/trac/portableumem">https://labs.omniti.com/trac/portableumem</a></p>
 </blockquote>

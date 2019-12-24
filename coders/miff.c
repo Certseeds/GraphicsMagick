@@ -1677,7 +1677,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                           length=(int) (1.01*pixels_size+12);
                           if (image->logging)
                             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                                  "length = %zu", length);
+                                                  "length = %"MAGICK_SIZE_T_F"u",
+                                                  (MAGICK_SIZE_T) length);
                           zip_info.avail_in=(uInt) ReadBlob(image,length,zip_info.next_in);
                         }
                       else
