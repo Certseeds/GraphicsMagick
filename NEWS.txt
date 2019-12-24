@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 22, 2019
+This file was last updated to reflect changes up to December 24, 2019
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -20,7 +20,7 @@ release and not attempt to patch older releases.
   :local:
 
 
-1.3.34 (December ??, 2019)
+1.3.34 (December 24, 2019)
 ==========================
 
 Special Issues:
@@ -29,12 +29,14 @@ Special Issues:
   library) which is now often a libxml2 dependendency causes huge
   process initialization overhead.  This is noticed as unexpected
   slowness when GraphicsMagick utilities are used to process small to
-  medium sized files.  The time to initialize is often longer than the
-  time to read the input file, process the image, and write the output
-  file.  If the 'ICU' dependency can not be avoided, then make sure to
-  use the modules build.  Please lobby the 'ICU' library developers to
-  change their implementation to avoid long start-up times due to
-  merely linking with the library.
+  medium sized files.  The time to initialize the 'ICU' library is
+  often longer than the time that GraphicsMagick would otherwise
+  require to read the input file, process the image, and write the
+  output file.  If the 'ICU' dependency can not be avoided, then make
+  sure to use the modules build so there is only impact for file
+  formats which require libxml2.  Please lobby the 'ICU' library
+  developers to change their implementation to avoid long start-up
+  times due to merely linking with the library.
 
 Security Fixes:
 
@@ -155,7 +157,7 @@ Behavior Changes:
 
 * PNG: Post-processing to convert the image type in the PNG reader
   based on a specified magick prefix string is now disabled.  This can
-  (and should) be done after theimage has been returned.
+  (and should) be done after the image has been returned.
 
 * Trace Logging: The compiled-in logging default is always to stderr,
   which may be over-ridden using log.mgk as soon as it is loaded.
