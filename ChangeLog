@@ -1,3 +1,14 @@
+2019-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.c (main): Allow Ghostscript supported formats to be
+	a bit lossy.
+
+	* tests/rwblob.c (main): Allow Ghostscript supported formats to be
+	a bit lossy.
+
+	* magick/gradient.c (GradientImage): Compute blending alpha with
+	double precision for more precision.
+
 2019-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updates in preparation for 1.3.34 release.

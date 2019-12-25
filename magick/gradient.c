@@ -75,9 +75,6 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   MagickPassFail
     status=MagickPass;
 
-  /*
-    Determine (Hue, Saturation, Brightness) gradient.
-  */
   assert(image != (const Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(start_color != (const PixelPacket *) NULL);
@@ -86,7 +83,7 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   monitor_active=MagickMonitorActive();
 
   /*
-    Generate gradient pixels.
+    Generate gradient pixels using alpha blending
   */
 #if defined(HAVE_OPENMP)
 #  pragma omp parallel for shared(row_count, status)
@@ -114,8 +111,9 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
         {
           for (x=0; x < (long) image->columns; x++)
             {
-              BlendCompositePixel(&q[x],start_color,stop_color,(double)
-                                  MaxRGB*(y*image_columns+x)/(image_columns*image_rows));
+              BlendCompositePixel(&q[x],start_color,stop_color,
+                                  MaxRGBDouble*((double)y*image_columns+x)/
+                                  ((double)image_columns*image_rows));
             }
 
           if (!SyncImagePixelsEx(image,&image->exception))
