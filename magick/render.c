@@ -3379,36 +3379,37 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 */
                 gradient_width=Max(AbsoluteValue(bounds.x2-bounds.x1+1),1);
                 gradient_height=Max(AbsoluteValue(bounds.y2-bounds.y1+1),1);
-                {
-                  char resource_str[MaxTextExtent];
-                  const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
-                  const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
-                  const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
-                  if (gradient_width > width_resource_limit)
-                    {
-                      FormatString(resource_str,"%" MAGICK_INT64_F "d", width_resource_limit);
-                      ThrowException(&image->exception,ResourceLimitError,
-                                     ImagePixelWidthLimitExceeded,resource_str);
-                      status=MagickFail;
-                      break;
+                if (AcquireMagickResource(WidthResource,gradient_width) != MagickPass)
+                  {
+                    char resource_str[MaxTextExtent];
+                    const magick_int64_t width_resource_limit = GetMagickResourceLimit(WidthResource);
+                    FormatString(resource_str,"%" MAGICK_INT64_F "d", width_resource_limit);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelWidthLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
+                if (AcquireMagickResource(HeightResource,gradient_height) != MagickPass)
+                  {
+                    char resource_str[MaxTextExtent];
+                    const magick_int64_t hight_resource_limit = GetMagickResourceLimit(HeightResource);
+                    FormatString(resource_str,"%" MAGICK_INT64_F "d", hight_resource_limit);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelHeightLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
                     }
-                  if (gradient_height > hight_resource_limit)
-                    {
-                      FormatString(resource_str,"%" MAGICK_INT64_F "d", hight_resource_limit);
-                      ThrowException(&image->exception,ResourceLimitError,
-                                     ImagePixelHeightLimitExceeded,resource_str);
-                      status=MagickFail;
-                      break;
-                    }
-                  if (gradient_width*gradient_height > pixels_resource_limit)
-                    {
-                      FormatString(resource_str,"%" MAGICK_INT64_F "d", pixels_resource_limit);
-                      ThrowException(&image->exception,ResourceLimitError,
-                                     ImagePixelLimitExceeded,resource_str);
-                      status=MagickFail;
-                      break;
-                    }
-                }
+                if (AcquireMagickResource(PixelsResource,(magick_uint64_t) gradient_width*gradient_height)
+                    != MagickPass)
+                  {
+                    char resource_str[MaxTextExtent];
+                    const magick_int64_t pixels_resource_limit = GetMagickResourceLimit(PixelsResource);
+                    FormatString(resource_str,"%" MAGICK_INT64_F "d", pixels_resource_limit);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
                 /*
                   Apply an arbitrary limit to gradient size requests
                   since gradient images can take a lot of memory.

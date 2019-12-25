@@ -1,5 +1,16 @@
 2019-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Test gradient image resource limits
+	using the proper API.
+
+	* magick/resource.c (ResourceInfinity): Fix definition of
+	ResourceInfinity.  Due to parenthesis in the wrong place, the
+	defined value was -1 rather than the maximum range value.  The
+	effect of this is that GetMagickResource() would return -1 rather
+	than the maximum range value for the return type as documented.
+	Regression was added on Saturday, March 09, 2019 in the 1.3.32
+	release via changeset 15927:a5318823758c.
+
 	* tests/rwfile.c (main): Allow Ghostscript supported formats to be
 	a bit lossy.
 

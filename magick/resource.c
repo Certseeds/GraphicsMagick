@@ -47,7 +47,7 @@
 /*
   Define  declarations.
 */
-#define ResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0)) >> 1)
+#define ResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1))
 #define ResourceInfoMaxIndex ((unsigned int) (sizeof(resource_info)/sizeof(resource_info[0])-1))
 
 /*
