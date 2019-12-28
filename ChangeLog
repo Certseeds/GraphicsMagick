@@ -1,5 +1,8 @@
 2019-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/gradient.c (GradientImage): Output PseudoClass images if
+	we can.
+
 	* coders/pcx.c (WritePCXImage): Fix heap overflow in PCX writer
 	when bytes per line value overflows its 16-bit storage unit.
 	Fixes SourceForge bug #619 "heap-buffer-overflow in WritePCXImage"

@@ -17,6 +17,7 @@
 #include "magick/studio.h"
 #include "magick/alpha_composite.h"
 #include "magick/color.h"
+#include "magick/colormap.h"
 #include "magick/gradient.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -92,6 +93,8 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   if (pixel_packets == (PixelPacket *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
                          image->filename);
+  if (span <= MaxColormapSize)
+    AllocateImageColormap(image,span);
 
   /*
     Generate gradient pixels using alpha blending
@@ -111,6 +114,9 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
 #endif
     }
 
+  if (image->storage_class == PseudoClass)
+    (void) memcpy(image->colormap,pixel_packets,span*sizeof(PixelPacket));
+
   /*
     Copy gradient pixels to image rows
   */
@@ -122,15 +128,30 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
       register PixelPacket
         *q;
 
+      register IndexPacket
+        *indexes = (IndexPacket *) NULL;
+
       q=SetImagePixelsEx(image,0,y,image->columns,1,&image->exception);
       if (q == (PixelPacket *) NULL)
         {
           status=MagickFail;
           break;
         }
-
+      if (image->storage_class == PseudoClass)
+        {
+          indexes=AccessMutableIndexes(image);
+          if (indexes == (IndexPacket *) NULL)
+            {
+              status=MagickFail;
+              break;
+            }
+        }
       for (x=0; x < image->columns; x++)
-        q[x] = pixel_packets[y];
+        {
+          if (indexes)
+            indexes[x]=(IndexPacket) y;
+          q[x] = pixel_packets[y];
+        }
 
       if (!SyncImagePixelsEx(image,&image->exception))
         {
