@@ -59,11 +59,15 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
                                           const PixelPacket *start_color,
                                           const PixelPacket *stop_color)
 {
-  const unsigned long
-    image_rows=image->rows,
-    image_columns=image->columns;
+  PixelPacket
+    *pixel_packets;
 
-  long
+  double
+    alpha_scale;
+
+  unsigned long
+    i,
+    span,
     y;
 
   unsigned long
@@ -82,74 +86,74 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
 
   monitor_active=MagickMonitorActive();
 
+  span = image->rows;
+
+  pixel_packets=MagickAllocateArray(PixelPacket *,span,sizeof(PixelPacket));
+  if (pixel_packets == (PixelPacket *) NULL)
+    ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
+                         image->filename);
+
   /*
     Generate gradient pixels using alpha blending
+    OpenMP is not demonstrated to help here.
   */
-#if defined(HAVE_OPENMP)
-#  pragma omp parallel for shared(row_count, status)
-#endif
-  for (y=0; y < (long) image->rows; y++)
-    {
-      MagickPassFail
-        thread_status;
+  alpha_scale = span > 1 ? ((MaxRGBDouble)/(span-1)) : MaxRGBDouble/2.0;
 
-      register long
+  for (i=0; i < span; i++)
+    {
+      double alpha = (double)i*alpha_scale;
+      BlendCompositePixel(&pixel_packets[i],start_color,stop_color,alpha);
+#if 0
+      fprintf(stdout, "%lu: %g (r=%u, g=%u, b=%u)\n", i, alpha,
+              (unsigned) pixel_packets[i].red,
+              (unsigned) pixel_packets[i].green,
+              (unsigned) pixel_packets[i].blue);
+#endif
+    }
+
+  /*
+    Copy gradient pixels to image rows
+  */
+  for (y=0; y < image->rows; y++)
+    {
+      register unsigned long
         x;
 
       register PixelPacket
         *q;
 
-      thread_status=status;
-      if (thread_status == MagickFail)
-        continue;
-
       q=SetImagePixelsEx(image,0,y,image->columns,1,&image->exception);
       if (q == (PixelPacket *) NULL)
-        thread_status=MagickFail;
-
-      if (q != (PixelPacket *) NULL)
         {
-          for (x=0; x < (long) image->columns; x++)
-            {
-              BlendCompositePixel(&q[x],start_color,stop_color,
-                                  MaxRGBDouble*((double)y*image_columns+x)/
-                                  ((double)image_columns*image_rows));
-            }
+          status=MagickFail;
+          break;
+        }
 
-          if (!SyncImagePixelsEx(image,&image->exception))
-            thread_status=MagickFail;
+      for (x=0; x < image->columns; x++)
+        q[x] = pixel_packets[y];
+
+      if (!SyncImagePixelsEx(image,&image->exception))
+        {
+          status=MagickFail;
+          break;
         }
 
       if (monitor_active)
         {
-          unsigned long
-            thread_row_count;
-
-#if defined(HAVE_OPENMP)
-#  pragma omp atomic
-#endif
           row_count++;
-#if defined(HAVE_OPENMP)
-#  pragma omp flush (row_count)
-#endif
-          thread_row_count=row_count;
-          if (QuantumTick(thread_row_count,image->rows))
-            if (!MagickMonitorFormatted(thread_row_count,image->rows,&image->exception,
+          if (QuantumTick(row_count,image->rows))
+            if (!MagickMonitorFormatted(row_count,image->rows,&image->exception,
                                         GradientImageText,image->filename))
-              thread_status=MagickFail;
-        }
-
-      if (thread_status == MagickFail)
-        {
-          status=MagickFail;
-#if defined(HAVE_OPENMP)
-#  pragma omp flush (status)
-#endif
+              {
+                status=MagickFail;
+                break;
+              }
         }
     }
   if (IsGray(*start_color) && IsGray(*stop_color))
     image->is_grayscale=MagickTrue;
   if (IsMonochrome(*start_color) && ColorMatch(start_color,stop_color))
     image->is_monochrome=MagickTrue;
+  MagickFreeMemory(pixel_packets);
   return(status);
 }

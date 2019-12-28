@@ -1,3 +1,11 @@
+2019-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/gradient.c (GradientImage): Gradient levels were still
+	not spot-on.  Now they are.  Unfortunately, this necessitated
+	re-generating reference test images based on gradient since the
+	gradient output has changed a little bit more than the test error
+	margins allow.
+
 2019-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Test gradient image resource limits

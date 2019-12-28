@@ -249,12 +249,12 @@ sub testRead {
       undef $status;
       $magick=$image->Get('magick');
       $signature=$image->Get('signature');
-      
+
       if ( $signature ne $ref_signature ) {
         print "ReadImage()\n";
-	print "Image: $infile, signatures do not match.\n";
-	print "     Computed: $signature\n";
-	print "     Expected: $ref_signature\n";
+        print "Image: $infile, signatures do not match.\n";
+        print "     Computed: $signature\n";
+        print "     Expected: $ref_signature\n";
         print "     Depth:    $depth\n";
         ++$failure;
         defined $ENV{'PERL_DEBUG'} && $image->Display();
@@ -310,7 +310,7 @@ sub testRead {
     print "not ok $test\n";
   } else {
     print "ok $test\n";
-  }    
+  }
 }
 
 
@@ -326,7 +326,7 @@ sub testReadCompare {
 
   # Create images
   $srcimage=Graphics::Magick->new;
-  $refimage=Graphics::Magick->new;  
+  $refimage=Graphics::Magick->new;
 
   if ( "$read_options" ne "" ) {
     eval "\$status=\$srcimage->Set($read_options);";
@@ -337,7 +337,7 @@ sub testReadCompare {
         goto COMPARE_RUNTIME_ERROR;
       }
   }
-  
+
   $status=$srcimage->ReadImage("$srcimage_name");
   if ("$status")
     {
@@ -440,7 +440,7 @@ sub testReadCompare {
 #
 sub testReadSized {
   my( $infile, $size, $depth, $ref_8, $ref_16, $ref_32 ) =  @_;
-  
+
   my($image,$ref_signature);
 
   if ( !defined( $ref_16 ) )
@@ -486,9 +486,9 @@ sub testReadSized {
     $signature=$image->Get('signature');
       if ( $signature ne $ref_signature ) {
         print "ReadImage()\n";
-	print "Image: $infile, signatures do not match.\n";
-	print "     Computed: $signature\n";
-	print "     Expected: $ref_signature\n";
+        print "Image: $infile, signatures do not match.\n";
+        print "     Computed: $signature\n";
+        print "     Expected: $ref_signature\n";
         print "     Depth:    $depth\n";
         print "not ok $test\n";
         defined $ENV{'PERL_DEBUG'} && $image->Display();
@@ -515,7 +515,7 @@ sub testReadSized {
 #
 sub testReadWrite {
   my( $infile, $outfile, $writeoptions, $ref_8, $ref_16, $ref_32 ) = @_;
-  
+
   my($image);
 
   if ( !defined( $ref_16 ) )
@@ -603,7 +603,7 @@ sub testReadWriteCompare {
   $errorinfo='';
 
   $image=Graphics::Magick->new;
-  $refimage=Graphics::Magick->new;  
+  $refimage=Graphics::Magick->new;
 
   #
   # Read the initial image
@@ -749,9 +749,9 @@ sub testReadWriteCompare {
 #
 sub testReadWriteNoVerify {
   my( $infile, $outfile, $writeoptions) = @_;
-  
+
   my($image, $images);
-  
+
   $image=Graphics::Magick->new;
   $status=$image->ReadImage("$infile");
   if( "$status" ) {
@@ -810,7 +810,7 @@ sub testReadWriteNoVerify {
 sub testReadWriteSized {
   my( $infile, $outfile, $size, $readdepth, $writeoptions, $ref_8, $ref_16,
       $ref_32 ) = @_;
-  
+
   my($image,$depth,$ref_signature);
 
   if ( !defined( $ref_16 ) )
@@ -917,7 +917,7 @@ sub testSetAttribute {
   my( $srcimage, $name, $attribute ) = @_;
 
   my($image);
-  
+
   # Create temporary image
   $image=Graphics::Magick->new;
 
@@ -1031,7 +1031,7 @@ sub testMontage {
                  '#808080', '#808000', '#FFFFFF', '#FFFF00',
                  '#800000', '#000080', '#FF0000', '#0000FF',
                  '#800080', '#008080', '#FF00FF', '#00FFFF' );
-  
+
   my $color;
   foreach $color ( @colors ) {
 
@@ -1068,7 +1068,7 @@ sub testMontage {
     print "not ok $test\n";
     return 1;
   }
-  
+
   if( ! ref($montage) ) {
     print "not ok $test\n";
   } else {
@@ -1079,12 +1079,12 @@ sub testMontage {
       if ( $signature ne $ref_signature ) {
         print "ReadImage()\n";
         print "Test $test, signatures do not match.\n";
-	print "     Computed: $signature\n";
-	print "     Expected: $ref_signature\n";
+        print "     Computed: $signature\n";
+        print "     Expected: $ref_signature\n";
         print "     Depth:    $depth\n";
         $status = $montage->Write("test_${test}_out.miff");
         warn "Write: $status" if "$status";
-          
+
         print "not ok $test\n";
       } else {
         # Check montage directory
