@@ -1,5 +1,10 @@
 2019-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (WritePCXImage): Fix heap overflow in PCX writer
+	when bytes per line value overflows its 16-bit storage unit.
+	Fixes SourceForge bug #619 "heap-buffer-overflow in WritePCXImage"
+	reported by Suhwan Song.
+
 	* magick/gradient.c (GradientImage): Gradient levels were still
 	not spot-on.  Now they are.  Unfortunately, this necessitated
 	re-generating reference test images based on gradient since the

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2019 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1008,7 +1008,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     *q;
 
   size_t
-    length;
+    bytes_per_line;
 
   unsigned char
     *pcx_colormap = (unsigned char *) NULL,
@@ -1126,8 +1126,16 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
         if (image->matte)
           pcx_info.planes++;
       }
-    pcx_info.bytes_per_line=(unsigned short)
-      (((unsigned long) image->columns*pcx_info.bits_per_pixel+7)/8);
+
+    /* image->columns*pcx_info.bits_per_pixel+7)/8 */
+    bytes_per_line=MagickArraySize(image->columns,pcx_info.bits_per_pixel);
+    if (bytes_per_line && (~((size_t)0)-7 > bytes_per_line))
+      bytes_per_line += 7;
+    bytes_per_line /= 8;
+    pcx_info.bytes_per_line=(unsigned short) bytes_per_line;
+    if ((pcx_info.bytes_per_line == 0) ||
+        ((size_t) pcx_info.bytes_per_line != bytes_per_line))
+      ThrowPCXWriterException(CoderError,UnsupportedNumberOfColumns,image);
     pcx_info.palette_info=1;
     pcx_info.colormap_signature=0x0c;
     /*
@@ -1168,8 +1176,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     for (i=0; i < 58; i++)
       (void) WriteBlobByte(image,'\0');
     /* Allocate memory for one pixel row. */
-    length=(size_t) pcx_info.bytes_per_line*pcx_info.planes;
-    pcx_pixels=MagickAllocateMemory(unsigned char *,length);
+    pcx_pixels=MagickAllocateArray(unsigned char *,bytes_per_line,pcx_info.planes);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=pcx_pixels;
