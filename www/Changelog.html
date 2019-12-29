@@ -35,6 +35,28 @@
 <div class="document">
 
 
+<p>2019-12-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/image.c (DisplayImages): Fix return status.  Was
+returning inverted return status.</li>
+<li>coders/gradient.c (ReadGRADIENTImage): Support the
+&quot;gradient:direction&quot; definition to produce produce additional
+gradient vector directions corresponding to South, North, West,
+East, NorthWest, NorthEast, SouthWest, and SouthEast.  This
+support is similar to a useful feature added in ImageMagick
+6.9.2.5 although there is no claim that the results are identical,
+even if the resulting images appear to be visually
+indistinguishable.</li>
+<li>magick/gradient.c (GradientImage): Add support for using the
+image 'gravity' attribute to produce additional gradient vector
+directions corresponding to SouthGravity (the previously-existing
+default), NorthGravity, WestGravity, EastGravity,
+NorthWestGravity, NorthEastGravity, SouthWestGravity, and
+SouthEastGravity.  Gradient images are updated to be PseudoClass
+(color-mapped), if possible.</li>
+</ul>
+</blockquote>
 <p>2019-12-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

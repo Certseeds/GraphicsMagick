@@ -476,17 +476,17 @@ void DestroyImageInfo( <a class="reference external" href="../api/types.html#ima
 <div class="section" id="id28">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-unsigned int DisplayImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
+MagickPassFail DisplayImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
 </pre>
 </div>
 <div class="section" id="id29">
 <h2>Description</h2>
 <p>DisplayImages() displays an image sequence to any X window screen.  It
-returns a value other than 0 if successful.  Check the exception member
-of image to determine the reason for any failure.</p>
+returns MagickPass if successful or MagickFail if not.  Check the
+exception member of image to determine the reason for any failure.</p>
 <p>The format of the DisplayImages method is:</p>
 <pre class="literal-block">
-unsigned int DisplayImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
+MagickPassFail DisplayImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">

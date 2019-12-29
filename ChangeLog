@@ -1,3 +1,25 @@
+2019-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (DisplayImages): Fix return status.  Was
+	returning inverted return status.
+
+	* coders/gradient.c (ReadGRADIENTImage): Support the
+	"gradient:direction" definition to produce produce additional
+	gradient vector directions corresponding to South, North, West,
+	East, NorthWest, NorthEast, SouthWest, and SouthEast.  This
+	support is similar to a useful feature added in ImageMagick
+	6.9.2.5 although there is no claim that the results are identical,
+	even if the resulting images appear to be visually
+	indistinguishable.
+
+	* magick/gradient.c (GradientImage): Add support for using the
+	image 'gravity' attribute to produce additional gradient vector
+	directions corresponding to SouthGravity (the previously-existing
+	default), NorthGravity, WestGravity, EastGravity,
+	NorthWestGravity, NorthEastGravity, SouthWestGravity, and
+	SouthEastGravity.  Gradient images are updated to be PseudoClass
+	(color-mapped), if possible.
+
 2019-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/gradient.c (GradientImage): Output PseudoClass images if

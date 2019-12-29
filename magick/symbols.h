@@ -436,6 +436,7 @@
 #define GetUserTime GmGetUserTime
 #define GlobExpression GmGlobExpression
 #define GradientImage GmGradientImage
+#define GravityTypeToString GmGravityTypeToString
 #define GrayscalePseudoClassImage GmGrayscalePseudoClassImage
 #define HSLTransform GmHSLTransform
 #define HWBTransform GmHWBTransform
