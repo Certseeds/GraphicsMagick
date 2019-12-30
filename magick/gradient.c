@@ -95,13 +95,11 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   size_t
     span;
 
-  unsigned long i;
-#ifdef _MSC_VER
-  long int
-#else
   unsigned long
-#endif
-		y;
+    i;
+
+  long
+    y;
 
   unsigned long
     row_count=0;
@@ -226,7 +224,7 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
 #    pragma omp parallel for if(num_threads > 1) num_threads(num_threads) schedule(guided) shared(row_count, status)
 #  endif
 #endif
-  for (y=0; y < image->rows; y++)
+  for (y=0; y < (long) image->rows; y++)
     {
       MagickPassFail
         thread_status;
@@ -310,7 +308,7 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
                 for (x=0; x < image->columns; x++)
                   {
                     i = (size_t) (sqrt((x_origin-x)*(x_origin-x)+ydf)+0.5);
-                    /* fprintf(stderr,"NW %lux%lu: %lu\n", x, y, (unsigned long) i); */
+                    /* fprintf(stderr,"NW %lux%ld: %lu\n", x, y, (unsigned long) i); */
                     q[x] = pixel_packets[i];
                     if (indexes)
                       indexes[x]=(IndexPacket) i;
