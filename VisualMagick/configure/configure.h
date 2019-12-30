@@ -342,15 +342,17 @@ class CommandLineInfo : public CCommandLineInfo
   BOOL m_build64Bit;
   BOOL m_noWizard;
   BOOL m_openMP;
+  BOOL m_speedOpt;
   int m_projectType;
   int m_quantumDepth;
 public:
-  CommandLineInfo(int quantumDepth, int projectType, BOOL openMP, BOOL build64Bit);
+  CommandLineInfo(int quantumDepth, int projectType, BOOL openMP, BOOL build64Bit, BOOL speedOpt);
   CommandLineInfo(const CommandLineInfo& obj);
   CommandLineInfo& operator =(const CommandLineInfo& obj);
   BOOL build64Bit();
   BOOL noWizard();
   BOOL openMP();
+  BOOL speedOpt();
   int projectType();
   int quantumDepth();
 

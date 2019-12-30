@@ -66,6 +66,7 @@ BOOL onebigdllMode = FALSE;
 BOOL visualStudio7 = TRUE;
 BOOL m_bigCoderDLL = FALSE;
 BOOL openMP = FALSE;
+BOOL speedOpt = FALSE;
 BOOL build64Bit = FALSE;
 
 string release_loc;
@@ -2920,7 +2921,7 @@ BOOL CConfigureApp::InitInstance()
   bin_loc = "..\\bin\\";
   lib_loc = "..\\lib\\";
 
-  CommandLineInfo info = CommandLineInfo(quantumDepth, projectType, openMP, build64Bit);
+  CommandLineInfo info = CommandLineInfo(quantumDepth, projectType, openMP, build64Bit, speedOpt);
   ParseCommandLine(info);
 
   wizard.m_Page2.m_useX11Stubs = useX11Stubs;
@@ -2931,6 +2932,7 @@ BOOL CConfigureApp::InitInstance()
   //wizard.m_Page2.m_bigCoderDLL = m_bigCoderDLL;
   wizard.m_Page2.m_build64Bit = info.build64Bit();
   wizard.m_Page2.m_openMP = info.openMP();
+  wizard.m_Page2.m_speedOpt = info.speedOpt();
   wizard.m_Page2.m_projectType = info.projectType();
   wizard.m_Page2.m_quantumDepth = info.quantumDepth();
 
@@ -3032,6 +3034,7 @@ BOOL CConfigureApp::InitInstance()
       visualStudio7 = wizard.m_Page2.m_visualStudio7;
       build64Bit = wizard.m_Page2.m_build64Bit;
       openMP = wizard.m_Page2.m_openMP;
+      speedOpt = wizard.m_Page2.m_speedOpt;
       quantumDepth = wizard.m_Page2.m_quantumDepth;
       //m_bigCoderDLL = wizard.m_Page2.m_bigCoderDLL;
       release_loc = wizard.m_Page3.m_tempRelease;
@@ -3441,13 +3444,14 @@ ConfigureProject *CConfigureApp::write_project_lib( bool dll,
   return project;
 }
 
-CommandLineInfo::CommandLineInfo(int quantumDepth, int projectType, BOOL openMP, BOOL build64Bit)
+CommandLineInfo::CommandLineInfo(int quantumDepth, int projectType, BOOL openMP, BOOL build64Bit, BOOL speedOpt)
 {
   m_quantumDepth = quantumDepth;
   m_projectType = projectType;
   m_openMP = openMP;
   m_build64Bit = build64Bit;
   m_noWizard = FALSE;
+  m_speedOpt = speedOpt;
 }
 
 CommandLineInfo::CommandLineInfo(const CommandLineInfo& obj)
@@ -3473,6 +3477,11 @@ BOOL CommandLineInfo::noWizard()
 BOOL CommandLineInfo::openMP()
 {
   return m_openMP;
+}
+
+BOOL CommandLineInfo::speedOpt()
+{
+  return m_speedOpt;
 }
 
 int CommandLineInfo::projectType()
@@ -3504,6 +3513,8 @@ void CommandLineInfo::ParseParam(const char* pszParam, BOOL bFlag, BOOL bLast)
     m_noWizard = TRUE;
   else if (strcmpi(pszParam, "openMP") == 0)
     m_openMP = TRUE;
+  else if (strcmpi(pszParam, "speedOpt") == 0)
+    m_speedOpt = TRUE;
   else if (strcmpi(pszParam, "Q8") == 0)
     m_quantumDepth=Q8;
   else if (strcmpi(pszParam, "Q16") == 0)
@@ -4978,8 +4989,7 @@ void ConfigureVS7Project::write_cpp_compiler_tool_runtime( int runtime,
     }
 }
 
-void ConfigureVS7Project::write_cpp_compiler_tool_options( int type,
-                                                           int mode )
+void ConfigureVS7Project::write_cpp_compiler_tool_options(int type, int mode)
 {
   m_stream << "        StringPooling=\"TRUE\"" << endl;
   //m_stream << "        ShowIncludes=\"TRUE\"" << endl;
@@ -4994,6 +5004,14 @@ void ConfigureVS7Project::write_cpp_compiler_tool_options( int type,
   m_stream << "        InlineFunctionExpansion=\"2\"" << endl;
   if (openMP)
     m_stream << "        OpenMP=\"TRUE\"" << endl;
+  if(speedOpt)
+  {
+    m_stream << "        EnableIntrinsicFunctions=\"true\"" << endl;
+    m_stream << "        FavorSizeOrSpeed=\"1\"" << endl;
+    m_stream << "        EnableEnhancedInstructionSet=\"2\"" << endl;
+    m_stream << "        FloatingPointModel=\"2\"" << endl;
+  }
+
   switch (mode)
     {
     case 0:
@@ -5008,7 +5026,13 @@ void ConfigureVS7Project::write_cpp_compiler_tool_options( int type,
       m_stream << "        BasicRuntimeChecks=\"0\"" << endl;
       m_stream << "        OmitFramePointers=\"TRUE\"" << endl; // /nologo
       // optimizeDisabled 0,optimizeMinSpace 1,optimizeMaxSpeed 2,optimizeFull 3,optimizeCustom 4
-      m_stream << "        Optimization=\"3\"" << endl;
+      if(speedOpt)
+      {
+        m_stream << "        Optimization=\"2\"" << endl;
+        m_stream << "        BufferSecurityCheck=\"false\"" << endl;
+      }
+      else
+        m_stream << "        Optimization=\"3\"" << endl;
       break;
     case 1:
       // runtimeBasicCheckNone 0,runtimeCheckStackFrame 1,runtimeCheckUninitVariables 2,runtimeBasicCheckAll 3
