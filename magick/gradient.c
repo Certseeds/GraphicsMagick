@@ -95,9 +95,13 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
   size_t
     span;
 
+  unsigned long i;
+#ifdef _MSC_VER
+  long int
+#else
   unsigned long
-    i,
-    y;
+#endif
+		y;
 
   unsigned long
     row_count=0;

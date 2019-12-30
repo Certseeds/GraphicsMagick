@@ -1,4 +1,7 @@
 2019-12-30  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+	* magick/gradient.c: Visual studio does not compile file without this fix.        
+
+2019-12-30  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* VisualMagick\configure\configure.cpp Add option for speed optimisation
 	to achieve better performance.
