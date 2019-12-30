@@ -1,5 +1,7 @@
 2019-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/version.h.in: Bump copyright years.
+
 	* magick/image.c (DisplayImages): Fix return status.  Was
 	returning inverted return status.
 

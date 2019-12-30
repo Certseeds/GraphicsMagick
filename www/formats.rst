@@ -812,4 +812,4 @@ automatically uncompressed while the image is read.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2019
+Copyright |copy| GraphicsMagick Group 2002 - 2020

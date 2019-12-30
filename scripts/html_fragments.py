@@ -58,7 +58,7 @@ nav_template = """
 footer_template = """
 <hr class="divider">
 <div class="footer">
-    <p><a href="%(url_prefix)sCopyright.html">Copyright</a>GraphicsMagick Group 2002 - 2019</p>
+    <p><a href="%(url_prefix)sCopyright.html">Copyright</a>GraphicsMagick Group 2002 - 2020</p>
 </div>
 """
 
