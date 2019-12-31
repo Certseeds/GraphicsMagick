@@ -115,6 +115,9 @@ static Image *ReadGRADIENTImage(const ImageInfo *image_info,
   Image
     *image;
 
+  const char *
+    gravity;
+
   /*
     Initialize Image structure.
   */
@@ -129,32 +132,19 @@ static Image *ReadGRADIENTImage(const ImageInfo *image_info,
   (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
   (void) strlcpy(colorname,image_info->filename,MaxTextExtent);
   (void) sscanf(image_info->filename,"%[^-]",colorname);
-  if (!QueryColorDatabase(colorname,&start_color,exception))
-    {
-      DestroyImage(image);
-      return((Image *) NULL);
-    }
+  (void) QueryColorDatabase(colorname,&start_color,exception);
   (void) strcpy(colorname,"white");
   if (PixelIntensityToQuantum(&start_color) > (0.5*MaxRGB))
     (void) strcpy(colorname,"black");
   (void) sscanf(image_info->filename,"%*[^-]-%s",colorname);
-  if (!QueryColorDatabase(colorname,&stop_color,exception))
-    {
-      DestroyImage(image);
-      return((Image *) NULL);
-    }
-  {
-    const char *
-      gravity;
-
-    if ((gravity=AccessDefinition(image_info,"gradient","direction")))
-      image->gravity=StringToGravityType(gravity);
-    else
-      image->gravity=SouthGravity;
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Gradient using '%s' Gravity",
-                          GravityTypeToString(image->gravity));
-  }
+  (void) QueryColorDatabase(colorname,&stop_color,exception);
+  if ((gravity=AccessDefinition(image_info,"gradient","direction")))
+    image->gravity=StringToGravityType(gravity);
+  else
+    image->gravity=SouthGravity;
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Gradient using '%s' Gravity",
+                        GravityTypeToString(image->gravity));
   (void) GradientImage(image,&start_color,&stop_color);
   return(image);
 }
