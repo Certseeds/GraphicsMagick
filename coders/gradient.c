@@ -132,12 +132,24 @@ static Image *ReadGRADIENTImage(const ImageInfo *image_info,
   (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
   (void) strlcpy(colorname,image_info->filename,MaxTextExtent);
   (void) sscanf(image_info->filename,"%[^-]",colorname);
-  (void) QueryColorDatabase(colorname,&start_color,exception);
+  if (!QueryColorDatabase(colorname,&start_color,exception))
+    {
+      /* Promote warning to error */
+      exception->severity = OptionError;
+      DestroyImage(image);
+      return((Image *) NULL);
+    }
   (void) strcpy(colorname,"white");
   if (PixelIntensityToQuantum(&start_color) > (0.5*MaxRGB))
     (void) strcpy(colorname,"black");
   (void) sscanf(image_info->filename,"%*[^-]-%s",colorname);
-  (void) QueryColorDatabase(colorname,&stop_color,exception);
+  if (!QueryColorDatabase(colorname,&stop_color,exception))
+    {
+      /* Promote warning to error */
+      exception->severity = OptionError;
+      DestroyImage(image);
+      return((Image *) NULL);
+    }
   if ((gravity=AccessDefinition(image_info,"gradient","direction")))
     image->gravity=StringToGravityType(gravity);
   else
