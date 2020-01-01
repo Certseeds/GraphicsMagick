@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -111,8 +111,10 @@ static Image *ReadNULLImage(const ImageInfo *image_info,
   (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
   status=QueryColorDatabase((char *) image_info->filename,
     &image->background_color,exception);
-  if (status == False)
+  if (status == MagickFail)
     {
+      /* Promote warning to error */
+      exception->severity = OptionError;
       DestroyImage(image);
       return((Image *) NULL);
     }

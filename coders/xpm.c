@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -453,7 +453,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strcpy(target,"black");
       }
     if (!QueryColorDatabase(target,&image->colormap[j],exception))
-      break;
+      {
+        /* Promote warning to error */
+        exception->severity = CorruptImageError;
+        break;
+      }
   }
   if (j < image->colors)
     ThrowXPMReaderException(CorruptImageError,CorruptImage,image);

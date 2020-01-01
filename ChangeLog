@@ -1,5 +1,14 @@
 2020-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c (ReadXPMImage): Promote a color-lookup
+	warning to an error.
+
+	* coders/xc.c (ReadXCImage): Promote a color-lookup
+	warning to an error.
+
+	* coders/null.c (ReadNULLImage): Promote a color-lookup
+	warning to an error.
+
 	* Makefile.am: Rotate ChangeLogs for the new year.
 
 	* coders/gradient.c (ReadGRADIENTImage): Promote a color-lookup
