@@ -38,6 +38,14 @@
 <p>2020-01-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/magick.c (InitializeMagickSignalHandlers): Use the normal
+termination signal handler for SIGXCPU and SIGXFSZ so that ulimit
+or setrlimit(2) may be used to apply CPU (RLIMIT_CPU) and output
+file size (RLIMIT_FSIZE) limits with the normal cleanup, and
+without dumping core.  Note that any output files currently being
+written may be truncated and files being written by external
+programs (e.g. Ghostscript) might be left behind unless they are
+to a temporary file assigned by GraphicsMagick.</li>
 <li>coders/xpm.c (ReadXPMImage): Promote a color-lookup
 warning to an error.</li>
 <li>coders/xc.c (ReadXCImage): Promote a color-lookup

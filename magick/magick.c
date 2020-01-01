@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1049,13 +1049,13 @@ InitializeMagickSignalHandlers(void)
 #if defined(SIGSEGV)
   (void) MagickCondSignal(SIGSEGV,MagickPanicSignalHandler);
 #endif
-  /* exceeded cpu limit, default terminate with core */
+  /* exceeded cpu limit, default terminate */
 #if defined(SIGXCPU)
-  (void) MagickCondSignal(SIGXCPU,MagickPanicSignalHandler);
+  (void) MagickCondSignal(SIGXCPU,MagickSignalHandler);
 #endif
-  /* exceeded file size limit, default terminate with core */
+  /* exceeded file size limit, default terminate */
 #if defined(SIGXFSZ)
-  (void) MagickCondSignal(SIGXFSZ,MagickPanicSignalHandler);
+  (void) MagickCondSignal(SIGXFSZ,MagickSignalHandler);
 #endif
 }
 

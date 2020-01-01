@@ -1,5 +1,14 @@
 2020-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/magick.c (InitializeMagickSignalHandlers): Use the normal
+	termination signal handler for SIGXCPU and SIGXFSZ so that ulimit
+	or setrlimit(2) may be used to apply CPU (RLIMIT_CPU) and output
+	file size (RLIMIT_FSIZE) limits with the normal cleanup, and
+	without dumping core.  Note that any output files currently being
+	written may be truncated and files being written by external
+	programs (e.g. Ghostscript) might be left behind unless they are
+	to a temporary file assigned by GraphicsMagick.
+
 	* coders/xpm.c (ReadXPMImage): Promote a color-lookup
 	warning to an error.
 
