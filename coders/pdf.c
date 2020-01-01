@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -660,6 +660,11 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
     fax_blob_length,
     length;
 
+#if defined(HAVE_LOCALTIME_R)
+  struct tm
+    tm_buf;
+#endif /* if defined(HAVE_LOCALTIME_R) */
+
   struct tm
     *time_meridian;
 
@@ -718,7 +723,12 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlobString(image,buffer);
   (void) WriteBlobString(image,"<<\n");
   seconds=time((time_t *) NULL);
-  time_meridian=localtime(&seconds);
+#if defined(HAVE_LOCALTIME_R)
+  time_meridian=localtime_r(&seconds,&tm_buf);
+#else
+  time_meridian=localtime(&seconds); /* Thread-unsafe version */
+#endif  /* if defined(HAVE_LOCALTIME_R) */
+
   FormatString(date,"D:%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+1900,
                time_meridian->tm_mon+1,time_meridian->tm_mday,time_meridian->tm_hour,
                time_meridian->tm_min,time_meridian->tm_sec);

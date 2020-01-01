@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2019 GraphicsMagick Group
+# Copyright (C) 2003-2020 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -2768,7 +2768,7 @@ AC_SUBST([LIB_WMF_DEPS])
 GM_FUNC_MMAP_FILEIO
 AC_CHECK_FUNCS([atoll CryptGenRandom \
   clock_getres clock_gettime ctime_r cosf _exit fabsf fcntl fstatvfs ftime getexecname \
-  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r logf madvise \
+  getc_unlocked getpagesize getpwnam_r getrlimit getpid lltostr localtime_r logf madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \

@@ -28360,7 +28360,7 @@ rm -f conftest.mmap
 
 for ac_func in atoll CryptGenRandom \
   clock_getres clock_gettime ctime_r cosf _exit fabsf fcntl fstatvfs ftime getexecname \
-  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r logf madvise \
+  getc_unlocked getpagesize getpwnam_r getrlimit getpid lltostr localtime_r logf madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \

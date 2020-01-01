@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2019 GraphicsMagick Group
+% Copyright (C) 2005-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -3154,6 +3154,11 @@ STATIC void GenerateDPXTimeStamp(char *timestamp, size_t maxsize)
   time_t
     current_time;
 
+#if defined(HAVE_LOCALTIME_R)
+  struct tm
+    tm_buf;
+#endif /* if defined(HAVE_LOCALTIME_R) */
+
   const struct tm
     *t;
 
@@ -3161,7 +3166,11 @@ STATIC void GenerateDPXTimeStamp(char *timestamp, size_t maxsize)
     p;
 
   current_time=time((time_t *) NULL);
-  t=localtime(&current_time);
+#if defined(HAVE_LOCALTIME_R)
+  t=localtime_r(&current_time, &tm_buf);
+#else
+  t=localtime(&current_time); /* Thread-unsafe version */
+#endif  /* if defined(HAVE_LOCALTIME_R) */
 
   (void) strftime(timestamp,maxsize,"%Y:%m:%d:%H:%M:%S%Z",t);
   timestamp[maxsize-1]='\0';

@@ -38,6 +38,25 @@
 <p>2020-01-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/dpx.c (GenerateDPXTimeStamp): Use reentrant localtime_r()
+function if it is available.</li>
+<li>magick/log.c (LogMagickEventList): Use reentrant
+localtime_r() function if it is available.</li>
+<li>coders/cineon.c (GenerateCineonTimeStamp): Use reentrant
+localtime_r() function if it is available.</li>
+<li>coders/mat.c (WriteMATLABImage): Use reentrant localtime_r()
+function if it is available.</li>
+<li>coders/pdf.c (WritePDFImage): Use reentrant localtime_r()
+function if it is available.</li>
+<li>coders/ps.c (WritePSImage): Use reentrant ctime_r() function
+if it is available.</li>
+<li>coders/ps2.c (WritePS2Image): Use reentrant ctime_r() function
+if it is available.</li>
+<li>coders/ps3.c (WritePS3Image): Use reentrant ctime_r() function
+if it is available.</li>
+<li>configure.ac: Test for getpwnam_r().</li>
+<li>magick/utility.c (ExpandFilename): Use reentrant getpwnam_r()
+function if it is available.</li>
 <li>magick/magick.c (InitializeMagickSignalHandlers): Use the normal
 termination signal handler for SIGXCPU and SIGXFSZ so that ulimit
 or setrlimit(2) may be used to apply CPU (RLIMIT_CPU) and output

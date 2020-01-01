@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -827,6 +827,17 @@ MagickExport void ExpandFilename(char *filename)
       char
         username[MaxTextExtent];
 
+#  if defined(HAVE_GETPWNAM_R)
+      struct  passwd
+        pwd;
+
+      size_t
+        pwnam_buf_len;
+
+      char
+        *pwnam_buf;
+#  endif /* if defined(HAVE_GETPWNAM_R) */
+
       struct passwd
         *entry;
 
@@ -837,15 +848,28 @@ MagickExport void ExpandFilename(char *filename)
       p=strchr(username,'/');
       if (p != (char *) NULL)
         *p='\0';
-      entry=getpwnam(username);
-      if (entry == (struct passwd *) NULL)
-        return;
-      (void) strncpy(expanded_filename,entry->pw_dir,MaxTextExtent-1);
-      if (p != (char *) NULL)
+
+#  if defined(HAVE_GETPWNAM_R)
+      entry=(struct passwd *) NULL;
+      pwnam_buf_len = sysconf(_SC_GETPW_R_SIZE_MAX);
+      pwnam_buf=MagickAllocateMemory(char *,pwnam_buf_len);
+      if (pwnam_buf != (char *) NULL)
+        (void) getpwnam_r(username,&pwd,pwnam_buf,pwnam_buf_len,&entry);
+#else
+      entry=getpwnam(username); /* Thread-unsafe version */
+#  endif /* if defined(HAVE_GETPWNAM_R) */
+      if (entry != (struct passwd *) NULL)
         {
-          (void) strcat(expanded_filename,"/");
-          (void) strlcat(expanded_filename,p+1,MaxTextExtent);
+          (void) strncpy(expanded_filename,entry->pw_dir,MaxTextExtent-1);
+          if (p != (char *) NULL)
+            {
+              (void) strcat(expanded_filename,"/");
+              (void) strlcat(expanded_filename,p+1,MaxTextExtent);
+            }
         }
+#  if defined(HAVE_GETPWNAM_R)
+      MagickFreeMemory(pwnam_buf);
+#  endif /* if defined(HAVE_GETPWNAM_R) */
 #endif
     }
   (void) strlcpy(filename,expanded_filename,MaxTextExtent);

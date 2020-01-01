@@ -1,5 +1,34 @@
 2020-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (GenerateDPXTimeStamp): Use reentrant localtime_r()
+	function if it is available.
+
+	* magick/log.c (LogMagickEventList): Use reentrant
+	localtime_r() function if it is available.
+
+	* coders/cineon.c (GenerateCineonTimeStamp): Use reentrant
+	localtime_r() function if it is available.
+
+	* coders/mat.c (WriteMATLABImage): Use reentrant localtime_r()
+	function if it is available.
+
+	* coders/pdf.c (WritePDFImage): Use reentrant localtime_r()
+	function if it is available.
+
+	* coders/ps.c (WritePSImage): Use reentrant ctime_r() function
+	if it is available.
+
+	* coders/ps2.c (WritePS2Image): Use reentrant ctime_r() function
+	if it is available.
+
+	* coders/ps3.c (WritePS3Image): Use reentrant ctime_r() function
+	if it is available.
+
+	* configure.ac: Test for getpwnam_r().
+
+	* magick/utility.c (ExpandFilename): Use reentrant getpwnam_r()
+	function if it is available.
+
 	* magick/magick.c (InitializeMagickSignalHandlers): Use the normal
 	termination signal handler for SIGXCPU and SIGXFSZ so that ulimit
 	or setrlimit(2) may be used to apply CPU (RLIMIT_CPU) and output

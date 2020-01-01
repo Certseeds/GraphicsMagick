@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -511,7 +511,10 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         /*
           Output Postscript header.
         */
-        if (LocaleCompare(image_info->magick,"PS2") == 0)
+ #if defined(HAVE_CTIME_R)
+        char time_buf[26];
+#endif /* defined(HAVE_CTIME_R) */
+       if (LocaleCompare(image_info->magick,"PS2") == 0)
           (void) strcpy(buffer,"%!PS-Adobe-3.0\n");
         else
           (void) strcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -520,8 +523,11 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         FormatString(buffer,"%%%%Title: (%.1024s)\n",image->filename);
         (void) WriteBlobString(image,buffer);
         timer=time((time_t *) NULL);
-        (void) localtime(&timer);
-        (void) strlcpy(date,ctime(&timer),MaxTextExtent);
+#if defined(HAVE_CTIME_R)
+        (void) strlcpy(date,ctime_r(&timer,time_buf),MaxTextExtent);
+#else
+        (void) strlcpy(date,ctime(&timer),MaxTextExtent); /* Thread-unsafe version */
+#endif /* defined(HAVE_CTIME_R) */
         date[strlen(date)-1]='\0';
         FormatString(buffer,"%%%%CreationDate: (%.1024s)\n",date);
         (void) WriteBlobString(image,buffer);

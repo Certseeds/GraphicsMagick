@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -488,6 +488,9 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
     *p;
 
   struct tm
+#if defined(HAVE_LOCALTIME_R)
+    tm_buf,
+#endif /* if defined(HAVE_LOCALTIME_R) */
     *time_meridian;
 
   time_t
@@ -613,7 +616,11 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
 #  endif
 #endif
   seconds=time((time_t *) NULL);
-  time_meridian=localtime(&seconds);
+#if defined(HAVE_LOCALTIME_R)
+  time_meridian=localtime_r(&seconds, &tm_buf);
+#else
+  time_meridian=localtime(&seconds); /* Thread-unsafe version */
+#endif /* if defined(HAVE_LOCALTIME_R) */
   elapsed_time=GetElapsedTime(&log_info->timer);
   user_time=GetUserTime(&log_info->timer);
   (void) ContinueTimer((TimerInfo *) &log_info->timer);
