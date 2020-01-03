@@ -66,7 +66,7 @@ BOOL onebigdllMode = FALSE;
 BOOL visualStudio7 = TRUE;
 BOOL m_bigCoderDLL = FALSE;
 BOOL openMP = FALSE;
-BOOL speedOpt = FALSE;
+BOOL speedOpt = TRUE;
 BOOL build64Bit = FALSE;
 
 string release_loc;

@@ -1,3 +1,14 @@
+2020-01-03  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* VisualMagick\configure\configure.exe: Should not depend on mfcr90.dll.
+	It is too bad when end user cannot run this tool because of missing DLL.
+
+	* VisualMagick\configure\configure.cpp Make speed optimisation as default
+        option.
+
+	* VisualMagick\configure\configure.vcproj Give different filename to debug
+	build to avoid accidental committing debug build to repository.        
+
 2020-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (GenerateDPXTimeStamp): Use reentrant localtime_r()
