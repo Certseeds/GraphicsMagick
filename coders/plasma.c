@@ -131,6 +131,7 @@ static Image *ReadPlasmaImage(const ImageInfo *image_info,
   DestroyImageInfo(clone_info);
   if (image == (Image *) NULL)
     return(image);
+  ContinueTimer(&image->timer);
   (void) strlcpy(image->filename,image_info->filename,sizeof(image->filename));
   image->storage_class=DirectClass;
   for (y=0; y < (long) image->rows; y++)
