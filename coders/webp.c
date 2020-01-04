@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2019 GraphicsMagick Group
+% Copyright (C) 2013-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -252,6 +252,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     {
       MagickFreeMemory(stream);
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
@@ -334,6 +335,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   pixels=(unsigned char *) NULL;
   MagickFreeMemory(stream);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 #endif

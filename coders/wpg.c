@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1428,6 +1428,8 @@ UnpackRaster:
                     }
                 }
 
+              StopTimer(&image->timer);
+
               if (image_info->subrange != 0)
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))
                   goto Finish;
@@ -1633,6 +1635,8 @@ UnpackRaster:
                      Tx(0,2)= 0;   Tx(1,2)=(WPG._2Rect.Y_ur+WPG._2Rect.Y_ll);
                      Tx(2,2)=1; */
                 }
+
+              StopTimer(&image->timer);
 
               if (image_info->subrange != 0)
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))

@@ -707,6 +707,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   jas_matrix_destroy(pixels);
   (void) jas_stream_close(jp2_stream);
   jas_image_destroy(jp2_image);
+  StopTimer(&image->timer);
   return(image);
 }
 #endif

@@ -2173,6 +2173,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   if (image_info->ping)
     {
+      StopTimer(&image->timer);
       CloseBlob(image);
       return(image);
     }
@@ -3051,6 +3052,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(map_Y);
   DestroyThreadViewDataSet(scanline_set);
   DestroyThreadViewDataSet(samples_set);
+  StopTimer(&image->timer);
   CloseBlob(image);
   return(image);
 }

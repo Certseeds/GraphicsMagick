@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -238,8 +238,10 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
       ThrowVIDReaderException(CorruptImageError,UnableToReadVIDImage,image)
     }
+  montage_image->timer=image->timer;
   DestroyImageList(image);
   LiberateVIDLists();
+  StopTimer(&montage_image->timer);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return(montage_image);
 }

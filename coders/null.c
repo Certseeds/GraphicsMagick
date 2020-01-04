@@ -122,6 +122,7 @@ static Image *ReadNULLImage(const ImageInfo *image_info,
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   image->colormap[0]=image->background_color;
   status=SetImageEx(image,OpaqueOpacity,exception);
+  StopTimer(&image->timer);
   if (status == MagickFail)
     {
       DestroyImage(image);

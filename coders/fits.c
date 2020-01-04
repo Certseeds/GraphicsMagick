@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -660,6 +660,8 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
               ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, image->filename);
               break;
             }
+
+          StopTimer(&image->timer);
 
           /*
             Proceed to next image.

@@ -161,6 +161,7 @@ static Image *ReadFAXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -174,6 +175,7 @@ static Image *ReadFAXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
       image->filename);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

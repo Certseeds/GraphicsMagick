@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -237,6 +237,7 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) DrawImage(image,draw_info);
   DestroyDrawInfo(draw_info);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

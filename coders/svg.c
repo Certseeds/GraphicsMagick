@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -3978,6 +3978,7 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
+  StopTimer(&image->timer);
   return(image);
 }
 #endif

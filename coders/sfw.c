@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -199,7 +199,8 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   Image
     *flipped_image,
-    *image;
+    *image,
+    *jimage;
 
   ImageInfo
     *clone_info;
@@ -335,17 +336,23 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   CloseBlob(image);
   strlcpy(original_filename,image->filename,sizeof(original_filename));
   strlcpy(original_magick,image->magick,sizeof(original_magick));
-  DestroyImage(image);
   /*
     Read JPEG image.
   */
   (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
   (void) strlcat(clone_info->filename,temporary_filename,sizeof(clone_info->filename));
-  image=ReadImage(clone_info,exception);
+  jimage=ReadImage(clone_info,exception);
   (void) LiberateTemporaryFile(temporary_filename);
   DestroyImageInfo(clone_info);
-  if (image == (Image *) NULL)
-    return(image);
+  if (jimage == (Image *) NULL)
+    {
+      DestroyImage(image);
+      return(jimage);
+    }
+  jimage->timer=image->timer;
+  DestroyImage(image);
+  image=jimage;
+  jimage=(Image *) NULL;
   /*
     Restore the input filename and magick
   */
@@ -359,10 +366,12 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
       flipped_image=FlipImage(image,exception);
       if (flipped_image != (Image *) NULL)
         {
+          flipped_image->timer=image->timer;
           DestroyImage(image);
           image=flipped_image;
         }
     }
+  StopTimer(&image->timer);
   return(image);
 }
 

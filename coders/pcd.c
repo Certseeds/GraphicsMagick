@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -744,6 +744,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->colorspace=YCCColorspace;
         if (TransformColorspace(image,RGBColorspace) != MagickPass)
           break;
+        StopTimer(&image->timer);
         if (j < (long) number_images)
           {
             /*
@@ -904,6 +905,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->chromaticity.white_point.x=0.3127f;
   image->chromaticity.white_point.y=0.3290f;
   image->gamma=1.000f/2.200f;
+  StopTimer(&image->timer);
   return(image);
 }
 

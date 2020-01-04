@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -833,6 +833,7 @@ static Image *ReadXWDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(ximage->data);
   MagickFreeMemory(ximage);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 #endif

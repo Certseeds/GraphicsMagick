@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -5146,6 +5146,7 @@ MagickXImportImage(const ImageInfo *image_info,
       (void) XBell(display,0);
     }
   (void) XCloseDisplay(display);
+  StopTimer(&image->timer);
   return(image);
 }
 

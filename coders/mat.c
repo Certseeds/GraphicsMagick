@@ -702,6 +702,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       image = rotated_image;
     }
 
+    StopTimer(&image->timer);
+
 skip_reading_current:
 
     if (image_info->subrange != 0)

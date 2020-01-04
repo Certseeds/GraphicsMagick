@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -143,6 +143,7 @@ static Image *ReadOTBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -186,6 +187,7 @@ static Image *ReadOTBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
       image->filename);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

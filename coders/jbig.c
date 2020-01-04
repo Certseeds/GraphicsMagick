@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -87,7 +87,7 @@ static unsigned int
 %
 */
 static Image *ReadJBIGImage(const ImageInfo *image_info,
-  ExceptionInfo *exception)
+                            ExceptionInfo *exception)
 {
 #define MaxBufferSize  8192
 
@@ -134,7 +134,7 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   */
   jbg_dec_init(&jbig_info);
   jbg_dec_maxsize(&jbig_info,(unsigned long) image->columns,
-    (unsigned long) image->rows);
+                  (unsigned long) image->rows);
   image->columns= jbg_dec_getwidth(&jbig_info);
   image->rows= jbg_dec_getheight(&jbig_info);
   image->depth=1;
@@ -146,19 +146,19 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   status=JBG_EAGAIN;
   do
-  {
-    length=(long) ReadBlob(image,MaxBufferSize,(char *) buffer);
-    if (length == 0)
-      break;
-    p=buffer;
-    count=0;
-    while ((length > 0) && ((status == JBG_EAGAIN) || (status == JBG_EOK)))
     {
-      status=jbg_dec_in(&jbig_info,p,length,&count);
-      p+=count;
-      length-=count;
-    }
-  } while ((status == JBG_EAGAIN) || (status == JBG_EOK));
+      length=(long) ReadBlob(image,MaxBufferSize,(char *) buffer);
+      if (length == 0)
+        break;
+      p=buffer;
+      count=0;
+      while ((length > 0) && ((status == JBG_EAGAIN) || (status == JBG_EOK)))
+        {
+          status=jbg_dec_in(&jbig_info,p,length,&count);
+          p+=count;
+          length-=count;
+        }
+    } while ((status == JBG_EAGAIN) || (status == JBG_EOK));
   /*
     Create colormap.
   */
@@ -203,29 +203,29 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   {
     ImportPixelAreaOptions
       import_options;
-    
+
     ImportPixelAreaInfo
       import_info;
 
-  ImportPixelAreaOptionsInit(&import_options);
-  import_options.grayscale_miniswhite=MagickTrue;
-  p=jbg_dec_getimage(&jbig_info,0);
-  for (y=0; y < image->rows; y++)
-  {
-    q=SetImagePixels(image,0,y,image->columns,1);
-    if (q == (PixelPacket *) NULL)
-      break;
-    if (!ImportImagePixelArea(image,GrayQuantum,1,p,&import_options,&import_info))
-      break;
-    p+=import_info.bytes_imported;
-    if (!SyncImagePixels(image))
-      break;
-    if (QuantumTick(y,image->rows))
-      if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
-                                  image->filename,
-                                  image->columns,image->rows))
-        break;
-  }
+    ImportPixelAreaOptionsInit(&import_options);
+    import_options.grayscale_miniswhite=MagickTrue;
+    p=jbg_dec_getimage(&jbig_info,0);
+    for (y=0; y < image->rows; y++)
+      {
+        q=SetImagePixels(image,0,y,image->columns,1);
+        if (q == (PixelPacket *) NULL)
+          break;
+        if (!ImportImagePixelArea(image,GrayQuantum,1,p,&import_options,&import_info))
+          break;
+        p+=import_info.bytes_imported;
+        if (!SyncImagePixels(image))
+          break;
+        if (QuantumTick(y,image->rows))
+          if (!MagickMonitorFormatted(y,image->rows,exception,LoadImageText,
+                                      image->filename,
+                                      image->columns,image->rows))
+            break;
+      }
   }
   /*
     Free scale resource.
@@ -235,6 +235,7 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   CloseBlob(image);
   image->is_grayscale=MagickTrue;
   image->is_monochrome=MagickTrue;
+  StopTimer(&image->timer);
   return(image);
 }
 #endif

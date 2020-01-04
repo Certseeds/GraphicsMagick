@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1982,6 +1982,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   CloseBlob(image);
   if ( image_type == GIMP_GRAY )
     image->is_grayscale=MagickTrue;
+  StopTimer(&image->timer);
   return(image);
 }
 

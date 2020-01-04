@@ -158,6 +158,7 @@ static Image *ReadGRADIENTImage(const ImageInfo *image_info,
                         "Gradient using '%s' Gravity",
                         GravityTypeToString(image->gravity));
   (void) GradientImage(image,&start_color,&stop_color);
+  StopTimer(&image->timer);
   return(image);
 }
 

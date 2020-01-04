@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009 GraphicsMagick Group
+% Copyright (C) 2009-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -142,6 +142,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
 DONE_READING:
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

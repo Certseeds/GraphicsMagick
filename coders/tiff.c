@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3565,6 +3565,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     read_next_frame:
       if (status == MagickPass)
         {
+          StopTimer(&image->timer);
           if (image->depth > QuantumDepth)
             image->depth=QuantumDepth;
           if ((photometric == PHOTOMETRIC_LOGL) ||

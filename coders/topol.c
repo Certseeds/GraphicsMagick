@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -737,6 +737,7 @@ DONE_READING:
   /* if (EOFBlob(image))
      ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image); */
   CloseBlob(image);
+  StopTimer(&image->timer);
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return (image);

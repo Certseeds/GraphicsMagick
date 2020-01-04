@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -206,6 +206,7 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -283,6 +284,7 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
       image->filename);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

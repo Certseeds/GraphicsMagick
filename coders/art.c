@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -148,6 +148,7 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
  DONE_READING:
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

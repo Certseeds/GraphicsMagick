@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2670,7 +2670,8 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
       ipa_device_close(API);
       (void) wmf_api_destroy(API);
       CloseBlob(image);
-      if(logging)
+      StopTimer(&image->timer);
+      if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),"leave ReadWMFImage()");
       return(image);
     }
@@ -2742,6 +2743,7 @@ static Image *ReadWMFImage(const ImageInfo * image_info, ExceptionInfo * excepti
   /* Cleanup allocated data */
   (void) wmf_api_destroy(API);
   CloseBlob(image);
+  StopTimer(&image->timer);
 
   /* Check for and report any rendering error */
   if(image->exception.severity != UndefinedException)

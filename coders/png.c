@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -3952,6 +3952,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   SetMagickResourceLimit(WidthResource,width_resource);
   SetMagickResourceLimit(HeightResource,height_resource);
 
+  StopTimer(&image->timer);
+
   return (image);
 }
 
@@ -4451,6 +4453,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #endif
               if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                 {
+                  StopTimer(&image->timer);
                   /*
                     Allocate next image structure.
                   */
@@ -4891,6 +4894,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                     {
+                      StopTimer(&image->timer);
                       AllocateNextImage(image_info,image);
                       if (image->next == (Image *) NULL)
                         {
@@ -5491,6 +5495,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 {
                   if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                     {
+                      StopTimer(&image->timer);
                       /*
                         Allocate next image structure.
                       */
@@ -5542,6 +5547,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                 {
+                  StopTimer(&image->timer);
                   /*
                     Allocate next image structure.
                   */
@@ -5586,6 +5592,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           first_mng_object=MagickFalse;
           if (AccessMutablePixels(image) != (PixelPacket *) NULL)
             {
+              StopTimer(&image->timer);
               /*
                 Allocate next image structure.
               */
@@ -6204,6 +6211,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                               " background layer.");
       if (AccessMutablePixels(image) != (PixelPacket *) NULL)
         {
+          StopTimer(&image->timer);
           /*
             Allocate next image structure.
           */

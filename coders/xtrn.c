@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2011 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -221,6 +221,8 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
         }
     }
   DestroyImageInfo(clone_info);
+  if (image != (Image *) NULL)
+    StopTimer(&image->timer);
   return(image);
 }
 

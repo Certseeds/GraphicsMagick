@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1033,6 +1033,8 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) AnnotateImage(image,draw_info);
         if (p == (char *) NULL)
           break;
+
+        StopTimer(&image->timer);
 
         if (logging)
           (void)LogMagickEvent(CoderEvent,GetMagickModule(),

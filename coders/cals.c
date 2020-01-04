@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009 GraphicsMagick Group
+% Copyright (C) 2009-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -129,7 +129,8 @@ static MagickBool IsCALS(const unsigned char *magick,const size_t length)
 static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image
-    *image;
+    *image,
+    *timage;
 
   long
     y;
@@ -330,21 +331,30 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
       (void) LiberateTemporaryFile(filename);
       ThrowReaderException(CoderError,UnableToWriteTemporaryFile,image);
     }
-  DestroyImage(image);
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
   FormatString(clone_info->filename,"tiff:%.1024s",filename);
-  image=ReadImage(clone_info,exception);
+  timage=ReadImage(clone_info,exception);
   (void) LiberateTemporaryFile(filename);
   DestroyImageInfo(clone_info);
-  if (image != (Image *) NULL)
+  if (timage != (Image *) NULL)
     {
-      (void) strlcpy(image->filename,image_info->filename,
-                     sizeof(image->filename));
-      (void) strlcpy(image->magick_filename,image_info->filename,
-                     sizeof(image->magick_filename));
-      (void) strlcpy(image->magick,"CALS",sizeof(image->magick));
+      (void) strlcpy(timage->filename,image_info->filename,
+                     sizeof(timage->filename));
+      (void) strlcpy(timage->magick_filename,image_info->filename,
+                     sizeof(timage->magick_filename));
+      (void) strlcpy(timage->magick,"CALS",sizeof(timage->magick));
+      timage->timer=image->timer;
+      DestroyImage(image);
+      image=timage;
+      timage = (Image *) NULL;
+      StopTimer(&image->timer);
+    }
+  else
+    {
+      DestroyImage(image);
+      image = (Image *) NULL;
     }
   return(image);
 }

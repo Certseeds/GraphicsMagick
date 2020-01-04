@@ -930,6 +930,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
   if (EOFBlob(image))
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(GetFirstImageInList(image));
 }
 

@@ -128,6 +128,10 @@ static Image *ReadXCImage(const ImageInfo *image_info,ExceptionInfo *exception)
       DestroyImage(image);
       image=(Image *) NULL;
     }
+  else
+    {
+      StopTimer(&image->timer);
+    }
 
   return image;
 }

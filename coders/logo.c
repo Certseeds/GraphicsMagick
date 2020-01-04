@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
 % Parts Copyright (c) 1989-2000 by Brian V. Smith
 % Parts Copyright (c) 1991 by Paul King
@@ -5039,13 +5039,16 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
       /*
         Tile pattern across image canvas.
       */
+      ContinueTimer(&image->timer);
       pattern_image=image;
       image=AllocateImage(clone_info);
       (void) TextureImage(image,pattern_image);
+      image->timer=pattern_image->timer;
       DestroyImage(pattern_image);
     }
 
   DestroyImageInfo(clone_info);
+  StopTimer(&image->timer);
   return(image);
 }
 

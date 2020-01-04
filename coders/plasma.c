@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -131,6 +131,7 @@ static Image *ReadPlasmaImage(const ImageInfo *image_info,
   DestroyImageInfo(clone_info);
   if (image == (Image *) NULL)
     return(image);
+  (void) strlcpy(image->filename,image_info->filename,sizeof(image->filename));
   image->storage_class=DirectClass;
   for (y=0; y < (long) image->rows; y++)
   {
@@ -176,6 +177,7 @@ static Image *ReadPlasmaImage(const ImageInfo *image_info,
     if (PlasmaImage(image,&segment_info,0,depth))
       break;
   }
+  StopTimer(&image->timer);
   return(image);
 }
 

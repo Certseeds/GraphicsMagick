@@ -529,6 +529,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(textlist);
   MagickFreeMemory(xpm_buffer);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

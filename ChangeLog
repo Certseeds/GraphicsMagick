@@ -1,3 +1,9 @@
+2020-01-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/*.c (ReadFOOImage): Stop image timer just before
+	returning from reader so that reported timings are correct when
+	used in the future.
+
 2020-01-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/timer.c (StartTimer): Expose previously existing

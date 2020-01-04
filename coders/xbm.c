@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -288,6 +288,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
@@ -396,6 +397,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(data);
   (void) SyncImage(image);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

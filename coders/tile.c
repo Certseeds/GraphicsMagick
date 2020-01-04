@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -106,6 +106,8 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   if (tile_image == (Image *) NULL)
     return((Image *) NULL);
 
+  ContinueTimer(&tile_image->timer);
+
   /*
     Adapt tile image to desired image type.
   */
@@ -118,6 +120,11 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   (void) GetGeometry(image_info->size,&geometry.x,&geometry.y,&geometry.width,
                      &geometry.height);
   image=ConstituteTextureImage(geometry.width,geometry.height,tile_image,exception);
+  if (image)
+    {
+      image->timer = tile_image->timer;
+      StopTimer(&image->timer);
+    }
 
   DestroyImage(tile_image);
   return(image);
