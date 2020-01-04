@@ -1,13 +1,18 @@
+2020-01-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (WriteImage): Don't over-write time-stamp
+	when output is to INFO format.
+
 2020-01-03  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* VisualMagick\configure\configure.exe: Should not depend on mfcr90.dll.
 	It is too bad when end user cannot run this tool because of missing DLL.
 
 	* VisualMagick\configure\configure.cpp Make speed optimisation as default
-        option.
+	option.
 
 	* VisualMagick\configure\configure.vcproj Give different filename to debug
-	build to avoid accidental committing debug build to repository.        
+	build to avoid accidental committing debug build to repository.
 
 2020-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
