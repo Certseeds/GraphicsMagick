@@ -962,8 +962,10 @@
 #define SpliceImageIntoList GmSpliceImageIntoList
 #define SplitImageList GmSplitImageList
 #define SpreadImage GmSpreadImage
+#define StartTimer GmStartTimer
 #define SteganoImage GmSteganoImage
 #define StereoImage GmStereoImage
+#define StopTimer GmStopTimer
 #define StorageTypeToString GmStorageTypeToString
 #define StretchTypeToString GmStretchTypeToString
 #define StringToArgv GmStringToArgv

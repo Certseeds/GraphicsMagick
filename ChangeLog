@@ -1,5 +1,9 @@
 2020-01-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/timer.c (StartTimer): Expose previously existing
+	StartTimer() function.
+	(StopTimer): Expose previously existing StartTimer() function.
+
 	* magick/constitute.c (WriteImage): Don't over-write time-stamp
 	when output is to INFO format.
 
