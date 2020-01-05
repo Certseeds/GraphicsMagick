@@ -1,5 +1,10 @@
 2020-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/sfw.c (ReadSFWImage): Restore a DestroyImage() statement
+	which was accidentally deleted by recent edits.  Fixes oss-fuzz
+	"Issue 19819 in oss-fuzz: graphicsmagick:coder_SFW_fuzzer:
+	Indirect-leak in AllocateImage".
+
 	* coders/png.c (WriteOneJNGImage): Detect when JPEG encoder has
 	failed, and throw exception.  Fix image dimension limit
 	validations.  Stop discarding exception report.  Fixes SourceForge

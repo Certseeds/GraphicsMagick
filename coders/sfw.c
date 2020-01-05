@@ -339,6 +339,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   CloseBlob(image);
   strlcpy(original_filename,image->filename,sizeof(original_filename));
   strlcpy(original_magick,image->magick,sizeof(original_magick));
+  DestroyImage(image);
   /*
     Read JPEG image.
   */
