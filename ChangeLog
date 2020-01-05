@@ -1,5 +1,11 @@
 2020-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (WriteOneJNGImage): Detect when JPEG encoder has
+	failed, and throw exception.  Fix image dimension limit
+	validations.  Stop discarding exception report.  Fixes SourceForge
+	bug #621 "Assertion in WriteBlob at magick/blob.c:4937" which was
+	reported by Suhwan Song.
+
 	* coders/pict.c (WritePICTImage): Eliminating small buffer overrun
 	when run-length encoding pixels.  Fixes SourceForge bug #620
 	"heap-buffer-overflow in EncodeImage at coders/pict.c:1114" which
