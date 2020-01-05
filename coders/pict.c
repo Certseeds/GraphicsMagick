@@ -112,22 +112,22 @@
 
 typedef struct _PICTPixmap
 {
-  short
+  magick_uint16_t
     version,
     pack_type;
 
-  unsigned long
+  magick_uint32_t
     pack_size,
     horizontal_resolution,
     vertical_resolution;
 
-  short
+  magick_uint16_t
     pixel_type,
     bits_per_pixel,
     component_count,
     component_size;
 
-  unsigned long
+  magick_uint32_t
     plane_bytes,
     table,
     reserved;
@@ -135,7 +135,7 @@ typedef struct _PICTPixmap
 
 typedef struct _PICTRectangle
 {
-  short
+  magick_uint16_t
     top,
     left,
     bottom,
@@ -2003,8 +2003,8 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
 #define PictVersion  0x11
 
   double
-    x_resolution,
-    y_resolution;
+    x_resolution = 72.0,
+    y_resolution = 72.0;
 
   long
     y;
@@ -2100,8 +2100,19 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   pixmap.table=0;
   pixmap.reserved=0;
   transfer_mode=0;
-  x_resolution=image->x_resolution ? image->x_resolution : 72.0;
-  y_resolution=image->y_resolution ? image->y_resolution : 72.0;
+  if ((image->x_resolution > MagickEpsilon) &&
+      (image->y_resolution > MagickEpsilon))
+    {
+      x_resolution=image->x_resolution;
+      y_resolution=image->y_resolution;
+      if (image->units == PixelsPerCentimeterResolution)
+        {
+          x_resolution *= 2.54;
+          y_resolution *= 2.54;
+        }
+      x_resolution=ConstrainToRange(0.0,(double) 0xffff,x_resolution);
+      y_resolution=ConstrainToRange(0.0,(double) 0xffff,y_resolution);
+    }
   storage_class=image->storage_class;
   if (image->compression == JPEGCompression)
     storage_class=DirectClass;
@@ -2122,7 +2133,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
     bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
-  if ((bytes_per_line == 0) || (bytes_per_line > 0x7FFF))
+  if ((bytes_per_line == 0) || (bytes_per_line > 0x7FFFU) || ((row_bytes+MaxCount*2U) >= 0x7FFFU))
     ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
 #if defined(PTRDIFF_MAX)
   /*
@@ -2134,7 +2145,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
     ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 #endif /* if defined(PTRDIFF_MAX) */
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);
-  packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount);
+  packed_scanline=MagickAllocateMemory(unsigned char *,row_bytes+MaxCount*2U);
   scanline=MagickAllocateMemory(unsigned char *,row_bytes);
   if ((buffer == (unsigned char *) NULL) ||
       (packed_scanline == (unsigned char *) NULL) ||

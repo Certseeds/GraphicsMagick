@@ -1,5 +1,10 @@
 2020-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (WritePICTImage): Eliminating small buffer overrun
+	when run-length encoding pixels.  Fixes SourceForge bug #620
+	"heap-buffer-overflow in EncodeImage at coders/pict.c:1114" which
+	was reported by Suhwan Song.
+
 	* coders/logo.c (ReadLOGOImage): PATTERN error handling was
 	incomplete.  Add appropriate error handling.
 	(ReadLOGOImage): Switch to using ConstituteTextureImage() rather
