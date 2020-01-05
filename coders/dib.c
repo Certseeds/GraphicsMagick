@@ -553,6 +553,9 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register unsigned char
     *p;
 
+  TimerInfo
+    timer;
+
   size_t
     count,
     length;
@@ -578,6 +581,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  GetTimerInfo(&timer);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
@@ -1126,7 +1130,6 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       Image
         *flipped_image;
-
       /*
         Correct image orientation.
       */
@@ -1138,12 +1141,12 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       DestroyBlob(flipped_image);
       flipped_image->blob=ReferenceBlob(image->blob);
-      flipped_image->timer=image->timer;
       DestroyImage(image);
       image=flipped_image;
     }
   CloseBlob(image);
-  StopTimer(&image->timer);
+  StopTimer(&timer);
+  image->timer=timer;
   return(image);
 }
 

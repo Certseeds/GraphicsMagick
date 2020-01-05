@@ -131,6 +131,9 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   RectangleInfo
     geometry;
 
+  TimerInfo
+    timer;
+
   register long
     i;
 
@@ -144,6 +147,7 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  GetTimerInfo(&timer);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image=AllocateImage(image_info);
   list=MagickAllocateMemory(char **,sizeof(char *));
@@ -238,11 +242,11 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
       ThrowVIDReaderException(CorruptImageError,UnableToReadVIDImage,image)
     }
-  montage_image->timer=image->timer;
   DestroyImageList(image);
   LiberateVIDLists();
-  StopTimer(&montage_image->timer);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
+  StopTimer(&timer);
+  montage_image->timer=timer;
   return(montage_image);
 }
 

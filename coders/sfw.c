@@ -199,8 +199,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   Image
     *flipped_image,
-    *image,
-    *jimage;
+    *image;
 
   ImageInfo
     *clone_info;
@@ -225,6 +224,9 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   size_t
     buffer_size;
 
+  TimerInfo
+    timer;
+
   unsigned int
     status;
 
@@ -235,6 +237,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  GetTimerInfo(&timer);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
@@ -341,18 +344,11 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
   (void) strlcat(clone_info->filename,temporary_filename,sizeof(clone_info->filename));
-  jimage=ReadImage(clone_info,exception);
+  image=ReadImage(clone_info,exception);
   (void) LiberateTemporaryFile(temporary_filename);
   DestroyImageInfo(clone_info);
-  if (jimage == (Image *) NULL)
-    {
-      DestroyImage(image);
-      return(jimage);
-    }
-  jimage->timer=image->timer;
-  DestroyImage(image);
-  image=jimage;
-  jimage=(Image *) NULL;
+  if (image == (Image *) NULL)
+    return(image);
   /*
     Restore the input filename and magick
   */
@@ -366,12 +362,12 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
       flipped_image=FlipImage(image,exception);
       if (flipped_image != (Image *) NULL)
         {
-          flipped_image->timer=image->timer;
           DestroyImage(image);
           image=flipped_image;
         }
     }
-  StopTimer(&image->timer);
+  StopTimer(&timer);
+  image->timer=timer;
   return(image);
 }
 

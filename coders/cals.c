@@ -129,8 +129,7 @@ static MagickBool IsCALS(const unsigned char *magick,const size_t length)
 static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image
-    *image,
-    *timage;
+    *image;
 
   long
     y;
@@ -151,6 +150,9 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
 
   FILE
     *file;
+
+  TimerInfo
+    timer;
 
   unsigned long
     byte_count_pos,
@@ -173,6 +175,7 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  GetTimerInfo(&timer);
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
@@ -199,20 +202,20 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
             }
         }
       else
-      if (LocaleNCompare(record,"rorient:",8) == 0)
-        { /* rorient */
-          unsigned long
-            pel_path_rot,
-            line_rot;
+        if (LocaleNCompare(record,"rorient:",8) == 0)
+          { /* rorient */
+            unsigned long
+              pel_path_rot,
+              line_rot;
 
-          pel_path_rot = line_rot = 0;
-          if (sscanf(record+8,"%ld,%ld",&pel_path_rot,&line_rot) != 2)
-            {
-              orient = 0;
-              break;
-            }
-          switch (pel_path_rot)
-            {
+            pel_path_rot = line_rot = 0;
+            if (sscanf(record+8,"%ld,%ld",&pel_path_rot,&line_rot) != 2)
+              {
+                orient = 0;
+                break;
+              }
+            switch (pel_path_rot)
+              {
               case 90:
                 orient = 5;
                 break;
@@ -224,29 +227,29 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
                 break;
               default:
                 orient = 1;
+              }
+            if (line_rot == 90) orient++;
+          }
+        else
+          if (LocaleNCompare(record,"rpelcnt:",8) == 0)
+            { /* replcnt */
+              if (sscanf(record+8,"%ld,%ld",&width,&height) != 2)
+                {
+                  width = 0;
+                  height = 0;
+                  break;
+                }
             }
-          if (line_rot == 90) orient++;
-        }
-      else
-      if (LocaleNCompare(record,"rpelcnt:",8) == 0)
-        { /* replcnt */
-          if (sscanf(record+8,"%ld,%ld",&width,&height) != 2)
-            {
-              width = 0;
-              height = 0;
-              break;
-            }
-        }
-     else
-     if (LocaleNCompare(record,"rdensty:",8) == 0)
-        { /* rdensty */
-          if (sscanf(record+8,"%ld",&density) != 1)
-            {
-              density = 0;
-              break;
-            }
-          if (!density) density = 200;
-        }
+          else
+            if (LocaleNCompare(record,"rdensty:",8) == 0)
+              { /* rdensty */
+                if (sscanf(record+8,"%ld",&density) != 1)
+                  {
+                    density = 0;
+                    break;
+                  }
+                if (!density) density = 200;
+              }
     }
   if ((!width) || (!height) || (rtype != 1) || (!orient) || (!density) )
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -331,25 +334,23 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
       (void) LiberateTemporaryFile(filename);
       ThrowReaderException(CoderError,UnableToWriteTemporaryFile,image);
     }
+  DestroyImage(image);
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
   FormatString(clone_info->filename,"tiff:%.1024s",filename);
-  timage=ReadImage(clone_info,exception);
+  image=ReadImage(clone_info,exception);
   (void) LiberateTemporaryFile(filename);
   DestroyImageInfo(clone_info);
-  if (timage != (Image *) NULL)
+  if (image != (Image *) NULL)
     {
-      (void) strlcpy(timage->filename,image_info->filename,
-                     sizeof(timage->filename));
-      (void) strlcpy(timage->magick_filename,image_info->filename,
-                     sizeof(timage->magick_filename));
-      (void) strlcpy(timage->magick,"CALS",sizeof(timage->magick));
-      timage->timer=image->timer;
-      DestroyImage(image);
-      image=timage;
-      timage = (Image *) NULL;
-      StopTimer(&image->timer);
+      (void) strlcpy(image->filename,image_info->filename,
+                     sizeof(image->filename));
+      (void) strlcpy(image->magick_filename,image_info->filename,
+                     sizeof(image->magick_filename));
+      (void) strlcpy(image->magick,"CALS",sizeof(image->magick));
+      StopTimer(&timer);
+      image->timer=timer;
     }
   else
     {

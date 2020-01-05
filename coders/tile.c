@@ -87,6 +87,8 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   RectangleInfo
     geometry;
 
+  TimerInfo
+    timer;
 
   /*
     Initialize Image structure.
@@ -96,6 +98,7 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
+  GetTimerInfo(&timer);
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
@@ -105,8 +108,6 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   DestroyImageInfo(clone_info);
   if (tile_image == (Image *) NULL)
     return((Image *) NULL);
-
-  ContinueTimer(&tile_image->timer);
 
   /*
     Adapt tile image to desired image type.
@@ -120,13 +121,13 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   (void) GetGeometry(image_info->size,&geometry.x,&geometry.y,&geometry.width,
                      &geometry.height);
   image=ConstituteTextureImage(geometry.width,geometry.height,tile_image,exception);
+  DestroyImage(tile_image);
   if (image)
     {
-      image->timer = tile_image->timer;
-      StopTimer(&image->timer);
+      StopTimer(&timer);
+      image->timer=timer;
     }
 
-  DestroyImage(tile_image);
   return(image);
 }
 

@@ -4991,12 +4991,16 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
   const void
     *blob;
 
+  TimerInfo
+    timer;
+
   size_t
     extent;
 
   unsigned int
     i;
 
+  GetTimerInfo(&timer);
   clone_info=CloneImageInfo(image_info);
   image=(Image *) NULL;
   blob=NULL;
@@ -5030,25 +5034,27 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
       ThrowReaderException(BlobError,UnableToOpenFile,image)
     }
   image=BlobToImage(clone_info,blob,extent,exception);
-
-  if ((image_info->size) && (LocaleCompare(image_info->magick,"PATTERN") == 0))
+  if (image != (Image *) NULL)
     {
-      Image
-        *pattern_image;
+      StopTimer(&image->timer);
+      if ((image_info->size) && (LocaleCompare(image_info->magick,"PATTERN") == 0))
+        {
+          Image
+            *pattern_image;
 
-      /*
-        Tile pattern across image canvas.
-      */
-      ContinueTimer(&image->timer);
-      pattern_image=image;
-      image=AllocateImage(clone_info);
-      (void) TextureImage(image,pattern_image);
-      image->timer=pattern_image->timer;
-      DestroyImage(pattern_image);
+          /*
+            Tile pattern across image canvas.
+          */
+          pattern_image=image;
+          image=AllocateImage(clone_info);
+          (void) TextureImage(image,pattern_image);
+          DestroyImage(pattern_image);
+          StopTimer(&timer);
+          image->timer=timer;
+        }
     }
 
   DestroyImageInfo(clone_info);
-  StopTimer(&image->timer);
   return(image);
 }
 
