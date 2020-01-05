@@ -5037,7 +5037,8 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
   if (image != (Image *) NULL)
     {
       StopTimer(&image->timer);
-      if (LocaleCompare(image_info->magick,"PATTERN") == 0)
+      if ((clone_info->size != (char *) NULL) &&
+          (LocaleCompare(image_info->magick,"PATTERN") == 0))
         {
           Image
             *pattern_image;
@@ -5050,13 +5051,12 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
           */
           geometry.width=0;
           geometry.height=0;
-          if (clone_info->size)
-            (void) GetGeometry(clone_info->size,&geometry.x,&geometry.y,&geometry.width,
-                               &geometry.height);
+          (void) GetGeometry(clone_info->size,&geometry.x,&geometry.y,&geometry.width,
+                             &geometry.height);
           if ((geometry.width == 0) || (geometry.height == 0))
             {
               DestroyImageInfo(clone_info);
-              ThrowReaderException(OptionError,MustSpecifyImageSize,image);
+              ThrowReaderException(OptionError,GeometryDimensionsAreZero,image);
             }
           pattern_image=image;
           image=ConstituteTextureImage(geometry.width,geometry.height,pattern_image,exception);

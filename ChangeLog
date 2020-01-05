@@ -4,6 +4,8 @@
 	incomplete.  Add appropriate error handling.
 	(ReadLOGOImage): Switch to using ConstituteTextureImage() rather
 	than TextureImage() since it is more appropriate for this purpose.
+	(ReadLOGOImage): Oops!  Accidental change of behavior. When size
+	is not supplied, simply return the pattern image.
 
 2020-01-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

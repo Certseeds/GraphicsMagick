@@ -41,7 +41,9 @@
 <li>coders/logo.c (ReadLOGOImage): PATTERN error handling was
 incomplete.  Add appropriate error handling.
 (ReadLOGOImage): Switch to using ConstituteTextureImage() rather
-than TextureImage() since it is more appropriate for this purpose.</li>
+than TextureImage() since it is more appropriate for this purpose.
+(ReadLOGOImage): Oops!  Accidental change of behavior. When size
+is not supplied, simply return the pattern image.</li>
 </ul>
 </blockquote>
 <p>2020-01-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
