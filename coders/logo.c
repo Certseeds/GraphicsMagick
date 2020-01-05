@@ -5042,31 +5042,28 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
           Image
             *pattern_image;
 
-          MagickPassFail
-            status;
+          RectangleInfo
+            geometry;
 
           /*
-            Tile pattern across image canvas.
+            Tile pattern across image canvas of specified size.
           */
-          pattern_image=image;
-          image=AllocateImage(clone_info);
-          if ((image->columns == 0) || (image->rows == 0))
+          geometry.width=0;
+          geometry.height=0;
+          if (clone_info->size)
+            (void) GetGeometry(clone_info->size,&geometry.x,&geometry.y,&geometry.width,
+                               &geometry.height);
+          if ((geometry.width == 0) || (geometry.height == 0))
             {
               DestroyImageInfo(clone_info);
-              DestroyImage(pattern_image);
               ThrowReaderException(OptionError,MustSpecifyImageSize,image);
             }
-          status=TextureImage(image,pattern_image);
+          pattern_image=image;
+          image=ConstituteTextureImage(geometry.width,geometry.height,pattern_image,exception);
           DestroyImage(pattern_image);
           StopTimer(&timer);
-          image->timer=timer;
-          if (status != MagickPass)
-            {
-              CopyException(exception,&image->exception);
-              DestroyImage(image);
-              DestroyImageInfo(clone_info);
-              return (Image *) NULL;
-            }
+          if (image)
+            image->timer=timer;
         }
     }
 

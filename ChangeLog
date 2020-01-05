@@ -2,6 +2,8 @@
 
 	* coders/logo.c (ReadLOGOImage): PATTERN error handling was
 	incomplete.  Add appropriate error handling.
+	(ReadLOGOImage): Switch to using ConstituteTextureImage() rather
+	than TextureImage() since it is more appropriate for this purpose.
 
 2020-01-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
