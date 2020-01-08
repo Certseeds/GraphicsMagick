@@ -1,3 +1,11 @@
+2020-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (ReadPICTImage): Be more strict about PICT
+	rectangle by treating rectangle dimensions as if they are a 16-bit
+	signed type and not allowing negative values.  Avoid GCC warnings
+	which sprung up similar to "warning: comparison is always false
+	due to limited range of data type".
+
 2020-01-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/sfw.c (ReadSFWImage): Restore a DestroyImage() statement

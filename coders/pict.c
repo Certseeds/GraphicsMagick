@@ -90,8 +90,9 @@
 */
 #define ValidateRectangle(rectangle) \
   ((!EOFBlob(image) && \
-    (rectangle.bottom - rectangle.top > 0) && \
-    (rectangle.right - rectangle.left > 0)))
+    !((rectangle.bottom | rectangle.top | rectangle.right | rectangle.left ) & 0x8000) && \
+    (rectangle.bottom > rectangle.top) && \
+    (rectangle.right > rectangle.left)))
 
 /*
   Issue a trace message with rectangle dimensions.
@@ -1286,15 +1287,6 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
   else
     if (version != 1)
       ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
-  /*
-    Validate dimensions
-  */
-  if ((frame.left < 0) || (frame.right < 0) || (frame.top < 0) || (frame.bottom < 0) ||
-      (frame.left >= frame.right) || (frame.top >= frame.bottom))
-    {
-      ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
-    }
-
   /*
     Create black canvas.
   */
