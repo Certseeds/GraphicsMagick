@@ -1785,7 +1785,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         */
         jpeg=True;
         length=ReadBlobMSBLong(image);
-        if ((length > 154) && ((file_size <= 0) || (file_size-TellBlob(image) > length)))
+        if ((length > 154) && ((file_size <= 0) || ((size_t) (file_size-TellBlob(image)) > length)))
           {
             void
               *blob,
