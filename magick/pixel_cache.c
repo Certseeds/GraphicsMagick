@@ -4580,7 +4580,9 @@ ModifyCache(Image *image, ExceptionInfo *exception)
         */
         cache_info=(CacheInfo *) image->cache;
         status=(((image->storage_class == cache_info->storage_class) &&
-                 (image->colorspace == cache_info->colorspace)) ||
+                 (image->colorspace == cache_info->colorspace) &&
+                 (image->rows == cache_info->rows) &&
+                 (image->columns == cache_info->columns)) ||
                 (OpenCache(image,IOMode,exception)));
       }
   }

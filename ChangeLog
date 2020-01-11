@@ -1,3 +1,18 @@
+2020-01-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (ModifyCache): Re-open the pixel cache if
+	the cache rows/columns do not match the owning image rows/columns.
+
+	* magick/transform.c (TransformImage): TransformImage now returns
+	a MagickPassFail return status value rather than void.
+
+	* coders/pict.c (ReadPICTImage): Fix some over-strict validations
+	which were preventing some PICT files which were previously read
+	successfully from being accepted. Fix problems which occurred when
+	the clipping rectangle changed the image size. Improve reading
+	embedded JPEG blobs.  Now successfully reads all raster PICT files
+	I have available.
+
 2020-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (ReadPICTImage): Be more strict about PICT
