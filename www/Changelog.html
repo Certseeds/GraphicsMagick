@@ -38,6 +38,11 @@
 <p>2020-01-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/histogram.c (WriteHISTOGRAMImage): Histogram coder was
+relying on the previously removed '&#64;' file inclusion feature to
+insert the histogram comment text.  Write a PseudoClass MIFF image
+with RLE compression.  Fixes SourceForge issue #622 &quot;Histogram
+produces incorrect color table attribute &quot;.</li>
 <li>magick/pixel_cache.c (ModifyCache): Re-open the pixel cache if
 the cache rows/columns do not match the owning image rows/columns.</li>
 <li>magick/transform.c (TransformImage): TransformImage now returns

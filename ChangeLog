@@ -1,5 +1,11 @@
 2020-01-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/histogram.c (WriteHISTOGRAMImage): Histogram coder was
+	relying on the previously removed '@' file inclusion feature to
+	insert the histogram comment text.  Write a PseudoClass MIFF image
+	with RLE compression.  Fixes SourceForge issue #622 "Histogram
+	produces incorrect color table attribute ".
+
 	* magick/pixel_cache.c (ModifyCache): Re-open the pixel cache if
 	the cache rows/columns do not match the owning image rows/columns.
 
