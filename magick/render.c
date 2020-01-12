@@ -3872,7 +3872,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {/*textdx*/
             double value;
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&value);
+            status &= MagickAtoFChk(token,&value);
             /* value may be specified using "em" or "ex" units */
             if (LocaleNCompare(q,"em",2) == 0)
               {
@@ -3891,7 +3891,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {/*textdy*/
             double value;
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&value);
+            status &= MagickAtoFChk(token,&value);
             /* value may be specified using "em" or "ex" units */
             if (LocaleNCompare(q,"em",2) == 0)
               {
@@ -3942,7 +3942,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             double value;
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&value);
+            status &= MagickAtoFChk(token,&value);
             xTextCurrent = value;
             break;
           }
@@ -3950,7 +3950,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
           {
             double value;
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&value);
+            status &= MagickAtoFChk(token,&value);
             yTextCurrent = value;
             break;
           }
@@ -3992,11 +3992,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         if (LocaleCompare("translate",keyword) == 0)
           {
             MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&affine.tx);
+            status &= MagickAtoFChk(token,&affine.tx);
             MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
               MagickGetToken(q,&q,token,token_max_length);
-            (void) MagickAtoFChk(token,&affine.ty);
+            status &= MagickAtoFChk(token,&affine.ty);
             break;
           }
         status=MagickFail;
@@ -4078,11 +4078,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       if (!IsPoint(q))
         break;
       MagickGetToken(q,&q,token,token_max_length);
-      (void) MagickAtoFChk(token,&point.x);
+      status &= MagickAtoFChk(token,&point.x);
       MagickGetToken(q,&q,token,token_max_length);
       if (*token == ',')
         MagickGetToken(q,&q,token,token_max_length);
-      (void) MagickAtoFChk(token,&point.y);
+      status &= MagickAtoFChk(token,&point.y);
       MagickGetToken(q,(char **) NULL,token,token_max_length);
       if (*token == ',')
         MagickGetToken(q,&q,token,token_max_length);
@@ -5867,7 +5867,8 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           status&=DrawPolygonPrimitive(image,clone_info,primitive_info);
           DestroyDrawInfo(clone_info);
           /* ... and then stroke the polygon */
-          status&=DrawStrokePolygon(image,draw_info,primitive_info);
+          if (status != MagickFail)
+            status&=DrawStrokePolygon(image,draw_info,primitive_info);
           break;
         }
       status&=DrawPolygonPrimitive(image,draw_info,primitive_info);
