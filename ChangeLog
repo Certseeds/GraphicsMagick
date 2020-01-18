@@ -1,3 +1,11 @@
+2020-01-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/meta.c (WriteMETAImage): Assure that 'iptc_offset' is
+	initialized and valid.
+
+	* coders/jpeg.c (ReadJPEGImage): Assure that evaluating the
+	embedded profile length does not suffer from undefined behavior.
+
 2020-01-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Add more MVG parser validations.

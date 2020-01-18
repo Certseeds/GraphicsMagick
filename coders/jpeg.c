@@ -446,6 +446,25 @@ static void JPEGErrorHandler(j_common_ptr jpeg_info)
   longjmp(error_manager->error_recovery,1);
 }
 
+#define GetProfileLength(jpeg_info, length)                             \
+  do {                                                                  \
+    int                                                                 \
+      _c;                                                               \
+                                                                        \
+    if (((_c = GetCharacter(jpeg_info)) != EOF) && (_c >= 0))           \
+      {                                                                 \
+        length=_c*256;                                                  \
+        if (((_c = GetCharacter(jpeg_info)) != EOF) && (_c >= 0))       \
+          length+=_c;                                                   \
+        else                                                            \
+          length=0;                                                     \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        length=0;                                                       \
+      }                                                                 \
+  } while(0)
+
 static boolean ReadComment(j_decompress_ptr jpeg_info)
 {
   char
@@ -457,20 +476,22 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
   Image
     *image;
 
+  register char
+    *p;
+
   size_t
     i,
     length;
 
-  register char
-    *p;
+  int
+    c;
 
   /*
     Determine length of comment.
   */
   error_manager=(ErrorManager *) jpeg_info->client_data;
   image=error_manager->image;
-  length=GetCharacter(jpeg_info) << 8;
-  length+=GetCharacter(jpeg_info);
+  GetProfileLength(jpeg_info, length);
   if (length <= 2)
     return(True);
   length-=2;
@@ -479,9 +500,11 @@ static boolean ReadComment(j_decompress_ptr jpeg_info)
     Read comment.
   */
   p=comment;
-  for (i=length; i != 0; i--)
+  for (i=0; i < length; i++)
     {
-      *p=GetCharacter(jpeg_info);
+      if ((c=GetCharacter(jpeg_info)) == EOF)
+        break;
+      *p=c;
       p++;
     }
   *p='\0';
@@ -511,18 +534,15 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
     *profile;
 
   int
+    c,
     marker;
-
-  boolean
-    status = True;
 
   /*
     Determine length of generic profile.
   */
-  length=GetCharacter(jpeg_info) << 8;
-  length+=GetCharacter(jpeg_info);
+  GetProfileLength(jpeg_info, length);
   if (length <= 2)
-    return(status);
+    return(True);
   length-=2;
 
   marker=jpeg_info->unread_marker-JPEG_APP0;
@@ -544,7 +564,14 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   profile=error_manager->buffer;
 
   for (i=0 ; i < length ; i++)
-    profile[i]=GetCharacter(jpeg_info);
+    {
+      if ((c=GetCharacter(jpeg_info)) != EOF)
+        profile[i]=c;
+      else
+        break;
+    }
+  if (i != length)
+    return True;
 
   /*
     Detect EXIF and XMP profiles.
@@ -568,7 +595,7 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   /*
     Store profile in Image.
   */
-  status=AppendImageProfile(image,profile_name,profile+header_length,
+  (void) AppendImageProfile(image,profile_name,profile+header_length,
                             length-header_length);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -577,7 +604,7 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
                         profile_name, (MAGICK_SIZE_T) header_length,
                         (MAGICK_SIZE_T) length-header_length);
 
-  return (status);
+  return (True);
 }
 
 static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
@@ -591,20 +618,22 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
   Image
     *image;
 
+  unsigned char
+    *profile;
+
   long
     length;
 
   register long
     i;
 
-  unsigned char
-    *profile;
+  int
+    c;
 
   /*
     Determine length of color profile.
   */
-  length=(long) GetCharacter(jpeg_info) << 8;
-  length+=(long) GetCharacter(jpeg_info);
+  GetProfileLength(jpeg_info, length);
   length-=2;
   if (length <= 14)
     {
@@ -639,9 +668,14 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
     length);
 
   for (i=0 ; i < length; i++)
-   profile[i]=GetCharacter(jpeg_info);
-
-  (void) AppendImageProfile(image,"ICM",profile,length);
+    {
+      if ((c=GetCharacter(jpeg_info)) != EOF)
+        profile[i]=c;
+      else
+        break;
+    }
+  if (i == length)
+    (void) AppendImageProfile(image,"ICM",profile,length);
 
   return(True);
 }
@@ -669,11 +703,13 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
     tag[MaxTextExtent];
 #endif
 
+  int
+    c;
+
   /*
     Determine length of binary data stored here.
   */
-  length=(long) GetCharacter(jpeg_info) << 8;
-  length+=(long) GetCharacter(jpeg_info);
+  GetProfileLength(jpeg_info, length);
   length-=2;
   if (length <= 0)
     return(True);
@@ -740,10 +776,15 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
                         "Profile: IPTC, %ld bytes",
     length);
 
-  for (i=0; i<length; i++)
-    profile[i]=GetCharacter(jpeg_info);
-
-  (void) AppendImageProfile(image,"IPTC",profile,length);
+  for (i=0; i < length; i++)
+    {
+      if ((c=GetCharacter(jpeg_info)) != EOF)
+        profile[i]=c;
+      else
+        break;
+    }
+  if (i == length)
+    (void) AppendImageProfile(image,"IPTC",profile,length);
 
   return(True);
 }
