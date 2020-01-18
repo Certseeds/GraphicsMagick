@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2409,7 +2409,7 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
         *buff;
 
       size_t
-        iptc_offset,
+        iptc_offset = 0,
         length;
 
       const unsigned char
@@ -2418,9 +2418,9 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,"IPTC",&profile_length)) == 0)
         ThrowWriterException(CoderError,NoIPTCProfileAvailable,image);
       length=GetIPTCStream(profile,profile_length,&iptc_offset);
-      info=profile+iptc_offset;
       if (length == 0)
         ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
+      info=profile+iptc_offset;
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
       if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
