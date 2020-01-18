@@ -1619,7 +1619,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
 
   for (c=image_geometry; *c != 0 ; c++)
     {
-      if (isspace((int)(unsigned char) (*c)))
+      if (isspace((int) (*c)))
         {
           continue;
         }
@@ -1699,7 +1699,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
   bounds.x=0;
   bounds.y=0;
   p=geometry;
-  while (isspace((int)(unsigned char) *p))
+  while ((isspace((int)(*p))))
     p++;
   if (*p == '\0')
     return(flags);

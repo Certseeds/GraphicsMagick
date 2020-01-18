@@ -270,8 +270,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status;
+
+  MagickBool
+    colormap_initialized;
 
   size_t
     length;
@@ -415,6 +418,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   none=(~0U);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Parsing colormap...");
+  colormap_initialized=MagickFalse;
   for (j=0; j < image->colors; j++)
   {
     p=textlist[i++];
@@ -458,8 +462,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         exception->severity = CorruptImageError;
         break;
       }
+    /* We are going to be done now */
+    if (j+1 == image->colors)
+      colormap_initialized=MagickTrue;
   }
-  if (j < image->colors)
+  if (!colormap_initialized)
     ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
   image->depth=GetImageDepth(image,&image->exception);
   image->depth=NormalizeDepthToOctet(image->depth);

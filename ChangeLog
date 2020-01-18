@@ -1,5 +1,8 @@
 2020-01-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c (ReadXPMImage): Properly detect the case where the
+	XPM colormap is not fully initialized.
+
 	* coders/pict.c (DecodeImage): Fix heap buffer over-reads. Fixes
 	oss-fuzz issue 20053 "graphicsmagick:coder_PICT_fuzzer:
 	Heap-buffer-overflow in ExpandBuffer" and oss-fuzz issue 20048
