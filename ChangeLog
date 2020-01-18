@@ -1,5 +1,12 @@
 2020-01-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (DecodeImage): Fix heap buffer over-reads. Fixes
+	oss-fuzz issue 20053 "graphicsmagick:coder_PICT_fuzzer:
+	Heap-buffer-overflow in ExpandBuffer" and oss-fuzz issue 20048
+	"graphicsmagick:coder_PICT_fuzzer: Heap-buffer-overflow in
+	DecodeImage".  Both of these oss-fuzz issues appeared due to
+	recent changes since the last release.
+
 	* coders/meta.c (WriteMETAImage): Assure that 'iptc_offset' is
 	initialized and valid.
 

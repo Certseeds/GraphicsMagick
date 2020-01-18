@@ -770,11 +770,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                                   const unsigned int bits_per_pixel)
 {
   unsigned long
-    j,
     y;
-
-  register unsigned long
-    i;
 
   register const unsigned char
     *p;
@@ -784,6 +780,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
 
   size_t
     allocated_pixels,
+    scanline_alloc,
     row_bytes;
 
   unsigned char
@@ -792,14 +789,18 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
     *scanline = NULL;
 
   unsigned long
-    bytes_per_pixel,
-    length,
     number_pixels,
-    scanline_length,
     width;
 
   magick_off_t
     file_size;
+
+  unsigned int
+    bytes_per_pixel,
+    i,
+    j,
+    length,
+    scanline_length;
 
   ARG_NOT_USED(image_info);
 
@@ -887,8 +888,15 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                      image->filename);
       goto decode_error_exit;
     }
-  /* FIXME: Extra +1 avoids heap read overflow (oss-fuzz 12019) */
-  scanline=MagickAllocateMemory(unsigned char *,row_bytes+1);
+  /* Use a worst-case allocation policy (because we can afford to) */
+  if (bytes_per_line < 8)
+    scanline_alloc = bytes_per_line;
+  else if (bytes_per_line <= 200)
+    scanline_alloc = 256U;
+  else
+    scanline_alloc = 65536U;
+
+  scanline=MagickAllocateMemory(unsigned char *,scanline_alloc);
   if (scanline == (unsigned char *) NULL)
     {
       ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,
@@ -927,23 +935,26 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
         scanline_length=ReadBlobMSBShort(blob);
       else
         scanline_length=ReadBlobByte(blob);
-      if (scanline_length >= row_bytes)
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "scanline_length = %u, "
+                              "scanline_alloc = %"MAGICK_SIZE_T_F"u",
+                              scanline_length, (MAGICK_SIZE_T)scanline_alloc);
+      if (scanline_length < 2)
         {
-          if (image->logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "scanline_length = %lu, row_bytes = %"MAGICK_SIZE_T_F"u",
-                                  scanline_length, (MAGICK_SIZE_T)row_bytes);
           ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
-                         "scanline length exceeds row bytes");
+                         image->filename);
           goto decode_error_exit;
         }
       if (ReadBlob(blob,scanline_length,(char *) scanline) != scanline_length)
         {
           ThrowException(&image->exception,CorruptImageError,UnexpectedEndOfFile,
-                         image->filename);
+                         "Scanline length too small!");
           goto decode_error_exit;
         }
-      (void) memset(scanline+scanline_length,0,row_bytes-scanline_length); /* Zero remainder */
+      #if 0
+      (void) memset(scanline+scanline_length,0,scanline_alloc-scanline_length); /* Zero remainder */
+      #endif
       for (j=0; j < scanline_length; )
         if ((scanline[j] & 0x80) == 0)
           {
@@ -956,7 +967,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                                "Decoded RLE pixels exceeds allocation!");
                 goto decode_error_exit;
               }
-            (void) memcpy(q,p,number_pixels); /* ASAN report */
+            (void) memcpy(q,p,number_pixels);
             q+=number_pixels;
             j+=length*bytes_per_pixel+1;
           }
