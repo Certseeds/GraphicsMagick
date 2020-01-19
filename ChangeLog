@@ -1,5 +1,9 @@
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Options.cpp (strokeDashArray): Add needless check
+	for _drawInfo->dash_pattern null in order to make static analysis
+	happy.
+
 	* magick/render.c (DestroyPolygonInfo): Make sure to not
 	dereference a null edges pointer.
 
