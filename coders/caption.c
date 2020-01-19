@@ -123,6 +123,7 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  (void) memset(&metrics,0,sizeof(metrics));
   image=AllocateImage(image_info);
   if (image->columns == 0)
     ThrowCAPTIONException(OptionError,MustSpecifyImageSize,image);

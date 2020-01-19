@@ -1,5 +1,8 @@
 2020-01-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (DestroyThreadViewSet): Check if views
+	pointer is not null before destroying views.
+
 	* coders/xpm.c (ReadXPMImage): Properly detect the case where the
 	XPM colormap is not fully initialized.
 

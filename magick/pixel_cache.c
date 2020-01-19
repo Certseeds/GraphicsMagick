@@ -470,12 +470,18 @@ DestroyThreadViewSet(ThreadViewSet *view_set)
 
   if (view_set != (ThreadViewSet *) NULL)
     {
-      for (i=0; i < view_set->nviews; i++)
+      if (view_set->views != (ViewInfo *) NULL)
         {
-          CloseCacheView(view_set->views[i]);
-          view_set->views[i]=(ViewInfo *) NULL;
+          for (i=0; i < view_set->nviews; i++)
+            {
+              if (view_set->views[i] != (ViewInfo *) NULL)
+                {
+                  CloseCacheView(view_set->views[i]);
+                  view_set->views[i]=(ViewInfo *) NULL;
+                }
+            }
+          MagickFreeMemory(view_set->views);
         }
-      MagickFreeMemory(view_set->views);
       MagickFreeMemory(view_set);
     }
 }
