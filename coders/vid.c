@@ -92,7 +92,8 @@ static unsigned int
           MagickFreeMemory(filelist[i]);        \
         MagickFreeMemory(filelist);             \
       }                                         \
-    MagickFreeMemory(list[0]);                  \
+    if (list != (char **) NULL)                 \
+      MagickFreeMemory(list[0]);                \
     MagickFreeMemory(list);                     \
   }
 

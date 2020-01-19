@@ -1,5 +1,8 @@
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/vid.c (ReadVIDImage): Make sure that
+	ThrowVIDReaderException does not dereference a null pointer.
+
 	* magick/quantize.c (ClassifyImageColors): Fix error handling so a
 	null pointer won't be consumed after a memory allocation failure.
 	Changed the location of some variable declarations and added some
