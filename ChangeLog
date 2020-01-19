@@ -1,3 +1,10 @@
+2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/quantize.c (ClassifyImageColors): Fix error handling so a
+	null pointer won't be consumed after a memory allocation failure.
+	Changed the location of some variable declarations and added some
+	comments.
+
 2020-01-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/caption.c (ReadCAPTIONImage): Assure that metrics are
