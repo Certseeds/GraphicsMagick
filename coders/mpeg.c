@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -247,6 +247,11 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
   unsigned long
     count;
 
+  assert(image_info != (const ImageInfo *) NULL);
+  assert(image_info->signature == MagickSignature);
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+
   /*
     Write parameter file (see mpeg2encode documentation for details).
   */
@@ -488,7 +493,7 @@ static unsigned int WriteMPEGImage(const ImageInfo *image_info,Image *image)
   */
   if(!AcquireTemporaryFileName(basename))
     {
-      DestroyImage(coalesce_image);
+      DestroyImageList(coalesce_image);
       ThrowWriterTemporaryFileException(basename);
     }
   FormatString(coalesce_image->filename,"%.1024s",basename);

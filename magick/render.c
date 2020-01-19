@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1137,9 +1137,12 @@ DestroyPolygonInfo(void *polygon_info_void)
       register long
         i;
 
-      for (i=0; i < polygon_info->number_edges; i++)
-        MagickFreeMemory(polygon_info->edges[i].points);
-      MagickFreeMemory(polygon_info->edges);
+      if (polygon_info->edges != (EdgeInfo *) NULL)
+        {
+          for (i=0; i < polygon_info->number_edges; i++)
+            MagickFreeMemory(polygon_info->edges[i].points);
+          MagickFreeMemory(polygon_info->edges);
+        }
       MagickFreeMemory(polygon_info);
     }
 }

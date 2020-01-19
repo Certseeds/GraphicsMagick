@@ -1,5 +1,8 @@
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DestroyPolygonInfo): Make sure to not
+	dereference a null edges pointer.
+
 	* coders/pdb.c (WritePDBImage): Make sure that null comment value
 	is not dereferenced.
 
