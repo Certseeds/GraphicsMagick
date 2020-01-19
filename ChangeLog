@@ -1,5 +1,8 @@
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pdb.c (WritePDBImage): Make sure that null comment value
+	is not dereferenced.
+
 	* coders/vid.c (ReadVIDImage): Make sure that
 	ThrowVIDReaderException does not dereference a null pointer.
 

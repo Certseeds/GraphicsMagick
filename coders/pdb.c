@@ -898,7 +898,9 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   pdb_info.seed=0;
   pdb_info.next_record=0;
   comment=GetImageAttribute(image,"comment");
-  pdb_info.number_records=(comment == (ImageAttribute *) NULL ? 1 : 2);
+  pdb_info.number_records=1;
+  if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
+    pdb_info.number_records++;
   if (image->logging)
     LogPDPInfo(&pdb_info);
   (void) WriteBlob(image,32,pdb_info.name);
@@ -1062,7 +1064,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlobMSBShort(image,pdb_image.height);
   (void) WriteBlob(image,q-p,p);
   MagickFreeMemory(p);
-  if (pdb_info.number_records > 1)
+  if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
     (void) WriteBlobString(image,comment->value);
   CloseBlob(image);
   return(True);
