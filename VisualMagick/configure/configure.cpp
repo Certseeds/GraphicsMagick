@@ -5008,7 +5008,8 @@ void ConfigureVS7Project::write_cpp_compiler_tool_options(int type, int mode)
   {
     m_stream << "        EnableIntrinsicFunctions=\"true\"" << endl;
     m_stream << "        FavorSizeOrSpeed=\"1\"" << endl;
-    m_stream << "        EnableEnhancedInstructionSet=\"2\"" << endl;
+    if(!build64Bit)
+      m_stream << "        EnableEnhancedInstructionSet=\"2\"" << endl;
     m_stream << "        FloatingPointModel=\"2\"" << endl;
   }
 

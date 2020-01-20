@@ -1,3 +1,8 @@
+2020-01-20  Fojtik Jaroslav  <JaFojtik@seznam.cz>
+
+	* VisualMagick\configure\configure.cpp Option /arch:SSE2 is available only
+	for 32 bit build.
+
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcd.c (DecodeImage): Assure that pcd_length gets
