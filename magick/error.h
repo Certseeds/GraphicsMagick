@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003, 2004 GraphicsMagick Group
+  Copyright (C) 2003-2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -232,7 +232,7 @@ typedef void
   (*ErrorHandler)(const ExceptionType,const char *,const char *);
 
 typedef void
-  (*FatalErrorHandler)(const ExceptionType,const char *,const char *);
+  (*FatalErrorHandler)(const ExceptionType,const char *,const char *) MAGICK_FUNC_NORETURN;
 
 typedef void
   (*WarningHandler)(const ExceptionType,const char *,const char *);

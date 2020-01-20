@@ -1,5 +1,8 @@
 2020-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcd.c (DecodeImage): Assure that pcd_length gets
+	initialized with something.
+
 	* Magick++/lib/Options.cpp (strokeDashArray): Add needless check
 	for _drawInfo->dash_pattern null in order to make static analysis
 	happy.
