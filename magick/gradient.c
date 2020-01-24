@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -189,7 +189,7 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
                          image->filename);
   if (span <= MaxColormapSize)
-    AllocateImageColormap(image,span);
+    AllocateImageColormap(image,(unsigned long) span);
 
   /*
     Generate gradient pixels using alpha blending
@@ -304,10 +304,14 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
             case SouthWestGravity:
             case SouthEastGravity:
               {
+                /*
+                  FIXME: Diagonal gradient should be based on distance
+                  from perpendicular line!
+                */
                 double ydf = (y_origin-(double)y)*(y_origin-(double)y);
                 for (x=0; x < image->columns; x++)
                   {
-                    i = (size_t) (sqrt((x_origin-x)*(x_origin-x)+ydf)+0.5);
+                    i = (unsigned long) (sqrt((x_origin-x)*(x_origin-x)+ydf)+0.5);
                     /* fprintf(stderr,"NW %lux%ld: %lu\n", x, y, (unsigned long) i); */
                     q[x] = pixel_packets[i];
                     if (indexes)
