@@ -346,8 +346,8 @@ GenerateIPTCAttribute(Image *image,const char *key)
           /* fprintf(stderr,"Skipping record %d\n",profile[i+2]); */
           continue;
         }
-      length=profile[i+3] << 8;
-      length|=profile[i+4];
+      length=(size_t) profile[i+3] << 8;
+      length|=(size_t) profile[i+4];
       attribute=MagickAllocateMemory(char *,length+1);
       if (attribute == (char *) NULL)
         continue;
@@ -1879,7 +1879,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
             *pde,
             *pval;
 
-          pde=(unsigned char *) (ifdp+2+(12*de));
+          pde=(unsigned char *) (ifdp+2+(12*(size_t) de));
           if (logging && debug)
             (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                                   "EXIF: PDE offset %"MAGICK_SSIZE_T_F"d", (MAGICK_SSIZE_T) (pde-ifdp));
@@ -2959,7 +2959,7 @@ FindEXIFAttribute(const unsigned char *profile_info,
             *pval;
 
 
-          pde=(unsigned char *) (ifdp+2+(12*de));
+          pde=(unsigned char *) (ifdp+2+(12*(size_t) de));
           if (pde + 12 > tiffp + length)
             {
               if (debug)

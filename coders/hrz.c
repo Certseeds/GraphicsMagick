@@ -103,7 +103,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   ldblk = (long)(3*width);
 
-  if(GetBlobSize(image)!=(((long)ldblk)*height))
+  if(GetBlobSize(image)!=((magick_off_t) ((size_t)ldblk*height)))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
   image->columns = width;

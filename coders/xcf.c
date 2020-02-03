@@ -336,12 +336,12 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
 
     if (inDocInfo->image_type == GIMP_GRAY)
       {
-        expected_data_length=tile_image->columns*tile_image->rows*
+        expected_data_length=MagickArraySize(tile_image->columns,tile_image->rows)*
           sizeof(unsigned char);
       }
     else if (inDocInfo->image_type == GIMP_RGB)
       {
-        expected_data_length=tile_image->columns*tile_image->rows*
+        expected_data_length=MagickArraySize(tile_image->columns,tile_image->rows)*
           sizeof(XCFPixelPacket);
       }
     if (expected_data_length && (expected_data_length > data_length))
@@ -469,7 +469,7 @@ static MagickPassFail load_tile_rle (Image* image,
           CopyException(&image->exception,&tile_image->exception);
           goto bogus_rle;
         }
-      size = tile_image->rows * tile_image->columns;
+      size = MagickArraySize(tile_image->rows,tile_image->columns);
       count = 0;
 
       while (size > 0)
@@ -817,7 +817,7 @@ static MagickPassFail load_level (Image* image,
               /*
                 If compression is not used then enforce expected tile size.
               */
-              tile_data_size = tile_image->columns*tile_image->rows*packet_size;
+              tile_data_size = MagickArraySize(MagickArraySize(tile_image->columns,tile_image->rows),packet_size);
             }
           else
             {
@@ -827,7 +827,7 @@ static MagickPassFail load_level (Image* image,
                 Then we truncate to the file length, whichever is
                 smallest.
               */
-              offset2 = offset + tile_image->columns*tile_image->rows * packet_size * 1.5;
+              offset2 = (magick_off_t) ((double) offset + (double) tile_image->columns*tile_image->rows * packet_size * 1.5);
               tile_data_size = (size_t) offset2-offset;
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),

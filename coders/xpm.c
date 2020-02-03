@@ -429,7 +429,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    %lu: %s", i-1, textlist[i-1]);
     if (strlen(p) < width)
       break;
-    keys[j]=MagickAllocateMemory(char *,width+1);
+    keys[j]=MagickAllocateMemory(char *,(size_t) width+1);
     if (keys[j] == (char *) NULL)
       ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     keys[j][width]='\0';

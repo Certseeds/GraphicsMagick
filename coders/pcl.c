@@ -600,7 +600,7 @@ static unsigned long PCL_TiffRLECompress(unsigned long row_width,
       */
       if (unrep)
         {
-          q -= (unrep + rep);
+          q -= ((size_t) unrep + rep);
           while (unrep)
             {
               unrep_this_time = (unrep >= 128)?128:unrep;
@@ -726,7 +726,7 @@ static unsigned long PCL_RLECompress(unsigned long row_width,
       */
       if (unrep)
         {
-          q -= (unrep + rep);
+          q -= ((size_t) unrep + rep);
           while (unrep)
             {
               *out++=0;

@@ -450,7 +450,7 @@ static unsigned int SerializePseudoClassImage(const ImageInfo *image_info,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=True;
-  *length=image->columns*image->rows;
+  *length=MagickArraySize(image->columns,image->rows);
   *pixels=MagickAllocateMemory(unsigned char *, *length);
   if (*pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -528,7 +528,7 @@ static unsigned int SerializeMultiChannelImage(const ImageInfo *image_info,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=True;
-  *length=(image->colorspace == CMYKColorspace ? 4 : 3)*image->columns*image->rows;
+  *length=(size_t) (image->colorspace == CMYKColorspace ? 4U : 3U)*MagickArraySize(image->columns,image->rows);
   *pixels=MagickAllocateMemory(unsigned char *, *length);
   if (*pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);

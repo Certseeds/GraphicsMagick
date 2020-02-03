@@ -160,7 +160,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pixels=MagickAllocateArray(unsigned char *,image->columns,3);
     if (pixels == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    row_size=image->columns*3;
+    row_size= (size_t) image->columns*3;
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_size,pixels) != row_size)

@@ -418,7 +418,7 @@ static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigne
 {
   while(y < image->rows)
   {
-    if((long) x<ldblk) memset(BImgBuff+x, 0, ldblk-(long)x);
+    if((long) x<ldblk) memset(BImgBuff+x, 0, (size_t)ldblk-(long)x);
     if (InsertRow(BImgBuff,y,image,bpp) == MagickFail)
       break;
     x = 0;
@@ -1657,7 +1657,7 @@ UnpackRaster:
               if(Rec2.RecordLength > ((unsigned long) i+2))
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+i,              /*skip PS header in the wpg2*/
-                                        (size_t) (Rec2.RecordLength-i-2),exception);
+                                        (size_t)Rec2.RecordLength-i-2,exception);
               break;
 
             case 0x1B:          /*bitmap rectangle*/

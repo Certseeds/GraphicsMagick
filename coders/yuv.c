@@ -184,7 +184,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Allocate memory for a scanline.
   */
   if (interlace == NoInterlace)
-    scanline=MagickAllocateMemory(unsigned char *,2*image->columns+2);
+    scanline=MagickAllocateMemory(unsigned char *,(size_t) 2*image->columns+2);
   else
     scanline=MagickAllocateMemory(unsigned char *,image->columns);
   if (scanline == (unsigned char *) NULL)
@@ -213,7 +213,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (interlace == NoInterlace)
         {
           if ((y > 0) || (image->previous == (Image *) NULL))
-            (void) ReadBlob(image,2*image->columns,scanline);
+            (void) ReadBlob(image,(size_t)2*image->columns,scanline);
           p=scanline;
           q=SetImagePixels(image,0,y,image->columns,1);
           if (q == (PixelPacket *) NULL)
@@ -405,7 +405,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (image->scene >= (image_info->subimage+image_info->subrange-1))
         break;
     if (interlace == NoInterlace)
-      count=ReadBlob(image,2*image->columns,(char *) scanline);
+      count=ReadBlob(image, (size_t)2*image->columns,(char *) scanline);
     else
       count=ReadBlob(image,image->columns,(char *) scanline);
     if (count != 0)

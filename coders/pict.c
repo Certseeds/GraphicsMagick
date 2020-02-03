@@ -911,7 +911,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
       */
       for (y=0; y < image->rows; y++)
         {
-          q=pixels+y*width;
+          q=pixels+(size_t)y*width;
           number_pixels=bytes_per_line;
           if (ReadBlob(blob,number_pixels,(char *) scanline) != number_pixels)
             {
@@ -930,7 +930,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
   */
   for (y=0; y < image->rows; y++)
     {
-      q=pixels+y*width;
+      q=pixels+(size_t)y*width;
       if (bytes_per_line > 200)
         scanline_length=ReadBlobMSBShort(blob);
       else
@@ -1653,8 +1653,8 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                         i=(*p++);
                         j=(*p);
                         q->red=ScaleCharToQuantum((i & 0x7c) << 1);
-                        q->green=ScaleCharToQuantum(((i & 0x03) << 6) |
-                          ((j & 0xe0) >> 2));
+                        q->green=ScaleCharToQuantum((((size_t)i & 0x03) << 6) |
+                          (((size_t) j & 0xe0) >> 2));
                         q->blue=ScaleCharToQuantum((j & 0x1f) << 3);
                       }
                     else
@@ -1663,16 +1663,16 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                           q->red=ScaleCharToQuantum(*p);
                           q->green=
                             ScaleCharToQuantum(*(p+tile_image->columns));
-                          q->blue=ScaleCharToQuantum(*(p+2*tile_image->columns));
+                          q->blue=ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
                         }
                       else
                         {
                           q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p));
                           q->red=ScaleCharToQuantum(*(p+tile_image->columns));
                           q->green=(Quantum)
-                            ScaleCharToQuantum(*(p+2*tile_image->columns));
+                            ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
                           q->blue=
-                           ScaleCharToQuantum(*(p+3*tile_image->columns));
+                           ScaleCharToQuantum(*(p+ (size_t)3*tile_image->columns));
                         }
                   }
                 p++;
@@ -1682,7 +1682,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                 break;
               if ((tile_image->storage_class == DirectClass) &&
                   (pixmap.bits_per_pixel != 16))
-                p+=(pixmap.component_count-1)*tile_image->columns;
+                p+=((size_t) pixmap.component_count-1)*tile_image->columns;
               if (destination.bottom == (long) image->rows)
                 if (QuantumTick(y,tile_image->rows))
                   if (!MagickMonitorFormatted(y,tile_image->rows,&image->exception,
@@ -2441,8 +2441,8 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
 
         red=scanline;
         green=scanline+image->columns;
-        blue=scanline+2*image->columns;
-        opacity=scanline+3*image->columns;
+        blue=scanline+ (size_t)2*image->columns;
+        opacity=scanline+ (size_t)3*image->columns;
         for (y=0; y < (long) image->rows; y++)
         {
           p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
@@ -2450,13 +2450,13 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
             break;
           red=scanline;
           green=scanline+image->columns;
-          blue=scanline+2*image->columns;
+          blue=scanline+ (size_t)2*image->columns;
           if (image->matte)
             {
               opacity=scanline;
               red=scanline+image->columns;
-              green=scanline+2*image->columns;
-              blue=scanline+3*image->columns;
+              green=scanline+ (size_t)2*image->columns;
+              blue=scanline+ (size_t)3*image->columns;
             }
           for (x=0; x < (long) image->columns; x++)
           {

@@ -368,7 +368,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             TGA image comment.
           */
-          if ((size_t) (tga_info.id_length+1) != commentsize)
+          if (((size_t) tga_info.id_length+1) != commentsize)
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if (ReadBlob(image,tga_info.id_length,commentbuffer) != tga_info.id_length)
             ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -997,7 +997,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
               *q++=ScaleQuantumToChar(image->colormap[i].green);
               *q++=ScaleQuantumToChar(image->colormap[i].red);
             }
-          (void) WriteBlob(image,3*tga_info.colormap_length,
+          (void) WriteBlob(image, (size_t)3*tga_info.colormap_length,
                            (char *) targa_colormap);
           MagickFreeMemory(targa_colormap);
         }

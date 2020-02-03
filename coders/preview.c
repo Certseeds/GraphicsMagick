@@ -271,7 +271,8 @@ static unsigned int WritePreviewImage(const ImageInfo *image_info,Image *image)
     {
       case RotatePreview:
       {
-        FormatString(factor,"%.1f",degrees+=45.0);
+        degrees += 45.0;
+        FormatString(factor,"%.1f",degrees);
         FormatString(label,"rotate %.1024s",factor);
         ReplaceImage(preview_image,RotateImage(preview_image,degrees,
           &image->exception));
@@ -320,7 +321,8 @@ static unsigned int WritePreviewImage(const ImageInfo *image_info,Image *image)
       case GammaPreview:
       default:
       {
-        FormatString(factor,"%g",gamma+=0.4f);
+        gamma += 0.4f;
+        FormatString(factor,"%g",gamma);
         FormatString(label,"gamma %.1024s",factor);
         (void) GammaImage(preview_image,factor);
         break;
@@ -549,9 +551,9 @@ static unsigned int WritePreviewImage(const ImageInfo *image_info,Image *image)
       }
       case OilPaintPreview:
       {
-        FormatString(factor,"%g",0.5*(i+1));
+        FormatString(factor,"%g",0.5*((double) i+1));
         FormatString(label,"paint %.1024s",factor);
-        ReplaceImage(preview_image,OilPaintImage(preview_image,0.5*(i+1),
+        ReplaceImage(preview_image,OilPaintImage(preview_image,0.5*((double) i+1),
           &image->exception));
         break;
       }

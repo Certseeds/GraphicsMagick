@@ -788,7 +788,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
           kid_image=kid_image->next;
         }
       MagickReallocMemory(ExtendedSignedIntegralType *,xref,
-                          (count+2048)*sizeof(ExtendedSignedIntegralType));
+                          MagickArraySize((size_t) count+2048,sizeof(ExtendedSignedIntegralType)));
       if (xref == (ExtendedSignedIntegralType *) NULL)
         ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
@@ -1026,8 +1026,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
               FormatString(buffer,"/F%lu %g Tf\n",image->scene,
                            image_info->pointsize);
               (void) WriteBlobString(image,buffer);
-              FormatString(buffer,"%ld %g Td\n",geometry.x,geometry.y+
-                           geometry.height+i*image_info->pointsize+12);
+              FormatString(buffer,"%ld %g Td\n",geometry.x,(double) geometry.y+
+                           (double) geometry.height+i*(double) image_info->pointsize+12);
               (void) WriteBlobString(image,buffer);
               FormatString(buffer,"(%.1024s) Tj\n",labels[i]);
               (void) WriteBlobString(image,buffer);
@@ -1327,7 +1327,7 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
                 /*
                   Allocate pixel array.
                 */
-                length=(image->colorspace == CMYKColorspace ? 4 : 3)*number_pixels;
+                length=(size_t) (image->colorspace == CMYKColorspace ? 4 : 3)*number_pixels;
                 pixels=MagickAllocateMemory(unsigned char *,length);
                 if (pixels == (unsigned char *) NULL)
                   ThrowPDFWriterException(ResourceLimitError,MemoryAllocationFailed,

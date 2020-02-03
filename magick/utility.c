@@ -1008,8 +1008,8 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
                       if ((number_files % prealloc_entries) == 0)
                         {
                           MagickReallocMemory(char **,vector,
-                                              (*argc+count+prealloc_entries)*
-                                              sizeof(char *));
+                                              MagickArraySize((size_t) *argc+count+prealloc_entries,
+                                              sizeof(char *)));
                           if (vector == (char **) NULL)
                             {
                               fclose(file);
@@ -1099,7 +1099,7 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
         Transfer file list to argument vector.
       */
       MagickReallocMemory(char **,vector,
-                          (*argc+count+number_files+prealloc_entries)*sizeof(char *));
+                          MagickArraySize((size_t) *argc+count+number_files+prealloc_entries,sizeof(char *)));
       if (vector == (char **) NULL)
         return(MagickFail);
 
@@ -1489,7 +1489,7 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
             const char
               *separator;
 
-            int
+            size_t
               length;
 
             separator = strchr(start,DirectoryListSeparator);
@@ -4981,7 +4981,7 @@ MagickExport char **StringToArgv(const char *text,int *argc)
       p++;
   }
   (*argc)++;
-  argv=MagickAllocateMemory(char **,(*argc+1)*sizeof(char *));
+  argv=MagickAllocateMemory(char **,MagickArraySize((size_t) *argc+1,sizeof(char *)));
   if (argv == (char **) NULL)
     {
       MagickError3(ResourceLimitError,MemoryAllocationFailed,

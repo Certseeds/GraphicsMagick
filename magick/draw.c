@@ -4087,7 +4087,7 @@ MagickExport void DrawPushGraphicContext(DrawContext context)
 
   context->index++;
   MagickReallocMemory(DrawInfo **,context->graphic_context,
-                  (context->index+1)*sizeof(DrawInfo *));
+                  MagickArraySize((size_t) context->index+1,sizeof(DrawInfo *)));
   if (context->graphic_context == (DrawInfo **) NULL)
     {
       context->index--;
@@ -4814,7 +4814,7 @@ MagickExport double *DrawGetStrokeDashArray(DrawContext context,
   dasharray = (double *)NULL;
   if (n != 0)
     {
-      dasharray = MagickAllocateArray(double *, n+1, sizeof(double));
+      dasharray = MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
       if (dasharray != (double*)NULL)
         {
           p = CurrentContext->dash_pattern;
@@ -4924,7 +4924,7 @@ MagickExport void DrawSetStrokeDashArray(DrawContext context,
       if( n_new != 0 )
         {
           CurrentContext->dash_pattern = MagickAllocateArray(double *,
-                                                             (n_new+1),
+                                                             ((size_t) n_new+1),
                                                              sizeof(double));
           if(CurrentContext->dash_pattern)
             {

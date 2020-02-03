@@ -533,8 +533,8 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         (void) WriteBlobString(image,buffer);
         bounds.x1=geometry.x;
         bounds.y1=geometry.y;
-        bounds.x2=geometry.x+geometry.width;
-        bounds.y2=geometry.y+geometry.height+text_size;
+        bounds.x2=geometry.x+(size_t) geometry.width;
+        bounds.y2=geometry.y+(size_t) geometry.height+text_size;
         if (image_info->adjoin && (image->next != (Image *) NULL))
           (void) strcpy(buffer,"%%BoundingBox: (atend)\n");
         else
@@ -763,10 +763,10 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       bounds.x1=geometry.x;
     if (geometry.y < bounds.y1)
       bounds.y1=geometry.y;
-    if ((geometry.x+(long) geometry.width-1) > bounds.x2)
-      bounds.x2=geometry.x+geometry.width-1;
-    if ((geometry.y+(long) (geometry.height+text_size)-1) > bounds.y2)
-      bounds.y2=geometry.y+(geometry.height+text_size)-1;
+    if ((geometry.x+(size_t) geometry.width-1) > bounds.x2)
+      bounds.x2=geometry.x+(size_t) geometry.width-1;
+    if ((geometry.y+((size_t) geometry.height+text_size)-1) > bounds.y2)
+      bounds.y2=geometry.y+((size_t) geometry.height+text_size)-1;
     attribute=GetImageAttribute(image,"label");
     if (attribute != (const ImageAttribute *) NULL)
       (void) WriteBlobString(image,"%%PageResources: font Times-Roman\n");
@@ -966,8 +966,8 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
               /*
                 Allocate pixel array.
               */
-              length=(image->colorspace == CMYKColorspace ? 4 : 3)*
-                number_pixels;
+              length=MagickArraySize(image->colorspace == CMYKColorspace ? 4 : 3,
+                number_pixels);
               pixels=MagickAllocateMemory(unsigned char *,length);
               if (pixels == (unsigned char *) NULL)
                 ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);

@@ -233,7 +233,7 @@ ComputeCubeInfo(const Image *image,ExceptionInfo *exception)
                                                      sizeof(ColorPacket));
               else
                 MagickReallocMemory(ColorPacket *,node_info->list,
-                                    (i+1)*sizeof(ColorPacket));
+                                    MagickArraySize((size_t) i+1,sizeof(ColorPacket)));
               if (node_info->list == (ColorPacket *) NULL)
                 {
                   DestroyCubeInfo(cube_info);
@@ -933,7 +933,7 @@ MagickExport MagickBool IsPaletteImage(const Image *image,
                                                  sizeof(ColorPacket));
           else
             MagickReallocMemory(ColorPacket *,node_info->list,
-              (i+1)*sizeof(ColorPacket));
+              MagickArraySize((size_t) i+1,sizeof(ColorPacket)));
           if (node_info->list == (ColorPacket *) NULL)
             {
               ThrowException3(exception,ResourceLimitError,

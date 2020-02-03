@@ -1097,7 +1097,7 @@ SVGStartElement(void *context,const xmlChar *name,
   token[0]='\0';
   svg_info=(SVGInfo *) context;
   svg_info->n++;
-  MagickReallocMemory(double *,svg_info->scale,(svg_info->n+1)*sizeof(double));
+  MagickReallocMemory(double *,svg_info->scale,MagickArraySize((size_t)svg_info->n+1,sizeof(double)));
   if (svg_info->scale == (double *) NULL)
     {
       ThrowException(svg_info->exception,ResourceLimitError,

@@ -1151,7 +1151,7 @@ MagickExport MagickPassFail ModulateImage(Image *image,const char *modulate)
       (void) ModulateImagePixels(NULL,&param,image,image->colormap,
                                  (IndexPacket *) NULL,image->colors,
                                  &image->exception);
-      status=MagickMonitorFormatted(image->colors,image->colors+1,&image->exception,
+      status=MagickMonitorFormatted(image->colors,(size_t) image->colors+1,&image->exception,
                              progress_message,image->filename);
       status&=SyncImage(image);
     }

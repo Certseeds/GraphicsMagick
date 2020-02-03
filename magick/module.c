@@ -752,7 +752,7 @@ GetModuleList(ExceptionInfo *exception)
     max_entries;
 
   max_entries=MAX_MODULES;
-  modules=MagickAllocateMemory(char **,(max_entries+1)*sizeof(char *));
+  modules=MagickAllocateArray(char **,((size_t) max_entries+1),sizeof(char *));
   if (modules == (char **) NULL)
     return((char **) NULL);
   modules[0]=(char *) NULL;
@@ -957,7 +957,7 @@ InitializeModuleSearchPath(MagickModuleType module_type,
           const char
             *seperator;
 
-          int
+          size_t
             length;
 
           MagickBool
@@ -1707,11 +1707,10 @@ ReadModuleConfigureFile(const char *basename,
                 Allocate memory for the module list.
               */
               in_entry=MagickTrue;
-              module_info=MagickAllocateMemory(ModuleInfo *,sizeof(ModuleInfo));
+              module_info=MagickAllocateClearedMemory(ModuleInfo *,sizeof(ModuleInfo));
               if (module_info == (ModuleInfo *) NULL)
                 MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                                   UnableToAllocateModuleInfo);
-              (void) memset(module_info,0,sizeof(ModuleInfo));
               module_info->path=AcquireString(path);
               module_info->signature=MagickSignature;
               if (module_list == (ModuleInfo *) NULL)
@@ -1929,11 +1928,10 @@ SetCoderInfo(const char *tag)
     *entry;
 
   assert(tag != (const char *) NULL);
-  entry=MagickAllocateMemory(CoderInfo *,sizeof(CoderInfo));
+  entry=MagickAllocateClearedMemory(CoderInfo *,sizeof(CoderInfo));
   if (entry == (CoderInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateModuleInfo);
-  (void) memset(entry,0,sizeof(CoderInfo));
   entry->tag=AcquireString(tag);
   entry->signature=MagickSignature;
   return(entry);

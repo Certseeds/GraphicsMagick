@@ -659,7 +659,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowSGIReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             }
 
-          max_packets_alloc_size=MagickArraySize(iris_info.xsize+10U,4U);
+          max_packets_alloc_size=MagickArraySize((size_t) iris_info.xsize+10U,4U);
           max_packets=MagickAllocateMemory(unsigned char *,max_packets_alloc_size);
           if (max_packets == (unsigned char *) NULL)
             ThrowSGIReaderException(ResourceLimitError,MemoryAllocationFailed,
@@ -781,7 +781,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               for (y=0; y < image->rows; y++)
                 {
-                  p=iris_pixels+(image->rows-y-1)*8*image->columns;
+                  p=iris_pixels+((size_t)image->rows-y-1)*8*image->columns;
                   q=SetImagePixels(image,0,y,image->columns,1);
                   if (q == (PixelPacket *) NULL)
                     break;
@@ -810,7 +810,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
           else
             for (y=0; y < image->rows; y++)
               {
-                p=iris_pixels+(image->rows-y-1)*4*image->columns;
+                p=iris_pixels+((size_t) image->rows-y-1)*4*image->columns;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -850,7 +850,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               for (y=0; y < image->rows; y++)
                 {
-                  p=iris_pixels+(image->rows-y-1)*8*image->columns;
+                  p=iris_pixels+((size_t)image->rows-y-1)*8*image->columns;
                   q=SetImagePixels(image,0,y,image->columns,1);
                   if (q == (PixelPacket *) NULL)
                     break;
@@ -875,7 +875,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               for (y=0; y < image->rows; y++)
                 {
-                  p=iris_pixels+(image->rows-y-1)*4U*image->columns;
+                  p=iris_pixels+((size_t)image->rows-y-1)*4U*image->columns;
                   q=SetImagePixels(image,0,y,image->columns,1);
                   if (q == (PixelPacket *) NULL)
                     break;
@@ -1201,7 +1201,7 @@ static unsigned int WriteSGIImage(const ImageInfo *image_info,Image *image)
         Allocate SGI pixels.
       */
       number_pixels=image->columns*image->rows;
-      iris_pixels=MagickAllocateMemory(unsigned char *,4*number_pixels);
+      iris_pixels=MagickAllocateMemory(unsigned char *, (size_t)4*number_pixels);
       if (iris_pixels == (unsigned char *) NULL)
         ThrowSGIWriterException(ResourceLimitError,MemoryAllocationFailed,image);
       /*
@@ -1212,7 +1212,7 @@ static unsigned int WriteSGIImage(const ImageInfo *image_info,Image *image)
           p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
           if (p == (const PixelPacket *) NULL)
             break;
-          q=iris_pixels+((iris_info.ysize-1)-y)*(iris_info.xsize*4);
+          q=iris_pixels+(((size_t)iris_info.ysize-1)-y)*((size_t)iris_info.xsize*4);
           for (x=0; x < (long) image->columns; x++)
             {
               *q++=ScaleQuantumToChar(p->red);
@@ -1289,7 +1289,7 @@ static unsigned int WriteSGIImage(const ImageInfo *image_info,Image *image)
                   runlength[y+z*iris_info.ysize]=length;
                   offset+=length;
                 }
-              q+=(iris_info.xsize*4);
+              q+=((size_t)iris_info.xsize*4);
             }
           /*
             Write out line start and length tables and runlength-encoded pixels.

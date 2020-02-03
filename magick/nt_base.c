@@ -2093,7 +2093,7 @@ MagickExport unsigned char *NTResourceToBlob(const char *id)
     {
       return((unsigned char *) NULL);
     }
-  blob=MagickAllocateMemory(unsigned char *,length+1);
+  blob=MagickAllocateMemory(unsigned char *,(size_t) length+1);
   if (blob != (unsigned char *) NULL)
     {
       (void) memcpy(blob,value,length);

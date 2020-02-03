@@ -915,11 +915,10 @@ AC_SUBST(MODULE_EXTRA_CPPFLAGS)
 AC_SUBST(LIBRARY_EXTRA_CPPFLAGS)
 
 # Check standard headers
-AC_HEADER_STDC
 AC_HEADER_DIRENT
 
 # Check additional headers
-AC_CHECK_HEADERS([machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
+AC_CHECK_HEADERS([inttypes.h machine/param.h mach-o/dyld.h process.h stdint.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
 AC_CHECK_HEADERS([wincrypt.h],[],[],[#include <windows.h>])
 
 case "${host_os}" in

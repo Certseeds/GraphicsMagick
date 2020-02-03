@@ -2806,7 +2806,7 @@ static void ReduceImageColors(const char *filename,CubeInfo *cube_info,
     cube_info->colors=0;
     Reduce(cube_info,cube_info->root);
     status=MagickMonitorFormatted(span-cube_info->colors,
-                                  span-number_colors+1,exception,
+                                  (size_t) span-number_colors+1,exception,
                                   ReduceImageText,
                                   filename,
                                   number_colors);

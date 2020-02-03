@@ -1684,11 +1684,10 @@ SetMagickInfo(const char *name)
     *magick_info;
 
   assert(name != (const char *) NULL);
-  magick_info=MagickAllocateMemory(MagickInfo *,sizeof(MagickInfo));
+  magick_info=MagickAllocateClearedMemory(MagickInfo *,sizeof(MagickInfo));
   if (magick_info == (MagickInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateMagickInfo);
-  (void) memset(magick_info,0,sizeof(MagickInfo));
   magick_info->name=name;
   magick_info->adjoin=MagickTrue;
   magick_info->raw=MagickFalse;

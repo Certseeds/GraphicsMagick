@@ -969,7 +969,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;
-    (void) memset(scanline,0,image->columns*packet_size); /* FIXME: remove */
+    (void) memset(scanline,0, (size_t) image->columns*packet_size); /* FIXME: remove */
     (void) ExportImagePixelArea(image,GrayQuantum,bits_per_pixel,scanline,0,0);
     for (x=0; x < pdb_image.width; x++)
     {
@@ -1030,8 +1030,8 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   /*
     Write the Image record header.
   */
-  (void) WriteBlobMSBLong(image,(unsigned long)
-    (TellBlob(image)+8*pdb_info.number_records));
+  (void) WriteBlobMSBLong(image,(magick_uint32_t)
+    (TellBlob(image)+(size_t)8*pdb_info.number_records));
   (void) WriteBlobByte(image,0x40);
   (void) WriteBlobByte(image,0x6f);
   (void) WriteBlobByte(image,0x80);

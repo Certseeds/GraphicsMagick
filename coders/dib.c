@@ -272,7 +272,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                 */
                 x=0;
                 y++;
-                q=pixels+y*image->columns;
+                q=pixels+(size_t) y*image->columns;
                 break;
               }
             case 0x02:
@@ -288,7 +288,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                 if (byte == EOF)
                   return MagickFail;
                 y+=byte;
-                q=pixels+y*image->columns+x;
+                q=pixels+y*(size_t) image->columns+x;
                 break;
               }
             default:
@@ -428,7 +428,7 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
       /*
         Determine runlength.
       */
-      for (i=1; ((x+i) < bytes_per_line); i++)
+      for (i=1; (((size_t) x+i) < bytes_per_line); i++)
         if ((*(p+i) != *p) || (i == 255U))
           break;
       *q++=(unsigned char) i;
@@ -688,7 +688,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       unsigned char
         *dib_colormap;
 
-      unsigned int
+      size_t
         packet_size;
 
       /*
@@ -796,7 +796,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       (void) memset(pixels,0,pixels_size);
       status=DecodeImage(image,dib_info.compression,pixels,
-                         image->rows*image->columns);
+                         (size_t) image->rows*image->columns);
       if (status == False)
         {
           MagickFreeMemory(pixels);
@@ -822,7 +822,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       for (y=(long) image->rows-1; y >= 0; y--)
       {
-        p=pixels+(image->rows-y-1)*bytes_per_line;
+        p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
@@ -854,7 +854,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
             {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+              status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
                                             image->columns,image->rows);
@@ -871,7 +871,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       for (y=(long) image->rows-1; y >= 0; y--)
       {
-        p=pixels+(image->rows-y-1)*bytes_per_line;
+        p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
@@ -901,7 +901,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
             {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+              status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
                                             image->columns,image->rows);
@@ -920,7 +920,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         bytes_per_line=image->columns;
       for (y=(long) image->rows-1; y >= 0; y--)
       {
-        p=pixels+(image->rows-y-1)*bytes_per_line;
+        p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
@@ -939,7 +939,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
             {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+              status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
                                             image->columns,image->rows);
@@ -959,10 +959,10 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       image->storage_class=DirectClass;
       if (dib_info.compression == 1)
-        bytes_per_line=2*image->columns;
+        bytes_per_line=(size_t) 2*image->columns;
       for (y=(long) image->rows-1; y >= 0; y--)
       {
-        p=pixels+(image->rows-y-1)*bytes_per_line;
+        p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
@@ -989,7 +989,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
             {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+              status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
                                             image->columns,image->rows);
@@ -1007,7 +1007,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       for (y=(long) image->rows-1; y >= 0; y--)
       {
-        p=pixels+(image->rows-y-1)*bytes_per_line;
+        p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
         q=SetImagePixels(image,0,y,image->columns,1);
         if (q == (PixelPacket *) NULL)
           break;
@@ -1025,7 +1025,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->previous == (Image *) NULL)
           if (QuantumTick(y,image->rows))
             {
-              status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+              status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                             exception,LoadImageText,
                                             image->filename,
                                             image->columns,image->rows);
@@ -1102,7 +1102,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
-              if (!MagickMonitorFormatted(image->rows-y-1,image->rows,&image->exception,
+              if (!MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,&image->exception,
                                           LoadImageText,image->filename,
                                           image->columns,image->rows))
                 break;
@@ -1496,7 +1496,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         /*
           Convert run-length encoded raster pixels.
         */
-        length=2*(bytes_per_line+2)*(image->rows+2)+2;
+        length=2*((size_t) bytes_per_line+2)*((size_t) image->rows+2)+2;
         dib_data=MagickAllocateMemory(unsigned char *,length);
         if (dib_data == (unsigned char *) NULL)
           {
@@ -1533,7 +1533,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         Dump colormap to file.
       */
       dib_colormap=MagickAllocateArray(unsigned char *,
-                                       (size_t) (1U << dib_info.bits_per_pixel),4);
+                                       (((size_t) 1U) << dib_info.bits_per_pixel),4);
       if (dib_colormap == (unsigned char *) NULL)
         {
           MagickFreeMemory(pixels);
@@ -1554,7 +1554,7 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
         *q++=(Quantum) 0x0;
         *q++=(Quantum) 0x0;
       }
-      (void) WriteBlob(image,4*(1U << dib_info.bits_per_pixel),
+      (void) WriteBlob(image, 4*(((size_t) 1U) << dib_info.bits_per_pixel),
         (char *) dib_colormap);
       MagickFreeMemory(dib_colormap);
     }

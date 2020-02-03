@@ -101,7 +101,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
   char img_label_str[MaxTextExtent];
 
 
-  alloc_size = TileInfo->PicSize + 2;
+  alloc_size = (size_t) TileInfo->PicSize + 2;
 
   if (image->logging)
     (void) LogMagickEvent(CoderEvent, GetMagickModule(),

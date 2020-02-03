@@ -580,7 +580,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       scale_to_quantum=MaxRGBDouble/max_value;
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Channel %d scale is %g", component, scale_to_quantum);
-      channel_lut[component]=MagickAllocateArray(Quantum *,max_value+1,sizeof(Quantum));
+      channel_lut[component]=MagickAllocateArray(Quantum *, (size_t) max_value+1,sizeof(Quantum));
       if (channel_lut[component] == (Quantum *) NULL)
         ThrowJP2ReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       for(i=0; i <= max_value; i++)
@@ -1191,7 +1191,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
           d=115-image_info->quality;  /* Best number is 110-115 */
           rate=100.0/(d*d);
           header_size=550.0; /* Base file size. */
-          header_size+=(number_components-1)*142; /* Additional components */
+          header_size+=((size_t) number_components-1)*142; /* Additional components */
           /* FIXME: Need to account for any ICC profiles here */
 
           current_size=(double)((image->rows*image->columns*image->depth)/8)*

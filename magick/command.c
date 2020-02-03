@@ -9419,7 +9419,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
                 ThrowException(&(*image)->exception,OptionError,MatrixIsNotSquare,message);
                 continue;
               }
-            kernel=MagickAllocateArray(double *,order*order,sizeof(double));
+            kernel=MagickAllocateArray(double *,(size_t) order*order,sizeof(double));
             if (kernel == (double *) NULL)
               MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
                 MagickMsg(ResourceLimitError,UnableToAllocateCoefficients));
@@ -10542,7 +10542,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
                 ThrowException(&(*image)->exception,OptionError,MatrixIsNotSquare,message);
                 continue;
               }
-            matrix=MagickAllocateArray(double *,order*order,sizeof(double));
+            matrix=MagickAllocateArray(double *,MagickArraySize(order,order),sizeof(double));
             if (matrix == (double *) NULL)
               MagickFatalError(ResourceLimitFatalError,MemoryAllocationFailed,
                 MagickMsg(ResourceLimitError,UnableToAllocateCoefficients));

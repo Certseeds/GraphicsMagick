@@ -446,7 +446,7 @@ WandExport DrawingWand *CloneDrawingWand(const DrawingWand *drawing_wand)
   if (drawing_wand->graphic_context != (DrawInfo **) NULL)
     {
       clone_wand->graphic_context=MagickAllocateArray(DrawInfo **,
-                                                      drawing_wand->index+1,
+                                                      (size_t) drawing_wand->index+1,
                                                       sizeof(DrawInfo *));
       if (clone_wand->graphic_context == (DrawInfo **) NULL)
         {
@@ -455,7 +455,7 @@ WandExport DrawingWand *CloneDrawingWand(const DrawingWand *drawing_wand)
           goto clone_drawing_wand_fail;
         }
       (void) memset(clone_wand->graphic_context,0,
-                    (drawing_wand->index+1)*sizeof(DrawInfo *));
+                    ((size_t) drawing_wand->index+1)*sizeof(DrawInfo *));
 
       for (clone_wand->index=0; clone_wand->index <= drawing_wand->index; clone_wand->index++)
         {
@@ -3831,7 +3831,7 @@ WandExport void DrawPushGraphicContext(DrawingWand *drawing_wand)
   assert(drawing_wand->signature == MagickSignature);
   drawing_wand->index++;
   MagickReallocMemory(DrawInfo **,drawing_wand->graphic_context,
-                      (drawing_wand->index+1)*sizeof(DrawInfo *));
+                      MagickArraySize((size_t) drawing_wand->index+1,sizeof(DrawInfo *)));
   if (drawing_wand->graphic_context == (DrawInfo **) NULL)
     {
       drawing_wand->index--;
@@ -4492,7 +4492,7 @@ WandExport double *DrawGetStrokeDashArray(const DrawingWand *drawing_wand,
   dash_array=(double *)NULL;
   if (n != 0)
     {
-      dash_array=MagickAllocateArray(double *, n+1, sizeof(double));
+      dash_array=MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
       p=CurrentContext->dash_pattern;
       q=dash_array;
       i=n;
@@ -4594,7 +4594,7 @@ WandExport void DrawSetStrokeDashArray(DrawingWand *drawing_wand,
       if (n_new != 0)
         {
           CurrentContext->dash_pattern=MagickAllocateArray(double *,
-                                                           (n_new+1),
+                                                           ((size_t) n_new+1),
                                                            sizeof(double));
           if (!CurrentContext->dash_pattern)
             {

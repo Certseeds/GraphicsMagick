@@ -961,7 +961,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             else
               {
-                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                bytes_per_row=MagickArraySize((((size_t) bits_per_sample+7)/8)*
                                               samples_per_pixel,image->columns);
               }
 
@@ -1939,7 +1939,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
               }
             else
               {
-                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                bytes_per_row=MagickArraySize((((size_t) bits_per_sample+7)/8)*
                                               samples_per_pixel,image->columns);
               }
 

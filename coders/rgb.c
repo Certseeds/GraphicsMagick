@@ -191,7 +191,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (scanline == (unsigned char *) NULL)
     ThrowRGBReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   tile_packets=(size_t) packet_size*image->tile_info.width;
-  x=(size_t) (packet_size*image->tile_info.x);
+  x=(size_t) packet_size*image->tile_info.x;
   /*
     Initialize import options.
   */
@@ -261,7 +261,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -310,7 +310,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           image->columns,image->rows))
                 break;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -358,7 +358,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -392,7 +392,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -426,7 +426,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -465,7 +465,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     break;
               i++;
             }
-            count=image->tile_info.height-image->rows-image->tile_info.y;
+            count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
             for (i=0; i < (long) count; i++)
               if (ReadBlob(image,tile_packets,scanline) != tile_packets)
                 break;

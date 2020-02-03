@@ -697,7 +697,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 
       for (y = 0; y < image->rows; y++)
         {
-          magick_uint32_t *s = picture.argb + y * picture.argb_stride;
+          magick_uint32_t *s = picture.argb + (size_t)y * picture.argb_stride;
           p=GetImagePixelsEx(image,0,y,image->columns,1,&image->exception);
           if (p == (const PixelPacket *) NULL)
             break;

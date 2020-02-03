@@ -907,10 +907,10 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   global_colormap=MagickAllocateArray(unsigned char *,3U,Max(global_colors,256U));
   if (global_colormap == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  (void) memset(global_colormap,0,3*Max(global_colors,256U));
+  (void) memset(global_colormap,0,(size_t) 3*Max(global_colors,256U));
   if (BitSet(flag,0x80))
     {
-      if (ReadBlob(image,3*global_colors,(char *) global_colormap) != 3U*global_colors)
+      if (ReadBlob(image,(size_t) 3*global_colors,(char *) global_colormap) != (size_t) 3U*global_colors)
         {
           MagickFreeMemory(global_colormap);
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -1120,7 +1120,7 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
           }
-        if (ReadBlob(image,3*image->colors,(char *) colormap) != 3*image->colors)
+        if (ReadBlob(image, (size_t) 3*image->colors,(char *) colormap) != (size_t) 3*image->colors)
           {
             MagickFreeMemory(global_colormap);
             MagickFreeMemory(colormap);
@@ -1499,7 +1499,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
             break;
         (void) WriteBlobByte(image,(long) j);  /* background color */
         (void) WriteBlobByte(image,0x0);  /* reserved */
-        (void) WriteBlob(image,3*(1 << bits_per_pixel),(char *) colormap);
+        (void) WriteBlob(image,3*(((size_t) 1) << bits_per_pixel),(char *) colormap);
         for (j=0; j < 768; j++)
           global_colormap[j]=colormap[j];
       }
@@ -1583,17 +1583,17 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
     c=0x00;
     if (interlace != NoInterlace)
       c|=0x40;  /* pixel data is interlaced */
-    for (j=0; j < (3*image->colors); j++)
+    for (j=0; j < ((size_t) 3*image->colors); j++)
       if (colormap[j] != global_colormap[j])
         break;
-    if (j == (3*image->colors))
+    if (j == ((size_t) 3*image->colors))
       (void) WriteBlobByte(image,c);
     else
       {
         c|=0x80;
         c|=(bits_per_pixel-1);   /* size of local colormap */
         (void) WriteBlobByte(image,c);
-        (void) WriteBlob(image,3U*(1U << bits_per_pixel),(char *) colormap);
+        (void) WriteBlob(image,3*(((size_t) 1U) << bits_per_pixel),(char *) colormap);
       }
     /*
       Write the image data.

@@ -591,7 +591,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       image->columns = image->rows;
       image->rows = temp;
       if(HDR.imagf==1) ldblk *= 2;
-      SeekBlob(image, HDR.nCols*ldblk, SEEK_CUR);
+      SeekBlob(image, (size_t) HDR.nCols*ldblk, SEEK_CUR);
       goto skip_reading_current;
     }
 
@@ -1275,7 +1275,7 @@ skip_reading_current:
 
     /* Allocate next image structure. */
     AllocateNextImage(image_info,image);
-    if (image->next == (Image *) NULL) break;
+    if ((image == (Image *) NULL) || (image->next == (Image *) NULL)) break;
     image=SyncNextImageInList(image);
     image->columns = image->rows = 0;
     image->colors=0;

@@ -87,10 +87,10 @@ MagickExport void FinalizeSignature(SignatureInfo *signature_info)
   count=(long) ((low_order >> 3) & 0x3f);
   signature_info->message[count++]=0x80;
   if (count <= (SignatureSize-8))
-    (void) memset(signature_info->message+count,0,SignatureSize-8-count);
+    (void) memset(signature_info->message+count,0,SignatureSize-8-(size_t) count);
   else
     {
-      (void) memset(signature_info->message+count,0,SignatureSize-count);
+      (void) memset(signature_info->message+count,0,SignatureSize-(size_t) count);
       TransformSignature(signature_info);
       (void) memset(signature_info->message,0,SignatureSize-8);
     }
@@ -202,7 +202,7 @@ MagickExport unsigned int SignatureImage(Image *image)
   */
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  message=MagickAllocateMemory(unsigned char *,20*image->columns);
+  message=MagickAllocateArray(unsigned char *,20,image->columns);
   if (message == (unsigned char *) NULL)
     ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToComputeImageSignature);

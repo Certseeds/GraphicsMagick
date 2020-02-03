@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2019 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -95,6 +95,7 @@ extern "C" {
 #  define _CRTDBG_MAP_ALLOC
 #endif
 #include <stdlib.h>
+#include <stddef.h> /* C'99 size_t, ptrdiff_t, NULL */
 #if !defined(MSWINDOWS)
 #  include <unistd.h>
 #else

@@ -252,7 +252,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   tile_packets=(size_t) packet_size*image->tile_info.width;
-  x=(size_t) (packet_size*image->tile_info.x);
+  x=(size_t) packet_size*image->tile_info.x;
   /*
     Initialize import options.
   */
@@ -319,7 +319,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
             break;
     }
     image->is_grayscale=is_grayscale;
-    count=image->tile_info.height-image->rows-image->tile_info.y;
+    count= (size_t) image->tile_info.height-image->rows-image->tile_info.y;
     for (j=0; j < count; j++)
       if (ReadBlob(image,tile_packets,scanline) != tile_packets)
         break;

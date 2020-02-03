@@ -1,3 +1,14 @@
+2020-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick, coders, wand: Added copious casts to avoid possible
+	integer overflows in the Microsoft Windows 64-bit build, where
+	sizeof(long) < sizeof(size_t).
+
+2020-01-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.h ("PrimitiveInfo"): Change PrimitiveInfo
+	coordinates from type 'unsigned long' to 'size_t'.
+
 2020-01-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/gradient.c (GradientImage): Warnings reduction, plus note

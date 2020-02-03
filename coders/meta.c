@@ -1780,7 +1780,7 @@ iptc_find:
     else
       {
         /* short format */
-        tag_length=((long) c) << 8;
+        tag_length=((size_t) c) << 8;
         c=(*p++);
         blob_length--;
         if (blob_length == 0)
@@ -1986,7 +1986,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(unsigned int) (taglen+1));
+    str=MagickAllocateMemory(unsigned char *, (size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");
@@ -2113,7 +2113,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(unsigned int) (taglen+1));
+    str=MagickAllocateMemory(unsigned char *,(size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");

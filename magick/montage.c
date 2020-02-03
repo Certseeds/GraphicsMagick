@@ -494,8 +494,8 @@ MagickExport Image *MontageImages(const Image *images,
   title=TranslateText(image_info,image_list[0],montage_info->title);
   title_offset=0;
   if (montage_info->title != (char *) NULL)
-    title_offset=(unsigned long) (2*(metrics.ascent-metrics.descent)*
-      MultilineCensus(title)+2*tile_info.y);
+    title_offset=(unsigned long) (2.0*(metrics.ascent-metrics.descent)*
+      (double) MultilineCensus(title)+2.0*tile_info.y);
   number_lines=0;
   for (i=0; i < (long) number_images; i++)
   {

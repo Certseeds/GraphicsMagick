@@ -261,10 +261,10 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
       count=sscanf(command,"%%%%BoundingBox: %lf %lf %lf %lf",&bounds.x1,
         &bounds.y1,&bounds.x2,&bounds.y2);
     if (LocaleNCompare(DocumentMedia,command,strlen(DocumentMedia)) == 0)
-      count=sscanf(command,"%%%%DocumentMedia: %*s %lf %lf",&bounds.x2,
+      count=(size_t) sscanf(command,"%%%%DocumentMedia: %*s %lf %lf",&bounds.x2,
         &bounds.y2)+2;
     if (LocaleNCompare(PageBoundingBox,command,strlen(PageBoundingBox)) == 0)
-      count=sscanf(command,"%%%%PageBoundingBox: %lf %lf %lf %lf",
+      count=(size_t) sscanf(command,"%%%%PageBoundingBox: %lf %lf %lf %lf",
         &bounds.x1,&bounds.y1,&bounds.x2,&bounds.y2);
     if (count != 4)
       continue;
@@ -810,7 +810,7 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
         bounds.x1=geometry.x;
         bounds.y1=geometry.y;
         bounds.x2=geometry.x+x_scale;
-        bounds.y2=geometry.y+(geometry.height+text_size);
+        bounds.y2=geometry.y+((size_t) geometry.height+text_size);
         if (image_info->adjoin && (image->next != (Image *) NULL))
           (void) strlcpy(buffer,"%%%%BoundingBox: (atend)\n",sizeof(buffer));
         else
@@ -1206,10 +1206,10 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
       bounds.x1=geometry.x;
     if (geometry.y < bounds.y1)
       bounds.y1=geometry.y;
-    if ((geometry.x+(long) geometry.width-1) > bounds.x2)
-      bounds.x2=geometry.x+geometry.width-1;
-    if ((geometry.y+(long) (geometry.height+text_size)-1) > bounds.y2)
-      bounds.y2=geometry.y+(geometry.height+text_size)-1;
+    if ((geometry.x+((size_t) geometry.width-1)) > bounds.x2)
+      bounds.x2=geometry.x+(size_t) geometry.width-1;
+    if ((geometry.y+((size_t) geometry.height+text_size)-1) > bounds.y2)
+      bounds.y2=geometry.y+((size_t) geometry.height+text_size)-1;
     attribute=GetImageAttribute(image,"label");
     if (attribute != (const ImageAttribute *) NULL)
       (void) WriteBlobString(image,"%%%%PageResources: font Times-Roman\n");

@@ -731,8 +731,8 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
             }
           i++;
           (void) fprintf(file,"    %.1024s:\n",tag);
-          length=profile[i++] << 8;
-          length|=profile[i++];
+          length=(size_t) profile[i++] << 8;
+          length|=(size_t) profile[i++];
           length=Min(length,profile_length-i);
           text=MagickAllocateMemory(char *,length+1);
           if (text != (char *) NULL)

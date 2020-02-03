@@ -105,12 +105,12 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   dummy=ReadBlobLSBShort(image);
   height=ReadBlobLSBShort(image);
 
-  ldblk=(long) ((width+7) / 8);
+  ldblk=(long) (((size_t) width+7) / 8);
   Padding=(unsigned char) ((-ldblk) & 0x01);
 
   image->columns=width;
   image->rows=height;
-  if(GetBlobSize(image)!=(magick_off_t) (8+((long)ldblk+Padding)*image->rows))
+  if(GetBlobSize(image)!=(magick_off_t) (8+((size_t)ldblk+Padding)*image->rows))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);

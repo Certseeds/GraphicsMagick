@@ -251,7 +251,7 @@ GetMagickFileFormat(const unsigned char *header, const size_t header_length,
       */
       for (i=0; i < ArraySize(StaticMagic); i++)
         {
-          if (StaticMagic[i].offset+StaticMagic[i].length <= header_length)
+          if ((size_t) StaticMagic[i].offset+StaticMagic[i].length <= header_length)
             {
               if ((header[StaticMagic[i].offset] == StaticMagic[i].magic[0]) &&
                   (memcmp(header+StaticMagic[i].offset,StaticMagic[i].magic,
