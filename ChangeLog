@@ -1,3 +1,7 @@
+2020-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/topol.c: Include magick/magick_endian.h.
+
 2020-02-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick, coders, wand: Added copious casts to avoid possible
