@@ -1,5 +1,8 @@
 2020-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/wmf/read.t: Update WMF reference images.  Relax
+	test requirements for ski.wmf.
+
 	* locale/C.mgk: Correct error message associated with
 	"UnsupportedNumberOfRows".  Patch was submitted by Thorsten
 	Alteholz via private email on 2020-02-05.
