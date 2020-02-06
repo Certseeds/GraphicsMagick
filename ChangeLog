@@ -1,3 +1,9 @@
+2020-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* locale/C.mgk: Correct error message associated with
+	"UnsupportedNumberOfRows".  Patch was submitted by Thorsten
+	Alteholz via private email on 2020-02-05.
+
 2020-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/topol.c: Include magick/magick_endian.h.
