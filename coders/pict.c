@@ -892,11 +892,11 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
   if (bytes_per_line < 8)
     scanline_alloc = bytes_per_line;
   else if (bytes_per_line <= 200)
-    scanline_alloc = 256U;
+    scanline_alloc = 256U+256U; /* Allocate extra for RLE over-run */
   else
-    scanline_alloc = 65536U;
+    scanline_alloc = 65536U+256U; /* Allocate extra for RLE over-run */
 
-  scanline=MagickAllocateMemory(unsigned char *,scanline_alloc);
+  scanline=MagickAllocateClearedMemory(unsigned char *,scanline_alloc);
   if (scanline == (unsigned char *) NULL)
     {
       ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,

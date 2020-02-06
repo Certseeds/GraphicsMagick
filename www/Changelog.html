@@ -38,6 +38,11 @@
 <p>2020-02-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/pict.c (DecodeImage): Allocate extra scanline memory to
+allow small RLE overrun.  Fixes oss-fuzz 20271
+&quot;graphicsmagick:coder_PICT_fuzzer: Heap-buffer-overflow in
+ExpandBuffer&quot; and 20272 &quot;graphicsmagick:coder_PICT_fuzzer:
+Heap-buffer-overflow in DecodeImage&quot;.</li>
 <li>PerlMagick/t/wmf/read.t: Update WMF reference images.  Relax
 test requirements for ski.wmf.</li>
 <li>locale/C.mgk: Correct error message associated with
