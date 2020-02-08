@@ -3472,7 +3472,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleCompare("pattern",token) == 0)
               {
                 double
-                  ordinate;
+                  ordinate,
+                  dval;
+
                 RectangleInfo
                   bounds;
 
@@ -3484,7 +3486,18 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                bounds.x=(long) ceil(ordinate-0.5);
+                dval=ceil(ordinate-0.5);
+                if (((dval < (double) LONG_MIN || dval > (double) LONG_MAX)) ||
+                    (AcquireMagickResource(WidthResource,AbsoluteValue((magick_int64_t) dval)) != MagickPass))
+                  {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern x ordinate (%g)", ordinate);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelWidthLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
+                bounds.x=(long) dval;
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
@@ -3493,7 +3506,18 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                bounds.y=(long) ceil(ordinate-0.5);
+                dval=ceil(ordinate-0.5);
+                if ((dval < (double) LONG_MIN || dval > (double) LONG_MAX) ||
+                    (AcquireMagickResource(WidthResource,AbsoluteValue((magick_int64_t) dval)) != MagickPass))
+                  {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern x ordinate (%g)", ordinate);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelHeightLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
+                bounds.y=(long) dval;
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
@@ -3503,7 +3527,18 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                bounds.width=(unsigned long) floor(ordinate+0.5);
+                dval=floor(ordinate+0.5);
+                if ((dval > (double) ULONG_MAX) ||
+                    (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
+                  {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern width (%g)", ordinate);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelWidthLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
+                bounds.width=(unsigned long) dval;
                 MagickGetToken(q,&q,token,token_max_length);
                 if (*token == ',')
                   MagickGetToken(q,&q,token,token_max_length);
@@ -3513,7 +3548,28 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                bounds.height=(unsigned long) floor(ordinate+0.5);
+                dval=floor(ordinate+0.5);
+                if ((dval > (double) ULONG_MAX) ||
+                    (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
+                  {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern height (%g)", ordinate);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelHeightLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
+                bounds.height=(unsigned long) dval;
+                if (AcquireMagickResource(PixelsResource,(magick_uint64_t) bounds.width*bounds.height)
+                    != MagickPass)
+                  {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern dimensions %lux%lu", bounds.width,bounds.height);
+                    ThrowException(&image->exception,ResourceLimitError,
+                                   ImagePixelLimitExceeded,resource_str);
+                    status=MagickFail;
+                    break;
+                  }
                 for (p=q; *q != '\0'; )
                 {
                   MagickGetToken(q,&q,token,token_max_length);

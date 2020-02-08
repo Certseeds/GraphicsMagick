@@ -1,3 +1,14 @@
+2020-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Apply draconian pattern
+	specification offset and dimension validations.  Hopefully there
+	is no impact to usability.  If so please report it as a bug.
+	Fixes oss-fuzz 20586 "graphicsmagick:coder_MVG_fuzzer:
+	Integer-overflow in DrawPolygonPrimitive".
+
+	* coders/svg.c (ReadSVGImage): Fix dereference of NULL pointer
+	when stopping image timer.
+
 2020-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c (DecodeImage): Allocate extra scanline memory to
