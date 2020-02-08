@@ -3978,7 +3978,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
-  StopTimer(&image->timer);
+  if (image != (Image *) NULL)
+    StopTimer(&image->timer);
   return(image);
 }
 #endif
