@@ -507,7 +507,8 @@ static int UnpackWPGRaster(Image *image,int bpp)
               {
                 x=0;
                 y++;
-                ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                if(image->exception.severity != UndefinedException)
+                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
               }
             MagickFreeMemory(BImgBuff);
             return(-3);
@@ -523,7 +524,8 @@ static int UnpackWPGRaster(Image *image,int bpp)
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 {
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                  if(image->exception.severity != UndefinedException)
+                    ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
