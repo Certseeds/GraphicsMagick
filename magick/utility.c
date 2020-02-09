@@ -6307,7 +6307,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
             q+=(translate)(q,buffer,MaxTextExtent);
             break;
           }
-        FormatString(buffer,"%lu",DefaultCompressionQuality);
+        FormatString(buffer,"%u",DefaultCompressionQuality);
         q+=(translate)(q,buffer,MaxTextExtent);
         break;
       }

@@ -73,30 +73,12 @@
 #include "magick/utility.h"
 #include "magick/xwindow.h"
 
-/*
-  Constant declaration.
-*/
-const char
-  *BackgroundColor = "#ffffffffffff",  /* white */
-  *BorderColor = "#dfdfdfdfdfdf",  /* gray */
-  *DefaultTileFrame = "15x15+3+3",
-  *DefaultTileGeometry = "120x120+4+3>",
-  *DefaultTileLabel = "%f\n%wx%h\n%b",
-  *ForegroundColor = "#000000000000",  /* black */
-  *HighlightColor = "#f1f100001e1e", /* light red */
-  *MatteColor = "#bdbdbdbdbdbd",  /* gray */
-  *PSDensityGeometry = "72.0x72.0",
-  *PSPageGeometry = "612x792>";
-
-const unsigned long
-  DefaultCompressionQuality = 75;
-
 static MagickPassFail
 MagickParseSubImageSpecification(const char *subimage_spec,
                                  unsigned long *subimage_ptr,
                                  unsigned long *subrange_ptr,
                                  MagickBool allow_geometry);
-
+
 /* provide public access to the clip_mask member of Image */
 MagickExport Image **
 ImageGetClipMask(const Image * image)

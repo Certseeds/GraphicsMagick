@@ -1,3 +1,17 @@
+2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOnePNGImage): Eliminate compilation warnings
+	about signed/unsigned comparisons.
+
+	* magick/image.c: Remove private global string constants, and one
+	private global unsigned long constant, from the library ABI.
+	Since the global constants were declared via a private header and
+	only used within the GraphicsMagick build, removing these does not
+	impact the public ABI.  The globals removed are BackgroundColor,
+	BorderColor, DefaultTileFrame, DefaultTileGeometry,
+	DefaultTileLabel, ForegroundColor, HighlightColor, MatteColor,
+	PSDensityGeometry, PSPageGeometry, and DefaultCompressionQuality.
+
 2020-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Apply draconian pattern
