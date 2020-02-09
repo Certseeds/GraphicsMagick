@@ -1,5 +1,8 @@
 2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (VersionCommand): Add Google perftools tcmalloc
+	to the available feature support.
+
 	* www/INSTALL-unix.rst: Include some information about building
 	with MSYS2.
 

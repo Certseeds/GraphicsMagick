@@ -16870,9 +16870,9 @@ static void PrintFeatureTextual(const char* feature,MagickBool support,const cha
 
   support_text=(support ? "yes" : "no");
   if ((text != NULL) && strlen(text) != 0)
-    (void) fprintf(stdout,"  %-24s %s (%s)\n", feature,  support_text, text);
+    (void) fprintf(stdout,"  %-26s %s (%s)\n", feature,  support_text, text);
   else
-    (void) fprintf(stdout,"  %-24s %s\n", feature, support_text);
+    (void) fprintf(stdout,"  %-26s %s\n", feature, support_text);
 }
 static void PrintFeature(const char* feature,MagickBool support)
 {
@@ -17005,6 +17005,13 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
   supported=MagickTrue;
 #endif /* defined(HasMTMALLOC) */
   PrintFeature("Solaris mtmalloc", supported);
+
+  /* Google perftools tcmalloc */
+  supported=MagickFalse;
+#if defined(HasTCMALLOC)
+  supported=MagickTrue;
+#endif /* defined(HasTCMALLOC) */
+  PrintFeature("Google perftools tcmalloc", supported);
 
   /* OpenMP */
   supported=MagickFalse;
