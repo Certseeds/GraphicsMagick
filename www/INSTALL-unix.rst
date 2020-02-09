@@ -833,11 +833,12 @@ When using MSYS2, requesting to install these packages using 'pacman
 -S' (in addition to compilation tools for C/C++) should result in
 getting up to speed very quicky with a featureful build:
 
-bzip2, gzip, mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
-mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
-mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
-mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
-mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2.
+mingw-w64-x86_64-bzip2, mingw-w64-x86_64-freetype,
+mingw-w64-x86_64-ghostscript, mingw-w64-x86_64-jbigkit,
+mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libjpeg-turbo,
+mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtool,
+mingw-w64-x86_64-libwebp mingw-w64-x86_64-libwmf,
+mingw-w64-x86_64-libxml2, mingw-w64-x86_64-zlib
 
 GraphicsMagick may also be built using the free MinGW
 ("Minimalistic GNU for Windows") package, available from
