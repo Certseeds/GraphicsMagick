@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
-<title>UNIX/Cygwin/MinGW Compilation</title>
+<title>UNIX/Cygwin/MinGW/MSYS2 Compilation</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
 <body>
@@ -32,8 +32,8 @@
 <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
-<div class="document" id="unix-cygwin-mingw-compilation">
-<h1 class="title">UNIX/Cygwin/MinGW Compilation</h1>
+<div class="document" id="unix-cygwin-mingw-msys2-compilation">
+<h1 class="title">UNIX/Cygwin/MinGW/MSYS2 Compilation</h1>
 
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -47,7 +47,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#building-under-cygwin" id="id5">Building under Cygwin</a></li>
-<li><a class="reference internal" href="#building-under-mingw-msys" id="id6">Building under MinGW &amp; MSYS</a><ul>
+<li><a class="reference internal" href="#building-under-mingw-msys2" id="id6">Building under MinGW &amp; MSYS2</a><ul>
 <li><a class="reference internal" href="#cross-compilation-on-unix-linux-host" id="id7">Cross-compilation On Unix/Linux Host</a></li>
 </ul>
 </li>
@@ -902,10 +902,24 @@ be possible to catch C++ exceptions thrown from DLLs.  The test suite
 <tt class="docutils literal">make check</tt> includes several tests to verify that C++ exceptions
 are working properly.</p>
 </div>
-<div class="section" id="building-under-mingw-msys">
-<h1><a class="toc-backref" href="#id6">Building under MinGW &amp; MSYS</a></h1>
-<p>GraphicsMagick may be built using the free MinGW (&quot;Minimalistic GNU for
-Windows&quot;) package, available from</p>
+<div class="section" id="building-under-mingw-msys2">
+<h1><a class="toc-backref" href="#id6">Building under MinGW &amp; MSYS2</a></h1>
+<p>GraphicsMagick may easily be built using the free <a class="reference external" href="https://www.msys2.org/">MSYS2</a> distribution which provides GCC compilers,
+libraries, and headers, targeting native Windows along with a
+Unix-like command shell and a package manager ('Pacman') to install
+pre-compiled components.  Using the pre-compiled packages, it is
+almost as easy to compile GraphicsMagick under MSYS2 as it is under
+Linux!</p>
+<p>When using MSYS2, requesting to install these packages using 'pacman
+-S' (in addition to compilation tools for C/C++) should result in
+getting up to speed very quicky with a featureful build:</p>
+<p>bzip2, gzip, mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
+mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
+mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2.</p>
+<p>GraphicsMagick may also be built using the free MinGW
+(&quot;Minimalistic GNU for Windows&quot;) package, available from</p>
 <blockquote>
 <a class="reference external" href="http://www.mingw.org/">http://www.mingw.org/</a></blockquote>
 <p>or from</p>

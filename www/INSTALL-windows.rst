@@ -266,9 +266,10 @@ Applicability
 -------------
 
   This section provides instructions for building GraphicsMagick
-  Microsoft Windows using the Visual C++ (Visual Studio, etc.) IDE. For
-  building using the free Cygwin or MinGW compilers, follow the
-  instructions in INSTALL-unix.txt.
+  Microsoft Windows using the Visual C++ (Visual Studio, etc.)
+  IDE. For building using the free Cygwin or MinGW compilers (e.g. as
+  part of `MSYS2 <https://www.msys2.org/>`_), follow the instructions
+  in INSTALL-unix.txt.
 
 Important Notes
 ---------------

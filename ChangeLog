@@ -1,5 +1,8 @@
 2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/INSTALL-unix.rst: Include some information about building
+	with MSYS2.
+
 	* coders/png.c (ReadOnePNGImage): Eliminate compilation warnings
 	about signed/unsigned comparisons.
 

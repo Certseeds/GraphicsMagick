@@ -2,9 +2,9 @@
 .. This text is in reStucturedText format, so it may look a bit odd.
 .. See http://docutils.sourceforge.net/rst.html for details.
 
-=============================
-UNIX/Cygwin/MinGW Compilation
-=============================
+===================================
+UNIX/Cygwin/MinGW/MSYS2 Compilation
+===================================
 
 .. contents::
   :local:
@@ -818,11 +818,29 @@ be possible to catch C++ exceptions thrown from DLLs.  The test suite
 ``make check`` includes several tests to verify that C++ exceptions
 are working properly.
 
-Building under MinGW & MSYS
----------------------------
+Building under MinGW & MSYS2
+----------------------------
 
-GraphicsMagick may be built using the free MinGW ("Minimalistic GNU for
-Windows") package, available from
+GraphicsMagick may easily be built using the free `MSYS2
+<https://www.msys2.org/>`_ distribution which provides GCC compilers,
+libraries, and headers, targeting native Windows along with a
+Unix-like command shell and a package manager ('Pacman') to install
+pre-compiled components.  Using the pre-compiled packages, it is
+almost as easy to compile GraphicsMagick under MSYS2 as it is under
+Linux!
+
+When using MSYS2, requesting to install these packages using 'pacman
+-S' (in addition to compilation tools for C/C++) should result in
+getting up to speed very quicky with a featureful build:
+
+bzip2, gzip, mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
+mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
+mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2.
+
+GraphicsMagick may also be built using the free MinGW
+("Minimalistic GNU for Windows") package, available from
 
     http://www.mingw.org/
 
