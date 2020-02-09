@@ -2301,7 +2301,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                           "    Reading PNG IDAT chunk(s)");
   if (num_passes > 1)
   {
-    if (ping_rowbytes < GetMagickResourceLimit(MemoryResource)/image->rows)
+    if (ping_rowbytes < (size_t) GetMagickResourceLimit(MemoryResource)/image->rows)
       mng_info->png_pixels=MagickAllocateArray(unsigned char *,
                                                ping_rowbytes,image->rows);
     else
@@ -2309,7 +2309,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   }
   else
   {
-    if ((magick_int64_t)ping_rowbytes < GetMagickResourceLimit(MemoryResource))
+    if (ping_rowbytes < (size_t) GetMagickResourceLimit(MemoryResource))
       mng_info->png_pixels=MagickAllocateMemory(unsigned char *, ping_rowbytes);
     else
       png_error(ping, "png_rowbytes array exceeds MemoryResource");
