@@ -3528,7 +3528,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=floor(ordinate+0.5);
-                if ((dval > (double) ULONG_MAX) ||
+                if ((dval > (double) LONG_MAX) ||
                     (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];
@@ -3549,7 +3549,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=floor(ordinate+0.5);
-                if ((dval > (double) ULONG_MAX) ||
+                if ((dval > (double) LONG_MAX) ||
                     (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];

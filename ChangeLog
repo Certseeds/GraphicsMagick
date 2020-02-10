@@ -1,3 +1,9 @@
+2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Limit pattern dimensions by
+	LONG_MAX rather than ULONG_MAX since this seems more likely to
+	avoid arithmetic overflows later on.
+
 2020-02-09  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c Check for exception in image.
