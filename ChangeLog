@@ -2,7 +2,6 @@
 
 	* coders/wpg.c Check for exception in image.
 
-
 2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (VersionCommand): Add Google perftools tcmalloc
