@@ -416,12 +416,18 @@ return RetVal;
 static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
                                 int bpp, long ldblk)
 {
-  while(y < image->rows)
+  while(y<image->rows && image->exception.severity!=UndefinedException)
   {
-    if((long) x<ldblk) memset(BImgBuff+x, 0, (size_t)ldblk-(long)x);
-    if (InsertRow(BImgBuff,y,image,bpp) == MagickFail)
+    if((long) x<ldblk) 
+    {
+      memset(BImgBuff+x, 0, (size_t)ldblk-(size_t)x);
+      if(x == 0)
+        x = ldblk;	/* Do not memset any more */
+      else
+        x = 0;		/* Next pass will need to clear whole row */
+    }
+    if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
       break;
-    x = 0;
     y++;
   }
 }
@@ -507,8 +513,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
               {
                 x=0;
                 y++;
-                if(image->exception.severity != UndefinedException)
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
               }
             MagickFreeMemory(BImgBuff);
             return(-3);
@@ -523,8 +528,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 { 
-                  if(image->exception.severity != UndefinedException)                 
-                      ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
