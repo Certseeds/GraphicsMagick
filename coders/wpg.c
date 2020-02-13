@@ -517,8 +517,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
             {           /* Here I need to duplicate previous row RUNCOUNT* */
                         /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
-                {
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                {                  
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
