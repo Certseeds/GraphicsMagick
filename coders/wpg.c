@@ -523,9 +523,9 @@ static int UnpackWPGRaster(Image *image,int bpp)
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
-                {
-                  if(image->exception.severity != UndefinedException)
-                    ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                { 
+                  if(image->exception.severity != UndefinedException)                 
+                      ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }
@@ -1574,7 +1574,7 @@ UnpackRaster:
                   {
                     ldblk=(long) ((bpp*image->columns+7)/8);
                     BImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
-                    if (BImgBuff == (unsigned char *) NULL)
+                    if(BImgBuff == (unsigned char *) NULL)
                       goto NoMemory;
 
                     for(i=0; i< (long) image->rows; i++)
