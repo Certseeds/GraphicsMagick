@@ -1,6 +1,7 @@
 2020-02-09  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
-	* coders/wpg.c ZeroFillMissing data will never been triggered when y>=image->rows.
+	* coders/wpg.c ZeroFillMissing data will never been triggered when
+	y>=image->rows.
 
 2020-02-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

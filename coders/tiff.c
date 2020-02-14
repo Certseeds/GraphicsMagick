@@ -5110,6 +5110,20 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 
       switch (compress_tag)
         {
+        case COMPRESSION_NONE:
+          {
+            /*
+              Target that each uncompressed strip is ~1MB
+            */
+            if (scanline_size < (tsize_t) 1048576)
+              rows_per_strip = (uint32) ((tsize_t) 1048576/scanline_size);
+            if (rows_per_strip > image->rows)
+              rows_per_strip=image->rows;
+            if (rows_per_strip < 1)
+              rows_per_strip=1;
+
+            break;
+          }
         case COMPRESSION_JPEG:
           {
             /*
@@ -5288,8 +5302,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               rows_per_strip =
                 (uint32) ceil((((double) lzma_memory_mb[lzma_preset-1]*
                                 1024.0*1024.0*8.0))/
-                              (((double) bits_per_sample*samples_per_pixel
-                                *image->columns)))/8.0;
+                              (((double) scanline_size)))/8.0;
 
               if (rows_per_strip < 1)
                 rows_per_strip=1U;
