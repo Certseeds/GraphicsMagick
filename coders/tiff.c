@@ -94,6 +94,16 @@
 #  define LOG_TIFF_BLOB_IO 0
 #endif /* !defined(LOG_TIFF_BLOB_IO) */
 
+/*
+  The number of bytes to try to allocate per uncompressed strip by default.
+  This is used to determine the default number of rows per strip.
+
+  Target that each uncompressed strip is ~1MB.
+ */
+#if !defined(TIFF_BYTES_PER_STRIP)
+#  define TIFF_BYTES_PER_STRIP 1048576
+#endif /* !defined(TIFF_BYTES_PER_STRIP) */
+
 #if !defined(PREDICTOR_NONE)
 #define     PREDICTOR_NONE              1
 #endif
@@ -4245,6 +4255,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   TIFF
     *tiff = (TIFF *) NULL;
 
+  size_t
+    bytes_per_strip_target = TIFF_BYTES_PER_STRIP;
+
   uint16
     bits_per_sample,
     compress_tag,
@@ -5086,61 +5099,25 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       (void) TIFFSetField(tiff,TIFFTAG_COMPRESSION,compress_tag);
 
       /*
-        Obtain recommended rows per strip given current image width,
-        bits per sample, samples per pixel, tags, and compression
-        specific requirements.  Tries to create strips with 8K of
-        uncompressed data.
+        Determine rows per strip given current image width, bits per
+        sample, samples per pixel, tags, and compression specific
+        requirements.  Tries to create strips with
+        TARGET_BYTES_PER_STRIP of uncompressed data.
       */
-      scanline_size=TIFFScanlineSize(tiff);
-      rows_per_strip=TIFFDefaultStripSize(tiff,0);
-      if (rows_per_strip < 1)
-        rows_per_strip=1;
-      /*
-        It seems that some programs fail to handle more than 32K or
-        64K strips in an image due to using a 16-bit strip counter.
-        The solution is to use a larger strip size.  This approach
-        might cause excessively large strips for mega-sized images and
-        someday we may remove the solution since the problematic
-        readers will have expired.
-      */
-      if ((image->rows/rows_per_strip) > 32767)
-        rows_per_strip=image->rows/32768;
-      if (rows_per_strip < 1)
-        rows_per_strip=1;
-
       switch (compress_tag)
         {
-        case COMPRESSION_NONE:
-          {
-            /*
-              Target that each uncompressed strip is ~1MB
-            */
-            if (scanline_size < (tsize_t) 1048576)
-              rows_per_strip = (uint32) ((tsize_t) 1048576/scanline_size);
-            if (rows_per_strip > image->rows)
-              rows_per_strip=image->rows;
-            if (rows_per_strip < 1)
-              rows_per_strip=1;
-
-            break;
-          }
         case COMPRESSION_JPEG:
           {
             /*
-              RowsPerStrip must be multiple of 16 for JPEG.
-
-              RowsPerStrip is required to be a multiple of 8 times the
-              largest vertical sampling factor.  If YCbCr subsampling
-              is 2,2 then RowsPerStrip must be a multiple of 16.
+              Set JPEG RGB mode since we don't have a suitable YCbCR encoder.
             */
-            rows_per_strip=(((rows_per_strip < 16 ? 16 : rows_per_strip)+1)/16)*16;
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "JPEG Quality: %u", (unsigned) image_info->quality);
             (void) TIFFSetField(tiff,TIFFTAG_JPEGQUALITY,image_info->quality);
             if (IsRGBColorspace(image->colorspace))
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "TIFFTAG_JPEGCOLORMODE: JPEGCOLORMODE_RGB");
+                                      "TIFFTAG_JPEGCOLORMODE: JPEGCOLORMODE_RGB");
                 (void) TIFFSetField(tiff,TIFFTAG_JPEGCOLORMODE,JPEGCOLORMODE_RGB);
               }
             if (bits_per_sample == 12)
@@ -5153,16 +5130,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           }
         case COMPRESSION_ADOBE_DEFLATE:
           {
-            /*
-              Deflate strips compress better up to 32K of data
-              (enlarge if necessary)..
-            */
-            unsigned int
-              proposed_rows_per_strip;
-
-            proposed_rows_per_strip = (uint32) (32*1024) / Max(scanline_size,1);
-            if (proposed_rows_per_strip > rows_per_strip)
-              rows_per_strip=proposed_rows_per_strip;
             /*
               Use horizontal differencing (type 2) for images which are
               likely to be continuous tone.  The TIFF spec says that this
@@ -5216,31 +5183,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 group_three_options=(uint32) strtol(value,(char **)NULL, 10);
               }
             (void) TIFFSetField(tiff,TIFFTAG_GROUP3OPTIONS,group_three_options);
-
-            /*
-              It is recommended (but not required) to output FAX as
-              one strip. We will limit strip size to 16 megapixels by
-              default.
-            */
-            rows_per_strip=16000000UL/image->columns;
-            if (rows_per_strip < 1)
-              rows_per_strip=1;
-            if (rows_per_strip > image->rows)
-              rows_per_strip=(uint32) image->rows;
             break;
           }
         case COMPRESSION_CCITTFAX4:
           {
-            /*
-              It is recommended (but not required) to output FAX as
-              one strip. We will limit strip size to 16 megapixels by
-              default.
-            */
-            rows_per_strip=16000000UL/image->columns;
-            if (rows_per_strip < 1)
-              rows_per_strip=1;
-            if (rows_per_strip > image->rows)
-              rows_per_strip=(uint32) image->rows;
             break;
           }
 #if defined(COMPRESSION_LZMA)
@@ -5275,41 +5221,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "LZMA PRESET set to %u", lzma_preset);
 
-            {
-              /*
-                Provide a default rows-per-strip which is suitably
-                tailored for the compression level.
-              */
-
-              /*
-                Strip memory target for various compression preset levels.
-                Values are arbitrary.  LZMA is a memory and CPU pig.
-              */
-              static const unsigned int
-                lzma_memory_mb[] =
-                {       /* Level  Compress  Decompress */
-                  1U,  /*   1       2 MB      1 MB    */
-                  4U,  /*   2      12 MB      2 MB    */
-                  4U,  /*   3      12 MB      1 MB    */
-                  4U,  /*   4      16 MB      2 MB    */
-                  6U,  /*   5      26 MB      3 MB    */
-                  10U, /*   6      45 MB      5 MB    */
-                  18U, /*   7      83 MB      9 MB    */
-                  34U, /*   8     159 MB     17 MB    */
-                  66U  /*   9     311 MB     33 MB    */
-                };
-
-              rows_per_strip =
-                (uint32) ceil((((double) lzma_memory_mb[lzma_preset-1]*
-                                1024.0*1024.0*8.0))/
-                              (((double) scanline_size)))/8.0;
-
-              if (rows_per_strip < 1)
-                rows_per_strip=1U;
-              if (rows_per_strip > image->rows)
-                rows_per_strip=image->rows;
-            }
-
             /*
               Use horizontal differencing (type 2) for images which are
               likely to be continuous tone.  The TIFF spec says that this
@@ -5325,16 +5236,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(COMPRESSION_JBIG)
         case COMPRESSION_JBIG:
           {
-            /*
-              It is recommended (but not required) to output FAX as
-              one strip. We will limit strip size to 16 megapixels by
-              default.
-            */
-            rows_per_strip=16000000UL/image->columns;
-            if (rows_per_strip < 1)
-              rows_per_strip=1;
-            if (rows_per_strip > image->rows)
-              rows_per_strip=(uint32) image->rows;
             break;
           }
 #endif /* COMPRESSION_JBIG */
@@ -5354,16 +5255,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(COMPRESSION_ZSTD)
         case COMPRESSION_ZSTD:
           {
-            /*
-              Larger strips compress better with diminishing returns
-              (enlarge if necessary)..
-            */
-            unsigned int
-              proposed_rows_per_strip;
-
-            proposed_rows_per_strip = (uint32) (512*1024) / Max(scanline_size,1);
-            if (proposed_rows_per_strip > rows_per_strip)
-              rows_per_strip=proposed_rows_per_strip;
             /*
               Use horizontal differencing (type 2) for images which are
               likely to be continuous tone.  The TIFF spec says that this
@@ -5406,17 +5297,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(COMPRESSION_WEBP)
         case COMPRESSION_WEBP:
           {
-            /*
-              Larger strips compress better with diminishing returns
-              (enlarge if necessary)..
-            */
-            unsigned int
-              proposed_rows_per_strip;
-
-            proposed_rows_per_strip = (uint32) (1024*1024) / Max(scanline_size,1);
-            if (proposed_rows_per_strip > rows_per_strip)
-              rows_per_strip=proposed_rows_per_strip;
-
             /* TIFFTAG_WEBP_LEVEL */
             if (image_info->quality != DefaultCompressionQuality)
               {
@@ -5439,7 +5319,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 {
                   int lossless=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "TIFFTAG_WEBP_LOSSLESS: %d", lossless);
+                                        "TIFFTAG_WEBP_LOSSLESS: %d", lossless);
                   (void) TIFFSetField(tiff,TIFFTAG_WEBP_LOSSLESS,lossless);
                 }
             }
@@ -5452,12 +5332,87 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           }
         }
 
+      scanline_size=TIFFScanlineSize(tiff);
+      /* (void) LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFScanlineSize(): %lu", (unsigned long) scanline_size); */
+      rows_per_strip=TIFFDefaultStripSize(tiff,0);
+      /* (void) LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFDefaultStripSize(): %lu", (unsigned long) rows_per_strip); */
+
+      switch (compress_tag)
+        {
+        case COMPRESSION_CCITTFAX3:
+        case COMPRESSION_CCITTFAX4:
+#if defined(COMPRESSION_JBIG)
+        case COMPRESSION_JBIG:
+#endif /* COMPRESSION_JBIG */
+            {
+              /*
+              It is recommended (but not required) to output FAX/JBIG
+              as one strip. We will limit strip size to 32 megapixels
+              (4MiB) by default.
+              */
+              bytes_per_strip_target = 4*TIFF_BYTES_PER_STRIP;
+              break;
+            }
+#if defined(COMPRESSION_LZMA)
+        case COMPRESSION_LZMA:
+          {
+            uint32
+              lzma_preset = 0;
+
+            /*
+              Strip memory target for various compression preset levels.
+              Values are arbitrary.  LZMA is a memory and CPU pig.
+            */
+            static const unsigned int
+              lzma_memory_mb[] =
+              {       /* Level  Compress  Decompress */
+                1U,  /*   1       2 MB      1 MB    */
+                4U,  /*   2      12 MB      2 MB    */
+                4U,  /*   3      12 MB      1 MB    */
+                4U,  /*   4      16 MB      2 MB    */
+                6U,  /*   5      26 MB      3 MB    */
+                10U, /*   6      45 MB      5 MB    */
+                18U, /*   7      83 MB      9 MB    */
+                34U, /*   8     159 MB     17 MB    */
+                66U  /*   9     311 MB     33 MB    */
+              };
+
+            (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_LZMAPRESET,&lzma_preset);
+            bytes_per_strip_target = lzma_memory_mb[lzma_preset-1]*1024*1024;
+            break;
+          }
+#endif /* COMPRESSION_LZMA */
+        default:
+          {
+          }
+        }
+
+      if (scanline_size < (tsize_t) bytes_per_strip_target)
+        rows_per_strip *= (uint32) ((size_t) bytes_per_strip_target / ((size_t) rows_per_strip*scanline_size));
+      if (rows_per_strip > image->rows)
+        rows_per_strip=image->rows;
+      if (rows_per_strip < 1)
+        rows_per_strip=1;
+
+      /*
+        It seems that some programs fail to handle more than 32K or
+        64K strips in an image due to using a 16-bit strip counter.
+        The solution is to use a larger strip size.  This approach
+        might cause excessively large strips for mega-sized images and
+        someday we may remove the solution since the problematic
+        readers will have expired.
+      */
+      if ((image->rows/rows_per_strip) > 32767)
+        rows_per_strip=image->rows/32768;
+      if (rows_per_strip < 1)
+        rows_per_strip=1;
+
       /*
         Allow the user to specify the predictor (at their own peril)
       */
       {
         const char *
-            value;
+          value;
 
         if ((value=AccessDefinition(image_info,"tiff","predictor")))
           predictor=(unsigned short) MagickAtoI(value);

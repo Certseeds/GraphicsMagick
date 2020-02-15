@@ -1,3 +1,14 @@
+2020-02-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Evidence suggests that large
+	strip sizes improve performance by reducing the number of I/Os.
+	The defaults suggested by libtiff are way to small for today's
+	images and computers.  Default TIFF strip sizes so that each
+	uncompressed strip consumes up to 1MiB of memory, or 4MiB for FAX
+	oriented codecs, or based on LZMA compression level when using
+	LZMA compression.  The default size may be adjusted via the
+	TIFF_BYTES_PER_STRIP preprocessor definition.
+
 2020-02-09  Fojtik Jaroslav  <JaFojtik@seznam.cz>
 
 	* coders/wpg.c ZeroFillMissing data will never been triggered when
