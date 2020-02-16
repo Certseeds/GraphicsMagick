@@ -2307,7 +2307,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             photometric == PHOTOMETRIC_MINISBLACK) &&
            ((image_info->type == PaletteType) ||
             (image_info->type == PaletteMatteType)) &&
-            (MaxColormapSize > MaxValueGivenBits(bits_per_sample))
+           (MaxColormapSize > MaxValueGivenBits(bits_per_sample))
            )
           )
         {
@@ -2429,7 +2429,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             /*
               QuantumTransferMode reported an error
-             */
+            */
             ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
           }
       }
@@ -2624,9 +2624,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         break;
                       }
                     if (image->previous == (Image *) NULL)
-                      if (QuantumTick(y+sample*image->rows,image->rows*max_sample))
-                        if (!MagickMonitorFormatted(y+sample*image->rows,
-                                                    image->rows*max_sample,exception,
+                      if (QuantumTick(y+(magick_int64_t)sample*image->rows, (magick_int64_t)image->rows*max_sample))
+                        if (!MagickMonitorFormatted(y+ (magick_int64_t)sample*image->rows,
+                                                    (magick_int64_t)image->rows*max_sample,exception,
                                                     LoadImageText,image->filename,
                                                     image->columns,image->rows))
                           break;
@@ -2693,7 +2693,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             p=0;
             strip_size=0;
             strip_id=0;
-             /*
+            /*
               Allocate memory for one strip.
             */
             strip_size_max=TIFFStripSize(tiff);
@@ -2731,7 +2731,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             if (!AcquireMagickResource(MemoryResource,strip_size_max))
               ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                         image);
+                                       image);
 
             strip=MagickAllocateMemory(unsigned char *,(size_t) strip_size_max);
             if (strip == (unsigned char *) NULL)
@@ -2840,8 +2840,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     rows_remaining--;
 
                     if (image->previous == (Image *) NULL)
-                      if (QuantumTick(y+image->rows*sample,image->rows*max_sample))
-                        if (!MagickMonitorFormatted(y+image->rows*sample,image->rows*max_sample,exception,
+                      if (QuantumTick(y+(magick_int64_t)image->rows*sample, (magick_int64_t)image->rows*max_sample))
+                        if (!MagickMonitorFormatted(y+ (magick_int64_t)image->rows*sample, (magick_int64_t)image->rows*max_sample,exception,
                                                     LoadImageText,image->filename,
                                                     image->columns,image->rows))
                           {
@@ -2982,7 +2982,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             if (!AcquireMagickResource(MemoryResource,tile_size_max))
               ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                         image);
+                                       image);
 
             tile=MagickAllocateMemory(unsigned char *, (size_t) tile_size_max);
             if (tile == (unsigned char *) NULL)
@@ -3175,7 +3175,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if ((strip_pixels_size == 0) ||
                 (!AcquireMagickResource(MemoryResource,strip_pixels_size)))
               ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                         image);
+                                       image);
 
             strip_pixels=MagickAllocateMemory(uint32 *,strip_pixels_size);
             if (strip_pixels == (uint32 *) NULL)
@@ -3215,7 +3215,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     i=(long) Min(rows_per_strip,image->rows-y);
                   }
                 i--;
-                p=strip_pixels+image->columns*i;
+                p=strip_pixels+(size_t) image->columns*i;
                 for (x=0; x < image->columns; x++)
                   {
                     q->red=ScaleCharToQuantum(TIFFGetR(*p));
@@ -3383,8 +3383,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     /*
                       Transfer tile to image
                     */
-                    p=tile_pixels+(tile_rows-tile_rows_remaining)*tile_columns;
-                    q=strip+(x+(tile_rows_remaining-1)*image->columns);
+                    p=tile_pixels+(size_t)(tile_rows-tile_rows_remaining)*tile_columns;
+                    q=strip+(x+(size_t)(tile_rows_remaining-1)*image->columns);
                     for ( tile_row=tile_rows_remaining; tile_row != 0; tile_row--)
                       {
                         if (image->matte)
@@ -3410,7 +3410,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               p++;
                             }
                         p+=tile_columns-tile_columns_remaining;
-                        q-=(image->columns+tile_columns_remaining);
+                        q-=((size_t) image->columns+tile_columns_remaining);
                       }
                     if (status == MagickFail)
                       break;
@@ -3499,7 +3499,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 LiberateMagickResource(MemoryResource,pixels_size);
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                       image);
+                                         image);
               }
             if (!TIFFReadRGBAImage(tiff,(uint32) image->columns,
                                    (uint32) image->rows,
@@ -5344,15 +5344,15 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(COMPRESSION_JBIG)
         case COMPRESSION_JBIG:
 #endif /* COMPRESSION_JBIG */
-            {
-              /*
+          {
+            /*
               It is recommended (but not required) to output FAX/JBIG
               as one strip. We will limit strip size to 32 megapixels
               (4MiB) by default.
-              */
-              bytes_per_strip_target = 4*TIFF_BYTES_PER_STRIP;
-              break;
-            }
+            */
+            bytes_per_strip_target = 4*TIFF_BYTES_PER_STRIP;
+            break;
+          }
 #if defined(COMPRESSION_LZMA)
         case COMPRESSION_LZMA:
           {
@@ -5378,7 +5378,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               };
 
             (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_LZMAPRESET,&lzma_preset);
-            bytes_per_strip_target = lzma_memory_mb[lzma_preset-1]*1024*1024;
+            bytes_per_strip_target = (size_t) lzma_memory_mb[lzma_preset-1]*1024*1024;
             break;
           }
 #endif /* COMPRESSION_LZMA */
@@ -5888,9 +5888,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                       }
 
                     if (image->previous == (Image *) NULL)
-                      if (QuantumTick(y+sample*image->rows,image->rows*max_sample))
-                        if (!MagickMonitorFormatted(y+sample*image->rows,
-                                                    image->rows*max_sample,&image->exception,
+                      if (QuantumTick(y+(magick_int64_t)sample*image->rows, (magick_int64_t)image->rows*max_sample))
+                        if (!MagickMonitorFormatted(y+ (magick_int64_t)sample*image->rows,
+                                                    (magick_int64_t)image->rows*max_sample,&image->exception,
                                                     SaveImageText,image->filename,
                                                     image->columns,image->rows))
                           {

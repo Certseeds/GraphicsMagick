@@ -2225,7 +2225,7 @@ static int format8BIM(Image *ifile, Image *ofile)
             goto format8BIMError;
           }
         plen = (unsigned char) c;
-        PString=MagickAllocateMemory(unsigned char *,(unsigned int) (plen+1));
+        PString=MagickAllocateMemory(unsigned char *,(size_t) plen+1);
         if (PString == (unsigned char *) NULL)
           {
             ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,

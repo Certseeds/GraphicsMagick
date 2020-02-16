@@ -163,7 +163,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pixels=MagickAllocateArray(unsigned char *,image->columns,4);
     if (pixels == (unsigned char *) NULL)
       ThrowAVSReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    row_bytes=4*image->columns;
+    row_bytes=(size_t) 4*image->columns;
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_bytes,pixels) != row_bytes)
