@@ -1,3 +1,9 @@
+2020-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/: Move all remaining private implementation code in
+	public headers which is guarded by MAGICK_IMPLEMENTATION into
+	private headers, which are never installed.
+
 2020-02-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Evidence suggests that large

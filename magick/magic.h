@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2009 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -24,13 +24,7 @@ extern MagickExport MagickPassFail
   ListMagicInfo(FILE *file,ExceptionInfo *exception);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-extern MagickExport MagickPassFail
-  InitializeMagicInfo(void);
-
-extern MagickExport void
-  DestroyMagicInfo(void);
-
+#  include "magick/magic-private.h"
 #endif /* MAGICK_IMPLEMENTATION */
 
 #if defined(__cplusplus) || defined(c_plusplus)

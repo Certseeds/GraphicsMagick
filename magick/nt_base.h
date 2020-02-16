@@ -342,10 +342,8 @@ extern MagickExport int
   NTGhostscriptLoadDLL(void),
   NTGhostscriptUnLoadDLL(void);
 
-#if defined(MAGICK_IMPLEMENTATION)
 extern MagickExport const GhostscriptVectors
   *NTGhostscriptDLLVectors( void );
-#endif /* defined(MAGICK_IMPLEMENTATION) */
 
 /*
   Directory access functions

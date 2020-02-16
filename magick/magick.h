@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -130,19 +130,7 @@ extern MagickExport MagickInfo
   *SetMagickInfo(const char *name);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-  /*
-    Get blocksize to use when accessing the filesystem.
-  */
-  extern size_t
-  MagickGetFileSystemBlockSize(void) MAGICK_FUNC_PURE;
-
-  /*
-    Set blocksize to use when accessing the filesystem.
-  */
-  extern void
-  MagickSetFileSystemBlockSize(const size_t block_size);
-
+#  include "magick/magick-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 

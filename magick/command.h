@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2017 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -49,13 +49,7 @@ extern MagickExport int
   GMCommand(int argc,char **argv);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-extern void
-  MagickDestroyCommandInfo(void);
-
-extern MagickPassFail
-  MagickInitializeCommandInfo(void);
-
+#  include "magick/command-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)

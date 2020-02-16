@@ -37,28 +37,7 @@ typedef struct _MagickRandomKernel
   MagickExport double MagickRandomReal(void);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-  /*
-    Initialize the random kernel with suitable entropy
-  */
-  MagickExport void InitializeMagickRandomKernel(MagickRandomKernel *kernel);
-
-  /*
-    Acquire the default random number kernel.  Memory is owned by
-    library and should not be freed.
-  */
-  MagickExport MagickRandomKernel* AcquireMagickRandomKernel();
-
-  /*
-    Initialize the random number generator system.
-  */
-  extern void InitializeMagickRandomGenerator();
-
-  /*
-    Destroy the random number generator system.
-  */
-  extern void DestroyMagickRandomGenerator();
-
+#include "magick/random-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)
