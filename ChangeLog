@@ -1,5 +1,8 @@
 2020-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/common.h: Add missing unsupported handling for some
+	recently added GCC/Clang attributes.
+
 	* magick/: Move all remaining private implementation code in
 	public headers which is guarded by MAGICK_IMPLEMENTATION into
 	private headers, which are never installed.
