@@ -39,8 +39,8 @@ Prerequisites
   "Helvetica" and "Times Roman" if these fonts are not available as
   TrueType fonts.  The Ghostscript fonts need to manually installed
   with administrator privileges in the Ghostscript installation
-  directory (e.g. as "C:\Program Files\gs\fonts" or "C:Program
-  Files\gs\gs9.27\fonts").
+  directory (e.g. as ``C:\Program Files\gs\fonts`` or ``C:Program
+  Files\gs\gs9.27\fonts``).
 
   The algorithm used to find the fonts consults the Windows registry
   to learn Ghostscript installation paths, and then looks for a
@@ -282,16 +282,16 @@ Important Notes
   optimization, and the problem is likely to go away (but with less
   performance).
 
-Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
+Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation
 ------------------------------------------------------------
 
   The Visual C++ distribution targeted at Windows 2000 through Windows
-  8 does not provide any stock workspace (DSW) or project files (DSP)
+  10 does not provide any stock workspace (DSW) or project files (DSP)
   except for those included with third party libraries. Instead, there
   is a "configure" program that must run to create build
   environments to satisfy various requirements.
 
-  The configure program resides in VisualMagick\configure in the
+  The configure program resides in ``VisualMagick\configure`` in the
   GraphicsMagick source tree.  A pre-compiled configure.exe is
   provided, as well as Visual Studio project files to recompile it
   from source code if needed.

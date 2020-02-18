@@ -60,7 +60,7 @@
 <li><a class="reference internal" href="#installing-from-source-code" id="id16">Installing From Source Code</a><ul>
 <li><a class="reference internal" href="#applicability" id="id17">Applicability</a></li>
 <li><a class="reference internal" href="#important-notes" id="id18">Important Notes</a></li>
-<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-14-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></li>
+<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-19-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation</a></li>
 <li><a class="reference internal" href="#environment-variables" id="id20">Environment Variables</a></li>
 <li><a class="reference internal" href="#windows-distribution-build-procedure" id="id21">Windows Distribution Build Procedure</a></li>
 </ul>
@@ -94,8 +94,8 @@ Fonts&quot;) to support the standard set of Adobe Postscript fonts like
 &quot;Helvetica&quot; and &quot;Times Roman&quot; if these fonts are not available as
 TrueType fonts.  The Ghostscript fonts need to manually installed
 with administrator privileges in the Ghostscript installation
-directory (e.g. as &quot;C:Program Filesgsfonts&quot; or &quot;C:Program
-Filesgsgs9.27fonts&quot;).</p>
+directory (e.g. as <tt class="docutils literal"><span class="pre">C:\Program</span> Files\gs\fonts</tt> or <tt class="docutils literal">C:Program
+Files\gs\gs9.27\fonts</tt>).</p>
 <p>The algorithm used to find the fonts consults the Windows registry
 to learn Ghostscript installation paths, and then looks for a
 &quot;fonts/n019003l.pfb&quot; file in each path until it finds a match.</p>
@@ -354,15 +354,15 @@ then adjust the settings for the module which failed and disable
 optimization, and the problem is likely to go away (but with less
 performance).</blockquote>
 </div>
-<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-14-0-compilation">
-<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></h2>
+<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-19-0-compilation">
+<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation</a></h2>
 <blockquote>
 <p>The Visual C++ distribution targeted at Windows 2000 through Windows
-8 does not provide any stock workspace (DSW) or project files (DSP)
+10 does not provide any stock workspace (DSW) or project files (DSP)
 except for those included with third party libraries. Instead, there
 is a &quot;configure&quot; program that must run to create build
 environments to satisfy various requirements.</p>
-<p>The configure program resides in VisualMagickconfigure in the
+<p>The configure program resides in <tt class="docutils literal">VisualMagick\configure</tt> in the
 GraphicsMagick source tree.  A pre-compiled configure.exe is
 provided, as well as Visual Studio project files to recompile it
 from source code if needed.</p>

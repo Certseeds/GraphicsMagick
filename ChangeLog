@@ -1,3 +1,8 @@
+2020-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-windows.rst: Add quoting to avoid losing backslashes
+	in Windows paths.
+
 2020-02-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/common.h: Add missing unsupported handling for some
