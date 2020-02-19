@@ -1,3 +1,8 @@
+2020-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (MagickToMime): Add a MIME translation for
+	"jpg".  Issue reported by Pro Turm.
+
 2020-02-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/INSTALL-windows.rst: Add quoting to avoid losing backslashes

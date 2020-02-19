@@ -1480,6 +1480,7 @@ MagickToMime(const char *magick)
       { "gif",   "image/gif" },
       { "gif87", "image/gif" },
       { "jpeg",  "image/jpeg" },
+      { "jpg",   "image/jpeg" },
       { "mng",   "video/x-mng" },
       { "mpeg",  "video/mpeg" },
       { "png",   "image/png" },
