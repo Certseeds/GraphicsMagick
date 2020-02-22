@@ -55,7 +55,7 @@ extern void
     description_))
 
 #    define MagickError2(severity_,reason_,description_) \
-  (_MagickError(severity_,reason_,description_));MAGICK_NORETURN_EXIT
+  (_MagickError(severity_,reason_,description_))
 
 #    define MagickFatalError2(severity_,reason_,description_) \
   (_MagickFatalError(severity_,reason_,description_));MAGICK_NORETURN_EXIT
@@ -110,7 +110,7 @@ extern void
   (_MagickError(severity_,#reason_,#description_))
 
 #    define MagickFatalError3(severity_,reason_,description_) \
-  (_MagickFatalError(severity_,#reason_,#description_))
+  (_MagickFatalError(severity_,#reason_,#description_));MAGICK_NORETURN_EXIT
 
 #    define MagickWarning3(severity_,reason_,description_) \
   (_MagickWarning(severity_,#reason_,#description_))

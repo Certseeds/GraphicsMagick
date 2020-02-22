@@ -86,6 +86,8 @@ static SemaphoreInfo
 static MagickInfo
   *magick_list = (MagickInfo *) NULL;
 
+static unsigned int initialize_magick_options = 0;
+
 static unsigned int panic_signal_handler_call_count = 0;
 static unsigned int quit_signal_handler_call_count = 0;
 
@@ -564,12 +566,18 @@ GetMagickInfoArray(ExceptionInfo *exception)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  InitializeMagick() initializes the GraphicsMagick environment.
-%  InitializeMagick() MUST be invoked by the using program before making
-%  use of GraphicsMagick functions or else the library will be unusable.
+%
+%  InitializeMagick() or InitializeMagickEx() MUST be invoked by the using
+%  program before making use of GraphicsMagick functions or else the library
+%  will be unusable and any usage is likely to cause a crash.
 %
 %  This function should be invoked in the primary (original) thread of the
 %  application's process, and before starting any OpenMP threads, as part
 %  of program initialization.
+%
+%  If alternate memory allocations are provided via MagickAllocFunctions()
+%  then that function should be invoked before InitializeMagickEx() since
+%  the memory allocation functions need to be consistent.
 %
 %  The format of the InitializeMagick function is:
 %
@@ -577,7 +585,7 @@ GetMagickInfoArray(ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
 %
-%    o path: The execution path of the current GraphicsMagick client.
+%    o path: The execution path of the current GraphicsMagick client (or NULL)
 %
 %
 */
@@ -926,7 +934,7 @@ IsValidFilesystemPath(const char *path)
 /*
   Try and figure out the path and name of the client
  */
-MagickExport void
+static void
 InitializeMagickClientPathAndName(const char *path)
 {
 #if !defined(UseInstalledMagick)
@@ -1007,7 +1015,7 @@ InitializeMagickClientPathAndName(const char *path)
   Establish signal handlers for common signals
 
 */
-MagickExport void
+static void
 InitializeMagickSignalHandlers(void)
 {
 #if 0
@@ -1059,8 +1067,65 @@ InitializeMagickSignalHandlers(void)
 #endif
 }
 
+
 MagickExport void
 InitializeMagick(const char *path)
+{
+  ExceptionInfo exception;
+  GetExceptionInfo(&exception);
+  (void) InitializeMagickEx(path,0,&exception);
+  if (exception.severity != UndefinedException)
+    CatchException(&exception);
+  DestroyExceptionInfo(&exception);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   I n i t i a l i z e M a g i c k E x                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  InitializeMagickEx() initializes the GraphicsMagick environment,
+%  providing a bit more more control and visibility over initialization
+%  than the original InitializeMagick().
+%
+%  InitializeMagick() or InitializeMagickEx() MUST be invoked by the using
+%  program before making use of GraphicsMagick functions or else the library
+%  will be unusable and any usage is likely to cause a crash.
+%
+%  This function should be invoked in the primary (original) thread of the
+%  application's process, and before starting any OpenMP threads, as part
+%  of program initialization.
+%
+%  If alternate memory allocations are provided via MagickAllocFunctions()
+%  then that function should be invoked before InitializeMagickEx() since
+%  the memory allocation functions need to be consistent.
+%
+%  The format of the InitializeMagickEx function is:
+%
+%      MagickPassFail InitializeMagickEx(const char *path,
+%                                        unsigned int options,
+%                                        ExceptionInfo *exception)
+%
+%  A description of each parameter follows:
+%
+%    o path: The execution path of the current GraphicsMagick client (or NULL)
+%
+%    o options: Options flags tailoring initializations performed
+%
+%    o exception: Information about initialization failure is reported here.
+%
+%
+*/
+
+MagickExport MagickPassFail
+InitializeMagickEx(const char *path, unsigned int options,
+                   ExceptionInfo *exception)
 {
   /*
     NOTE: This routine sets up the path to the client which needs to
@@ -1074,6 +1139,11 @@ InitializeMagick(const char *path)
   const char
     *p;
 
+  MagickPassFail
+    status = MagickPass;
+
+  (void) exception;
+
   /* Acquire initialization lock */
   SPINLOCK_WAIT;
 
@@ -1081,8 +1151,11 @@ InitializeMagick(const char *path)
     {
       /* Release initialization lock */
       SPINLOCK_RELEASE;
-      return;
+      return status;
     }
+
+  /* Save initialization options in case we need them later */
+  initialize_magick_options = options;
 
 #if defined(MSWINDOWS)
 # if defined(_DEBUG) && !defined(__BORLANDC__)
@@ -1173,7 +1246,8 @@ InitializeMagick(const char *path)
 #if defined(MSWINDOWS)
   NTInitializeExceptionHandlers();  /* WIN32 Exceptions */
 #endif /* defined(MSWINDOWS) */
-  InitializeMagickSignalHandlers(); /* Signal handlers */
+  if (!(options & MAGICK_OPT_NO_SIGNAL_HANDER))
+    InitializeMagickSignalHandlers(); /* Signal handlers */
   InitializeTemporaryFiles();       /* Temporary files */
   InitializeMagickResources();      /* Resources */
   InitializeMagickRegistry();       /* Image/blob registry */
@@ -1196,6 +1270,8 @@ InitializeMagick(const char *path)
 
   /* Release initialization lock */
   SPINLOCK_RELEASE;
+
+  return status;
 }
 
 /*
@@ -1217,7 +1293,7 @@ InitializeMagick(const char *path)
 %
 %
 */
-MagickPassFail
+static MagickPassFail
 InitializeMagickInfoList(void)
 {
   assert(magick_semaphore == (SemaphoreInfo *) NULL);

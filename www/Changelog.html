@@ -35,6 +35,22 @@
 <div class="document">
 
 
+<p>2020-02-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/magick.c (InitializeMagickSignalHandlers): This private
+implementation function is now a static function as it should have
+been.
+(InitializeMagickEx): New function which may be used in place of
+InitializeMagick() to initialize GraphicsMagick.  This
+initialization function returns an error status value, may update
+a passed ExceptionInfo structure with error information, and
+provides an options parameter which supports simple bit-flags to
+tailor initialization.  The signal handler registrations are
+skipped if the MAGICK_OPT_NO_SIGNAL_HANDER flag is set in the
+options.</li>
+</ul>
+</blockquote>
 <p>2020-02-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

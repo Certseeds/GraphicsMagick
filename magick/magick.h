@@ -16,6 +16,11 @@
 extern "C" {
 #endif
 
+/*
+  Flags to form options passed to InitializeMagickEx
+*/
+#define MAGICK_OPT_NO_SIGNAL_HANDER 0x0001 /* Don't register ANSI/POSIX signal handlers */
+
 typedef Image
   *(*DecoderHandler)(const ImageInfo *,ExceptionInfo *);
 
@@ -112,6 +117,8 @@ extern MagickExport MagickBool
 extern MagickExport MagickPassFail
   ListModuleMap(FILE *file,ExceptionInfo *exception),
   ListMagickInfo(FILE *file,ExceptionInfo *exception),
+  InitializeMagickEx(const char *path, unsigned int options,
+                     ExceptionInfo *exception),
   UnregisterMagickInfo(const char *name);
 
 extern MagickExport void

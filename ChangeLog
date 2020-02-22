@@ -1,3 +1,17 @@
+2020-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (InitializeMagickSignalHandlers): This private
+	implementation function is now a static function as it should have
+	been.
+	(InitializeMagickEx): New function which may be used in place of
+	InitializeMagick() to initialize GraphicsMagick.  This
+	initialization function returns an error status value, may update
+	a passed ExceptionInfo structure with error information, and
+	provides an options parameter which supports simple bit-flags to
+	tailor initialization.  The signal handler registrations are
+	skipped if the MAGICK_OPT_NO_SIGNAL_HANDER flag is set in the
+	options.
+
 2020-02-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magick.c (MagickToMime): Add a MIME translation for

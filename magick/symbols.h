@@ -466,7 +466,7 @@
 #define InitializeLogInfoPost GmInitializeLogInfoPost
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
-#define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
+#define InitializeMagickEx GmInitializeMagickEx
 #define InitializeMagickExceptionHandling GmInitializeMagickExceptionHandling
 #define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickMonitor GmInitializeMagickMonitor
@@ -474,7 +474,6 @@
 #define InitializeMagickRandomKernel GmInitializeMagickRandomKernel
 #define InitializeMagickRegistry GmInitializeMagickRegistry
 #define InitializeMagickResources GmInitializeMagickResources
-#define InitializeMagickSignalHandlers GmInitializeMagickSignalHandlers
 #define InitializePixelIteratorOptions GmInitializePixelIteratorOptions
 #define InitializeSemaphore GmInitializeSemaphore
 #define InitializeTemporaryFiles GmInitializeTemporaryFiles
