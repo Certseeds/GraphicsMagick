@@ -1,5 +1,7 @@
 2020-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update with News since previous release.
+
 	* magick/magick.c (InitializeMagickSignalHandlers): This private
 	implementation function is now a static function as it should have
 	been.
