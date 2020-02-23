@@ -44,7 +44,7 @@ GraphicsMagick Change Logs
 
 The following are the ``GraphicsMagick`` change logs since 2001:
 
-  * 2020_ (nothing yet!)
+  * 2020_ (1.3.35 released)
 
   * 2019_ (1.3.32, 1.3.33, 1.3.34 released)
 

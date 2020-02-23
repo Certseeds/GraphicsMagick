@@ -1,5 +1,7 @@
 2020-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* version.sh: Updates in preparation for the 1.3.35 release.
+
 	* www/INSTALL-windows.rst: Update Windows installation and build
 	documentation.
 
