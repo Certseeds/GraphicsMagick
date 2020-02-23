@@ -130,24 +130,17 @@ Select Additional Tasks
 
   * Associate supported file extensions with GraphicsMagick
 
-  * Install ImageMagickObject OLE Control for VBscript, Visual Basic,
-    and WSH.
-
   "Creating a desktop icon" and "Update the executable search path"
   are selected by default. The remaining options default to
   un-selected.  Select the options you prefer.
 
-  Think twice before selecting "*Associate supported file extensions with
-  GraphicsMagick*" since this will set up approximately fifty file
-  associations, including common formats like JPEG, GIF, PNG, TIFF, and
-  PDF. These file associations will be to the 'gmdisplay' program which
-  is suitable for displaying images, but currently offers little more
-  than that. Windows XP seems to handle the file associations pretty
-  well, allowing you to choose from a list of programs, but older systems
-  like Windows NT 4.0 and Windows '98 only support a single association
-  per format, which can be quite annoying. Associations for
-  GraphicsMagick's native formats (such as `MIFF <miff.html>`_) will
-  always be made.
+  Think twice before selecting "*Associate supported file extensions
+  with GraphicsMagick*" since this will set up approximately fifty
+  file associations, including common formats like JPEG, GIF, PNG,
+  TIFF, and PDF. These file associations will be to the 'gmdisplay'
+  program which is suitable for displaying images, but currently
+  offers little more than that.  Associations for GraphicsMagick's
+  native formats (such as `MIFF <miff.html>`_) will always be made.
 
   Once you have made your selections, click on "*Next>*" to continue.
 
@@ -207,14 +200,9 @@ Uninstall
   installation directory) will leave behind the registry entries and path
   settings established at install time.
 
-  Under Windows '95 and Windows '98, use the "*Uninstall*" entry in the
-  GraphicsMagick portion of the Windows start menu to initiate the
-  uninstall.
-
-  On NT 4.0 and 5.X -based systems, GraphicsMagick should be removed via
-  the "*Add or Remove Programs*" area of the Windows Control Panel. Select
-  the GraphicsMagick package from the list, and click on "*Change/Remove*"
-  to uninstall it.
+  GraphicsMagick should be removed via the "*Add or Remove Programs*"
+  area of the Windows Control Panel. Select the GraphicsMagick package
+  from the list, and click on "*Change/Remove*" to uninstall it.
 
 Use From Another Package or Program
 -----------------------------------
@@ -300,8 +288,8 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation
   dialog after proceeding past the initial notifications screen:
 
   .. image:: configure-target-setup.png
-     :height: 485px
-     :width: 512px
+     :height: 473px
+     :width: 498px
      :scale: 100%
      :alt: Configure program screen shot
      :align: center
@@ -350,9 +338,9 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation
   multi-threaded support (the only option for DLL's).
 
   To do a build for your requirements, simply go to the configure sub-
-  directory under VisualMagick and open the configure.dsw workspace (for
-  Visual C++ 6.0) or configure.sln (for Visual C++ 7.X or 8.X). Set the
-  build configuration to "Release" under the
+  directory under VisualMagick and open the configure.dsw workspace
+  (for Visual C++ 6.0) or configure.sln (for Visual C++ 7.X through
+  9.X). Set the build configuration to "Release" under the
 
       "Build..., Set Active Configuration..."  menu.
 

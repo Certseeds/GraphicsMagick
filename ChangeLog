@@ -1,3 +1,8 @@
+2020-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-windows.rst: Update Windows installation and build
+	documentation.
+
 2020-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update with News since previous release.
