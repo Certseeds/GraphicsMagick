@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -527,14 +527,14 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
           {
             case VFF_MAPTYP_2_BYTE:
             {
-              MSBOrderShort(viff_colormap,(bytes_per_pixel*image->colors*
+              MSBOrderShort(viff_colormap,((size_t)bytes_per_pixel*image->colors*
                 viff_info.map_rows));
               break;
             }
             case VFF_MAPTYP_4_BYTE:
             case VFF_MAPTYP_FLOAT:
             {
-              MSBOrderLong(viff_colormap,(bytes_per_pixel*image->colors*
+              MSBOrderLong(viff_colormap,((size_t)bytes_per_pixel*image->colors*
                 viff_info.map_rows));
               break;
             }
@@ -824,7 +824,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
           /*
             Convert DirectColor scanline.
           */
-          number_pixels=image->columns*image->rows;
+          number_pixels=(size_t)image->columns*image->rows;
           for (y=0; y < (long) image->rows; y++)
           {
             q=SetImagePixels(image,0,y,image->columns,1);
@@ -871,6 +871,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
           image->filename);
         break;
       }
+    StopTimer(&image->timer);
     /*
       Proceed to next image.
     */
@@ -1220,10 +1221,10 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
           for (x=0; x < (long) image->columns; x++)
           {
             *q=ScaleQuantumToChar(p->red);
-            *(q+number_pixels)=ScaleQuantumToChar(p->green);
-            *(q+number_pixels*2)=ScaleQuantumToChar(p->blue);
+            *(q+ (size_t)number_pixels)=ScaleQuantumToChar(p->green);
+            *(q+ (size_t)number_pixels*2)=ScaleQuantumToChar(p->blue);
             if (image->matte)
-              *(q+number_pixels*3)=ScaleQuantumToChar(MaxRGB-p->opacity);
+              *(q+ (size_t)number_pixels*3)=ScaleQuantumToChar(MaxRGB-p->opacity);
             p++;
             q++;
           }
@@ -1256,7 +1257,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
             *q++=ScaleQuantumToChar(image->colormap[i].green);
           for (i=0; i < (long) image->colors; i++)
             *q++=ScaleQuantumToChar(image->colormap[i].blue);
-          (void) WriteBlob(image,3*image->colors,(char *) viff_colormap);
+          (void) WriteBlob(image, (size_t)3*image->colors,(char *) viff_colormap);
           MagickFreeMemory(viff_colormap);
           /*
             Convert PseudoClass packet to VIFF colormapped pixels.

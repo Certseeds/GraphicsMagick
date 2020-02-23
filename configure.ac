@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2019 GraphicsMagick Group
+# Copyright (C) 2003-2020 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -915,11 +915,10 @@ AC_SUBST(MODULE_EXTRA_CPPFLAGS)
 AC_SUBST(LIBRARY_EXTRA_CPPFLAGS)
 
 # Check standard headers
-AC_HEADER_STDC
 AC_HEADER_DIRENT
 
 # Check additional headers
-AC_CHECK_HEADERS([machine/param.h mach-o/dyld.h process.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
+AC_CHECK_HEADERS([inttypes.h machine/param.h mach-o/dyld.h process.h stdint.h sun_prefetch.h sys/mman.h sys/resource.h sys/times.h sys/types.h])
 AC_CHECK_HEADERS([wincrypt.h],[],[],[#include <windows.h>])
 
 case "${host_os}" in
@@ -2768,7 +2767,7 @@ AC_SUBST([LIB_WMF_DEPS])
 GM_FUNC_MMAP_FILEIO
 AC_CHECK_FUNCS([atoll CryptGenRandom \
   clock_getres clock_gettime ctime_r cosf _exit fabsf fcntl fstatvfs ftime getexecname \
-  getc_unlocked getpagesize getrlimit getpid lltostr localtime_r logf madvise \
+  getc_unlocked getpagesize getpwnam_r getrlimit getpid lltostr localtime_r logf madvise \
   _NSGetExecutablePath _pclose pclose poll _popen popen posix_fadvise \
   posix_fallocate posix_madvise posix_memalign posix_spawnp pread pwrite \
   putc_unlocked raise rand_r readdir_r readlink realpath select seekdir \

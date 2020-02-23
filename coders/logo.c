@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
 % Parts Copyright (c) 1989-2000 by Brian V. Smith
 % Parts Copyright (c) 1991 by Paul King
@@ -4991,12 +4991,16 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
   const void
     *blob;
 
+  TimerInfo
+    timer;
+
   size_t
     extent;
 
   unsigned int
     i;
 
+  GetTimerInfo(&timer);
   clone_info=CloneImageInfo(image_info);
   image=(Image *) NULL;
   blob=NULL;
@@ -5030,19 +5034,37 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
       ThrowReaderException(BlobError,UnableToOpenFile,image)
     }
   image=BlobToImage(clone_info,blob,extent,exception);
-
-  if ((image_info->size) && (LocaleCompare(image_info->magick,"PATTERN") == 0))
+  if (image != (Image *) NULL)
     {
-      Image
-        *pattern_image;
+      StopTimer(&image->timer);
+      if ((clone_info->size != (char *) NULL) &&
+          (LocaleCompare(image_info->magick,"PATTERN") == 0))
+        {
+          Image
+            *pattern_image;
 
-      /*
-        Tile pattern across image canvas.
-      */
-      pattern_image=image;
-      image=AllocateImage(clone_info);
-      (void) TextureImage(image,pattern_image);
-      DestroyImage(pattern_image);
+          RectangleInfo
+            geometry;
+
+          /*
+            Tile pattern across image canvas of specified size.
+          */
+          geometry.width=0;
+          geometry.height=0;
+          (void) GetGeometry(clone_info->size,&geometry.x,&geometry.y,&geometry.width,
+                             &geometry.height);
+          if ((geometry.width == 0) || (geometry.height == 0))
+            {
+              DestroyImageInfo(clone_info);
+              ThrowReaderException(OptionError,GeometryDimensionsAreZero,image);
+            }
+          pattern_image=image;
+          image=ConstituteTextureImage(geometry.width,geometry.height,pattern_image,exception);
+          DestroyImage(pattern_image);
+          StopTimer(&timer);
+          if (image)
+            image->timer=timer;
+        }
     }
 
   DestroyImageInfo(clone_info);

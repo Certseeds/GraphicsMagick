@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -497,6 +497,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -703,6 +704,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickFreeMemory(comment);
     }
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 
@@ -896,7 +898,9 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   pdb_info.seed=0;
   pdb_info.next_record=0;
   comment=GetImageAttribute(image,"comment");
-  pdb_info.number_records=(comment == (ImageAttribute *) NULL ? 1 : 2);
+  pdb_info.number_records=1;
+  if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
+    pdb_info.number_records++;
   if (image->logging)
     LogPDPInfo(&pdb_info);
   (void) WriteBlob(image,32,pdb_info.name);
@@ -965,7 +969,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   {
     if (!AcquireImagePixels(image,0,y,image->columns,1,&image->exception))
       break;
-    (void) memset(scanline,0,image->columns*packet_size); /* FIXME: remove */
+    (void) memset(scanline,0, (size_t) image->columns*packet_size); /* FIXME: remove */
     (void) ExportImagePixelArea(image,GrayQuantum,bits_per_pixel,scanline,0,0);
     for (x=0; x < pdb_image.width; x++)
     {
@@ -1026,8 +1030,8 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   /*
     Write the Image record header.
   */
-  (void) WriteBlobMSBLong(image,(unsigned long)
-    (TellBlob(image)+8*pdb_info.number_records));
+  (void) WriteBlobMSBLong(image,(magick_uint32_t)
+    (TellBlob(image)+(size_t)8*pdb_info.number_records));
   (void) WriteBlobByte(image,0x40);
   (void) WriteBlobByte(image,0x6f);
   (void) WriteBlobByte(image,0x80);
@@ -1060,7 +1064,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlobMSBShort(image,pdb_image.height);
   (void) WriteBlob(image,q-p,p);
   MagickFreeMemory(p);
-  if (pdb_info.number_records > 1)
+  if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
     (void) WriteBlobString(image,comment->value);
   CloseBlob(image);
   return(True);

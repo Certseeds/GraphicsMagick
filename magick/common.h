@@ -262,6 +262,12 @@ extern "C" {
 #if !defined(MAGICK_FUNC_WARN_UNUSED_RESULT)
 #  define MAGICK_FUNC_WARN_UNUSED_RESULT /*nothing*/
 #endif
+#if !defined(MAGICK_FUNC_NOINLINE)
+#  define MAGICK_FUNC_NOINLINE /*nothing*/
+#endif
+#if !defined(MAGICK_FUNC_ALWAYSINLINE)
+#  define MAGICK_FUNC_ALWAYSINLINE /*nothing*/
+#endif
 #if !defined(MAGICK_FUNC_ALLOC_SIZE_1ARG)
 #  define MAGICK_FUNC_ALLOC_SIZE_1ARG(arg_num) /*nothing*/
 #endif
@@ -274,17 +280,17 @@ extern "C" {
 #if !defined(MAGICK_FUNC_COLD)
 #  define MAGICK_FUNC_COLD  /*nothing*/
 #endif
-#if !defined(MAGICK_ASSUME_ALIGNED)
-#  define MAGICK_ASSUME_ALIGNED(exp,align) (exp)
-#endif
-#if !defined(MAGICK_ASSUME_ALIGNED_OFFSET)
-#  define MAGICK_ASSUME_ALIGNED_OFFSET(exp,align,offset) (exp)
-#endif
 #if !defined(MAGICK_OPTIMIZE_FUNC)
 #  define MAGICK_OPTIMIZE_FUNC(opt) /*nothing*/
 #endif
 #if !defined(MAGICK_FALLTHROUGH)
 #  define MAGICK_FALLTHROUGH /*nothing*/
+#endif
+#if !defined(MAGICK_ASSUME_ALIGNED)
+#  define MAGICK_ASSUME_ALIGNED(exp,align) (exp)
+#endif
+#if !defined(MAGICK_ASSUME_ALIGNED_OFFSET)
+#  define MAGICK_ASSUME_ALIGNED_OFFSET(exp,align,offset) (exp)
 #endif
 
   /*

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -270,8 +270,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   register long
     i;
 
-  unsigned int
+  MagickPassFail
     status;
+
+  MagickBool
+    colormap_initialized;
 
   size_t
     length;
@@ -415,6 +418,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   none=(~0U);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Parsing colormap...");
+  colormap_initialized=MagickFalse;
   for (j=0; j < image->colors; j++)
   {
     p=textlist[i++];
@@ -425,7 +429,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    %lu: %s", i-1, textlist[i-1]);
     if (strlen(p) < width)
       break;
-    keys[j]=MagickAllocateMemory(char *,width+1);
+    keys[j]=MagickAllocateMemory(char *,(size_t) width+1);
     if (keys[j] == (char *) NULL)
       ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     keys[j][width]='\0';
@@ -453,9 +457,16 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strcpy(target,"black");
       }
     if (!QueryColorDatabase(target,&image->colormap[j],exception))
-      break;
+      {
+        /* Promote warning to error */
+        exception->severity = CorruptImageError;
+        break;
+      }
+    /* We are going to be done now */
+    if (j+1 == image->colors)
+      colormap_initialized=MagickTrue;
   }
-  if (j < image->colors)
+  if (!colormap_initialized)
     ThrowXPMReaderException(CorruptImageError,CorruptImage,image);
   image->depth=GetImageDepth(image,&image->exception);
   image->depth=NormalizeDepthToOctet(image->depth);
@@ -525,6 +536,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeMemory(textlist);
   MagickFreeMemory(xpm_buffer);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

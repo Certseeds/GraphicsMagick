@@ -28,7 +28,7 @@ extern MagickExport Image
   *RollImage(const Image *image,const long x_offset,const long y_offset,ExceptionInfo *exception),
   *ShaveImage(const Image *image,const RectangleInfo *shave_info,ExceptionInfo *exception);
 
-extern MagickExport void
+extern MagickExport MagickPassFail
   TransformImage(Image **,const char *,const char *);
 
 #if defined(__cplusplus) || defined(c_plusplus)

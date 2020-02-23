@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -267,6 +267,7 @@ static Image *ReadVICARImage(const ImageInfo *image_info,
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
@@ -300,6 +301,7 @@ static Image *ReadVICARImage(const ImageInfo *image_info,
   if (EOFBlob(image))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

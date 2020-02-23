@@ -224,7 +224,7 @@ static unsigned int WriteBRAILLEImage(const ImageInfo *image_info,
           (void) WriteBlobString(image,buffer);
         }
       (void) FormatString(buffer,"Width: %.20g\n",(double)
-        (image->columns+(image->columns % 2)));
+        image->columns+(image->columns % 2));
       (void) WriteBlobString(image,buffer);
       (void) FormatString(buffer,"Height: %.20g\n",(double)
         image->rows);

@@ -537,6 +537,17 @@ int main ( int argc, char **argv )
           (!strcmp( "UYVY", format )) ||
           (!strcmp( "WEBP", format )) ||
           (!strcmp( "YUV", format )) ||
+
+          (!strcmp( "EPDF", format ))  ||
+          (!strcmp( "EPI", format ))  ||
+          (!strcmp( "EPS", format ))  ||
+          (!strcmp( "EPSF", format ))  ||
+          (!strcmp( "EPSI", format ))  ||
+          (!strcmp( "EPT", format ))  ||
+          (!strcmp( "PDF", format ))  ||
+          (!strcmp( "PS", format ))  ||
+          (!strcmp( "PS2", format ))  ||
+
           (final->compression == JPEGCompression))
         fuzz_factor = 0.06;
 

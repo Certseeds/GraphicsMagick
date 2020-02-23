@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -87,6 +87,8 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   RectangleInfo
     geometry;
 
+  TimerInfo
+    timer;
 
   /*
     Initialize Image structure.
@@ -96,6 +98,7 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
+  GetTimerInfo(&timer);
   clone_info=CloneImageInfo(image_info);
   clone_info->blob=(void *) NULL;
   clone_info->length=0;
@@ -118,8 +121,13 @@ static Image *ReadTILEImage(const ImageInfo *image_info,
   (void) GetGeometry(image_info->size,&geometry.x,&geometry.y,&geometry.width,
                      &geometry.height);
   image=ConstituteTextureImage(geometry.width,geometry.height,tile_image,exception);
-
   DestroyImage(tile_image);
+  if (image)
+    {
+      StopTimer(&timer);
+      image->timer=timer;
+    }
+
   return(image);
 }
 

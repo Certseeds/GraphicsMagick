@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# Copyright (C) 2003 - 2016 GraphicsMagick Group
+# Copyright (C) 2003-2019 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 #
@@ -96,7 +96,7 @@ testReadCompare('input.gif87', 'reference/read/input_gif87.miff', q//, 0, 0);
 print("Gradient (gradual passing from one shade to another) ...\n");
 ++$test;
 testReadCompare('gradient:red-blue', 'reference/read/gradient.miff',
-                q/size=>"70x46"/, 0.003, 0.004);
+                q/size=>"256x256"/, 0.003, 0.004);
 
 print("GRANITE (granite texture) ...\n");
 ++$test;
@@ -352,4 +352,3 @@ print("UYVY format ...\n");
 ++$test;
 testReadCompare('input_70x46.uyvy', 'reference/read/input_uyvy.miff',
                 q/size=>"70x46", depth=>8/, 0.006, 0.008);
-

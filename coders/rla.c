@@ -711,6 +711,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowRLAReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   CloseBlob(image);
   MagickFreeMemory(scanlines);
+  StopTimer(&image->timer);
   return(image);
 }
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -351,31 +351,10 @@ static MagickPassFail AssignImageColors(CubeInfo *cube_info,Image *image)
 {
 #define AssignImageText "[%s] Assign colors..."
 
-  IndexPacket
-    index;
-
-  long
-    count,
-    y;
-
-  register IndexPacket
-    *indexes;
-
-  register long
-    i,
-    x;
-
-  register const NodeInfo
-    *node_info;
-
-  register PixelPacket
-    *q;
-
   unsigned int
     dither;
 
   unsigned int
-    id,
     is_grayscale,
     is_monochrome;
 
@@ -387,7 +366,7 @@ static MagickPassFail AssignImageColors(CubeInfo *cube_info,Image *image)
   */
   if (!AllocateImageColormap(image,cube_info->colors))
     ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
-      UnableToQuantizeImage);
+                          UnableToQuantizeImage);
   image->colors=0;
   is_grayscale=image->is_grayscale;
   is_monochrome=image->is_monochrome;
@@ -401,71 +380,107 @@ static MagickPassFail AssignImageColors(CubeInfo *cube_info,Image *image)
   if (dither)
     dither=DitherImage(cube_info,image);
   if (!dither)
-    for (y=0; y < (long) image->rows; y++)
     {
-      q=GetImagePixels(image,0,y,image->columns,1);
-      if (q == (PixelPacket *) NULL)
+      long
+        y;
+
+      /*
+        FIXME: Use OpenMP?
+      */
+      for (y=0; y < (long) image->rows; y++)
         {
-          status=MagickFail;
-          break;
-        }
-      indexes=AccessMutableIndexes(image);
-      for (x=0; x < (long) image->columns; x+=count)
-      {
-        /*
-          Identify the deepest node containing the pixel's color.
-        */
-        for (count=1; (x+count) < (long) image->columns; count++)
-          if (NotColorMatch(q,q+count))
-            break;
-        node_info=cube_info->root;
-        for (index=MaxTreeDepth-1; (long) index > 0; index--)
-        {
-          id=ColorToNodeId(q->red,q->green,q->blue,index);
-          if (node_info->child[id] == (NodeInfo *) NULL)
-            break;
-          node_info=node_info->child[id];
-        }
-        /*
-          Find closest color among siblings and their children.
-        */
-        cube_info->color.red=q->red;
-        cube_info->color.green=q->green;
-        cube_info->color.blue=q->blue;
-        cube_info->distance=3.0*((double) MaxRGB+1.0)*((double) MaxRGB+1.0);
-        ClosestColor(image,cube_info,node_info->parent);
-        index=(IndexPacket) cube_info->color_number;
-        for (i=0; i < count; i++)
-        {
-          if (image->storage_class == PseudoClass)
-            indexes[x+i]=index;
-          if (!cube_info->quantize_info->measure_error)
+          IndexPacket
+            index;
+
+          long
+            count;
+
+          register IndexPacket
+            *indexes;
+
+          register long
+            i,
+            x;
+
+          register const NodeInfo
+            *node_info;
+
+          register PixelPacket
+            *q;
+
+          unsigned int
+            id;
+
+          q=GetImagePixels(image,0,y,image->columns,1);
+          if (q == (PixelPacket *) NULL)
             {
-              q->red=image->colormap[index].red;
-              q->green=image->colormap[index].green;
-              q->blue=image->colormap[index].blue;
+              status=MagickFail;
+              break;
             }
-          q++;
+          indexes=AccessMutableIndexes(image);
+          for (x=0; x < (long) image->columns; x+=count)
+            {
+              /*
+                Identify the deepest node containing the pixel's color.
+              */
+              for (count=1; (x+count) < (long) image->columns; count++)
+                if (NotColorMatch(q,q+count))
+                  break;
+              node_info=cube_info->root;
+              for (index=MaxTreeDepth-1; (long) index > 0; index--)
+                {
+                  id=ColorToNodeId(q->red,q->green,q->blue,index);
+                  if (node_info->child[id] == (NodeInfo *) NULL)
+                    break;
+                  node_info=node_info->child[id];
+                }
+              /*
+                Find closest color among siblings and their children.
+              */
+              cube_info->color.red=q->red;
+              cube_info->color.green=q->green;
+              cube_info->color.blue=q->blue;
+              cube_info->distance=3.0*(MaxRGBDouble+1.0)*(MaxRGBDouble+1.0);
+              ClosestColor(image,cube_info,node_info->parent);
+              index=(IndexPacket) cube_info->color_number;
+              for (i=0; i < count; i++)
+                {
+                  if (image->storage_class == PseudoClass)
+                    indexes[x+i]=index;
+                  if (!cube_info->quantize_info->measure_error)
+                    {
+                      q->red=image->colormap[index].red;
+                      q->green=image->colormap[index].green;
+                      q->blue=image->colormap[index].blue;
+                    }
+                  q++;
+                }
+            }
+          if (!SyncImagePixels(image))
+            {
+              status=MagickFail;
+              break;
+            }
+          if (QuantumTick(y,image->rows))
+            if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                        AssignImageText,image->filename))
+              {
+                status=MagickFail;
+                break;
+              }
         }
-      }
-      if (!SyncImagePixels(image))
-        {
-          status=MagickFail;
-          break;
-        }
-      if (QuantumTick(y,image->rows))
-        if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                    AssignImageText,image->filename))
-          {
-            status=MagickFail;
-            break;
-          }
     }
   if ((cube_info->quantize_info->number_colors == 2) &&
       (IsGrayColorspace(cube_info->quantize_info->colorspace)))
     {
+      PixelPacket
+        *q;
+
       Quantum
         intensity;
+
+      long
+        i;
 
       /*
         Monochrome image.
@@ -473,14 +488,14 @@ static MagickPassFail AssignImageColors(CubeInfo *cube_info,Image *image)
       is_monochrome=True;
       q=image->colormap;
       for (i=(long) image->colors; i > 0; i--)
-      {
-        intensity=(Quantum) (PixelIntensityToQuantum(q) <
-          (MaxRGB/2) ? 0 : MaxRGB);
-        q->red=intensity;
-        q->green=intensity;
-        q->blue=intensity;
-        q++;
-      }
+        {
+          intensity=(Quantum) (PixelIntensityToQuantum(q) <
+                               (MaxRGB/2) ? 0 : MaxRGB);
+          q->red=intensity;
+          q->green=intensity;
+          q->blue=intensity;
+          q++;
+        }
     }
   if (cube_info->quantize_info->measure_error)
     (void) GetImageQuantizeError(image);
@@ -616,10 +631,10 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
         if (NotColorMatch(p,p+count))
           break;
       index=MaxTreeDepth-1;
-      bisect=((double) MaxRGB+1.0)/2.0;
-      mid.red=MaxRGB/2.0;
-      mid.green=MaxRGB/2.0;
-      mid.blue=MaxRGB/2.0;
+      bisect=(MaxRGBDouble+1.0)/2.0;
+      mid.red=MaxRGBDouble/2.0;
+      mid.green=MaxRGBDouble/2.0;
+      mid.blue=MaxRGBDouble/2.0;
       node_info=cube_info->root;
       for (level=1; level <= 8; level++)
       {
@@ -635,8 +650,12 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
             */
             node_info->child[id]=GetNodeInfo(cube_info,id,level,node_info);
             if (node_info->child[id] == (NodeInfo *) NULL)
-              ThrowException3(exception,ResourceLimitError,
-                MemoryAllocationFailed,UnableToQuantizeImage);
+              {
+                ThrowException3(exception,ResourceLimitError,
+                                MemoryAllocationFailed,UnableToQuantizeImage);
+                status=MagickFail;
+                break;
+              }
             if (level == MaxTreeDepth)
               cube_info->colors++;
           }
@@ -652,6 +671,8 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
         cube_info->root->quantize_error+=node_info->quantize_error;
         index--;
       }
+      if (status == MagickFail)
+        break;
       /*
         Sum RGB for this leaf for later derivation of the mean cube color.
       */
@@ -669,8 +690,8 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
           break;
         }
   }
-  if (y == (long) image->rows)
-    return(True);
+  if ((status == MagickFail) || (y == (long) image->rows))
+    return status;
   /*
     More than 256 colors;  classify to the cube_info->depth tree depth.
   */
@@ -700,14 +721,14 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
         if (NotColorMatch(p,p+count))
           break;
       index=MaxTreeDepth-1;
-      bisect=((double) MaxRGB+1.0)/2.0;
-      mid.red=MaxRGB/2.0;
-      mid.green=MaxRGB/2.0;
-      mid.blue=MaxRGB/2.0;
+      bisect=(MaxRGBDouble+1.0)/2.0;
+      mid.red=MaxRGBDouble/2.0;
+      mid.green=MaxRGBDouble/2.0;
+      mid.blue=MaxRGBDouble/2.0;
       node_info=cube_info->root;
       for (level=1; level <= cube_info->depth; level++)
       {
-        bisect/=2;
+        bisect/=2.0;
         id=ColorToNodeId(p->red,p->green,p->blue,index);
         mid.red+=id & 4 ? bisect : -bisect;
         mid.green+=id & 2 ? bisect : -bisect;
@@ -719,8 +740,12 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
             */
             node_info->child[id]=GetNodeInfo(cube_info,id,level,node_info);
             if (node_info->child[id] == (NodeInfo *) NULL)
-              ThrowException3(exception,ResourceLimitError,
-                MemoryAllocationFailed,UnableToQuantizeImage);
+              {
+                ThrowException3(exception,ResourceLimitError,
+                                MemoryAllocationFailed,UnableToQuantizeImage);
+                status=MagickFail;
+                break;
+              }
             if (level == cube_info->depth)
               cube_info->colors++;
           }
@@ -736,6 +761,8 @@ static MagickPassFail ClassifyImageColors(CubeInfo *cube_info,const Image *image
         cube_info->root->quantize_error+=node_info->quantize_error;
         index--;
       }
+      if (status == MagickFail)
+        break;
       /*
         Sum RGB for this leaf for later derivation of the mean cube color.
       */
@@ -816,6 +843,8 @@ MagickExport QuantizeInfo *CloneQuantizeInfo(const QuantizeInfo *quantize_info)
 %
 %  ClosestColor() traverses the color cube tree at a particular node and
 %  determines which colormap entry best represents the input color.
+%
+%  This is a recursive function.
 %
 %  The format of the ClosestColor method is:
 %
@@ -1158,7 +1187,7 @@ static MagickPassFail Dither(CubeInfo *cube_info,Image *image,
           p->color.red=pixel.red;
           p->color.green=pixel.green;
           p->color.blue=pixel.blue;
-          p->distance=3.0*((double) MaxRGB+1.0)*((double) MaxRGB+1.0);
+          p->distance=3.0*(MaxRGBDouble+1.0)*(MaxRGBDouble+1.0);
           ClosestColor(image,p,node_info->parent);
           p->cache[i]=(long) p->color_number;
         }
@@ -1344,7 +1373,7 @@ static CubeInfo *GetCubeInfo(const QuantizeInfo *quantize_info,
   for (i=0; i < ExceptionQueueLength; i++)
   {
     cube_info->weights[ExceptionQueueLength-i-1]=1.0/weight;
-    weight*=exp(log(((double) MaxRGB+1.0))/(ExceptionQueueLength-1.0));
+    weight*=exp(log((MaxRGBDouble+1.0))/(ExceptionQueueLength-1.0));
   }
   /*
     Normalize the weighting factors.
@@ -1539,7 +1568,7 @@ MagickExport MagickPassFail GetImageQuantizeError(Image *image)
   /*
     Compute final error statistics.
   */
-  normalize=3.0*((double) MaxRGB+1.0)*((double) MaxRGB+1.0);
+  normalize=3.0*(MaxRGBDouble+1.0)*(MaxRGBDouble+1.0);
   image->error.mean_error_per_pixel=total_error/image->columns/image->rows;
   image->error.normalized_mean_error=
     image->error.mean_error_per_pixel/normalize;
@@ -1857,6 +1886,8 @@ MagickExport void GrayscalePseudoClassImage(Image *image,
 %  coherence between neighboring pixels.  Here, the quantization error is
 %  distributed along the Hilbert curve.
 %
+%  This is a recursive function.
+%
 %  The format of the HilbertCurve method is:
 %
 %      void HilbertCurve(CubeInfo *cube_info,Image *image,
@@ -2173,20 +2204,8 @@ MagickExport MagickPassFail OrderedDitherImage(Image *image)
       { 168, 104, 152,  88, 164, 100, 148,  84 }
     };
 
-  IndexPacket
-    index;
-
   long
     y;
-
-  register IndexPacket
-    *indexes;
-
-  register long
-    x;
-
-  register PixelPacket
-    *q;
 
   MagickPassFail
     status=MagickPass;
@@ -2200,9 +2219,22 @@ MagickExport MagickPassFail OrderedDitherImage(Image *image)
       UnableToDitherImage);
   /*
     Dither image with the ordered dithering technique.
+    FIXME: Use OpenMP?
   */
   for (y=0; y < (long) image->rows; y++)
   {
+    IndexPacket
+      index;
+
+    register IndexPacket
+      *indexes;
+
+    register long
+      x;
+
+    register PixelPacket
+      *q;
+
     q=GetImagePixels(image,0,y,image->columns,1);
     if (q == (PixelPacket *) NULL)
       {
@@ -2249,6 +2281,8 @@ MagickExport MagickPassFail OrderedDitherImage(Image *image)
 %
 %  PruneChild() deletes the given node and merges its statistics into its
 %  parent.
+%
+%  This is a recursive function.
 %
 %  The format of the PruneSubtree method is:
 %
@@ -2302,6 +2336,8 @@ static void PruneChild(CubeInfo *cube_info,const NodeInfo *node_info)
 %  PruneLevel() deletes all nodes at the bottom level of the color tree merging
 %  their color statistics into their parent node.
 %
+%  This is a recursive function.
+%
 %  The format of the PruneLevel method is:
 %
 %      PruneLevel(CubeInfo *cube_info,const NodeInfo *node_info)
@@ -2343,6 +2379,8 @@ static void PruneLevel(CubeInfo *cube_info,const NodeInfo *node_info)
 %  PruneToCubeDepth() deletes any nodes ar a depth greater than
 %  cube_info->depth while merging their color statistics into their parent
 %  node.
+%
+%  This is a recursive function.
 %
 %  The format of the PruneToCubeDepth method is:
 %
@@ -2647,6 +2685,8 @@ MagickExport MagickPassFail QuantizeImages(const QuantizeInfo *quantize_info,
 %  Reduce() traverses the color cube tree and prunes any node whose
 %  quantization error falls below a particular threshold.
 %
+%  This is a recursive function.
+%
 %  The format of the Reduce method is:
 %
 %      Reduce(CubeInfo *cube_info,const NodeInfo *node_info)
@@ -2766,7 +2806,7 @@ static void ReduceImageColors(const char *filename,CubeInfo *cube_info,
     cube_info->colors=0;
     Reduce(cube_info,cube_info->root);
     status=MagickMonitorFormatted(span-cube_info->colors,
-                                  span-number_colors+1,exception,
+                                  (size_t) span-number_colors+1,exception,
                                   ReduceImageText,
                                   filename,
                                   number_colors);

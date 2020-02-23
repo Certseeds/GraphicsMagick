@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -36,6 +36,7 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/magick_endian.h"
 #include "magick/error.h"
 #include "magick/list.h"
 #include "magick/magick.h"
@@ -737,6 +738,7 @@ DONE_READING:
   /* if (EOFBlob(image))
      ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image); */
   CloseBlob(image);
+  StopTimer(&image->timer);
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return (image);

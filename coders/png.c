@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2301,7 +2301,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                           "    Reading PNG IDAT chunk(s)");
   if (num_passes > 1)
   {
-    if (ping_rowbytes < GetMagickResourceLimit(MemoryResource)/image->rows)
+    if (ping_rowbytes < (size_t) GetMagickResourceLimit(MemoryResource)/image->rows)
       mng_info->png_pixels=MagickAllocateArray(unsigned char *,
                                                ping_rowbytes,image->rows);
     else
@@ -2309,7 +2309,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   }
   else
   {
-    if ((magick_int64_t)ping_rowbytes < GetMagickResourceLimit(MemoryResource))
+    if (ping_rowbytes < (size_t) GetMagickResourceLimit(MemoryResource))
       mng_info->png_pixels=MagickAllocateMemory(unsigned char *, ping_rowbytes);
     else
       png_error(ping, "png_rowbytes array exceeds MemoryResource");
@@ -3952,6 +3952,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
   SetMagickResourceLimit(WidthResource,width_resource);
   SetMagickResourceLimit(HeightResource,height_resource);
 
+  StopTimer(&image->timer);
+
   return (image);
 }
 
@@ -4451,6 +4453,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
 #endif
               if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                 {
+                  StopTimer(&image->timer);
                   /*
                     Allocate next image structure.
                   */
@@ -4891,6 +4894,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                     {
+                      StopTimer(&image->timer);
                       AllocateNextImage(image_info,image);
                       if (image->next == (Image *) NULL)
                         {
@@ -5491,6 +5495,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 {
                   if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                     {
+                      StopTimer(&image->timer);
                       /*
                         Allocate next image structure.
                       */
@@ -5542,6 +5547,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             {
               if (AccessMutablePixels(image) != (PixelPacket *) NULL)
                 {
+                  StopTimer(&image->timer);
                   /*
                     Allocate next image structure.
                   */
@@ -5586,6 +5592,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           first_mng_object=MagickFalse;
           if (AccessMutablePixels(image) != (PixelPacket *) NULL)
             {
+              StopTimer(&image->timer);
               /*
                 Allocate next image structure.
               */
@@ -6204,6 +6211,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                               " background layer.");
       if (AccessMutablePixels(image) != (PixelPacket *) NULL)
         {
+          StopTimer(&image->timer);
           /*
             Allocate next image structure.
           */
@@ -8815,7 +8823,7 @@ static MagickPassFail WritePNGImage(const ImageInfo *image_info,Image *image)
 
 /* Write one JNG image */
 static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
-                                     const ImageInfo *image_info,Image *image)
+                                       const ImageInfo *image_info,Image *image)
 {
   Image
     *jpeg_image;
@@ -8847,11 +8855,22 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),
                          "  enter WriteOneJNGImage()");
 
-  if (image->columns > 65535 || image->rows > 65535)
+  if (image->columns > 65500U)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "  JNG dimensions too large");
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
+                            "  JNG dimensions too large"
+                            " (%lu columns exceeds limit of 65500)",
+                            image->columns);
+      ThrowWriterException(CoderError,UnsupportedNumberOfColumns,
+                             image);
+    }
+  if (image->rows > 65500U)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  JNG dimensions too large"
+                            " (%lu rows exceeds limit of 65500)",
+                            image->rows);
+      ThrowWriterException(CoderError,UnsupportedNumberOfRows,
                              image);
     }
 
@@ -9297,6 +9316,14 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
                           "  Creating blob.");
   blob=(char *) ImageToBlob(jpeg_image_info,jpeg_image,&length,
                             &image->exception);
+  if (blob == (char *) NULL)
+    {
+      if (jpeg_image != (Image *)NULL)
+        DestroyImage(jpeg_image);
+      if (jpeg_image_info != (ImageInfo *)NULL)
+        DestroyImageInfo(jpeg_image_info);
+      return MagickFail;
+    }
   if (logging)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -9406,7 +9433,6 @@ static MagickPassFail WriteJNGImage(const ImageInfo *image_info,Image *image)
   status=WriteOneJNGImage(mng_info,image_info,image);
   CloseBlob(image);
 
-  (void) CatchImageException(image);
   MngInfoFreeStruct(mng_info,&have_mng_structure);
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"exit WriteJNGImage()");

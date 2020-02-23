@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -190,7 +190,7 @@ static void Upsample(const unsigned long width,const unsigned long height,
           break;                                            \
         p=buffer; \
       } \
-    sum|=((unsigned int) (*p) << (24-bits)); \
+    sum|=(((unsigned int) (*p)) << (24-bits));  \
     bits+=8; \
     p++; \
   } \
@@ -261,6 +261,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
                           image->columns, image->rows,
                           (image->columns > 1536 ? 3U : 1U));
   pcd_table[2]=pcd_table[1]=pcd_table[0]=(PCDTable *) NULL;
+  pcd_length[2]=pcd_length[1]=pcd_length[0]=0;
   buffer=MagickAllocateMemory(unsigned char *,0x800);
   if (buffer == (unsigned char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
@@ -305,6 +306,12 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
     }
     pcd_length[i]=(unsigned int) length;
   }
+  if (EOFBlob(image))
+    {
+      status=MagickFail;
+      goto decode_image_error;
+    }
+
   /*
     Search for Sync byte.
   */
@@ -744,6 +751,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->colorspace=YCCColorspace;
         if (TransformColorspace(image,RGBColorspace) != MagickPass)
           break;
+        StopTimer(&image->timer);
         if (j < (long) number_images)
           {
             /*
@@ -904,6 +912,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->chromaticity.white_point.x=0.3127f;
   image->chromaticity.white_point.y=0.3290f;
   image->gamma=1.000f/2.200f;
+  StopTimer(&image->timer);
   return(image);
 }
 

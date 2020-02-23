@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1780,7 +1780,7 @@ iptc_find:
     else
       {
         /* short format */
-        tag_length=((long) c) << 8;
+        tag_length=((size_t) c) << 8;
         c=(*p++);
         blob_length--;
         if (blob_length == 0)
@@ -1986,7 +1986,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(unsigned int) (taglen+1));
+    str=MagickAllocateMemory(unsigned char *, (size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");
@@ -2113,7 +2113,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(unsigned int) (taglen+1));
+    str=MagickAllocateMemory(unsigned char *,(size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");
@@ -2225,7 +2225,7 @@ static int format8BIM(Image *ifile, Image *ofile)
             goto format8BIMError;
           }
         plen = (unsigned char) c;
-        PString=MagickAllocateMemory(unsigned char *,(unsigned int) (plen+1));
+        PString=MagickAllocateMemory(unsigned char *,(size_t) plen+1);
         if (PString == (unsigned char *) NULL)
           {
             ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,
@@ -2409,7 +2409,7 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
         *buff;
 
       size_t
-        iptc_offset,
+        iptc_offset = 0,
         length;
 
       const unsigned char
@@ -2418,9 +2418,9 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       if((profile=GetImageProfile(image,"IPTC",&profile_length)) == 0)
         ThrowWriterException(CoderError,NoIPTCProfileAvailable,image);
       length=GetIPTCStream(profile,profile_length,&iptc_offset);
-      info=profile+iptc_offset;
       if (length == 0)
         ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
+      info=profile+iptc_offset;
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
       if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);

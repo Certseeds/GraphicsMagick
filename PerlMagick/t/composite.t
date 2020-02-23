@@ -29,7 +29,7 @@ chdir 't' || die 'Cd failed';
 # Maxium error is ignored since operation depends on floating-point
 # sensitive threshold.
 #
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Add'/,
                      'reference/composite/Add.miff',0.004,1.0);
@@ -42,7 +42,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # shape does not appear in the result.
 #
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Atop'/,
                      'reference/composite/Atop.miff',0.0025,0.005);
@@ -53,7 +53,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result image shaded by composite image.
 #
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Bumpmap'/,
                      'reference/composite/Bumpmap.miff',0.0025,0.005);
@@ -64,7 +64,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result is transparent where composite image obscures the image.
 #
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Clear'/,
                      'reference/composite/Clear.miff',0.0025,0.005);
@@ -75,7 +75,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The resulting image is image replaced with composite image.  The
 # matte information is ignored.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Copy'/,
                      'reference/composite/Copy.miff',0.0025,0.005);
@@ -87,7 +87,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # blue layer in composite image.  The other layers are copied
 # untouched.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'CopyBlue'/,
                      'reference/composite/CopyBlue.miff',0.0025,0.005);
@@ -99,7 +99,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # green layer in composite image.  The other layers are copied
 # untouched.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'CopyGreen'/,
                      'reference/composite/CopyGreen.miff',0.0025,0.005);
@@ -110,7 +110,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The resulting image is the red layer in image replaced with the red
 # layer in composite image.  The other layers are copied untouched.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'CopyRed'/,
                      'reference/composite/CopyRed.miff',0.0025,0.005);
@@ -122,7 +122,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # opacity layer in composite image.  The other layers are copied
 # untouched.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'CopyOpacity'/,
                      'reference/composite/CopyOpacity.miff',0.0025,0.005);
@@ -133,7 +133,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result of abs(composite image - image).  This is useful for
 # comparing two very similar images.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Difference'/,
                      'reference/composite/Difference.miff',0.0025,0.005);
@@ -147,10 +147,10 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # differs from over because the portion of composite image outside
 # image's shape does not appear in the result.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Dissolve', opacity => '25'/,
-                     'reference/composite/Dissolve.miff',0.003,0.007);
+                     'reference/composite/Dissolve.miff',0.003,0.008);
 
 #
 # In
@@ -158,7 +158,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result is composite image cut by the shape of image.  None of
 # the image data of image will be in the result.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'In'/,
                      'reference/composite/In.miff',0.0025,0.005);
@@ -169,7 +169,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result of composite image - image, with underflow cropped to
 # zero.  The matte channel is ignored (set to 255, full coverage).
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Minus'/,
                      'reference/composite/Minus.miff',0.0025,0.005);
@@ -180,7 +180,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The result of composite image * image.  This is useful for the
 # creation of drop-shadows.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Multiply'/,
                      'reference/composite/Multiply.miff',0.0025,0.005);
@@ -191,7 +191,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # The resulting image is composite image with the shape of image cut
 # out.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Out'/,
                      'reference/composite/Out.miff',0.0025,0.005);
@@ -203,7 +203,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # opaque  areas  of  composite  image obscuring image in the
 # region of overlap.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Over'/,
                      'reference/composite/Over.miff',0.0025,0.005);
@@ -215,7 +215,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # cropped to 255 (no overflow).  This operation is independent of the
 # matte channels.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Plus'/,
                      'reference/composite/Plus.miff',0.0025,0.005);
@@ -231,7 +231,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # sensitive threshold.
 #
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Subtract'/,
                      'reference/composite/Subtract.miff',0.006,1.0);
@@ -243,7 +243,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 # that is outside the overlap region.  The overlap region will be
 # blank.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Xor'/,
                      'reference/composite/Xor.miff',0.002,0.005);
@@ -253,7 +253,7 @@ testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
 #
 # The result of composite image / image.
 ++$test;
-testCompositeCompare('gradient:white-black',q/size=>"100x80"/,
+testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
                      'input_matte.miff', q//,
                      q/, gravity=>'Center', compose=>'Divide'/,
                      'reference/composite/Divide.miff',0.0025,0.02);

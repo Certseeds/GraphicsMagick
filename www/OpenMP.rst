@@ -190,7 +190,7 @@ specifying the maximum number of threads to use.
 
 --------------------------------------------------------------------------
 
-| Copyright (C) 2008 - 2019 GraphicsMagick Group
+| Copyright (C) 2008 - 2020 GraphicsMagick Group
 
 This program is covered by multiple licenses, which are described in
 Copyright.txt. You should have received a copy of Copyright.txt with this

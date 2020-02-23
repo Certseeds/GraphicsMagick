@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -961,7 +961,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             else
               {
-                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                bytes_per_row=MagickArraySize((((size_t) bits_per_sample+7)/8)*
                                               samples_per_pixel,image->columns);
               }
 
@@ -1154,6 +1154,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         default:
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
+      StopTimer(&image->timer);
       /*
         Proceed to next image.
       */
@@ -1938,7 +1939,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
               }
             else
               {
-                bytes_per_row=MagickArraySize(((bits_per_sample+7)/8)*
+                bytes_per_row=MagickArraySize((((size_t) bits_per_sample+7)/8)*
                                               samples_per_pixel,image->columns);
               }
 

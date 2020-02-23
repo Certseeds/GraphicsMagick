@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003, 2004 GraphicsMagick Group
+  Copyright (C) 2003-2020 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -21,7 +21,6 @@ typedef enum
   TextFileIOMode
 } FileIOMode;
 
-
 MagickExport MagickPassFail
   AcquireTemporaryFileName(char *filename),
   LiberateTemporaryFile(char *filename);
@@ -33,43 +32,7 @@ MagickExport FILE *
   AcquireTemporaryFileStream(char *filename,FileIOMode mode);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-#define ThrowReaderTemporaryFileException(filename) \
-{ \
-  if ((image) == (Image *) NULL) \
-    { \
-    ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile, \
-      filename); \
-    } \
-  else \
-    { \
-      ThrowException(exception,FileOpenError,UnableToCreateTemporaryFile, \
-        filename); \
-      CloseBlob(image); \
-      DestroyImageList(image); \
-    } \
-  return((Image *) NULL); \
-}
-#define ThrowWriterTemporaryFileException(filename) \
-{ \
-  assert(image != (Image *) NULL); \
-  ThrowException(&(image)->exception,FileOpenError, \
-    UnableToCreateTemporaryFile,filename); \
-  if (image_info->adjoin) \
-    while ((image)->previous != (Image *) NULL) \
-      (image)=(image)->previous; \
-  CloseBlob(image); \
-  return(False); \
-}
-
-MagickExport void
-  DestroyTemporaryFiles(void),
-  PurgeTemporaryFiles(void),
-  PurgeTemporaryFilesAsyncSafe(void);
-
-extern MagickPassFail
-  InitializeTemporaryFiles(void);
-
+#  include "magick/tempfile-private.h"
 #endif /* MAGICK_IMPLEMENTATION */
 
 #if defined(__cplusplus) || defined(c_plusplus)

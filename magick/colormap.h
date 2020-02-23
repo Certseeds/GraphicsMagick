@@ -31,35 +31,7 @@ extern MagickExport MagickPassFail
   SortColormapByIntensity(Image *image);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-#define VerifyColormapIndexWithColors(image,index,colors)     \
-{ \
-  if (index >= colors) \
-    { \
-      if (image->exception.severity < CorruptImageError ) \
-        { \
-          char \
-            colormapIndexBuffer[MaxTextExtent]; \
-          \
-          FormatString(colormapIndexBuffer, \
-                       "index %" MAGICK_SIZE_T_F "u >= %u colors, %.1024s", \
-                       (MAGICK_SIZE_T) index, (unsigned int) colors, image->filename); \
-          errno=0; \
-          ThrowException(&image->exception,CorruptImageError, \
-                         InvalidColormapIndex,colormapIndexBuffer); \
-        } \
-      index = 0U; \
-    } \
-}
-
-#define VerifyColormapIndex(image,index) \
-{ \
-  VerifyColormapIndexWithColors(image,index,image->colors) \
-}
-
-extern MagickExport unsigned int
-  MagickConstrainColormapIndex(Image *image, unsigned int index) MAGICK_FUNC_DEPRECATED;
-
+#  include "magick/colormap-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)

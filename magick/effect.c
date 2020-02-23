@@ -50,7 +50,6 @@
 #include "magick/operator.h"
 #include "magick/pixel_cache.h"
 #include "magick/pixel_iterator.h"
-#include "magick/random-private.h"
 #include "magick/random.h"
 #include "magick/render.h"
 #include "magick/shear.h"
@@ -726,7 +725,7 @@ BlurScanline(const double * restrict kernel,const unsigned long width,
   {
     aggregate=zero;
     p=kernel;
-    q=source+(x-width/2);
+    q=source+((size_t) x-width/2);
     for (i=0; i < (long) width; i++)
     {
       aggregate.red+=(*p)*q->red;
@@ -748,7 +747,7 @@ BlurScanline(const double * restrict kernel,const unsigned long width,
     aggregate=zero;
     scale=0;
     p=kernel;
-    q=source+(x-width/2);
+    q=source+((size_t) x-width/2);
     for (i=0; i < (long) (columns-x+width/2); i++)
     {
       aggregate.red+=(*p)*q->red;
@@ -1359,7 +1358,7 @@ MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned in
 
     normal_kernel=MagickAllocateAlignedMemory(float_quantum_t *,
                                               MAGICK_CACHE_LINE_SIZE,
-                                              width*width*sizeof(float_quantum_t));
+                                              (size_t) width*width*sizeof(float_quantum_t));
     if (normal_kernel == (float_quantum_t *) NULL)
       {
         DestroyImage(convolve_image);
@@ -1506,7 +1505,7 @@ MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned in
                         for (u=0; u < width; u++)
                           pixel.red+=k[u]*r[u].red;
                         k+= width;
-                        r+=image->columns+width;
+                        r+=(size_t) image->columns+width;
                       }
                     q->red=q->green=q->blue=RoundFloatQuantumToIntQuantum(pixel.red);
                     q->opacity=OpaqueOpacity;
@@ -1523,7 +1522,7 @@ MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned in
                             pixel.blue+=k[u]*r[u].blue;
                           }
                         k+=width;
-                        r+=image->columns+width;
+                        r+=(size_t) image->columns+width;
                       }
                     q->red=RoundFloatQuantumToIntQuantum(pixel.red);
                     q->green=RoundFloatQuantumToIntQuantum(pixel.green);
@@ -1543,7 +1542,7 @@ MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned in
                             pixel.opacity+=k[u]*r[u].opacity;
                           }
                         k+=width;
-                        r+=image->columns+width;
+                        r+=(size_t) image->columns+width;
                       }
                     q->red=RoundFloatQuantumToIntQuantum(pixel.red);
                     q->green=RoundFloatQuantumToIntQuantum(pixel.green);
@@ -1691,7 +1690,7 @@ MagickExport Image *DespeckleImage(const Image *image,ExceptionInfo *exception)
   /*
     Compute buffer size
   */
-  length=(image->columns+2)*(image->rows+2);
+  length=MagickArraySize((size_t) image->columns+2,(size_t) image->rows+2);
 
   /*
     Allocate planar working buffers
@@ -1926,13 +1925,13 @@ MagickExport Image *EdgeImage(const Image *image,const double radius,
   if (((long) image->columns < width) || ((long) image->rows < width))
     ThrowImageException3(OptionError,UnableToEdgeImage,
       ImageSmallerThanRadius);
-  kernel=MagickAllocateMemory(double *,width*width*sizeof(double));
+  kernel=MagickAllocateArray(double *,MagickArraySize(width,width),sizeof(double));
   if (kernel == (double *) NULL)
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToEdgeImage);
   for (i=0; i < (width*width); i++)
     kernel[i]=(-1.0);
-  kernel[i/2]=width*width-1.0;
+  kernel[i/2]=(double) width*width-1.0;
   edge_image=ConvolveImage(image,width,kernel,exception);
   MagickFreeMemory(kernel);
   edge_image->is_grayscale=image->is_grayscale;
@@ -1996,7 +1995,7 @@ MagickExport Image *EmbossImage(const Image *image,const double radius,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   width=GetOptimalKernelWidth(radius,0.5);
-  kernel=MagickAllocateMemory(double *,width*width*sizeof(double));
+  kernel=MagickAllocateArray(double *,MagickArraySize(width,width),sizeof(double));
   if (kernel == (double *) NULL)
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToEmbossImage);
@@ -2006,7 +2005,7 @@ MagickExport Image *EmbossImage(const Image *image,const double radius,
   {
     for (u=(-width/2); u <= (width/2); u++)
     {
-      alpha=exp(-((double) u*u+v*v)/(2.0*sigma*sigma));
+      alpha=exp(-((double) u*u+(double) v*v)/(2.0*sigma*sigma));
       kernel[i]=((u < 0) || (v < 0) ? -8.0 : 8.0)*
         alpha/(2.0*MagickPI*sigma*sigma);
       if (u == j)
@@ -2165,8 +2164,8 @@ MagickExport Image *EnhanceImage(const Image *image,ExceptionInfo *exception)
             /*
               Transfer first 2 pixels of the scanline.
             */
-            *q++=(*(p+2*image->columns));
-            *q++=(*(p+2*image->columns+1));
+            *q++=(*(p+(size_t) 2*image->columns));
+            *q++=(*(p+(size_t) 2*image->columns+1));
             for (x=2; x < (long) (image->columns-2); x++)
               {
                 /*
@@ -2174,14 +2173,14 @@ MagickExport Image *EnhanceImage(const Image *image,ExceptionInfo *exception)
                 */
                 aggregate=zero;
                 total_weight=0.0;
-                r=p+2*image->columns+2;
+                r=p+(size_t) 2*image->columns+2;
                 pixel_red=r->red;
                 pixel_green=r->green;
                 pixel_blue=r->blue;
 
                 for (i=0 ; i < 5; i++)
                   {
-                    r=p+i*image->columns;
+                    r=p+(size_t) i*image->columns;
                     for (j = 0; j < 5; j++)
                       {
                         const double red = (double) r->red;
@@ -2318,16 +2317,16 @@ MagickExport Image *GaussianBlurImage(const Image *image,const double radius,
   if (((long) image->columns < width) || ((long) image->rows < width))
     ThrowImageException3(OptionError,UnableToBlurImage,
       ImageSmallerThanRadius);
-  kernel=MagickAllocateMemory(double *,width*width*sizeof(double));
+  kernel=MagickAllocateArray(double *,MagickArraySize(width,width),sizeof(double));
   if (kernel == (double *) NULL)
     ThrowImageException(ResourceLimitError,MemoryAllocationFailed,
       MagickMsg(OptionError,UnableToBlurImage));
   i=0;
-  for (v=(-width/2); v <= (width/2); v++)
+  for (v=(-(width)/2); v <= (width/2); v++)
   {
     for (u=(-width/2); u <= (width/2); u++)
     {
-      alpha=exp(-((double) u*u+v*v)/(2.0*sigma*sigma));
+      alpha=exp(-((double) u*u+(double) v*v)/(2.0*sigma*sigma));
       kernel[i]=alpha/(2.0*MagickPI*sigma*sigma);
       i++;
     }
@@ -2789,7 +2788,7 @@ MagickExport Image *MedianFilterImage(const Image *image,const double radius,
                   {
                     for (u=0; u < width; u++)
                       InsertMedianList(skiplist,&r[u]);
-                    r+=image->columns+width;
+                    r+=(size_t) image->columns+width;
                   }
                 GetMedianList(skiplist,&q[x]);
               }
@@ -2960,7 +2959,7 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
     /*
       Allocate and initialize offsets.
     */
-    offsets=MagickAllocateMemory(BlurOffsetInfo *,width*sizeof(BlurOffsetInfo));
+    offsets=MagickAllocateArray(BlurOffsetInfo *,width,sizeof(BlurOffsetInfo));
     if (offsets == (BlurOffsetInfo *) NULL)
       {
         MagickFreeMemory(kernel);
@@ -2971,8 +2970,8 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
     y=(long) (width*cos(DegreesToRadians(angle+90)));
     for (i=0; i < width; i++)
       {
-        offsets[i].x=(int) (i*x/sqrt(x*x+y*y)+0.5);
-        offsets[i].y=(int) (i*y/sqrt(x*x+y*y)+0.5);
+        offsets[i].x=(int) ((double) i*x/sqrt((double) x*x+(double) y*y)+0.5);
+        offsets[i].y=(int) ((double) i*y/sqrt((double) x*x+(double) y*y)+0.5);
       }
   }
   /*
@@ -3823,7 +3822,7 @@ MagickExport Image *ReduceNoiseImage(const Image *image,const double radius,
                 {
                   for (u=0; u < width; u++)
                     InsertMedianList(skiplist,&r[u]);
-                  r+=image->columns+width;
+                  r+=(size_t) image->columns+width;
                 }
               q[x]=GetNonpeakMedianList(skiplist);
               p++;
@@ -4138,7 +4137,7 @@ MagickExport Image *SharpenImage(const Image *image,const double radius,
   if (((long) image->columns < width) || ((long) image->rows < width))
     ThrowImageException3(OptionError,UnableToSharpenImage,
       ImageSmallerThanRadius);
-  kernel=MagickAllocateMemory(double *,width*width*sizeof(double));
+  kernel=MagickAllocateArray(double *,MagickArraySize(width,width),sizeof(double));
   if (kernel == (double *) NULL)
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToSharpenImage);
@@ -4148,7 +4147,7 @@ MagickExport Image *SharpenImage(const Image *image,const double radius,
   {
     for (u=(-width/2); u <= (width/2); u++)
     {
-      alpha=exp(-((double) u*u+v*v)/(2.0*sigma*sigma));
+      alpha=exp(-((double) u*u+(double) v*v)/(2.0*sigma*sigma));
       kernel[i]=alpha/(2.0*MagickPI*sigma*sigma);
       normalize+=kernel[i];
       i++;
@@ -4397,7 +4396,7 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
                       }
                   } while (((y+y_distance) < 0) ||
                            ((y+y_distance) >= (long) image->rows));
-                *q=*(neighbors+(x+x_distance)+((y+y_distance-y_min)*image->columns));
+                *q=*(neighbors+(((size_t) x)+x_distance)+((((size_t) y)+y_distance-y_min)*(size_t) image->columns));
                 q++;
               }
             if (!SyncImagePixelsEx(spread_image,exception))

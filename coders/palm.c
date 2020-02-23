@@ -1090,6 +1090,7 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -1255,6 +1256,7 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
   MagickFreeMemory(one_row);
   MagickFreeMemory(lastrow);
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

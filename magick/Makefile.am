@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2019 GraphicsMagick Group
+# Copyright (C) 2004-2020 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -289,24 +289,43 @@ MAGICK_INCLUDE_HDRS = \
 
 MAGICK_NOINST_HDRS = \
 	magick/alpha_composite.h \
+	magick/attribute-private.h \
 	magick/bit_stream.h \
+	magick/color-private.h \
+	magick/color_lookup-private.h \
+	magick/colormap-private.h \
+	magick/command-private.h \
+	magick/constitute-private.h \
+	magick/delegate-private.h \
+	magick/error-private.h \
 	magick/floats.h \
 	magick/image-private.h \
 	magick/locale_c.h \
+	magick/log-private.h \
+	magick/magic-private.h \
+	magick/magick-private.h \
 	magick/map.h \
+	magick/memory-private.h \
+	magick/module-private.h \
 	magick/module_aliases.h \
+	magick/monitor-private.h \
 	magick/nt_base.h \
 	magick/nt_feature.h \
 	magick/omp_data_view.h \
 	magick/pixel_cache-private.h \
 	magick/prefetch.h \
 	magick/random-private.h \
+	magick/registry-private.h \
+	magick/render-private.h \
 	magick/semaphore.h \
 	magick/spinlock.h \
 	magick/static.h \
 	magick/studio.h \
+	magick/tempfile-private.h \
 	magick/tempfile.h \
+	magick/type-private.h \
 	magick/unix_port.h \
+	magick/utility-private.h \
 	magick/widget.h \
 	magick/xwindow.h
 

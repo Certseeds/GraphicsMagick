@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -184,11 +184,11 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (!AllocateImageColormap(image,pixel_mode == 1 ? 256 : 16))
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
-          tim_colormap=MagickAllocateMemory(unsigned char *,image->colors*2);
+          tim_colormap=MagickAllocateMemory(unsigned char *, (size_t)image->colors*2);
           if (tim_colormap == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
-          if (ReadBlob(image,2*image->colors,(char *) tim_colormap) != 2*image->colors)
+          if (ReadBlob(image, (size_t)2*image->colors,(char *) tim_colormap) != (size_t)2*image->colors)
             {
               MagickFreeMemory(tim_colormap);
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -319,7 +319,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 if (QuantumTick(y,image->rows))
                   {
-                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                    status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                   exception,LoadImageText,
                                                   image->filename,
                                                   image->columns,image->rows);
@@ -353,7 +353,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 if (QuantumTick(y,image->rows))
                   {
-                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                    status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                   exception,LoadImageText,
                                                   image->filename,
                                                   image->columns,image->rows);
@@ -391,7 +391,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 if (QuantumTick(y,image->rows))
                   {
-                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                    status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                   exception,LoadImageText,
                                                   image->filename,
                                                   image->columns,image->rows);
@@ -424,7 +424,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 if (QuantumTick(y,image->rows))
                   {
-                    status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                    status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                   exception,LoadImageText,
                                                   image->filename,
                                                   image->columns,image->rows);
@@ -449,6 +449,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                          image->filename);
           break;
         }
+      StopTimer(&image->timer);
       /*
         Proceed to next image.
       */

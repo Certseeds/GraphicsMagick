@@ -184,7 +184,7 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
   for (p=text; *p != '\0'; p++)
     if (*p == '\n')
       number_lines++;
-  textlist=MagickAllocateMemory(char **,(number_lines+1)*sizeof(char *));
+  textlist=MagickAllocateArray(char **,((size_t) number_lines+1),sizeof(char *));
   if (textlist == (char **) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToConvertText);
@@ -232,84 +232,84 @@ MagickExport MagickPassFail AnnotateImage(Image *image,const DrawInfo *draw_info
       case NorthWestGravity:
       default:
       {
-        offset.x=geometry.x+i*draw_info->affine.ry*height;
-        offset.y=geometry.y+i*draw_info->affine.sy*height;
+        offset.x=(double)geometry.x+(double)i*draw_info->affine.ry*height;
+        offset.y=(double)geometry.y+(double)i*draw_info->affine.sy*height;
         break;
       }
       case NorthGravity:
       {
-        offset.x=geometry.x+geometry.width/2+i*draw_info->affine.ry*height-
-          draw_info->affine.sx*metrics.width/2;
-        offset.y=geometry.y+i*draw_info->affine.sy*height-draw_info->affine.rx*
-          metrics.width/2;
+        offset.x=(double)geometry.x+(double)geometry.width/2+(double)i*draw_info->affine.ry*height-
+          (double)draw_info->affine.sx*metrics.width/2.0;
+        offset.y=(double)geometry.y+(double)i*draw_info->affine.sy*height-draw_info->affine.rx*
+          metrics.width/2.0;
         break;
       }
       case NorthEastGravity:
       {
-        offset.x=(geometry.width == 0 ? 1 : -1)*geometry.x+geometry.width+i*
-          draw_info->affine.ry*height-draw_info->affine.sx*metrics.width;
-        offset.y=geometry.y+i*draw_info->affine.sy*height-draw_info->affine.rx*
+        offset.x=(geometry.width == 0 ? 1.0 : -1.0)*(double)geometry.x+(double)geometry.width+i*
+          draw_info->affine.ry*height-(double)draw_info->affine.sx*metrics.width;
+        offset.y=(double)geometry.y+(double)i*draw_info->affine.sy*height-(double)draw_info->affine.rx*
           metrics.width;
         break;
       }
       case WestGravity:
       {
-        offset.x=geometry.x+i*draw_info->affine.ry*height+draw_info->affine.ry*
-          (metrics.ascent+metrics.descent-(number_lines-1)*height)/2;
-        offset.y=geometry.y+geometry.height/2+i*draw_info->affine.sy*height+
-          draw_info->affine.sy*(metrics.ascent+metrics.descent-(number_lines-1)*
-          height)/2;
+        offset.x=(double)geometry.x+(double)i*draw_info->affine.ry*height+(double)draw_info->affine.ry*
+          (metrics.ascent+metrics.descent-(double)(number_lines-1)*(double) height)/2.0;
+        offset.y=(double) geometry.y+(double)geometry.height/2.0+(double)i*draw_info->affine.sy*height+
+          (double)draw_info->affine.sy*((double)metrics.ascent+metrics.descent-(double)(number_lines-1)*
+          height)/2.0;
         break;
       }
       case StaticGravity:
       case CenterGravity:
       {
-        offset.x=geometry.x+geometry.width/2+i*draw_info->affine.ry*height-
-          draw_info->affine.sx*metrics.width/2+draw_info->affine.ry*
-          (metrics.ascent+metrics.descent-(number_lines-1)*height)/2;
-        offset.y=geometry.y+geometry.height/2+i*draw_info->affine.sy*height-
-          draw_info->affine.rx*metrics.width/2+draw_info->affine.sy*
-          (metrics.ascent+metrics.descent-(number_lines-1)*height)/2;
+        offset.x=(double)geometry.x+(double)geometry.width/2.0+(double)i*draw_info->affine.ry*height-
+          (double)draw_info->affine.sx*metrics.width/2.0+draw_info->affine.ry*
+          ((double)metrics.ascent+metrics.descent-(double)(number_lines-1)*height)/2.0;
+        offset.y=(double)geometry.y+(double)geometry.height/2.0+(double)i*draw_info->affine.sy*height-
+          (double)draw_info->affine.rx*metrics.width/2.0+(double)draw_info->affine.sy*
+          ((double)metrics.ascent+metrics.descent-(double)(number_lines-1)*height)/2.0;
         break;
       }
       case EastGravity:
       {
-        offset.x=(geometry.width == 0 ? 1 : -1)*geometry.x+geometry.width+i*
-          draw_info->affine.ry*height-draw_info->affine.sx*metrics.width+
-          draw_info->affine.ry*(metrics.ascent+metrics.descent-(number_lines-1)*
-          height)/2;
-        offset.y=geometry.y+geometry.height/2+i*draw_info->affine.sy*height-
-          draw_info->affine.rx*metrics.width+draw_info->affine.sy*
-          (metrics.ascent+metrics.descent-(number_lines-1)*height)/2;
+        offset.x=(geometry.width == 0 ? 1.0 : -1.0)*(double)geometry.x+(double)geometry.width+(double)i*
+          (double)draw_info->affine.ry*height-(double)draw_info->affine.sx*metrics.width+
+          (double)draw_info->affine.ry*((double)metrics.ascent+(double)metrics.descent-(number_lines-1)*
+          (double)height)/2.0;
+        offset.y=(double)geometry.y+(double)geometry.height/2.0+(double)i*draw_info->affine.sy*height-
+            (double)draw_info->affine.rx*metrics.width+(double)draw_info->affine.sy*
+          ((double)metrics.ascent+metrics.descent-(number_lines-1)*(double)height)/2.0;
         break;
       }
       case SouthWestGravity:
       {
-        offset.x=geometry.x+i*draw_info->affine.ry*height-draw_info->affine.ry*
+        offset.x= (double)geometry.x+ (double)i*draw_info->affine.ry*height-draw_info->affine.ry*
           (number_lines-1)*height;
-        offset.y=(geometry.height == 0 ? 1 : -1)*geometry.y+geometry.height+i*
+        offset.y= (double)(geometry.height == 0 ? 1 : -1)*geometry.y+geometry.height+i*
           draw_info->affine.sy*height-draw_info->affine.sy*(number_lines-1)*
           height;
         break;
       }
       case SouthGravity:
       {
-        offset.x=geometry.x+geometry.width/2+i*draw_info->affine.ry*
-          height-draw_info->affine.sx*metrics.width/2-
-          draw_info->affine.ry*(number_lines-1)*height;
-        offset.y=(geometry.height == 0 ? 1 : -1)*geometry.y+geometry.height+i*
-          draw_info->affine.sy*height-draw_info->affine.rx*
-          metrics.width/2-draw_info->affine.sy*(number_lines-1)*height;
+        offset.x= (double)geometry.x+(double)geometry.width/2.0+(double)i*draw_info->affine.ry*
+          height- (double)draw_info->affine.sx*metrics.width/2.0-
+            (double)draw_info->affine.ry*(number_lines-1)*height;
+        offset.y=(geometry.height == 0 ? 1.0 : -1.0)*geometry.y+geometry.height+(double)i*
+          draw_info->affine.sy*height-(double)draw_info->affine.rx*
+          metrics.width/2.0-(double)draw_info->affine.sy*(number_lines-1)*height;
         break;
       }
       case SouthEastGravity:
       {
-        offset.x=(geometry.width == 0 ? 1 : -1)*geometry.x+geometry.width+i*
-          draw_info->affine.ry*height-draw_info->affine.sx*metrics.width-
-          draw_info->affine.ry*(number_lines-1)*height;
-        offset.y=(geometry.height == 0 ? 1 : -1)*geometry.y+geometry.height+i*
-          draw_info->affine.sy*height-draw_info->affine.rx*metrics.width-
-          draw_info->affine.sy*(number_lines-1)*height;
+        offset.x=(geometry.width == 0 ? 1.0 : -1.0)*geometry.x+geometry.width+(double)i*
+          draw_info->affine.ry*height-(double)draw_info->affine.sx*metrics.width-
+            (double)draw_info->affine.ry*(number_lines-1)*height;
+        offset.y=(geometry.height == 0 ? 1.0 : -1.0)*geometry.y+(double)geometry.height+i*
+          draw_info->affine.sy*height-(double)draw_info->affine.rx*metrics.width-
+            (double)draw_info->affine.sy*(number_lines-1)*height;
         break;
       }
     }
@@ -1445,7 +1445,7 @@ static MagickPassFail RenderFreetype(Image *image,const DrawInfo *draw_info,
                   if (bitmap->bitmap.pixel_mode == ft_pixel_mode_grays)
                     {
                       if (draw_info->text_antialias)
-                        opacity=ScaleCharToQuantum(p[pc]);
+                        opacity=ScaleCharToQuantum((double) p[pc]);
                       else
                         opacity=(p[pc] < 127 ? OpaqueOpacity : TransparentOpacity);
                     }

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -621,7 +621,7 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
               if (q == (PixelPacket *) NULL)
                 break;
 
-              if (ReadBlob(image, packet_size*image->columns, fits_pixels) != (size_t)packet_size*image->columns)
+              if (ReadBlob(image, (size_t)packet_size*image->columns, fits_pixels) != (size_t)packet_size*image->columns)
                 {
                   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                                     "  fits cannot read scanrow %u from a file.", (unsigned)y );
@@ -660,6 +660,8 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
               ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, image->filename);
               break;
             }
+
+          StopTimer(&image->timer);
 
           /*
             Proceed to next image.
@@ -773,8 +775,8 @@ int InsertRowHDU(char *buffer, const char *data, int offset)
   len = strlen(data);
   len = Min(len,80); /* Each card image is 80 bytes max */
 
-  if (len > (size_t) (FITS_BLOCK_SIZE-offset))
-        len = FITS_BLOCK_SIZE-offset;
+  if (len > (size_t) (((size_t)FITS_BLOCK_SIZE)-offset))
+        len = ((size_t) FITS_BLOCK_SIZE)-offset;
 
   (void) strncpy(buffer+offset,data,len);
   return offset +80;
@@ -927,11 +929,11 @@ static MagickPassFail WriteFITSImage(const ImageInfo *image_info,Image *image)
         FixSignedValues(pixels, image->columns, 2, export_options.endian);
       if (quantum_size == 32)
         FixSignedValues(pixels, image->columns, 4, export_options.endian);
-      if (WriteBlob(image,packet_size*image->columns,pixels) != packet_size*image->columns)
+      if (WriteBlob(image, (size_t) packet_size*image->columns,pixels) != (size_t) packet_size*image->columns)
         break;
-      if (QuantumTick(image->rows-y-1,image->rows))
+      if (QuantumTick((size_t) image->rows-y-1,image->rows))
         {
-          status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+          status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                         &image->exception,SaveImageText,
                                         image->filename,
                                         image->columns,image->rows);

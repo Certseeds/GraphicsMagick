@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -416,12 +416,18 @@ return RetVal;
 static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
                                 int bpp, long ldblk)
 {
-  while(y < image->rows)
+  while(y<image->rows && image->exception.severity!=UndefinedException)
   {
-    if((long) x<ldblk) memset(BImgBuff+x, 0, ldblk-(long)x);
-    if (InsertRow(BImgBuff,y,image,bpp) == MagickFail)
+    if((long) x<ldblk) 
+    {
+      memset(BImgBuff+x, 0, (size_t)ldblk-(size_t)x);
+      if(x == 0)
+        x = ldblk;	/* Do not memset any more */
+      else
+        x = 0;		/* Next pass will need to clear whole row */
+    }
+    if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
       break;
-    x = 0;
     y++;
   }
 }
@@ -516,13 +522,12 @@ static int UnpackWPGRaster(Image *image,int bpp)
             {           /* Here I need to duplicate previous row RUNCOUNT* */
                         /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
-                {
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
+                {                  
                   MagickFreeMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
-                {
+                { 
                   ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
@@ -1428,6 +1433,8 @@ UnpackRaster:
                     }
                 }
 
+              StopTimer(&image->timer);
+
               if (image_info->subrange != 0)
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))
                   goto Finish;
@@ -1570,7 +1577,7 @@ UnpackRaster:
                   {
                     ldblk=(long) ((bpp*image->columns+7)/8);
                     BImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
-                    if (BImgBuff == (unsigned char *) NULL)
+                    if(BImgBuff == (unsigned char *) NULL)
                       goto NoMemory;
 
                     for(i=0; i< (long) image->rows; i++)
@@ -1634,6 +1641,8 @@ UnpackRaster:
                      Tx(2,2)=1; */
                 }
 
+              StopTimer(&image->timer);
+
               if (image_info->subrange != 0)
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))
                   goto Finish;
@@ -1653,7 +1662,7 @@ UnpackRaster:
               if(Rec2.RecordLength > ((unsigned long) i+2))
                 image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+i,              /*skip PS header in the wpg2*/
-                                        (size_t) (Rec2.RecordLength-i-2),exception);
+                                        (size_t)Rec2.RecordLength-i-2,exception);
               break;
 
             case 0x1B:          /*bitmap rectangle*/

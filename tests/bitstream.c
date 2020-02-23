@@ -114,7 +114,7 @@ int main ( int argc, char *argv[])
       reps = atoi(argv[2]);
       bits = atoi(argv[3]);
 
-      bytes=(unsigned char *)malloc(reps*2);
+      bytes=(unsigned char *)calloc(reps,2);
       if (!bytes)
         {
           (void) printf("Failed to allocate %lu bytes\n", (unsigned long) reps*2);

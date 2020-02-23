@@ -1,4 +1,4 @@
-.TH gm 1 "2019/08/27" "GraphicsMagick"
+.TH gm 1 "2019/12/29" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1272,6 +1272,22 @@ DPX files have Red and Blue interchanged, or Cb and Cr interchanged due
 to an different interpretation of the standard, or getting the wires
 crossed. The swap-samples option may be supplied when reading or writing
 in order to read or write using the necessary sample order.
+
+.in 15
+.in 15
+.B "gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}"
+.in 20
+ \fR
+.in 20
+By default, the gradient coder produces a gradient from top to
+bottom ("South").  Since GraphicsMagick 1.3.35, the gradient direction
+may be specified to produce gradient vectors according to a
+gravity-like specification.  The arguments are \fBSouth\fP (Top to
+Bottom), \fBNorth\fP (Bottom to Top), \fBWest\fP (Right to Left),
+\fBEast\fP (Left to Right), \fBNorthWest\fP (Bottom-Right to
+Top-Left), \fBNorthEast\fP (Bottom-Left to Top-Right),
+\fBSouthWest\fP (Top-Right Bottom-Left), and \fBSouthEast\fP
+(Top-Left to Bottom-Right).
 
 .in 15
 .in 15
@@ -10559,7 +10575,7 @@ software was configured and the host system.
 To display the version information:
 
   GraphicsMagick 1.3.27a 2017-12-11 Q16 http://www.GraphicsMagick.org/
-  Copyright (C) 2002-2017 GraphicsMagick Group.
+  Copyright (C) 2002-2020 GraphicsMagick Group.
   Additional copyrights and licenses apply to this software.
   See http://www.GraphicsMagick.org/www/Copyright.html for details.
   Feature Support:

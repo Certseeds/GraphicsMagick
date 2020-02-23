@@ -21,7 +21,8 @@ GraphicsMagick Change Logs
               image processing, software development, TclMagick, Magick++
 
 .. _GraphicsMagick : index.html
-.. _2019 : Changelog.html
+.. _2020 : Changelog.html
+.. _2019 : ChangeLog-2019.html
 .. _2018 : ChangeLog-2018.html
 .. _2017 : ChangeLog-2017.html
 .. _2016 : ChangeLog-2016.html
@@ -42,6 +43,8 @@ GraphicsMagick Change Logs
 .. _2001 : ChangeLog-2001.html
 
 The following are the ``GraphicsMagick`` change logs since 2001:
+
+  * 2020_ (1.3.35 released)
 
   * 2019_ (1.3.32, 1.3.33, 1.3.34 released)
 
@@ -86,4 +89,4 @@ The following are the ``GraphicsMagick`` change logs since 2001:
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2019
+Copyright |copy| GraphicsMagick Group 2002 - 2020

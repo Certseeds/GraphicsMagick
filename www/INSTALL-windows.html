@@ -60,7 +60,7 @@
 <li><a class="reference internal" href="#installing-from-source-code" id="id16">Installing From Source Code</a><ul>
 <li><a class="reference internal" href="#applicability" id="id17">Applicability</a></li>
 <li><a class="reference internal" href="#important-notes" id="id18">Important Notes</a></li>
-<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-14-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></li>
+<li><a class="reference internal" href="#windows-xp-vista-7-visual-c-6-0-through-19-0-compilation" id="id19">Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation</a></li>
 <li><a class="reference internal" href="#environment-variables" id="id20">Environment Variables</a></li>
 <li><a class="reference internal" href="#windows-distribution-build-procedure" id="id21">Windows Distribution Build Procedure</a></li>
 </ul>
@@ -94,8 +94,8 @@ Fonts&quot;) to support the standard set of Adobe Postscript fonts like
 &quot;Helvetica&quot; and &quot;Times Roman&quot; if these fonts are not available as
 TrueType fonts.  The Ghostscript fonts need to manually installed
 with administrator privileges in the Ghostscript installation
-directory (e.g. as &quot;C:Program Filesgsfonts&quot; or &quot;C:Program
-Filesgsgs9.27fonts&quot;).</p>
+directory (e.g. as <tt class="docutils literal"><span class="pre">C:\Program</span> Files\gs\fonts</tt> or <tt class="docutils literal">C:Program
+Files\gs\gs9.27\fonts</tt>).</p>
 <p>The algorithm used to find the fonts consults the Windows registry
 to learn Ghostscript installation paths, and then looks for a
 &quot;fonts/n019003l.pfb&quot; file in each path until it finds a match.</p>
@@ -179,23 +179,17 @@ options:</p>
 <li>Create a desktop icon</li>
 <li>Update executable search path</li>
 <li>Associate supported file extensions with GraphicsMagick</li>
-<li>Install ImageMagickObject OLE Control for VBscript, Visual Basic,
-and WSH.</li>
 </ul>
 <p>&quot;Creating a desktop icon&quot; and &quot;Update the executable search path&quot;
 are selected by default. The remaining options default to
 un-selected.  Select the options you prefer.</p>
-<p>Think twice before selecting &quot;<em>Associate supported file extensions with
-GraphicsMagick</em>&quot; since this will set up approximately fifty file
-associations, including common formats like JPEG, GIF, PNG, TIFF, and
-PDF. These file associations will be to the 'gmdisplay' program which
-is suitable for displaying images, but currently offers little more
-than that. Windows XP seems to handle the file associations pretty
-well, allowing you to choose from a list of programs, but older systems
-like Windows NT 4.0 and Windows '98 only support a single association
-per format, which can be quite annoying. Associations for
-GraphicsMagick's native formats (such as <a class="reference external" href="miff.html">MIFF</a>) will
-always be made.</p>
+<p>Think twice before selecting &quot;<em>Associate supported file extensions
+with GraphicsMagick</em>&quot; since this will set up approximately fifty
+file associations, including common formats like JPEG, GIF, PNG,
+TIFF, and PDF. These file associations will be to the 'gmdisplay'
+program which is suitable for displaying images, but currently
+offers little more than that.  Associations for GraphicsMagick's
+native formats (such as <a class="reference external" href="miff.html">MIFF</a>) will always be made.</p>
 <p>Once you have made your selections, click on &quot;<em>Next&gt;</em>&quot; to continue.</p>
 </blockquote>
 </div>
@@ -254,13 +248,9 @@ functionality. Always remove an installed GraphicsMagick via its
 uninstall function since manually removing it (such as by removing its
 installation directory) will leave behind the registry entries and path
 settings established at install time.</p>
-<p>Under Windows '95 and Windows '98, use the &quot;<em>Uninstall</em>&quot; entry in the
-GraphicsMagick portion of the Windows start menu to initiate the
-uninstall.</p>
-<p>On NT 4.0 and 5.X -based systems, GraphicsMagick should be removed via
-the &quot;<em>Add or Remove Programs</em>&quot; area of the Windows Control Panel. Select
-the GraphicsMagick package from the list, and click on &quot;<em>Change/Remove</em>&quot;
-to uninstall it.</p>
+<p>GraphicsMagick should be removed via the &quot;<em>Add or Remove Programs</em>&quot;
+area of the Windows Control Panel. Select the GraphicsMagick package
+from the list, and click on &quot;<em>Change/Remove</em>&quot; to uninstall it.</p>
 </blockquote>
 </div>
 <div class="section" id="use-from-another-package-or-program">
@@ -338,9 +328,10 @@ installed</td>
 <h2><a class="toc-backref" href="#id17">Applicability</a></h2>
 <blockquote>
 This section provides instructions for building GraphicsMagick
-Microsoft Windows using the Visual C++ (Visual Studio, etc.) IDE. For
-building using the free Cygwin or MinGW compilers, follow the
-instructions in INSTALL-unix.txt.</blockquote>
+Microsoft Windows using the Visual C++ (Visual Studio, etc.)
+IDE. For building using the free Cygwin or MinGW compilers (e.g. as
+part of <a class="reference external" href="https://www.msys2.org/">MSYS2</a>), follow the instructions
+in INSTALL-unix.txt.</blockquote>
 </div>
 <div class="section" id="important-notes">
 <h2><a class="toc-backref" href="#id18">Important Notes</a></h2>
@@ -353,21 +344,21 @@ then adjust the settings for the module which failed and disable
 optimization, and the problem is likely to go away (but with less
 performance).</blockquote>
 </div>
-<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-14-0-compilation">
-<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation</a></h2>
+<div class="section" id="windows-xp-vista-7-visual-c-6-0-through-19-0-compilation">
+<h2><a class="toc-backref" href="#id19">Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation</a></h2>
 <blockquote>
 <p>The Visual C++ distribution targeted at Windows 2000 through Windows
-8 does not provide any stock workspace (DSW) or project files (DSP)
+10 does not provide any stock workspace (DSW) or project files (DSP)
 except for those included with third party libraries. Instead, there
 is a &quot;configure&quot; program that must run to create build
 environments to satisfy various requirements.</p>
-<p>The configure program resides in VisualMagickconfigure in the
+<p>The configure program resides in <tt class="docutils literal">VisualMagick\configure</tt> in the
 GraphicsMagick source tree.  A pre-compiled configure.exe is
 provided, as well as Visual Studio project files to recompile it
 from source code if needed.</p>
 <p>Once started, the configure program provides this configuration
 dialog after proceeding past the initial notifications screen:</p>
-<img alt="Configure program screen shot" class="align-center" src="configure-target-setup.png" style="width: 512.0px; height: 485.0px;" />
+<img alt="Configure program screen shot" class="align-center" src="configure-target-setup.png" style="width: 498.0px; height: 473.0px;" />
 <p>In addition to (or as a replacement to) the above dialog, the
 configure.exe program supports these command-line options:</p>
 <dl class="docutils">
@@ -405,9 +396,9 @@ distribution is built using #1 from above with the X11 libraries
 excluded. This results build using all DLL's for everything and
 multi-threaded support (the only option for DLL's).</p>
 <p>To do a build for your requirements, simply go to the configure sub-
-directory under VisualMagick and open the configure.dsw workspace (for
-Visual C++ 6.0) or configure.sln (for Visual C++ 7.X or 8.X). Set the
-build configuration to &quot;Release&quot; under the</p>
+directory under VisualMagick and open the configure.dsw workspace
+(for Visual C++ 6.0) or configure.sln (for Visual C++ 7.X through
+9.X). Set the build configuration to &quot;Release&quot; under the</p>
 <blockquote>
 &quot;Build..., Set Active Configuration...&quot;  menu.</blockquote>
 <p>Build and execute the configure program and follow the on-screen
@@ -788,7 +779,7 @@ double-clicking from Windows Explorer.<ol class="loweralpha">
 <tt class="docutils literal"><span class="pre">GM\VisualMagick\bin\GraphicsMagick-1.3-Q8-dll.exe</span></tt></li>
 </ol>
 </blockquote>
-<p>Copyright © GraphicsMagick Group 2002 - 2019</p>
+<p>Copyright © GraphicsMagick Group 2002 - 2020</p>
 </div>
 </div>
 </div>

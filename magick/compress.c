@@ -276,7 +276,7 @@ MagickExport void Ascii85Flush(Image *image)
       image->ascii85->buffer[image->ascii85->offset+1]=0;
       image->ascii85->buffer[image->ascii85->offset+2]=0;
       tuple=Ascii85Tuple(tuple_buff, image->ascii85->buffer);
-      (void) WriteBlob(image,image->ascii85->offset+1,
+      (void) WriteBlob(image,(size_t) image->ascii85->offset+1,
         *tuple == 'z' ? "!!!!" : tuple);
     }
   (void) WriteBlobByte(image,'~');
@@ -762,7 +762,7 @@ MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
   width=image->columns;
   if (is_fax == True)
     width=Max(image->columns,1728);
-  scanline=MagickAllocateMemory(unsigned char *,width+1);
+  scanline=MagickAllocateMemory(unsigned char *,(size_t) width+1);
   if (scanline == (unsigned char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
       (char *) NULL);
@@ -827,7 +827,7 @@ MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
       if (runlength >= 64)
         {
           if (runlength < 1792)
-            entry=MWTable+((runlength/64)-1);
+            entry=MWTable+(((size_t) runlength/64)-1);
           else
             entry=EXTable+(Min(runlength,2560)-1792)/64;
           runlength-=entry->count;
@@ -847,7 +847,7 @@ MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
           }
           if (runlength >= 64)
             {
-              entry=MBTable+((runlength/64)-1);
+              entry=MBTable+(((size_t) runlength/64)-1);
               if (runlength >= 1792)
                 entry=EXTable+(Min(runlength,2560)-1792)/64;
               runlength-=entry->count;

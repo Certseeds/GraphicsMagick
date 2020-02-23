@@ -1501,6 +1501,17 @@ to an different interpretation of the standard, or getting the wires
 crossed. The swap-samples option may be supplied when reading or writing
 in order to read or write using the necessary sample order.
 </dd>
+<dt>gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}</dt>
+<dd>By default, the gradient coder produces a gradient from top to
+bottom ("South").  Since GraphicsMagick 1.3.35, the gradient direction
+may be specified to produce gradient vectors according to a
+gravity-like specification.  The arguments are <strong>South</strong> (Top to
+Bottom), <strong>North</strong> (Bottom to Top), <strong>West</strong> (Right to Left),
+<strong>East</strong> (Left to Right), <strong>NorthWest</strong> (Bottom-Right to
+Top-Left), <strong>NorthEast</strong> (Bottom-Left to Top-Right),
+<strong>SouthWest</strong> (Top-Right Bottom-Left), and <strong>SouthEast</strong>
+(Top-Left to Bottom-Right).
+</dd>
 <dt>jp2:rate=&lt;value&gt;</dt>
 <dd>Specify the compression factor to use while writing JPEG-2000
 files. The compression factor is the reciprocal of the compression
@@ -18089,7 +18100,7 @@ color="#00B04F"><font size="+1">
 <p>To display the version information:
 <pre>
   GraphicsMagick 1.3.27a 2017-12-11 Q16 http://www.GraphicsMagick.org/
-  Copyright (C) 2002-2017 GraphicsMagick Group.
+  Copyright (C) 2002-2020 GraphicsMagick Group.
   Additional copyrights and licenses apply to this software.
   See http://www.GraphicsMagick.org/www/Copyright.html for details.
   Feature Support:

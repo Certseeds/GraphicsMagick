@@ -551,8 +551,8 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 #endif
 
         (void) strlcpy(message,"[%s] Rotate: 90 degrees...",sizeof(message));
-        total_tiles=(((image->rows/tile_height_max)+1)*
-                     ((image->columns/tile_width_max)+1));
+        total_tiles=((((size_t) image->rows/tile_height_max)+1)*
+                     (((size_t) image->columns/tile_width_max)+1));
         tile=0;
 
         monitor_active=MagickMonitorActive();
@@ -650,7 +650,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                     /*
                       DirectClass pixels
                     */
-                    p=tile_pixels+(tile_height-1)*tile_width + y;
+                    p=tile_pixels+((size_t) tile_height-1)*tile_width + y;
                     for (x=tile_height; x != 0; x--)
                       {
                         *q = *p;
@@ -673,7 +673,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                               *ip;
 
                             iq=rotate_indexes;
-                            ip=indexes+(tile_height-1)*tile_width + y;
+                            ip=indexes+((size_t) tile_height-1)*tile_width + y;
                             for (x=tile_height; x != 0; x--)
                               {
                                 *iq = *ip;
@@ -874,8 +874,8 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
 #endif
 
         (void) strlcpy(message,"[%s] Rotate: 270 degrees...",sizeof(message));
-        total_tiles=(((image->rows/tile_height_max)+1)*
-                     ((image->columns/tile_width_max)+1));
+        total_tiles=((((size_t) image->rows/tile_height_max)+1)*
+                     (((size_t) image->columns/tile_width_max)+1));
         tile=0;
 
         monitor_active=MagickMonitorActive();
@@ -973,7 +973,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                     /*
                       DirectClass pixels
                     */
-                    p=tile_pixels+(tile_width-1-y);
+                    p=tile_pixels+((size_t) tile_width-1-y);
                     for (x=tile_height; x != 0; x--)
                       {
                         *q = *p;
@@ -996,7 +996,7 @@ IntegralRotateImage(const Image *image,unsigned int rotations,
                               *ip;
 
                             iq=rotate_indexes;
-                            ip=indexes+(tile_width-1-y);
+                            ip=indexes+((size_t) tile_width-1-y);
                             for (x=tile_height; x != 0; x--)
                               {
                                 *iq = *ip;
@@ -1225,9 +1225,9 @@ XShearImage(Image *image,const double degrees,
                     thread_status=MagickFail;
                     break;
                   }
-                p+=x_offset+skip;
+                p+= (ptrdiff_t)x_offset+skip;
                 q=p-step;
-                (void) memcpy(q,p,(width-(unsigned long)skip)*sizeof(PixelPacket));
+                (void) memcpy(q,p,((size_t) width-(size_t) skip)*sizeof(PixelPacket));
                 q+=width;
                 for (i=0; i < step; i++)
                   *q++=image->background_color;
@@ -1245,7 +1245,7 @@ XShearImage(Image *image,const double degrees,
                     thread_status=MagickFail;
                     break;
                   }
-                p+=x_offset+width-skip;
+                p+= (ptrdiff_t)x_offset+width-skip;
                 q=p+step;
                 for (i=0; i < ((long) width - skip); i++)
                   *--q=(*--p);
@@ -1337,7 +1337,7 @@ XShearImage(Image *image,const double degrees,
                 thread_status=MagickFail;
                 break;
               }
-            p+=x_offset+width;
+            p+= (ptrdiff_t)x_offset+width;
             q=p+step;
             for (i=0; i < (long) width; i++)
               {
@@ -1540,9 +1540,9 @@ YShearImage(Image *image,const double degrees,
                     thread_status=MagickFail;
                     break;
                   }
-                p+=y_offset+skip;
+                p+= (ptrdiff_t)y_offset+skip;
                 q=p-step;
-                (void) memcpy(q,p,(height-(unsigned long)skip)*sizeof(PixelPacket));
+                (void) memcpy(q,p,((size_t) height-(size_t)skip)*sizeof(PixelPacket));
                 q+=height;
                 for (i=0; i < (long) step; i++)
                   *q++=image->background_color;
@@ -1560,7 +1560,7 @@ YShearImage(Image *image,const double degrees,
                     thread_status=MagickFail;
                     break;
                   }
-                p+=y_offset+height-skip;
+                p+= (ptrdiff_t)y_offset+height-skip;
                 q=p+step;
                 for (i=0; i < ((long) height - skip); i++)
                   *--q=(*--p);
@@ -1652,7 +1652,7 @@ YShearImage(Image *image,const double degrees,
                 thread_status=MagickFail;
                 break;
               }
-            p+=y_offset+height;
+            p+= (ptrdiff_t)y_offset+height;
             q=p+step;
             for (i=0; i < (long) height; i++)
               {

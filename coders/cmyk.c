@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -190,7 +190,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
   if (scanline == (unsigned char *) NULL)
     ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   tile_packets=(size_t) packet_size*image->tile_info.width;
-  x=(size_t) (packet_size*image->tile_info.x);
+  x=(size_t) packet_size*image->tile_info.x;
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "image->tile_info.x=%lu, packet_size=%u, "
@@ -267,7 +267,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                                           image->columns,image->rows))
                 break;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -320,7 +320,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                                           image->columns,image->rows))
                 break;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -368,7 +368,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -402,7 +402,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -436,7 +436,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -470,7 +470,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                 break;
           i++;
         }
-        count=image->tile_info.height-image->rows-image->tile_info.y;
+        count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
         for (i=0; i < (long) count; i++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -509,7 +509,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
                     break;
               i++;
             }
-            count=image->tile_info.height-image->rows-image->tile_info.y;
+            count=(size_t) image->tile_info.height-image->rows-image->tile_info.y;
             for (i=0; i < (long) count; i++)
               if (ReadBlob(image,tile_packets,scanline) != tile_packets)
                 break;
@@ -525,6 +525,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           image->filename);
         break;
       }
+    StopTimer(&image->timer);
     /*
       Proceed to next image.
     */

@@ -577,7 +577,7 @@ Unsupported number of columns
 MessageId       = +1
 SymbolicName    = CoderErrorUnsupportedNumberOfRows
 Language        = English
-Unsupported number of columns
+Unsupported number of rows
 .
 
 MessageId       = +1

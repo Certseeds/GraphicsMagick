@@ -152,7 +152,7 @@ MagickExport void *CropImageToHBITMAP(Image *image,
   bitmap.bmBits         = NULL;
 
   bitmap_bitsH = (HANDLE) GlobalAlloc (GMEM_MOVEABLE | GMEM_DDESHARE,
-               page.width*page.height*bitmap.bmBitsPixel);
+               (size_t) page.width*page.height*bitmap.bmBitsPixel);
   if (bitmap_bitsH == NULL)
     return( NULL );
 

@@ -1,6 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
-% Copyright (C) 2002 ImageMagick Studio
+% Copyright (C) 2010-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -13,9 +12,9 @@
 %                            MM MM  A   A  C                                  %
 %                            M M M  AAAAA  C                                  %
 %                            M   M  A   A  C                                  %
-%                            M   M  A   A   CCC                               %                              %
+%                            M   M  A   A   CCC                               %
 %                                                                             %
-%                Read MAC: MacPaint Image Format.                                     %
+%                    Read MAC: MacPaint Image Format.                         %
 %                                                                             %
 %                                                                             %
 %                              Software Design                                %
@@ -85,25 +84,25 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int status;
   const PixelPacket *q;
 
-        /* Open image file. */
+  /* Open image file. */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image = AllocateImage(image_info);
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if(status == False)
+  if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
-        /* Read MAC image. */
+  /* Read MAC image. */
   ldblk = ReadBlobLSBShort(image);
-  if((ldblk & 0xFF)!=0)
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if ((ldblk & 0xFF)!=0)
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
-  if(ldblk==0)          /* ???? don't know why */
-        SeekBlob(image,0x200,SEEK_SET);
+  if (ldblk==0)          /* ???? don't know why */
+    SeekBlob(image,0x200,SEEK_SET);
   else
-        SeekBlob(image,0x280,SEEK_SET);
+    SeekBlob(image,0x280,SEEK_SET);
 
   image->columns = 576;
   image->rows = 720;
@@ -112,87 +111,88 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (!AllocateImageColormap(image,image->colors)) goto NoMemory;
 
-    /* If ping is true, then only set image size and colors without reading any image data. */
+  /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
   /* ----- Load RLE compressed raster ----- */
   ldblk = (image->depth*image->columns) /8;
   BImgBuff = MagickAllocateMemory(unsigned char *, ((size_t)ldblk));
-  if(BImgBuff==NULL)
-    NoMemory:
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  if (BImgBuff==NULL)
+  NoMemory:
+    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   DataPtr = BImgBuff;
   x8=0; y=0;
 
-  while(y<image->rows)
-  {
-    rep = ReadBlobByte(image);
-    if(EOFBlob(image)) break;
-
-    if( rep>=128 || rep<=0)
+  while (y<image->rows)
     {
-      b = ~ReadBlobByte(image);;
+      rep = ReadBlobByte(image);
+      if(EOFBlob(image)) break;
 
-      rep = ~rep + 2;
-      while(rep>0)
-      {
-        *DataPtr++ = b;
-        x8++;
-        rep--;
-        if(x8>=ldblk)
+      if ( rep>=128 || rep<= 0)
         {
-          x8=0;
+          b = ~ReadBlobByte(image);;
 
-          q = SetImagePixels(image,0,y,image->columns,1);
-          if(q == (PixelPacket *)NULL) break;
-          (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
-          if(!SyncImagePixels(image)) break;
+          rep = ~rep + 2;
+          while (rep>0)
+            {
+              *DataPtr++ = b;
+              x8++;
+              rep--;
+              if(x8>=ldblk)
+                {
+                  x8=0;
 
-          DataPtr = BImgBuff;
-          y++;
-          if(y>=image->rows)
-          {
-            break;
-          }
+                  q = SetImagePixels(image,0,y,image->columns,1);
+                  if (q == (PixelPacket *)NULL) break;
+                  (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
+                  if (!SyncImagePixels(image)) break;
+
+                  DataPtr = BImgBuff;
+                  y++;
+                  if ( y >= image->rows )
+                    {
+                      break;
+                    }
+                }
+            }
         }
-      }
-    }
-    else
-    {
-      rep++;
-      while(rep>0)
-      {
-        b = ~ReadBlobByte(image);
-        *DataPtr++ = b;
-        x8++;
-        rep--;
-        if(x8>=ldblk)
+      else
         {
-          x8=0;
+          rep++;
+          while ( rep > 0 )
+            {
+              b = ~ReadBlobByte(image);
+              *DataPtr++ = b;
+              x8++;
+              rep--;
+              if ( x8>=ldblk )
+                {
+                  x8=0;
 
-          q = SetImagePixels(image,0,y,image->columns,1);
-          if(q == (PixelPacket *)NULL) break;
-          (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
-          if (!SyncImagePixels(image)) break;
+                  q = SetImagePixels(image,0,y,image->columns,1);
+                  if (q == (PixelPacket *)NULL) break;
+                  (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
+                  if (!SyncImagePixels(image)) break;
 
-          DataPtr = BImgBuff;
-          y++;
-          if(y>=image->rows)
-          {
-            break;
-          }
+                  DataPtr = BImgBuff;
+                  y++;
+                  if ( y >= image->rows )
+                    {
+                      break;
+                    }
+                }
+            }
         }
-      }
     }
-  }
-  if(BImgBuff!=NULL)
+  if (BImgBuff!=NULL)
     MagickFreeMemory(BImgBuff);
-  if(EOFBlob(image))
+  if (EOFBlob(image))
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
 
-DONE_READING:
+ DONE_READING:
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

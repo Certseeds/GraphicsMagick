@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -309,7 +309,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->matte=rle_header.Flags & AlphaFlag;
   number_planes=rle_header.Ncolors;
   number_colormaps=rle_header.Ncmap;
-  map_length=(size_t) (1UL << rle_header.Cmaplen);
+  map_length=(size_t) 1 << rle_header.Cmaplen;
 
   (void) memset(background_color,0,sizeof(background_color));
   if (rle_header.Flags & NoBackgroundFlag)
@@ -400,7 +400,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         arbitrary string.
       */
       length=ReadBlobLSBShort(image);
-      comment=MagickAllocateMemory(char *,length+1);
+      comment=MagickAllocateMemory(char *,(size_t) length+1);
       if (comment == (char *) NULL)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -439,6 +439,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       MagickFreeMemory(colormap);
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
 
@@ -544,7 +545,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (EOFBlob(image))
                   ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
               }
-            offset=((image->rows-y-1)*image->columns*number_planes)+x*number_planes+plane;
+            offset=(((size_t) image->rows-y-1)*image->columns*number_planes)+x*(size_t) number_planes+plane;
             operand++;
             p=rle_pixels+offset;
             for (i=0; i < (unsigned int) operand; i++)
@@ -579,7 +580,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
               ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             (void) ReadBlobByte(image);
             operand++;
-            offset=((image->rows-y-1)*image->columns*number_planes)+x*number_planes+plane;
+            offset=(((size_t) image->rows-y-1)*image->columns*number_planes)+x*(size_t) number_planes+plane;
             p=rle_pixels+offset;
             for (i=0; i < (unsigned int) operand; i++)
               {
@@ -767,6 +768,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

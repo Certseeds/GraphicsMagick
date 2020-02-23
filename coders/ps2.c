@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -511,7 +511,10 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         /*
           Output Postscript header.
         */
-        if (LocaleCompare(image_info->magick,"PS2") == 0)
+ #if defined(HAVE_CTIME_R)
+        char time_buf[26];
+#endif /* defined(HAVE_CTIME_R) */
+       if (LocaleCompare(image_info->magick,"PS2") == 0)
           (void) strcpy(buffer,"%!PS-Adobe-3.0\n");
         else
           (void) strcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -520,15 +523,18 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         FormatString(buffer,"%%%%Title: (%.1024s)\n",image->filename);
         (void) WriteBlobString(image,buffer);
         timer=time((time_t *) NULL);
-        (void) localtime(&timer);
-        (void) strlcpy(date,ctime(&timer),MaxTextExtent);
+#if defined(HAVE_CTIME_R)
+        (void) strlcpy(date,ctime_r(&timer,time_buf),MaxTextExtent);
+#else
+        (void) strlcpy(date,ctime(&timer),MaxTextExtent); /* Thread-unsafe version */
+#endif /* defined(HAVE_CTIME_R) */
         date[strlen(date)-1]='\0';
         FormatString(buffer,"%%%%CreationDate: (%.1024s)\n",date);
         (void) WriteBlobString(image,buffer);
         bounds.x1=geometry.x;
         bounds.y1=geometry.y;
-        bounds.x2=geometry.x+geometry.width;
-        bounds.y2=geometry.y+geometry.height+text_size;
+        bounds.x2=geometry.x+(size_t) geometry.width;
+        bounds.y2=geometry.y+(size_t) geometry.height+text_size;
         if (image_info->adjoin && (image->next != (Image *) NULL))
           (void) strcpy(buffer,"%%BoundingBox: (atend)\n");
         else
@@ -757,10 +763,10 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       bounds.x1=geometry.x;
     if (geometry.y < bounds.y1)
       bounds.y1=geometry.y;
-    if ((geometry.x+(long) geometry.width-1) > bounds.x2)
-      bounds.x2=geometry.x+geometry.width-1;
-    if ((geometry.y+(long) (geometry.height+text_size)-1) > bounds.y2)
-      bounds.y2=geometry.y+(geometry.height+text_size)-1;
+    if ((geometry.x+(size_t) geometry.width-1) > bounds.x2)
+      bounds.x2=geometry.x+(size_t) geometry.width-1;
+    if ((geometry.y+((size_t) geometry.height+text_size)-1) > bounds.y2)
+      bounds.y2=geometry.y+((size_t) geometry.height+text_size)-1;
     attribute=GetImageAttribute(image,"label");
     if (attribute != (const ImageAttribute *) NULL)
       (void) WriteBlobString(image,"%%PageResources: font Times-Roman\n");
@@ -960,8 +966,8 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
               /*
                 Allocate pixel array.
               */
-              length=(image->colorspace == CMYKColorspace ? 4 : 3)*
-                number_pixels;
+              length=MagickArraySize(image->colorspace == CMYKColorspace ? 4 : 3,
+                number_pixels);
               pixels=MagickAllocateMemory(unsigned char *,length);
               if (pixels == (unsigned char *) NULL)
                 ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);

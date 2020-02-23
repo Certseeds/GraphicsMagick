@@ -3299,7 +3299,7 @@ CompositeImage(Image *canvas_image,
                   y_displace=(vertical_scale*(p->opacity-
                                               (((double) MaxRGB+1.0)/2)))/(((double) MaxRGB+1.0)/2);
                 if (InterpolateViewColor(AccessDefaultCacheView(canvas_image),r,
-                                         x_offset+x+x_displace,y_offset+y+y_displace,
+                                         x_offset+(size_t) x+x_displace,y_offset+(size_t) y+y_displace,
                                          &canvas_image->exception) == MagickFail)
                   {
                     status=MagickFail;

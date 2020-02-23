@@ -67,7 +67,6 @@
 #define AttachBlob GmAttachBlob
 #define AutoOrientImage GmAutoOrientImage
 #define AverageImages GmAverageImages
-#define BackgroundColor GmBackgroundColor
 #define Base64Decode GmBase64Decode
 #define Base64Encode GmBase64Encode
 #define BenchmarkImageCommand GmBenchmarkImageCommand
@@ -80,7 +79,6 @@
 #define BlobWriteByteHook GmBlobWriteByteHook
 #define BlurImage GmBlurImage
 #define BlurImageChannel GmBlurImageChannel
-#define BorderColor GmBorderColor
 #define BorderImage GmBorderImage
 #define CatchException GmCatchException
 #define CatchImageException GmCatchImageException
@@ -135,9 +133,6 @@
 #define CycleColormapImage GmCycleColormapImage
 #define DeallocateImageProfileIterator GmDeallocateImageProfileIterator
 #define DeconstructImages GmDeconstructImages
-#define DefaultTileFrame GmDefaultTileFrame
-#define DefaultTileGeometry GmDefaultTileGeometry
-#define DefaultTileLabel GmDefaultTileLabel
 #define DefineClientName GmDefineClientName
 #define DefineClientPathAndName GmDefineClientPathAndName
 #define DeleteImageFromList GmDeleteImageFromList
@@ -321,7 +316,6 @@
 #define FlattenImages GmFlattenImages
 #define FlipImage GmFlipImage
 #define FlopImage GmFlopImage
-#define ForegroundColor GmForegroundColor
 #define FormatSize GmFormatSize
 #define FormatString GmFormatString
 #define FormatStringList GmFormatStringList
@@ -436,11 +430,11 @@
 #define GetUserTime GmGetUserTime
 #define GlobExpression GmGlobExpression
 #define GradientImage GmGradientImage
+#define GravityTypeToString GmGravityTypeToString
 #define GrayscalePseudoClassImage GmGrayscalePseudoClassImage
 #define HSLTransform GmHSLTransform
 #define HWBTransform GmHWBTransform
 #define HaldClutImage GmHaldClutImage
-#define HighlightColor GmHighlightColor
 #define HighlightStyleToString GmHighlightStyleToString
 #define HuffmanDecodeImage GmHuffmanDecodeImage
 #define HuffmanEncode2Image GmHuffmanEncode2Image
@@ -472,7 +466,7 @@
 #define InitializeLogInfoPost GmInitializeLogInfoPost
 #define InitializeMagicInfo GmInitializeMagicInfo
 #define InitializeMagick GmInitializeMagick
-#define InitializeMagickClientPathAndName GmInitializeMagickClientPathAndName
+#define InitializeMagickEx GmInitializeMagickEx
 #define InitializeMagickExceptionHandling GmInitializeMagickExceptionHandling
 #define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickMonitor GmInitializeMagickMonitor
@@ -480,7 +474,6 @@
 #define InitializeMagickRandomKernel GmInitializeMagickRandomKernel
 #define InitializeMagickRegistry GmInitializeMagickRegistry
 #define InitializeMagickResources GmInitializeMagickResources
-#define InitializeMagickSignalHandlers GmInitializeMagickSignalHandlers
 #define InitializePixelIteratorOptions GmInitializePixelIteratorOptions
 #define InitializeSemaphore GmInitializeSemaphore
 #define InitializeTemporaryFiles GmInitializeTemporaryFiles
@@ -702,7 +695,6 @@
 #define MapImage GmMapImage
 #define MapImages GmMapImages
 #define MapModeToString GmMapModeToString
-#define MatteColor GmMatteColor
 #define MatteFloodfillImage GmMatteFloodfillImage
 #define MedianFilterImage GmMedianFilterImage
 #define MetricTypeToString GmMetricTypeToString
@@ -733,8 +725,6 @@
 #define OpenModules GmOpenModules
 #define OrderedDitherImage GmOrderedDitherImage
 #define OrientationTypeToString GmOrientationTypeToString
-#define PSDensityGeometry GmPSDensityGeometry
-#define PSPageGeometry GmPSPageGeometry
 #define PackbitsEncode2Image GmPackbitsEncode2Image
 #define PackbitsEncodeImage GmPackbitsEncodeImage
 #define PanicDestroyMagick GmPanicDestroyMagick
@@ -961,8 +951,10 @@
 #define SpliceImageIntoList GmSpliceImageIntoList
 #define SplitImageList GmSplitImageList
 #define SpreadImage GmSpreadImage
+#define StartTimer GmStartTimer
 #define SteganoImage GmSteganoImage
 #define StereoImage GmStereoImage
+#define StopTimer GmStopTimer
 #define StorageTypeToString GmStorageTypeToString
 #define StretchTypeToString GmStretchTypeToString
 #define StringToArgv GmStringToArgv

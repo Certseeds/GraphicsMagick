@@ -435,12 +435,12 @@ Classify(Image * restrict image,short **extrema,
 
               for (count=0 ; count < number_clusters; count++)
                 {
-                  if ((r >= (cluster_array[count]->red.left-SafeMargin)) &&
-                      (r <= (cluster_array[count]->red.right+SafeMargin)) &&
-                      (g >= (cluster_array[count]->green.left-SafeMargin)) &&
-                      (g <= (cluster_array[count]->green.right+SafeMargin)) &&
-                      (b >= (cluster_array[count]->blue.left-SafeMargin)) &&
-                      (b <= (cluster_array[count]->blue.right+SafeMargin)))
+                  if ((r >= ((double) cluster_array[count]->red.left-SafeMargin)) &&
+                      (r <= ((double) cluster_array[count]->red.right+SafeMargin)) &&
+                      (g >= ((double) cluster_array[count]->green.left-SafeMargin)) &&
+                      (g <= ((double) cluster_array[count]->green.right+SafeMargin)) &&
+                      (b >= ((double) cluster_array[count]->blue.left-SafeMargin)) &&
+                      (b <= ((double) cluster_array[count]->blue.right+SafeMargin)))
                     {
                       /*
                         Count this pixel.
@@ -466,7 +466,7 @@ Classify(Image * restrict image,short **extrema,
               p++;
             }
           if (QuantumTick(y,image->rows))
-            if (!MagickMonitorFormatted(y,image->rows << 1,&image->exception,
+            if (!MagickMonitorFormatted(y,(size_t) image->rows*2,&image->exception,
                                         SegmentImageText,image->filename))
               {
                 status=MagickFail;
@@ -593,7 +593,7 @@ Classify(Image * restrict image,short **extrema,
 #  pragma omp parallel for
 #endif
       for (i=(-255); i <= 255; i++)
-        squares[i]=i*i;
+        squares[i]=(double)i*i;
       /*
         Allocate image colormap.
       */
@@ -783,7 +783,7 @@ Classify(Image * restrict image,short **extrema,
 #endif
               thread_row_count=row_count;
               if (QuantumTick(thread_row_count,image->rows))
-                if (!MagickMonitorFormatted(thread_row_count+image->rows,image->rows << 1,
+                if (!MagickMonitorFormatted((size_t) thread_row_count+image->rows,(size_t) image->rows*2,
                                             &image->exception,
                                             SegmentImageText,image->filename))
                   thread_status=MagickFail;

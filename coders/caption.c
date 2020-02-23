@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -123,6 +123,7 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  (void) memset(&metrics,0,sizeof(metrics));
   image=AllocateImage(image_info);
   if (image->columns == 0)
     ThrowCAPTIONException(OptionError,MustSpecifyImageSize,image);
@@ -181,6 +182,7 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
   (void) AnnotateImage(image,draw_info);
   DestroyDrawInfo(draw_info);
   MagickFreeMemory(caption);
+  StopTimer(&image->timer);
   return(image);
 }
 

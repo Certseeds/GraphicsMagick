@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -410,6 +410,7 @@ static Image *ReadEMFImage(const ImageInfo *image_info,
   SelectObject(hDC,hOldBitmap);
   DeleteDC(hDC);
   DeleteObject(hBitmap);
+  StopTimer(&image->timer);
   return(image);
 }
 #endif /* HasWINGDI32 */

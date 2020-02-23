@@ -161,6 +161,7 @@ static Image *ReadLABELImage(const ImageInfo *image_info,
   (void) SetImage(image,OpaqueOpacity);
   (void) AnnotateImage(image,draw_info);
   DestroyDrawInfo(draw_info);
+  StopTimer(&image->timer);
   return(image);
 }
 

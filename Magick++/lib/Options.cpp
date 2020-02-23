@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2002, 2003
+// Copyright Bob Friesenhahn, 1999-2020
 //
 // Implementation of Options
 //
@@ -513,8 +513,9 @@ void Magick::Options::strokeDashArray ( const double* strokeDashArray_ )
                                 "Unable to allocate dash-pattern memory");
 
       // Copy elements
-      memcpy(_drawInfo->dash_pattern,strokeDashArray_,
-             (x+1)*sizeof(double));
+      if (_drawInfo->dash_pattern)
+        memcpy(_drawInfo->dash_pattern,strokeDashArray_,
+               (x+1)*sizeof(double));
     }
 }
 const double* Magick::Options::strokeDashArray ( void ) const

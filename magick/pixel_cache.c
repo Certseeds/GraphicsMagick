@@ -470,12 +470,18 @@ DestroyThreadViewSet(ThreadViewSet *view_set)
 
   if (view_set != (ThreadViewSet *) NULL)
     {
-      for (i=0; i < view_set->nviews; i++)
+      if (view_set->views != (ViewInfo *) NULL)
         {
-          CloseCacheView(view_set->views[i]);
-          view_set->views[i]=(ViewInfo *) NULL;
+          for (i=0; i < view_set->nviews; i++)
+            {
+              if (view_set->views[i] != (ViewInfo *) NULL)
+                {
+                  CloseCacheView(view_set->views[i]);
+                  view_set->views[i]=(ViewInfo *) NULL;
+                }
+            }
+          MagickFreeMemory(view_set->views);
         }
-      MagickFreeMemory(view_set->views);
       MagickFreeMemory(view_set);
     }
 }
@@ -1838,7 +1844,7 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
       return((const PixelPacket *) NULL);
     }
   offset=y*(magick_off_t) cache_info->columns+x;
-  length=(rows-1)*cache_info->columns+columns-1;
+  length=(size_t) (rows-1)*cache_info->columns+columns-1;
   number_pixels=(magick_uint64_t) cache_info->columns*cache_info->rows;
   if ((offset >= 0) && (((magick_uint64_t) offset+length) < number_pixels))
     if ((x >= 0) && ((x+columns) <= cache_info->columns) &&
@@ -3210,7 +3216,7 @@ CheckImagePixelLimits(const Image *image, ExceptionInfo *exception)
     magick_int64_t
       total_pixels;
 
-    total_pixels=image->columns*image->rows;
+    total_pixels=(magick_int64_t) image->columns*image->rows;
     if (AcquireMagickResource(PixelsResource,total_pixels)
         != MagickPass)
       {
@@ -4580,7 +4586,9 @@ ModifyCache(Image *image, ExceptionInfo *exception)
         */
         cache_info=(CacheInfo *) image->cache;
         status=(((image->storage_class == cache_info->storage_class) &&
-                 (image->colorspace == cache_info->colorspace)) ||
+                 (image->colorspace == cache_info->colorspace) &&
+                 (image->rows == cache_info->rows) &&
+                 (image->columns == cache_info->columns)) ||
                 (OpenCache(image,IOMode,exception)));
       }
   }

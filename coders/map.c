@@ -146,8 +146,8 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read image colormap.
   */
-  if (ReadBlob(image,packet_size*image->colors,(char *) colormap) !=
-      packet_size*image->colors)
+  if (ReadBlob(image, (size_t) packet_size*image->colors,(char *) colormap) !=
+      (size_t) packet_size*image->colors)
     ThrowMAPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   p=colormap;
   if (image->colors <= 256)
@@ -187,8 +187,8 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (q == (PixelPacket *) NULL)
       break;
     indexes=AccessMutableIndexes(image);
-    if (ReadBlob(image,packet_size*image->columns,(char *) pixels) !=
-        packet_size*image->columns)
+    if (ReadBlob(image, (size_t) packet_size*image->columns,(char *) pixels) !=
+        (size_t) packet_size*image->columns)
       ThrowMAPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     for (x=0; x < (long) image->columns; x++)
     {
@@ -383,8 +383,8 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
       *q++=image->colormap[i].blue & 0xff;
     }
 #endif /* QuantumDepth > 8 */
-  if (WriteBlob(image,packet_size*image->colors,(char *) colormap) !=
-      packet_size*image->colors)
+  if (WriteBlob(image, (size_t) packet_size*image->colors,(char *) colormap) !=
+      (size_t) packet_size*image->colors)
     ThrowMAPWriterException(FileOpenError,UnableToWriteFile,image);
   MagickFreeMemory(colormap);
   /*

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -591,7 +591,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       image->columns = image->rows;
       image->rows = temp;
       if(HDR.imagf==1) ldblk *= 2;
-      SeekBlob(image, HDR.nCols*ldblk, SEEK_CUR);
+      SeekBlob(image, (size_t) HDR.nCols*ldblk, SEEK_CUR);
       goto skip_reading_current;
     }
 
@@ -701,6 +701,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       DeleteImageFromList(&image);
       image = rotated_image;
     }
+
+    StopTimer(&image->timer);
 
 skip_reading_current:
 
@@ -1273,7 +1275,7 @@ skip_reading_current:
 
     /* Allocate next image structure. */
     AllocateNextImage(image_info,image);
-    if (image->next == (Image *) NULL) break;
+    if ((image == (Image *) NULL) || (image->next == (Image *) NULL)) break;
     image=SyncNextImageInList(image);
     image->columns = image->rows = 0;
     image->colors=0;
@@ -1395,13 +1397,20 @@ static MagickPassFail WriteMATLABImage(const ImageInfo *image_info,Image *image)
   char padding;
   char MATLAB_HDR[0x80];
   time_t current_time;
+#if defined(HAVE_LOCALTIME_R)
+  struct tm tm_buf;
+#endif /* if defined(HAVE_LOCALTIME_R) */
   const struct tm *t;
   unsigned char *pixels;
   int is_gray;
   unsigned char ImageName = 'A';
 
   current_time = time((time_t *)NULL);
-  t = localtime(&current_time);
+#if defined(HAVE_LOCALTIME_R)
+  t=localtime_r(&current_time, &tm_buf);
+#else
+  t=localtime(&current_time); /* Thread-unsafe version */
+#endif  /* if defined(HAVE_LOCALTIME_R) */
 
   /*
     Open output image file.

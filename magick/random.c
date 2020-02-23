@@ -13,7 +13,6 @@
 */
 
 #include "magick/studio.h"
-#include "magick/random-private.h"
 #include "magick/random.h"
 #include "magick/semaphore.h"
 #include "magick/tsd.h"

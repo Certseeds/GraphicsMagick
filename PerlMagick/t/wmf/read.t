@@ -29,7 +29,7 @@ testReadCompare('clock.wmf', '../reference/wmf/clock.miff',
                 q//, 0.002, 0.9);
 ++$test;
 testReadCompare('ski.wmf', '../reference/wmf/ski.miff',
-                q//, 0.021, 0.9);
+                q//, 0.021, 1.0);
 ++$test;
 testReadCompare('fjftest.wmf', '../reference/wmf/fjftest.miff',
                 q//, 0.004, 0.5);

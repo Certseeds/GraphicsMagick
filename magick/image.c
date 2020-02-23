@@ -73,30 +73,12 @@
 #include "magick/utility.h"
 #include "magick/xwindow.h"
 
-/*
-  Constant declaration.
-*/
-const char
-  *BackgroundColor = "#ffffffffffff",  /* white */
-  *BorderColor = "#dfdfdfdfdfdf",  /* gray */
-  *DefaultTileFrame = "15x15+3+3",
-  *DefaultTileGeometry = "120x120+4+3>",
-  *DefaultTileLabel = "%f\n%wx%h\n%b",
-  *ForegroundColor = "#000000000000",  /* black */
-  *HighlightColor = "#f1f100001e1e", /* light red */
-  *MatteColor = "#bdbdbdbdbdbd",  /* gray */
-  *PSDensityGeometry = "72.0x72.0",
-  *PSPageGeometry = "612x792>";
-
-const unsigned long
-  DefaultCompressionQuality = 75;
-
 static MagickPassFail
 MagickParseSubImageSpecification(const char *subimage_spec,
                                  unsigned long *subimage_ptr,
                                  unsigned long *subrange_ptr,
                                  MagickBool allow_geometry);
-
+
 /* provide public access to the clip_mask member of Image */
 MagickExport Image **
 ImageGetClipMask(const Image * image)
@@ -1534,12 +1516,12 @@ MagickExport void DestroyImageInfo(ImageInfo *image_info)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DisplayImages() displays an image sequence to any X window screen.  It
-%  returns a value other than 0 if successful.  Check the exception member
-%  of image to determine the reason for any failure.
+%  returns MagickPass if successful or MagickFail if not.  Check the
+%  exception member of image to determine the reason for any failure.
 %
 %  The format of the DisplayImages method is:
 %
-%      unsigned int DisplayImages(const ImageInfo *image_info,Image *image)
+%      MagickPassFail DisplayImages(const ImageInfo *image_info,Image *image)
 %
 %  A description of each parameter follows:
 %
@@ -1604,7 +1586,7 @@ MagickExport MagickPassFail DisplayImages(const ImageInfo *image_info,
   MagickXDestroyResourceInfo(&resource_info);
   MagickXDestroyX11Resources();
   (void) XCloseDisplay(display);
-  return(image->exception.severity != UndefinedException);
+  return(image->exception.severity == UndefinedException ? MagickPass : MagickFail);
 }
 #else
 MagickExport unsigned int DisplayImages(const ImageInfo *image_info,

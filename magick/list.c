@@ -532,7 +532,7 @@ MagickExport Image **ImageListToArray(const Image *images,
   if (images == (Image *) NULL)
     return((Image **) NULL);
   assert(images->signature == MagickSignature);
-  group=MagickAllocateMemory(Image **,(GetImageListLength(images)+1)*sizeof(Image *));
+  group=MagickAllocateArray(Image **,((size_t) GetImageListLength(images)+1),sizeof(Image *));
   if (group == (Image **) NULL)
     {
       ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,

@@ -785,6 +785,50 @@ MagickExport FilterTypes StringToFilterTypes(const char *option)
 /*
   GravityType
 */
+MagickExport const char *GravityTypeToString(const GravityType gravity_type)
+{
+  const char
+    *gravity="?";
+
+  switch(gravity_type)
+    {
+    case ForgetGravity:
+      gravity="Forget";
+      break;
+    case NorthWestGravity:
+      gravity="NorthWest";
+      break;
+    case NorthGravity:
+      gravity="North";
+      break;
+    case NorthEastGravity:
+      gravity="NorthEast";
+      break;
+    case WestGravity:
+      gravity="West";
+      break;
+    case CenterGravity:
+      gravity="Center";
+      break;
+    case EastGravity:
+      gravity="East";
+      break;
+    case SouthWestGravity:
+      gravity="SouthWest";
+      break;
+    case SouthGravity:
+      gravity="South";
+      break;
+    case SouthEastGravity:
+      gravity="SouthEast";
+      break;
+    case StaticGravity:
+      gravity="Static";
+      break;
+    }
+
+  return gravity;
+}
 MagickExport GravityType StringToGravityType(const char *option)
 {
   GravityType

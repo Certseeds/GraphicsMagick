@@ -49,10 +49,11 @@
 #define FuzzyOpacityMatch(color,target,fuzz) \
   (((color)->opacity == (target)->opacity) && \
    FuzzyColorMatch(color,target,fuzz))
-#define MaxStacksize  (1 << 15)
+#define MaxStacksize  (((size_t) 1) << 15)
 #define Push(up,left,right,delta) \
-  if ((s < (segment_stack+MaxStacksize)) && (((up)+(delta)) >= 0) && \
-      (((up)+(delta)) < (long) image->rows)) \
+  if ((s < (segment_stack+MaxStacksize)) && \
+      ((((ptrdiff_t)up)+((ptrdiff_t)delta)) >= 0) && \
+      ((((ptrdiff_t)up)+((ptrdiff_t)delta)) < (long) image->rows)) \
     { \
       s->y1=(up); \
       s->x1=(left); \
@@ -159,8 +160,8 @@ MagickExport MagickPassFail ColorFloodfillImage(Image *image,
   */
   if (FuzzyColorMatch(&draw_info->fill,&target,image->fuzz))
     return(MagickFail);
-  floodplane=MagickAllocateMemory(unsigned char *,image->columns*image->rows);
-  segment_stack=MagickAllocateMemory(SegmentInfo *,MaxStacksize*sizeof(SegmentInfo));
+  floodplane=MagickAllocateClearedArray(unsigned char *,image->columns,image->rows);
+  segment_stack=MagickAllocateArray(SegmentInfo *,MaxStacksize,sizeof(SegmentInfo));
   if ((floodplane== (unsigned char *) NULL) ||
       (segment_stack == (SegmentInfo *) NULL))
     {
@@ -169,7 +170,6 @@ MagickExport MagickPassFail ColorFloodfillImage(Image *image,
       ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
                             UnableToFloodfillImage);
     }
-  (void) memset(floodplane,False,image->columns*image->rows);
   /*
     Push initial segment on stack.
   */
@@ -179,7 +179,7 @@ MagickExport MagickPassFail ColorFloodfillImage(Image *image,
   start=0;
   s=segment_stack;
   Push(y,x,x,1);
-  Push(y+1,x,x,-1);
+  Push((ptrdiff_t)y+1,x,x,-1);
   while (s > segment_stack)
   {
     /*
@@ -225,7 +225,7 @@ MagickExport MagickPassFail ColorFloodfillImage(Image *image,
       {
         start=x+1;
         if (start < x1)
-          Push(y,start,x1-1,-offset);
+          Push(y,start,(ptrdiff_t)x1-1,-offset);
         x=x1+1;
       }
     do
@@ -261,9 +261,9 @@ MagickExport MagickPassFail ColorFloodfillImage(Image *image,
                   break;
                 }
             }
-          Push(y,start,x-1,offset);
-          if (x > (x2+1))
-            Push(y,x2+1,x-1,-offset);
+          Push(y,start, (ptrdiff_t)x-1,offset);
+          if (x > ((ptrdiff_t)x2+1))
+            Push(y, (ptrdiff_t)x2+1, (ptrdiff_t)x-1,-offset);
         }
       skip=False;
       x++;
@@ -462,7 +462,7 @@ MagickExport MagickPassFail MatteFloodfillImage(Image *image,
   start=0;
   s=segment_stack;
   Push(y,x,x,1);
-  Push(y+1,x,x,-1);
+  Push((ptrdiff_t)y+1,x,x,-1);
   while (s > segment_stack)
   {
     /*
@@ -506,7 +506,7 @@ MagickExport MagickPassFail MatteFloodfillImage(Image *image,
       {
         start=x+1;
         if (start < x1)
-          Push(y,start,x1-1,-offset);
+          Push(y,start, (ptrdiff_t)x1-1,-offset);
         x=x1+1;
       }
     do
@@ -539,9 +539,9 @@ MagickExport MagickPassFail MatteFloodfillImage(Image *image,
               status=MagickFail;
               break;
             }
-          Push(y,start,x-1,offset);
-          if (x > (x2+1))
-            Push(y,x2+1,x-1,-offset);
+          Push(y,start, (ptrdiff_t)x-1,offset);
+          if (x > ((ptrdiff_t)x2+1))
+            Push(y, (ptrdiff_t)x2+1, (ptrdiff_t)x-1,-offset);
         }
       skip=False;
       q=GetImagePixels(image,0,y,image->columns,1);

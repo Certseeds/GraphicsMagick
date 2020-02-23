@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1626,7 +1626,7 @@ MagickExport Image *ShaveImage(const Image *image,
 %
 %  The format of the TransformImage method is:
 %
-%      void TransformImage(Image **image,const char *crop_geometry,
+%      MagickPassFail TransformImage(Image **image,const char *crop_geometry,
 %        const char *image_geometry)
 %
 %  A description of each parameter follows:
@@ -1641,8 +1641,8 @@ MagickExport Image *ShaveImage(const Image *image,
 %
 %
 */
-MagickExport void TransformImage(Image **image,const char *crop_geometry,
-                                 const char *image_geometry)
+MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geometry,
+                                           const char *image_geometry)
 {
   Image
     *previous,
@@ -1654,6 +1654,9 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
 
   int
     flags;
+
+  MagickPassFail
+    status = MagickPass;
 
   assert(image != (Image **) NULL);
   assert((*image)->signature == MagickSignature);
@@ -1673,6 +1676,8 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
           (flags & PercentValue))
         {
           crop_image=CropImage(transform_image,&geometry,&(*image)->exception);
+          if (crop_image == (Image *) NULL)
+            status = MagickFail;
         }
       else
         if ((transform_image->columns > geometry.width) ||
@@ -1716,7 +1721,10 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
                       }
                   }
                 if (next == (Image *) NULL)
-                  break;
+                  {
+                    status=MagickFail;
+                    break;
+                  }
               }
           }
       if (crop_image != (Image *) NULL)
@@ -1733,7 +1741,7 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
       *image=transform_image;
     }
   if (image_geometry == (const char *) NULL)
-    return;
+    return status;
 
   /*
     Scale image to a user specified size.
@@ -1743,7 +1751,7 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
                           &geometry.width,&geometry.height);
   if ((transform_image->columns == geometry.width) &&
       (transform_image->rows == geometry.height))
-    return;
+    return status;
 
   /*
     Resize image.
@@ -1751,11 +1759,15 @@ MagickExport void TransformImage(Image **image,const char *crop_geometry,
   resize_image=ZoomImage(transform_image,geometry.width,geometry.height,
                          &(*image)->exception);
   if (resize_image == (Image *) NULL)
-    return;
+    {
+      status=MagickFail;
+      return status;
+    }
 
   previous=transform_image->previous;
   resize_image->next=transform_image->next;
   DestroyImage(transform_image);
   transform_image=resize_image;
   *image=transform_image;
+  return status;
 }

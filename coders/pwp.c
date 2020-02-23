@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -226,6 +226,7 @@ static Image *ReadPWPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (void) SetMonitorHandler(handler);
     if (next_image == (Image *) NULL)
       break;
+    StopTimer(&next_image->timer);
     FormatString(next_image->filename,"slide_%02ld.sfw",next_image->scene);
     if (image == (Image *) NULL)
       image=next_image;

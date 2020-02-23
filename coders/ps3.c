@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -450,7 +450,7 @@ static unsigned int SerializePseudoClassImage(const ImageInfo *image_info,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=True;
-  *length=image->columns*image->rows;
+  *length=MagickArraySize(image->columns,image->rows);
   *pixels=MagickAllocateMemory(unsigned char *, *length);
   if (*pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -528,7 +528,7 @@ static unsigned int SerializeMultiChannelImage(const ImageInfo *image_info,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=True;
-  *length=(image->colorspace == CMYKColorspace ? 4 : 3)*image->columns*image->rows;
+  *length=(size_t) (image->colorspace == CMYKColorspace ? 4U : 3U)*MagickArraySize(image->columns,image->rows);
   *pixels=MagickAllocateMemory(unsigned char *, *length);
   if (*pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1371,6 +1371,9 @@ static MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
     */
     if (page == 1)
       {
+#if defined(HAVE_CTIME_R)
+        char time_buf[26];
+#endif /* defined(HAVE_CTIME_R) */
         /* Postscript magic */
         if (LocaleCompare(image_info->magick,"PS3") == 0)
           (void) strlcpy(buffer,"%!PS-Adobe-3.0\n", sizeof(buffer));
@@ -1389,8 +1392,11 @@ static MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
 
         /* File creation timestamp */
         timer=time((time_t *) NULL);
-        (void) localtime(&timer);
-        (void) strlcpy(date,ctime(&timer),MaxTextExtent);
+#if defined(HAVE_CTIME_R)
+        (void) strlcpy(date,ctime_r(&timer,time_buf),MaxTextExtent);
+#else
+        (void) strlcpy(date,ctime(&timer),MaxTextExtent); /* Thread-unsafe version */
+#endif /* defined(HAVE_CTIME_R) */
         date[strlen(date)-1]='\0';
         FormatString(buffer,"%%%%CreationDate: %.1024s\n",date);
         (void) WriteBlobString(image,buffer);

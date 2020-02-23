@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -630,7 +630,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   packet_size=40.0;  /* Max characters in a row */
 
                 double
-                  number_pixels=image->columns*image->rows;
+                  number_pixels=(double) image->columns*image->rows;
 
                 ratio = (((double) number_pixels*packet_size)/file_size);
 
@@ -650,8 +650,8 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         SetImage(image,OpaqueOpacity);
 
         BImgBuff = MagickAllocateArray(unsigned char *,
-                                       (size_t)(x+1),
-                                       ( ((image->matte) ? 4 : 3)
+                                       ((size_t)x+1),
+                                       ((size_t)((image->matte) ? 4 : 3)
                                          * NumOfPlanes/8));
         WImgBuff = (magick_uint16_t *)BImgBuff;
         DImgBuff = (magick_uint32_t *)BImgBuff;
@@ -769,11 +769,11 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
                 if (image->matte)
                   (void)ImportImagePixelArea(image,RGBAQuantum,NumOfPlanes,
-                                             BImgBuff + 4*x_min*(NumOfPlanes/8),
+                                             BImgBuff + (size_t)4*x_min*(NumOfPlanes/8),
                                              &import_options,0);
                 else
                   (void)ImportImagePixelArea(image,RGBQuantum,NumOfPlanes,
-                                             BImgBuff + 3*x_min*(NumOfPlanes/8),
+                                             BImgBuff + (size_t)3*x_min*(NumOfPlanes/8),
                                              &import_options,0);
                 if (!SyncImagePixels(image))
                   break;
@@ -854,11 +854,11 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 if (image->matte)
                   (void)ImportImagePixelArea(image, RGBAQuantum, NumOfPlanes,
-                                             BImgBuff + 4*x_min*(NumOfPlanes/8),
+                                             BImgBuff + (size_t)4*x_min*(NumOfPlanes/8),
                                              &import_options, 0);
                 else
                   (void)ImportImagePixelArea(image, RGBQuantum, NumOfPlanes,
-                                             BImgBuff + 3*x_min*(NumOfPlanes/8),
+                                             BImgBuff + (size_t)3*x_min*(NumOfPlanes/8),
                                              &import_options, 0);
                 if (!SyncImagePixels(image))
                   {
@@ -1033,6 +1033,8 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) AnnotateImage(image,draw_info);
         if (p == (char *) NULL)
           break;
+
+        StopTimer(&image->timer);
 
         if (logging)
           (void)LogMagickEvent(CoderEvent,GetMagickModule(),

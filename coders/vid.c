@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2015 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -92,7 +92,8 @@ static unsigned int
           MagickFreeMemory(filelist[i]);        \
         MagickFreeMemory(filelist);             \
       }                                         \
-    MagickFreeMemory(list[0]);                  \
+    if (list != (char **) NULL)                 \
+      MagickFreeMemory(list[0]);                \
     MagickFreeMemory(list);                     \
   }
 
@@ -131,6 +132,9 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   RectangleInfo
     geometry;
 
+  TimerInfo
+    timer;
+
   register long
     i;
 
@@ -144,6 +148,7 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  GetTimerInfo(&timer);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image=AllocateImage(image_info);
   list=MagickAllocateMemory(char **,sizeof(char *));
@@ -241,6 +246,8 @@ static Image *ReadVIDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   DestroyImageList(image);
   LiberateVIDLists();
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
+  StopTimer(&timer);
+  montage_image->timer=timer;
   return(montage_image);
 }
 

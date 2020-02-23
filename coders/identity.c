@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009 GraphicsMagick Group
+% Copyright (C) 2009-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -169,6 +169,10 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
     {
       DestroyImage(image);
       image=(Image *) NULL;
+    }
+  else
+    {
+      StopTimer(&image->timer);
     }
 
   return(image);

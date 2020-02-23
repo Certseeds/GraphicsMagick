@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2019 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -22,7 +22,7 @@ extern "C" {
   typedef MagickPassFail
   (*MonitorHandler)(const char *text,const magick_int64_t quantum,
                     const magick_uint64_t span,ExceptionInfo *exception);
-  
+
   /*
     Monitor declarations.
   */
@@ -41,16 +41,7 @@ extern "C" {
                          const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,4,5)));
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-  extern void
-  DestroyMagickMonitor(void);
-
-  extern MagickPassFail
-    InitializeMagickMonitor(void);
-
-  extern MagickBool
-  MagickMonitorActive(void) MAGICK_FUNC_PURE;
-
+#  include "magick/monitor-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)

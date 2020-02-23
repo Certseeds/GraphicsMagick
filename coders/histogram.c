@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -45,6 +45,7 @@
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/tempfile.h"
+#include "magick/quantize.h"
 #include "magick/utility.h"
 
 /*
@@ -154,7 +155,7 @@ ModuleExport void UnregisterHISTOGRAMImage(void)
 %
 */
 static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
-  Image *image)
+                                        Image *image)
 {
 #define HistogramDensity  "256x200"
 
@@ -209,12 +210,12 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
   SetGeometry(image,&geometry);
   if (image_info->density == (char *) NULL)
     (void) GetMagickGeometry(HistogramDensity,&geometry.x,&geometry.y,
-      &geometry.width,&geometry.height);
+                             &geometry.width,&geometry.height);
   else
     (void) GetMagickGeometry(image_info->density,&geometry.x,&geometry.y,
-      &geometry.width,&geometry.height);
+                             &geometry.width,&geometry.height);
   histogram_image=CloneImage(image,geometry.width,geometry.height,True,
-    &image->exception);
+                             &image->exception);
   if (histogram_image == (Image *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) SetImageType(histogram_image,TrueColorType);
@@ -233,7 +234,7 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
       MagickFreeMemory(blue);
       DestroyImage(histogram_image);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image)
-    }
+        }
   (void) memset(red,0,length*sizeof(long));
   (void) memset(green,0,length*sizeof(long));
   (void) memset(blue,0,length*sizeof(long));
@@ -241,28 +242,28 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
     Initialize histogram count arrays.
   */
   for (y=0; y < (long) image->rows; y++)
-  {
-    p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-    if (p == (const PixelPacket *) NULL)
-      break;
-    for (x=0; x < (long) image->columns; x++)
     {
-      red[ScaleQuantumToChar(p->red)]++;
-      green[ScaleQuantumToChar(p->green)]++;
-      blue[ScaleQuantumToChar(p->blue)]++;
-      p++;
+      p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+      if (p == (const PixelPacket *) NULL)
+        break;
+      for (x=0; x < (long) image->columns; x++)
+        {
+          red[ScaleQuantumToChar(p->red)]++;
+          green[ScaleQuantumToChar(p->green)]++;
+          blue[ScaleQuantumToChar(p->blue)]++;
+          p++;
+        }
     }
-  }
   maximum=0;
   for (x=0; x < (long) histogram_image->columns; x++)
-  {
-    if (maximum < red[x])
-      maximum=red[x];
-    if (maximum < green[x])
-      maximum=green[x];
-    if (maximum < blue[x])
-      maximum=blue[x];
-  }
+    {
+      if (maximum < red[x])
+        maximum=red[x];
+      if (maximum < green[x])
+        maximum=green[x];
+      if (maximum < blue[x])
+        maximum=blue[x];
+    }
   if (maximum > 0L)
     scale=(double) histogram_image->rows/maximum;
   else
@@ -271,42 +272,42 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
     Initialize histogram image.
   */
   (void) QueryColorDatabase("black",&histogram_image->background_color,
-    &image->exception);
+                            &image->exception);
   (void) SetImage(histogram_image,OpaqueOpacity);
   for (x=0; x < (long) histogram_image->columns; x++)
-  {
-    q=GetImagePixels(histogram_image,x,0,1,histogram_image->rows);
-    if (q == (PixelPacket *) NULL)
-      break;
-    y=(long) (histogram_image->rows-(long) (scale*red[x]));
-    r=q+y;
-    for ( ; y < (long) histogram_image->rows; y++)
     {
-      r->red=MaxRGB;
-      r++;
-    }
-    y=(long) (histogram_image->rows-(long) (scale*green[x]));
-    r=q+y;
-    for ( ; y < (long) histogram_image->rows; y++)
-    {
-      r->green=MaxRGB;
-      r++;
-    }
-    y=(long) (histogram_image->rows-(long) (scale*blue[x]));
-    r=q+y;
-    for ( ; y < (long) histogram_image->rows; y++)
-    {
-      r->blue=MaxRGB;
-      r++;
-    }
-    if (!SyncImagePixels(histogram_image))
-      break;
-    if (QuantumTick(x,histogram_image->columns))
-      if (!MagickMonitorFormatted(x,histogram_image->columns,&image->exception,
-                                  SaveImageText,image->filename,
-                                  image->columns,image->rows))
+      q=GetImagePixels(histogram_image,x,0,1,histogram_image->rows);
+      if (q == (PixelPacket *) NULL)
         break;
-  }
+      y=(long) (histogram_image->rows-(long) (scale*red[x]));
+      r=q+y;
+      for ( ; y < (long) histogram_image->rows; y++)
+        {
+          r->red=MaxRGB;
+          r++;
+        }
+      y=(long) (histogram_image->rows-(long) (scale*green[x]));
+      r=q+y;
+      for ( ; y < (long) histogram_image->rows; y++)
+        {
+          r->green=MaxRGB;
+          r++;
+        }
+      y=(long) (histogram_image->rows-(long) (scale*blue[x]));
+      r=q+y;
+      for ( ; y < (long) histogram_image->rows; y++)
+        {
+          r->blue=MaxRGB;
+          r++;
+        }
+      if (!SyncImagePixels(histogram_image))
+        break;
+      if (QuantumTick(x,histogram_image->columns))
+        if (!MagickMonitorFormatted(x,histogram_image->columns,&image->exception,
+                                    SaveImageText,image->filename,
+                                    image->columns,image->rows))
+          break;
+    }
   /*
     Free memory resources.
   */
@@ -319,25 +320,45 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
       DestroyImage(histogram_image);
       ThrowWriterTemporaryFileException(filename);
     }
-    {
-      char
-        command[MaxTextExtent];
+  {
+    char
+      *histogram;
 
-      /*
-        Add a histogram as an image comment.
-      */
-      (void) GetNumberColors(image,file,&image->exception);
-      (void) fclose(file);
-      FormatString(command,"@%.1024s",filename);
-      (void) SetImageAttribute(histogram_image,"comment",command);
-      (void) LiberateTemporaryFile(filename);
-    }
+    size_t
+      histogram_length;
+
+    /*
+      Add a histogram as an image comment.
+    */
+    (void) GetNumberColors(image,file,&image->exception);
+    (void) fclose(file);
+    histogram=FileToBlob(filename,&histogram_length,&histogram_image->exception);
+    (void) StripImage(histogram_image);
+    (void) SetImageAttribute(histogram_image,"comment",NULL);
+    if (histogram && histogram_length > 0)
+      (void) SetImageAttribute(histogram_image,"comment",histogram);
+    MagickFreeMemory(histogram);
+    (void) LiberateTemporaryFile(filename);
+  }
+  /*
+    Reduce to a PseudoClass image.
+  */
+  {
+    QuantizeInfo
+      quantize_info;
+
+    GetQuantizeInfo(&quantize_info);
+    quantize_info.number_colors=8;
+    quantize_info.dither=MagickFalse;
+    (void) QuantizeImage(&quantize_info,histogram_image);
+  }
   /*
     Write Histogram image as MIFF.
   */
   (void) strlcpy(filename,histogram_image->filename,MaxTextExtent);
   (void) strlcpy(histogram_image->filename,"miff:",MaxTextExtent);
   (void) strlcat(histogram_image->filename,filename,MaxTextExtent);
+  histogram_image->compression=RLECompression;
   status=WriteImage(image_info,histogram_image);
   DestroyImage(histogram_image);
   return(status);

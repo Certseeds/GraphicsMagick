@@ -1139,7 +1139,7 @@ MagickExport Image *OilPaintImage(const Image *image,const double radius,
                         }
                       ru++;
                     }
-                  r+=image->columns+width;
+                  r+=(size_t) image->columns+width;
                 }
               *q++=(*s);
             }

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003,2016 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -63,10 +63,6 @@
 */
 static double
   UserTime(void);
-
-static void
-  StartTimer(TimerInfo *,const unsigned int),
-  StopTimer(TimerInfo *);
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -344,7 +340,7 @@ MagickExport void ResetTimer(TimerInfo *time_info)
 %       stopwatch.
 %
 */
-static void StartTimer(TimerInfo *time_info,const unsigned int reset)
+MagickExport void StartTimer(TimerInfo *time_info,const unsigned int reset)
 {
   assert(time_info != (TimerInfo *) NULL);
   assert(time_info->signature == MagickSignature);
@@ -386,7 +382,7 @@ static void StartTimer(TimerInfo *time_info,const unsigned int reset)
 %    o  time_info: Timer statistics structure.
 %
 */
-static void StopTimer(TimerInfo *time_info)
+MagickExport void StopTimer(TimerInfo *time_info)
 {
   assert(time_info != (TimerInfo *) NULL);
   assert(time_info->signature == MagickSignature);

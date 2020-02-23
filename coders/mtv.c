@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -160,7 +160,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pixels=MagickAllocateArray(unsigned char *,image->columns,3);
     if (pixels == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    row_size=image->columns*3;
+    row_size= (size_t) image->columns*3;
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_size,pixels) != row_size)
@@ -192,6 +192,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->filename);
         break;
       }
+    StopTimer(&image->timer);
     /*
       Proceed to next image.
     */

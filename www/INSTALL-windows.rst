@@ -39,8 +39,8 @@ Prerequisites
   "Helvetica" and "Times Roman" if these fonts are not available as
   TrueType fonts.  The Ghostscript fonts need to manually installed
   with administrator privileges in the Ghostscript installation
-  directory (e.g. as "C:\Program Files\gs\fonts" or "C:Program
-  Files\gs\gs9.27\fonts").
+  directory (e.g. as ``C:\Program Files\gs\fonts`` or ``C:Program
+  Files\gs\gs9.27\fonts``).
 
   The algorithm used to find the fonts consults the Windows registry
   to learn Ghostscript installation paths, and then looks for a
@@ -130,24 +130,17 @@ Select Additional Tasks
 
   * Associate supported file extensions with GraphicsMagick
 
-  * Install ImageMagickObject OLE Control for VBscript, Visual Basic,
-    and WSH.
-
   "Creating a desktop icon" and "Update the executable search path"
   are selected by default. The remaining options default to
   un-selected.  Select the options you prefer.
 
-  Think twice before selecting "*Associate supported file extensions with
-  GraphicsMagick*" since this will set up approximately fifty file
-  associations, including common formats like JPEG, GIF, PNG, TIFF, and
-  PDF. These file associations will be to the 'gmdisplay' program which
-  is suitable for displaying images, but currently offers little more
-  than that. Windows XP seems to handle the file associations pretty
-  well, allowing you to choose from a list of programs, but older systems
-  like Windows NT 4.0 and Windows '98 only support a single association
-  per format, which can be quite annoying. Associations for
-  GraphicsMagick's native formats (such as `MIFF <miff.html>`_) will
-  always be made.
+  Think twice before selecting "*Associate supported file extensions
+  with GraphicsMagick*" since this will set up approximately fifty
+  file associations, including common formats like JPEG, GIF, PNG,
+  TIFF, and PDF. These file associations will be to the 'gmdisplay'
+  program which is suitable for displaying images, but currently
+  offers little more than that.  Associations for GraphicsMagick's
+  native formats (such as `MIFF <miff.html>`_) will always be made.
 
   Once you have made your selections, click on "*Next>*" to continue.
 
@@ -207,14 +200,9 @@ Uninstall
   installation directory) will leave behind the registry entries and path
   settings established at install time.
 
-  Under Windows '95 and Windows '98, use the "*Uninstall*" entry in the
-  GraphicsMagick portion of the Windows start menu to initiate the
-  uninstall.
-
-  On NT 4.0 and 5.X -based systems, GraphicsMagick should be removed via
-  the "*Add or Remove Programs*" area of the Windows Control Panel. Select
-  the GraphicsMagick package from the list, and click on "*Change/Remove*"
-  to uninstall it.
+  GraphicsMagick should be removed via the "*Add or Remove Programs*"
+  area of the Windows Control Panel. Select the GraphicsMagick package
+  from the list, and click on "*Change/Remove*" to uninstall it.
 
 Use From Another Package or Program
 -----------------------------------
@@ -266,9 +254,10 @@ Applicability
 -------------
 
   This section provides instructions for building GraphicsMagick
-  Microsoft Windows using the Visual C++ (Visual Studio, etc.) IDE. For
-  building using the free Cygwin or MinGW compilers, follow the
-  instructions in INSTALL-unix.txt.
+  Microsoft Windows using the Visual C++ (Visual Studio, etc.)
+  IDE. For building using the free Cygwin or MinGW compilers (e.g. as
+  part of `MSYS2 <https://www.msys2.org/>`_), follow the instructions
+  in INSTALL-unix.txt.
 
 Important Notes
 ---------------
@@ -281,16 +270,16 @@ Important Notes
   optimization, and the problem is likely to go away (but with less
   performance).
 
-Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
+Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation
 ------------------------------------------------------------
 
   The Visual C++ distribution targeted at Windows 2000 through Windows
-  8 does not provide any stock workspace (DSW) or project files (DSP)
+  10 does not provide any stock workspace (DSW) or project files (DSP)
   except for those included with third party libraries. Instead, there
   is a "configure" program that must run to create build
   environments to satisfy various requirements.
 
-  The configure program resides in VisualMagick\configure in the
+  The configure program resides in ``VisualMagick\configure`` in the
   GraphicsMagick source tree.  A pre-compiled configure.exe is
   provided, as well as Visual Studio project files to recompile it
   from source code if needed.
@@ -299,8 +288,8 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
   dialog after proceeding past the initial notifications screen:
 
   .. image:: configure-target-setup.png
-     :height: 485px
-     :width: 512px
+     :height: 473px
+     :width: 498px
      :scale: 100%
      :alt: Configure program screen shot
      :align: center
@@ -349,9 +338,9 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 14.0 Compilation
   multi-threaded support (the only option for DLL's).
 
   To do a build for your requirements, simply go to the configure sub-
-  directory under VisualMagick and open the configure.dsw workspace (for
-  Visual C++ 6.0) or configure.sln (for Visual C++ 7.X or 8.X). Set the
-  build configuration to "Release" under the
+  directory under VisualMagick and open the configure.dsw workspace
+  (for Visual C++ 6.0) or configure.sln (for Visual C++ 7.X through
+  9.X). Set the build configuration to "Release" under the
 
       "Build..., Set Active Configuration..."  menu.
 
@@ -779,4 +768,4 @@ Windows Distribution Build Procedure
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| GraphicsMagick Group 2002 - 2019
+Copyright |copy| GraphicsMagick Group 2002 - 2020

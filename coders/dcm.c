@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -6455,7 +6455,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
 
   if (dcm->rescale_map == (Quantum *) NULL)
     {
-      size_t num_entries = Max(MaxMap+1,dcm->max_value_in+1);
+      size_t num_entries = Max((size_t) MaxMap+1,(size_t) dcm->max_value_in+1);
       dcm->rescale_map=MagickAllocateArray(Quantum *,num_entries,sizeof(Quantum));
       if (dcm->rescale_map == NULL)
         {
@@ -6470,13 +6470,13 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
       if (dcm->upper_lim > dcm->lower_lim)
         {
           /* Use known range within image */
-          win_width=(dcm->upper_lim-dcm->lower_lim+1)*dcm->rescale_slope;
-          win_center=((dcm->upper_lim+dcm->lower_lim)/2)*dcm->rescale_slope+dcm->rescale_intercept;
+          win_width=((double) dcm->upper_lim-dcm->lower_lim+1)*dcm->rescale_slope;
+          win_center=(((double) dcm->upper_lim+dcm->lower_lim)/2.0)*dcm->rescale_slope+dcm->rescale_intercept;
         }
       else
         {
           /* Use full sample range and hope for the best */
-          win_width=(dcm->max_value_in+1)*dcm->rescale_slope;
+          win_width=((double) dcm->max_value_in+1)*dcm->rescale_slope;
           if (dcm->pixel_representation == 1)
             win_center=dcm->rescale_intercept;
           else
@@ -6493,7 +6493,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
   for (i=0; i < (dcm->max_value_in+1); i++)
     {
       if ((dcm->pixel_representation == 1) && (i >= MaxValueGivenBits(dcm->significant_bits)))
-        Xr = -((dcm->max_value_in+1-i) * dcm->rescale_slope) + dcm->rescale_intercept;
+        Xr = -(((double) dcm->max_value_in+1-i) * dcm->rescale_slope) + dcm->rescale_intercept;
       else
         Xr = (i * dcm->rescale_slope) + dcm->rescale_intercept;
       if (Xr <= Xw_min)
@@ -7625,6 +7625,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 break;
             }
         }
+      StopTimer(&image->timer);
 
       /*
         Proceed to next image.

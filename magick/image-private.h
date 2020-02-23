@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2018 - 2019 GraphicsMagick Group
+  Copyright (C) 2018 - 2020 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -24,3 +24,11 @@ typedef struct _ImageExtra
 #define ImageGetClipMaskInlined(i) (&i->extra->clip_mask)
 
 #define ImageGetCompositeMaskInlined(i) (&i->extra->composite_mask)
+
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 2
+ * fill-column: 78
+ * End:
+ */

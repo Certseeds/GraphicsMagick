@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -104,6 +104,8 @@ static Image *ReadXCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     &image->background_color,exception);
   if (status == MagickFail)
     {
+      /* Promote warning to error */
+      exception->severity = OptionError;
       DestroyImage(image);
       return ((Image *) NULL);
     }
@@ -125,6 +127,10 @@ static Image *ReadXCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       DestroyImage(image);
       image=(Image *) NULL;
+    }
+  else
+    {
+      StopTimer(&image->timer);
     }
 
   return image;

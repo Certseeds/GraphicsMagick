@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -137,6 +137,7 @@ static Image *ReadSTEGANOImage(const ImageInfo *image_info,
   if (image_info->ping)
     {
       CloseBlob(image);
+      StopTimer(&image->timer);
       return(image);
     }
   /*
@@ -193,6 +194,7 @@ static Image *ReadSTEGANOImage(const ImageInfo *image_info,
   }
   DestroyImage(watermark);
   (void) SyncImage(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

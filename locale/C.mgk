@@ -343,7 +343,7 @@
         Unsupported number of columns
       </Message>
       <Message name="UnsupportedNumberOfRows">
-        Unsupported number of columns
+        Unsupported number of rows
       </Message>
       <Message name="ArithmeticOverflow">
         Arithmetic overflow

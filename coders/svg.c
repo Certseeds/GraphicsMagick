@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1097,7 +1097,7 @@ SVGStartElement(void *context,const xmlChar *name,
   token[0]='\0';
   svg_info=(SVGInfo *) context;
   svg_info->n++;
-  MagickReallocMemory(double *,svg_info->scale,(svg_info->n+1)*sizeof(double));
+  MagickReallocMemory(double *,svg_info->scale,MagickArraySize((size_t)svg_info->n+1,sizeof(double)));
   if (svg_info->scale == (double *) NULL)
     {
       ThrowException(svg_info->exception,ResourceLimitError,
@@ -3978,6 +3978,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
+  if (image != (Image *) NULL)
+    StopTimer(&image->timer);
   return(image);
 }
 #endif

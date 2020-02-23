@@ -40,7 +40,7 @@ require AutoLoader;
     );
 
 # This version identifier must match the package version.
-($VERSION) = '1.3.34' =~ /^([\d.]+)/g;
+($VERSION) = '1.3.35' =~ /^([\d.]+)/g;
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()

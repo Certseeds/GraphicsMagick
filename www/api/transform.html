@@ -368,8 +368,8 @@ region of the image to shave.</dd>
 <div class="section" id="id21">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-void TransformImage( <a class="reference external" href="../api/types.html#image">Image</a> ** image, const char *crop_geometry,
-                     const char *image_geometry );
+MagickPassFail TransformImage( <a class="reference external" href="../api/types.html#image">Image</a> ** image, const char *crop_geometry,
+                               const char *image_geometry );
 </pre>
 </div>
 <div class="section" id="id22">
@@ -380,8 +380,8 @@ geometry specification.  If the operation fails, the original image handle
 is returned.</p>
 <p>The format of the TransformImage method is:</p>
 <pre class="literal-block">
-void TransformImage( <a class="reference external" href="../api/types.html#image">Image</a> ** image, const char *crop_geometry,
-                     const char *image_geometry );
+MagickPassFail TransformImage( <a class="reference external" href="../api/types.html#image">Image</a> ** image, const char *crop_geometry,
+                               const char *image_geometry );
 </pre>
 <dl class="docutils">
 <dt>image:</dt>

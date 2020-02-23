@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -163,7 +163,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     pixels=MagickAllocateArray(unsigned char *,image->columns,4);
     if (pixels == (unsigned char *) NULL)
       ThrowAVSReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    row_bytes=4*image->columns;
+    row_bytes=(size_t) 4*image->columns;
     for (y=0; y < (long) image->rows; y++)
     {
       if (ReadBlob(image,row_bytes,pixels) != row_bytes)
@@ -203,6 +203,8 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
     if (MagickFail == status)
       break;
+
+    StopTimer(&image->timer);
 
     /*
       Proceed to next image.

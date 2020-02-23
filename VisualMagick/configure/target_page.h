@@ -26,8 +26,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CTargetPage)
 	enum { IDD = IDD_TARGET_PAGE };
-	int		m_projectType;
-	int		m_quantumDepth;
+	int	m_projectType;
+	int	m_quantumDepth;
 	BOOL	m_useX11Stubs;
 	BOOL	m_decorateFiles;
 	BOOL	m_optionalFiles;
@@ -36,6 +36,7 @@ public:
 	BOOL	m_bigCoderDLL;
 	BOOL	m_build64Bit;
 	BOOL	m_openMP;
+	BOOL	m_speedOpt;
 	//}}AFX_DATA
 
 

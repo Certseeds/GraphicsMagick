@@ -1946,7 +1946,7 @@ MagickExport void *GetConfigureBlob(const char *filename,char *path,
             const char
               *separator;
 
-            int
+            size_t
               string_length;
 
             separator = strchr(start,DirectoryListSeparator);
@@ -2956,7 +2956,8 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
 #if defined(HasBZLIB)
                       if (strncmp((char *) magick,"BZh",3) == 0)
                         {
-                          (void) fclose(image->blob->handle.std);
+                          if (image->blob->handle.std)
+                            (void) fclose(image->blob->handle.std);
                           image->blob->handle.bz=BZ2_bzopen(filename,type);
                           if (image->blob->handle.bz != (BZFILE *) NULL)
                             {

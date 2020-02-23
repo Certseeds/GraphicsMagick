@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009 GraphicsMagick Group
+% Copyright (C) 2009-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -103,7 +103,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   ldblk = (long)(3*width);
 
-  if(GetBlobSize(image)!=(((long)ldblk)*height))
+  if(GetBlobSize(image)!=((magick_off_t) ((size_t)ldblk*height)))
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
   image->columns = width;
@@ -142,6 +142,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
 DONE_READING:
   CloseBlob(image);
+  StopTimer(&image->timer);
   return(image);
 }
 

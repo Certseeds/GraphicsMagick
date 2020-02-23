@@ -351,7 +351,7 @@ MagickExport Image *MagnifyImage(const Image * restrict image,ExceptionInfo *exc
       if (q == (PixelPacket *) NULL)
         break;
       p=scanline+image->columns-1;
-      q+=2*(image->columns-1);
+      q+=2*((size_t) image->columns-1);
       *q=(*p);
       *(q+1)=(*(p));
       for (x=1; x < (long) image->columns; x++)
@@ -559,11 +559,11 @@ MagickExport Image *MinifyImage(const Image * restrict image,ExceptionInfo *exce
                 total=zero;
                 r=p;
                 Minify(3.0); Minify(7.0);  Minify(7.0);  Minify(3.0);
-                r=p+(image->columns+4);
+                r=p+((size_t) image->columns+4);
                 Minify(7.0); Minify(15.0); Minify(15.0); Minify(7.0);
-                r=p+2*(image->columns+4);
+                r=p+2*((size_t) image->columns+4);
                 Minify(7.0); Minify(15.0); Minify(15.0); Minify(7.0);
-                r=p+3*(image->columns+4);
+                r=p+3*((size_t) image->columns+4);
                 Minify(3.0); Minify(7.0);  Minify(7.0);  Minify(3.0);
                 q->red=(Quantum) (total.red/128.0+0.5);
                 q->green=(Quantum) (total.green/128.0+0.5);
@@ -931,7 +931,7 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
         {
           contribution[n].pixel=start+n;
           contribution[n].weight=
-            filter_info->function(scale*(start+n-center+0.5),filter_info->support);
+            filter_info->function(scale*((double) start+n-center+0.5),filter_info->support);
           density+=contribution[n].weight;
         }
       if ((density != 0.0) && (density != 1.0))
@@ -1181,7 +1181,7 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
         {
           contribution[n].pixel=start+n;
           contribution[n].weight=
-            filter_info->function(scale*(start+n-center+0.5),filter_info->support);
+            filter_info->function(scale*((double) start+n-center+0.5),filter_info->support);
           density+=contribution[n].weight;
         }
       if ((density != 0.0) && (density != 1.0))
@@ -1402,8 +1402,8 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   if (resize_image == (Image *) NULL)
     return ((Image *) NULL);
 
-  order=(((double) columns*(image->rows+rows)) >
-         ((double) rows*(image->columns+columns)));
+  order=(((double) columns*((size_t) image->rows+rows)) >
+         ((double) rows*((size_t) image->columns+columns)));
   if (order)
     source_image=CloneImage(resize_image,columns,image->rows,True,exception);
   else
@@ -1455,7 +1455,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   quantum=0;
   if (order)
     {
-      span=source_image->columns+resize_image->rows;
+      span=(size_t) source_image->columns+resize_image->rows;
       status=HorizontalFilter(image,source_image,x_factor,&filters[i],blur,
                               view_data_set,span,&quantum,exception);
       if (status != MagickFail)
@@ -1464,7 +1464,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
     }
   else
     {
-      span=resize_image->columns+source_image->rows;
+      span=(size_t) resize_image->columns+source_image->rows;
       status=VerticalFilter(image,source_image,y_factor,&filters[i],blur,
                             view_data_set,span,&quantum,exception);
       if (status != MagickFail)

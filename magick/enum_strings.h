@@ -54,6 +54,7 @@ extern "C" {
   extern MagickExport const char *CompositeOperatorToString(const CompositeOperator composite_op) MAGICK_FUNC_CONST;
   extern MagickExport const char *CompressionTypeToString(const CompressionType compression_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *ConfirmAccessModeToString(const ConfirmAccessMode access_mode) MAGICK_FUNC_CONST;
+  extern MagickExport const char *GravityTypeToString(const GravityType gravity_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *EndianTypeToString(const EndianType endian_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *HighlightStyleToString(const HighlightStyle difference_algorithm) MAGICK_FUNC_CONST;
   extern MagickExport const char *ImageTypeToString(const ImageType image_type) MAGICK_FUNC_CONST;

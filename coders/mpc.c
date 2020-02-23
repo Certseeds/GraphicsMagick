@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -629,7 +629,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 if (LocaleNCompare(keyword,"profile-",8) == 0)
                   {
                     i=(long) number_of_profiles;
-                    MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
+                    MagickReallocMemory(ProfileInfo *,profiles,MagickArraySize((size_t) i+1,sizeof(ProfileInfo)));
                     if (profiles == (ProfileInfo *) NULL)
                       {
                         MagickFreeMemory(values);
@@ -886,11 +886,11 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Read image colormap from file.
             */
             packet_size=image->depth > 8 ? 6 : 3;
-            colormap=MagickAllocateMemory(unsigned char *,packet_size*image->colors);
+            colormap=MagickAllocateArray(unsigned char *,packet_size,image->colors);
             if (colormap == (unsigned char *) NULL)
               ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,
                 image);
-            (void) ReadBlob(image,packet_size*image->colors,colormap);
+            (void) ReadBlob(image, (size_t) packet_size*image->colors,colormap);
             p=colormap;
             if (image->depth <= 8)
               for (i=0; i < (long) image->colors; i++)
@@ -931,6 +931,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     status=PersistCache(image,cache_filename,MagickTrue,&offset,exception);
     if (status == MagickFail)
       ThrowMPCReaderException(CacheError,UnableToPeristPixelCache,image);
+    StopTimer(&image->timer);
     /*
       Proceed to next image.
     */
@@ -1390,7 +1391,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
           Allocate colormap.
         */
         packet_size=image->depth > 8 ? 6 : 3;
-        colormap=MagickAllocateMemory(unsigned char *,packet_size*image->colors);
+        colormap=MagickAllocateArray(unsigned char *,packet_size,image->colors);
         if (colormap == (unsigned char *) NULL)
           return(MagickFail);
         /*
@@ -1417,7 +1418,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
           }
 #endif /* QuantumDepth > 8 */
 
-        (void) WriteBlob(image,packet_size*image->colors,colormap);
+        (void) WriteBlob(image, (size_t) packet_size*image->colors,colormap);
         MagickFreeMemory(colormap);
       }
     /*

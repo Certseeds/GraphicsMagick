@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -15,6 +15,11 @@
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
+
+/*
+  Flags to form options passed to InitializeMagickEx
+*/
+#define MAGICK_OPT_NO_SIGNAL_HANDER 0x0001 /* Don't register ANSI/POSIX signal handlers */
 
 typedef Image
   *(*DecoderHandler)(const ImageInfo *,ExceptionInfo *);
@@ -112,6 +117,8 @@ extern MagickExport MagickBool
 extern MagickExport MagickPassFail
   ListModuleMap(FILE *file,ExceptionInfo *exception),
   ListMagickInfo(FILE *file,ExceptionInfo *exception),
+  InitializeMagickEx(const char *path, unsigned int options,
+                     ExceptionInfo *exception),
   UnregisterMagickInfo(const char *name);
 
 extern MagickExport void
@@ -130,19 +137,7 @@ extern MagickExport MagickInfo
   *SetMagickInfo(const char *name);
 
 #if defined(MAGICK_IMPLEMENTATION)
-
-  /*
-    Get blocksize to use when accessing the filesystem.
-  */
-  extern size_t
-  MagickGetFileSystemBlockSize(void) MAGICK_FUNC_PURE;
-
-  /*
-    Set blocksize to use when accessing the filesystem.
-  */
-  extern void
-  MagickSetFileSystemBlockSize(const size_t block_size);
-
+#  include "magick/magick-private.h"
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 
 
