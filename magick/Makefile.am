@@ -106,6 +106,7 @@ MAGICK_BASE_SRCS = \
 	magick/enhance.c \
 	magick/enhance.h \
 	magick/enum_strings.c \
+	magick/enum_strings.h \
 	magick/error.c \
 	magick/error.h \
 	magick/export.c \

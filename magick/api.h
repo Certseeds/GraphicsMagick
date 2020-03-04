@@ -9,6 +9,12 @@
 
   GraphicsMagick Application Programming Interface declarations.
 
+  Please notice that the header inclusion is designed such that the compiler
+  include path should include the parent directory of 'magick' and should not
+  include the directly where api.h resides.  If the include path includes the
+  directory where api.h resides, then there may be conflicts with other
+  headers.
+
 */
 
 #if !defined(_MAGICK_API_H)
