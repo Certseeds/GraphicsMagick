@@ -1,5 +1,9 @@
 2020-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/api.h: Add "magick/enum_strings.h" to API headers.
+	Requested by Przemysław Sobala via posting to the
+	graphicsmagick-help mailing list on 2020-02-27.
+
 	* scripts/html_fragments.py: Automatically generate HTML footer
 	content and include commented HTML fragment which may be
 	substituted with SF tracker for SourceForge web site.

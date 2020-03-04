@@ -1159,8 +1159,8 @@ am__magick_libGraphicsMagick_la_SOURCES_DIST =  \
 	magick/deprecate.c magick/deprecate.h magick/describe.c \
 	magick/describe.h magick/draw.c magick/draw.h magick/effect.c \
 	magick/effect.h magick/enhance.c magick/enhance.h \
-	magick/enum_strings.c magick/enum_strings.h magick/error.c \
-	magick/error.h magick/export.c magick/floats.c magick/floats.h \
+	magick/enum_strings.c magick/error.c magick/error.h \
+	magick/export.c magick/floats.c magick/floats.h \
 	magick/forward.h magick/fx.c magick/fx.h magick/gem.c \
 	magick/gem.h magick/gradient.c magick/gradient.h \
 	magick/hclut.c magick/hclut.h magick/image.c magick/image.h \
@@ -3760,7 +3760,6 @@ MAGICK_BASE_SRCS = \
 	magick/enhance.c \
 	magick/enhance.h \
 	magick/enum_strings.c \
-	magick/enum_strings.h \
 	magick/error.c \
 	magick/error.h \
 	magick/export.c \
@@ -3897,6 +3896,7 @@ MAGICK_INCLUDE_HDRS = \
 	magick/draw.h \
 	magick/effect.h \
 	magick/enhance.h \
+	magick/enum_strings.h \
 	magick/error.h \
 	magick/forward.h \
 	magick/fx.h \

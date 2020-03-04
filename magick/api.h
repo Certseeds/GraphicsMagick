@@ -75,6 +75,7 @@ extern "C" {
 #include "magick/effect.h"
 #include "magick/enhance.h"
 #include "magick/error.h"
+#include "magick/enum_strings.h"
 #include "magick/fx.h"
 #include "magick/gem.h"
 #include "magick/gradient.h"

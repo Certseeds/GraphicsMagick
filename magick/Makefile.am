@@ -106,7 +106,6 @@ MAGICK_BASE_SRCS = \
 	magick/enhance.c \
 	magick/enhance.h \
 	magick/enum_strings.c \
-	magick/enum_strings.h \
 	magick/error.c \
 	magick/error.h \
 	magick/export.c \
@@ -248,6 +247,7 @@ MAGICK_INCLUDE_HDRS = \
 	magick/draw.h \
 	magick/effect.h \
 	magick/enhance.h \
+	magick/enum_strings.h \
 	magick/error.h \
 	magick/forward.h \
 	magick/fx.h \
