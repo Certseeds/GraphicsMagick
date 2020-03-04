@@ -635,9 +635,3 @@ Use
    gm identify -format '%[dpx:*]' foo.dpx
 
 to list all DPX header attributes.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

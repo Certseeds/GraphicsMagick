@@ -1098,8 +1098,3 @@ the developer's environment environment and your own may include the
 compiler, the CPU type, and the library versions used. The
 GraphicsMagick developers use the current release of all dependent
 libraries.
-
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

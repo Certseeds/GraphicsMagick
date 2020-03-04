@@ -26,7 +26,7 @@ noted).  At the moment, the fastest way to obtain formal releases is
 from the `SourceForge Download`_ page since SourceForge has lots of
 bandwidth, and many mirror sites. Snapshot packages should usually be
 retrieved from the `GraphicsMagick FTP`_ site or one of its mirrors.
-There are mirrors of the ftp site in Czechoslovakia and Poland.
+There are mirrors of the ftp site in the Czech Republic and Poland.
 
 Ftp Site Organization
 ---------------------
@@ -81,9 +81,3 @@ Here are some known download sites for GraphicsMagick:
   `Polish ftp mirror via ftp <ftp://ftp.icm.edu.pl/pub/unix/graphics/GraphicsMagick/>`_ (ftp protocol)
 
   `Polish ftp mirror via http <http://ftp.icm.edu.pl/pub/unix/graphics/GraphicsMagick/>`_ (http protocol)
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

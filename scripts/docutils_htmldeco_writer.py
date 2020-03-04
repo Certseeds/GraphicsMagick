@@ -65,6 +65,6 @@ class MmHtmlTranslator(html4css1.HTMLTranslator):
 
         self.body_prefix.append(html_fragments.banner)
         self.body_prefix.append(html_fragments.nav)
-        #self.body_suffix = [html_fragments.footer, '</body>\n</html>\n']
-        self.body_suffix = ['</body>\n</html>\n']
+        self.body_suffix = [html_fragments.footer, '</body>\n</html>\n']
+        #self.body_suffix = ['</body>\n</html>\n']
 

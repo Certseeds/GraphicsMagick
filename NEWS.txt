@@ -4720,10 +4720,3 @@ The objectives of GraphicsMagick are to:
   * Improve memory efficiency.
   * Use a release process which assures a working product.
   * Maintain an accurate ChangeLog.
-
-
----------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2018

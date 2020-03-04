@@ -115,14 +115,3 @@ Alvy Ray Smith and Eric Ray Lyons
 Thomas R Crimmins
 		Inventor of the eight hull algorithm used for speckle
 		reduction.
-
-
----------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-| Copyright |copy| GraphicsMagick Group 2002 - 2020
-
-This program is covered by multiple licenses, which are described in
-Copyright.txt. You should have received a copy of Copyright.txt with this
-package; otherwise see http://www.graphicsmagick.org/Copyright.html.

@@ -83,10 +83,3 @@ The following are the ``GraphicsMagick`` change logs since 2001:
   * 2002_
 
   * 2001_
-
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

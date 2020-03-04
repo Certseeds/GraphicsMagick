@@ -1,3 +1,9 @@
+2020-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* scripts/html_fragments.py: Automatically generate HTML footer
+	content and include commented HTML fragment which may be
+	substituted with SF tracker for SourceForge web site.
+
 2020-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* version.sh: Updates in preparation for the 1.3.35 release.

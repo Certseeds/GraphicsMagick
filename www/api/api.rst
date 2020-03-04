@@ -296,9 +296,3 @@ out.miff'.
 The GraphicsMagick-config script reproduces the options which were used to
 compile the GraphicsMagick utilities. Using compatible options ensures that
 your program will compile and run.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

@@ -173,9 +173,3 @@ Here are just a few examples of what GraphicsMagick can do:
   * Decorate an image with a border or frame
 
   * Describe the format and characteristics of an image
-
-------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

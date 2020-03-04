@@ -54,9 +54,3 @@ GraphicsMagick Project Information
 `Thanks`_ - Read about those who helped in ways other than contributing code.
 
 `Source Control`_ - Source control is important.  We use Mercurial.
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2012 - 2020

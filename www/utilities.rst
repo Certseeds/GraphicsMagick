@@ -61,9 +61,3 @@ montage_         Create a composite image (in a grid) from separate images
 time_            Time the execution of a utility command.
 version_         Report GraphicsMagick version, features, and build options.
 ===============  =========================================================================
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

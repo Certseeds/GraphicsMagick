@@ -401,9 +401,3 @@ Authors
 John Cristy, magick-users@imagemagick.org ImageMagick Studio LLC.
 
 Maintained since 2002 by Bob Friesenhahn, GraphicsMagick Group.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

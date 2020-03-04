@@ -233,10 +233,3 @@ Mercurial Topics
 
 * `Merge Tool Configuration <https://www.mercurial-scm.org/wiki/MergeToolConfiguration>`_
 * `Keep "My" or "Their" files when doing a merge <https://www.mercurial-scm.org/wiki/TipsAndTricks#Keep_.22My.22_or_.22Their.22_files_when_doing_a_merge>`_
-
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2012 - 2020

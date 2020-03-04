@@ -807,9 +807,3 @@ On some platforms, GraphicsMagick automatically processes these
 extensions: .gz for Zip compression, .Z for Unix compression, and .bz2
 for block compression. For example, a PNM image called image.pnm.gz is
 automatically uncompressed while the image is read.
-
------------------------------------------------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020
