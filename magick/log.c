@@ -238,7 +238,7 @@ static LogEventType ParseEvents(const char *event_string)
 %
 %
 */
-MagickExport void DestroyLogInfo(void)
+void DestroyLogInfo(void)
 {
   if (log_info->file != (FILE *) NULL)
     if ((log_info->file != stdout) && (log_info->file != stderr))
@@ -445,11 +445,11 @@ MagickExport MagickBool IsEventLogging(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  LogMagickEvent() logs an event as determined by the log configuration file.
-%  If an error occurs, False is returned otherwise True.
+%  If an error occurs, MagickFail is returned otherwise MagickPass.
 %
 %  The format of the LogMagickEvent method is:
 %
-%      unsigned int LogMagickEvent(const LogEventType type,const char *module,
+%      MagickPassFail LogMagickEvent(const LogEventType type,const char *module,
 %        const char *function,const unsigned long line,const char *format,...)
 %
 %  A description of each parameter follows:
@@ -466,7 +466,7 @@ MagickExport MagickBool IsEventLogging(void)
 %
 %
 */
-MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
+MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
   const char *module,const char *function,const unsigned long line,
   const char *format,va_list operands)
 {
@@ -546,7 +546,7 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
             }
         }
       if (!enabled)
-        return(True);
+        return(MagickPass);
     }
 
   /* fixup module info to just include the filename - and not the
@@ -678,7 +678,7 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
       (void) fprintf(log_info->file,"</record>\n");
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
-      return(True);
+      return(MagickPass);
     }
   if (((unsigned int) log_info->output_type) & TXTFileOutput)
     {
@@ -718,7 +718,7 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
                        severity, event);
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
-      return(True);
+      return(MagickPass);
     }
 #if defined(MSWINDOWS)
   if (log_info->output_type & Win32DebugOutput)
@@ -887,9 +887,9 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
       log_info->method(type,buffer);
     }
   UnlockSemaphoreInfo(log_info->log_semaphore);
-  return(True);
+  return(MagickPass);
 }
-MagickExport unsigned int LogMagickEvent(const ExceptionType type,
+MagickExport MagickPassFail LogMagickEvent(const ExceptionType type,
   const char *module,const char *function,const unsigned long line,
   const char *format,...)
 {
@@ -921,7 +921,7 @@ MagickExport unsigned int LogMagickEvent(const ExceptionType type,
 %
 %  The format of the ReadLogConfigureFile method is:
 %
-%      unsigned int ReadLogConfigureFile(const char *basename,
+%      MagickPassFail ReadLogConfigureFile(const char *basename,
 %        const unsigned int depth,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -1190,14 +1190,13 @@ MagickExport unsigned long SetLogEventMask(const char *events)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SetLogFormat() sets the format for the "human readable" log record.
 %
 %  The format of the LogMagickFormat method is:
 %
-%      SetLogFormat(const char *format)
+%      void SetLogFormat(const char *format)
 %
 %  A description of each parameter follows:
 %
@@ -1223,19 +1222,18 @@ MagickExport void SetLogFormat(const char *format)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetLogMethod() sets the method that should be called when logging.
+%  SetLogMethod() sets the method to be called when logging.
 %
 %  The format of the SetLogMethod method is:
 %
-%      SetLogFormat(LogMethod)
+%      void SetLogMethod(LogMethod method)
 %
 %  A description of each parameter follows:
 %
-%    o method: pointer to a method that will be called when LogMagickEvent is
-%      being called.
+%    o method: pointer to a method of type LogMethod that will be called when LogMagickEvent
+%      is called.  Pass a null pointer to remove a registered method.
 %
 %
 */
@@ -1243,8 +1241,17 @@ MagickExport void SetLogMethod(LogMethod method)
 {
   LockSemaphoreInfo(log_info->log_semaphore);
 
-  log_info->output_type=(LogOutputType) (log_info->output_type |
-    MethodOutput);
+  if (method == (LogMethod) NULL)
+    {
+      log_info->output_type=(LogOutputType)
+        (log_info->output_type & ~MethodOutput);
+    }
+  else
+    {
+      log_info->output_type=(LogOutputType)
+        (log_info->output_type | MethodOutput);
+    }
+
   log_info->method=method;
 
   UnlockSemaphoreInfo(log_info->log_semaphore);

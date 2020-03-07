@@ -72,7 +72,7 @@ typedef enum
 } LogEventType;
 
 typedef void
-  (*LogMethod)(const ExceptionType,const char *);
+  (*LogMethod)(const ExceptionType type,const char *text);
 
 /*
   Method declarations.

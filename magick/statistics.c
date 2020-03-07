@@ -40,7 +40,7 @@
 %  The format of the GetImageStatistics method is:
 %
 %      MagickPassFail GetImageStatistics(const Image *image,
-%                                        ImageStatistics *statistics
+%                                        ImageStatistics *statistics,
 %                                        ExceptionInfo *exception)
 %
 %  A description of each parameter follows:

@@ -1,3 +1,10 @@
+2020-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/api/api.rst: Add functions from log.c and render.c.
+
+	* magick/log.c (DestroyLogInfo): DestroyLogInfo is no longer
+	marked MagickExport.
+
 2020-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/api.h: Add "magick/enum_strings.h" to API headers.

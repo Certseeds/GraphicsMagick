@@ -990,7 +990,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  DestroyDrawInfo() deallocates memory associated with an DrawInfo
-%  structure.
+%  structure.  Nothing is done if the pointer passed is NULL.
 %
 %  The format of the DestroyDrawInfo method is:
 %
