@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<title>log</title>
+<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+</head>
+<body>
+
+<div class="banner">
+<img src="../images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
+<span class="title">GraphicsMagick</span>
+<form action="http://www.google.com/search">
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+</form>
+</div>
+
+<div class="navmenu">
+<ul>
+  <li><a href="../index.html">Home</a></li>
+  <li><a href="../project.html">Project</a></li>
+  <li><a href="../download.html">Download</a></li>
+  <li><a href="../README.html">Install</a></li>
+  <li><a href="../Hg.html">Source</a></li>
+  <li><a href="../NEWS.html">News</a> </li>
+  <li><a href="../utilities.html">Utilities</a></li>
+  <li><a href="../programming.html">Programming</a></li>
+  <li><a href="../reference.html">Reference</a></li>
+</ul>
+</div>
+<div class="document" id="log">
+<h1 class="title">log</h1>
+<h2 class="subtitle" id="event-logging-support">Event logging support</h2>
+
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#iseventlogging" id="id9">IsEventLogging</a></li>
+<li><a class="reference internal" href="#logmagickevent" id="id10">LogMagickEvent</a></li>
+<li><a class="reference internal" href="#setlogeventmask" id="id11">SetLogEventMask</a></li>
+<li><a class="reference internal" href="#setlogformat" id="id12">SetLogFormat</a></li>
+<li><a class="reference internal" href="#setlogmethod" id="id13">SetLogMethod</a></li>
+</ul>
+</div>
+<div class="section" id="iseventlogging">
+<h1><a class="toc-backref" href="#id9">IsEventLogging</a></h1>
+<div class="section" id="synopsis">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+unsigned int IsEventLogging( void );
+</pre>
+</div>
+<div class="section" id="description">
+<h2>Description</h2>
+<p>IsEventLogging() returns True if logging of events is enabled otherwise
+False.</p>
+<p>The format of the IsEventLogging method is:</p>
+<pre class="literal-block">
+unsigned int IsEventLogging( void );
+</pre>
+</div>
+</div>
+<div class="section" id="logmagickevent">
+<h1><a class="toc-backref" href="#id10">LogMagickEvent</a></h1>
+<div class="section" id="id1">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+MagickPassFail LogMagickEvent( const LogEventType type, const char *module,
+                               const char *function, const unsigned long line,
+                               const char *format, ... );
+</pre>
+</div>
+<div class="section" id="id2">
+<h2>Description</h2>
+<p>LogMagickEvent() logs an event as determined by the log configuration file.
+If an error occurs, MagickFail is returned otherwise MagickPass.</p>
+<p>The format of the LogMagickEvent method is:</p>
+<pre class="literal-block">
+MagickPassFail LogMagickEvent( const LogEventType type, const char *module,
+                               const char *function, const unsigned long line,
+                               const char *format, ... );
+</pre>
+<dl class="docutils">
+<dt>type:</dt>
+<dd>The event type.</dd>
+<dt>filename:</dt>
+<dd>The source module filename.</dd>
+<dt>function:</dt>
+<dd>The function name.</dd>
+<dt>line:</dt>
+<dd>The line number of the source module.</dd>
+<dt>format:</dt>
+<dd>The output format.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="setlogeventmask">
+<h1><a class="toc-backref" href="#id11">SetLogEventMask</a></h1>
+<div class="section" id="id3">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+unsigned long SetLogEventMask( const char *events );
+</pre>
+</div>
+<div class="section" id="id4">
+<h2>Description</h2>
+<p>SetLogEventMask() accepts a comma-delimited list that determines which
+events to log.  All other events are ignored.  By default, no logging is
+enabled.  This method returns the updated log event mask.</p>
+<p>The format of the AcquireString method is:</p>
+<pre class="literal-block">
+unsigned long SetLogEventMask( const char *events );
+</pre>
+<p>A description of each parameter follows:</p>
+<dl class="docutils">
+<dt>events:</dt>
+<dd>log these events.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="setlogformat">
+<h1><a class="toc-backref" href="#id12">SetLogFormat</a></h1>
+<div class="section" id="id5">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+void SetLogFormat( const char *format );
+</pre>
+</div>
+<div class="section" id="id6">
+<h2>Description</h2>
+<p>SetLogFormat() sets the format for the &quot;human readable&quot; log record.</p>
+<p>The format of the LogMagickFormat method is:</p>
+<pre class="literal-block">
+void SetLogFormat( const char *format );
+</pre>
+<p>A description of each parameter follows:</p>
+<dl class="docutils">
+<dt>format:</dt>
+<dd>The log record format.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="setlogmethod">
+<h1><a class="toc-backref" href="#id13">SetLogMethod</a></h1>
+<div class="section" id="id7">
+<h2>Synopsis</h2>
+<pre class="literal-block">
+void SetLogMethod( LogMethod method );
+</pre>
+</div>
+<div class="section" id="id8">
+<h2>Description</h2>
+<p>SetLogMethod() sets the method to be called when logging.</p>
+<p>The format of the SetLogMethod method is:</p>
+<pre class="literal-block">
+void SetLogMethod( LogMethod method );
+</pre>
+<p>A description of each parameter follows:</p>
+<dl class="docutils">
+<dt>method:</dt>
+<dd>pointer to a method of type LogMethod that will be called when LogMagickEvent
+is called.  Pass a null pointer to remove a registered method.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
+</div>
+</body>
+</html>
