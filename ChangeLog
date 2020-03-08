@@ -1,5 +1,9 @@
 2020-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/resize.c (HorizontalFilter): Improve tracing.
+	(VerticalFilter): Improve tracing.
+	(ResizeImage): Improve tracing.
+
 	* www/api/api.rst: Add functions from log.c and render.c.
 
 	* magick/log.c (DestroyLogInfo): DestroyLogInfo is no longer

@@ -854,7 +854,11 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "Enter HorizontalFilter() ...");
+                          "Horizontal Filter: %lux%lu => %lux%lu "
+                          "(x_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
+                          source->columns, source->rows,
+                          destination->columns, destination->rows,
+                          x_factor, blur, (MAGICK_SIZE_T) span);
 
   quantum = *quantum_p;
 
@@ -1066,7 +1070,7 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "%s exit HorizontalFilter()",
+                          "%s exit Horizontal Filter",
                           (status == MagickFail ? "Error" : "Normal"));
 
   *quantum_p = quantum;
@@ -1102,7 +1106,11 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "Enter VerticalFilter() ...");
+                          "Vertical Filter: %lux%lu => %lux%lu "
+                          "(y_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
+                          source->columns, source->rows,
+                          destination->columns, destination->rows,
+                          y_factor, blur, (MAGICK_SIZE_T) span);
 
   quantum = *quantum_p;
 
@@ -1318,7 +1326,7 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "%s exit VerticalFilter()",
+                          "%s exit Vertical Filter",
                           (status == MagickFail ? "Error" : "Normal"));
 
   *quantum_p = quantum;
@@ -1453,6 +1461,10 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   */
   status=MagickPass;
   quantum=0;
+  if (IsEventLogging())
+    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                          "Resize filter order: %s",
+                          order ? "Horizontal/Vertical" : "Vertical/Horizontal");
   if (order)
     {
       span=(size_t) source_image->columns+resize_image->rows;
