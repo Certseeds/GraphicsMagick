@@ -1,3 +1,9 @@
+2020-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (LogMagickEventList): Prepare source module base
+	name more efficiently.  Move MethodOutput implementation to the
+	front so it is not filtered by other active blocks.
+
 2020-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/resize.c (HorizontalFilter): Improve tracing.

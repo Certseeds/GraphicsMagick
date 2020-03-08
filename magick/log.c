@@ -467,9 +467,12 @@ MagickExport MagickBool IsEventLogging(void)
 %
 */
 MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
-  const char *module,const char *function,const unsigned long line,
-  const char *format,va_list operands)
+                                               const char *module,const char *function,const unsigned long line,
+                                               const char *format,va_list operands)
 {
+  const char
+    *modulebase;
+
   char
     *domain,
     *severity,
@@ -477,15 +480,11 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
     nteventtype,
 #endif
     event[MaxTextExtent],
-    srcname[MaxTextExtent],
     timestamp[MaxTextExtent];
 
   double
     elapsed_time,
     user_time;
-
-  register const char
-    *p;
 
   struct tm
 #if defined(HAVE_LOCALTIME_R)
@@ -552,17 +551,21 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
   /* fixup module info to just include the filename - and not the
      whole path to the file. This makes the log huge for no good
      reason */
-  GetPathComponent(module,TailPath,srcname);
+  for (modulebase=module+strlen(module)-1; modulebase > module; modulebase--)
+    if (IsBasenameSeparator(*modulebase))
+      {
+        modulebase++;
+        break;
+      }
 
-  LockSemaphoreInfo(log_info->log_semaphore);
   switch (((unsigned int) type) % 100)
-  {
+    {
     case UndefinedException: domain=(char *) "Undefined"; break;
     case ExceptionBase: domain=(char *) "Exception"; break;
     case ResourceBase: domain=(char *) "Resource"; break;
-    /* case ResourceLimitBase: domain=(char *) "ResourceLimit"; break; */
+      /* case ResourceLimitBase: domain=(char *) "ResourceLimit"; break; */
     case TypeBase: domain=(char *) "Type"; break;
-    /* case AnnotateBase: domain=(char *) "Annotate"; break; */
+      /* case AnnotateBase: domain=(char *) "Annotate"; break; */
     case OptionBase: domain=(char *) "Option"; break;
     case DelegateBase: domain=(char *) "Delegate"; break;
     case MissingDelegateBase: domain=(char *) "MissingDelegate"; break;
@@ -574,7 +577,7 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
     case CoderBase: domain=(char *) "Coder"; break;
     case ModuleBase: domain=(char *) "Module"; break;
     case DrawBase: domain=(char *) "Draw"; break;
-    /* case RenderBase: domain=(char *) "Render"; break; */
+      /* case RenderBase: domain=(char *) "Render"; break; */
     case ImageBase: domain=(char *) "image"; break;
     case TemporaryFileBase: domain=(char *) "TemporaryFile"; break;
     case TransformBase: domain=(char *) "Transform"; break;
@@ -587,24 +590,24 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
     case RegistryBase: domain=(char *) "Registry"; break;
     case ConfigureBase: domain=(char *) "Configure"; break;
     default: domain=(char *) "UnknownEvent"; break;
-  }
+    }
   switch ((((unsigned int) type) / 100) * 100)
-  {
+    {
     case EventException: severity=(char *) "Event"; break;
     case WarningException: severity=(char *) "Warning"; break;
     case ErrorException: severity=(char *) "Error"; break;
     case FatalErrorException: severity=(char *) "FatalError"; break;
     default: severity=(char *) "Unknown"; break;
-  }
+    }
 #if defined(MSWINDOWS)
   switch ((type / 100) * 100)
-  {
+    {
     case EventException: nteventtype=EVENTLOG_INFORMATION_TYPE; break;
     case WarningException: nteventtype=EVENTLOG_WARNING_TYPE; break;
     case ErrorException: nteventtype=EVENTLOG_ERROR_TYPE; break;
     case FatalErrorException: nteventtype=EVENTLOG_ERROR_TYPE; break;
     default: nteventtype=EVENTLOG_INFORMATION_TYPE; break;
-  }
+    }
 #endif
 #if defined(HAVE_VSNPRINTF)
   (void) vsnprintf(event,MaxTextExtent,format,operands);
@@ -615,18 +618,34 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
 #    error Neither vsnprintf or vsprintf is available.
 #  endif
 #endif
+  LockSemaphoreInfo(log_info->log_semaphore);
   seconds=time((time_t *) NULL);
 #if defined(HAVE_LOCALTIME_R)
   time_meridian=localtime_r(&seconds, &tm_buf);
 #else
-  time_meridian=localtime(&seconds); /* Thread-unsafe version */
+  time_meridian=localtime(&seconds); /* Possibly thread-unsafe version */
 #endif /* if defined(HAVE_LOCALTIME_R) */
   elapsed_time=GetElapsedTime(&log_info->timer);
   user_time=GetUserTime(&log_info->timer);
   (void) ContinueTimer((TimerInfo *) &log_info->timer);
   FormatString(timestamp,"%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+
-    1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
-    time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+               1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
+               time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+  if ((log_info->output_type & MethodOutput) &&
+      (log_info->method != (LogMethod) NULL))
+    {
+      char
+        buffer[MaxTextExtent];
+
+      FormatString(buffer,
+                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
+                   " %.1024s %.1024s\n",
+                   timestamp, (long) (elapsed_time/60.0),
+                   fmod(elapsed_time,60.0),
+                   user_time, (long) getpid(), modulebase, function, line,
+                   domain, severity, event);
+      log_info->method(type,buffer);
+    }
   if (((unsigned int) log_info->output_type) & XMLFileOutput)
     {
       /*
@@ -661,16 +680,16 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
         }
       (void) fprintf(log_info->file,"<record>\n");
       (void) fprintf(log_info->file,"  <timestamp>%.1024s</timestamp>\n",
-        timestamp);
+                     timestamp);
       (void) fprintf(log_info->file,
-        "  <elapsed-time>%ld:%-9.6f</elapsed-time>\n",
-        (long) (elapsed_time/60.0),fmod(elapsed_time,60.0));
+                     "  <elapsed-time>%ld:%-9.6f</elapsed-time>\n",
+                     (long) (elapsed_time/60.0),fmod(elapsed_time,60.0));
       (void) fprintf(log_info->file,"  <user-time>%0.3f</user-time>\n",
-        user_time);
+                     user_time);
       (void) fprintf(log_info->file,"  <pid>%ld</pid>\n",(long) getpid());
-      (void) fprintf(log_info->file,"  <module>%.1024s</module>\n",srcname);
+      (void) fprintf(log_info->file,"  <module>%.1024s</module>\n",modulebase);
       (void) fprintf(log_info->file,"  <function>%.1024s</function>\n",
-        function);
+                     function);
       (void) fprintf(log_info->file,"  <line>%lu</line>\n",line);
       (void) fprintf(log_info->file,"  <domain>%.1024s</domain>\n",domain);
       (void) fprintf(log_info->file,"  <severity>%.1024s</severity>\n",severity);
@@ -709,13 +728,13 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
           if (log_info->generation >= log_info->generations)
             log_info->generation=0;
         }
-        (void) fprintf(log_info->file,
-                       "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu"
-                       " %.1024s %.1024s %.1024s\n",
-                       timestamp, (long) (elapsed_time/60.0),
-                       fmod(elapsed_time,60.0),
-                       user_time, (long) getpid(), srcname, function, line, domain,
-                       severity, event);
+      (void) fprintf(log_info->file,
+                     "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu"
+                     " %.1024s %.1024s %.1024s\n",
+                     timestamp, (long) (elapsed_time/60.0),
+                     fmod(elapsed_time,60.0),
+                     user_time, (long) getpid(), modulebase, function, line, domain,
+                     severity, event);
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
       return(MagickPass);
@@ -731,7 +750,7 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
                    " %.1024s %.1024s\n",
                    timestamp, (long) (elapsed_time/60.0),
                    fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
+                   user_time, (long) getpid(), modulebase, function, line,
                    domain, severity, event);
       OutputDebugString(buffer);
     }
@@ -752,7 +771,7 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
                    " %.1024s %.1024s\n",
                    timestamp, (long) (elapsed_time/60.0),
                    fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
+                   user_time, (long) getpid(), modulebase, function, line,
                    domain, severity, event);
       hSource = RegisterEventSource(NULL, MagickPackageName);
       if (hSource != NULL)
@@ -766,8 +785,12 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
   if ((((unsigned int) log_info->output_type) & StdoutOutput) ||
       (((unsigned int) log_info->output_type) & StderrOutput))
     {
+      register const char
+        *p;
+
       FILE
         *file;
+
       /*
         Log to stdout in a "human readable" format.
       */
@@ -775,116 +798,92 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
       if (((unsigned int) log_info->output_type) & StderrOutput)
         file = stderr;
       for (p=log_info->format; *p != '\0'; p++)
-      {
-        /*
-          Process formatting characters in text.
-        */
-        if ((*p == '\\') && (*(p+1) == 'r'))
-          {
-            (void) fprintf(file,"\r");
-            p++;
-            continue;
-          }
-        if ((*p == '\\') && (*(p+1) == 'n'))
-          {
-            (void) fprintf(file,"\n");
-            p++;
-            continue;
-          }
-        if (*p != '%')
-          {
-            (void) fprintf(file,"%c",*p);
-            continue;
-          }
-        p++;
-        switch (*p)
         {
-          case 'd':
-          {
-            (void) fprintf(file,"%.1024s",domain);
-            break;
-          }
-          case 'e':
-          {
-            (void) fprintf(file,"%.1024s",event);
-            break;
-          }
-          case 'f':
-          {
-            (void) fprintf(file,"%.1024s",function);
-            break;
-          }
-          case 'l':
-          {
-            (void) fprintf(file,"%lu",line);
-            break;
-          }
-          case 'm':
-          {
-            register const char
-              *lp;
-
-            for (lp=srcname+strlen(srcname)-1; lp > srcname; lp--)
-              if (*lp == *DirectorySeparator)
-                {
-                  lp++;
-                  break;
-                }
-            (void) fprintf(file,"%.1024s",lp);
-            break;
-          }
-          case 'p':
-          {
-            (void) fprintf(file,"%ld",(long) getpid());
-            break;
-          }
-          case 'r':
-          {
-            (void) fprintf(file,"%ld:%-9.6f",(long) (elapsed_time/60.0),
-              fmod(elapsed_time,60.0));
-            break;
-          }
-          case 's':
-          {
-            (void) fprintf(file,"%.1024s",severity);
-            break;
-          }
-          case 't':
-          {
-            (void) fprintf(file,"%02d:%02d:%02d",time_meridian->tm_hour,
-              time_meridian->tm_min,time_meridian->tm_sec);
-            break;
-          }
-          case 'u':
-          {
-            (void) fprintf(file,"%0.3fu",user_time);
-            break;
-          }
-          default:
-          {
-            (void) fprintf(file,"%%");
-            (void) fprintf(file,"%c",*p);
-            break;
-          }
+          /*
+            Process formatting characters in text.
+          */
+          if ((*p == '\\') && (*(p+1) == 'r'))
+            {
+              (void) fprintf(file,"\r");
+              p++;
+              continue;
+            }
+          if ((*p == '\\') && (*(p+1) == 'n'))
+            {
+              (void) fprintf(file,"\n");
+              p++;
+              continue;
+            }
+          if (*p != '%')
+            {
+              (void) fprintf(file,"%c",*p);
+              continue;
+            }
+          p++;
+          switch (*p)
+            {
+            case 'd':
+              {
+                (void) fprintf(file,"%.1024s",domain);
+                break;
+              }
+            case 'e':
+              {
+                (void) fprintf(file,"%.1024s",event);
+                break;
+              }
+            case 'f':
+              {
+                (void) fprintf(file,"%.1024s",function);
+                break;
+              }
+            case 'l':
+              {
+                (void) fprintf(file,"%lu",line);
+                break;
+              }
+            case 'm':
+              {
+                (void) fprintf(file,"%.1024s",modulebase);
+                break;
+              }
+            case 'p':
+              {
+                (void) fprintf(file,"%ld",(long) getpid());
+                break;
+              }
+            case 'r':
+              {
+                (void) fprintf(file,"%ld:%-9.6f",(long) (elapsed_time/60.0),
+                               fmod(elapsed_time,60.0));
+                break;
+              }
+            case 's':
+              {
+                (void) fprintf(file,"%.1024s",severity);
+                break;
+              }
+            case 't':
+              {
+                (void) fprintf(file,"%02d:%02d:%02d",time_meridian->tm_hour,
+                               time_meridian->tm_min,time_meridian->tm_sec);
+                break;
+              }
+            case 'u':
+              {
+                (void) fprintf(file,"%0.3fu",user_time);
+                break;
+              }
+            default:
+              {
+                (void) fprintf(file,"%%");
+                (void) fprintf(file,"%c",*p);
+                break;
+              }
+            }
         }
-      }
       (void) fprintf(file,"\n");
       (void) fflush(file);
-    }
-  if ((log_info->output_type & MethodOutput) &&
-      (log_info->method != (LogMethod) NULL))
-    {
-      char
-        buffer[MaxTextExtent];
-
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
-                   domain, severity, event);
-      log_info->method(type,buffer);
     }
   UnlockSemaphoreInfo(log_info->log_semaphore);
   return(MagickPass);
