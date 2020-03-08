@@ -4547,6 +4547,11 @@ ModifyCache(Image *image, ExceptionInfo *exception)
               if (status == MagickFail)
                 DestroyCacheInfo(clone_image.cache);
             }
+          else
+            {
+              DestroyCacheInfo(clone_image.cache);
+              clone_image.cache=(CacheInfo *) NULL;
+            }
           DestroySemaphoreInfo(&clone_image.semaphore);
 
           if (status != MagickFail)
@@ -4555,7 +4560,7 @@ ModifyCache(Image *image, ExceptionInfo *exception)
               image->cache=clone_image.cache;
             }
           if (status == MagickFail)
-            fprintf(stderr,"ModifyCache failed!\n");
+            fprintf(stderr,"ModifyCache failed!\n"); /* oss-fuzz-20871 leaked clone_image.cache allocated by GetCacheInfo(&clone_image.cache) */
           /* fprintf(stderr,"ModifyCache: Thread %d exits (cache_info = %p)\n",
              omp_get_thread_num(),image->cache); */
         }
@@ -4567,7 +4572,10 @@ ModifyCache(Image *image, ExceptionInfo *exception)
       cache if necessary.
     */
     if (destroy_cache)
-      DestroyCacheInfo(cache_info);
+      {
+        DestroyCacheInfo(cache_info);
+        cache_info=(CacheInfo *) NULL;
+      }
 
     if (status != MagickFail)
       {
