@@ -99,6 +99,12 @@ typedef struct _LogInfo
     filename[256],
     format[200];
 
+  time_t
+    last_seconds;
+
+  struct tm
+    last_tm;
+
 } LogInfo;
 
 /*
@@ -487,9 +493,6 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
     user_time;
 
   struct tm
-#if defined(HAVE_LOCALTIME_R)
-    tm_buf,
-#endif /* if defined(HAVE_LOCALTIME_R) */
     *time_meridian;
 
   time_t
@@ -620,11 +623,20 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
 #endif
   LockSemaphoreInfo(log_info->log_semaphore);
   seconds=time((time_t *) NULL);
+  if (seconds == log_info->last_seconds)
+    {
+      time_meridian=&log_info->last_tm;
+    }
+  else
+    {
+      log_info->last_seconds=seconds;
 #if defined(HAVE_LOCALTIME_R)
-  time_meridian=localtime_r(&seconds, &tm_buf);
+      time_meridian=localtime_r(&seconds, &log_info->last_tm);
 #else
-  time_meridian=localtime(&seconds); /* Possibly thread-unsafe version */
+      time_meridian=localtime(&seconds); /* Possibly thread-unsafe version */
+      (void) memcpy(&log_info->last_tm,time_meridian,sizeof(log_info->last_tm));
 #endif /* if defined(HAVE_LOCALTIME_R) */
+    }
   elapsed_time=GetElapsedTime(&log_info->timer);
   user_time=GetUserTime(&log_info->timer);
   (void) ContinueTimer((TimerInfo *) &log_info->timer);

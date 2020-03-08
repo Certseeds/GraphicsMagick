@@ -3,6 +3,8 @@
 	* magick/log.c (LogMagickEventList): Prepare source module base
 	name more efficiently.  Move MethodOutput implementation to the
 	front so it is not filtered by other active blocks.
+	(LogMagickEventList): Cache broken-down time structure in LogInfo
+	and recompute only when needed.
 
 2020-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
