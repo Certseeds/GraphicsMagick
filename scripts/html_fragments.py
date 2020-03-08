@@ -60,7 +60,7 @@ nav_template = """
 
 # hr class was "divider".  Changed to "docutils"
 # footer div class was "footer".  Changed to "document" so text style matches document.
-footer_template = """
+footer_template = u"""
 <hr class="docutils">
 <div class="document">
     <p><a href="%(url_prefix)sCopyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020%(sponsor_logo_html)s</p>
