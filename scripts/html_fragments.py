@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:expandtab:tw=100:
 
 #* Author: Mark Mitchell

@@ -293,7 +293,7 @@ InitializeLogInfo(void)
   /*
     Initialize LogInfo
   */
-  log_info=MagickAllocateMemory(LogInfo *,sizeof(LogInfo));
+  log_info=MagickAllocateClearedMemory(LogInfo *,sizeof(LogInfo));
   if (log_info == (LogInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateLogInfo);
@@ -320,6 +320,7 @@ InitializeLogInfo(void)
   log_info->output_type=StderrOutput;
   log_info->method=0;
   log_info->log_configured=MagickFalse;
+  log_info->last_seconds=0;
 
   (void) strlcpy(log_info->path,"(default)",sizeof(log_info->path));
   (void) strlcpy(log_info->filename,"Magick-%d.log",sizeof(log_info->filename));
