@@ -1,3 +1,8 @@
+2020-03-10  Troy Patteson  <troyp@ieee.org>
+
+	* coders/png.c (WriteOnePNGImage): Don't skip optional Exif
+	identifier code if it isn't present.
+
 2020-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (ModifyCache): Destroy clone_image.cache if

@@ -8536,17 +8536,22 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                 PNGType(chunk,mng_eXIf);
 
                 if (length < 7)
-                  break;  /* othewise crashes */
+                  break;  /* otherwise crashes */
 
-                /* skip the "Exif\0\0" JFIF Exif Header ID */
-                length -= 6;
+                if (data[0] == 'E' && data[1] == 'x' && data[2] == 'i' &&
+                    data[3] == 'f' && data[4] == '\0' && data[5] == '\0')
+                  {
+                    /* skip the optional Exif identifier code ("Exif\0\0") */
+                    length -= 6;
+                    data += 6;
+                  }
 
                 LogPNGChunk(logging,chunk,length);
                 (void) WriteBlobMSBULong(image,length);
                 (void) WriteBlob(image,4,chunk);
-                (void) WriteBlob(image,length,data+6);
+                (void) WriteBlob(image,length,data);
                 (void) WriteBlobMSBULong(image,crc32(crc32(0,chunk,4),
-                  data+6, (uInt) length));
+                  data, (uInt) length));
                 break;
               }
           }
