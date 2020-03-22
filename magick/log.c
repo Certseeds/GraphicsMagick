@@ -1193,31 +1193,16 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetLogDefaultEventType() sets the set of events which will result in
-%  a log event.  The events are specified as a comma-separated list
-%  including one or more of the following:
-%
-%     annotate       Text annotation events.
-%     blob           File opening/closing/loading events.
-%     cache          Pixel cache events.
-%     coder          File format coder events.
-%     configure      Configuration events (searching for .mgk files, etc.).
-%     deprecate      Identify use of deprecated functions.
-%     error          Error exception report events.
-%     exception      Exception report events (warning and error).
-%     locale         Locale events.
-%     none           Reporting disabled.
-%     render         Rendering (drawing) events.
-%     resource       Resource allocation events (memory, disk, etc.)
-%     temporaryFile  Temporary file events (allocate, deallocate, etc.)
-%     transform      Image processing events.
-%     user           User events (not emitted by GraphicsMagick).
-%     warning        Warning exception report events.
-%     X11            X11 server events.
+%  SetLogDefaultEventType() accepts a comma-delimited list (Annotate, Blob,
+%  Cache, Coder, Configure, Deprecate, Error, Exception,  FatalError,
+%  Information, Locale, Option, Render, Resource, TemporaryFile, Transform,
+%  User, Warning, or X11) that determines the default set of events to log.
+%  All other events are ignored.  By default, no logging is enabled.
 %
 %  This function should be called prior to InitializeMagick() since it
 %  provides defaults used by InitializeMagick() while the logging system
-%  is initialized.
+%  is initialized.  The events may be modified later after
+%  InitializeMagick() has been called using the SetLogEventMask() function.
 %
 %  The format of SetLogDefaultEventType method is:
 %
@@ -1478,9 +1463,12 @@ MagickExport void SetLogDefaultFileName( const char *filename )
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetLogEventMask() accepts a comma-delimited list that determines which
-%  events to log.  All other events are ignored.  By default, no logging is
-%  enabled.  This method returns the updated log event mask.
+%  SetLogEventMask() accepts a comma-delimited list (Annotate, Blob, Cache,
+%  Coder, Configure, Deprecate, Error, Exception,  FatalError, Information,
+%  Locale, Option, Render, Resource, TemporaryFile, Transform, User,
+%  Warning, or X11) that determines which events to log.  All other events
+%  are ignored.  By default, no logging is enabled.  This method returns
+%  the updated log event mask.
 %
 %  The format of the SetLogEventMask method is:
 %
@@ -1529,17 +1517,17 @@ MagickExport unsigned long SetLogEventMask(const char *events)
 %  SetLogFormat() sets the format for the "human readable" log record.
 %  The format specification supports these special format characters:
 %
-%    %d   domain
-%    %e   event
-%    %f   function
-%    %l   line
-%    %m   module
-%    %p   process ID
-%    %r   real CPU time
-%    %t   wall clock time
-%    %u   user CPU time
-%    %%   percent sign
-%    \n   newline
+%    %d   domain,
+%    %e   event,
+%    %f   function,
+%    %l   line,
+%    %m   module,
+%    %p   process ID,
+%    %r   real CPU time,
+%    %t   wall clock time,
+%    %u   user CPU time,
+%    %%   percent sign,
+%    \n   newline,
 %    \r   carriage return
 %
 %  The format of the LogMagickFormat method is:

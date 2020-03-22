@@ -76,7 +76,7 @@ MagickBool IsEventLogging( void );
 <div class="section" id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-MagickPassFail LogMagickEvent( const LogEventType type, const char *module,
+MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
                                const char *function, const unsigned long line,
                                const char *format, ... );
 </pre>
@@ -88,7 +88,7 @@ configuration. If an error occurs, MagickFail is returned otherwise
 MagickPass.</p>
 <p>The format of the LogMagickEvent method is:</p>
 <pre class="literal-block">
-MagickPassFail LogMagickEvent( const LogEventType type, const char *module,
+MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
                                const char *function, const unsigned long line,
                                const char *format, ... );
 </pre>
@@ -116,29 +116,15 @@ void SetLogDefaultEventType( const char *events );
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
-<p>SetLogDefaultEventType() sets the set of events which will result in
-a log event.  The events are specified as a comma-separated list
-including one or more of the following:</p>
-<p>annotate       Text annotation events.
-blob           File opening/closing/loading events.
-cache          Pixel cache events.
-coder          File format coder events.
-configure      Configuration events (searching for .mgk files, etc.).
-deprecate      Identify use of deprecated functions.
-error          Error exception report events.
-exception      Exception report events (warning and error).
-locale         Locale events.
-none           Reporting disabled.
-render         Rendering (drawing) events.
-resource       Resource allocation events (memory, disk, etc.)
-temporaryFile  Temporary file events (allocate, deallocate, etc.)
-transform      Image processing events.
-user           User events (not emitted by GraphicsMagick).
-warning        Warning exception report events.
-X11            X11 server events.</p>
+<p>SetLogDefaultEventType() accepts a comma-delimited list (Annotate, Blob,
+Cache, Coder, Configure, Deprecate, Error, Exception,  FatalError,
+Information, Locale, Option, Render, Resource, TemporaryFile, Transform,
+User, Warning, or X11) that determines the default set of events to log.
+All other events are ignored.  By default, no logging is enabled.</p>
 <p>This function should be called prior to InitializeMagick() since it
 provides defaults used by InitializeMagick() while the logging system
-is initialized.</p>
+is initialized.  The events may be modified later after
+InitializeMagick() has been called using the SetLogEventMask() function.</p>
 <p>The format of SetLogDefaultEventType method is:</p>
 <pre class="literal-block">
 void SetLogDefaultEventType( const char *events );
@@ -208,7 +194,7 @@ void SetLogDefaultLimit( const unsigned long limit );
 <div class="section" id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-void SetLogDefaultLogMethod( const LogMethod method );
+void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
 </pre>
 </div>
 <div class="section" id="id10">
@@ -224,7 +210,7 @@ provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultLogMethod method is:</p>
 <pre class="literal-block">
-void SetLogDefaultLogMethod( const LogMethod method );
+void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">
@@ -238,7 +224,7 @@ void SetLogDefaultLogMethod( const LogMethod method );
 <div class="section" id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-void SetLogDefaultOutputType( const LogOutputType output_type );
+void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );
 </pre>
 </div>
 <div class="section" id="id12">
@@ -249,7 +235,7 @@ provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultOutputType method is:</p>
 <pre class="literal-block">
-void SetLogDefaultOutputType( const LogOutputType output_type );
+void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">
@@ -297,9 +283,12 @@ unsigned long SetLogEventMask( const char *events );
 </div>
 <div class="section" id="id16">
 <h2>Description</h2>
-<p>SetLogEventMask() accepts a comma-delimited list that determines which
-events to log.  All other events are ignored.  By default, no logging is
-enabled.  This method returns the updated log event mask.</p>
+<p>SetLogEventMask() accepts a comma-delimited list (Annotate, Blob, Cache,
+Coder, Configure, Deprecate, Error, Exception,  FatalError, Information,
+Locale, Option, Render, Resource, TemporaryFile, Transform, User,
+Warning, or X11) that determines which events to log.  All other events
+are ignored.  By default, no logging is enabled.  This method returns
+the updated log event mask.</p>
 <p>The format of the SetLogEventMask method is:</p>
 <pre class="literal-block">
 unsigned long SetLogEventMask( const char *events );
@@ -323,17 +312,17 @@ void SetLogFormat( const char *format );
 <h2>Description</h2>
 <p>SetLogFormat() sets the format for the &quot;human readable&quot; log record.
 The format specification supports these special format characters:</p>
-<p>%d   domain
-%e   event
-%f   function
-%l   line
-%m   module
-%p   process ID
-%r   real CPU time
-%t   wall clock time
-%u   user CPU time
-%%   percent sign
-n   newline
+<p>%d   domain,
+%e   event,
+%f   function,
+%l   line,
+%m   module,
+%p   process ID,
+%r   real CPU time,
+%t   wall clock time,
+%u   user CPU time,
+%%   percent sign,
+n   newline,
 r   carriage return</p>
 <p>The format of the LogMagickFormat method is:</p>
 <pre class="literal-block">
@@ -351,7 +340,7 @@ void SetLogFormat( const char *format );
 <div class="section" id="id19">
 <h2>Synopsis</h2>
 <pre class="literal-block">
-void SetLogMethod( LogMethod method );
+void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
 </pre>
 </div>
 <div class="section" id="id20">
@@ -359,7 +348,7 @@ void SetLogMethod( LogMethod method );
 <p>SetLogMethod() sets the method to be called when logging.</p>
 <p>The format of the SetLogMethod method is:</p>
 <pre class="literal-block">
-void SetLogMethod( LogMethod method );
+void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
 </pre>
 <p>A description of each parameter follows:</p>
 <dl class="docutils">

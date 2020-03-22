@@ -1,5 +1,11 @@
 2020-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/api/types.rst: Improved types documentation and added more
+	hyperlinks.
+
+	* scripts/format_c_api_doc.py: Add hyperlinks for 'LogMethod' and
+	'LogOutputType' type documentation.
+
 	* Magick++/lib/Image.cpp (SetLogDefaultEventType): New C++ function to
 	forward to C interface.
 	(SetLogDefaultGenerations): New C++ function to forward to C
