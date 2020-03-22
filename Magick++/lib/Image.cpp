@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2017
+// Copyright Bob Friesenhahn, 1999-2020
 //
 // Implementation of Image
 //
@@ -4144,6 +4144,56 @@ void Magick::MagickPlusPlusDestroyMagick(void)
       magick_initialized=false;
       MagickLib::DestroyMagick();
     }
+}
+
+  //
+  // Logging defaults initialization routines.  These are
+  // pass-throughs into the equivalent C library functions.  The
+  // purpose of these routines is to provide a program with an
+  // alternative to the default "log.mgk" based initialization.
+  //
+
+// Specify default events which will result in a log event (comma-comma-separated list)
+void MagickDLLDecl Magick::SetLogDefaultEventType(const std::string &events_)
+{
+  MagickLib::SetLogDefaultEventType(events_.c_str());
+}
+
+// Specify default maximum log file generations before overwriting the first name.
+void MagickDLLDecl Magick::SetLogDefaultGenerations(const unsigned int generations_)
+{
+  MagickLib::SetLogDefaultGenerations(generations_);
+}
+
+// Specify default maximum number of logging events before creating a new log file.
+void MagickDLLDecl Magick::SetLogDefaultLimit(const unsigned int limit_)
+{
+  MagickLib::SetLogDefaultLimit(limit_);
+}
+
+// Specify the file name, or file path, to be written to for each log event
+void MagickDLLDecl Magick::SetLogDefaultFileName(const std::string &filename_)
+{
+  MagickLib::SetLogDefaultFileName(filename_.c_str());
+}
+
+// Specify default log format using special format characters as used by "log.mgk"
+void MagickDLLDecl Magick::SetLogDefaultFormat(const std::string &format_)
+{
+  MagickLib::SetLogDefaultFormat(format_.c_str());
+}
+
+// Specify default C-language call-back function to be invoked for each log event
+// FIXME: Develop an improved interface more suitable for C++
+void MagickDLLDecl Magick::SetLogDefaultLogMethod(const Magick::LogMethod method_)
+{
+  MagickLib::SetLogDefaultLogMethod(method_);
+}
+
+// Specify default logging output type/destination.
+void MagickDLLDecl Magick::SetLogDefaultOutputType(const Magick::LogOutputType output_type_)
+{
+  MagickLib::SetLogDefaultOutputType(output_type_);
 }
 
 // C library initialization routine

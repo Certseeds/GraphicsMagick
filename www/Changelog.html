@@ -35,6 +35,47 @@
 <div class="document">
 
 
+<p>2020-03-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>Magick++/lib/Image.cpp (SetLogDefaultEventType): New C++ function to
+forward to C interface.
+(SetLogDefaultGenerations): New C++ function to forward to C
+interface.
+(SetLogDefaultLimit): New C++ function to forward to C interface.
+(SetLogDefaultFormat(): New C++ function to forward to C
+interface.
+(SetLogDefaultLogMethod): New C++ function to forward to C
+interface.
+(SetLogDefaultFileName): New C++ function to forward to C
+interface.
+(SetLogDefaultOutputType): New C++ function to forward to C
+interface.</li>
+<li>magick/log.c (SetLogDefaultEventType): New function to support
+setting the default set of events which will result in a log
+event.
+(SetLogDefaultGenerations): New function to specify the maximum
+number of log files maintain before circulating back to overwrite
+the first name.
+(SetLogDefaultLimit): New function to specify the maximum number
+of logging events which may occur before creating a new log file.
+(SetLogDefaultLogMethod): New function to provide a call-back
+function to be invoked for each log event when the logging method
+type is MethodOutput.
+(SetLogDefaultOutputType): New function to set the logging output
+destination.
+(SetLogDefaultFormat): New function to provide the format of the
+logging output.
+(SetLogDefaultFileName): New function to provide the file name,
+or file path, to be written to for each log event.
+(InitializeLogInfo): If a default logging callback was provided
+via SetLogDefaultLogMethod() then skip searching for &quot;log.mgk&quot;.
+In this case it is assumed that the API user has already changed
+any other logging default which would have been updated by
+&quot;log.mgk&quot; so it would be harmful to search for it, or read from
+it.</li>
+</ul>
+</blockquote>
 <p>2020-03-10  Troy Patteson  &lt;<a class="reference external" href="mailto:troyp&#37;&#52;&#48;ieee&#46;org">troyp<span>&#64;</span>ieee<span>&#46;</span>org</a>&gt;</p>
 <blockquote>
 <ul class="simple">

@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2017
+// Copyright Bob Friesenhahn, 1999 - 2020
 //
 // Definition of Image, the representation of a single image in Magick++
 //
@@ -45,6 +45,35 @@ namespace Magick
                                   const Magick::Image& right_ );
   int MagickDLLDecl operator <= ( const Magick::Image& left_,
                                   const Magick::Image& right_ );
+
+  //
+  // Logging defaults initialization routines.  These are
+  // pass-throughs into the equivalent C library functions.  The
+  // purpose of these routines is to provide a program with an
+  // alternative to the default "log.mgk" based initialization.
+  //
+
+  // Specify default events which will result in a log event (comma-comma-separated list)
+  void MagickDLLDecl SetLogDefaultEventType(const std::string &events_);
+
+  // Specify default maximum log file generations before overwriting the first name.
+  void MagickDLLDecl SetLogDefaultGenerations(const unsigned int generations_);
+
+  // Specify default maximum number of logging events before creating a new log file.
+  void MagickDLLDecl SetLogDefaultLimit(const unsigned int limit_);
+
+  // Specify the file name, or file path, to be written to for each log event
+  void MagickDLLDecl SetLogDefaultFileName(const std::string &filename_);
+
+  // Specify default log format using special format characters as used by "log.mgk"
+  void MagickDLLDecl SetLogDefaultFormat(const std::string &format_);
+
+  // Specify default C-language call-back function to be invoked for each log event
+  // FIXME: Develop an improved interface more suitable for C++
+  void MagickDLLDecl SetLogDefaultLogMethod(const Magick::LogMethod method_);
+
+  // Specify default logging output type/destination.
+  void MagickDLLDecl SetLogDefaultOutputType(const Magick::LogOutputType output_type_);
 
   // C library initialization routine
   void MagickDLLDecl InitializeMagick(const char *path_);

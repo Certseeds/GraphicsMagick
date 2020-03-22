@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2018
+// Copyright Bob Friesenhahn, 1999 - 2020
 //
 // Inclusion of GraphicsMagick headers (with namespace magic)
 
@@ -205,7 +205,7 @@ namespace MagickLib
 
 #if defined(MAGICK_IMPLEMENTATION)
 namespace MagickLib
-{
+{ // This header is now also included by magick/api.h
 #  include "magick/enum_strings.h"
 }
 #endif
@@ -744,6 +744,10 @@ namespace Magick
   using MagickLib::MirrorVirtualPixelMethod;
   using MagickLib::TileVirtualPixelMethod;
 
+  // Logging related types
+  using MagickLib::LogMethod;
+  using MagickLib::LogOutputType;
+
 #if defined(MAGICK_IMPLEMENTATION)
   //
   // GraphicsMagick symbols used in implementation code
@@ -913,6 +917,7 @@ namespace Magick
   using MagickLib::EnhanceImage;
   using MagickLib::EqualizeImage;
   using MagickLib::ExceptionInfo;
+  using MagickLib::ExceptionType;
   using MagickLib::ExecuteModuleProcess;
   using MagickLib::ExportImagePixelArea;
   using MagickLib::ExtentImage;

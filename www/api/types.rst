@@ -748,6 +748,36 @@ position an object. A common default for gravity is NorthWestGravity.
    |SouthEastGravity          |Position object at bottom-right of region                             |
    +--------------------------+----------------------------------------------------------------------+
 
+LogOutputType
+=============
+
+LogOutputType specifies how/where logging ("tracing") output is to be directed.
+
+.. table:: LogOutputType
+
+   +--------------------------+----------------------------------------------------------------------+
+   |       Enumeration        |                             Description                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |DisabledOutput            |Reporting disabled                                                    |
+   +--------------------------+----------------------------------------------------------------------+
+   |UndefinedOutput           |Reporting disabled                                                    |
+   +--------------------------+----------------------------------------------------------------------+
+   |StdoutOutput              |Log to stdout in "human readable" format                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |StderrOutput              |Log to stderr in "human readable" format                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |XMLFileOutput             |Log to a file in an XML format                                        |
+   +--------------------------+----------------------------------------------------------------------+
+   |TXTFileOutput             |Log to a file in a text format                                        |
+   +--------------------------+----------------------------------------------------------------------+
+   |Win32DebugOutput          |Windows, Output events to the application/system debugger.            |
+   +--------------------------+----------------------------------------------------------------------+
+   |Win32EventlogOutput       |Windows, Output events to the Application event log.                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |MethodOutput              |Log by calling registered C-language callback function                |
+   +--------------------------+----------------------------------------------------------------------+
+
+
 Image
 =====
 

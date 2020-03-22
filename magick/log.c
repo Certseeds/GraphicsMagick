@@ -50,21 +50,8 @@
 #define MagickLogFilename  "log.mgk"
 
 /*
-  Typedef declarations.
+  Run-time Logger Info
 */
-typedef enum
-{
-  DisabledOutput = 0x0000,
-  UndefinedOutput = 0x0000,
-  StdoutOutput = 0x0001,
-  StderrOutput = 0x0002,
-  XMLFileOutput = 0x0004,
-  TXTFileOutput = 0x0008,
-  Win32DebugOutput = 0x0010,
-  Win32EventlogOutput = 0x0020,
-  MethodOutput = 0x0040
-} LogOutputType;
-
 typedef struct _LogInfo
 {
   SemaphoreInfo
@@ -106,6 +93,30 @@ typedef struct _LogInfo
     last_tm;
 
 } LogInfo;
+
+/*
+  Static Logger Defaults
+*/
+typedef struct _LogInfoDefaults
+{
+  unsigned long
+    generations, /* 3 */
+    limit; /* 2000 */
+
+  LogEventType
+    events; /* NoEventsMask */
+
+  LogOutputType
+    output_type; /* StderrOutput */
+
+  LogMethod
+    method;  /* (LogMethod) 0 */
+
+  char
+    filename[256], /* "Magick-%d.log" */
+    format[200]; /* "%t %r %u %p %m/%f/%l/%d:\n  %e" */
+
+} LogInfoDefaults;
 
 /*
   This table maps between masks and the various event id's that can occur
@@ -181,6 +192,17 @@ static const struct
 */
 static LogInfo
 *log_info = (LogInfo *) NULL;
+
+static LogInfoDefaults log_info_defaults =
+  {
+    3, /* unsigned long generations */
+    2000, /* unsigned long limit */
+    NoEventsMask, /* LogEventType events */
+    StderrOutput, /* LogOutputType output_type */
+    (LogMethod) 0, /* LogMethod */
+    "Magick-%d.log", /* char filename[256] */
+    "%t %r %u %p %m/%f/%l/%d:\n  %e", /* char format[200] */
+  };
 
 /*
   Forward declarations.
@@ -276,6 +298,12 @@ void DestroyLogInfo(void)
 %  fatal error for the whole program.  All of the allocations performed by
 %  this function are released by DestroyLogInfo().
 %
+%  Normally this function will search for a "log.mgk" file from which to
+%  obtain logging defaults, and use compiled-in defaults if the "log.mgk"
+%  file is not found.  The search for "log.mgk" is skipped if the default
+%  logging method is MethodOutput and a logging call-back has been
+%  registered.
+%
 %  The format of the InitializeLogInfo method is:
 %
 %      MagickPassFail InitializeLogInfo(void)
@@ -312,19 +340,19 @@ InitializeLogInfo(void)
 
   log_info->file=(FILE *) NULL;
   GetTimerInfo(&log_info->timer);
-  log_info->generations=3;
-  log_info->limit=2000;
+  log_info->generations=log_info_defaults.generations;
+  log_info->limit=log_info_defaults.limit;
   log_info->generation=0;
   log_info->count=0;
-  log_info->events=NoEventsMask;
-  log_info->output_type=StderrOutput;
-  log_info->method=0;
+  log_info->events=log_info_defaults.events;
+  log_info->output_type=log_info_defaults.output_type;
+  log_info->method=log_info_defaults.method;
   log_info->log_configured=MagickFalse;
   log_info->last_seconds=0;
 
   (void) strlcpy(log_info->path,"(default)",sizeof(log_info->path));
-  (void) strlcpy(log_info->filename,"Magick-%d.log",sizeof(log_info->filename));
-  (void) strlcpy(log_info->format,"%t %r %u %p %m/%f/%l/%d:\n  %e",
+  (void) strlcpy(log_info->filename,log_info_defaults.filename,sizeof(log_info->filename));
+  (void) strlcpy(log_info->format,log_info_defaults.format,
                  sizeof(log_info->format));
 
 #if defined(__COVERITY__)
@@ -341,8 +369,11 @@ InitializeLogInfo(void)
 
 #if UseInstalledMagick
   /*
-    Try to read the log configuration file.
+    Try to read the log configuration file if not using call-back
+    method.
   */
+  if (!((log_info->output_type & MethodOutput) &&
+        (log_info->method != (LogMethod) NULL)))
   {
     ExceptionInfo
       exception;
@@ -426,12 +457,13 @@ InitializeLogInfoPost(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  IsEventLogging() returns True if logging of events is enabled otherwise
-%  False.
+%  IsEventLogging() returns MagickTrue if logging of events is enabled otherwise
+%  MagickFalse.  This can be used to enable logging code which is otherwise
+%  not needed.
 %
 %  The format of the IsEventLogging method is:
 %
-%      unsigned int IsEventLogging(void)
+%      MagickBool IsEventLogging(void)
 %
 %
 */
@@ -451,8 +483,9 @@ MagickExport MagickBool IsEventLogging(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  LogMagickEvent() logs an event as determined by the log configuration file.
-%  If an error occurs, MagickFail is returned otherwise MagickPass.
+%  LogMagickEvent() logs an event as determined by the current logging
+%  configuration. If an error occurs, MagickFail is returned otherwise
+%  MagickPass.
 %
 %  The format of the LogMagickEvent method is:
 %
@@ -473,9 +506,11 @@ MagickExport MagickBool IsEventLogging(void)
 %
 %
 */
-MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
-                                               const char *module,const char *function,const unsigned long line,
-                                               const char *format,va_list operands)
+MagickExport MagickPassFail
+LogMagickEventList(const ExceptionType type,
+                   const char *module,const char *function,
+                   const unsigned long line,
+                   const char *format,va_list operands)
 {
   const char
     *modulebase;
@@ -658,6 +693,8 @@ MagickExport MagickPassFail LogMagickEventList(const ExceptionType type,
                    user_time, (long) getpid(), modulebase, function, line,
                    domain, severity, event);
       log_info->method(type,buffer);
+      UnlockSemaphoreInfo(log_info->log_semaphore);
+      return(MagickPass);
     }
   if (((unsigned int) log_info->output_type) & XMLFileOutput)
     {
@@ -1146,6 +1183,291 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
 }
 
 /*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t E v e n t T y p e                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultEventType() sets the set of events which will result in
+%  a log event.  The events are specified as a comma-separated list
+%  including one or more of the following:
+%
+%     annotate       Text annotation events.
+%     blob           File opening/closing/loading events.
+%     cache          Pixel cache events.
+%     coder          File format coder events.
+%     configure      Configuration events (searching for .mgk files, etc.).
+%     deprecate      Identify use of deprecated functions.
+%     error          Error exception report events.
+%     exception      Exception report events (warning and error).
+%     locale         Locale events.
+%     none           Reporting disabled.
+%     render         Rendering (drawing) events.
+%     resource       Resource allocation events (memory, disk, etc.)
+%     temporaryFile  Temporary file events (allocate, deallocate, etc.)
+%     transform      Image processing events.
+%     user           User events (not emitted by GraphicsMagick).
+%     warning        Warning exception report events.
+%     X11            X11 server events.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultEventType method is:
+%
+%      void SetLogDefaultEventType( const char *events )
+%
+%  A description of each parameter follows:
+%
+%    o events: Comma-separated list of events to report.
+%
+%
+*/
+MagickExport void SetLogDefaultEventType(const char *events)
+{
+  if (events != NULL)
+    {
+      LogEventType event_flags=ParseEvents(events);
+      log_info_defaults.events=event_flags;
+    }
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t G e n e r a t i o n s                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultGenerations() specifies the maximum number of log files
+%  to maintain before circulating back to overwrite the first name.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultGenerations method is:
+%
+%      void SetLogDefaultGenerations(const unsigned long generations)
+%
+%  A description of each parameter follows:
+%
+%    o generations: Number of log files to maintain before circulating back to
+%      the first name.
+%
+%
+*/
+MagickExport void SetLogDefaultGenerations(const unsigned long generations)
+{
+  log_info_defaults.generations=generations;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t L i m i t                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultLimit() specifies the maximum number of logging events which
+%  may occur before creating a new log file.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultLimit method is:
+%
+%      void SetLogDefaultLimit(const unsigned long limit)
+%
+%  A description of each parameter follows:
+%
+%    o limit: Maximum number of logging events before creating a new log file.
+%
+%
+*/
+MagickExport void SetLogDefaultLimit(const unsigned long limit)
+{
+  log_info_defaults.limit=limit;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t L o g M e t h o d                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultLogMethod() provides a call-back function to be invoked
+%  for each log event when the logging method type is MethodOutput.
+%  This call-back function is supported when MethodOutput is enabled
+%  in the log output type.  MethodOutput is automatically enabled if
+%  a call-back function is provided, and disabled if the call-back
+%  function is NULL.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultLogMethod method is:
+%
+%      void SetLogDefaultLogMethod( const LogMethod method )
+%
+%  A description of each parameter follows:
+%
+%    o method: Call-back function to be invoked for each log event.
+%
+%
+*/
+MagickExport void SetLogDefaultLogMethod(const LogMethod method)
+{
+  if (method == (LogMethod) NULL)
+    {
+      log_info_defaults.output_type=(LogOutputType)
+        (log_info_defaults.output_type & ~MethodOutput);
+    }
+  else
+    {
+      log_info_defaults.output_type=(LogOutputType)
+        (log_info_defaults.output_type | MethodOutput);
+    }
+
+  log_info_defaults.method=method;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t O u t p u t T y p e                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultOutputType() sets the logging output destination.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultOutputType method is:
+%
+%      void SetLogDefaultOutputType( const LogOutputType output_type )
+%
+%  A description of each parameter follows:
+%
+%    o output_type: The logging output destination.  One of the enumerated
+%       values of LogOutputType.
+%
+%
+*/
+MagickExport void SetLogDefaultOutputType(const LogOutputType output_type)
+{
+  log_info_defaults.output_type=output_type;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t F o r ma t                                      %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultFormat() provides the format of the logging output.
+%  The specification supports these special format characters:
+%
+%    %d   domain
+%    %e   event
+%    %f   function
+%    %l   line
+%    %m   module
+%    %p   process ID
+%    %r   real CPU time
+%    %t   wall clock time
+%    %u   user CPU time
+%    %%   percent sign
+%    \n   newline
+%    \r   carriage return
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultFormat method is:
+%
+%      void SetLogDefaultFormat( const char *format )
+%
+%  A description of each parameter follows:
+%
+%    o format: The format of the logging output.
+%
+%
+*/
+MagickExport void SetLogDefaultFormat( const char *format )
+{
+  (void) strlcpy(log_info_defaults.format,format,sizeof(log_info_defaults.format));
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t F i l e N a m e                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultFileName() provides the file name, or file path, to be
+%  written to for each log event.  Place a %d in the file name in order to
+%  support multiple log generations.  This setting is only used when the
+%  log output type uses an output file.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultFileName method is:
+%
+%      void SetLogDefaultFileName( const char *filename )
+%
+%  A description of each parameter follows:
+%
+%    o filename: File name, or file path to write log output to.
+%
+%
+*/
+MagickExport void SetLogDefaultFileName( const char *filename )
+{
+  (void) strlcpy(log_info_defaults.filename,filename,sizeof(log_info_defaults.filename));
+}
+
+/*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
 %                                                                             %
@@ -1160,7 +1482,7 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
 %  events to log.  All other events are ignored.  By default, no logging is
 %  enabled.  This method returns the updated log event mask.
 %
-%  The format of the AcquireString method is:
+%  The format of the SetLogEventMask method is:
 %
 %      unsigned long SetLogEventMask(const char *events)
 %
@@ -1205,6 +1527,20 @@ MagickExport unsigned long SetLogEventMask(const char *events)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SetLogFormat() sets the format for the "human readable" log record.
+%  The format specification supports these special format characters:
+%
+%    %d   domain
+%    %e   event
+%    %f   function
+%    %l   line
+%    %m   module
+%    %p   process ID
+%    %r   real CPU time
+%    %t   wall clock time
+%    %u   user CPU time
+%    %%   percent sign
+%    \n   newline
+%    \r   carriage return
 %
 %  The format of the LogMagickFormat method is:
 %

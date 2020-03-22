@@ -49,12 +49,14 @@ The InitializeMagick() function *MUST* be invoked before constructing
 any Magick++ objects.  This used to be optional, but now it is
 absolutely required.  This function initalizes semaphores and
 configuration information necessary for the software to work
-correctly.  Failing to invoke InitializeMagick() is likely to lead to
-a program crash or thrown assertion.  If the program resides in the
-same directory as the GraphicsMagick files, then argv[0] may be passed
-as an argument so that GraphicsMagick knows where its files reside,
+correctly.  Failing to invoke InitializeMagick() will lead to a
+program crash or thrown assertion.  If the program resides in the same
+directory as the GraphicsMagick files, then argv[0] may be passed as
+an argument so that GraphicsMagick knows where its files reside,
 otherwise NULL may be passed and GraphicsMagick will try to use other
-means (if necessary).
+means (if necessary).  Even if an argument is passed, GraphicsMagick
+may use more reliable location information gleaned from the operating
+system, depending on build configuration.
 
 The preferred way to allocate Image objects is via automatic
 allocation (on the stack). There is no concern that allocating Image
@@ -2820,6 +2822,77 @@ buffer or file.  Used to support image encoders::
     void writePixels ( const QuantumType quantum_,
                        unsigned char *destination_ )
 
+Explicit Logging Configuration And Callbacks
+--------------------------------------------
+
+It is sometimes useful for a program to not have to depend on a
+configuration file for configuring logging ("tracing").  One reason
+for this is because until a logging configuration file has been found
+and loaded, default logging parameters are used.  Another reason is
+that in some configurations, it is useful for each instance of a
+program to use its own logging configuration.  To make this possible,
+the Magick++ library provides pass-through functions which allow
+setting the logging defaults *before* InitializeMagick() is called.
+Setting logging defaults after InitializeMagick() is called has no
+purpose since they will not be used.
+
+The following C++ pass-through functions are available"
+
+SetLogDefaultEventType
+++++++++++++++++++++++
+
+Specify default events which will result in a log event (comma-comma-separated list)::
+
+  void SetLogDefaultEventType(const std::string &events_)
+
+SetLogDefaultGenerations
+++++++++++++++++++++++++
+
+Specify default maximum log file generations before overwriting the first name::
+
+  void SetLogDefaultGenerations(const unsigned int generations_)
+
+SetLogDefaultLimit
+++++++++++++++++++
+
+Specify default maximum number of logging events before creating a new log file::
+
+  void SetLogDefaultLimit(const unsigned int limit_)
+
+SetLogDefaultFileName
++++++++++++++++++++++
+
+Specify the file name, or file path, to be written to for each log event::
+
+  void SetLogDefaultFileName(const std::string &filename_)
+
+SetLogDefaultFormat
+++++++++++++++++++++++
+
+Specify default log format using the same special format characters used by "log.mgk"::
+
+  void SetLogDefaultFormat(const std::string &format_)
+
+SetLogDefaultLogMethod
+++++++++++++++++++++++
+
+Specify default C-language call-back function to be invoked for each log event::
+
+  void SetLogDefaultLogMethod(const Magick::LogMethod method_)
+
+Note that it is hoped that better mechanisms will be provided in the future.
+
+SetLogDefaultOutputType
++++++++++++++++++++++++
+
+Specify default logging output type/destination::
+
+  void SetLogDefaultOutputType(const Magick::LogOutputType output_type_)
+
+Available LogOutputType enumerations are DisabledOutput,
+UndefinedOutput, StdoutOutput, StderrOutput, XMLFileOutput,
+TXTFileOutput, Win32DebugOutput, Win32EventlogOutput, and
+MethodOutput.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
