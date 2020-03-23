@@ -1,3 +1,23 @@
+2020-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/magick/magick_config.h.in: ProvideDllMain is now
+	disabled by default since it causes InitializeMagick() to be
+	invoked prior to when the program's main() routine is called,
+	thereby blocking configuration activities or use of
+	InitializeMagickEx().  With this change it is even more imperative
+	that InitializeMagick() be explicitly invoked by all programs
+	using GraphicsMagick.
+
+	* magick/log.c (LogMagickEventList): Always use/respect the
+	configured log format as might be obtained from "log.mgk" or
+	SetLogDefaultFormat().
+
+	* magick/utility.c (MagickFormatString): Return the size of the
+	formatted string.
+	(MagickFormatStringList): Return the size of the formatted string.
+	(FormatString): Return the size of the formatted string.
+	(FormatStringList): Return the size of the formatted string.
+
 2020-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/api/types.rst: Improved types documentation and added more

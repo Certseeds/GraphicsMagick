@@ -1228,11 +1228,13 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method FormatString prints formatted output of a variable argument list.
+%  Method FormatString prints formatted output of a variable argument list
+%  buffer, limiting its output to MaxTextExtent.
+%  The formatted size (as would be returned by strlen()) is returned.
 %
 %  The format of the FormatString method is:
 %
-%      void FormatString(char *string,const char *format,...)
+%      size_t FormatString(char *string,const char *format,...)
 %
 %  A description of each parameter follows.
 %
@@ -1245,23 +1247,38 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
 %
 %
 */
-MagickExport void FormatStringList(char *string,const char *format,
-                                   va_list operands)
+MagickExport size_t FormatStringList(char *string,const char *format,
+                                     va_list operands)
 {
+  size_t
+    fls = 0;
+
+  int
+    fli;
+
 #if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(string,MaxTextExtent,format,operands);
+  fli=vsnprintf(string,MaxTextExtent,format,operands);
 #else
-  (void) vsprintf(string,format,operands);
+  fli=vsprintf(string,format,operands);
 #endif
+  if (fli >= MaxTextExtent)
+    fls=MaxTextExtent-1;
+  else if (fli > 0)
+    fls=(size_t) fli;
+  return fls;
 }
-MagickExport void FormatString(char *string,const char *format,...)
+MagickExport size_t FormatString(char *string,const char *format,...)
 {
   va_list
     operands;
 
+  size_t
+    formatted_len;
+
   va_start(operands,format);
-  FormatStringList(string, format, operands);
+  formatted_len=FormatStringList(string, format, operands);
   va_end(operands);
+  return formatted_len;
 }
 
 /*
@@ -3681,11 +3698,12 @@ double MagickFmax(const double x, const double y)
 %
 %  Method MagickFormatString prints formatted output of a variable
 %  argument list buffer, limiting its output to a specified buffer size.
+%  The formatted size (as would be returned by strlen()) is returned.
 %
 %  The format of the MagickFormatString method is:
 %
-%      void MagickFormatString(char *string,const size_t length,
-%                              const char *format,...)
+%      size_t MagickFormatString(char *string,const size_t length,
+%                                const char *format,...)
 %
 %  A description of each parameter follows.
 %
@@ -3702,27 +3720,48 @@ double MagickFmax(const double x, const double y)
 %
 %
 */
-MagickExport void MagickFormatStringList(char *string,
-                                         const size_t length,
-                                         const char *format,
-                                         va_list operands)
+MagickExport size_t MagickFormatStringList(char *string,
+                                           const size_t length,
+                                           const char *format,
+                                           va_list operands)
 {
+  size_t
+    fls = 0;
+
+  int
+    fli;
+
+  if (length > 0)
+    {
 #if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(string,length,format,operands);
+      fli=vsnprintf(string,length,format,operands);
 #else
-  (void) vsprintf(string,format,operands);
+      fli=vsprintf(string,format,operands);
 #endif
+      if (fli > 0)
+        {
+          if ((size_t) fli >= length)
+            fls=length-1;
+          else
+            fls=(size_t) fli;
+        }
+    }
+  return fls;
 }
-MagickExport void MagickFormatString(char *string,
-                                     const size_t length,
-                                     const char *format,...)
+MagickExport size_t MagickFormatString(char *string,
+                                       const size_t length,
+                                       const char *format,...)
 {
   va_list
     operands;
 
+  size_t
+    formatted_len;
+
   va_start(operands,format);
-  MagickFormatStringList(string, length, format, operands);
+  formatted_len=MagickFormatStringList(string, length, format, operands);
   va_end(operands);
+  return formatted_len;
 }
 
 /*

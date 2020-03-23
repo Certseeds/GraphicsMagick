@@ -35,6 +35,26 @@
 <div class="document">
 
 
+<p>2020-03-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>VisualMagick/magick/magick_config.h.in: ProvideDllMain is now
+disabled by default since it causes InitializeMagick() to be
+invoked prior to when the program's main() routine is called,
+thereby blocking configuration activities or use of
+InitializeMagickEx().  With this change it is even more imperative
+that InitializeMagick() be explicitly invoked by all programs
+using GraphicsMagick.</li>
+<li>magick/log.c (LogMagickEventList): Always use/respect the
+configured log format as might be obtained from &quot;log.mgk&quot; or
+SetLogDefaultFormat().</li>
+<li>magick/utility.c (MagickFormatString): Return the size of the
+formatted string.
+(MagickFormatStringList): Return the size of the formatted string.
+(FormatString): Return the size of the formatted string.
+(FormatStringList): Return the size of the formatted string.</li>
+</ul>
+</blockquote>
 <p>2020-03-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

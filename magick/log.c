@@ -513,16 +513,25 @@ LogMagickEventList(const ExceptionType type,
                    const char *format,va_list operands)
 {
   const char
-    *modulebase;
+    *domain,
+    *modulebase,
+    *severity;
+
+  register const char
+    *p;
+
+  size_t
+    message_len=0;
 
   char
-    *domain,
-    *severity,
-#if defined(MSWINDOWS)
-    nteventtype,
-#endif
+    message[MaxTextExtent],
     event[MaxTextExtent],
-    timestamp[MaxTextExtent];
+    timestamp[16];
+
+#if defined(MSWINDOWS)
+  char
+    nteventtype;
+#endif
 
   double
     elapsed_time,
@@ -587,6 +596,10 @@ LogMagickEventList(const ExceptionType type,
         return(MagickPass);
     }
 
+  event[0]='\0';
+  message[0]='\0';
+  timestamp[0]='\0';
+
   /* fixup module info to just include the filename - and not the
      whole path to the file. This makes the log huge for no good
      reason */
@@ -599,44 +612,44 @@ LogMagickEventList(const ExceptionType type,
 
   switch (((unsigned int) type) % 100)
     {
-    case UndefinedException: domain=(char *) "Undefined"; break;
-    case ExceptionBase: domain=(char *) "Exception"; break;
-    case ResourceBase: domain=(char *) "Resource"; break;
-      /* case ResourceLimitBase: domain=(char *) "ResourceLimit"; break; */
-    case TypeBase: domain=(char *) "Type"; break;
-      /* case AnnotateBase: domain=(char *) "Annotate"; break; */
-    case OptionBase: domain=(char *) "Option"; break;
-    case DelegateBase: domain=(char *) "Delegate"; break;
-    case MissingDelegateBase: domain=(char *) "MissingDelegate"; break;
-    case CorruptImageBase: domain=(char *) "CorruptImage"; break;
-    case FileOpenBase: domain=(char *) "FileOpen"; break;
-    case BlobBase: domain=(char *) "Blob"; break;
-    case StreamBase: domain=(char *) "Stream"; break;
-    case CacheBase: domain=(char *) "Cache"; break;
-    case CoderBase: domain=(char *) "Coder"; break;
-    case ModuleBase: domain=(char *) "Module"; break;
-    case DrawBase: domain=(char *) "Draw"; break;
-      /* case RenderBase: domain=(char *) "Render"; break; */
-    case ImageBase: domain=(char *) "image"; break;
-    case TemporaryFileBase: domain=(char *) "TemporaryFile"; break;
-    case TransformBase: domain=(char *) "Transform"; break;
-    case XServerBase: domain=(char *) "XServer"; break;
-    case X11Base: domain=(char *) "X11"; break;
-    case UserBase: domain=(char *) "User"; break;
-    case MonitorBase: domain=(char *) "Monitor"; break;
-    case LocaleBase: domain=(char *) "Locale"; break;
-    case DeprecateBase: domain=(char *) "Deprecate"; break;
-    case RegistryBase: domain=(char *) "Registry"; break;
-    case ConfigureBase: domain=(char *) "Configure"; break;
-    default: domain=(char *) "UnknownEvent"; break;
+    case UndefinedException: domain="Undefined"; break;
+    case ExceptionBase: domain="Exception"; break;
+    case ResourceBase: domain="Resource"; break;
+      /* case ResourceLimitBase: domain="ResourceLimit"; break; */
+    case TypeBase: domain="Type"; break;
+      /* case AnnotateBase: domain="Annotate"; break; */
+    case OptionBase: domain="Option"; break;
+    case DelegateBase: domain="Delegate"; break;
+    case MissingDelegateBase: domain="MissingDelegate"; break;
+    case CorruptImageBase: domain="CorruptImage"; break;
+    case FileOpenBase: domain="FileOpen"; break;
+    case BlobBase: domain="Blob"; break;
+    case StreamBase: domain="Stream"; break;
+    case CacheBase: domain="Cache"; break;
+    case CoderBase: domain="Coder"; break;
+    case ModuleBase: domain="Module"; break;
+    case DrawBase: domain="Draw"; break;
+      /* case RenderBase: domain="Render"; break; */
+    case ImageBase: domain="image"; break;
+    case TemporaryFileBase: domain="TemporaryFile"; break;
+    case TransformBase: domain="Transform"; break;
+    case XServerBase: domain="XServer"; break;
+    case X11Base: domain="X11"; break;
+    case UserBase: domain="User"; break;
+    case MonitorBase: domain="Monitor"; break;
+    case LocaleBase: domain="Locale"; break;
+    case DeprecateBase: domain="Deprecate"; break;
+    case RegistryBase: domain="Registry"; break;
+    case ConfigureBase: domain="Configure"; break;
+    default: domain="UnknownEvent"; break;
     }
   switch ((((unsigned int) type) / 100) * 100)
     {
-    case EventException: severity=(char *) "Event"; break;
-    case WarningException: severity=(char *) "Warning"; break;
-    case ErrorException: severity=(char *) "Error"; break;
-    case FatalErrorException: severity=(char *) "FatalError"; break;
-    default: severity=(char *) "Unknown"; break;
+    case EventException: severity="Event"; break;
+    case WarningException: severity="Warning"; break;
+    case ErrorException: severity="Error"; break;
+    case FatalErrorException: severity="FatalError"; break;
+    default: severity="Unknown"; break;
     }
 #if defined(MSWINDOWS)
   switch ((type / 100) * 100)
@@ -648,15 +661,7 @@ LogMagickEventList(const ExceptionType type,
     default: nteventtype=EVENTLOG_INFORMATION_TYPE; break;
     }
 #endif
-#if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(event,MaxTextExtent,format,operands);
-#else
-#  if defined(HAVE_VSPRINTF)
-  (void) vsprintf(event,format,operands);
-#  else
-#    error Neither vsnprintf or vsprintf is available.
-#  endif
-#endif
+  MagickFormatStringList(event,sizeof(event),format,operands);
   LockSemaphoreInfo(log_info->log_semaphore);
   seconds=time((time_t *) NULL);
   if (seconds == log_info->last_seconds)
@@ -676,23 +681,115 @@ LogMagickEventList(const ExceptionType type,
   elapsed_time=GetElapsedTime(&log_info->timer);
   user_time=GetUserTime(&log_info->timer);
   (void) ContinueTimer((TimerInfo *) &log_info->timer);
-  FormatString(timestamp,"%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+
-               1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
-               time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+  (void) MagickFormatString(timestamp,sizeof(timestamp),"%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+
+                            1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
+                            time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+
+  if (!(((unsigned int) log_info->output_type) & XMLFileOutput))
+    {
+      /*
+        Format message in a "human readable" format.
+      */
+      for (p=log_info->format; *p != '\0'; p++)
+        {
+          /*
+            Process formatting characters in text.
+          */
+          if ((*p == '\\') && (*(p+1) == 'r'))
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\r");
+              p++;
+              continue;
+            }
+          if ((*p == '\\') && (*(p+1) == 'n'))
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\n");
+              p++;
+              continue;
+            }
+          if (*p != '%')
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%c",*p);
+              continue;
+            }
+          p++;
+          switch (*p)
+            {
+            case 'd':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",domain);
+                break;
+              }
+            case 'e':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",event);
+                break;
+              }
+            case 'f':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",function);
+                break;
+              }
+            case 'l':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%lu",line);
+                break;
+              }
+            case 'm':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",modulebase);
+                break;
+              }
+            case 'p':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%ld",(long) getpid());
+                break;
+              }
+            case 'r':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%ld:%-9.6f",(long) (elapsed_time/60.0),
+                                                fmod(elapsed_time,60.0));
+                break;
+              }
+            case 's':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",severity);
+                break;
+              }
+            case 't':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%02d:%02d:%02d",time_meridian->tm_hour,
+                                                time_meridian->tm_min,time_meridian->tm_sec);
+                break;
+              }
+            case 'u':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%0.3fu",user_time);
+                break;
+              }
+            default:
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%%");
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%c",*p);
+                break;
+              }
+            }
+        }
+
+      /*
+        Add a new-line to message for messages which need it.  This avoids buffering or I/O later.
+      */
+      if (((unsigned int) log_info->output_type) &
+          ((unsigned int) Win32DebugOutput|Win32EventlogOutput|StdoutOutput|StderrOutput))
+        {
+          message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\n");
+        }
+    }
+
   if ((log_info->output_type & MethodOutput) &&
       (log_info->method != (LogMethod) NULL))
     {
-      char
-        buffer[MaxTextExtent];
-
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), modulebase, function, line,
-                   domain, severity, event);
-      log_info->method(type,buffer);
+      log_info->method(type,message);
       UnlockSemaphoreInfo(log_info->log_semaphore);
       return(MagickPass);
     }
@@ -778,13 +875,7 @@ LogMagickEventList(const ExceptionType type,
           if (log_info->generation >= log_info->generations)
             log_info->generation=0;
         }
-      (void) fprintf(log_info->file,
-                     "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu"
-                     " %.1024s %.1024s %.1024s\n",
-                     timestamp, (long) (elapsed_time/60.0),
-                     fmod(elapsed_time,60.0),
-                     user_time, (long) getpid(), modulebase, function, line, domain,
-                     severity, event);
+      (void) fprintf(log_info->file,"%s",message);
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
       return(MagickPass);
@@ -792,41 +883,21 @@ LogMagickEventList(const ExceptionType type,
 #if defined(MSWINDOWS)
   if (log_info->output_type & Win32DebugOutput)
     {
-      char
-        buffer[MaxTextExtent];
-
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), modulebase, function, line,
-                   domain, severity, event);
-      OutputDebugString(buffer);
+      OutputDebugString(message);
     }
   if (log_info->output_type & Win32EventlogOutput)
     {
 #define LOGGING_ERROR_CODE 0
-      char
-        buffer[MaxTextExtent];
-
       LPCSTR
         szList[1];
 
       HANDLE
         hSource;
 
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), modulebase, function, line,
-                   domain, severity, event);
       hSource = RegisterEventSource(NULL, MagickPackageName);
       if (hSource != NULL)
         {
-          szList[0]=buffer;
+          szList[0]=message;
           ReportEvent(hSource,nteventtype,0,LOGGING_ERROR_CODE,NULL,1,0,szList,NULL);
           DeregisterEventSource(hSource);
         }
@@ -835,104 +906,16 @@ LogMagickEventList(const ExceptionType type,
   if ((((unsigned int) log_info->output_type) & StdoutOutput) ||
       (((unsigned int) log_info->output_type) & StderrOutput))
     {
-      register const char
-        *p;
-
       FILE
         *file;
 
       /*
-        Log to stdout in a "human readable" format.
+        Log to stdout/stderr in a "human readable" format.
       */
       file = stdout;
       if (((unsigned int) log_info->output_type) & StderrOutput)
         file = stderr;
-      for (p=log_info->format; *p != '\0'; p++)
-        {
-          /*
-            Process formatting characters in text.
-          */
-          if ((*p == '\\') && (*(p+1) == 'r'))
-            {
-              (void) fprintf(file,"\r");
-              p++;
-              continue;
-            }
-          if ((*p == '\\') && (*(p+1) == 'n'))
-            {
-              (void) fprintf(file,"\n");
-              p++;
-              continue;
-            }
-          if (*p != '%')
-            {
-              (void) fprintf(file,"%c",*p);
-              continue;
-            }
-          p++;
-          switch (*p)
-            {
-            case 'd':
-              {
-                (void) fprintf(file,"%.1024s",domain);
-                break;
-              }
-            case 'e':
-              {
-                (void) fprintf(file,"%.1024s",event);
-                break;
-              }
-            case 'f':
-              {
-                (void) fprintf(file,"%.1024s",function);
-                break;
-              }
-            case 'l':
-              {
-                (void) fprintf(file,"%lu",line);
-                break;
-              }
-            case 'm':
-              {
-                (void) fprintf(file,"%.1024s",modulebase);
-                break;
-              }
-            case 'p':
-              {
-                (void) fprintf(file,"%ld",(long) getpid());
-                break;
-              }
-            case 'r':
-              {
-                (void) fprintf(file,"%ld:%-9.6f",(long) (elapsed_time/60.0),
-                               fmod(elapsed_time,60.0));
-                break;
-              }
-            case 's':
-              {
-                (void) fprintf(file,"%.1024s",severity);
-                break;
-              }
-            case 't':
-              {
-                (void) fprintf(file,"%02d:%02d:%02d",time_meridian->tm_hour,
-                               time_meridian->tm_min,time_meridian->tm_sec);
-                break;
-              }
-            case 'u':
-              {
-                (void) fprintf(file,"%0.3fu",user_time);
-                break;
-              }
-            default:
-              {
-                (void) fprintf(file,"%%");
-                (void) fprintf(file,"%c",*p);
-                break;
-              }
-            }
-        }
-      (void) fprintf(file,"\n");
+      (void) fprintf(file,"%s",message);
       (void) fflush(file);
     }
   UnlockSemaphoreInfo(log_info->log_semaphore);
