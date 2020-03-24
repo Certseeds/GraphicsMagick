@@ -441,6 +441,11 @@ InitializeLogInfoPost(void)
     */
     if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
       (void) SetLogEventMask(p);
+
+    /*
+      Claim that logging was successfully configured
+    */
+    log_info->log_configured=MagickTrue;
   }
 
   return MagickPass;
@@ -1160,7 +1165,7 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
   MagickFreeMemory(xml);
 
   if ((depth == 0) && (status == MagickPass))
-    log_info->log_configured=True;
+    log_info->log_configured=MagickTrue;
 
   return(status);
 }
