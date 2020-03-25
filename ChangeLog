@@ -1,3 +1,8 @@
+2020-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfoPost): Don't load log.mgk if
+	logging is already configured to use MethodOutput.
+
 2020-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (InitializeLogInfoPost): Mark that logging is

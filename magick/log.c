@@ -424,16 +424,21 @@ InitializeLogInfoPost(void)
     *p;
 
   /*
-    Try to read the log configuration file.
+    Try to read the log configuration file if not using call-back
+    method.
   */
   if (!log_info->log_configured)
   {
-    ExceptionInfo
-      exception;
+    if (!((log_info->output_type & MethodOutput) &&
+          (log_info->method != (LogMethod) NULL)))
+      {
+        ExceptionInfo
+          exception;
 
-    GetExceptionInfo(&exception);
-    (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
-    DestroyExceptionInfo(&exception);
+        GetExceptionInfo(&exception);
+        (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
+        DestroyExceptionInfo(&exception);
+      }
 
     /*
       Set override logging flags using the value of MAGICK_DEBUG if it
