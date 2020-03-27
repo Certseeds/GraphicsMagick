@@ -12,13 +12,13 @@ make install
 popd
 
 # build xz
-echo "=== Building xz..."
-pushd "$SRC/xz"
-./autogen.sh
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
-make -j$(nproc)
-make install
-popd
+#echo "=== Building xz..."
+#pushd "$SRC/xz"
+#./autogen.sh
+#PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
+#make -j$(nproc)
+#make install
+#popd
 
 # build zstd
 echo "==== Building zstd..."

@@ -1,3 +1,8 @@
+2020-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Skip building xz in the oss-fuzz
+	build until its build problems get worked out.
+
 2020-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/log.c (InitializeLogInfoPost): Don't load log.mgk if
