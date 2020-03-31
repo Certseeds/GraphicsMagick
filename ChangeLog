@@ -1,3 +1,8 @@
+2020-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Restore xz to oss-fuzz build due to
+	build problems getting worked out.
+
 2020-03-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh (MAGICK_LIBS): Remove mention of

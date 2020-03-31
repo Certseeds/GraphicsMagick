@@ -12,13 +12,13 @@ make install
 popd
 
 # build xz
-#echo "=== Building xz..."
-#pushd "$SRC/xz"
-#./autogen.sh
-#PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
-#make -j$(nproc)
-#make install
-#popd
+echo "=== Building xz..."
+pushd "$SRC/xz"
+./autogen.sh
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
+make -j$(nproc)
+make install
+popd
 
 # build zstd
 echo "==== Building zstd..."
@@ -88,7 +88,7 @@ make install
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the
 # maximum extent possible.
-MAGICK_LIBS="$WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/libz.a " # Used to have $WORK/lib/liblzma.a
+MAGICK_LIBS="$WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a "
 
 echo "=== Building fuzzers..."
 for f in fuzzing/*_fuzzer.cc; do
