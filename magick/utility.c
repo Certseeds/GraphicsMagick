@@ -1699,7 +1699,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
             {
               /* Check for too many characters. */
               i++;
-              if (i == sizeof(geometry))
+              if (i == sizeof(geometry)-1)
                 return NoValue;
 
               *q=*c;
@@ -1724,7 +1724,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
   bounds.x=0;
   bounds.y=0;
   p=geometry;
-  while ((isspace((int)(*p))))
+  while ((*p != '\0') && (isspace((int)(*p))))
     p++;
   if (*p == '\0')
     return(flags);

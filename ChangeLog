@@ -2,6 +2,8 @@
 
 	* magick/utility.c (ExpandFilenames): Properly handle NULL
 	filelist and NULL filelist entries.
+	(GetGeometry): Assure that there is no one-character stack read
+	overflow when reading the geometry buffer.
 
 2020-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
