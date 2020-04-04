@@ -153,6 +153,8 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         p=q;
         while ((LocaleNCompare(q,"->",2) != 0) && (*q != '\0'))
           MagickGetToken(q,&q,token,token_max_length);
+        if (!((q-p) > 2))
+          continue;
         length=Min(q-p-2,MaxTextExtent-1);
         (void) strncpy(comment,p+1,length);
         comment[length]='\0';
