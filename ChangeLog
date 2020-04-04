@@ -1,5 +1,11 @@
 2020-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/pixel_cache.c (ReadCacheIndexes): If SetNexus() has
+	previously failed to allocate the staging buffer and thus reported
+	an exception to the user, then ReadCacheIndexes() should report an
+	error rather than blundering into copying indexes data to a null
+	pointer.
+
 	* magick/effect.c (AdaptiveThresholdImage): Assure that we don't
 	attempt to write to output pixels if they have not been selected
 	yet.

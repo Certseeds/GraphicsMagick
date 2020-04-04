@@ -1003,7 +1003,7 @@ ReadCacheIndexes(const Cache cache,const NexusInfo *nexus_info,
   assert(cache != (Cache) NULL);
   cache_info=(CacheInfo *) cache;
   assert(cache_info->signature == MagickSignature);
-  if (!cache_info->indexes_valid)
+  if (!(cache_info->indexes_valid && (nexus_info->indexes != (IndexPacket *) NULL)))
     return(MagickFail);
   if (nexus_info->in_core)
     return(MagickPass);
