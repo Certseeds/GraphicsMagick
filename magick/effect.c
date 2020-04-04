@@ -313,7 +313,8 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
            * pre-computed data and only for pixels inside valid
            * domain
            */
-          if ((y > (height/2 + height)) && (x >= width) &&
+          if ((q != (PixelPacket *) NULL) && /* FIXME: May be patching over a bug! */
+              (y > (height/2 + height)) && (x >= width) &&
               (x < (image->columns + width)))
             {
               /* Left, Right, Upper, Bottom coord. to calculate the
