@@ -1071,9 +1071,12 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
       /* ListFiles() may change current directory without restoring. */
       if ((strlen(current_directory) > 0) && (chdir(current_directory) != 0))
         {
-          for (j=0; j < number_files; j++)
-            MagickFreeMemory(filelist[j]);
-          MagickFreeMemory(filelist);
+          if (filelist != (char **) NULL)
+            {
+              for (j=0; j < number_files; j++)
+                MagickFreeMemory(filelist[j]);
+              MagickFreeMemory(filelist);
+            }
           MagickFatalError(ConfigureFatalError,UnableToRestoreCurrentDirectory,
                            NULL);
         }
@@ -1088,9 +1091,12 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
             not matching anything (abc* and there's no file starting with
             abc). Do the same for behaviour consistent with that.
           */
-          for (j=0; j < number_files; j++)
-            MagickFreeMemory(filelist[j]);
-          MagickFreeMemory(filelist);
+          if (filelist != (char **) NULL)
+            {
+              for (j=0; j < number_files; j++)
+                MagickFreeMemory(filelist[j]);
+              MagickFreeMemory(filelist);
+            }
           continue;
         }
 
@@ -1109,7 +1115,9 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
           char
             filename_buffer[MaxTextExtent];
 
-          *filename_buffer='\0';
+          if (filelist[j] == (const char *) NULL)
+            continue;
+          filename_buffer[0]='\0';
           if (strlcat(filename_buffer,path,sizeof(filename_buffer))
               >= sizeof(filename_buffer))
             MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",

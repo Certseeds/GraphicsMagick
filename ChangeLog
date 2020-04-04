@@ -1,3 +1,8 @@
+2020-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (ExpandFilenames): Properly handle NULL
+	filelist and NULL filelist entries.
+
 2020-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Restore xz to oss-fuzz build due to
