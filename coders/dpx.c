@@ -1184,19 +1184,19 @@ DPXOrientationToOrientationType(const unsigned int orientation)
 }
 
 #define LSBOctetsToPackedU32Word(scanline,packed_u32) \
-{ \
+do { \
   packed_u32  = (((magick_uint32_t) *scanline++)); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 8); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 16); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 24); \
-}
+ } while(0)
 #define MSBOctetsToPackedU32Word(scanline,packed_u32) \
-{ \
+do { \
   packed_u32  = (((magick_uint32_t) *scanline++) << 24); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 16); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 8); \
   packed_u32 |= (((magick_uint32_t) *scanline++)); \
-}
+ } while(0)
 
 /*
   Scale from a video level to a full-range level.
@@ -1292,7 +1292,7 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
       if (bits_per_sample == 10)
         {
           register magick_uint32_t
-            packed_u32;
+            packed_u32 = 0;
 
           register unsigned int
             datum;
@@ -1339,38 +1339,22 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
 
           if (endian_type == MSBEndian)
             {
-              for (i=samples_per_row/3; i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  MSBOctetsToPackedU32Word(scanline,packed_u32);
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
+                  datum = i % 3;
+                  if (datum == 0)
+                    MSBOctetsToPackedU32Word(scanline,packed_u32);
                   *sp++=(packed_u32 >> shifts[datum]) & 0x3FF;
-                }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  MSBOctetsToPackedU32Word(scanline,packed_u32);
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
                 }
             }
           else if (endian_type == LSBEndian)
             {
-              for (i=samples_per_row/3; i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  LSBOctetsToPackedU32Word(scanline,packed_u32);
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
+                  datum = i % 3;
+                  if (datum == 0)
+                    LSBOctetsToPackedU32Word(scanline,packed_u32);
                   *sp++=(packed_u32 >> shifts[datum]) & 0x3FF;
-                }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  LSBOctetsToPackedU32Word(scanline,packed_u32);
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
                 }
             }
           return;
@@ -3218,19 +3202,19 @@ STATIC U16 OrientationTypeToDPXOrientation(const OrientationType orientation_typ
 }
 
 #define LSBPackedU32WordToOctets(packed_u32,scanline) \
-{ \
+do { \
   *scanline++=(unsigned char) ((packed_u32) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 8) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 16) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 24) & 0xFF); \
-}
+ } while(0)
 #define MSBPackedU32WordToOctets(packed_u32,scanline) \
-{ \
+do { \
   *scanline++=(unsigned char) ((packed_u32 >> 24) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 16) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 8) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32) & 0xFF); \
-}
+ } while(0)
 
 /*
   WordStreamLSBWrite support
@@ -3358,47 +3342,37 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 }
             }
 
+          datum=0;
+          packed_u32=0;
           if (endian_type == MSBEndian)
             {
-              /* Standard specified datum order */
-              for (i=(samples_per_row/3); i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  packed_u32=0;
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  if (datum == 2)
+                    {
+                      MSBPackedU32WordToOctets(packed_u32,scanline);
+                      packed_u32=0;
+                    }
+                  datum = i % 3;
                   packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
-                  MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  packed_u32=0;
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= ((magick_uint32_t) *samples++ << shifts[datum++]);
-                  MSBPackedU32WordToOctets(packed_u32,scanline);
-                }
+              if ((samples_per_row+1) % 3 )
+                MSBPackedU32WordToOctets(packed_u32,scanline);
             }
           else if (endian_type == LSBEndian)
             {
-              /* Standard specified datum order */
-              for (i=(samples_per_row/3); i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  packed_u32=0;
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  if (datum == 2)
+                    {
+                      LSBPackedU32WordToOctets(packed_u32,scanline);
+                      packed_u32=0;
+                    }
+                  datum = i % 3;
                   packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
-                  LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  packed_u32=0;
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  LSBPackedU32WordToOctets(packed_u32,scanline);
-                }
+              if ((samples_per_row+1) % 3 )
+                LSBPackedU32WordToOctets(packed_u32,scanline);
             }
           return;
         }

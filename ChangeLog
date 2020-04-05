@@ -1,5 +1,8 @@
 2020-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dpx.c (ReadRowSamples): Simplify 10-bit packed decoding.
+	(WriteRowSamples): Simplify 10-bit packed encoding.
+
 	* coders/locale.c (ReadConfigureFile): Ignore comment element if
 	it was not found or is too short.
 
