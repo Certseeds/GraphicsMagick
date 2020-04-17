@@ -1,3 +1,11 @@
+2020-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/config.sub: Update to latest config.sub
+
+	* config/config.guess: Update to latest config.guess.
+
+	* Makefile.am: Update to Automake 1.16.2
+
 2020-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c (ReadRowSamples): Simplify 10-bit packed decoding.
