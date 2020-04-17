@@ -1,5 +1,8 @@
 2020-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/fits.c (InsertRowHDU): Fix scary-sounding GCC 10 warning,
+	which is actually benign.
+
 	* config/config.sub: Update to latest config.sub
 
 	* config/config.guess: Update to latest config.guess.

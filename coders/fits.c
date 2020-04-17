@@ -761,8 +761,8 @@ ModuleExport void UnregisterFITSImage(void)
   This functions inserts one row into a HDU. Note that according to
   FITS spec a card image contains 80 bytes of ASCII data.
 
-  buffer - 2880 byte logical FITS record.
-  data   - string data to append
+  buffer - 2880 byte logical FITS record (initially memset to 0).
+  data   - string data to append at offset
   offset - offset into FITS record to write the data.
 */
 int InsertRowHDU(char *buffer, const char *data, int offset)
@@ -778,7 +778,7 @@ int InsertRowHDU(char *buffer, const char *data, int offset)
   if (len > (size_t) (((size_t)FITS_BLOCK_SIZE)-offset))
         len = ((size_t) FITS_BLOCK_SIZE)-offset;
 
-  (void) strncpy(buffer+offset,data,len);
+  (void) memcpy(buffer+offset,data,len);
   return offset +80;
 }
 
