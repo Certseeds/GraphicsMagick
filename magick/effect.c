@@ -3645,6 +3645,8 @@ RandomChannelThresholdImage(Image *image,const char *channel,
 %
 */
 
+static PixelPacket GetNonpeakMedianList(MedianPixelList *pixel_list) MAGICK_FUNC_PURE;
+
 static PixelPacket GetNonpeakMedianList(MedianPixelList *pixel_list)
 {
   PixelPacket

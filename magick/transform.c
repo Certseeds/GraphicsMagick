@@ -1329,6 +1329,9 @@ MagickExport Image *FlopImage(const Image *image,ExceptionInfo *exception)
 %
 %
 */
+
+static RectangleInfo GetImageMosaicDimensions(const Image *image) MAGICK_FUNC_PURE;
+
 static RectangleInfo GetImageMosaicDimensions(const Image *image)
 {
   RectangleInfo

@@ -1,4 +1,12 @@
+2020-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick: Fix remaining GCC 10 warnings.
+
 2020-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/transform.c (GetImageMosaicDimensions): Mark function as pure.
+
+	* magick/effect.c (GetNonpeakMedianList): Mark function as pure.
 
 	* coders/fits.c (InsertRowHDU): Fix scary-sounding GCC 10 warning,
 	which is actually benign.

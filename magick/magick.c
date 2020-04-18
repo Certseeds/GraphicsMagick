@@ -178,7 +178,7 @@ DestroyMagick(void)
   DestroyColorInfo();           /* Color database */
   DestroyDelegateInfo();        /* External delegate information */
   DestroyTypeInfo();            /* Font information */
-  DestroyMagicInfo();           /* File format detection */
+  /*DestroyMagicInfo();*/       /* File format detection */
   DestroyMagickInfoList();      /* Coder registrations + modules */
   DestroyConstitute();          /* Constitute semaphore */
   DestroyMagickRegistry();      /* Registered images */
@@ -1253,7 +1253,7 @@ InitializeMagickEx(const char *path, unsigned int options,
   InitializeMagickRegistry();       /* Image/blob registry */
   InitializeConstitute();           /* Constitute semaphore */
   InitializeMagickInfoList();       /* Coder registrations + modules */
-  InitializeMagicInfo();            /* File format detection */
+  /*InitializeMagicInfo();*/        /* File format detection */
   InitializeTypeInfo();             /* Font information */
   InitializeDelegateInfo();         /* External delegate information */
   InitializeColorInfo();            /* Color database */
