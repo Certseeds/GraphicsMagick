@@ -1,3 +1,14 @@
+2020-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Support dpx:swap-samples-read
+	define which behaves similar to dpx:swap-samples, but is only
+	applied when reading.  This provides for use when there is both
+	reading and writing in the same operation.
+	(WriteDPXImage): Support dpx:swap-samples-write define which
+	behaves similar to dpx:swap-samples, but is only applied when
+	writing.  This provides for use when there is both reading and
+	writing in the same operation.
+
 2020-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick: Fix remaining GCC 10 warnings.

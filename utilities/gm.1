@@ -1,4 +1,4 @@
-.TH gm 1 "2019/12/29" "GraphicsMagick"
+.TH gm 1 "2020/04/23" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -822,7 +822,7 @@ The behavior of each operator is described below.
 .in 15
 .B "Over"
 .in 20
- \fR
+\fR
 .in 20
 The result will be the union of the two image shapes, with opaque areas
 of \fIchange-image\fP obscuring \fIbase-image\fP in the region of
@@ -832,7 +832,7 @@ overlap.
 .in 15
 .B "In"
 .in 20
- \fR
+\fR
 .in 20
 The result is simply \fIchange-image\fP cut by the shape of
 \fIbase-image\fP. None of the image data of \fIbase-image\fP will be in
@@ -842,7 +842,7 @@ the result.
 .in 15
 .B "Out"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is \fIchange-image\fP with the shape of
 \fIbase-image\fP cut out.
@@ -851,7 +851,7 @@ The resulting image is \fIchange-image\fP with the shape of
 .in 15
 .B "Atop"
 .in 20
- \fR
+\fR
 .in 20
 The result is the same shape as \fIbase-image\fP, with
 \fIchange-image\fP obscuring \fIbase-image\fP where the image shapes
@@ -863,7 +863,7 @@ the result.
 .in 15
 .B "Xor"
 .in 20
- \fR
+\fR
 .in 20
 The result is the image data from both \fIchange-image\fP and
 \fIbase-image\fP that is outside the overlap region. The overlap region
@@ -873,7 +873,7 @@ will be blank.
 .in 15
 .B "Plus"
 .in 20
- \fR
+\fR
 .in 20
 The result is just the sum of the image data. Output values are cropped
 to MaxRGB (no overflow). This operation is independent of the matte
@@ -883,7 +883,7 @@ channels.
 .in 15
 .B "Minus"
 .in 20
- \fR
+\fR
 .in 20
 The result of \fIchange-image\fP - \fIbase-image\fP, with underflow
 cropped to zero. The matte channel is ignored (set to opaque, full
@@ -893,7 +893,7 @@ coverage).
 .in 15
 .B "Add"
 .in 20
- \fR
+\fR
 .in 20
 The result of \fIchange-image\fP + \fIbase-image\fP, with overflow
 wrapping around (\fImod\fP MaxRGB+1).
@@ -902,7 +902,7 @@ wrapping around (\fImod\fP MaxRGB+1).
 .in 15
 .B "Subtract"
 .in 20
- \fR
+\fR
 .in 20
 The result of \fIchange-image\fP - \fIbase-image\fP, with underflow
 wrapping around (\fImod\fP MaxRGB+1). The \fBadd\fP and \fBsubtract\fP
@@ -912,7 +912,7 @@ operators can be used to perform reversible transformations.
 .in 15
 .B "Difference"
 .in 20
- \fR
+\fR
 .in 20
 The result of abs(\fIchange-image\fP - \fIbase-image\fP). This is
 useful for comparing two very similar images.
@@ -921,7 +921,7 @@ useful for comparing two very similar images.
 .in 15
 .B "Divide"
 .in 20
- \fR
+\fR
 .in 20
 The result of \fIchange-image\fP / \fIbase-image\fP. This is useful
 for improving the readability of text on unevenly illuminated photos (by
@@ -931,7 +931,7 @@ using a gaussian blurred copy of change-image as base-image).
 .in 15
 .B "Multiply"
 .in 20
- \fR
+\fR
 .in 20
 The result of \fIchange-image\fP * \fIbase-image\fP. This is useful for
 the creation of drop-shadows.
@@ -940,7 +940,7 @@ the creation of drop-shadows.
 .in 15
 .B "Bumpmap"
 .in 20
- \fR
+\fR
 .in 20
 The result \fIbase-image\fP shaded by \fIchange-image\fP.
 
@@ -948,7 +948,7 @@ The result \fIbase-image\fP shaded by \fIchange-image\fP.
 .in 15
 .B "Copy"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is \fIbase-image\fP replaced with
 \fIchange-image\fP. Here the matte information is ignored.
@@ -957,7 +957,7 @@ The resulting image is \fIbase-image\fP replaced with
 .in 15
 .B "CopyRed"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the red channel in \fIbase-image\fP replaced with
 the red channel in \fIchange-image\fP. The other channels are copied
@@ -967,7 +967,7 @@ untouched.
 .in 15
 .B "CopyGreen"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the green channel in \fIbase-image\fP replaced
 with the green channel in \fIchange-image\fP. The other channels are
@@ -977,7 +977,7 @@ copied untouched.
 .in 15
 .B "CopyBlue"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the blue channel in \fIbase-image\fP replaced
 with the blue channel in \fIchange-image\fP. The other channels are
@@ -987,7 +987,7 @@ copied untouched.
 .in 15
 .B "CopyOpacity"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the opacity channel in \fIbase-image\fP replaced
 with the opacity channel in \fIchange-image\fP. The other channels are
@@ -997,7 +997,7 @@ copied untouched.
 .in 15
 .B "CopyCyan"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the cyan channel in \fIbase-image\fP replaced
 with the cyan channel in \fIchange-image\fP. The other channels are
@@ -1008,7 +1008,7 @@ CMYK(A) colorspace.
 .in 15
 .B "CopyMagenta"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the magenta channel in \fIbase-image\fP
 replaced with the magenta channel in \fIchange-image\fP. The other
@@ -1019,7 +1019,7 @@ base-image be in CMYK(A) colorspace.
 .in 15
 .B "CopyYellow"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the yellow channel in \fIbase-image\fP
 replaced with the yellow channel in \fIchange-image\fP. The other
@@ -1030,7 +1030,7 @@ base-image be in CMYK(A) colorspace.
 .in 15
 .B "CopyBlack"
 .in 20
- \fR
+\fR
 .in 20
 The resulting image is the black channel in \fIbase-image\fP
 replaced with the black channel in \fIchange-image\fP. The other
@@ -1205,7 +1205,7 @@ The following definitions may be created:
 .in 15
 .B "cineon:colorspace={rgb|cineonlog}"
 .in 20
- \fR
+\fR
 .in 20
 Use the cineon:colorspace option when reading a Cineon file to
 specify the colorspace the Cineon file uses. This overrides the colorspace
@@ -1215,7 +1215,7 @@ type implied by the DPX header (if any).
 .in 15
 .B "dpx:bits-per-sample=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the dpx:bits-per-sample key is defined, GraphicsMagick will write
 DPX images with the specified bits per sample, overriding any existing
@@ -1229,7 +1229,7 @@ below).
 .in 15
 .B "dpx:colorspace={rgb|cineonlog}"
 .in 20
- \fR
+\fR
 .in 20
 Use the dpx:colorspace option when reading a DPX file to
 specify the colorspace the DPX file uses. This overrides the colorspace
@@ -1239,7 +1239,7 @@ type implied by the DPX header (if any).
 .in 15
 .B "dpx:packing-method={packed|a|b|lsbpad|msbpad}"
 .in 20
- \fR
+\fR
 .in 20
 DPX samples are output within 32-bit words. They may be tightly
 packed end-to-end within the words ("packed"), padded with null bits to
@@ -1253,7 +1253,7 @@ of 10 bits with type A padding.
 .in 15
 .B "dpx:pixel-endian={lsb|msb}"
 .in 20
- \fR
+\fR
 .in 20
 Allows the user to specify the endian order of the pixels when
 reading or writing the DPX files. Sometimes this is useful if the file is
@@ -1264,20 +1264,31 @@ use different endianness.
 .in 15
 .B "dpx:swap-samples={true|false}"
 .in 20
- \fR
+\fR
+.in 15
+.B "dpx:swap-samples-read={true|false}"
+.in 20
+\fR
+.in 15
+.B "dpx:swap-samples-write={true|false}"
+.in 20
+\fR
 .in 20
 GraphicsMagick strives to adhere to the DPX standard but certain
-aspects of the standard can be quite confusing. As a result, some 10-bit
-DPX files have Red and Blue interchanged, or Cb and Cr interchanged due
-to an different interpretation of the standard, or getting the wires
-crossed. The swap-samples option may be supplied when reading or writing
-in order to read or write using the necessary sample order.
+aspects of the standard can be quite confusing. As a result, some
+10-bit DPX files have Red and Blue interchanged, or Cb and Cr
+interchanged due to an different interpretation of the standard, or
+getting the wires crossed. The swap-samples option may be supplied
+when reading or writing in order to read or write using the necessary
+sample order.  Use swap-samples-read when swapping should only occur
+in the reader, or swap-samples-write when swapping should only occur
+in the writer.
 
 .in 15
 .in 15
 .B "gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}"
 .in 20
- \fR
+\fR
 .in 20
 By default, the gradient coder produces a gradient from top to
 bottom ("South").  Since GraphicsMagick 1.3.35, the gradient direction
@@ -1293,7 +1304,7 @@ Top-Left), \fBNorthEast\fP (Bottom-Left to Top-Right),
 .in 15
 .B "jp2:rate=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Specify the compression factor to use while writing JPEG-2000
 files. The compression factor is the reciprocal of the compression
@@ -1306,7 +1317,7 @@ setting. The default quality setting of 75 results in a rate value of
 .in 15
 .B "jpeg:block-smoothing={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Enables or disables block smoothing when reading a JPEG file
 (default enabled).
@@ -1315,7 +1326,7 @@ Enables or disables block smoothing when reading a JPEG file
 .in 15
 .B "jpeg:dct-method=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Selects the IJG JPEG library DCT implementation to use. The
 encoding implementations vary in speed and encoding error. The
@@ -1329,7 +1340,7 @@ behaves.
 .in 15
 .B "jpeg:fancy-upsampling={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
@@ -1338,7 +1349,7 @@ Enables or disables fancy upsampling when reading a JPEG file
 .in 15
 .B "jpeg:max-scan-number=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Specifies an integer value for the maximum number of progressive
 scans allowed in a JPEG file.  The default maximum is 100 scans.  This
@@ -1349,7 +1360,7 @@ small JPEG files to take many minutes or hours to be read.
 .in 15
 .B "jpeg:max-warnings=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Specifies an integer value for how many warnings are allowed for
 any given error type before being promoted to a hard error.  JPEG
@@ -1359,7 +1370,7 @@ files producing excessive warnings indicate a problem with the file.
 .in 15
 .B "jpeg:optimize-coding={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Selects if huffman encoding should be used. Huffman encoding is enabled
 by default, but may be disabled for very large images since it encoding
@@ -1371,7 +1382,7 @@ memory consumption.
 .in 15
 .B "jpeg:preserve-settings"
 .in 20
- \fR
+\fR
 .in 20
 If the jpeg:preserve-settings flag is defined, the JPEG encoder will
 use the same "quality" and "sampling-factor" settings that were found
@@ -1385,7 +1396,7 @@ are not.
 .in 15
 .B "pcl:fit-to-page"
 .in 20
- \fR
+\fR
 .in 20
 If the pcl:fit-to-page flag is defined, then the printer is
 requested to scale the image to fit the page size (width and/or
@@ -1394,7 +1405,7 @@ height).
 .in 15
 .B "mng:maximum-loops=<value>"
 .in 20
- \fR
+\fR
 .in 20
 mng:maximum-loops specifies the maximum number of loops allowed to
 be specified by a MNG LOOP chunk. Without an imposed limit, a MNG file
@@ -1405,7 +1416,7 @@ time.  The current default limit is 512 loops.
 .in 15
 .B "pdf:use-cropbox={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 If the pdf:use-cropbox flag is set to \fBtrue\fP, then
 Ghostscript is requested to apply the PDF crop box.
@@ -1414,7 +1425,7 @@ Ghostscript is requested to apply the PDF crop box.
 .in 15
 .B "pdf:stop-on-error={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 If the pdf:stop-on-error flag is set to \fBtrue\fP, then
 Ghostscript is requested to stop processing the PDF when the first
@@ -1425,7 +1436,7 @@ requested pages.
 .in 15
 .B "ps:imagemask"
 .in 20
- \fR
+\fR
 .in 20
 If the ps:imagemask flag is defined, the PS3 and EPS3 coders will
 create Postscript files that render bilevel images with the Postscript
@@ -1435,7 +1446,7 @@ imagemask operator instead of the image operator.
 .in 15
 .B "ptif:minimum-geometry=<geometry>"
 .in 20
- \fR
+\fR
 .in 20
 If the ptif:minimum-geometry key is defined, GraphicsMagick will
 use it to determine the minimum frame size to output when writing a
@@ -1446,7 +1457,7 @@ versions of the first frame). The default minimum geometry is 32x32.
 .in 15
 .B "tiff:alpha={unspecified|associated|unassociated}"
 .in 20
- \fR
+\fR
 .in 20
 Specify the TIFF alpha channel type when reading or writing TIFF files,
 overriding the normal value. The default alpha channel type for new files
@@ -1467,7 +1478,7 @@ the pixels.
 .in 15
 .B "tiff:fill-order={msb2lsb|lsb2msb}"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:fill-order key is defined, GraphicsMagick will use it to
 determine the bit fill order used while writing TIFF files. The normal default
@@ -1480,7 +1491,7 @@ therefore RFC 2301 recommends using reverse order.
 .in 15
 .B "tiff:group-three-options=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:group-three-options key is defined, GraphicsMagick
 will use it to set the group3 options tag when writing
@@ -1491,7 +1502,7 @@ usage of this tag.  The default value is 4.
 .in 15
 .B "tiff:ignore-tags=<tags>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:ignore-tags key is defined, then it is used as a list
 of comma-delimited integer TIFF tag values to ignore while reading the
@@ -1504,7 +1515,7 @@ data at all.
 .in 15
 .B "tiff:report-warnings={false|true}"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:report-warnings key is defined and set to \fBtrue\fP,
 then TIFF warnings are reported as a warning exception rather than as
@@ -1518,7 +1529,7 @@ to the use of proprietary or specialized extensions.
 .in 15
 .B "tiff:sample-format={unsigned|ieeefp}"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:sample-format key is defined, GraphicsMagick will use it to
 determine the sample format used while writing TIFF files. The default is
@@ -1531,7 +1542,7 @@ to use.
 .in 15
 .B "tiff:max-sample-value=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:max-sample-value key is defined, GraphicsMagick will use the
 assigned value as the maximum floating point value while reading or
@@ -1546,7 +1557,7 @@ SMaxSampleValue tag is not present, it may be necessary to
 .in 15
 .B "tiff:min-sample-value=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:min-sample-value key is defined, GraphicsMagick will use
 the assigned value as the minimum floating point value while reading or
@@ -1557,7 +1568,7 @@ the value obtained from the file's SMinSampleValue tag (if present).
 .in 15
 .B "tiff:bits-per-sample=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:bits-per-sample key is defined, GraphicsMagick will write
 images with the specified bits per sample, overriding any existing depth
@@ -1571,7 +1582,7 @@ depend on the nature of the image (e.g. colormapped, grayscale, RGB, CMYK).
 .in 15
 .B "tiff:samples-per-pixel=<value>"
 .in 20
- \fR
+\fR
 .in 20
 If the tiff:samples-per-pixel key is defined to a value, the TIFF coder
 will write TIFF images with the defined samples per pixel, overriding any
@@ -1581,7 +1592,7 @@ value stored in the image. This option should not normally be used.
 .in 15
 .B "tiff:rows-per-strip=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Allows the user to specify the number of rows per TIFF strip.
 Rounded up to a multiple of 16 when using JPEG compression. Ignored when
@@ -1591,7 +1602,7 @@ using tiles.
 .in 15
 .B "tiff:strip-per-page=true"
 .in 20
- \fR
+\fR
 .in 20
 Requests that the image is written in a single TIFF strip. This is
 normally the default when group3 or group4 compression is requested
@@ -1602,7 +1613,7 @@ result in failure due to resource consumption in the writer or reader.
 .in 15
 .B "tiff:tile"
 .in 20
- \fR
+\fR
 .in 20
 Enable writing tiled TIFF (rather than stripped) using the default tile
 size. Tiled TIFF organizes the image as an array of smaller images
@@ -1612,7 +1623,7 @@ size. Tiled TIFF organizes the image as an array of smaller images
 .in 15
 .B "tiff:tile-geometry=<width>x<height>"
 .in 20
- \fR
+\fR
 .in 20
 Specify the tile size to use while writing tiled TIFF. Width and
 height should be a multiple of 16. If the value is not a multiple of 16,
@@ -1629,7 +1640,7 @@ with smaller tile sizes.
 .in 15
 .B "tiff:tile-width=<width>"
 .in 20
- \fR
+\fR
 .in 20
 Specify the tile width to use while writing tiled TIFF. The tile height
 is then defaulted to an appropriate size. Width should be a multiple of
@@ -1640,7 +1651,7 @@ Enables tiled TIFF if it has not already been enabled.
 .in 15
 .B "tiff:tile-height=<height>"
 .in 20
- \fR
+\fR
 .in 20
 Specify the tile height to use while writing tiled TIFF. The tile width
 is then defaulted to an appropriate size. Height should be a multiple of
@@ -1651,7 +1662,7 @@ Enables tiled TIFF if it has not already been enabled.
 .in 15
 .B "tiff:webp-lossless={TRUE|FALSE}"
 .in 20
- \fR
+\fR
 .in 20
 Specify a value of \fBTRUE\fP to enable lossless mode while
 writing WebP-compressed TIFF files. The WebP \fBwebp:lossless\fP
@@ -1663,7 +1674,7 @@ expended while compressing.
 .in 15
 .B "tiff:zstd-compress-level=<value>"
 .in 20
- \fR
+\fR
 .in 20
 Specify the compression level to use while writing Zstd-compressed
 TIFF files. The valid range is 1 to 22. If this define is not
@@ -1675,7 +1686,7 @@ quality setting of 75 is translated to a compress level of 9 such that
 .in 15
 .B "webp:lossless={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Enable lossless encoding.
 
@@ -1683,7 +1694,7 @@ Enable lossless encoding.
 .in 15
 .B "webp:method={0-6}"
 .in 20
- \fR
+\fR
 .in 20
 Quality/speed trade-off.
 
@@ -1691,7 +1702,7 @@ Quality/speed trade-off.
 .in 15
 .B "webp:image-hint={default,graph,photo,picture}"
 .in 20
- \fR
+\fR
 .in 20
 Hint for image type.
 
@@ -1699,7 +1710,7 @@ Hint for image type.
 .in 15
 .B "webp:target-size=<integer>"
 .in 20
- \fR
+\fR
 .in 20
 Target size in bytes.
 
@@ -1707,7 +1718,7 @@ Target size in bytes.
 .in 15
 .B "webp:target-psnr=<float>"
 .in 20
- \fR
+\fR
 .in 20
 Minimal distortion to try to achieve.
 
@@ -1715,7 +1726,7 @@ Minimal distortion to try to achieve.
 .in 15
 .B "webp:segments={1-4}"
 .in 20
- \fR
+\fR
 .in 20
 Maximum number of segments to use.
 
@@ -1723,7 +1734,7 @@ Maximum number of segments to use.
 .in 15
 .B "webp:sns-strength={0-100}"
 .in 20
- \fR
+\fR
 .in 20
 Spatial Noise Shaping.
 
@@ -1731,7 +1742,7 @@ Spatial Noise Shaping.
 .in 15
 .B "webp:filter-strength={0-100}"
 .in 20
- \fR
+\fR
 .in 20
 Filter strength.
 
@@ -1739,7 +1750,7 @@ Filter strength.
 .in 15
 .B "webp:filter-sharpness={0-7}"
 .in 20
- \fR
+\fR
 .in 20
 Filter sharpness.
 
@@ -1747,7 +1758,7 @@ Filter sharpness.
 .in 15
 .B "webp:filter-type={0,1}"
 .in 20
- \fR
+\fR
 .in 20
 Filtering type. 0 = simple, 1 = strong (only used if
 filter-strength > 0 or autofilter is enabled).
@@ -1756,7 +1767,7 @@ filter-strength > 0 or autofilter is enabled).
 .in 15
 .B "webp:auto-filter={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Auto adjust filter's strength.
 
@@ -1764,7 +1775,7 @@ Auto adjust filter's strength.
 .in 15
 .B "webp:alpha-compression=<integer>"
 .in 20
- \fR
+\fR
 .in 20
 Algorithm for encoding the alpha plane (0 = none, 1 = compressed
 with WebP lossless). Default is 1.
@@ -1773,7 +1784,7 @@ with WebP lossless). Default is 1.
 .in 15
 .B "webp:alpha-filtering=<integer>"
 .in 20
- \fR
+\fR
 .in 20
 Predictive filtering method for alpha plane. 0: none, 1: fast, 2:
 best. Default is 1.
@@ -1782,7 +1793,7 @@ best. Default is 1.
 .in 15
 .B "webp:alpha-quality={0-100}"
 .in 20
- \fR
+\fR
 .in 20
 Between 0 (smallest size) and 100 (lossless). Default is 100.
 
@@ -1790,7 +1801,7 @@ Between 0 (smallest size) and 100 (lossless). Default is 100.
 .in 15
 .B "webp:pass=[1..10]"
 .in 20
- \fR
+\fR
 .in 20
 Number of entropy-analysis passes.
 
@@ -1798,7 +1809,7 @@ Number of entropy-analysis passes.
 .in 15
 .B "webp:show-compressed={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 Export the compressed picture back.  In-loop filtering is not
 applied.
@@ -1807,7 +1818,7 @@ applied.
 .in 15
 .B "webp:preprocessing=[0,1,2]"
 .in 20
- \fR
+\fR
 .in 20
 0=none, 1=segment-smooth, 2=pseudo-random dithering
 
@@ -1815,7 +1826,7 @@ applied.
 .in 15
 .B "webp:partitions=[0-3]"
 .in 20
- \fR
+\fR
 .in 20
 log2(number of token partitions) in [0..3].  Default is 0 for
 easier progressive decoding.
@@ -1824,7 +1835,7 @@ easier progressive decoding.
 .in 15
 .B "webp:partition-limit={0-100}"
 .in 20
- \fR
+\fR
 .in 20
 Quality degradation allowed to fit the 512k limit on prediction
 modes coding (0: no degradation, 100: maximum possible
@@ -1834,7 +1845,7 @@ degradation).
 .in 15
 .B "webp:emulate-jpeg-size={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 If true, compression parameters will be remapped to better match
 the expected output size from JPEG compression. Generally, the output
@@ -1844,7 +1855,7 @@ size will be similar but the degradation will be lower.
 .in 15
 .B "webp:thread-level=<integer>"
 .in 20
- \fR
+\fR
 .in 20
 If non-zero, try and use multi-threaded encoding.
 
@@ -1852,7 +1863,7 @@ If non-zero, try and use multi-threaded encoding.
 .in 15
 .B "webp:low-memory={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 If set, reduce memory usage (but increase CPU use)
 
@@ -1860,7 +1871,7 @@ If set, reduce memory usage (but increase CPU use)
 .in 15
 .B "webp:use-sharp-yuv={true|false}"
 .in 20
- \fR
+\fR
 .in 20
 If set, if needed, use sharp (and slow) RGB->YUV conversion
 
@@ -3319,7 +3330,7 @@ The following is a description of the operators:
 .in 15
 .B "Add"
 .in 20
- \fR
+\fR
 .in 20
 Result is rvalue added to channel value.
 
@@ -3327,7 +3338,7 @@ Result is rvalue added to channel value.
 .in 15
 .B "And"
 .in 20
- \fR
+\fR
 .in 20
 Result is the logical AND of rvalue with channel value.
 
@@ -3335,7 +3346,7 @@ Result is the logical AND of rvalue with channel value.
 .in 15
 .B "Assign"
 .in 20
- \fR
+\fR
 .in 20
 Result is rvalue.
 
@@ -3343,7 +3354,7 @@ Result is rvalue.
 .in 15
 .B "Depth"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value adjusted so that it may be (approximately)
 stored in the specified number of bits without additional loss.
@@ -3352,7 +3363,7 @@ stored in the specified number of bits without additional loss.
 .in 15
 .B "Divide"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value divided by rvalue.
 
@@ -3360,7 +3371,7 @@ Result is channel value divided by rvalue.
 .in 15
 .B "Gamma"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value gamma adjusted by rvalue.
 
@@ -3368,7 +3379,7 @@ Result is channel value gamma adjusted by rvalue.
 .in 15
 .B "LShift"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value bitwise left shifted by rvalue bits.
 
@@ -3376,7 +3387,7 @@ Result is channel value bitwise left shifted by rvalue bits.
 .in 15
 .B "Log"
 .in 20
- \fR
+\fR
 .in 20
 Result is computed as log(value*rvalue+1)/log(rvalue+1).
 
@@ -3384,7 +3395,7 @@ Result is computed as log(value*rvalue+1)/log(rvalue+1).
 .in 15
 .B "Max"
 .in 20
- \fR
+\fR
 .in 20
 Result is assigned to rvalue if rvalue is greater than value.
 
@@ -3392,7 +3403,7 @@ Result is assigned to rvalue if rvalue is greater than value.
 .in 15
 .B "Min"
 .in 20
- \fR
+\fR
 .in 20
 Result is assigned to rvalue if rvalue is less than value.
 
@@ -3400,7 +3411,7 @@ Result is assigned to rvalue if rvalue is less than value.
 .in 15
 .B "Multiply"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value multiplied by rvalue.
 
@@ -3408,7 +3419,7 @@ Result is channel value multiplied by rvalue.
 .in 15
 .B "Negate"
 .in 20
- \fR
+\fR
 .in 20
 Result is inverse of channel value (like a film negative). An rvalue
 must be supplied but is currently not used. Inverting the image twice
@@ -3418,7 +3429,7 @@ results in the original image.
 .in 15
 .B "Or"
 .in 20
- \fR
+\fR
 .in 20
 Result is the logical OR of rvalue with channel value.
 
@@ -3426,7 +3437,7 @@ Result is the logical OR of rvalue with channel value.
 .in 15
 .B "Pow"
 .in 20
- \fR
+\fR
 .in 20
 Result is computed as pow(value,rvalue). Similar to Gamma except that
 rvalue is not inverted.
@@ -3435,7 +3446,7 @@ rvalue is not inverted.
 .in 15
 .B "RShift"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value bitwise right shifted by rvalue bits.
 
@@ -3443,7 +3454,7 @@ Result is channel value bitwise right shifted by rvalue bits.
 .in 15
 .B "Subtract"
 .in 20
- \fR
+\fR
 .in 20
 Result is channel value minus rvalue.
 
@@ -3451,7 +3462,7 @@ Result is channel value minus rvalue.
 .in 15
 .B "Threshold"
 .in 20
- \fR
+\fR
 .in 20
 Result is maximum (white) if channel value is greater than rvalue,
 or minimum (black) if it is less than or equal to rvalue. If \fBall\fP
@@ -3462,7 +3473,7 @@ intensity.
 .in 15
 .B "Threshold-white"
 .in 20
- \fR
+\fR
 .in 20
 Result is maximum (white) if channel value is greater than rvalue and
 is unchanged if it is less than or equal to rvalue. This can be used to
@@ -3474,7 +3485,7 @@ intensity.
 .in 15
 .B "Threshold-White-Negate"
 .in 20
- \fR
+\fR
 .in 20
 Result is set to black if channel value is greater than
 rvalue and is unchanged if it is less than or equal to rvalue. If
@@ -3485,7 +3496,7 @@ computed pixel intensity.
 .in 15
 .B "Threshold-black"
 .in 20
- \fR
+\fR
 .in 20
 Result is minimum (black) if channel value is less than than rvalue
 and is unchanged if it is greater than or equal to rvalue. This can be
@@ -3497,7 +3508,7 @@ computed pixel intensity.
 .in 15
 .B "Threshold-Black-Negate"
 .in 20
- \fR
+\fR
 .in 20
 Result is set to white if channel value is less than than
 rvalue and is unchanged if it is greater than or equal to rvalue. If
@@ -3508,7 +3519,7 @@ computed pixel intensity.
 .in 15
 .B "Xor"
 .in 20
- \fR
+\fR
 .in 20
 Result is the logical XOR of rvalue with channel value. An
 interesting property of XOR is that performing the same operation twice
@@ -3518,7 +3529,7 @@ results in the original value.
 .in 15
 .B "Noise-Gaussian"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with gaussian noise
 according to the intensity specified by rvalue.
@@ -3527,7 +3538,7 @@ according to the intensity specified by rvalue.
 .in 15
 .B "Noise-Impulse"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with impulse noise
 according to the intensity specified by rvalue.
@@ -3536,7 +3547,7 @@ according to the intensity specified by rvalue.
 .in 15
 .B "Noise-Laplacian"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with laplacian noise
 according to the intensity specified by rvalue.
@@ -3545,7 +3556,7 @@ according to the intensity specified by rvalue.
 .in 15
 .B "Noise-Multiplicative"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with multiplicative
 gaussian noise according to the intensity specified by rvalue.
@@ -3554,7 +3565,7 @@ gaussian noise according to the intensity specified by rvalue.
 .in 15
 .B "Noise-Poisson"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with poisson noise
 according to the intensity specified by rvalue.
@@ -3563,7 +3574,7 @@ according to the intensity specified by rvalue.
 .in 15
 .B "Noise-Random"
 .in 20
- \fR
+\fR
 .in 20
 Result is the current channel value modulated with random (uniform
 distribution) noise according to the intensity specified by rvalue.
@@ -3574,7 +3585,7 @@ quantum span.
 .in 15
 .B "Noise-Uniform"
 .in 20
- \fR
+\fR
 .in 20
 Result is the channel value with uniform noise applied according to
 the intensity specified by rvalue.
@@ -4611,7 +4622,7 @@ The parameters are:
 .in 15
 .B "radius"
 .in 20
- \fR
+\fR
 .in 20
 
 The radius of the Gaussian, in pixels, not counting the center pixel (default 0).
@@ -4620,7 +4631,7 @@ The radius of the Gaussian, in pixels, not counting the center pixel (default 0)
 .in 15
 .B "sigma"
 .in 20
- \fR
+\fR
 .in 20
 
 The standard deviation of the Gaussian, in pixels (default 1.0).
@@ -4629,7 +4640,7 @@ The standard deviation of the Gaussian, in pixels (default 1.0).
 .in 15
 .B "amount"
 .in 20
- \fR
+\fR
 .in 20
 
 The percentage of the difference between the original and the blur image that
@@ -4639,7 +4650,7 @@ is added back into the original (default 1.0).
 .in 15
 .B "threshold"
 .in 20
- \fR
+\fR
 .in 20
 
 The threshold, as a fraction of MaxRGB, needed to apply the difference
@@ -4689,7 +4700,7 @@ Choose from these methods:
 .in 15
 .B "Constant"
 .in 20
- \fR
+\fR
 .in 20
 
 Use the image background color.
@@ -4698,7 +4709,7 @@ Use the image background color.
 .in 15
 .B "Edge"
 .in 20
- \fR
+\fR
 .in 20
 
 Extend the edge pixel toward infinity (default).
@@ -4707,7 +4718,7 @@ Extend the edge pixel toward infinity (default).
 .in 15
 .B "Mirror"
 .in 20
- \fR
+\fR
 .in 20
 
 Mirror the image.
@@ -4716,7 +4727,7 @@ Mirror the image.
 .in 15
 .B "Tile"
 .in 20
- \fR
+\fR
 .in 20
 
 Tile the image.
@@ -5329,21 +5340,21 @@ particular command.
 .in 15
 .B "\fBCtl+O\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to load an image from a file.
 .in 15
 .in 15
 .B "\fBspace\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to display the next image in the sequence.
 .in 15
 .in 15
 .B "\fB<\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to speed-up the display of the images.  Refer to
 \fB-delay\fP for more information.
@@ -5351,7 +5362,7 @@ Press to speed-up the display of the images.  Refer to
 .in 15
 .B "\fB>\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to slow the display of the images.  Refer to
 \fB-delay\fP for more information.
@@ -5359,7 +5370,7 @@ Press to slow the display of the images.  Refer to
 .in 15
 .B "\fB?\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to display information about the image.  Press
 any key or button to erase the information.
@@ -5371,14 +5382,14 @@ and the total number of unique colors in the image.
 .in 15
 .B "\fBF1\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to display helpful information about \fBanimate(1)\fP.
 .in 15
 .in 15
 .B "\fBCtl-q\fP"
 .in 20
- \fR
+\fR
 .in 20
 Press to discard all images and exit program.
 .in 15
@@ -5396,7 +5407,7 @@ the \fBanimate\fP program uses the following X resources:
 .in 15
 .B "\fBbackground\fP \fB(\fP\fIclass\fP \fBBackground)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the preferred color to use for the Image window background. The
@@ -5405,7 +5416,7 @@ default is #ccc.
 .in 15
 .B "\fBborderColor\fP \fB(\fP\fIclass\fP \fBBorderColor)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the preferred color to use for the Image window border. The default
@@ -5414,7 +5425,7 @@ is #ccc.
 .in 15
 .B "\fBborderWidth\fP \fB(\fP\fIclass\fP \fBBorderWidth)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the width in pixels of the Image window border. The default is
@@ -5423,7 +5434,7 @@ Specifies the width in pixels of the Image window border. The default is
 .in 15
 .B "\fBfont\fP \fB(\fP\fIclass\fP \fBFont\fP \fBor\fP \fBFontList)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the name of the preferred font to use in normal formatted text.
@@ -5432,7 +5443,7 @@ The default is 14 point \fIHelvetica\fP.
 .in 15
 .B "\fBforeground\fP \fB(\fP\fIclass\fP \fBForeground)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the preferred color to use for text within the Image window.
@@ -5441,7 +5452,7 @@ The default is black.
 .in 15
 .B "\fBgeometry\fP \fB(\fP\fIclass\fP \fBgeometry)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the preferred size and position of the image window. It is not
@@ -5454,7 +5465,7 @@ to the bottom edge of the icon.
 .in 15
 .B "\fBiconGeometry\fP \fB(\fP\fIclass\fP \fBIconGeometry)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the preferred size and position of the application when iconified.
@@ -5464,7 +5475,7 @@ Offsets, if present, are handled in the same manner as in class Geometry.
 .in 15
 .B "\fBiconic\fP \fB(\fP\fIclass\fP \fBIconic)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This resource indicates that you would prefer that the application's windows
@@ -5474,7 +5485,7 @@ by you. Window managers may choose not to honor the application's request.
 .in 15
 .B "\fBmatteColor\fP \fB(\fP\fIclass\fP \fBMatteColor)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specify the color of windows. It is used for the backgrounds of windows,
@@ -5484,7 +5495,7 @@ colors derived from this color. Default value: #ddd.
 .in 15
 .B "\fBname\fP \fB(\fP\fIclass\fP \fBName)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This resource specifies the name under which resources for the application
@@ -5495,7 +5506,7 @@ to alter the executable file name. The default is the application name.
 .in 15
 .B "\fBsharedMemory\fP \fB(\fP\fIclass\fP \fBSharedMemory)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This resource specifies whether animate should attempt use shared memory
@@ -5506,7 +5517,7 @@ is ignored. The default is True.
 .in 15
 .B "\fBtext_font\fP \fB(\fP\fIclass\fP \fBtextFont)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Specifies the name of the preferred font to use in fixed (typewriter style)
@@ -5515,7 +5526,7 @@ formatted text. The default is 14 point \fICourier\fP.
 .in 15
 .B "\fBtitle\fP \fB(\fP\fIclass\fP \fBTitle)\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This resource specifies the title to be used for the Image window. This
@@ -6158,7 +6169,7 @@ elements and their attributes:
 .in 15
 .B "<image>"
 .in 20
- \fR
+\fR
 .in 20
 background, color, id, size
 .in 15
@@ -6193,7 +6204,7 @@ example:
 .in 15
 .B "<group>"
 .in 20
- \fR
+\fR
 .in 20
 
 Define a new group of image objects.  By default, images are only
@@ -6233,7 +6244,7 @@ life of the group:
 .in 15
 .B "<read>"
 .in 20
- \fR
+\fR
 .in 20
     filename
 .in 15
@@ -6265,7 +6276,7 @@ To read two images use
 .in 15
 .B "<write>"
 .in 20
- \fR
+\fR
 .in 20
     filename
 .in 15
@@ -6282,7 +6293,7 @@ a single multiple-image file or multiple ones if necessary.
 .in 15
 .B "<get>"
 .in 20
- \fR
+\fR
 .in 20
 Get any attribute recognized by
 PerlMagick's GetAttribute() and stores it as an image attribute for later
@@ -6299,7 +6310,7 @@ use. Currently only \fIwidth\fP and \fIheight\fP are supported.
 .in 15
 .B "<set>"
 .in 20
- \fR
+\fR
 .in 20
 background, bordercolor, clip-mask, colorspace, density,
 magick, mattecolor, opacity.  Set an attribute recognized by
@@ -6308,7 +6319,7 @@ PerlMagick's GetAttribute().
 .in 15
 .B "<profile>"
 .in 20
- \fR
+\fR
 .in 20
     [profilename]
 .in 15
@@ -6339,42 +6350,42 @@ To remove a specified profile use "!" as the filename eg
 .in 15
 .B "<border>"
 .in 20
- \fR
+\fR
 .in 20
     fill, geometry, height, width
 .in 15
 .in 15
 .B "<blur>"
 .in 20
- \fR
+\fR
 .in 20
     radius, sigma
 .in 15
 .in 15
 .B "<charcoal>"
 .in 20
- \fR
+\fR
 .in 20
     radius, sigma
 .in 15
 .in 15
 .B "<chop>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, height, width, x, y
 .in 15
 .in 15
 .B "<crop>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, height, width, x, y
 .in 15
 .in 15
 .B "<composite>"
 .in 20
- \fR
+\fR
 .in 20
     compose, geometry, gravity, image, x, y
 .in 15
@@ -6404,243 +6415,243 @@ To remove a specified profile use "!" as the filename eg
 .in 15
 .B "<despeckle>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<emboss>"
 .in 20
- \fR
+\fR
 .in 20
     radius, sigma
 .in 15
 .in 15
 .B "<enhance>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<equalize>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<edge>"
 .in 20
- \fR
+\fR
 .in 20
     radius
 .in 15
 .in 15
 .B "<flip>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<flop>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<frame>"
 .in 20
- \fR
+\fR
 .in 20
     fill, geometry, height, width, x, y, inner, outer
 .in 15
 .in 15
 .B "<flatten>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<get>"
 .in 20
- \fR
+\fR
 .in 20
     height, width
 .in 15
 .in 15
 .B "<gamma>"
 .in 20
- \fR
+\fR
 .in 20
     red, green, blue
 .in 15
 .in 15
 .B "<image>"
 .in 20
- \fR
+\fR
 .in 20
     background, color, id, size
 .in 15
 .in 15
 .B "<implode>"
 .in 20
- \fR
+\fR
 .in 20
     amount
 .in 15
 .in 15
 .B "<magnify>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<minify>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<medianfilter>"
 .in 20
- \fR
+\fR
 .in 20
     radius
 .in 15
 .in 15
 .B "<normalize>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<oilpaint>"
 .in 20
- \fR
+\fR
 .in 20
     radius
 .in 15
 .in 15
 .B "<print>"
 .in 20
- \fR
+\fR
 .in 20
     output
 .in 15
 .in 15
 .B "<profile>"
 .in 20
- \fR
+\fR
 .in 20
     [profilename]
 .in 15
 .in 15
 .B "<read>"
 .in 20
- \fR
+\fR
 .in 15
 .B "<resize>"
 .in 20
- \fR
+\fR
 .in 20
     blur, filter, geometry, height, width
 .in 15
 .in 15
 .B "<roll>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, x, y
 .in 15
 .in 15
 .B "<rotate>"
 .in 20
- \fR
+\fR
 .in 20
     degrees
 .in 15
 .in 15
 .B "<reducenoise>"
 .in 20
- \fR
+\fR
 .in 20
     radius
 .in 15
 .in 15
 .B "<sample>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, height, width
 .in 15
 .in 15
 .B "<scale>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, height, width
 .in 15
 .in 15
 .B "<sharpen>"
 .in 20
- \fR
+\fR
 .in 20
     radius, sigma
 .in 15
 .in 15
 .B "<shave>"
 .in 20
- \fR
+\fR
 .in 20
     geometry, height, width
 .in 15
 .in 15
 .B "<shear>"
 .in 20
- \fR
+\fR
 .in 20
     x, y
 .in 15
 .in 15
 .B "<solarize>"
 .in 20
- \fR
+\fR
 .in 20
     threshold
 .in 15
 .in 15
 .B "<spread>"
 .in 20
- \fR
+\fR
 .in 20
     radius
 .in 15
 .in 15
 .B "<stegano>"
 .in 20
- \fR
+\fR
 .in 20
     image
 .in 15
 .in 15
 .B "<stereo>"
 .in 20
- \fR
+\fR
 .in 20
     image
 .in 15
 .in 15
 .B "<swirl>"
 .in 20
- \fR
+\fR
 .in 20
     degrees
 .in 15
 .in 15
 .B "<texture>"
 .in 20
- \fR
+\fR
 .in 20
     image
 .in 15
 .in 15
 .B "<threshold>"
 .in 20
- \fR
+\fR
 .in 20
     threshold
 .in 15
 .in 15
 .B "<transparent>"
 .in 20
- \fR
+\fR
 .in 20
     color
 .in 15
 .in 15
 .B "<trim>"
 .in 20
- \fR
+\fR
 
 .SH GM CONVERT
 
@@ -9309,7 +9320,7 @@ as .displayrc:
 .B "
 \fBdisplay image centered on a backdrop\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This backdrop covers the entire workstation screen and is useful for hiding
@@ -9321,7 +9332,7 @@ for details.
 .B "
 \fBconfirm on program exit\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Ask for a confirmation before exiting the \fBdisplay(1)\fP program.
@@ -9330,7 +9341,7 @@ Ask for a confirmation before exiting the \fBdisplay(1)\fP program.
 .B "
 \fBcorrect image for display gamma\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 If the image has a known gamma, the gamma is corrected to match that of
@@ -9340,7 +9351,7 @@ the X server (see the X Resource\fB displayGamma\fP).
 .B "
 \fBdisplay warning messages\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Display any warning messages.
@@ -9349,7 +9360,7 @@ Display any warning messages.
 .B "
 \fBapply Floyd/Steinberg error diffusion to image\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 The basic strategy of dithering is to trade intensity resolution for spatial
@@ -9361,7 +9372,7 @@ improved with this preference.
 .B "
 \fBuse a shared colormap for colormapped X visuals\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 This option only applies when the default X server visual is
@@ -9377,7 +9388,7 @@ image colormap is installed.
 .B "
 \fBdisplay images as an X server pixmap\fP"
 .in 20
- \fR
+\fR
 .in 20
 
 Images are maintained as a XImage by default. Set this resource to True

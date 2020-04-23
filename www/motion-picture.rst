@@ -524,6 +524,12 @@ DPX files:
     supplied when reading or writing in order to read or write using
     the necessary sample order.
 
+-define dpx:swap-samples-read={true|false}
+    Similar to dpx:swap-samples but only applied while reading.
+
+-define dpx:swap-samples-write={true|false}
+    Similar to dpx:swap-samples but only applied while writing.
+
 -interlace plane
     By default, samples are stored contiguously in a single element
     when possible. Specifying '-interlace plane' causes each sample

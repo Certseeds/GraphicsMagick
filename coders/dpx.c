@@ -2518,7 +2518,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
         }
-      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")))
+      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")) ||
+          (definition_value=AccessDefinition(image_info,"dpx","swap-samples-read")))
         {
           if (LocaleCompare(definition_value,"false") != 0)
             swap_word_datums = swap_word_datums ? MagickFalse : MagickTrue;
@@ -4518,12 +4519,12 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
         }
-      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")))
+      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")) ||
+          (definition_value=AccessDefinition(image_info,"dpx","swap-samples-write")))
         {
           if (LocaleCompare(definition_value,"false") != 0)
             swap_word_datums = swap_word_datums ? MagickFalse : MagickTrue;
         }
-
       /*
         Create a chroma image if we are subsampling YCbCr.
       */

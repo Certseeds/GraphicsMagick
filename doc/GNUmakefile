@@ -32,12 +32,13 @@ INSTALLWWW       = ../www
 INSTALLUTILITIES = ../utilities
 GMSUBDIR=Gm
 
-DOC2MAN	         = ./imdoc2man
-DOC2HTML         = ./gmdoc2html
-DOC2TEX          = ./imdoc2tex
+DOC2MAN	          = ./imdoc2man
+DOC2HTML          = ./gmdoc2html
+DOC2TEX           = ./imdoc2tex
+DOCSELECTBRIEF    = ./imdoc_select_brief
 DOCSELECTCOMBINED = ./gmdocselect
 DOCSELECTSEPARATE = ./imdocselect
-DOCINCLUDE       = ./imdocinclude
+DOCINCLUDE        = ./imdocinclude
 
 # You might need to change this to /usr/bin/sed
 SED = /bin/sed
@@ -95,7 +96,7 @@ gm.tex: targets-tex $(GMSUBDIR)/tex.imdoc $(DOC2TEX)
 	mv $@.tmp $@
 
 brief_options.imdoc:	options.imdoc
-	imdoc_select_brief options.imdoc brief_options.imdoc
+	$(DOCSELECTBRIEF) options.imdoc brief_options.imdoc
 
 $(INSTALLWWW)/gm.html: gm.html
 	cp -p $< $@
