@@ -19,6 +19,87 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+1.3.36 (?? ??, 2020)
+==========================
+
+Special Issues:
+
+*
+
+Security Fixes:
+
+*
+
+Bug fixes:
+
+* ModifyCache(): Fix memory leak.
+
+* ReadCacheIndexes(): Don't blunder into accessing a null pointer if
+  the using code has ignored a previous error report bubled-up from
+  SetNexus().
+
+New Features:
+
+* Logging is now fully programmable.
+
+* DPX format: Support dpx:swap-samples-read define which behaves
+  similar to dpx:swap-samples, but is only applied when reading, as
+  well as dpx:swap-samples-write, which is only applied when
+  writing. This provides for use when there is both reading and
+  writing in the same operation (otherwise the final result was no
+  effect!).
+
+API Updates:
+
+* magick/api.h: Add "magick/enum_strings.h" to API headers.
+
+* New log settings accessor C functions: SetLogDefaultFileName(),
+  SetLogDefaultFormat(), SetLogDefaultOutputType(),
+  SetLogDefaultLogMethod(), SetLogDefaultLimit(),
+  SetLogDefaultGenerations(), SetLogDefaultEventType().  These
+  functions allow a program to set the same parameters which may be
+  set by loading a "log.mgk" function.  If a default logging callback
+  was provided via SetLogDefaultLogMethod() such that MethodOutput is
+  used, then the search for a "log.mgk" is avoided entirely.
+
+* New log settings accessor C++ functions: SetLogDefaultFileName(),
+  SetLogDefaultFormat(), SetLogDefaultOutputType(),
+  SetLogDefaultLogMethod(), SetLogDefaultLimit(),
+  SetLogDefaultGenerations(), SetLogDefaultEventType().  These C++
+  functions just pass through to the equivalent C functions and
+  provide the same benefits.
+
+Feature improvements:
+
+* PNG writer: Don't skip optional Exif identifier code if it isn't present.
+
+* DPX reader/writer: decode/encode of 10-bit packed DPX is now twice
+  as fast as it was due to code simplification.
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* None
+
+Behavior Changes:
+
+* Previously the formatting settings from "log.mgk" were only used
+  when writing to a file, or to the console, via a file handle.  Now
+  the log formatting has been normalized so that the settings provided
+  by "log.mgk" (or SetLogDefaultFormat()) will always be used.  It is
+  possible this may result in some formatting changes.
+
+* In the Windows Visual Studio build, the ProvideDllMain option is now
+  disabled by default (can still be enabled) since it causes
+  InitializeMagick() to be invoked prior to when the program's main()
+  routine is called, thereby blocking configuration activities or use
+  of InitializeMagickEx().  With this change it is even more
+  imperative that InitializeMagick() be explicitly invoked by all
+  programs using GraphicsMagick.
+
 1.3.35 (February 23, 2020)
 ==========================
 
