@@ -403,7 +403,7 @@ return RetVal;
   x++; \
   if((long) x>=ldblk) \
   { \
-    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) { RetVal=-6; goto unpack_wpg_raser_error; } \
     x=0; \
     y++; \
     if(y>=image->rows) break; \
@@ -537,6 +537,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
         }
       }
     }
+unpack_wpg_raser_error:;
   MagickFreeMemory(BImgBuff);
   return(RetVal);
 }
@@ -552,7 +553,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   x++; \
   if((long) x >= ldblk) \
   { \
-    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) { RetVal=-6; goto unpack_wpg2_error; } \
     x=0; \
     y++; \
     XorMe = 0; \
@@ -729,6 +730,7 @@ static int UnpackWPG2Raster(Image *image, int bpp)
             }
         }
     }
+unpack_wpg2_error:;
   FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
   return(RetVal);
 }

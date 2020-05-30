@@ -1,5 +1,9 @@
 2020-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Terminate reading when a pixel
+	cache resource limit is hit rather than moving on to heap buffer
+	overflow.  Fixes oss-fuzz 20045, 20318, 21956
+
 	* coders/png.c (ReadMNGImage): If the image width is 1, then X
 	magnification is done by by simple pixel replication.  If the
 	image height is 1, then Y magnification is done by simple pixel

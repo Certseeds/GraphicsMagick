@@ -38,6 +38,9 @@
 <p>2020-05-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/wpg.c (ReadWPGImage): Terminate reading when a pixel
+cache resource limit is hit rather than moving on to heap buffer
+overflow.  Fixes oss-fuzz 20045, 20318, 21956</li>
 <li>coders/png.c (ReadMNGImage): If the image width is 1, then X
 magnification is done by by simple pixel replication.  If the
 image height is 1, then Y magnification is done by simple pixel
