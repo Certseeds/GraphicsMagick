@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2020-05-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/png.c (ReadMNGImage): If the image width is 1, then X
+magnification is done by by simple pixel replication.  If the
+image height is 1, then Y magnification is done by simple pixel
+replication.  Fixes oss-fuzz issue 19025 &quot;Heap-buffer-overflow in
+ReadMNGImage&quot; and oss-fuzz issue 19026 &quot;ASSERT: yy &lt; (long)
+large_image-&gt;rows&quot;. It appears that CERT has assigned
+CVE-2020-12672 for oss-fuzz issue 19025.  Note that the heap
+overwrite is only one byte.</li>
+</ul>
+</blockquote>
 <p>2020-05-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

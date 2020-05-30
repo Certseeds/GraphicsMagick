@@ -1,3 +1,14 @@
+2020-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): If the image width is 1, then X
+	magnification is done by by simple pixel replication.  If the
+	image height is 1, then Y magnification is done by simple pixel
+	replication.  Fixes oss-fuzz issue 19025 "Heap-buffer-overflow in
+	ReadMNGImage" and oss-fuzz issue 19026 "ASSERT: yy < (long)
+	large_image->rows". It appears that CERT has assigned
+	CVE-2020-12672 for oss-fuzz issue 19025.  Note that the heap
+	overwrite is only one byte.
+
 2020-05-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update with changes up to 2020-04-23.
