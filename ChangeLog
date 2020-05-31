@@ -1,3 +1,9 @@
+2020-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): WebP compression only supports a
+	depth of 8.  Fixes oss-fuzz 22560 "Use-of-uninitialized-value in
+	GammaToLinear".
+
 2020-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ReadWPGImage): Terminate reading when a pixel

@@ -4867,7 +4867,19 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if defined(BITS_IN_JSAMPLE)
           depth=BITS_IN_JSAMPLE;
           bits_per_sample=BITS_IN_JSAMPLE;
+#else
+          depth=8;
+          bits_per_sample=8;
 #endif
+        }
+
+      if (COMPRESSION_WEBP == compress_tag)
+        {
+          /*
+            WebP compression only supports a depth of 8.
+          */
+          depth=8;
+          bits_per_sample=8;
         }
 
       alpha_type=UnspecifiedAlpha;
