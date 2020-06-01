@@ -1994,13 +1994,13 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
 static MagickPassFail
 ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
 {
-  long
+  unsigned long
     y;
 
   register const PixelPacket
     *r;
 
-  register long
+  register unsigned long
     x;
 
   register PixelPacket
@@ -2036,9 +2036,9 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
                       nexus_info->region.width,nexus_info->region.height,mask_nexus,
                       &image->exception);
   if ((p != (PixelPacket *) NULL) && (r != (const PixelPacket *) NULL))
-    for (y=0; y < (long) nexus_info->region.height; y++)
+    for (y=0; y < nexus_info->region.height; y++)
       {
-        for (x=0; x < (long) nexus_info->region.width; x++)
+        for (x=0; x < nexus_info->region.width; x++)
           {
             if (r->red == TransparentOpacity)
               q->red=p->red;
@@ -2277,15 +2277,16 @@ SyncCacheNexus(Image *image,const NexusInfo *nexus_info,
       if (*ImageGetClipMaskInlined(image) != (Image *) NULL)
         if (!ClipCacheNexus(image,nexus_info))
           status=MagickFail;
-    /* added mask */
-    if  ( status != MagickFail )
-      {
-        if (*ImageGetCompositeMaskInlined(image) != (Image *) NULL)
-          {
-            if (!CompositeCacheNexus(image,nexus_info))
-              status=MagickFail;
-          }
-      }
+
+      /* added mask */
+      if  ( status != MagickFail )
+        {
+          if (*ImageGetCompositeMaskInlined(image) != (Image *) NULL)
+            {
+              if (!CompositeCacheNexus(image,nexus_info))
+                status=MagickFail;
+            }
+        }
 
       if (status != MagickFail)
         if ((status=WriteCachePixels(cache_info,nexus_info)) == MagickFail)
