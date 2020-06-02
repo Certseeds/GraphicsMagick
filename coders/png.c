@@ -5304,7 +5304,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "MAGN chunk (%lu bytes): "
-                                      "First_magnified_object_id=%u, Las t_magnified_object_id=%u, "
+                                      "First_magnified_object_id=%u, Last_magnified_object_id=%u, "
                                       "MB=%u, ML=%u, MR=%u, MT=%u, MX=%u, MY=%u, "
                                       "X_method=%u, Y_method=%u",
                                       length,
