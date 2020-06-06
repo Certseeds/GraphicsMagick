@@ -413,9 +413,12 @@ return RetVal;
 
 /** Call this function to ensure that all data matrix is filled with something. This function
  * is used only to error recovery. */
-static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
-                                int bpp, long ldblk)
+static MagickPassFail ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
+                                          int bpp, long ldblk)
 {
+  MagickPassFail
+    status = MagickPass;
+
   while(y<image->rows && image->exception.severity!=UndefinedException)
   {
     if((long) x<ldblk) 
@@ -427,9 +430,13 @@ static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigne
         x = 0;		/* Next pass will need to clear whole row */
     }
     if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
-      break;
+      {
+        status = MagickFail;
+        break;
+      }
     y++;
   }
+  return status;
 }
 
 
@@ -528,7 +535,6 @@ static int UnpackWPGRaster(Image *image,int bpp)
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 { 
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
                   MagickFreeMemory(BImgBuff);
                   return(-6);
                 }

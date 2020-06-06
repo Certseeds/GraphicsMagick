@@ -1,3 +1,10 @@
+2020-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (UnpackWPGRaster): Fix oss-fuzz 23042
+	"Heap-buffer-overflow in ImportGrayQuantumType" and oss-fuzz
+	"Heap-buffer-overflow in InsertRow" which are both from the same
+	cause.
+
 2020-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/pixel_cache.c (ClipCacheNexus): Change x and y variables
