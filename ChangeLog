@@ -1,3 +1,9 @@
+2020-06-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Apply stricter range limits when
+	converting a double to a long in order to avoid integer overflow.
+	Fixes oss-fuzz 23304 "Integer-overflow in DrawImage".
+
 2020-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (UnpackWPGRaster): Fix oss-fuzz 23042

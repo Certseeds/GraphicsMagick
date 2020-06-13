@@ -3893,7 +3893,7 @@ result is a gray image.</pp>
 <pp>Select an operator from <s>Add</s>, <s>And</s>, <s>Assign</s>,
 <s>Depth</s>, <s>Divide</s>, <s>Gamma</s>, <s>Negate</s>,
 <s>LShift</s>, <s>Log</s>, <s>Max</s>, <s>Min</s>, <s>Multiply</s>,
-<s>Or</s>, <s>Pow</s> <s>RShift</s>, <s>Subtract</s>,
+<s>Or</s>, <s>Pow</s>, <s>RShift</s>, <s>Subtract</s>,
 <s>Threshold</s>, <s>Threshold-White</s>,
 <s>Threshold-White-Negate</s>, <s>Threshold-Black</s>,
 <s>Threshold-Black-Negate</s>, <s>Xor</s>, <s>Noise-Gaussian</s>,

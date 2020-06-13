@@ -74,6 +74,14 @@
 #if !defined(PRIMITIVE_INFO_POINTS_MAX)
 #  define PRIMITIVE_INFO_POINTS_MAX ((~((size_t)0)) >> 8)
 #endif /* !defined(PRIMITIVE_INFO_POINTS_MAX) */
+/* Largest double value which can be converted to a long and survive AbsoluteValue() */
+#if LONG_MAX == 2147483647L
+#  define DTOLONG_MAX 2147483647.0
+#  define DTOLONG_MIN 2147483647.0
+#else
+#  define DTOLONG_MAX    9007199254740992.0
+#  define DTOLONG_MIN   -9007199254740992.0
+#endif
 
 /*
   Typedef declarations.
@@ -3487,7 +3495,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=ceil(ordinate-0.5);
-                if (((dval < (double) LONG_MIN || dval > (double) LONG_MAX)) ||
+                if ((dval < DTOLONG_MIN) || (dval > DTOLONG_MAX) ||
                     (AcquireMagickResource(WidthResource,AbsoluteValue((magick_int64_t) dval)) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];
@@ -3507,7 +3515,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=ceil(ordinate-0.5);
-                if ((dval < (double) LONG_MIN || dval > (double) LONG_MAX) ||
+                if ((dval < DTOLONG_MIN) || (dval > DTOLONG_MAX) ||
                     (AcquireMagickResource(WidthResource,AbsoluteValue((magick_int64_t) dval)) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];
@@ -3528,7 +3536,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=floor(ordinate+0.5);
-                if ((dval > (double) LONG_MAX) ||
+                if ((dval > DTOLONG_MAX) ||
                     (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];
@@ -3549,7 +3557,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     break;
                   }
                 dval=floor(ordinate+0.5);
-                if ((dval > (double) LONG_MAX) ||
+                if ((dval > DTOLONG_MAX) ||
                     (AcquireMagickResource(WidthResource,(magick_int64_t) dval) != MagickPass))
                   {
                     char resource_str[MaxTextExtent];
@@ -5579,7 +5587,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       return status;
     }
   dvalue=ceil(primitive_info->point.x-0.5);
-  if (MAGICK_ISNAN(dvalue) || ((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+  if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
       char double_str[18];
       FormatString(double_str,"%g",dvalue);
@@ -5588,7 +5596,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
     }
   x=(long) dvalue;
   dvalue=ceil(primitive_info->point.y-0.5);
-  if (MAGICK_ISNAN(dvalue) || ((dvalue < (double) LONG_MIN)) || (dvalue > (double) LONG_MAX))
+  if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
       char double_str[18];
       FormatString(double_str,"%g",dvalue);
