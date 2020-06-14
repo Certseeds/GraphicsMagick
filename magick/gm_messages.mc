@@ -1223,6 +1223,12 @@ arithmetic overflow
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorClipPathNotFound
+Language        = English
+clip path not found
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorDrawingRecursionDetected
 Language        = English
 drawing recursion detected

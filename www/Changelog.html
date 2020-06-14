@@ -40,7 +40,11 @@
 <ul class="simple">
 <li>magick/render.c (DrawImage): Apply stricter range limits when
 converting a double to a long in order to avoid integer overflow.
-Fixes oss-fuzz 23304 &quot;Integer-overflow in DrawImage&quot;.</li>
+Fixes oss-fuzz 23304 &quot;Integer-overflow in DrawImage&quot;.
+(DrawClipPath): If there is no matching clip-path attribute then
+return an informative error.  Fixes oss-fuzz 23187 &quot;Stack-overflow
+in DrawImage&quot; which is actually a case of DrawImage() /
+DrawClipPath() recursion.</li>
 </ul>
 </blockquote>
 <p>2020-06-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

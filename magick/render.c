@@ -1708,30 +1708,24 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
+  assert(name != (const char *) NULL);
   FormatString(clip_path,"[%.1024s]",name);
   attribute=GetImageAttribute(image,clip_path);
-  /*
-    FIXME: Desired error handling for missing clip-path attribute is
-    not clear (was returning MagickFail).  Maybe the caller does not
-    know.
-  */
   if (attribute == (ImageAttribute *) NULL)
     return(MagickPass);
   image_clip_mask = *ImageGetClipMaskInlined(image);
   if (image_clip_mask == (Image *) NULL)
     {
-      Image
-        *clip_mask;
-
-      clip_mask=CloneImage(image,image->columns,image->rows,MagickTrue,
-        &image->exception);
-      if (clip_mask == (Image *) NULL)
-        return(MagickFail);
-      status=SetImageClipMask(image,clip_mask);
-      DestroyImage(clip_mask);
-      if (status == MagickFail)
-        return(MagickFail);
-      image_clip_mask = *ImageGetClipMaskInlined(image);
+      /*
+        FIXME: Desired error handling for missing clip-path attribute
+        is not clear. Previous stop-gap code was producing an empty
+        clip-path image, but this resulted in recursion.  Return an
+        informative error for the moment.
+      */
+      ThrowException(&image->exception,DrawError,ClipPathNotFound,
+                     name);
+      status=MagickFail;
+      goto draw_clip_path_end;
     }
   else
     {
