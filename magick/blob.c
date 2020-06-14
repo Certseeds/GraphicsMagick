@@ -2394,7 +2394,7 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
 
   if (image->logging)
     (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                          "Copying from Blob stream to file %s",filename);
+                          "Copying from Blob stream to file \"%s\"...",filename);
   if (MagickConfirmAccess(FileWriteConfirmAccessMode,filename,exception)
       == MagickFail)
     return MagickFail;
@@ -2425,8 +2425,11 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
       break;
   }
   (void) close(file);
+  if (image->logging)
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Copyied %"MAGICK_SIZE_T_F"u bytes from Blob stream to \"%s\"",(MAGICK_SIZE_T) i,filename);
   MagickFreeMemory(buffer);
-  return(i < length);
+  return (i < length ? MagickFail : MagickPass);
 }
 
 /*

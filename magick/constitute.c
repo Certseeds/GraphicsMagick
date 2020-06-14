@@ -1587,7 +1587,14 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
               DestroyImage(image);
               return((Image *) NULL);
             }
-          (void) ImageToFile(image,clone_info->filename,exception);
+          if (ImageToFile(image,clone_info->filename,exception) == MagickFail)
+            {
+              LiberateTemporaryFile(clone_info->filename);
+              CloseBlob(image);
+              DestroyImageInfo(clone_info);
+              DestroyImage(image);
+              return(MagickFail);
+            }
           clone_info->temporary=True;
         }
       CloseBlob(image);

@@ -2937,21 +2937,21 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   static const char
     *virtual_delegates[] =
     {
-      "AUTOTRACE",
-      "BROWSE",
-      "EDIT",
-      "GS-COLOR",
-      "GS-COLOR+ALPHA",
-      "GS-GRAY",
-      "GS-MONO",
-      "LAUNCH",
-      "MPEG-ENCODE",
-      "PRINT",
-      "SCAN",
-      "SHOW",
-      "TMP",
-      "WIN",
-      NULL
+     "AUTOTRACE",
+     "BROWSE",
+     "EDIT",
+     "GS-COLOR",
+     "GS-COLOR+ALPHA",
+     "GS-GRAY",
+     "GS-MONO",
+     "LAUNCH",
+     "MPEG-ENCODE",
+     "PRINT",
+     "SCAN",
+     "SHOW",
+     "TMP",
+     "WIN",
+     NULL
     };
 
   char
@@ -3181,18 +3181,25 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           /*
             Copy standard input or pipe to temporary file.
           */
-          if(!AcquireTemporaryFileName(filename))
+          if (!AcquireTemporaryFileName(filename))
             {
               CloseBlob(image);
               DestroyImage(image);
               return(MagickFail);
             }
-          (void) ImageToFile(image,filename,exception);
+          if (ImageToFile(image,filename,exception) == MagickFail)
+            {
+              LiberateTemporaryFile(filename);
+              CloseBlob(image);
+              DestroyImage(image);
+              return(MagickFail);
+            }
           CloseBlob(image);
           (void) strcpy(image->filename,filename);
           status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
           if (status == MagickFail)
             {
+              LiberateTemporaryFile(filename);
               DestroyImage(image);
               return(MagickFail);
             }

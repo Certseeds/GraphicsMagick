@@ -1,5 +1,11 @@
 2020-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/constitute.c (ReadImage): Improve error handling related
+	to ImageToFile().
+
+	* magick/image.c (SetImageInfo): Improve error handling related to
+	ImageToFile().
+
 	* coders/mat.c: Check MagickFindRawImageMinMax() return status.
 
 	* magick/constitute.c (MagickFindRawImageMinMax): Verify that the
