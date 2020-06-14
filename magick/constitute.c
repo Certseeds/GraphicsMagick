@@ -1122,7 +1122,7 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
 
   *min=0.0;
   *max=1.0;
-  status=MagickFail;
+  status=MagickPass;
 
   filepos = TellBlob(image);
 
@@ -1138,8 +1138,8 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
             read_func = ReadBlob;
 
             MagickFindMinMax(status,image,read_func,char,scanline_octets,
-                             scanline_buffer,min,max)
-              break;
+                             scanline_buffer,min,max);
+            break;
           }
         case ShortPixel:
           {
@@ -1196,7 +1196,8 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
           }
         }
 
-      (void) SeekBlob(image, filepos, SEEK_SET);
+      if (SeekBlob(image, filepos, SEEK_SET) != filepos)
+        status = MagickFail;
     }
 
   return status;

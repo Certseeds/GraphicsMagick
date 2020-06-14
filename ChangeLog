@@ -1,3 +1,10 @@
+2020-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mat.c: Check MagickFindRawImageMinMax() return status.
+
+	* magick/constitute.c (MagickFindRawImageMinMax): Verify that the
+	original seek position was restored.
+
 2020-06-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Apply stricter range limits when
