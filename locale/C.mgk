@@ -667,6 +667,9 @@
       <Message name="UnbalancedGraphicContextPushPop">
         unbalanced graphic context push-pop
       </Message>
+      <Message name="UnbalancedPushPop">
+        unbalanced push-pop
+      </Message>
       <Message name="TooManyCoordinates">
         too many coordinates
       </Message>
@@ -697,9 +700,6 @@
       <Message name="UnableToDrawOnImage">
         unable to draw on image
       </Message>
-      <Message name="ClipPathNotFound">
-        clip path not found
-      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
@@ -707,6 +707,9 @@
       </Message>
     </FatalError>
     <Warning>
+      <Message name="ClipPathNotFound">
+        clip path not found
+      </Message>
       <Message name="NotCurrentlyPushingPatternDefinition">
         Not currently pushing pattern definition
       </Message>

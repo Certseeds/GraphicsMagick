@@ -1720,11 +1720,11 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
         FIXME: Desired error handling for missing clip-path attribute
         is not clear. Previous stop-gap code was producing an empty
         clip-path image, but this resulted in recursion.  Return an
-        informative error for the moment.
+        informative warning for the moment.
       */
-      ThrowException(&image->exception,DrawError,ClipPathNotFound,
+      ThrowException(&image->exception,DrawWarning,ClipPathNotFound,
                      name);
-      status=MagickFail;
+      status=MagickPass;
       goto draw_clip_path_end;
     }
   else
@@ -1781,6 +1781,8 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   if ((status=NegateImage(image_clip_mask,False)) == MagickFail)
     goto draw_clip_path_end;
 
+  (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
+
  draw_clip_path_end:
 
   if (clone_info != (DrawInfo *) NULL)
@@ -1790,7 +1792,6 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
       clone_info = (DrawInfo *) NULL;
     }
 
-  (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
   return(status);
 }
 
@@ -2211,24 +2212,38 @@ static void DrawImageRecurseOut(Image *image)
 */
 static
 char *  ExtractTokensBetweenPushPop (
-  char * q,                 /* address of pointer into primitive string */
-  char * token,             /* big enough buffer for extracted string */
-  size_t token_max_length,
-  char const * pop_string,  /* stop when we see pop pop_string */
-  Image *image,
-  size_t * pExtractedLength /* if not null, length of extracted string returned */
-  )
+                                     char * q,                 /* address of pointer into primitive string */
+                                     char * token,             /* big enough buffer for extracted string */
+                                     size_t token_max_length,
+                                     char const * pop_string,  /* stop when we see pop pop_string */
+                                     Image *image,
+                                     size_t * pExtractedLength /* if not null, length of extracted string returned */
+                                     )
 {/*ExtractTokensBetweenPushPop*/
 
-  char const * p;
-  char * pAfterPopString = 0;
+  char const *p;
+  char const *pq;
+  char *pAfterPopString = 0;
   char
-    name[MaxTextExtent];
+    name[MaxTextExtent],
+    pop_message[MaxTextExtent];
   size_t ExtractedLength = 0;
+  MagickBool found_pop = MagickFalse;
+
+  FormatString(pop_message,"push %.512s", pop_string);
 
   /* next token is name associated with push/pop data */
+  pq = q;
   MagickGetToken(q,&q,token,token_max_length);
+  if (pq == q)
+    {
+      /* failed to get a token */
+        if  ( pExtractedLength )
+          *pExtractedLength = ExtractedLength;
+        return NULL;
+    }
   FormatString(name,"[%.1024s]",token);
+  FormatString(pop_message,"push %.512s %.512s", pop_string, token);
 
   /* search for "pop <pop_string>" */
   for (p=q; *q != '\0'; )
@@ -2251,22 +2266,32 @@ char *  ExtractTokensBetweenPushPop (
               break;
             }
           if (LocaleCompare(token,pop_string) == 0)
-            break;  /* found "pop <pop_string>" */
+            {
+              found_pop = MagickTrue;
+              break;  /* found "pop <pop_string>" */
+            }
         }
     }
 
-  /* sanity check on extracted string length */
-  if  ( q > (p+4U) )
+  if (found_pop)
     {
-      ExtractedLength = q - (p+4U);
-      (void) strncpy(token,p,ExtractedLength);
+      /* sanity check on extracted string length */
+      if  ( q > (p+4U) )
+        {
+          ExtractedLength = q - (p+4U);
+          (void) strncpy(token,p,ExtractedLength);
+        }
+      token[ExtractedLength] = '\0';
+      /* SetImageAttribute concatenates values! Delete with NULL */
+      (void) SetImageAttribute(image,name,NULL);
+      (void) SetImageAttribute(image,name,token);
+      if (pAfterPopString != NULL)
+        q = pAfterPopString;  /* skip ID string after "pop" */
     }
-  token[ExtractedLength] = '\0';
-  /* SetImageAttribute concatenates values! Delete with NULL */
-  (void) SetImageAttribute(image,name,NULL);
-  (void) SetImageAttribute(image,name,token);
-  if (pAfterPopString != NULL)
-    q = pAfterPopString;  /* skip ID string after "pop" */
+  else
+    {
+      ThrowException(&image->exception,DrawError,UnbalancedPushPop,pop_message);
+    }
   if  ( pExtractedLength )
     *pExtractedLength = ExtractedLength;
   return(q);
@@ -2308,7 +2333,7 @@ char * InsertAttributeIntoInputStream (
   attribute=GetImageAttribute(image,AttributeName);
   if (attribute == (ImageAttribute *) NULL)
     {
-      /* the client specifies whether or not an undefined attributes is an error */
+      /* the client specifies whether or not an undefined attribute is an error */
       if  ( UndefAttrIsError )
         *pStatus = MagickFail;
       return(q);

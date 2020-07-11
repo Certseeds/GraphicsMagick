@@ -1,3 +1,14 @@
+2020-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/xwindow.c (MagickXVisualColormapSize): Fix UBSAN integer
+	overflow warning.
+
+	* magick/render.c (DrawClipPath): Report only a warning if there
+	is no clip mask.
+	(ExtractTokensBetweenPushPop): Verify that the expected/required
+	pop statement is indeed found.  Fixes oss-fuzz 23498 "Timeout in
+	coder_MVG_fuzzer".
+
 2020-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/constitute.c (ReadImage): Improve error handling related

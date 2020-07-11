@@ -1223,12 +1223,6 @@ arithmetic overflow
 .
 
 MessageId       = +1
-SymbolicName    = DrawErrorClipPathNotFound
-Language        = English
-clip path not found
-.
-
-MessageId       = +1
 SymbolicName    = DrawErrorDrawingRecursionDetected
 Language        = English
 drawing recursion detected
@@ -1289,6 +1283,12 @@ unbalanced graphic context push-pop
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorUnbalancedPushPop
+Language        = English
+unbalanced push-pop
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorUnreasonableGradientSize
 Language        = English
 unreasonable gradient image size
@@ -1304,6 +1304,12 @@ MessageId       = +1
 SymbolicName    = DrawFatalErrorDefault
 Language        = English
 default error
+.
+
+MessageId       = +1
+SymbolicName    = DrawWarningClipPathNotFound
+Language        = English
+clip path not found
 .
 
 MessageId       = +1
