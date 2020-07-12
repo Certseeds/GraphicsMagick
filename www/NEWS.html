@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to February 23, 2020</p>
+<p>This file was last updated to reflect changes up to July 12, 2020</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -97,14 +97,34 @@ release and not attempt to patch older releases.</p>
 </ul>
 <p>Security Fixes:</p>
 <ul class="simple">
-<li></li>
+<li>GraphicsMagick is now participating in Google's oss-fuzz project due
+to the contributions and assistance of Alex Gaynor. Since February 4
+2018, 414 issues have been opened by oss-fuzz (some of which were
+benign build issues) and 0 issues remain open.  The issues list is
+available at <a class="reference external" href="https://bugs.chromium.org/p/oss-fuzz/issues/list">https://bugs.chromium.org/p/oss-fuzz/issues/list</a> under
+search term &quot;graphicsmagick&quot;.  Issues are available for anyone to
+view and duplicate if they have been in &quot;Verified&quot; status for 30
+days, or if they have been in &quot;New&quot; status for 90 days.  Please
+consult the GraphicsMagick ChangeLog file, Mercurial repository
+commit log, and the oss-fuzz issues list for details.</li>
+<li>WPG: Fixes for heap buffer overflow.</li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
+<li>ImageToFile(): Improve error handling to avoid possible deferred
+deletion of temporary files, causing unexpected excessive use of
+temporary file space.</li>
 <li>ModifyCache(): Fix memory leak.</li>
 <li>ReadCacheIndexes(): Don't blunder into accessing a null pointer if
 the using code has ignored a previous error report bubled-up from
 SetNexus().</li>
+<li>MNG: When doing image scaling and the image width or height is 1
+then always use simple pixel replication as per the MNG
+specification.</li>
+<li>MVG: Fixes to 'push clip-path foo' and 'pop clip-path foo' parsing
+to eliminate a class of malign behavior.</li>
+<li>TIFF: WEBP compression only supports a depth of 8 so force that
+value.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
@@ -162,6 +182,9 @@ routine is called, thereby blocking configuration activities or use
 of InitializeMagickEx().  With this change it is even more
 imperative that InitializeMagick() be explicitly invoked by all
 programs using GraphicsMagick.</li>
+<li>DrawClipPath() no longer fabricates a blank clip path image if the
+image does not contain a vector clip path attribute.  It returns
+success, but also a warning as well.</li>
 </ul>
 </div>
 <div class="section" id="february-23-2020">
