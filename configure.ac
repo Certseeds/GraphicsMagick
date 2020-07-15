@@ -855,6 +855,17 @@ if test "$with_zstd" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-zstd=$with_zstd "
 fi
 
+# Disable reading/writing gzip/bzip compressed files
+AC_ARG_WITH(compressed-files,
+              AS_HELP_STRING([--without-compressed-files],
+                             [disable reading and writing of gzip/bzip files]),
+              [with_compressed_files=$withval],
+              [with_compressed_files='yes'])
+if test "$with_compressed_files" != 'yes'; then
+    AC_DEFINE(DISABLE_COMPRESSED_FILES,1,[Disable reading and writing of gzip/bzip files])
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-compressed-files=$with_compressed_files "
+fi
+
 #
 # Specify path to shared libstdc++ if not in normal location
 #

@@ -56,10 +56,10 @@
 #include "magick/semaphore.h"
 #include "magick/tempfile.h"
 #include "magick/utility.h"
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
 #  include "zlib.h"
 #endif
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
 #  include "bzlib.h"
 #endif
 
@@ -90,10 +90,10 @@ typedef enum
 typedef union _MagickFileHandle
 {
     FILE    *std;       /* stdio handle */
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
     BZFILE  *bz;        /* bzip handle */
 #endif
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
     gzFile   gz;        /* zlib handle */
 #endif
 } MagickFileHandle;
@@ -398,10 +398,10 @@ MagickExport void AttachBlob(BlobInfo *blob_info,const void *blob,
   blob_info->offset=0;
   blob_info->type=BlobStream;
   blob_info->handle.std=(FILE *) NULL;
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
   blob_info->handle.bz=(BZFILE *) NULL;
 #endif
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
   blob_info->handle.gz=(gzFile) NULL;
 #endif
   blob_info->data=(unsigned char *) blob;
@@ -972,7 +972,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
       }
     case ZipStream:
       {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         if (!(status))
           {
             int
@@ -991,7 +991,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
       }
     case BZipStream:
       {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         if (!(status))
           {
             int
@@ -1062,7 +1062,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
           }
         case ZipStream:
           {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
             int
               gzerror_errnum;
 
@@ -1078,7 +1078,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
           }
         case BZipStream:
           {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
             /* Returns void */
             BZ2_bzclose(blob->handle.bz);
 #endif
@@ -1272,10 +1272,10 @@ MagickExport void DetachBlob(BlobInfo *blob_info)
   blob_info->exempt=MagickFalse;
   blob_info->type=UndefinedStream;
   blob_info->handle.std=(FILE *) NULL;
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
   blob_info->handle.bz=(BZFILE *) NULL;
 #endif
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
   blob_info->handle.gz=(gzFile) NULL;
 #endif
   blob_info->data=(unsigned char *) NULL;
@@ -1331,20 +1331,20 @@ MagickExport int EOFBlob(const Image *image)
     }
     case ZipStream:
     {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       blob->eof=gzeof(blob->handle.gz);
-#endif /* defined(HasZLIB) */
+#endif /* defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES) */
       break;
     }
     case BZipStream:
     {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       int
         status;
 
       (void) BZ2_bzerror(blob->handle.bz,&status);
       blob->eof=status == BZ_UNEXPECTED_EOF;
-#endif /* defined(HasBZLIB) */
+#endif /* defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES) */
       break;
     }
     case BlobStream:
@@ -2788,7 +2788,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
             FormMultiPartFilename(image,image_info);
           (void) strcpy(filename,image->filename);
         }
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       if (((strlen(filename) > 2) &&
            (LocaleCompare(filename+strlen(filename)-2,".Z") == 0)) ||
           ((strlen(filename) > 3) &&
@@ -2821,7 +2821,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
         }
       else
 #endif
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         if ((strlen(filename) > 4) &&
             (LocaleCompare(filename+strlen(filename)-4,".bz2") == 0))
           {
@@ -2939,7 +2939,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                                               "  read %" MAGICK_SIZE_T_F
                                               "u magic header bytes",
                                               (MAGICK_SIZE_T) count);
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
                       if ((magick[0] == 0x1FU) && (magick[1] == 0x8BU) &&
                           (magick[2] == 0x08U))
                         {
@@ -2956,7 +2956,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                             }
                         }
 #endif
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
                       if (strncmp((char *) magick,"BZh",3) == 0)
                         {
                           if (image->blob->handle.std)
@@ -3207,7 +3207,7 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
       }
     case ZipStream:
       {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         size_t
           i;
 
@@ -3257,7 +3257,7 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
       }
     case BZipStream:
       {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         size_t
           i;
 
@@ -4583,7 +4583,7 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
       return(-1);
     case ZipStream:
       {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         if (gzseek(image->blob->handle.gz,(off_t) offset,whence) < 0)
           return(-1);
 #endif
@@ -4764,14 +4764,14 @@ static int SyncBlob(Image *image)
     }
     case ZipStream:
     {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       status=gzflush(image->blob->handle.gz,Z_SYNC_FLUSH);
 #endif
       break;
     }
     case BZipStream:
     {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       status=BZ2_bzflush(image->blob->handle.bz);
 #endif
       break;
@@ -4832,7 +4832,7 @@ MagickExport magick_off_t TellBlob(const Image *image)
     case PipeStream:
     case ZipStream:
     {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       offset=gztell(image->blob->handle.gz);
 #endif
       break;
@@ -4973,7 +4973,7 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
       }
     case ZipStream:
       {
-#if defined(HasZLIB)
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         size_t
           i;
 
@@ -5018,7 +5018,7 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
       }
     case BZipStream:
       {
-#if defined(HasBZLIB)
+#if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
         size_t
           i;
 
