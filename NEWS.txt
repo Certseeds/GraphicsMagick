@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to July 12, 2020
+This file was last updated to reflect changes up to July 15, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -30,7 +30,7 @@ Security Fixes:
 
 * GraphicsMagick is now participating in Google's oss-fuzz project due
   to the contributions and assistance of Alex Gaynor. Since February 4
-  2018, 414 issues have been opened by oss-fuzz (some of which were
+  2018, 416 issues have been opened by oss-fuzz (some of which were
   benign build issues) and 0 issues remain open.  The issues list is
   available at https://bugs.chromium.org/p/oss-fuzz/issues/list under
   search term "graphicsmagick".  Issues are available for anyone to
@@ -124,10 +124,6 @@ Behavior Changes:
   of InitializeMagickEx().  With this change it is even more
   imperative that InitializeMagick() be explicitly invoked by all
   programs using GraphicsMagick.
-
-* DrawClipPath() no longer fabricates a blank clip path image if the
-  image does not contain a vector clip path attribute.  It returns
-  success, but also a warning as well.
 
 1.3.35 (February 23, 2020)
 ==========================

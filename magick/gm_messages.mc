@@ -1307,12 +1307,6 @@ default error
 .
 
 MessageId       = +1
-SymbolicName    = DrawWarningClipPathNotFound
-Language        = English
-clip path not found
-.
-
-MessageId       = +1
 SymbolicName    = DrawWarningNotARelativeURL
 Language        = English
 Not a relative URL

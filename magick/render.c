@@ -1559,7 +1559,7 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
 
   memset(primitive_info,0,sizeof(primitive_info));
   clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  if ((status=QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception)) == MagickFail)
+  if ((status &= QueryColorDatabase("#000000ff",&clone_info->fill,&image->exception)) == MagickFail)
     goto draw_bounding_rectangles_end;
   resolution.x=72.0;
   resolution.y=72.0;
@@ -1613,14 +1613,14 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
       {
         if (polygon_info->edges[i].direction)
           {
-          if ((status=QueryColorDatabase("red",&clone_info->stroke,
-                                         &image->exception)) == MagickFail)
+          if ((status &= QueryColorDatabase("red",&clone_info->stroke,
+                                            &image->exception)) == MagickFail)
             goto draw_bounding_rectangles_end;
           }
         else
           {
-            if ((status=QueryColorDatabase("green",&clone_info->stroke,
-                                           &image->exception)) == MagickFail)
+            if ((status &= QueryColorDatabase("green",&clone_info->stroke,
+                                              &image->exception)) == MagickFail)
               goto draw_bounding_rectangles_end;
           }
         start.x=polygon_info->edges[i].bounds.x1-mid;
@@ -1628,28 +1628,28 @@ DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
         end.x=polygon_info->edges[i].bounds.x2+mid;
         end.y=polygon_info->edges[i].bounds.y2+mid;
         primitive_info[0].primitive=RectanglePrimitive;
-        if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+        if ((status &= TraceRectangle(primitive_info,start,end)) == MagickFail)
           goto draw_bounding_rectangles_end;
         primitive_info[0].method=ReplaceMethod;
         coordinates=(long) primitive_info[0].coordinates;
         primitive_info[coordinates].primitive=UndefinedPrimitive;
-        if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+        if ((status &= DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
           goto draw_bounding_rectangles_end;
       }
     }
-  if ((status=QueryColorDatabase("blue",&clone_info->stroke,&image->exception)) == MagickFail)
+  if ((status &= QueryColorDatabase("blue",&clone_info->stroke,&image->exception)) == MagickFail)
     goto draw_bounding_rectangles_end;
   start.x=bounds.x1-mid;
   start.y=bounds.y1-mid;
   end.x=bounds.x2+mid;
   end.y=bounds.y2+mid;
   primitive_info[0].primitive=RectanglePrimitive;
-  if ((status=TraceRectangle(primitive_info,start,end)) == MagickFail)
+  if ((status &= TraceRectangle(primitive_info,start,end)) == MagickFail)
     goto draw_bounding_rectangles_end;
   primitive_info[0].method=ReplaceMethod;
   coordinates=(long) primitive_info[0].coordinates;
   primitive_info[coordinates].primitive=UndefinedPrimitive;
-  if ((status=DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
+  if ((status &= DrawPrimitive(image,clone_info,primitive_info)) == MagickFail)
     goto draw_bounding_rectangles_end;
 
  draw_bounding_rectangles_end:;
@@ -1713,77 +1713,102 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   attribute=GetImageAttribute(image,clip_path);
   if (attribute == (ImageAttribute *) NULL)
     return(MagickPass);
-  image_clip_mask = *ImageGetClipMaskInlined(image);
-  if (image_clip_mask == (Image *) NULL)
+  do
     {
-      /*
-        FIXME: Desired error handling for missing clip-path attribute
-        is not clear. Previous stop-gap code was producing an empty
-        clip-path image, but this resulted in recursion.  Return an
-        informative warning for the moment.
-      */
-      ThrowException(&image->exception,DrawWarning,ClipPathNotFound,
-                     name);
-      status=MagickPass;
-      goto draw_clip_path_end;
-    }
-  else
-    {
-      /*
-        Re-clone the image attributes, since more may have been added since
-        the clip_mask image was created.
-      */
-      DestroyImageAttributes(image_clip_mask);
-      CloneImageAttributes(image_clip_mask,image);
-    }
-  if ((status=QueryColorDatabase("none",&image_clip_mask->background_color,
-                                 &image->exception)) == MagickFail)
-    goto draw_clip_path_end;
-  if ((status=SetImage(image_clip_mask,TransparentOpacity)) == MagickFail)
-    goto draw_clip_path_end;
-  (void) LogMagickEvent(RenderEvent,GetMagickModule(),
-    "\nbegin clip-path %.1024s",draw_info->extra->clip_path);
-  clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
-    goto draw_clip_path_end;
-  if ((status=QueryColorDatabase("white",&clone_info->fill,&image->exception)) == MagickFail)
-    goto draw_clip_path_end;
-
-  /*
-    According to the SVG spec:
-
-    The raw geometry of each child element exclusive of rendering properties such
-    as ‘fill’, ‘stroke’, ‘stroke-width’ within a ‘clipPath’ conceptually defines a
-    1-bit mask (with the possible exception of anti-aliasing along the edge of the
-    geometry) which represents the silhouette of the graphics associated with that
-    element.  Anything outside the outline of the object is masked out.
-
-    To conform with the spec, we make sure that fill color (set above), stroke color,
-    stroke width, and group/global opacity are set to appropriate values.
-  */
-  SetDrawInfoClippingPath(clone_info,MagickTrue);
-  if  ( IsDrawInfoSVGCompliant(clone_info) )
-    {
-      /* changes to fill, etc. will be ignored */
-      if ((status=QueryColorDatabase("none",
-                                     &clone_info->stroke,&image->exception))  /* SVG default */
-          == MagickFail)
+      image_clip_mask = *ImageGetClipMaskInlined(image);
+      if (image_clip_mask == (Image *) NULL)
         {
-          goto draw_clip_path_end;
+          /*
+            FIXME: Desired error handling for missing clip-path attribute is
+            not clear (was returning MagickFail).  Maybe the caller does not
+            know.
+          */
+          Image
+            *clip_mask;
+
+          if ((clip_mask=CloneImage(image,image->columns,image->rows,MagickTrue,
+                                    &image->exception)) == (Image *) NULL)
+            break;
+          status &= SetImageClipMask(image,clip_mask);
+          DestroyImage(clip_mask);
+          if (status == MagickFail)
+            break;
+          image_clip_mask = *ImageGetClipMaskInlined(image);
+          break;
         }
-      clone_info->stroke_width = 0.0;   /* SVG default */
-      clone_info->opacity = OpaqueOpacity;  /* SVG default */
-    }
+      else
+        {
+          /*
+            Re-clone the image attributes, since more may have been added since
+            the clip_mask image was created.
+          */
+          DestroyImageAttributes(image_clip_mask);
+          CloneImageAttributes(image_clip_mask,image);
+        }
+      if ((status &= QueryColorDatabase("none",&image_clip_mask->background_color,
+                                        &image->exception)) == MagickFail)
+        break;
+      if ((status &= SetImage(image_clip_mask,TransparentOpacity)) == MagickFail)
+        break;
+      (void) LogMagickEvent(RenderEvent,GetMagickModule(),
+                            "\nbegin clip-path %.1024s",draw_info->extra->clip_path);
+      if ((clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info)) == (DrawInfo *) NULL)
+        {
+          ThrowException3(&image->exception,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToDrawOnImage);
+          status=MagickFail;
+          break;
+        }
+      if ((status &= CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+        break;
+      if ((status &= QueryColorDatabase("white",&clone_info->fill,&image->exception)) == MagickFail)
+        break;
 
-  MagickFreeMemory(clone_info->extra->clip_path);
-  if ((status=DrawImage(image_clip_mask,clone_info)) == MagickFail)
-    goto draw_clip_path_end;
-  if ((status=NegateImage(image_clip_mask,False)) == MagickFail)
-    goto draw_clip_path_end;
+      /*
+        According to the SVG spec:
 
-  (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
+        The raw geometry of each child element exclusive of rendering properties such
+        as ‘fill’, ‘stroke’, ‘stroke-width’ within a ‘clipPath’ conceptually defines a
+        1-bit mask (with the possible exception of anti-aliasing along the edge of the
+        geometry) which represents the silhouette of the graphics associated with that
+        element.  Anything outside the outline of the object is masked out.
 
- draw_clip_path_end:
+        To conform with the spec, we make sure that fill color (set above), stroke color,
+        stroke width, and group/global opacity are set to appropriate values.
+      */
+      SetDrawInfoClippingPath(clone_info,MagickTrue);
+      if  ( IsDrawInfoSVGCompliant(clone_info) )
+        {
+          /* changes to fill, etc. will be ignored */
+          if ((status &= QueryColorDatabase("none",
+                                            &clone_info->stroke,&image->exception))  /* SVG default */
+              == MagickFail)
+            {
+              break;
+            }
+          clone_info->stroke_width = 0.0;   /* SVG default */
+          clone_info->opacity = OpaqueOpacity;  /* SVG default */
+        }
+
+      MagickFreeMemory(clone_info->extra->clip_path);
+      if ((status &= DrawImage(image_clip_mask,clone_info)) == MagickFail)
+        {
+          /* Copy exception into base image */
+          if (image_clip_mask->exception.severity > image->exception.severity)
+            CopyException(&image->exception, &image_clip_mask->exception);
+          break;
+        }
+      if ((status &= NegateImage(image_clip_mask,False)) == MagickFail)
+        {
+          /* Copy exception into base image */
+          if (image_clip_mask->exception.severity > image->exception.severity)
+            CopyException(&image->exception, &image_clip_mask->exception);
+          break;
+        }
+
+      (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end clip-path");
+
+    } while (0);
 
   if (clone_info != (DrawInfo *) NULL)
     {
@@ -1795,7 +1820,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   return(status);
 }
 
-/* code below for DrawCompositeMask() cloned/modifed from DrawClipMask() */
+/* code below for DrawCompositeMask() cloned/modifed from DrawClipPath() */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1847,56 +1872,75 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
   FormatString(composite_path,"[%.1024s]",name);
-  attribute=GetImageAttribute(image,composite_path);
-  if (attribute == (ImageAttribute *) NULL)
-    return(MagickFail);
-  image_composite_mask = *ImageGetCompositeMaskInlined(image);
-  if (image_composite_mask == (Image *) NULL)
+  do
     {
-      Image
-        *composite_mask;
-
-      composite_mask=CloneImage(image,image->columns,image->rows,MagickTrue,
-        &image->exception);
-      if (composite_mask == (Image *) NULL)
-        return(MagickFail);
-      status=SetImageCompositeMask(image,composite_mask);
-      DestroyImage(composite_mask);
+      if ((attribute=GetImageAttribute(image,composite_path)) == (ImageAttribute *) NULL)
+        {
+          status = MagickFail;
+          break;
+        }
       image_composite_mask = *ImageGetCompositeMaskInlined(image);
-      if (status == MagickFail)
-        return(MagickFail);
-    }
-  else
-    {
-      /*
-        Re-clone the image attributes, since more may have been added since
-        the composite_mask image was created.
-      */
-      DestroyImageAttributes(image_composite_mask);
-      CloneImageAttributes(image_composite_mask,image);
-    }
-  if ((status=QueryColorDatabase("none",&image_composite_mask->background_color,
-                                 &image->exception)) == MagickFail)
-    goto draw_composite_mask_end;
-  if ((status=SetImage(image_composite_mask,TransparentOpacity)) == MagickFail)
-    goto draw_composite_mask_end;
-  (void) LogMagickEvent(RenderEvent,GetMagickModule(),
-    "\nbegin mask %.1024s",draw_info->extra->composite_path);
-  clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-  if ((status=CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
-    goto draw_composite_mask_end;
-  /* these settings are per the SVG spec */
-  if ((status=QueryColorDatabase("black",&clone_info->fill,&image->exception)) == MagickFail)
-    goto draw_composite_mask_end;
-  if ((status=QueryColorDatabase("none",&clone_info->stroke,&image->exception)) == MagickFail)
-    goto draw_composite_mask_end;
-  clone_info->stroke_width = 1.0;
-  clone_info->opacity = OpaqueOpacity;
-  if ((status=DrawImage(image_composite_mask,clone_info)) == MagickFail)
-    goto draw_composite_mask_end;
- draw_composite_mask_end:;
+      if (image_composite_mask == (Image *) NULL)
+        {
+          Image
+            *composite_mask;
+
+          composite_mask=CloneImage(image,image->columns,image->rows,MagickTrue,
+                                    &image->exception);
+          if (composite_mask == (Image *) NULL)
+            {
+              status = MagickFail;
+              break;
+            }
+          status &= SetImageCompositeMask(image,composite_mask);
+          DestroyImage(composite_mask);
+          image_composite_mask = *ImageGetCompositeMaskInlined(image);
+          if (status == MagickFail)
+            break;
+        }
+      else
+        {
+          /*
+            Re-clone the image attributes, since more may have been added since
+            the composite_mask image was created.
+          */
+          DestroyImageAttributes(image_composite_mask);
+          CloneImageAttributes(image_composite_mask,image);
+        }
+      if ((status &= QueryColorDatabase("none",&image_composite_mask->background_color,
+                                        &image->exception)) == MagickFail)
+        break;
+      if ((status &= SetImage(image_composite_mask,TransparentOpacity)) == MagickFail)
+        break;
+      (void) LogMagickEvent(RenderEvent,GetMagickModule(),
+                            "\nbegin mask %.1024s",draw_info->extra->composite_path);
+      if ((clone_info=CloneDrawInfo((ImageInfo *) NULL,draw_info)) == (DrawInfo *) NULL)
+        {
+          ThrowException3(&image->exception,ResourceLimitError,
+                          MemoryAllocationFailed,UnableToDrawOnImage);
+          status=MagickFail;
+          break;
+        }
+      if ((status &= CloneString(&clone_info->primitive,attribute->value)) == MagickFail)
+        break;
+      /* these settings are per the SVG spec */
+      if ((status &= QueryColorDatabase("black",&clone_info->fill,&image->exception)) == MagickFail)
+        break;
+      if ((status &= QueryColorDatabase("none",&clone_info->stroke,&image->exception)) == MagickFail)
+        break;
+      clone_info->stroke_width = 1.0;
+      clone_info->opacity = OpaqueOpacity;
+      if ((status &= DrawImage(image_composite_mask,clone_info)) == MagickFail)
+        {
+          /* Copy exception into base image */
+          if (image_composite_mask->exception.severity > image->exception.severity)
+            CopyException(&image->exception, &image_composite_mask->exception);
+          break;
+        }
+      (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end composite-path");
+    } while (0);
+
   DestroyDrawInfo(clone_info);
-  (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end composite-path");
   return(status);
 }
 
@@ -1944,7 +1988,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
     total_length;
 
   MagickPassFail
-    status;
+    status = MagickPass;
 
   PrimitiveInfo
     *dash_polygon;
@@ -2005,7 +2049,6 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
     offset=0.0;
     n++;
   }
-  status=MagickPass;
   maximum_length=0.0;
   total_length=0.0;
   for (i=1; (i < number_vertices) && (length >= 0.0); i++)
@@ -2046,7 +2089,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
           j++;
           dash_polygon[0].coordinates=j;
           dash_polygon[j].primitive=UndefinedPrimitive;
-          status&=DrawStrokePolygon(image,clone_info,dash_polygon);
+          status &= DrawStrokePolygon(image,clone_info,dash_polygon);
           if (status == MagickFail)
             break;
         }
@@ -2072,7 +2115,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
       j++;
       dash_polygon[0].coordinates=(size_t) j;
       dash_polygon[j].primitive=UndefinedPrimitive;
-      status&=DrawStrokePolygon(image,clone_info,dash_polygon);
+      status &= DrawStrokePolygon(image,clone_info,dash_polygon);
     }
   MagickFreeMemory(dash_polygon);
   DestroyDrawInfo(clone_info);
@@ -2323,6 +2366,9 @@ char * InsertAttributeIntoInputStream (
   size_t RemainingLength;
   size_t NeededLength;
 
+  if (*pStatus == MagickFail)
+    return MagickFail;
+
   /* get attribute name, then get attribute value */
   if (MagickGetToken(q,&q,*ptoken,*ptoken_max_length) < 1)
     {
@@ -2433,7 +2479,7 @@ PrimitiveInfoRealloc(PrimitiveInfoMgr * p_PIMgr, const size_t Needed)
       /* Need to realloc */
       if (((*p_PIMgr->p_AllocCount > 0) && (have_memory == 0)) ||
           ((NeedAllocCount > 0) && (needed_memory == 0)) ||
-          (status=AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
+          (status &= AcquireMagickResource(MemoryResource,added_memory)) == MagickFail)
         {
           ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,UnableToDrawOnImage);
           status = MagickFail;
@@ -3161,6 +3207,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                                     graphic_context[n]->extra->composite_path)
                   == MagickFail)
                 status=MagickFail;
+              if (status == MagickFail)
               break;
             }
         if (LocaleCompare("matte",keyword) == 0)
@@ -3745,8 +3792,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
               break;    /* if drawing clip path, ignore changes to stroke color */
             FormatString(pattern,"[%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
-              (void) DrawPatternPath(image,draw_info,token,
-                &graphic_context[n]->stroke_pattern);
+              {
+                if ((status &= DrawPatternPath(image,draw_info,token,
+                                               &graphic_context[n]->stroke_pattern)) == MagickFail)
+                  break;
+              }
             else
               {/*stroke color, not pattern*/
 
@@ -3968,6 +4018,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double value;
             MagickGetToken(q,&q,token,token_max_length);
             status &= MagickAtoFChk(token,&value);
+            if (status == MagickFail)
+              break;
             /* value may be specified using "em" or "ex" units */
             if (LocaleNCompare(q,"em",2) == 0)
               {
@@ -3987,6 +4039,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             double value;
             MagickGetToken(q,&q,token,token_max_length);
             status &= MagickAtoFChk(token,&value);
+            if (status == MagickFail)
+              break;
             /* value may be specified using "em" or "ex" units */
             if (LocaleNCompare(q,"em",2) == 0)
               {
@@ -4174,10 +4228,14 @@ DrawImage(Image *image,const DrawInfo *draw_info)
         break;
       MagickGetToken(q,&q,token,token_max_length);
       status &= MagickAtoFChk(token,&point.x);
+      if (status == MagickFail)
+        break;
       MagickGetToken(q,&q,token,token_max_length);
       if (*token == ',')
         MagickGetToken(q,&q,token,token_max_length);
       status &= MagickAtoFChk(token,&point.y);
+      if (status == MagickFail)
+        break;
       MagickGetToken(q,(char **) NULL,token,token_max_length);
       if (*token == ',')
         MagickGetToken(q,&q,token,token_max_length);
@@ -4192,7 +4250,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       if (i < number_points)
         continue;
       /* Array is full; double the array size */
-      if ((status=PrimitiveInfoRealloc(&PIMgr,number_points)) == MagickFail)
+      if ((status &= PrimitiveInfoRealloc(&PIMgr,number_points)) != MagickPass)
         break;
     }
     if (status == MagickFail)
@@ -4390,7 +4448,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        if ((status=TracePoint(primitive_info+j,primitive_info[j].point)) == MagickFail)
+        if ((status &= TracePoint(primitive_info+j,primitive_info[j].point)) == MagickFail)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4402,8 +4460,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        if ((status=TraceLine(primitive_info+j,primitive_info[j].point,
-                              primitive_info[j+1].point)) == MagickFail)
+        if ((status &= TraceLine(primitive_info+j,primitive_info[j].point,
+                                 primitive_info[j+1].point)) == MagickFail)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4434,9 +4492,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             status=MagickFail;
             break;
           }
-        if ((status=TraceRectangle(primitive_info+j,
-                                   /*start*/primitive_info[j].point,
-                                   /*end*/primitive_info[j+1].point)) == MagickFail)
+        if ((status &= TraceRectangle(primitive_info+j,
+                                      /*start*/primitive_info[j].point,
+                                      /*end*/primitive_info[j+1].point)) == MagickFail)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4476,10 +4534,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        if ((status=TraceRoundRectangle(&PIMgr,
-                                        /*start*/primitive_info[j].point,
-                                        /*end*/primitive_info[j+1].point,
-                                        /*arc*/primitive_info[j+2].point)) == MagickFail)
+        if ((status &= TraceRoundRectangle(&PIMgr,
+                                           /*start*/primitive_info[j].point,
+                                           /*end*/primitive_info[j+1].point,
+                                           /*arc*/primitive_info[j+2].point)) == MagickFail)
           break;
          PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4492,8 +4550,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        if ((status=TraceArc(&PIMgr,primitive_info[j].point,
-                             primitive_info[j+1].point,primitive_info[j+2].point)) == MagickFail)
+        if ((status &= TraceArc(&PIMgr,primitive_info[j].point,
+                                primitive_info[j+1].point,primitive_info[j+2].point)) == MagickFail)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4515,10 +4573,10 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        if ((status=TraceEllipse(&PIMgr,
-                                 /*start*/primitive_info[j].point, /*centerX,centerY*/
-                                 /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
-                                 /*degrees*/primitive_info[j+2].point)) == MagickFail) /*arcStart,arcEnd*/
+        if ((status &= TraceEllipse(&PIMgr,
+                                    /*start*/primitive_info[j].point, /*centerX,centerY*/
+                                    /*stop*/primitive_info[j+1].point, /*radiusX,radiusY*/
+                                    /*degrees*/primitive_info[j+2].point)) == MagickFail) /*arcStart,arcEnd*/
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4531,8 +4589,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             break;
           }
         PIMgr.StoreStartingAt=j;
-        if ((status=TraceCircle(&PIMgr,primitive_info[j].point,
-                                primitive_info[j+1].point)) == MagickFail)
+        if ((status &= TraceCircle(&PIMgr,primitive_info[j].point,
+                                   primitive_info[j+1].point)) == MagickFail)
           break;
         PIMgr.StoreStartingAt=i=(long) (j+primitive_info[j].coordinates);
         break;
@@ -4780,7 +4838,7 @@ DrawPatternPath(Image *image,const DrawInfo *draw_info,const char *name,
     *image_info;
 
   MagickPassFail
-    status;
+    status = MagickPass;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -4811,7 +4869,12 @@ DrawPatternPath(Image *image,const DrawInfo *draw_info,const char *name,
   DestroyImage(clone_info->stroke_pattern);
   clone_info->stroke_pattern=(Image *) NULL;
   (void) CloneString(&clone_info->primitive,path->value);
-  status=DrawImage(*pattern,clone_info);
+  if ((status &= DrawImage(*pattern,clone_info)) == MagickFail)
+    {
+      /* Copy exception into base image */
+      if ((*pattern)->exception.severity > image->exception.severity)
+        CopyException(&image->exception, &(*pattern)->exception);
+    }
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"end pattern-path");
   return(status);

@@ -707,9 +707,6 @@
       </Message>
     </FatalError>
     <Warning>
-      <Message name="ClipPathNotFound">
-        clip path not found
-      </Message>
       <Message name="NotCurrentlyPushingPatternDefinition">
         Not currently pushing pattern definition
       </Message>

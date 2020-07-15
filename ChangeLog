@@ -1,3 +1,13 @@
+2020-07-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes up to 2020-07-15.
+
+	* magick/render.c (DrawImage): Improve error handling so errors
+	are returned when they should be.  Fixes oss-fuzz 24117
+	"Stack-overflow in DrawImage" and oss-fuzz 24126 "Timeout in
+	coder_MVG_fuzzer".  Restore the original behavior of
+	DrawClipPath() when there is no matching clip-path attribute.
+
 2020-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update with changes up to 2020-07-12.

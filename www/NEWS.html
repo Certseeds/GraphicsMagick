@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to July 12, 2020</p>
+<p>This file was last updated to reflect changes up to July 15, 2020</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -99,7 +99,7 @@ release and not attempt to patch older releases.</p>
 <ul class="simple">
 <li>GraphicsMagick is now participating in Google's oss-fuzz project due
 to the contributions and assistance of Alex Gaynor. Since February 4
-2018, 414 issues have been opened by oss-fuzz (some of which were
+2018, 416 issues have been opened by oss-fuzz (some of which were
 benign build issues) and 0 issues remain open.  The issues list is
 available at <a class="reference external" href="https://bugs.chromium.org/p/oss-fuzz/issues/list">https://bugs.chromium.org/p/oss-fuzz/issues/list</a> under
 search term &quot;graphicsmagick&quot;.  Issues are available for anyone to
@@ -182,9 +182,6 @@ routine is called, thereby blocking configuration activities or use
 of InitializeMagickEx().  With this change it is even more
 imperative that InitializeMagick() be explicitly invoked by all
 programs using GraphicsMagick.</li>
-<li>DrawClipPath() no longer fabricates a blank clip path image if the
-image does not contain a vector clip path attribute.  It returns
-success, but also a warning as well.</li>
 </ul>
 </div>
 <div class="section" id="february-23-2020">
