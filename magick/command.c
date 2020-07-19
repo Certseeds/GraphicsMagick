@@ -2741,7 +2741,7 @@ CompareImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         ThrowCompareException(OptionError,UnrecognizedOption,option)
       }
@@ -4031,7 +4031,7 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -6056,7 +6056,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("view",option+1) == 0)
           {
@@ -8654,7 +8654,7 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -15042,7 +15042,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {

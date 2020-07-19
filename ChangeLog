@@ -6,6 +6,9 @@
 	by avoiding adding a new public function.  Documentation
 	regarding how 'compare' uses this option is also added.
 
+	* magick/command.c: Merge changeset by谢致邦 (XIE Zhibang)
+	regarding Some duplicate "verbose" should be "version".
+
 	* configure.ac, magick/blob.c: Merge changeset by Przemysław
 	Sobala regarding "Configure: add --with(out)-compressed-files
 	option".  The configure option was changed to
