@@ -3554,8 +3554,15 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the image does not have a matte channel, create an opaque one.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-Use <strong>+matte</strong> to ignore the matte channel and to avoid writing a
+Use <strong>+matte</strong> to ignore the matte channel (treats it as opaque) and to avoid writing a
 matte channel in the output file.</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+For the compare command, <strong>-matte</strong> will add an opaque matte
+channel to images if they do not already have a matte channel, and
+matte will be enabled for both images.  Likewise, if <strong>+matte</strong> is
+used, the matte channel is disabled for both images.  This makes it
+easier to compare images regardless of if they already have a matte
+channel.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -3917,7 +3924,7 @@ result is a gray image.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">Select an operator from <strong>Add</strong>, <strong>And</strong>, <strong>Assign</strong>,
 <strong>Depth</strong>, <strong>Divide</strong>, <strong>Gamma</strong>, <strong>Negate</strong>,
 <strong>LShift</strong>, <strong>Log</strong>, <strong>Max</strong>, <strong>Min</strong>, <strong>Multiply</strong>,
-<strong>Or</strong>, <strong>Pow</strong> <strong>RShift</strong>, <strong>Subtract</strong>,
+<strong>Or</strong>, <strong>Pow</strong>, <strong>RShift</strong>, <strong>Subtract</strong>,
 <strong>Threshold</strong>, <strong>Threshold-White</strong>,
 <strong>Threshold-White-Negate</strong>, <strong>Threshold-Black</strong>,
 <strong>Threshold-Black-Negate</strong>, <strong>Xor</strong>, <strong>Noise-Gaussian</strong>,

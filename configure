@@ -8114,7 +8114,7 @@ macro_revision='2.4.6'
 
 
 
-
+LTOBSOLETE_VERSION
 
 ltmain=$ac_aux_dir/ltmain.sh
 

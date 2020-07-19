@@ -38,6 +38,11 @@
 <p>2020-07-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/command.c (CompareImageCommand): Merge changeset by
+谢致邦 (XIE Zhibang) which adds 'matte' support to the compare
+command. However, substantially reduce the amount of changes
+by avoiding adding a new public function.  Documentation
+regarding how 'compare' uses this option is also added.</li>
 <li>configure.ac, magick/blob.c: Merge changeset by Przemysław
 Sobala regarding &quot;Configure: add --with(out)-compressed-files
 option&quot;.  The configure option was changed to

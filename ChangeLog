@@ -1,5 +1,11 @@
 2020-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (CompareImageCommand): Merge changeset by
+	谢致邦 (XIE Zhibang) which adds 'matte' support to the compare
+	command. However, substantially reduce the amount of changes
+	by avoiding adding a new public function.  Documentation
+	regarding how 'compare' uses this option is also added.
+
 	* configure.ac, magick/blob.c: Merge changeset by Przemysław
 	Sobala regarding "Configure: add --with(out)-compressed-files
 	option".  The configure option was changed to

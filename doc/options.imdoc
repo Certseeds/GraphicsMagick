@@ -3481,8 +3481,16 @@ is implied by <s>-mask</s>.</pp>
 If the image does not have a matte channel, create an opaque one.</pp>
 
 <pp>
-Use <s>+matte</s> to ignore the matte channel and to avoid writing a
+Use <s>+matte</s> to ignore the matte channel (treats it as opaque) and to avoid writing a
 matte channel in the output file.</pp>
+
+<pp>
+For the compare command, <s>-matte</s> will add an opaque matte
+channel to images if they do not already have a matte channel, and
+matte will be enabled for both images.  Likewise, if <s>+matte</s> is
+used, the matte channel is disabled for both images.  This makes it
+easier to compare images regardless of if they already have a matte
+channel.</pp>
 
 </utils>
 

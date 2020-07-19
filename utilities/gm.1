@@ -1,4 +1,4 @@
-.TH gm 1 "2020/04/23" "GraphicsMagick"
+.TH gm 1 "2020/07/19" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -3096,8 +3096,15 @@ is implied by \fB-mask\fP.
 
 If the image does not have a matte channel, create an opaque one.
 
-Use \fB+matte\fP to ignore the matte channel and to avoid writing a
+Use \fB+matte\fP to ignore the matte channel (treats it as opaque) and to avoid writing a
 matte channel in the output file.
+
+For the compare command, \fB-matte\fP will add an opaque matte
+channel to images if they do not already have a matte channel, and
+matte will be enabled for both images.  Likewise, if \fB+matte\fP is
+used, the matte channel is disabled for both images.  This makes it
+easier to compare images regardless of if they already have a matte
+channel.
 .TP
 .B "-mattecolor \fI<color>"\fP
 \fRspecify the color to be used with the \fB-frame\fP option
@@ -3307,7 +3314,7 @@ result is a gray image.
 Select an operator from \fBAdd\fP, \fBAnd\fP, \fBAssign\fP,
 \fBDepth\fP, \fBDivide\fP, \fBGamma\fP, \fBNegate\fP,
 \fBLShift\fP, \fBLog\fP, \fBMax\fP, \fBMin\fP, \fBMultiply\fP,
-\fBOr\fP, \fBPow\fP \fBRShift\fP, \fBSubtract\fP,
+\fBOr\fP, \fBPow\fP, \fBRShift\fP, \fBSubtract\fP,
 \fBThreshold\fP, \fBThreshold-White\fP,
 \fBThreshold-White-Negate\fP, \fBThreshold-Black\fP,
 \fBThreshold-Black-Negate\fP, \fBXor\fP, \fBNoise-Gaussian\fP,

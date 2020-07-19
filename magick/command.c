@@ -2302,6 +2302,12 @@ CompareImageCommand(ImageInfo *image_info,
   MetricType
     metric=UndefinedMetric;
 
+  enum {
+        UndefinedMatte,
+        IgnoreMatte,
+        StoreMatte
+  } matte=UndefinedMatte;
+
   DifferenceImageOptions
     difference_options;
 
@@ -2629,7 +2635,13 @@ CompareImageCommand(ImageInfo *image_info,
       case 'm':
       {
         if (LocaleCompare("matte",option+1) == 0)
-          break;
+          {
+            if (*option == '+')
+              matte=IgnoreMatte;
+            else
+              matte=StoreMatte;
+            break;
+          }
         if (LocaleCompare("maximum-error",option+1) == 0)
           {
             if (*option == '-')
@@ -2764,6 +2776,24 @@ CompareImageCommand(ImageInfo *image_info,
       (void) TransformColorspace(reference_image,image_info->colorspace);
       (void) TransformColorspace(compare_image,image_info->colorspace);
     }
+
+  if (matte != UndefinedMatte)
+  {
+    if (matte == IgnoreMatte)
+      {
+        reference_image->matte=MagickFalse;
+        compare_image->matte=MagickFalse;
+      }
+    else if (matte == StoreMatte)
+      {
+        if (reference_image->matte == MagickFalse)
+          SetImageOpacity(reference_image,OpaqueOpacity);
+        reference_image->matte=MagickTrue;
+        if (compare_image->matte == MagickFalse)
+          SetImageOpacity(compare_image,OpaqueOpacity);
+        compare_image->matte=MagickTrue;
+      }
+  }
 
   if (metric != UndefinedMetric)
   {
