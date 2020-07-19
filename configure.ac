@@ -360,6 +360,17 @@ then
   AC_DEFINE(DisableSlowOpenMP,1,[Disable OpenMP for algorithms which sometimes run slower])
 fi
 
+# Disable reading/writing gzip/bzip compressed files
+AC_ARG_ENABLE(compressed-files,
+              AS_HELP_STRING([--disable-compressed-files],
+                             [disable reading and writing of gzip/bzip files]),
+              [with_compressed_files=$withval],
+              [with_compressed_files='yes'])
+if test "$with_compressed_files" != 'yes'; then
+    AC_DEFINE(DISABLE_COMPRESSED_FILES,1,[Disable reading and writing of gzip/bzip files])
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-compressed-files=$with_compressed_files "
+fi
+
 ########
 #
 # Check for large file support

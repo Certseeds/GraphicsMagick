@@ -1028,6 +1028,7 @@ with_gnu_ld
 with_threads
 enable_openmp
 enable_openmp_slow
+enable_compressed_files
 enable_largefile
 enable_shared
 enable_static
@@ -1728,6 +1729,8 @@ Optional Features:
   --disable-openmp        do not use OpenMP
   --enable-openmp-slow    enable OpenMP for algorithms which sometimes run
                           slower
+  --disable-compressed-files
+                          disable reading and writing of gzip/bzip files
   --disable-largefile     omit support for large files
   --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
@@ -7748,6 +7751,21 @@ then
 
 $as_echo "#define DisableSlowOpenMP 1" >>confdefs.h
 
+fi
+
+# Disable reading/writing gzip/bzip compressed files
+# Check whether --enable-compressed-files was given.
+if test "${enable_compressed_files+set}" = set; then :
+  enableval=$enable_compressed_files; with_compressed_files=$withval
+else
+  with_compressed_files='yes'
+fi
+
+if test "$with_compressed_files" != 'yes'; then
+
+$as_echo "#define DISABLE_COMPRESSED_FILES 1" >>confdefs.h
+
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-compressed-files=$with_compressed_files "
 fi
 
 ########

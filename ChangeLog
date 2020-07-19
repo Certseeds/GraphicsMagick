@@ -1,3 +1,11 @@
+2020-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac, magick/blob.c: Merge changeset by Przemysław
+	Sobala regarding "Configure: add --with(out)-compressed-files
+	option".  The configure option was changed to
+	--disable-compressed-files during the merge since it is more
+	appropriate.
+
 2020-07-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update with changes up to 2020-07-15.

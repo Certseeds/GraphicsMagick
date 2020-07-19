@@ -6,6 +6,9 @@
 /* Define if coders and filters are to be built as modules. */
 #undef BuildMagickModules
 
+/* Disable reading and writing of gzip/bzip files */
+#undef DISABLE_COMPRESSED_FILES
+
 /* Disable OpenMP for algorithms which sometimes run slower */
 #undef DisableSlowOpenMP
 
