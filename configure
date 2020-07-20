@@ -7756,7 +7756,7 @@ fi
 # Disable reading/writing gzip/bzip compressed files
 # Check whether --enable-compressed-files was given.
 if test "${enable_compressed_files+set}" = set; then :
-  enableval=$enable_compressed_files; with_compressed_files=$withval
+  enableval=$enable_compressed_files; with_compressed_files=$enableval
 else
   with_compressed_files='yes'
 fi
@@ -8114,7 +8114,7 @@ macro_revision='2.4.6'
 
 
 
-LTOBSOLETE_VERSION
+
 
 ltmain=$ac_aux_dir/ltmain.sh
 

@@ -364,7 +364,7 @@ fi
 AC_ARG_ENABLE(compressed-files,
               AS_HELP_STRING([--disable-compressed-files],
                              [disable reading and writing of gzip/bzip files]),
-              [with_compressed_files=$withval],
+              [with_compressed_files=$enableval],
               [with_compressed_files='yes'])
 if test "$with_compressed_files" != 'yes'; then
     AC_DEFINE(DISABLE_COMPRESSED_FILES,1,[Disable reading and writing of gzip/bzip files])
