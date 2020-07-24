@@ -1,3 +1,8 @@
+2020-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Fix compilation error when
+	COMPRESSION_WEBP is not defined.
+
 2020-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Fix enableval syntax for

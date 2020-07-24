@@ -4873,6 +4873,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #endif
         }
 
+#if defined(COMPRESSION_WEBP)
       if (COMPRESSION_WEBP == compress_tag)
         {
           /*
@@ -4881,6 +4882,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           depth=8;
           bits_per_sample=8;
         }
+#endif /* if defined(COMPRESSION_WEBP) */
 
       alpha_type=UnspecifiedAlpha;
       if (image->matte)
