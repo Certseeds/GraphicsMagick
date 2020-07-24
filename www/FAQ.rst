@@ -129,7 +129,7 @@ today's GPUs.
 What is the meaning of "magick"?
 --------------------------------
 
-According to the infamous British accultist `Aleister Crowley
+According to the infamous British occultist `Aleister Crowley
 <http://en.wikipedia.org/wiki/Aleister_Crowley>`_, the definition of
 `magick <http://en.wikipedia.org/wiki/Magick_(Aleister_Crowley)>`_ is
 "the science and art of causing change to occur in conformity with the
