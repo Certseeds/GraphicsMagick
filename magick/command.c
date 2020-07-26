@@ -9992,7 +9992,6 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
       {
         if (LocaleCompare("label",option+1) == 0)
           {
-            fprintf(stderr,"%d: Handling label\n",__LINE__);
             (void) SetImageAttribute(*image,"label",(char *) NULL);
             if (*option == '-')
               {
