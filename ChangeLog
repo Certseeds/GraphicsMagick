@@ -1,5 +1,7 @@
 2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* wand/wandtests.tap: Wand drawtest requires FreeType.
+
 	* NEWS.txt: Update with changes up to 2020-07-26.
 
 	* VisualMagick/magick/magick_config.h.in (HasGS): Default HasGS to
