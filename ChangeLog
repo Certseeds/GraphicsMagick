@@ -1,5 +1,8 @@
 2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DTOLONG_MIN): Correct 32-bit definition of
+	DTOLONG_MIN.
+
 	* wand/wandtests.tap: Wand drawtest requires FreeType.
 
 	* NEWS.txt: Update with changes up to 2020-07-26.

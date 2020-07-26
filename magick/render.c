@@ -77,7 +77,7 @@
 /* Largest double value which can be converted to a long and survive AbsoluteValue() */
 #if LONG_MAX == 2147483647L
 #  define DTOLONG_MAX 2147483647.0
-#  define DTOLONG_MIN 2147483647.0
+#  define DTOLONG_MIN -2147483647.0
 #else
 #  define DTOLONG_MAX    9007199254740992.0
 #  define DTOLONG_MIN   -9007199254740992.0
