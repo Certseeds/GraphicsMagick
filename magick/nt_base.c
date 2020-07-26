@@ -1288,7 +1288,7 @@ NTGhostscriptFind(const char **gs_productfamily,
                             "  Searching for %s...",
                             products[product_index]);
       FormatString(key,"SOFTWARE\\%s",products[product_index]);
-      
+
       /*
         long WINAPI RegOpenKeyEx(const HKEY hKey, const LPCTSTR
         lpSubKey, const DWORD ulOptions, const REGSAM samDesired,
@@ -1412,7 +1412,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   static int
     gs_major_version=0,
-    gs_minor_version=0;  
+    gs_minor_version=0;
 
   unsigned int
     i;
@@ -1455,6 +1455,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   return MagickFail;
 }
+if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1615,6 +1616,7 @@ MagickExport int NTGhostscriptEXE(char *path, int path_length)
 
   return FALSE;
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1777,6 +1779,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
   return FALSE;
 }
+if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1867,6 +1870,7 @@ MagickExport int NTGhostscriptUnLoadDLL(void)
 
   return False;
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -411,6 +411,9 @@
 /* Define if you have FlashPIX library */
 #undef HasFPX
 
+/* Enable use of Ghostscript */
+#undef HasGS
+
 /* Define if you have JBIG library */
 #undef HasJBIG
 

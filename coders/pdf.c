@@ -131,6 +131,7 @@ static unsigned int IsPDF(const unsigned char *magick,const size_t offset)
 %
 %
 */
+#if defined(HasGS)
 static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
 #define MediaBox  "/MediaBox"
@@ -458,6 +459,7 @@ static Image *ReadPDFImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   return(image);
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -488,7 +490,9 @@ ModuleExport void RegisterPDFImage(void)
     *entry;
 
   entry=SetMagickInfo("EPDF");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPDFImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePDFImage;
   entry->adjoin=False;
   entry->blob_support=False;
@@ -499,7 +503,9 @@ ModuleExport void RegisterPDFImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("PDF");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPDFImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePDFImage;
   entry->magick=(MagickHandler) IsPDF;
   entry->blob_support=False;

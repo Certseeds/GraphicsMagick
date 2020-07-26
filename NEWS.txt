@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to July 15, 2020
+This file was last updated to reflect changes up to July 25, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -107,7 +107,10 @@ Windows Delegate Updates/Additions:
 
 Build Changes:
 
-* None
+* Support the configure option --without-gs configure option to
+  disable reading PS, EPS, and PDF formats via an external Ghostscript
+  delegate program.  This corresponds to the HasGS definition in the
+  source code.
 
 Behavior Changes:
 

@@ -1,3 +1,23 @@
+2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes up to 2020-07-26.
+
+	* VisualMagick/magick/magick_config.h.in (HasGS): Default HasGS to
+	enabled.
+
+	* configure.ac: Add a --without-gs configure option to disable
+	reading PS, EPS, and PDF formats via an external Ghostscript
+	delegate program.  This is indended as an absolute security
+	measure for sites that want to be assured to avoid executing
+	Ghostscript even though it is installed on the system.  Removal of
+	PS and PDF reading support breaks reading other formats which are
+	handled by executing an external program to first convert to PS or
+	PDF formats.
+
+	* magick/delegate.c (InvokePostscriptDelegate): Use HasGS to
+	enable use of the Ghostscript delegate.  Change the existing
+	legacy HasGS ifdefs to HasGSLIB.
+
 2020-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Fix compilation error when

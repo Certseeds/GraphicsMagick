@@ -16989,9 +16989,9 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 
   /* Ghostscript Library */
   supported=MagickFalse;
-#if defined(HasGS)
+#if defined(HasGSLIB)
   supported=MagickTrue;
-#endif /* defined(HasGS) */
+#endif /* defined(HasGSLIB) */
   PrintFeature("Ghostscript (Library)", supported);
 
   /* JBIG */

@@ -824,6 +824,8 @@ INT8_T
 LIBRARY_EXTRA_CPPFLAGS
 MODULE_EXTRA_CPPFLAGS
 LIBSTDCLDFLAGS
+HasGS_FALSE
+HasGS_TRUE
 PERL_MAKE_OPTIONS
 MAGICK_LT_RELEASE_OPTS
 QuantumDepth
@@ -1055,6 +1057,7 @@ with_perl_options
 with_bzlib
 with_dps
 with_fpx
+with_gs
 with_jbig
 with_webp
 with_jpeg
@@ -1778,6 +1781,7 @@ Optional Packages:
   --without-bzlib         disable BZLIB support
   --without-dps           disable Display Postscript support
   --with-fpx              enable FlashPIX support
+  --without-gs            disable Ghostscript support
   --without-jbig          disable JBIG support
   --without-webp          disable WEBP support
   --without-jpeg          disable JPEG support
@@ -19663,6 +19667,32 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
+# Disable Ghostscript support.
+
+# Check whether --with-gs was given.
+if test "${with_gs+set}" = set; then :
+  withval=$with_gs; with_gs=$withval
+else
+  with_gs='yes'
+fi
+
+if test "$with_gs" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gs=$with_gs "
+fi
+if test "$with_gs" = 'yes' ; then
+
+$as_echo "#define HasGS 1" >>confdefs.h
+
+fi
+ if test "$with_gs" = 'yes'; then
+  HasGS_TRUE=
+  HasGS_FALSE='#'
+else
+  HasGS_TRUE='#'
+  HasGS_FALSE=
+fi
+
+
 # Disable JBIG.
 
 # Check whether --with-jbig was given.
@@ -28473,10 +28503,14 @@ LaunchDelegateDefault='gimp'
 MPEGDecodeDelegateDefault='mpeg2decode'
 MPEGEncodeDelegateDefault='mpeg2encode'
 MVDelegateDefault='mv'
-if test "$native_win32_build" = 'yes' ; then
-  PSDelegateDefault='gswin32c'
+if test "$with_gs" = 'yes' ; then
+   if test "$native_win32_build" = 'yes' ; then
+      PSDelegateDefault='gswin32c'
+   else
+      PSDelegateDefault='gs'
+   fi
 else
-  PSDelegateDefault='gs'
+   PSDelegateDefault='false'
 fi
 
 # Search for delegates
@@ -29223,7 +29257,8 @@ $as_echo "no" >&6; }
 fi
 
 
-# Extract the first word of ""$PSDelegateDefault"", so it can be a program name with args.
+if test "$with_gs" = 'yes' ; then
+  # Extract the first word of ""$PSDelegateDefault"", so it can be a program name with args.
 set dummy "$PSDelegateDefault"; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -29264,6 +29299,9 @@ $as_echo "no" >&6; }
 fi
 
 
+else
+  PSDelegate=$PSDelegateDefault
+fi
 
 # Prefer lpr to lp; lp needs options tacked on.
 if test "$LPRDelegate" != no
@@ -29507,9 +29545,11 @@ else
         break 1
       fi
     done
-    if test "${PSDelegate}" != 'gswin32c'
-    then
-      ghostscript_font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+    if test "$with_gs" = 'yes' ; then
+      if test "${PSDelegate}" != "${PSDelegateDefault}"
+      then
+        ghostscript_font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+      fi
     fi
 
   else
@@ -29531,9 +29571,11 @@ else
 
     if test "${ghostscript_font_dir}x" = 'x'
     then
-      if test "$PSDelegate" != 'gs'
-      then
-        ghostscript_font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+      if test "$with_gs" = 'yes' ; then
+        if test "$PSDelegate" != "${PSDelegateDefault}"
+        then
+          ghostscript_font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+        fi
       fi
     fi
 
@@ -30579,6 +30621,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MAGICK_COMPAT_TRUE}" && test -z "${MAGICK_COMPAT_FALSE}"; then
   as_fn_error $? "conditional \"MAGICK_COMPAT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HasGS_TRUE}" && test -z "${HasGS_FALSE}"; then
+  as_fn_error $? "conditional \"HasGS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -33187,7 +33233,7 @@ printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
 printf "DPS               --with-dps=$with_dps          \t$have_dps\n"
 printf "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx\n"
 printf "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf\n"
-printf "Ghostscript       None                  \t$PSDelegate ($GSVersion)\n"
+printf "Ghostscript       --with-gs=$with_gs            \t$PSDelegate ($GSVersion)\n"
 result_ghostscript_font_dir='none'
 if test "${ghostscript_font_dir}x" != 'x'
 then

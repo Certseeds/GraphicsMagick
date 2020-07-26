@@ -126,6 +126,7 @@ static unsigned int IsPS(const unsigned char *magick,const size_t length)
 %
 %
 */
+#if defined(HasGS)
 static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
 #define BoundingBox  "%%BoundingBox:"
@@ -382,16 +383,6 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
       DestroyImageInfo(clone_info);
     }
   (void) LiberateTemporaryFile((char *) image_info->filename);
-#if defined(HasDPS)
-  if (image == (Image *) NULL)
-    {
-      /*
-        Ghostscript has failed-- try the Display Postscript Extension.
-      */
-      (void) FormatString((char *) image_info->filename,"dps:%.1024s",filename);
-      image=ReadImage(image_info,exception);
-    }
-#endif /* defined(HasDPS) */
   if (image == (Image *) NULL)
     {
       if (UndefinedException == exception->severity)
@@ -422,6 +413,7 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   return(image);
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -452,7 +444,9 @@ ModuleExport void RegisterPSImage(void)
     *entry;
 
   entry=SetMagickInfo("EPI");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPSImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePSImage;
   entry->magick=(MagickHandler) IsPS;
   entry->adjoin=False;
@@ -462,7 +456,9 @@ ModuleExport void RegisterPSImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("EPS");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPSImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePSImage;
   entry->magick=(MagickHandler) IsPS;
   entry->adjoin=False;
@@ -472,7 +468,9 @@ ModuleExport void RegisterPSImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("EPSF");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPSImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePSImage;
   entry->magick=(MagickHandler) IsPS;
   entry->adjoin=False;
@@ -482,7 +480,9 @@ ModuleExport void RegisterPSImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("EPSI");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPSImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePSImage;
   entry->magick=(MagickHandler) IsPS;
   entry->adjoin=False;
@@ -492,7 +492,9 @@ ModuleExport void RegisterPSImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("PS");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadPSImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WritePSImage;
   entry->magick=(MagickHandler) IsPS;
   entry->description="Adobe PostScript";

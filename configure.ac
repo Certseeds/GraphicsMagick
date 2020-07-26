@@ -652,6 +652,20 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
+# Disable Ghostscript support.
+AC_ARG_WITH(gs,
+              AS_HELP_STRING([--without-gs],
+                             [disable Ghostscript support]),
+              [with_gs=$withval],
+              [with_gs='yes'])
+if test "$with_gs" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gs=$with_gs "
+fi
+if test "$with_gs" = 'yes' ; then
+  AC_DEFINE(HasGS,1,[Enable use of Ghostscript])
+fi
+AM_CONDITIONAL(HasGS,[test "$with_gs" = 'yes'])
+
 # Disable JBIG.
 AC_ARG_WITH(jbig,
               AS_HELP_STRING([--without-jbig],
@@ -2934,10 +2948,14 @@ MPEGEncodeDelegateDefault='mpeg2encode'
 MVDelegateDefault='mv'
 dnl PGPDecodeDelegateDefault='pgpv'
 dnl POVDelegateDefault='povray'
-if test "$native_win32_build" = 'yes' ; then
-  PSDelegateDefault='gswin32c'
+if test "$with_gs" = 'yes' ; then
+   if test "$native_win32_build" = 'yes' ; then
+      PSDelegateDefault='gswin32c'
+   else
+      PSDelegateDefault='gs'
+   fi
 else
-  PSDelegateDefault='gs'
+   PSDelegateDefault='false'
 fi
 dnl RADDecodeDelegateDefault='ra_ppm'
 dnl RLEEncodeDelegateDefault='rawtorle'
@@ -2975,7 +2993,11 @@ AC_PATH_PROG(MPEGEncodeDelegate, "$MPEGEncodeDelegateDefault", "$MPEGEncodeDeleg
 AC_PATH_PROG(MVDelegate, "$MVDelegateDefault", "$MVDelegateDefault")
 dnl AC_PATH_PROG(PGPDecodeDelegate, "$PGPDecodeDelegateDefault", "$PGPDecodeDelegateDefault")
 dnl AC_PATH_PROG(POVDelegate, "$POVDelegateDefault", "$POVDelegateDefault")
-AC_PATH_PROG(PSDelegate, "$PSDelegateDefault", "$PSDelegateDefault")
+if test "$with_gs" = 'yes' ; then
+  AC_PATH_PROG(PSDelegate, "$PSDelegateDefault", "$PSDelegateDefault")
+else
+  PSDelegate=$PSDelegateDefault
+fi
 dnl AC_PATH_PROG(RADDecodeDelegate, "$RADDecodeDelegateDefault", "$RADDecodeDelegateDefault")
 dnl AC_PATH_PROG(RLEEncodeDelegate, "$RLEEncodeDelegateDefault", "$RLEEncodeDelegateDefault")
 dnl AC_PATH_PROG(RMDelegate, "$RMDelegateDefault", "$RMDelegateDefault")
@@ -3115,9 +3137,11 @@ else
         break 1
       fi
     done
-    if test "${PSDelegate}" != 'gswin32c'
-    then
-      ghostscript_font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+    if test "$with_gs" = 'yes' ; then
+      if test "${PSDelegate}" != "${PSDelegateDefault}"
+      then
+        ghostscript_font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+      fi
     fi
 
   else
@@ -3139,9 +3163,11 @@ else
 
     if test "${ghostscript_font_dir}x" = 'x'
     then
-      if test "$PSDelegate" != 'gs'
-      then
-        ghostscript_font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+      if test "$with_gs" = 'yes' ; then
+        if test "$PSDelegate" != "${PSDelegateDefault}"
+        then
+          ghostscript_font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+        fi
       fi
     fi
 
@@ -3761,7 +3787,7 @@ printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
 printf "DPS               --with-dps=$with_dps          \t$have_dps\n"
 printf "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx\n"
 printf "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf\n"
-printf "Ghostscript       None                  \t$PSDelegate ($GSVersion)\n"
+printf "Ghostscript       --with-gs=$with_gs            \t$PSDelegate ($GSVersion)\n"
 result_ghostscript_font_dir='none'
 if test "${ghostscript_font_dir}x" != 'x'
 then

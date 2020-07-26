@@ -141,6 +141,9 @@ $$QuantumDepth
 // extracted to a 'fpx' subdirectory.
 // #undef HasFPX
 
+// Define to support Ghostscript as DLL or external program
+#define HasGS
+
 // Define to use the JBIG library
 #define HasJBIG
 
