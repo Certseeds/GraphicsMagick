@@ -1,5 +1,8 @@
 2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* wand/drawtest.c: Use structured error handling and report all
+	output to stderr so it does not screw up TAP tests.
+
 	* magick/render.c (DTOLONG_MIN): Correct 32-bit definition of
 	DTOLONG_MIN.
 
