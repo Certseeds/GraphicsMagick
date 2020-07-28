@@ -266,5 +266,5 @@ int main(int argc,char **argv)
   if (status == False)
     ThrowAPIException(magick_wand);
   DestroyMagickWand(magick_wand);
-  return(0);
+  return(EXIT_SUCCESS);
 }

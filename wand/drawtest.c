@@ -404,10 +404,7 @@ int main ( int argc, char **argv )
   outfile[MaxTextExtent-1]='\0';
   (void) strncpy( outfile, argv[1], MaxTextExtent-1 );
 
-  if (LocaleNCompare("drawtest",argv[0],7) == 0)
-    InitializeMagick((char *) NULL);
-  else
-    InitializeMagick(*argv);
+  InitializeMagick(*argv);
 
   /*
    * Create canvas image
@@ -422,11 +419,15 @@ int main ( int argc, char **argv )
           ThrowAPIException(canvas);
         }
 
+      fprintf(stderr, "Set the image size\n");
+
       if ((status = MagickReadImage( canvas, "xc:white" )) == MagickFail)
         {
           fprintf ( stderr, "Failed to read canvas image %s\n", MagickGetFilename(canvas) );
           ThrowAPIException(canvas);
         }
+
+      fprintf(stderr, "Got the image canvas image\n");
 
       /*
        * Scribble on image
@@ -437,6 +438,8 @@ int main ( int argc, char **argv )
           ThrowAPIException(canvas);
         }
 
+      fprintf(stderr, "Scribbled on the image\n");
+
       /*
        * Set depth to 8
        */
@@ -445,6 +448,8 @@ int main ( int argc, char **argv )
           fprintf ( stderr, "Failed to set the image depth\n" );
           ThrowAPIException(canvas);
         }
+
+      fprintf(stderr, "Set the canvas depth\n");
 
       /*
        * Set RLE compression
@@ -455,6 +460,8 @@ int main ( int argc, char **argv )
           ThrowAPIException(canvas);
         }
 
+      fprintf(stderr, "Set the image compression\n");
+
       /*
        * Save image to file
        */
@@ -463,6 +470,8 @@ int main ( int argc, char **argv )
           fprintf ( stderr, "Failed to write image file %s\n", outfile );
           ThrowAPIException(canvas);
         }
+
+      fprintf(stderr, "Wrote the output file\n");
 
     } while (0);
 
