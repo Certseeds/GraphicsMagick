@@ -1,5 +1,7 @@
 2020-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_base.c: Fix compilation issue noticed under MinGW.
+
 	* magick/render.c (DrawImage): Handle the case that
 	ExtractTokensBetweenPushPop() can return NULL.  Fixes oss-fuzz
 	24659 "Null-dereference READ in DrawImage".

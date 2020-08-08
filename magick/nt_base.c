@@ -1455,7 +1455,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   return MagickFail;
 }
-if defined(HasGS)
+#if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1779,7 +1779,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
   return FALSE;
 }
-if defined(HasGS)
+#if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
