@@ -1,5 +1,9 @@
 2020-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Handle the case that
+	ExtractTokensBetweenPushPop() can return NULL.  Fixes oss-fuzz
+	24659 "Null-dereference READ in DrawImage".
+
 	* magick/magick.c (MagickCondSignal): Re-implement to handle the
 	case where a new-style 'siginfo' signal handler was previously
 	registered, as well as the legacy type.  This may address oss-fuzz

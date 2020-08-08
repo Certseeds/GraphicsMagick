@@ -3359,7 +3359,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             MagickGetToken(q,&q,token,token_max_length);
             if (LocaleCompare("class",token) == 0)  /* added "push class" to support "defs" */
               {
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"class",image,0);
+                char *nq = ExtractTokensBetweenPushPop(q,token,token_max_length,"class",image,0);
+                if (nq != NULL)
+                  q=nq;
+                else
+                  status=MagickFail;
                 break;
               }
             if (LocaleCompare("clip-path",token) == 0)
@@ -3369,9 +3373,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   into new function ExtractTokensBetweenPushPop().
                 */
                 size_t ExtractedLength;
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength); /* NULLED */
-                if  ( ExtractedLength == 0 )
+                char *nq = ExtractTokensBetweenPushPop(q,token,token_max_length,"clip-path",image,&ExtractedLength); /* NULLED */
+                if  ( (ExtractedLength == 0) || (nq == NULL) )
                   status=MagickFail;
+                else
+                  q=nq;
                 break;
               }
             if (LocaleCompare("gradient",token) == 0)
@@ -3530,17 +3536,28 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             if (LocaleCompare("id",token) == 0)   /* added "push id" (to support "defs") */
               {
                 if  ( defsPushCount > 0 )
-                  q = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
+                  {
+                    char *nq = ExtractTokensBetweenPushPop(q,token,token_max_length,"id",image,0);
+                    if (nq == NULL)
+                      status=MagickFail;
+                    else
+                      q=nq;
+                    break;
+                  }
                 else    /* extract <identifier> from "push id <identifier>" */
-                  MagickGetToken(q,&q,token,token_max_length);
+                  {
+                    MagickGetToken(q,&q,token,token_max_length);
+                  }
                 break;
               }
             if (LocaleCompare("mask",token) == 0)   /* added mask */
               {
                 size_t ExtractedLength;
-                q = ExtractTokensBetweenPushPop(q,token,token_max_length,"mask",image,&ExtractedLength);
-                if  ( ExtractedLength == 0 )
+                char *nq = ExtractTokensBetweenPushPop(q,token,token_max_length,"mask",image,&ExtractedLength);
+                if  ( (ExtractedLength == 0) || (nq == NULL) )
                   status=MagickFail;
+                else
+                  q=nq;
                 break;
               }
             if (LocaleCompare("pattern",token) == 0)
