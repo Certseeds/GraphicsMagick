@@ -1,3 +1,10 @@
+2020-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (MagickCondSignal): Re-implement to handle the
+	case where a new-style 'siginfo' signal handler was previously
+	registered, as well as the legacy type.  This may address oss-fuzz
+	24690 "Use-of-uninitialized-value in MagickCondSignal".
+
 2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* wand/drawtest.c: Use structured error handling and report all
