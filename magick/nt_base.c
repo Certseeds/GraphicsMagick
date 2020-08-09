@@ -54,10 +54,12 @@
 static char
   *NTslsearchpath = (char *) NULL;
 #endif
+#if defined(HasGS)
 static void
   *gs_dll_handle = (void *)NULL;
 static GhostscriptVectors
     gs_vectors;
+#endif /* if defined(HasGS) */
 
 static MagickPassFail NTstrerror_r(LONG errnum, char *strerrbuf, size_t  buflen);
 

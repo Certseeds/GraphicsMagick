@@ -186,7 +186,9 @@ DestroyMagick(void)
   DestroyMagickRandomGenerator(); /* Random number generator */
   DestroyTemporaryFiles();      /* Temporary files */
 #if defined(MSWINDOWS)
+#if defined(HasGS)
   NTGhostscriptUnLoadDLL();     /* Ghostscript DLL */
+#endif /* if defined(HasGS) */
 #endif /* defined(MSWINDOWS) */
   /*
     Destroy logging last since some components log their destruction.

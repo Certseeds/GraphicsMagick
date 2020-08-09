@@ -1422,10 +1422,12 @@ static unsigned int ReadConfigureFile(const char *basename,
                       path[MaxTextExtent];
 
                     BinPath[0]=0;
+#if defined(HasGS)
                     /* Substitute @PSDelegate@ with path to Ghostscript */
                     NTGhostscriptEXE(path,MaxTextExtent-1);
                     SubstituteString((char **) &delegate_list->commands,
                                      "@PSDelegate@",path);
+#endif /* if defined(HasGS) */
 
 # if defined(UseInstalledMagick)
 #  if defined(MagickBinPath)
