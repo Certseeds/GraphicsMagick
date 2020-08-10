@@ -647,6 +647,7 @@ MagickCondSignal(int signo, Sigfunc *func)
   act.sa_flags |= SA_ONSTACK;
 #  endif /* if defined(SA_ONSTACK) */
 
+  (void) memset(&oact, 0, sizeof(oact));
   if (sigaction(signo, &act, &oact) == 0)
     {
       if ((oact.sa_flags & SA_SIGINFO) ||
