@@ -1,3 +1,10 @@
+2020-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Remove the assumption that a native Windows build
+	means that Ghostscript may be available so that MinGW tests which
+	depend on Ghostcript are attributed proper XFAIL status by the
+	test suite.
+
 2020-08-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magick.c (MagickCondSignal): Explicitly initialize 'oact'

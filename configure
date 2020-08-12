@@ -30249,8 +30249,7 @@ fi
 
 have_ps='no'
 if test "$have_dps"    = 'yes' || \
-   test "$have_gs" = 'yes' || \
-   test "${native_win32_build}" = 'yes' ; then
+   test "$have_gs" = 'yes' ; then
    have_ps='yes'
 fi
 if test "$have_ps"     = 'yes' ; then
