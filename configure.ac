@@ -242,25 +242,16 @@ AC_PROG_AWK
 AC_EXEEXT
 AC_OBJEXT
 
-LIB_GDI32=''
 native_win32_build='no'
 cygwin_build='no'
 case "${host_os}" in
   cygwin* )
     cygwin_build='yes'
-    LIB_GDI32='-lgdi32'
     ;;
   mingw* )
     native_win32_build='yes'
-    LIB_GDI32='-lgdi32'
     ;;
 esac
-if test "${LIB_GDI32}x" != 'x'
-then
-  AC_DEFINE(HasWINGDI32,1,Define to use the Windows GDI32 library)
-fi
-AC_SUBST(LIB_GDI32)
-AM_CONDITIONAL(HasWINGDI32, test "${LIB_GDI32}x" != 'x' )
 AM_CONDITIONAL(WIN32_NATIVE_BUILD, test "${native_win32_build}" = 'yes' )
 AM_CONDITIONAL(CYGWIN_BUILD, test "${cygwin_build}" = 'yes' )
 
@@ -650,6 +641,16 @@ AC_ARG_WITH(fpx,
               [with_fpx='no'])
 if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
+fi
+
+# Enable Windows lgdi32 library
+AC_ARG_WITH(gdi32,
+              AS_HELP_STRING([--without-gdi32],
+                             [disable Windows gdi32 support]),
+              [with_gdi32=$withval],
+              [with_gdi32='yes'])
+if test "$with_gdi32" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gdi32=$with_gdi32 "
 fi
 
 # Disable Ghostscript support.
@@ -2784,6 +2785,49 @@ AM_CONDITIONAL([HasWMF], [test "$have_wmf" = 'yes'])
 AC_SUBST([LIB_WMF])
 AC_SUBST([LIB_WMF_DEPS])
 
+
+#
+# Check for Windows gdi32 library
+#
+have_gdi32='no'
+if test "$with_gdi32" != 'no'
+then
+  LIB_GDI32=''
+  AC_MSG_CHECKING([for Windows GDI32 support])
+  AC_MSG_RESULT()
+  failed=0
+  passed=0
+  found_libgdi32=0
+  AC_CHECK_HEADER([windows.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_HEADER([wingdi.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[#include <windows.h>])
+  AC_CHECK_LIB([gdi32],[OpenClipboard],[found_libgdi32=`expr $found_libgdi32 + 1`],,)
+  if test $found_libgdi32 -gt 0
+  then
+    passed=`expr $passed + 1`
+  else
+    failed=`expr $failed + 1`
+  fi
+  AC_MSG_CHECKING([if Windows GDI32 support is complete])
+  if test $passed -gt 0
+  then
+    if test $failed -gt 0
+    then
+      AC_MSG_RESULT([no -- some components failed test])
+      have_gdi32='no (failed tests)'
+    else
+      LIB_GDI32='-lgdi32'
+      LIBS="$LIB_GDI32 $LIBS"
+      AC_DEFINE([HasWINGDI32],[1],[Define to use the Windows GDI32 library])
+      AC_MSG_RESULT([yes])
+      have_gdi32='yes'
+    fi
+  else
+    AC_MSG_RESULT([no])
+  fi
+fi
+AM_CONDITIONAL([HasWINGDI32], [test "$have_gdi32" = 'yes'])
+AC_SUBST([LIB_GDI32])
+
 ########
 #
 # Check for functions
@@ -3793,6 +3837,7 @@ then
   result_ghostscript_font_dir="$ghostscript_font_dir"
 fi
 printf "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir\t$result_ghostscript_font_dir\n"
+printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"
 printf "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2\n"

@@ -1,3 +1,9 @@
+2020-08-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Add --without-gdi32 configure option to support
+	disabling use of the Microsoft Windows gdi32 library if it is not
+	wanted.
+
 2020-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Remove the assumption that a native Windows build

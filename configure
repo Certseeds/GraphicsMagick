@@ -714,6 +714,9 @@ MagickLibConfigPath
 MagickLibPath
 MagickBinPath
 PERLMAINCC
+LIB_GDI32
+HasWINGDI32_FALSE
+HasWINGDI32_TRUE
 LIB_WMF_DEPS
 LIB_WMF
 HasWMF_FALSE
@@ -876,9 +879,6 @@ CYGWIN_BUILD_FALSE
 CYGWIN_BUILD_TRUE
 WIN32_NATIVE_BUILD_FALSE
 WIN32_NATIVE_BUILD_TRUE
-HasWINGDI32_FALSE
-HasWINGDI32_TRUE
-LIB_GDI32
 LN_S
 LD
 FGREP
@@ -1057,6 +1057,7 @@ with_perl_options
 with_bzlib
 with_dps
 with_fpx
+with_gdi32
 with_gs
 with_jbig
 with_webp
@@ -1781,6 +1782,7 @@ Optional Packages:
   --without-bzlib         disable BZLIB support
   --without-dps           disable Display Postscript support
   --with-fpx              enable FlashPIX support
+  --without-gdi32         disable Windows gdi32 support
   --without-gs            disable Ghostscript support
   --without-jbig          disable JBIG support
   --without-webp          disable WEBP support
@@ -7104,34 +7106,16 @@ done
 
 
 
-LIB_GDI32=''
 native_win32_build='no'
 cygwin_build='no'
 case "${host_os}" in
   cygwin* )
     cygwin_build='yes'
-    LIB_GDI32='-lgdi32'
     ;;
   mingw* )
     native_win32_build='yes'
-    LIB_GDI32='-lgdi32'
     ;;
 esac
-if test "${LIB_GDI32}x" != 'x'
-then
-
-$as_echo "#define HasWINGDI32 1" >>confdefs.h
-
-fi
-
- if test "${LIB_GDI32}x" != 'x' ; then
-  HasWINGDI32_TRUE=
-  HasWINGDI32_FALSE='#'
-else
-  HasWINGDI32_TRUE='#'
-  HasWINGDI32_FALSE=
-fi
-
  if test "${native_win32_build}" = 'yes' ; then
   WIN32_NATIVE_BUILD_TRUE=
   WIN32_NATIVE_BUILD_FALSE='#'
@@ -19667,6 +19651,19 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
+# Enable Windows lgdi32 library
+
+# Check whether --with-gdi32 was given.
+if test "${with_gdi32+set}" = set; then :
+  withval=$with_gdi32; with_gdi32=$withval
+else
+  with_gdi32='yes'
+fi
+
+if test "$with_gdi32" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gdi32=$with_gdi32 "
+fi
+
 # Disable Ghostscript support.
 
 # Check whether --with-gs was given.
@@ -28090,6 +28087,118 @@ fi
 
 
 
+
+#
+# Check for Windows gdi32 library
+#
+have_gdi32='no'
+if test "$with_gdi32" != 'no'
+then
+  LIB_GDI32=''
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Windows GDI32 support" >&5
+$as_echo_n "checking for Windows GDI32 support... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+$as_echo "" >&6; }
+  failed=0
+  passed=0
+  found_libgdi32=0
+  ac_fn_c_check_header_mongrel "$LINENO" "windows.h" "ac_cv_header_windows_h" "$ac_includes_default"
+if test "x$ac_cv_header_windows_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+  ac_fn_c_check_header_compile "$LINENO" "wingdi.h" "ac_cv_header_wingdi_h" "#include <windows.h>
+"
+if test "x$ac_cv_header_wingdi_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenClipboard in -lgdi32" >&5
+$as_echo_n "checking for OpenClipboard in -lgdi32... " >&6; }
+if ${ac_cv_lib_gdi32_OpenClipboard+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgdi32  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char OpenClipboard ();
+int
+main ()
+{
+return OpenClipboard ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gdi32_OpenClipboard=yes
+else
+  ac_cv_lib_gdi32_OpenClipboard=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gdi32_OpenClipboard" >&5
+$as_echo "$ac_cv_lib_gdi32_OpenClipboard" >&6; }
+if test "x$ac_cv_lib_gdi32_OpenClipboard" = xyes; then :
+  found_libgdi32=`expr $found_libgdi32 + 1`
+fi
+
+  if test $found_libgdi32 -gt 0
+  then
+    passed=`expr $passed + 1`
+  else
+    failed=`expr $failed + 1`
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if Windows GDI32 support is complete" >&5
+$as_echo_n "checking if Windows GDI32 support is complete... " >&6; }
+  if test $passed -gt 0
+  then
+    if test $failed -gt 0
+    then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+$as_echo "no -- some components failed test" >&6; }
+      have_gdi32='no (failed tests)'
+    else
+      LIB_GDI32='-lgdi32'
+      LIBS="$LIB_GDI32 $LIBS"
+
+$as_echo "#define HasWINGDI32 1" >>confdefs.h
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      have_gdi32='yes'
+    fi
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  fi
+fi
+ if test "$have_gdi32" = 'yes'; then
+  HasWINGDI32_TRUE=
+  HasWINGDI32_FALSE='#'
+else
+  HasWINGDI32_TRUE='#'
+  HasWINGDI32_FALSE=
+fi
+
+
+
 ########
 #
 # Check for functions
@@ -30586,10 +30695,6 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${HasWINGDI32_TRUE}" && test -z "${HasWINGDI32_FALSE}"; then
-  as_fn_error $? "conditional \"HasWINGDI32\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${WIN32_NATIVE_BUILD_TRUE}" && test -z "${WIN32_NATIVE_BUILD_FALSE}"; then
   as_fn_error $? "conditional \"WIN32_NATIVE_BUILD\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -30717,6 +30822,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasWMF_TRUE}" && test -z "${HasWMF_FALSE}"; then
   as_fn_error $? "conditional \"HasWMF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HasWINGDI32_TRUE}" && test -z "${HasWINGDI32_FALSE}"; then
+  as_fn_error $? "conditional \"HasWINGDI32\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasPSDelegate_TRUE}" && test -z "${HasPSDelegate_FALSE}"; then
@@ -33239,6 +33348,7 @@ then
   result_ghostscript_font_dir="$ghostscript_font_dir"
 fi
 printf "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir\t$result_ghostscript_font_dir\n"
+printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"
 printf "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2\n"
