@@ -3306,6 +3306,32 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                          image);
               }
             /*
+              Apply image resource limits to tile width, height, and pixels.
+            */
+            errno=0;
+            if (AcquireMagickResource(WidthResource,tile_columns) != MagickPass)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFF tile width %u exceeds limit!",tile_columns);
+                ThrowTIFFReaderException(ResourceLimitError,ImagePixelWidthLimitExceeded,
+                                         image);
+              }
+            if (AcquireMagickResource(HeightResource,tile_rows) != MagickPass)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFF tile width %u exceeds limit!",tile_rows);
+                ThrowTIFFReaderException(ResourceLimitError,ImagePixelHeightLimitExceeded,
+                                         image);
+              }
+            if (AcquireMagickResource(PixelsResource,tile_total_pixels) != MagickPass)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFF tile pixels %" MAGICK_SIZE_T_F "u exceeds limit!",
+                                      (MAGICK_SIZE_T) tile_total_pixels);
+                ThrowTIFFReaderException(ResourceLimitError,ImagePixelLimitExceeded,
+                                         image);
+              }
+            /*
               Rationalize memory request based on file size
             */
             if (tile_size_max > file_size*max_compress_ratio)
