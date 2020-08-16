@@ -5,8 +5,6 @@
 	issues 24523 "Timeout in coder_TIFF_fuzzer" and 24810 "Timeout in
 	coder_PTIF_fuzzer".
 
-	* fuzzing/oss-fuzz-build.sh: Disable Old JPEG format in libtiff.
-
 2020-08-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Add --without-gdi32 configure option to support
