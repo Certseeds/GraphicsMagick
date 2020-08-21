@@ -6976,14 +6976,14 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
   /* Define these outside of the following "if logging()" block so they will
    * show in debuggers.
    */
-    gm_vers=MagickLibVersionText;
+  gm_vers=MagickLibVersionText;
 #ifdef HasLCMS
-    (void) sprintf(lcms_vers,"%.4d",LCMS_VERSION);
+  (void) sprintf(lcms_vers,"%.4d",LCMS_VERSION);
 #endif
-    libpng_runv=png_get_libpng_ver(NULL);
-    libpng_vers=PNG_LIBPNG_VER_STRING;
-    zlib_runv=zlib_version;
-    zlib_vers=ZLIB_VERSION;
+  libpng_runv=png_get_libpng_ver(NULL);
+  libpng_vers=PNG_LIBPNG_VER_STRING;
+  zlib_runv=zlib_version;
+  zlib_vers=ZLIB_VERSION;
 
   if (logging != MagickFalse)
     {
