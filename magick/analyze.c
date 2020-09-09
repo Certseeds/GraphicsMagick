@@ -233,11 +233,10 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
 #endif
         }
     }
-  if ((bounds.width != 0) || (bounds.height != 0))
-    {
-      bounds.width-=(bounds.x-1);
-      bounds.height-=(bounds.y-1);
-    }
+  if (bounds.width != 0)
+    bounds.width-=(bounds.x-1);
+  if (bounds.height != 0)
+    bounds.height-=(bounds.y-1);
   if (bounds.x < 0)
     bounds.x=0;
   if (bounds.y < 0)
