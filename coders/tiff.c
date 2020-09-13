@@ -2035,8 +2035,23 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           if (chromaticity != (float *) NULL)
             {
-              image->chromaticity.white_point.x=chromaticity[0];
-              image->chromaticity.white_point.y=chromaticity[1];
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "White Point: %gx%g",
+                                      chromaticity[0] /* white_point.x */,
+                                      chromaticity[1] /* white_point.y */);
+              if (MAGICK_ISNAN(chromaticity[0]) || (chromaticity[0] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[1]) || (chromaticity[1] < 0.0))
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "White Point: Is corrupt!");
+                }
+              else
+                {
+                  image->chromaticity.white_point.x=chromaticity[0];
+                  image->chromaticity.white_point.y=chromaticity[1];
+                }
             }
         }
       chromaticity=(float *) NULL;
@@ -2044,12 +2059,36 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           if (chromaticity != (float *) NULL)
             {
-              image->chromaticity.red_primary.x=chromaticity[0];
-              image->chromaticity.red_primary.y=chromaticity[1];
-              image->chromaticity.green_primary.x=chromaticity[2];
-              image->chromaticity.green_primary.y=chromaticity[3];
-              image->chromaticity.blue_primary.x=chromaticity[4];
-              image->chromaticity.blue_primary.y=chromaticity[5];
+              if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Primary Chromaticities: "
+                                      "r=%gx%g g=%gx%g b=%gx%g",
+                                      chromaticity[0] /* red_primary.x */,
+                                      chromaticity[1] /* red_primary.y */,
+                                      chromaticity[2] /* green_primary.x */,
+                                      chromaticity[3] /* green_primary.y */,
+                                      chromaticity[4] /* blue_primary.x */,
+                                      chromaticity[5] /* blue_primary.y */);
+              if (MAGICK_ISNAN(chromaticity[0]) || (chromaticity[0] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[1]) || (chromaticity[1] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[2]) || (chromaticity[2] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[3]) || (chromaticity[3] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[4]) || (chromaticity[4] < 0.0) ||
+                  MAGICK_ISNAN(chromaticity[5]) || (chromaticity[5] < 0.0))
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Primary Chromaticities: Is corrupt!");
+                }
+              else
+                {
+                  image->chromaticity.red_primary.x=chromaticity[0];
+                  image->chromaticity.red_primary.y=chromaticity[1];
+                  image->chromaticity.green_primary.x=chromaticity[2];
+                  image->chromaticity.green_primary.y=chromaticity[3];
+                  image->chromaticity.blue_primary.x=chromaticity[4];
+                  image->chromaticity.blue_primary.y=chromaticity[5];
+                }
             }
         }
       {
@@ -5567,9 +5606,24 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           chromaticity[3]=image->chromaticity.green_primary.y;
           chromaticity[4]=image->chromaticity.blue_primary.x;
           chromaticity[5]=image->chromaticity.blue_primary.y;
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Primary Chromaticities: "
+                                  "r=%gx%g g=%gx%g b=%gx%g",
+                                  chromaticity[0] /* red_primary.x */,
+                                  chromaticity[1] /* red_primary.y */,
+                                  chromaticity[2] /* green_primary.x */,
+                                  chromaticity[3] /* green_primary.y */,
+                                  chromaticity[4] /* blue_primary.x */,
+                                  chromaticity[5] /* blue_primary.y */);
           (void) TIFFSetField(tiff,TIFFTAG_PRIMARYCHROMATICITIES,chromaticity);
           chromaticity[0]=image->chromaticity.white_point.x;
           chromaticity[1]=image->chromaticity.white_point.y;
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "White Point: %gx%g",
+                                  chromaticity[0] /* white_point.x */,
+                                  chromaticity[1] /* white_point.y */);
           (void) TIFFSetField(tiff,TIFFTAG_WHITEPOINT,chromaticity);
         }
       {

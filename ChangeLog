@@ -1,3 +1,11 @@
+2020-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Ignore corrupt whitepoint and
+	primary chromaticities tags.  Fixes oss-fuzz issue 25507
+	"Divide-by-zero in DoubleToRational".  The divide by zero is
+	actually in libtiff, but the bad values from the input file were
+	propagated through GraphicsMagick.
+
 2020-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/analyze.c (GetImageBoundingBox): Use solution proposed by
