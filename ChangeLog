@@ -1,3 +1,18 @@
+2020-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPrimitive): Improve error checking related
+	to ImagePrimitive.
+
+	* magick/resize.c (ResizeImage): If CloneImage() of resize_image
+	to source_image fails then free source_image allocation before
+	returning in order to prevent memory leak.
+
+	* magick/image.c (CloneImage): Free clone_image allocation if
+	ImgExtra allocation fails in order to prevent memory leak.  Fixes
+	oss-fuzz 25342 "Indirect-leak in MagickMalloc".
+	(SetImageOpacity): SetImageOpacity() now returns error status
+	since it is possible for it to fail.
+
 2020-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Ignore corrupt whitepoint and

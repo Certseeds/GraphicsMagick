@@ -1074,6 +1074,7 @@ extern MagickExport MagickPassFail
   SetImageCompositeMask(Image *image,const Image *composite_mask),  /*to support SVG masks*/
   SetImageDepth(Image *image,const unsigned long),
   SetImageInfo(ImageInfo *image_info,const unsigned int flags,ExceptionInfo *exception),
+  SetImageOpacity(Image *,const unsigned int),
   SetImageType(Image *image,const ImageType),
   StripImage(Image *image),
   SyncImage(Image *image);
@@ -1084,8 +1085,7 @@ extern MagickExport void
   DestroyImageInfo(ImageInfo *),
   GetImageException(Image *,ExceptionInfo *),
   GetImageInfo(ImageInfo *),
-  ModifyImage(Image **,ExceptionInfo *),
-  SetImageOpacity(Image *,const unsigned int);
+  ModifyImage(Image **,ExceptionInfo *);
 
 /* provide public access to the clip_mask member of Image */
 extern MagickExport Image

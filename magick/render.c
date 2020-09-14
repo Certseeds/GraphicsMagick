@@ -5920,8 +5920,10 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         break;
       clone_info=CloneImageInfo((ImageInfo *) NULL);
       if (LocaleNCompare(primitive_info->text,"data:",5) == 0)
-        composite_image=ReadInlineImage(clone_info,primitive_info->text,
-          &image->exception);
+        {
+          composite_image=ReadInlineImage(clone_info,primitive_info->text,
+                                          &image->exception);
+        }
       else
         {
           /*
@@ -5969,13 +5971,18 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           FormatString(geometry,"%gx%g!",primitive_info[1].point.x,
             primitive_info[1].point.y);
           handler=SetMonitorHandler((MonitorHandler) NULL);
-          TransformImage(&composite_image,(char *) NULL,geometry);
+          status&=TransformImage(&composite_image,(char *) NULL,geometry);
           (void) SetMonitorHandler(handler);
+          if (status == MagickFail)
+            {
+              DestroyImage(composite_image);
+              break;
+            }
         }
       if (!composite_image->matte)
-        SetImageOpacity(composite_image,OpaqueOpacity);
+        status&=SetImageOpacity(composite_image,OpaqueOpacity);
       if (draw_info->opacity != OpaqueOpacity)
-        SetImageOpacity(composite_image,draw_info->opacity);
+        status&=SetImageOpacity(composite_image,draw_info->opacity);
       affine=draw_info->affine;
       affine.tx=x;
       affine.ty=y;

@@ -1098,7 +1098,10 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   /* allocate and initialize struct for extra Image members */
   ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
   if  ( ImgExtra == (ImageExtra *) NULL )
-    ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,UnableToCloneImage);
+    {
+      MagickFreeMemory(clone_image);
+      ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,UnableToCloneImage);
+    }
   memset(ImgExtra,0,sizeof(*ImgExtra));
   clone_image->extra = ImgExtra;
 
@@ -3316,7 +3319,7 @@ SetImageOpacityCallBack(void *mutable_data,         /* User provided mutable dat
     }
   return MagickPass;
 }
-MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
+MagickExport MagickPassFail SetImageOpacity(Image *image,const unsigned int opacity_val)
 {
   const unsigned int
     opacity = opacity_val;
@@ -3324,6 +3327,9 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
   MagickBool
     is_grayscale,
     is_monochrome;
+
+  MagickPassFail
+    status = MagickPass;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -3336,10 +3342,10 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
       /*
         Attenuate existing opacity channel
       */
-      (void) PixelIterateMonoModify(ModulateImageOpacityCallBack,NULL,
-                                    "[%s] Modulate opacity...",
-                                    NULL,&opacity,0,0,image->columns,image->rows,
-                                    image,&image->exception);
+      status&=PixelIterateMonoModify(ModulateImageOpacityCallBack,NULL,
+                                     "[%s] Modulate opacity...",
+                                     NULL,&opacity,0,0,image->columns,image->rows,
+                                     image,&image->exception);
     }
   else
     {
@@ -3347,13 +3353,14 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
         Add new opacity channel or make existing opacity channel opaque
       */
       image->matte=True;
-      (void) PixelIterateMonoModify(SetImageOpacityCallBack,NULL,
-                                    "[%s] Set opacity...",
-                                    NULL,&opacity,0,0,image->columns,image->rows,
-                                    image,&image->exception);
+      status&=PixelIterateMonoModify(SetImageOpacityCallBack,NULL,
+                                     "[%s] Set opacity...",
+                                     NULL,&opacity,0,0,image->columns,image->rows,
+                                     image,&image->exception);
     }
   image->is_grayscale=is_grayscale;
   image->is_monochrome=is_monochrome;
+  return status;
 }
 
 /*

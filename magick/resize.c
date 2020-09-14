@@ -1417,7 +1417,10 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   else
     source_image=CloneImage(resize_image,image->columns,rows,True,exception);
   if (source_image == (Image *) NULL)
-    return ((Image *) NULL);
+    {
+      DestroyImage(resize_image);
+      return ((Image *) NULL);
+    }
 
   /*
     Allocate filter contribution info.
