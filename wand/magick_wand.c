@@ -9797,10 +9797,12 @@ WandExport unsigned int MagickSetResourceLimit(const ResourceType type,
 %
 %    o wand: The magick wand.
 %
-%    o number_factoes: The number of factors.
+%    o number_factors: The number of factors.  This value should be evenly
+%      divisible by two.
 %
 %    o sampling_factors: An array of doubles representing the sampling factor
-%      for each color component (in RGB order).
+%      for each color component (in RGB order).  Two double values must be
+%      provided for each color component.
 %
 */
 WandExport unsigned int MagickSetSamplingFactors(MagickWand *wand,
@@ -9814,13 +9816,18 @@ WandExport unsigned int MagickSetSamplingFactors(MagickWand *wand,
 
   assert(wand != (MagickWand *) NULL);
   assert(wand->signature == MagickSignature);
+  /*
+    Sampling factor is stored in a comma-delimited list of geometry
+    WxH specifications matching the sscanf() specification
+    %lfx%lf,%lfx%lf,%lfx%lf,%lfx%lf
+  */
   MagickFreeMemory(wand->image_info->sampling_factor);
   if (number_factors == 0)
     return(True);
   for (i=0; i < (long) (number_factors-1); i++)
   {
-    (void) MagickFormatString(sampling_factor,MaxTextExtent,"%g,",
-      sampling_factors[i]);
+    (void) MagickFormatString(sampling_factor,MaxTextExtent,"%g%c",
+                              sampling_factors[i], i % 2 ?  ',' : 'x');
     (void) ConcatenateString(&wand->image_info->sampling_factor,
       sampling_factor);
   }

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>magick_wand</title>
 <link rel="stylesheet" href="../docutils-api.css" type="text/css" />
 </head>
@@ -37,7 +37,7 @@
 <h2 class="subtitle" id="wand-image-processing-interfaces">Wand image processing interfaces</h2>
 
 <div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<p class="topic-title">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#clonemagickwand" id="id473">CloneMagickWand</a></li>
 <li><a class="reference internal" href="#destroymagickwand" id="id474">DestroyMagickWand</a></li>
@@ -5986,11 +5986,13 @@ unsigned int MagickSetSamplingFactors( MagickWand *wand, const unsigned long num
 <dl class="docutils">
 <dt>wand:</dt>
 <dd>The magick wand.</dd>
-<dt>number_factoes:</dt>
-<dd>The number of factors.</dd>
+<dt>number_factors:</dt>
+<dd>The number of factors.  This value should be evenly
+divisible by two.</dd>
 <dt>sampling_factors:</dt>
 <dd>An array of doubles representing the sampling factor
-for each color component (in RGB order).</dd>
+for each color component (in RGB order).  Two double values must be
+provided for each color component.</dd>
 </dl>
 </div>
 </div>

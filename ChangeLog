@@ -1,3 +1,10 @@
+2020-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/magick_wand.c (MagickSetSamplingFactors): Correct
+	formatting of sampling factors string.  Fixes SourceForge issue
+	633 "MagickSetSamplingFactors() API mismatch - comma separated
+	values instead of 1x1 ".
+
 2020-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawPrimitive): Improve error checking related

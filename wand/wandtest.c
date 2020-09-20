@@ -256,6 +256,8 @@ int main(int argc,char **argv)
   MagickResetIterator(magick_wand);
   while (MagickNextImage(magick_wand) != False)
     {
+      static const double sampling_factors[6] = { 1, 1, 1, 1, 1, 1 };
+      MagickSetSamplingFactors(magick_wand,sizeof(sampling_factors)/sizeof(sampling_factors[0]), sampling_factors);
       MagickSetImageDepth( magick_wand, 8);
       MagickSetImageCompression( magick_wand, RLECompression);
     }
