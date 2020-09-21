@@ -299,7 +299,10 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     }
 
 #if defined(SUPPORT_WEBP_MUX)
-  /* Read features out of the WebP container */
+  /*
+    Read features out of the WebP container
+    https://developers.google.com/speed/webp/docs/container-api
+  */
   {
     uint32_t webp_flags=0;
     WebPData flag_data;
@@ -309,20 +312,23 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     (void) memset(&flag_data,0,sizeof(flag_data));
     WebPMuxGetFeatures(mux,&webp_flags);
 
-    if (webp_flags & ICCP_FLAG) {
-      WebPMuxGetChunk(mux,"ICCP",&flag_data);
-      AppendImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & ICCP_FLAG)
+      {
+        WebPMuxGetChunk(mux,"ICCP",&flag_data);
+        SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
+      }
 
-    if (webp_flags & EXIF_FLAG) {
-      WebPMuxGetChunk(mux,"EXIF",&flag_data);
-      AppendImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & EXIF_FLAG)
+      {
+        WebPMuxGetChunk(mux,"EXIF",&flag_data);
+        SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+      }
 
-    if (webp_flags & XMP_FLAG) {
-      WebPMuxGetChunk(mux,"XMP",&flag_data);
-      AppendImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & XMP_FLAG)
+      {
+        WebPMuxGetChunk(mux,"XMP",&flag_data);
+        SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
+      }
 
     WebPMuxDelete(mux);
   }
