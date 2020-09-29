@@ -11,8 +11,9 @@
 # Written by Bob Friesenhahn <bfriesen@GraphicsMagick.org>
 #
 
-AC_PREREQ(2.69)
-AC_INIT(magick/magick.h)
+AC_PREREQ([2.69])
+AC_INIT
+AC_CONFIG_SRCDIR([magick/magick.h])
 
 # Specify directory where m4 macros may be found.
 AC_CONFIG_MACRO_DIR([m4])
@@ -228,7 +229,7 @@ AC_SUBST(DIRSEP)
 AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_CPP
-AM_PROG_LD
+LT_PATH_LD
 AC_SUBST(LD)
 AM_PROG_CC_C_O  # Necessary if objects are placed in subdirectories.
 AC_PROG_INSTALL
@@ -415,8 +416,7 @@ esac
 #
 
 # Configure libtool
-AC_LIBTOOL_DLOPEN
-LT_INIT([disable-shared win32-dll])
+LT_INIT([disable-shared win32-dll dlopen])
 LT_LANG([C++])
 AC_SUBST(LIBTOOL_DEPS)
 
@@ -1039,24 +1039,15 @@ AC_CHECK_SIZEOF(size_t)
 # Obtain size of an unsigned int pointer and define as SIZEOF_UNSIGNED_INTP
 AC_CHECK_SIZEOF(unsigned int*)
 
-# If `signal.h' declares signal as returning a pointer to a function
-# returning void, define RETSIGTYPE to be void; otherwise, define it
-# to be int.
-AC_TYPE_SIGNAL
-
 # Test for C compiler __func__ support
 if test "$ac_cv_have_C__func__" != 'yes' ; then
 AC_CACHE_CHECK(for C compiler __func__ support, ac_cv_have_C__func__,
-[AC_TRY_COMPILE(
-,
-changequote(<<, >>)dnl
-<<
-const char *func=__func__;
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[const char *func=__func__;
 return (func != 0 ? 0 : 1);
->>,
-changequote([, ])dnl
-ac_cv_have_C__func__='yes',
-ac_cv_have_C__func__='no')])
+]])],
+[ac_cv_have_C__func__='yes'],
+[ac_cv_have_C__func__='no'])])
 
 if test "$ac_cv_have_C__func__" = 'yes' ; then
  AC_DEFINE(HAS_C__func__,1,Define if C compiler supports __func__)
@@ -1305,7 +1296,7 @@ then
 # Full set of headers used ...
 # algorithm cctype cerrno cmath cstdio cstdlib cstring ctime exception
 # functional iomanip iosfwd iostream iterator list string strstream utility
- AC_LANG_CPLUSPLUS
+ AC_LANG([C++])
  AC_PROG_CXX
  AC_CXX_BOOL
  AC_CXX_CONST_CAST
@@ -1324,16 +1315,11 @@ then
  # Test for C++ compiler __func__ support
  if test "$ac_cv_have_CPP__func__" != 'yes' ; then
   AC_CACHE_CHECK(for C++ compiler __func__ support, ac_cv_have_CPP__func__,
-  [AC_TRY_COMPILE(
-  ,
-  changequote(<<, >>)dnl
-  <<
-  const char *func=__func__;
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+  [[const char *func=__func__;
   return (func != 0 ? 0 : 1);
-  >>,
-  changequote([, ])dnl
-  ac_cv_have_CPP__func__='yes',
-  ac_cv_have_CPP__func__='no')])
+  ]])],
+  [ac_cv_have_CPP__func__='yes'],[ac_cv_have_CPP__func__='no'])])
 
   if test "$ac_cv_have_CPP__func__" = 'yes' ; then
    AC_DEFINE(HAS_CPP__func__,1,Define if C++ compiler supports __func__)
@@ -2075,8 +2061,7 @@ then
   # Check for PNG delegate library.
   #
   AC_ARG_WITH(png,
-      [AC_HELP_STRING([--without-png],
-                      [disable PNG support])],
+      [AS_HELP_STRING([--without-png],[disable PNG support])],
       [with_png=$withval],
       [with_png='yes'])
       # PKG_CHECK_MODULES([PNG], [libpng], [], [])
@@ -2110,22 +2095,16 @@ then
           if test "$with_png" = 'yes' -o "$with_png" = "libpng1${var}" ; then
             if test "${pnglib}" != 'png' ; then
               AC_MSG_CHECKING(for LIBPNG1${var} support )
-              AC_TRY_COMPILE(
-#include <stdio.h>
+              AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <stdlib.h>
 #include <png.h>
-,
-changequote(<<, >>)dnl
-<<
-#if PNG_LIBPNG_VER_MINOR != ${var}
+]],
+[[#if PNG_LIBPNG_VER_MINOR != ${var}
 #error LIBPNG library must be version 1${var}!
 Kaboom, Kaboom
 #endif
 return 0;
->>,
-              changequote([, ])dnl
-              ac_cv_libpng_ok='yes',
-              ac_cv_libpng_ok='no')
+]])],[ac_cv_libpng_ok='yes'],[ac_cv_libpng_ok='no'])
               if test "$ac_cv_libpng_ok" = 'yes' ; then
                 passed=`expr $passed + 1`
                 AC_MSG_RESULT(yes)
@@ -2206,32 +2185,6 @@ then
     AC_CHECK_HEADER(jmorecfg.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
     AC_CHECK_HEADER(jpeglib.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
     AC_CHECK_LIB(jpeg,jpeg_read_header,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-
-# Test for compatible JPEG library
-if test "$ac_cv_jpeg_version_ok" != 'yes' ; then
-AC_CACHE_CHECK(for JPEG library is version 6b or later, ac_cv_jpeg_version_ok,
-[AC_TRY_COMPILE(
-#include <stdio.h>
-#include <stdlib.h>
-#include <jpeglib.h>
-,
-changequote(<<, >>)dnl
-<<
-#if JPEG_LIB_VERSION < 62
-#error IJG JPEG library must be version 6b or newer!
-Kaboom, Kaboom
-#endif
-return 0;
->>,
-changequote([, ])dnl
-ac_cv_jpeg_version_ok='yes',
-ac_cv_jpeg_version_ok='no')])
-if test "$ac_cv_jpeg_version_ok" = 'yes' ; then
- passed=`expr $passed + 1`
-else
- failed=`expr $failed + 1`
-fi
-fi
     AC_MSG_CHECKING(if JPEG package is complete)
     if test $passed -gt 0
     then

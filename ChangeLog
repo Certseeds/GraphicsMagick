@@ -1,3 +1,8 @@
+2020-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Update syntax to avoid using deprecated syntax
+	according to Autoconf 2.69.
+
 2020-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/webp.c (ReadWEBPImage): Use SetImageProfile() rather than

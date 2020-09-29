@@ -568,9 +568,6 @@
 /* Number of bits in a pixel Quantum (8/16/32) */
 #undef QuantumDepth
 
-/* Define as the return type of signal handlers (`int' or `void'). */
-#undef RETSIGTYPE
-
 /* Setjmp/longjmp are thread safe */
 #undef SETJMP_IS_THREAD_SAFE
 
