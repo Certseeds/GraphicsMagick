@@ -1,3 +1,9 @@
+2020-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac (AC_PROG_CC_STDC): AC_PROG_CC_STDC is no longer
+	required since AC_PROG_CC now provides its useful function.
+	AC_PROG_CC_STDC is marked as obsolete after Autoconf 2.69.
+
 2020-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Update syntax to avoid using deprecated syntax
