@@ -3,6 +3,7 @@
 	* configure.ac (AC_PROG_CC_STDC): AC_PROG_CC_STDC is no longer
 	required since AC_PROG_CC now provides its useful function.
 	AC_PROG_CC_STDC is marked as obsolete after Autoconf 2.69.
+	Quote all arguments to m4 macros.
 
 2020-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

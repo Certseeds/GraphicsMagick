@@ -45,47 +45,47 @@ dnl Compute the canonical host (run-time) system type variable
 AC_CANONICAL_HOST
 
 MAGICK_TARGET_CPU=$host_cpu
-AC_SUBST(MAGICK_TARGET_CPU)
-AC_DEFINE_UNQUOTED(MAGICK_TARGET_CPU,$MAGICK_TARGET_CPU,[Target Host CPU])
+AC_SUBST([MAGICK_TARGET_CPU])
+AC_DEFINE_UNQUOTED([MAGICK_TARGET_CPU],[$MAGICK_TARGET_CPU],[Target Host CPU])
 
 MAGICK_TARGET_VENDOR=$host_vendor
-AC_SUBST(MAGICK_TARGET_VENDOR)
-AC_DEFINE_UNQUOTED(MAGICK_TARGET_VENDOR,$MAGICK_TARGET_VENDOR,[Target Host Vendor])
+AC_SUBST([MAGICK_TARGET_VENDOR])
+AC_DEFINE_UNQUOTED([MAGICK_TARGET_VENDOR],[$MAGICK_TARGET_VENDOR],[Target Host Vendor])
 
 MAGICK_TARGET_OS=$host_os
-AC_SUBST(MAGICK_TARGET_OS)
-AC_DEFINE_UNQUOTED(MAGICK_TARGET_OS,$MAGICK_TARGET_OS,[Target Host OS])
+AC_SUBST([MAGICK_TARGET_OS])
+AC_DEFINE_UNQUOTED([MAGICK_TARGET_OS],[$MAGICK_TARGET_OS],[Target Host OS])
 
 # Compute newest and oldest interface numbers.
 MAGICK_LIB_INTERFACE_NEWEST=$MAGICK_LIBRARY_CURRENT
 MAGICK_LIB_INTERFACE_OLDEST=`expr ${MAGICK_LIBRARY_CURRENT} - ${MAGICK_LIBRARY_AGE}`
 
 # Substitute Magick library versioning
-AC_SUBST(MAGICK_LIBRARY_CURRENT)dnl
-AC_SUBST(MAGICK_LIBRARY_REVISION)dnl
-AC_SUBST(MAGICK_LIBRARY_AGE)dnl
+AC_SUBST([MAGICK_LIBRARY_CURRENT])dnl
+AC_SUBST([MAGICK_LIBRARY_REVISION])dnl
+AC_SUBST([MAGICK_LIBRARY_AGE])dnl
 
-AC_SUBST(MAGICK_LIB_INTERFACE_NEWEST)
-AC_SUBST(MAGICK_LIB_INTERFACE_OLDEST)
+AC_SUBST([MAGICK_LIB_INTERFACE_NEWEST])
+AC_SUBST([MAGICK_LIB_INTERFACE_OLDEST])
 
 # Substitute Magick++ library versioning
-AC_SUBST(MAGICK_PLUS_PLUS_LIBRARY_CURRENT)
-AC_SUBST(MAGICK_PLUS_PLUS_LIBRARY_REVISION)
-AC_SUBST(MAGICK_PLUS_PLUS_LIBRARY_AGE)
+AC_SUBST([MAGICK_PLUS_PLUS_LIBRARY_CURRENT])
+AC_SUBST([MAGICK_PLUS_PLUS_LIBRARY_REVISION])
+AC_SUBST([MAGICK_PLUS_PLUS_LIBRARY_AGE])
 
 # Substitute Magick Wand library versioning
-AC_SUBST(MAGICK_WAND_LIBRARY_CURRENT)
-AC_SUBST(MAGICK_WAND_LIBRARY_REVISION)
-AC_SUBST(MAGICK_WAND_LIBRARY_AGE)
+AC_SUBST([MAGICK_WAND_LIBRARY_CURRENT])
+AC_SUBST([MAGICK_WAND_LIBRARY_REVISION])
+AC_SUBST([MAGICK_WAND_LIBRARY_AGE])
 
-AC_SUBST(PACKAGE_NAME)dnl
-AC_SUBST(PACKAGE_VERSION)dnl
-AC_SUBST(PACKAGE_VERSION_ADDENDUM)dnl
-AC_SUBST(PACKAGE_CHANGE_DATE)dnl
-AC_SUBST(PACKAGE_RELEASE_DATE)dnl
+AC_SUBST([PACKAGE_NAME])dnl
+AC_SUBST([PACKAGE_VERSION])dnl
+AC_SUBST([PACKAGE_VERSION_ADDENDUM])dnl
+AC_SUBST([PACKAGE_CHANGE_DATE])dnl
+AC_SUBST([PACKAGE_RELEASE_DATE])dnl
 
 # Substitute Mercurial branch tag
-AC_SUBST(HG_BRANCH_TAG)dnl
+AC_SUBST([HG_BRANCH_TAG])dnl
 
 # Definition used to define MagickLibVersion in version.h
 MAGICK_LIB_VERSION="0x"
@@ -101,15 +101,15 @@ if test ${MAGICK_LIBRARY_REVISION} -lt 10 ; then
   MAGICK_LIB_VERSION=${MAGICK_LIB_VERSION}0
 fi
 MAGICK_LIB_VERSION=${MAGICK_LIB_VERSION}${MAGICK_LIBRARY_REVISION}
-AC_SUBST(MAGICK_LIB_VERSION)
+AC_SUBST([MAGICK_LIB_VERSION])
 
 # Definition used to define MagickLibVersionText in version.h
 MAGICK_LIB_VERSION_TEXT="${PACKAGE_VERSION}"
-AC_SUBST(MAGICK_LIB_VERSION_TEXT)
+AC_SUBST([MAGICK_LIB_VERSION_TEXT])
 
 # Definition used to define MagickLibVersionNumber in version.h
 MAGICK_LIB_VERSION_NUMBER="${MAGICK_LIBRARY_CURRENT},${MAGICK_LIBRARY_AGE},${MAGICK_LIBRARY_REVISION}"
-AC_SUBST(MAGICK_LIB_VERSION_NUMBER)
+AC_SUBST([MAGICK_LIB_VERSION_NUMBER])
 
 # Ensure that make can run correctly
 AM_SANITY_CHECK
@@ -117,7 +117,7 @@ AM_SANITY_CHECK
 # Generate configure header.
 AC_CONFIG_HEADERS([magick/magick_config.h magick/magick_config_api.h])
 
-AM_INIT_AUTOMAKE($PACKAGE_NAME,"${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}", ' ')
+AM_INIT_AUTOMAKE([$PACKAGE_NAME],["${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}"],[' '])
 
 # Enable support for silent build rules
 AM_SILENT_RULES
@@ -159,37 +159,37 @@ fi
 
 #
 eval "eval PREFIX_DIR=${prefix}"
-AC_SUBST(PREFIX_DIR)
+AC_SUBST([PREFIX_DIR])
 eval "eval EXEC_PREFIX_DIR=${exec_prefix}"
-AC_SUBST(EXEC_PREFIX_DIR)
+AC_SUBST([EXEC_PREFIX_DIR])
 eval "eval BIN_DIR=$bindir"
-AC_SUBST(BIN_DIR)
+AC_SUBST([BIN_DIR])
 eval "eval SBIN_DIR=$sbindir"
-AC_SUBST(SBIN_DIR)
+AC_SUBST([SBIN_DIR])
 eval "eval LIBEXEC_DIR=$libexecdir"
-AC_SUBST(LIBEXEC_DIR)
+AC_SUBST([LIBEXEC_DIR])
 eval "eval DATA_DIR=$datadir"
-AC_SUBST(DATA_DIR)
+AC_SUBST([DATA_DIR])
 eval "eval DOC_DIR=$docdir"
-AC_SUBST(DOC_DIR)
+AC_SUBST([DOC_DIR])
 eval "eval HTML_DIR=$htmldir"
-AC_SUBST(HTML_DIR)
+AC_SUBST([HTML_DIR])
 eval "eval SYSCONF_DIR=$sysconfdir"
-AC_SUBST(SYSCONF_DIR)
+AC_SUBST([SYSCONF_DIR])
 eval "eval SHAREDSTATE_DIR=$sharedstatedir"
-AC_SUBST(SHAREDSTATE_DIR)
+AC_SUBST([SHAREDSTATE_DIR])
 eval "eval LOCALSTATE_DIR=$localstatedir"
-AC_SUBST(LOCALSTATE_DIR)
+AC_SUBST([LOCALSTATE_DIR])
 eval "eval LIB_DIR=$libdir"
-AC_SUBST(LIB_DIR)
+AC_SUBST([LIB_DIR])
 eval "eval INCLUDE_DIR=$includedir"
-AC_SUBST(INCLUDE_DIR)
+AC_SUBST([INCLUDE_DIR])
 eval "eval OLDINCLUDE_DIR=$oldincludedir"
-AC_SUBST(OLDINCLUDE_DIR)
+AC_SUBST([OLDINCLUDE_DIR])
 eval "eval INFO_DIR=$infodir"
-AC_SUBST(INFO_DIR)
+AC_SUBST([INFO_DIR])
 eval "eval MAN_DIR=$mandir"
-AC_SUBST(MAN_DIR)
+AC_SUBST([MAN_DIR])
 
 # Get full paths to source and build directories
 srcdirfull="`cd $srcdir && pwd`"
@@ -219,17 +219,17 @@ case "${host_os}" in
     DIRSEP=';'
     ;;
 esac
-AC_SUBST(MAGICK_CODER_MODULE_PATH)
-AC_SUBST(MAGICK_CONFIGURE_SRC_PATH)
-AC_SUBST(MAGICK_CONFIGURE_BUILD_PATH)
-AC_SUBST(MAGICK_FILTER_MODULE_PATH)
-AC_SUBST(DIRSEP)
+AC_SUBST([MAGICK_CODER_MODULE_PATH])
+AC_SUBST([MAGICK_CONFIGURE_SRC_PATH])
+AC_SUBST([MAGICK_CONFIGURE_BUILD_PATH])
+AC_SUBST([MAGICK_FILTER_MODULE_PATH])
+AC_SUBST([DIRSEP])
 
 # Check for programs
 AC_PROG_CC
 AC_PROG_CPP
 LT_PATH_LD
-AC_SUBST(LD)
+AC_SUBST([LD])
 AM_PROG_CC_C_O  # Necessary if objects are placed in subdirectories.
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -252,11 +252,11 @@ case "${host_os}" in
     native_win32_build='yes'
     ;;
 esac
-AM_CONDITIONAL(WIN32_NATIVE_BUILD, test "${native_win32_build}" = 'yes' )
-AM_CONDITIONAL(CYGWIN_BUILD, test "${cygwin_build}" = 'yes' )
+AM_CONDITIONAL([WIN32_NATIVE_BUILD],[test "${native_win32_build}" = 'yes'])
+AM_CONDITIONAL([CYGWIN_BUILD],[test "${cygwin_build}" = 'yes'])
 
 WinPathScript="${srcdirfull}/winpath.sh"
-AC_SUBST(WinPathScript)
+AC_SUBST([WinPathScript])
 
 #
 # Compiler flags tweaks
@@ -295,7 +295,7 @@ fi
 # Determine POSIX threads settings
 #
 # Enable support for POSIX thread APIs
-AC_ARG_WITH(threads,
+AC_ARG_WITH([threads],
               AS_HELP_STRING([--without-threads],
                              [disable POSIX threads API support]),
               [with_threads=$withval],
@@ -337,10 +337,10 @@ AC_OPENMP([C])
 CFLAGS="$OPENMP_CFLAGS $CFLAGS"
 #CXXFLAGS="$OPENMP_CXXFLAGS $CXXFLAGS"
 #LDFLAGS="$LDFLAGS $OPENMP_CFLAGS"
-AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST([OPENMP_CFLAGS])
 
 # Allow the user to disable use of OpenMP where algorithms sometimes run slower.
-AC_ARG_ENABLE(openmp-slow,
+AC_ARG_ENABLE([openmp-slow],
               AS_HELP_STRING([--enable-openmp-slow],
                              [enable OpenMP for algorithms which
                              sometimes run slower]),
@@ -348,17 +348,17 @@ AC_ARG_ENABLE(openmp-slow,
               [with_openmp_slow='no'])
 if test "$with_openmp_slow" = 'no'
 then
-  AC_DEFINE(DisableSlowOpenMP,1,[Disable OpenMP for algorithms which sometimes run slower])
+  AC_DEFINE([DisableSlowOpenMP],[1],[Disable OpenMP for algorithms which sometimes run slower])
 fi
 
 # Disable reading/writing gzip/bzip compressed files
-AC_ARG_ENABLE(compressed-files,
+AC_ARG_ENABLE([compressed-files],
               AS_HELP_STRING([--disable-compressed-files],
                              [disable reading and writing of gzip/bzip files]),
               [with_compressed_files=$enableval],
               [with_compressed_files='yes'])
 if test "$with_compressed_files" != 'yes'; then
-    AC_DEFINE(DISABLE_COMPRESSED_FILES,1,[Disable reading and writing of gzip/bzip files])
+    AC_DEFINE([DISABLE_COMPRESSED_FILES],[1],[Disable reading and writing of gzip/bzip files])
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-compressed-files=$with_compressed_files "
 fi
 
@@ -395,7 +395,7 @@ then
     LFS_CPPFLAGS="$LFS_CPPFLAGS -D_LARGEFILE_SOURCE=1"
   fi
 fi
-AC_SUBST(LFS_CPPFLAGS)
+AC_SUBST([LFS_CPPFLAGS])
 
 #
 # Decide if setjmp/longjmp is thread safe based on host OS
@@ -406,7 +406,7 @@ case "${host_os}" in
 
     ;;
   *)
-    AC_DEFINE(SETJMP_IS_THREAD_SAFE,1,[Setjmp/longjmp are thread safe])
+    AC_DEFINE([SETJMP_IS_THREAD_SAFE],[1],[Setjmp/longjmp are thread safe])
     ;;
 esac
 
@@ -433,13 +433,13 @@ then
   libtool_build_static_libs='yes'
 fi
 
-AM_CONDITIONAL(WITH_SHARED_LIBS, test "${libtool_build_shared_libs}" = 'yes')
+AM_CONDITIONAL([WITH_SHARED_LIBS],[test "${libtool_build_shared_libs}" = 'yes'])
 
 #
 # Enable support for building loadable modules
 #
 build_modules='no'
-AC_ARG_WITH(modules,
+AC_ARG_WITH([modules],
               AS_HELP_STRING([--with-modules],
                              [enable building dynamically loadable
                              modules]),
@@ -456,37 +456,37 @@ if test "$with_modules" != 'no' ; then
   fi
 fi
 if test "$build_modules" != 'no' ; then
-  AC_DEFINE(BuildMagickModules,1,Define if coders and filters are to be built as modules.)
+  AC_DEFINE([BuildMagickModules],[1],[Define if coders and filters are to be built as modules.])
 fi
-AM_CONDITIONAL(WITH_MODULES, test "$build_modules" != 'no')
+AM_CONDITIONAL([WITH_MODULES],[test "$build_modules" != 'no'])
 
 
 # Build a version of GraphicsMagick which operates uninstalled.
 # Used to build distributions located via MAGICK_HOME / executable path
-AC_ARG_ENABLE(installed,
+AC_ARG_ENABLE([installed],
               AS_HELP_STRING([--disable-installed],
                              [disable building an installed GraphicsMagick]),
               [with_installed=$enableval],
               [with_installed='yes'])
 if test "$with_installed" = 'yes'
 then
-  AC_DEFINE(UseInstalledMagick,1,[GraphicsMagick is formally installed under prefix])
+  AC_DEFINE([UseInstalledMagick],[1],[GraphicsMagick is formally installed under prefix])
 else
   DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --disable-installed "
 fi
 
 # Enable broken/dangerous coders
 # EnableBrokenCoders CPP define and ENABLE_BROKEN_CODERS Automake conditional)
-AC_ARG_ENABLE(broken-coders,
+AC_ARG_ENABLE([broken-coders],
               AS_HELP_STRING([--enable-broken-coders],
                              [enable broken/dangerous file formats support]),
               [with_broken_coders=$enableval],
               [with_broken_coders='no'])
 if test "$with_broken_coders" = 'yes'
 then
-  AC_DEFINE(EnableBrokenCoders,1,[Enable broken/dangerous file formats support])
+  AC_DEFINE([EnableBrokenCoders],[1],[Enable broken/dangerous file formats support])
 fi
-AM_CONDITIONAL(ENABLE_BROKEN_CODERS, test "$with_broken_coders" != 'no')
+AM_CONDITIONAL([ENABLE_BROKEN_CODERS],[test "$with_broken_coders" != 'no'])
 
 # Add configure option --enable-maintainer-mode which enables dependency
 # checking and generation useful to package maintainers.  This is made an
@@ -494,21 +494,21 @@ AM_CONDITIONAL(ENABLE_BROKEN_CODERS, test "$with_broken_coders" != 'no')
 AM_MAINTAINER_MODE
 
 # Enable prof-based profiling support
-AC_ARG_ENABLE(prof,
+AC_ARG_ENABLE([prof],
               AS_HELP_STRING([--enable-prof],
                              [enable 'prof' profiling support]),
               [with_prof=$enableval],
               [with_prof='no'])
 
 # Enable gprof-based profiling support
-AC_ARG_ENABLE(gprof,
+AC_ARG_ENABLE([gprof],
               AS_HELP_STRING([--enable-gprof],
                              [enable 'gprof' profiling support]),
               [with_gprof=$enableval],
               [with_gprof='no'])
 
 # Enable gcov-based profiling support
-AC_ARG_ENABLE(gcov,
+AC_ARG_ENABLE([gcov],
               AS_HELP_STRING([--enable-gcov],
                              [enable 'gcov' profiling support]),
               [with_gcov=$enableval],
@@ -526,27 +526,27 @@ then
 fi
 
 # Enable prefixing library symbols with a common string
-AC_ARG_ENABLE(symbol-prefix,
+AC_ARG_ENABLE([symbol-prefix],
               AS_HELP_STRING([--enable-symbol-prefix],
                              [enable prefixing library symbols with "Gm"]),
               [with_symbol_prefix=$enableval],
               [with_symbol_prefix='no'])
 if test "$with_symbol_prefix" != 'no'
 then
-  AC_DEFINE(PREFIX_MAGICK_SYMBOLS,1,[Prefix Magick library symbols with a common string.])
+  AC_DEFINE([PREFIX_MAGICK_SYMBOLS],[1],[Prefix Magick library symbols with a common string.])
   DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --enable-symbol-prefix "
 fi
 
 # Enable ImageMagick utilities compatibility shortcuts (default no)
-AC_ARG_ENABLE(magick-compat,
+AC_ARG_ENABLE([magick-compat],
               AS_HELP_STRING([--enable-magick-compat],
                              [install ImageMagick utility shortcuts]),
               [with_magick_compat=$enableval],
               [with_magick_compat='no'])
-AM_CONDITIONAL(MAGICK_COMPAT, test "$with_magick_compat" != 'no')
+AM_CONDITIONAL([MAGICK_COMPAT],[test "$with_magick_compat" != 'no'])
 
 # Number of bits in a Quantum
-AC_ARG_WITH(quantum-depth,
+AC_ARG_WITH([quantum-depth],
               AS_HELP_STRING([--with-quantum-depth],
                              [number of bits in a pixel quantum (default 8)]),
               [with_quantum_depth=$withval],
@@ -559,14 +559,14 @@ case "${with_quantum_depth}" in
   8 ) ;;
   16 ) ;;
   32 ) ;;
-  * ) AC_MSG_ERROR("Pixel quantum depth must have value of 8, 16, or 32") ;;
+  * ) AC_MSG_ERROR([Pixel quantum depth must have value of 8, 16, or 32]) ;;
 esac
 QuantumDepth="$with_quantum_depth"
-AC_DEFINE_UNQUOTED(QuantumDepth,$QuantumDepth,[Number of bits in a pixel Quantum (8/16/32)])
-AC_SUBST(QuantumDepth)dnl
+AC_DEFINE_UNQUOTED([QuantumDepth],[$QuantumDepth],[Number of bits in a pixel Quantum (8/16/32)])
+AC_SUBST([QuantumDepth])dnl
 
 # Enable QuantumDepth in shared library names
-AC_ARG_ENABLE(quantum-library-names,
+AC_ARG_ENABLE([quantum-library-names],
               AS_HELP_STRING([--enable-quantum-library-names],
                              [shared library name includes quantum
                              depth to allow shared libraries with
@@ -580,40 +580,40 @@ if test "$with_quantum_library_names" != 'no'
 then
     MAGICK_LT_RELEASE_OPTS="-release Q${QuantumDepth}"
 fi
-AC_SUBST(MAGICK_LT_RELEASE_OPTS)
+AC_SUBST([MAGICK_LT_RELEASE_OPTS])
 
 # Disable/Enable support for full delegate paths in delegates.mgk
-AC_ARG_WITH(frozenpaths,
+AC_ARG_WITH([frozenpaths],
               AS_HELP_STRING([--with-frozenpaths],
                              [enable frozen delegate paths]),
               [with_frozenpaths=$withval],
               [with_frozenpaths='no'])
 
 # Enable build/install of Magick++
-AC_ARG_WITH(magick-plus-plus,
+AC_ARG_WITH([magick-plus-plus],
               AS_HELP_STRING([--without-magick-plus-plus],
                              [disable build/install of Magick++]),
               [with_magick_plus_plus=$withval],
               [with_magick_plus_plus='yes'])
 
 # Enable build/install of PerlMagick.
-AC_ARG_WITH(perl,
+AC_ARG_WITH([perl],
               AS_HELP_STRING([--with-perl@<:@=PERL@:>@],
                              [enable build/install of PerlMagick and optionally specify perl to use]),
               [with_perl=$withval],
               [with_perl='no'])
 
 # Options to pass when configuring PerlMagick
-AC_ARG_WITH(perl-options,
+AC_ARG_WITH([perl-options],
               AS_HELP_STRING([--with-perl-options=OPTIONS],
                              [options to pass on command-line when
                               generating PerlMagick's Makefile from Makefile.PL]),
               [PERL_MAKE_OPTIONS=$withval])
-AC_SUBST(PERL_MAKE_OPTIONS)
+AC_SUBST([PERL_MAKE_OPTIONS])
 
 
 # Disable BZLIB (bzip2 library)
-AC_ARG_WITH(bzlib,
+AC_ARG_WITH([bzlib],
               AS_HELP_STRING([--without-bzlib],
                              [disable BZLIB support]),
               [with_bzlib=$withval],
@@ -623,7 +623,7 @@ if test "$with_bzlib" != 'yes' ; then
 fi
 
 # Disable Display Postscript.
-AC_ARG_WITH(dps,
+AC_ARG_WITH([dps],
               AS_HELP_STRING([--without-dps],
                              [disable Display Postscript support]),
               [with_dps=$withval],
@@ -633,7 +633,7 @@ if test "$with_dps" != 'yes' ; then
 fi
 
 # Enable FlashPIX.
-AC_ARG_WITH(fpx,
+AC_ARG_WITH([fpx],
               AS_HELP_STRING([--with-fpx],
                              [enable FlashPIX support]),
               [with_fpx=$withval],
@@ -643,7 +643,7 @@ if test "$with_fpx" != 'yes' ; then
 fi
 
 # Enable Windows lgdi32 library
-AC_ARG_WITH(gdi32,
+AC_ARG_WITH([gdi32],
               AS_HELP_STRING([--without-gdi32],
                              [disable Windows gdi32 support]),
               [with_gdi32=$withval],
@@ -653,7 +653,7 @@ if test "$with_gdi32" != 'yes' ; then
 fi
 
 # Disable Ghostscript support.
-AC_ARG_WITH(gs,
+AC_ARG_WITH([gs],
               AS_HELP_STRING([--without-gs],
                              [disable Ghostscript support]),
               [with_gs=$withval],
@@ -662,12 +662,12 @@ if test "$with_gs" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gs=$with_gs "
 fi
 if test "$with_gs" = 'yes' ; then
-  AC_DEFINE(HasGS,1,[Enable use of Ghostscript])
+  AC_DEFINE([HasGS],[1],[Enable use of Ghostscript])
 fi
-AM_CONDITIONAL(HasGS,[test "$with_gs" = 'yes'])
+AM_CONDITIONAL([HasGS],[test "$with_gs" = 'yes'])
 
 # Disable JBIG.
-AC_ARG_WITH(jbig,
+AC_ARG_WITH([jbig],
               AS_HELP_STRING([--without-jbig],
                              [disable JBIG support]),
               [with_jbig=$withval],
@@ -677,7 +677,7 @@ if test "$with_jbig" != 'yes' ; then
 fi
 
 # Disable WEBP.
-AC_ARG_WITH(webp,
+AC_ARG_WITH([webp],
         AS_HELP_STRING([--without-webp],
                              [disable WEBP support]),
         [with_webp=$withval],
@@ -687,7 +687,7 @@ if test "$with_webp" != 'yes' ; then
 fi
 
 # Disable JPEG.
-AC_ARG_WITH(jpeg,
+AC_ARG_WITH([jpeg],
               AS_HELP_STRING([--without-jpeg],
                              [disable JPEG support]),
               [with_jpeg=$withval],
@@ -697,7 +697,7 @@ if test "$with_jpeg" != 'yes' ; then
 fi
 
 # Disable JPEG Version 2.
-AC_ARG_WITH(jp2,
+AC_ARG_WITH([jp2],
               AS_HELP_STRING([--without-jp2],
                              [disable JPEG v2 support]),
               [with_jp2=$withval],
@@ -707,7 +707,7 @@ if test "$with_jp2" != 'yes' ; then
 fi
 
 # Disable LCMS2.
-AC_ARG_WITH(lcms2,
+AC_ARG_WITH([lcms2],
               AS_HELP_STRING([--without-lcms2],
                              [disable lcms (v2.X) support]),
               [with_lcms2=$withval],
@@ -717,7 +717,7 @@ if test "$with_lcms2" != 'yes' ; then
 fi
 
 # Disable LZMA (lzma library)
-AC_ARG_WITH(lzma,
+AC_ARG_WITH([lzma],
               AS_HELP_STRING([--without-lzma],
                              [disable LZMA support]),
               [with_lzma=$withval],
@@ -727,14 +727,14 @@ if test "$with_lzma" != 'yes' ; then
 fi
 
 # # Disable MPEG.
-# AC_ARG_WITH(mpeg2,
+# AC_ARG_WITH([mpeg2],
 #             AS_HELP_STRING([--without-mpeg2],
 #                            [disable MPEG support]),
 #             [with_mpeg2=$withval],
 #             [with_mpeg2='yes'])
 
 # Disable PNG.
-AC_ARG_WITH(png,
+AC_ARG_WITH([png],
               AS_HELP_STRING([--without-png],
                              [disable PNG support]),
               [with_png=$withval],
@@ -744,7 +744,7 @@ if test "$with_png" != 'yes' ; then
 fi
 
 # Disable TIFF.
-AC_ARG_WITH(tiff,
+AC_ARG_WITH([tiff],
               AS_HELP_STRING([--without-tiff],
                              [disable TIFF support]),
               [with_tiff=$withval],
@@ -754,7 +754,7 @@ if test "$with_tiff" != 'yes' ; then
 fi
 
 # Disable TRIO.
-AC_ARG_WITH(trio,
+AC_ARG_WITH([trio],
               AS_HELP_STRING([--without-trio],
                              [disable TRIO support]),
               [with_trio=$withval],
@@ -764,7 +764,7 @@ if test "$with_trio" != 'yes' ; then
 fi
 
 # Disable TTF.
-AC_ARG_WITH(ttf,
+AC_ARG_WITH([ttf],
               AS_HELP_STRING([--without-ttf],
                              [disable TrueType support]),
               [with_ttf=$withval],
@@ -774,7 +774,7 @@ if test "$with_ttf" != 'yes' ; then
 fi
 
 # Enable use of Google tcmalloc library.
-AC_ARG_WITH(tcmalloc,
+AC_ARG_WITH([tcmalloc],
               AS_HELP_STRING([--with-tcmalloc],
                              [enable Google perftools tcmalloc (minimal) memory allocation library support]),
               [with_tcmalloc=$withval],
@@ -784,7 +784,7 @@ if test "$with_tcmalloc" != 'no' ; then
 fi
 
 # Enable use of Solaris mtmalloc library.
-AC_ARG_WITH(mtmalloc,
+AC_ARG_WITH([mtmalloc],
               AS_HELP_STRING([--with-mtmalloc],
                              [enable Solaris mtmalloc memory allocation library support]),
               [with_mtmalloc=$withval],
@@ -796,7 +796,7 @@ fi
 # Enable use of Solaris libumem (object-caching memory allocation library).
 # Available as a SourceForge project http://sourceforge.net/projects/umem/ or
 # https://labs.omniti.com/trac/portableumem/.
-AC_ARG_WITH(umem,
+AC_ARG_WITH([umem],
               AS_HELP_STRING([--with-umem],
                              [enable Solaris umem memory allocation library support]),
               [with_umem=$withval],
@@ -806,7 +806,7 @@ if test "$with_umem" != 'no' ; then
 fi
 
 # Disable WMF.
-AC_ARG_WITH(wmf,
+AC_ARG_WITH([wmf],
               AS_HELP_STRING([--without-wmf],
                              [disable WMF support]),
               [with_wmf=$withval],
@@ -816,7 +816,7 @@ if test "$with_wmf" != 'yes' ; then
 fi
 
 # Set default font search path
-AC_ARG_WITH(fontpath,
+AC_ARG_WITH([fontpath],
               AS_HELP_STRING([--with-fontpath=DIR],
                              [prepend to default font search path]),
               [with_fontpath=$withval],
@@ -825,14 +825,14 @@ if test "$with_fontpath" != "yes" && test -z "$with_fontpath"
 then
   with_fontpath=''
 else
-  AC_DEFINE_UNQUOTED(MAGICK_FONT_PATH,"$with_fontpath",Define to prepend to default font search path.)
+  AC_DEFINE_UNQUOTED([MAGICK_FONT_PATH],["$with_fontpath"],[Define to prepend to default font search path.])
 fi
 if test "$with_fontpath=" != '' ; then
   DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fontpath=$with_fontpath "
 fi
 
 # Set Ghostscript font directory
-AC_ARG_WITH(gs-font-dir,
+AC_ARG_WITH([gs-font-dir],
               AS_HELP_STRING([--with-gs-font-dir=DIR],
                              [directory containing Ghostscript fonts]),
               [with_gs_font_dir=$withval],
@@ -842,7 +842,7 @@ if test "$with_gs_font_dir" != 'default' ; then
 fi
 
 # Set Windows font directory
-AC_ARG_WITH(windows-font-dir,
+AC_ARG_WITH([windows-font-dir],
               AS_HELP_STRING([--with-windows-font-dir=DIR],
                              [directory containing MS-Windows fonts]),
               [with_windows_font_dir=$withval],
@@ -852,7 +852,7 @@ if test "$with_windows_font_dir" != '' ; then
 fi
 
 # Disable XML.
-AC_ARG_WITH(xml,
+AC_ARG_WITH([xml],
               AS_HELP_STRING([--without-xml],
                              [disable XML support]),
               [with_xml=$withval],
@@ -861,7 +861,7 @@ if test "$with_xml" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-xml=$with_xml "
 fi
 
-AC_ARG_WITH(zlib,
+AC_ARG_WITH([zlib],
               AS_HELP_STRING([--without-zlib],
                              [disable ZLIB support]),
               [with_zlib=$withval],
@@ -871,7 +871,7 @@ if test "$with_zlib" != 'yes' ; then
 fi
 
 # Disable Zstd (zstd library)
-AC_ARG_WITH(zstd,
+AC_ARG_WITH([zstd],
               AS_HELP_STRING([--without-zstd],
                              [disable Zstd support]),
               [with_zstd=$withval],
@@ -883,7 +883,7 @@ fi
 #
 # Specify path to shared libstdc++ if not in normal location
 #
-AC_ARG_WITH(libstdc,
+AC_ARG_WITH([libstdc],
              AS_HELP_STRING([--with-libstdc=DIR],
                             [use libstdc++ in DIR (for GNU C++)]),
   [if test "$withval" != no && test "$withval" != yes; then
@@ -891,7 +891,7 @@ AC_ARG_WITH(libstdc,
       LIBSTDCLDFLAGS="-L$withval"
     fi
   fi])
-AC_SUBST(LIBSTDCLDFLAGS)
+AC_SUBST([LIBSTDCLDFLAGS])
 
 # Does gcc required -traditional?
 AC_PROG_GCC_TRADITIONAL
@@ -936,8 +936,8 @@ then
      MAGICK_API_PC_CPPFLAGS="$MAGICK_API_PC_CPPFLAGS -D_MT"
   fi
 fi
-AC_SUBST(MODULE_EXTRA_CPPFLAGS)
-AC_SUBST(LIBRARY_EXTRA_CPPFLAGS)
+AC_SUBST([MODULE_EXTRA_CPPFLAGS])
+AC_SUBST([LIBRARY_EXTRA_CPPFLAGS])
 
 # Check standard headers
 AC_HEADER_DIRENT
@@ -1003,44 +1003,44 @@ AC_TYPE_LONG_DOUBLE_WIDER
 AC_C_CHAR_UNSIGNED
 
 # Obtain size of an 'signed short' and define as SIZEOF_SIGNED_SHORT
-AC_CHECK_SIZEOF(signed short)
+AC_CHECK_SIZEOF([signed short])
 
 # Obtain size of an 'unsigned short' and define as SIZEOF_UNSIGNED_SHORT
-AC_CHECK_SIZEOF(unsigned short)
+AC_CHECK_SIZEOF([unsigned short])
 
 # Obtain size of an 'signed int' and define as SIZEOF_SIGNED_INT
-AC_CHECK_SIZEOF(signed int)
+AC_CHECK_SIZEOF([signed int])
 
 # Obtain size of an 'unsigned int' and define as SIZEOF_UNSIGNED_INT
-AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_SIZEOF([unsigned int])
 
 # Obtain size of a 'signed long' and define as SIZEOF_SIGNED_LONG
-AC_CHECK_SIZEOF(signed long)
+AC_CHECK_SIZEOF([signed long])
 
 # Obtain size of a 'unsigned long' and define as SIZEOF_UNSIGNED_LONG
-AC_CHECK_SIZEOF(unsigned long)
+AC_CHECK_SIZEOF([unsigned long])
 
 # Obtain size of a 'long long' and define as SIZEOF_SIGNED_LONG_LONG.  If
 # 'signed long long' is not supported then the value defined is zero.
-AC_CHECK_SIZEOF(signed long long)
+AC_CHECK_SIZEOF([signed long long])
 
 # Obtain size of a 'unsigned long long' and define as
 # SIZEOF_UNSIGNED_LONG_LONG.  If 'unsigned long long' is not
 # supported then the value defined is zero.
-AC_CHECK_SIZEOF(unsigned long long)
+AC_CHECK_SIZEOF([unsigned long long])
 
 # Obtain size of off_t and define as SIZEOF_OFF_T
-AC_CHECK_SIZEOF(off_t)
+AC_CHECK_SIZEOF([off_t])
 
 # Obtain size of size_t and define as SIZEOF_SIZE_T
-AC_CHECK_SIZEOF(size_t)
+AC_CHECK_SIZEOF([size_t])
 
 # Obtain size of an unsigned int pointer and define as SIZEOF_UNSIGNED_INTP
-AC_CHECK_SIZEOF(unsigned int*)
+AC_CHECK_SIZEOF([unsigned int*])
 
 # Test for C compiler __func__ support
 if test "$ac_cv_have_C__func__" != 'yes' ; then
-AC_CACHE_CHECK(for C compiler __func__ support, ac_cv_have_C__func__,
+AC_CACHE_CHECK([for C compiler __func__ support], ac_cv_have_C__func__,
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
 [[const char *func=__func__;
 return (func != 0 ? 0 : 1);
@@ -1049,7 +1049,7 @@ return (func != 0 ? 0 : 1);
 [ac_cv_have_C__func__='no'])])
 
 if test "$ac_cv_have_C__func__" = 'yes' ; then
- AC_DEFINE(HAS_C__func__,1,Define if C compiler supports __func__)
+ AC_DEFINE([HAS_C__func__],[1],[Define if C compiler supports __func__])
 fi
 fi
 
@@ -1061,27 +1061,27 @@ fi
 # with Windows builds which don't use configure.
 #
 
-AC_MSG_CHECKING(for signed 8-bit type)
+AC_MSG_CHECKING([for signed 8-bit type])
 INT8_T='signed char'
-AC_MSG_RESULT($INT8_T)
-AC_SUBST(INT8_T)
+AC_MSG_RESULT([$INT8_T])
+AC_SUBST([INT8_T])
 
-AC_MSG_CHECKING(for unsigned 8-bit type)
+AC_MSG_CHECKING([for unsigned 8-bit type])
 UINT8_T='unsigned char'
-AC_MSG_RESULT($UINT8_T)
-AC_SUBST(UINT8_T)
+AC_MSG_RESULT([$UINT8_T])
+AC_SUBST([UINT8_T])
 
-AC_MSG_CHECKING(for signed 16-bit type)
+AC_MSG_CHECKING([for signed 16-bit type])
 INT16_T='signed short'
-AC_MSG_RESULT($INT16_T)
-AC_SUBST(INT16_T)
+AC_MSG_RESULT([$INT16_T])
+AC_SUBST([INT16_T])
 
-AC_MSG_CHECKING(for unsigned 16-bit type)
+AC_MSG_CHECKING([for unsigned 16-bit type])
 UINT16_T='unsigned short'
-AC_MSG_RESULT($UINT16_T)
-AC_SUBST(UINT16_T)
+AC_MSG_RESULT([$UINT16_T])
+AC_SUBST([UINT16_T])
 
-AC_MSG_CHECKING(for signed 32-bit type)
+AC_MSG_CHECKING([for signed 32-bit type])
 INT32_T='none'
 INT32_F='none'
 if test $ac_cv_sizeof_signed_int -eq 4
@@ -1093,11 +1093,11 @@ then
   INT32_T='signed long'
   INT32_F='"l"'
 fi
-AC_MSG_RESULT($INT32_T)
-AC_SUBST(INT32_T)
-AC_SUBST(INT32_F)
+AC_MSG_RESULT([$INT32_T])
+AC_SUBST([INT32_T])
+AC_SUBST([INT32_F])
 
-AC_MSG_CHECKING(for unsigned 32-bit type)
+AC_MSG_CHECKING([for unsigned 32-bit type])
 UINT32_T='none'
 UINT32_F='none'
 if test $ac_cv_sizeof_unsigned_int -eq 4
@@ -1109,11 +1109,11 @@ then
   UINT32_T='unsigned long'
   UINT32_F='"l"'
 fi
-AC_MSG_RESULT($UINT32_T)
-AC_SUBST(UINT32_T)
-AC_SUBST(UINT32_F)
+AC_MSG_RESULT([$UINT32_T])
+AC_SUBST([UINT32_T])
+AC_SUBST([UINT32_F])
 
-AC_MSG_CHECKING(for signed 64-bit type)
+AC_MSG_CHECKING([for signed 64-bit type])
 INT64_T='none'
 INT64_F='none'
 if test $ac_cv_sizeof_signed_long -eq 8
@@ -1130,11 +1130,11 @@ case "${host_os}" in
     INT64_F='"I64"'
     ;;
 esac
-AC_MSG_RESULT($INT64_T)
-AC_SUBST(INT64_T)
-AC_SUBST(INT64_F)
+AC_MSG_RESULT([$INT64_T])
+AC_SUBST([INT64_T])
+AC_SUBST([INT64_F])
 
-AC_MSG_CHECKING(for unsigned 64-bit type)
+AC_MSG_CHECKING([for unsigned 64-bit type])
 UINT64_T='none'
 UINT64_F='none'
 if test $ac_cv_sizeof_unsigned_long -eq 8
@@ -1151,11 +1151,11 @@ case "${host_os}" in
     UINT64_F='"I64"'
     ;;
 esac
-AC_MSG_RESULT($UINT64_T)
-AC_SUBST(UINT64_T)
-AC_SUBST(UINT64_F)
+AC_MSG_RESULT([$UINT64_T])
+AC_SUBST([UINT64_T])
+AC_SUBST([UINT64_F])
 
-AC_MSG_CHECKING(for unsigned maximum type)
+AC_MSG_CHECKING([for unsigned maximum type])
 UINTMAX_T='none'
 UINTMAX_F='none'
 if test "$UINT64_T" != 'none'
@@ -1167,11 +1167,11 @@ then
   UINTMAX_T=$UINT32_T
   UINTMAX_F=$UINT32_F
 fi
-AC_MSG_RESULT($UINTMAX_T)
-AC_SUBST(UINTMAX_T)
-AC_SUBST(UINTMAX_F)
+AC_MSG_RESULT([$UINTMAX_T])
+AC_SUBST([UINTMAX_T])
+AC_SUBST([UINTMAX_F])
 
-AC_MSG_CHECKING(for pointer difference type)
+AC_MSG_CHECKING([for pointer difference type])
 UINTPTR_T='none'
 UINTPTR_F='none'
 if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
@@ -1183,15 +1183,15 @@ then
   UINTPTR_T='unsigned long long'
   UINTPTR_F='"ll"'
 fi
-AC_MSG_RESULT($UINTPTR_T)
-AC_SUBST(UINTPTR_T)
-AC_SUBST(UINTPTR_F)
+AC_MSG_RESULT([$UINTPTR_T])
+AC_SUBST([UINTPTR_T])
+AC_SUBST([UINTPTR_F])
 
 MAGICK_SIZE_T='none'
 MAGICK_SIZE_T_F='none'
 MAGICK_SSIZE_T='none'
 MAGICK_SSIZE_T_F='none'
-AC_MSG_CHECKING(for size_t format specification)
+AC_MSG_CHECKING([for size_t format specification])
 if test $ac_cv_sizeof_size_t -eq $ac_cv_sizeof_unsigned_long
 then
   # Normal case for LP32 and LP64
@@ -1217,11 +1217,11 @@ then
     ;;
   esac
 fi
-AC_MSG_RESULT($MAGICK_SIZE_T_F)
-AC_SUBST(MAGICK_SIZE_T)
-AC_SUBST(MAGICK_SIZE_T_F)
-AC_SUBST(MAGICK_SSIZE_T)
-AC_SUBST(MAGICK_SSIZE_T_F)
+AC_MSG_RESULT([$MAGICK_SIZE_T_F])
+AC_SUBST([MAGICK_SIZE_T])
+AC_SUBST([MAGICK_SIZE_T_F])
+AC_SUBST([MAGICK_SSIZE_T])
+AC_SUBST([MAGICK_SSIZE_T_F])
 
 
 ########
@@ -1245,7 +1245,7 @@ AC_CHECK_DECLS([vsnprintf],[],[],[
 # Check for /dev/urandom device
 #
 #######
-AC_CACHE_CHECK(for /dev/urandom,gm_cv_dev_urandom,
+AC_CACHE_CHECK([for /dev/urandom],gm_cv_dev_urandom,
 [ gm_cv_dev_urandom=no
   if test -c /dev/urandom
   then
@@ -1253,7 +1253,7 @@ AC_CACHE_CHECK(for /dev/urandom,gm_cv_dev_urandom,
   fi])
   if test "${gm_cv_dev_urandom}" = yes
   then
-     AC_DEFINE(HAVE_DEV_URANDOM,1,[Have a /dev/urandom device for producing random bytes])
+     AC_DEFINE([HAVE_DEV_URANDOM],[1],[Have a /dev/urandom device for producing random bytes])
   fi
 
 ########
@@ -1264,7 +1264,7 @@ AC_CACHE_CHECK(for /dev/urandom,gm_cv_dev_urandom,
 MAGICK_PHYSICAL_MEMORY_COMMAND=''
 case "${host}" in
   *-*-freebsd* | *-apple-darwin*)
-    AC_PATH_PROG(SysCtlDelegate,sysctl,)
+    AC_PATH_PROG([SysCtlDelegate],[sysctl],[])
     if test "${SysCtlDelegate}X" != 'X'
     then
        # "sysctl -n hw.physmem" became available in FreeBSD 2.0
@@ -1275,8 +1275,8 @@ case "${host}" in
 esac
 if test "${MAGICK_PHYSICAL_MEMORY_COMMAND}X" != 'X'
 then
-  AC_DEFINE_UNQUOTED(MAGICK_PHYSICAL_MEMORY_COMMAND,
-    "${MAGICK_PHYSICAL_MEMORY_COMMAND}",
+  AC_DEFINE_UNQUOTED([MAGICK_PHYSICAL_MEMORY_COMMAND],
+    ["${MAGICK_PHYSICAL_MEMORY_COMMAND}"],
     [Command which returns total physical memory in bytes])
 fi
 
@@ -1290,7 +1290,7 @@ if test "$with_magick_plus_plus" = 'yes'
 then
  OLIBS="$LIBS"
  LIBS=''
- AC_LANG_PUSH(C++)
+ AC_LANG_PUSH([C++])
 
 # Full set of headers used ...
 # algorithm cctype cerrno cmath cstdio cstdlib cstring ctime exception
@@ -1321,13 +1321,13 @@ then
   [ac_cv_have_CPP__func__='yes'],[ac_cv_have_CPP__func__='no'])])
 
   if test "$ac_cv_have_CPP__func__" = 'yes' ; then
-   AC_DEFINE(HAS_CPP__func__,1,Define if C++ compiler supports __func__)
+   AC_DEFINE([HAS_CPP__func__],[1],[Define if C++ compiler supports __func__])
   fi
  fi
 
  AC_LANG_POP
 
- AC_MSG_CHECKING(whether C++ compiler is sufficient for Magick++)
+ AC_MSG_CHECKING([whether C++ compiler is sufficient for Magick++])
  if \
   test $ac_cv_cxx_bool = 'yes' && \
   test $ac_cv_cxx_const_cast = 'yes' &&
@@ -1346,10 +1346,10 @@ then
  else
   have_magick_plus_plus='no (failed tests)'
  fi
- AC_MSG_RESULT($have_magick_plus_plus)
+ AC_MSG_RESULT([$have_magick_plus_plus])
  LIBS="$OLIBS"
 fi
-AM_CONDITIONAL(WITH_MAGICK_PLUS_PLUS, test "$have_magick_plus_plus" = 'yes')
+AM_CONDITIONAL([WITH_MAGICK_PLUS_PLUS],[test "$have_magick_plus_plus" = 'yes'])
 
 # Assume that delegate headers and libraries may reside under same
 # directory as GraphicsMagick installation prefix.
@@ -1360,7 +1360,7 @@ MAGICK_API_CPPFLAGS="-I$INCLUDE_DIR/GraphicsMagick $MAGICK_API_CPPFLAGS"
 #
 # Find the X11 RGB database
 #
-AC_CACHE_CHECK(for X11 configure files,gm_cv_x_configure,
+AC_CACHE_CHECK([for X11 configure files],[gm_cv_x_configure],
 [# Look for the header file in a standard set of common directories.
 # Check X11 before X11Rn because it is often a symlink to the current release.
   for ac_dir in               \
@@ -1415,7 +1415,7 @@ case "${build_os}" in
     X11ConfigurePath=`$WinPathScript "$X11ConfigurePath=" 1`
   ;;
 esac
-AC_DEFINE_UNQUOTED(X11ConfigurePath,"X11ConfigurePath",Location of X11 configure files)
+AC_DEFINE_UNQUOTED([X11ConfigurePath],["X11ConfigurePath"],[Location of X11 configure files])
 
 #
 # Find Posix threads library
@@ -1428,7 +1428,7 @@ then
   then
     case "${host_cpu}-${host_os}" in
       *-freebsd*)
-        MAGICK_CHECK_PTHREAD_LIB(c_r,PTHREAD_LIBS=-lc_r) ;;
+        MAGICK_CHECK_PTHREAD_LIB([c_r],[PTHREAD_LIBS=-lc_r]) ;;
     esac
   fi
 
@@ -1442,7 +1442,7 @@ then
   LIB_THREAD="$PTHREAD_LIBS"
   LIBS="$LIBS $LIB_THREAD"
 fi
-AC_SUBST(LIB_THREAD)
+AC_SUBST([LIB_THREAD])
 
 #
 # Check for Google perftools tcmalloc library
@@ -1485,13 +1485,13 @@ have_umem='no'
 LIB_UMEM=''
 if test "$with_umem" != 'no'
 then
-  AC_MSG_CHECKING(for Solaris umem library support )
+  AC_MSG_CHECKING([for Solaris umem library support ])
   AC_MSG_RESULT()
   failed=0
   passed=0
-  AC_CHECK_HEADER(umem.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_LIB(umem,umem_alloc,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(umem,umem_free,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+  AC_CHECK_HEADER([umem.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_LIB([umem],[umem_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([umem],[umem_free],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
   if test $passed -gt 0
   then
     if test $failed -gt 0
@@ -1500,17 +1500,17 @@ then
     else
       LIB_UMEM='-lumem'
       LIBS="$LIB_UMEM $LIBS"
-      AC_DEFINE(HasUMEM,1,Define if you have umem memory allocation library)
+      AC_DEFINE([HasUMEM],[1],[Define if you have umem memory allocation library])
       have_umem='yes'
     fi
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
   fi
   AC_MSG_CHECKING([if Solaris umem memory allocation library is complete ])
   AC_MSG_RESULT([$have_umem])
 fi
-AM_CONDITIONAL(HasUMEM, test "$have_umem" = 'yes')
-AC_SUBST(LIB_UMEM)
+AM_CONDITIONAL([HasUMEM],[test "$have_umem" = 'yes'])
+AC_SUBST([LIB_UMEM])
 
 #
 # Check for Solaris-derived mtmalloc library
@@ -1557,44 +1557,44 @@ then
     # Open64 (passes for GCC but uses different OpenMP implementation)
     if test "x$LIB_OMP" = x ; then
       if $CC --version 2>&1 | grep Open64 > /dev/null ; then
-        AC_CHECK_LIB(openmp,omp_get_num_procs,LIB_OMP="-lopenmp",,)
+        AC_CHECK_LIB([openmp],[omp_get_num_procs],[LIB_OMP="-lopenmp"],,)
       fi
     fi
     # Clang (passes for GCC but uses different OpenMP implementation)
     if test "x$LIB_OMP" = x ; then
       if $CC --version 2>&1 | grep clang > /dev/null ; then
-        AC_CHECK_LIB(omp,GOMP_parallel_start,LIB_OMP="-lomp",,)
+        AC_CHECK_LIB([omp],[GOMP_parallel_start],[LIB_OMP="-lomp"],,)
       fi
     fi
     # GCC
     if test "x$LIB_OMP" = x ; then
-      AC_CHECK_LIB(gomp,GOMP_parallel_start,LIB_OMP="-lgomp",,)
+      AC_CHECK_LIB([gomp],[GOMP_parallel_start],[LIB_OMP="-lgomp"],,)
     fi
   else
     # Sun CC
     if test "x$LIB_OMP" = x ; then
-      AC_CHECK_LIB(mtsk,sunw_mp_register_warn,LIB_OMP="-lmtsk",,)
+      AC_CHECK_LIB([mtsk],[sunw_mp_register_warn],[LIB_OMP="-lmtsk"],,)
     fi
     # AIX xlc
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB(xlsmp,_xlsmpFlush,LIB_OMP="-lxlsmp",,)
+    AC_CHECK_LIB([xlsmp],[_xlsmpFlush],[LIB_OMP="-lxlsmp"],,)
     fi
     # SGI IRIX 6.5 MIPSpro C/C++
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB(mp,mp_destroy,LIB_OMP="-lmp",,)
+    AC_CHECK_LIB([mp],[mp_destroy],[LIB_OMP="-lmp"],,)
     fi
   fi
   LIBS="$LIB_OMP $LIBS"
 fi
-AC_SUBST(LIB_OMP)
+AC_SUBST([LIB_OMP])
 
 #
 # Find math library
 #
 LIB_MATH=''
-AC_CHECK_LIB(m,sqrt,LIB_MATH="-lm",,)
+AC_CHECK_LIB([m],[sqrt],[LIB_MATH="-lm"],,)
 LIBS="$LIB_MATH $LIBS"
-AC_SUBST(LIB_MATH)
+AC_SUBST([LIB_MATH])
 
 
 #
@@ -1604,19 +1604,19 @@ have_trio='no'
 LIB_TRIO=''
 if test "$ac_cv_func_vsnprintf" != 'yes' && test "$with_trio" != 'no'
 then
-   AC_MSG_CHECKING(for TRIO vsnprintf replacement)
-   AC_CHECK_LIB(trio,trio_vsnprintf,have_trio='yes',,)
+   AC_MSG_CHECKING([for TRIO vsnprintf replacement])
+   AC_CHECK_LIB([trio],[trio_vsnprintf],[have_trio='yes'],,)
    if test "$have_trio" = 'yes'
    then
      LIB_TRIO="-ltrio"
      LIBS="$LIB_TRIO $LIBS"
-     AC_DEFINE(HasTRIO,1,Define if you have TRIO vsnprintf replacement library)
-     AC_MSG_RESULT(yes)
+     AC_DEFINE([HasTRIO],[1],[Define if you have TRIO vsnprintf replacement library])
+     AC_MSG_RESULT([yes])
    else
-     AC_MSG_RESULT(no)
+     AC_MSG_RESULT([no])
    fi
 fi
-AC_SUBST(LIB_TRIO)
+AC_SUBST([LIB_TRIO])
 
 
 #
@@ -1646,7 +1646,7 @@ then
     else
       LIB_LTDL='-lltdl'
       LIBS="$LIB_LTDL $LIBS"
-      AC_DEFINE(HasLTDL,1,[Define if using libltdl to support dynamically loadable modules])
+      AC_DEFINE([HasLTDL],[1],[Define if using libltdl to support dynamically loadable modules])
       AC_MSG_RESULT([yes])
       have_ltdl='yes'
     fi
@@ -1658,7 +1658,7 @@ then
     AC_MSG_FAILURE([libltdl is required by modules build],[1])
   fi
 fi
-AM_CONDITIONAL(WITH_LTDL, test "$have_ltdl" != 'no')
+AM_CONDITIONAL([WITH_LTDL],[test "$have_ltdl" != 'no'])
 
 #
 # Check for ZLIB
@@ -1668,40 +1668,40 @@ LIB_ZLIB=''
 dnl PNG requires zlib so enable zlib check if PNG is requested
 if test "$with_zlib" != 'no' || test "$with_png" != 'no'
 then
-  AC_MSG_CHECKING(for ZLIB support )
+  AC_MSG_CHECKING([for ZLIB support ])
   AC_MSG_RESULT()
 
   failed=0
   passed=0
   # PKG_CHECK_MODULES([ZLIB], [zlib], [], [])
-  AC_CHECK_HEADER(zconf.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_HEADER(zlib.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_LIB(z,compress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(z,uncompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(z,deflate,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(z,inflate,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(z,gzseek,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_CHECK_LIB(z,gztell,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_MSG_CHECKING(if ZLIB package is complete)
+  AC_CHECK_HEADER([zconf.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_HEADER([zlib.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_LIB([z],[compress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([z],[uncompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([z],[deflate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([z],[inflate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([z],[gzseek],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_CHECK_LIB([z],[gztell],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_MSG_CHECKING([if ZLIB package is complete])
   if test $passed -gt 0
   then
     if test $failed -gt 0
     then
-      AC_MSG_RESULT(no -- some components failed test)
+      AC_MSG_RESULT([no -- some components failed test])
       have_zlib='no (failed tests)'
     else
       LIB_ZLIB='-lz'
       LIBS="$LIB_ZLIB $LIBS"
-      AC_DEFINE(HasZLIB,1,Define if you have zlib compression library)
-      AC_MSG_RESULT(yes)
+      AC_DEFINE([HasZLIB],[1],[Define if you have zlib compression library])
+      AC_MSG_RESULT([yes])
       have_zlib='yes'
     fi
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
   fi
 fi
-AM_CONDITIONAL(HasZLIB, test "$have_zlib" = 'yes')
-AC_SUBST(LIB_ZLIB)
+AM_CONDITIONAL([HasZLIB],[test "$have_zlib" = 'yes'])
+AC_SUBST([LIB_ZLIB])
 
 #
 # Check for BZLIB
@@ -1710,13 +1710,13 @@ have_bzlib='no'
 if test "$with_bzlib" != 'no'
 then
   LIB_BZLIB=''
-  AC_MSG_CHECKING(for BZLIB support )
+  AC_MSG_CHECKING([for BZLIB support ])
   AC_MSG_RESULT()
   failed=0
   passed=0
   found_libbz=0
-  AC_CHECK_HEADER(bzlib.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_LIB(bz2,BZ2_bzDecompress,found_libbz=`expr $found_libbz + 1`,,)
+  AC_CHECK_HEADER([bzlib.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_LIB([bz2],[BZ2_bzDecompress],[found_libbz=`expr $found_libbz + 1`],,)
   if test "$native_win32_build" = 'yes'
   then
     # Under MinGW, libbz2 obfuscates its functions by declaring them
@@ -1724,7 +1724,7 @@ then
     # somehow include bzlib.h during the test but Autoconf does not
     # make that possible.  We check for BZ2_decompress since that is
     # one of the few functions exported from the DLL (very strange).
-    AC_CHECK_LIB(bz2,_imp__BZ2_decompress,found_libbz=`expr $found_libbz + 1`,,)
+    AC_CHECK_LIB([bz2],[_imp__BZ2_decompress],[found_libbz=`expr $found_libbz + 1`],,)
   fi
   if test $found_libbz -gt 0
   then
@@ -1732,29 +1732,29 @@ then
   else
     failed=`expr $failed + 1`
   fi
-  #AC_CHECK_LIB(bz2,BZ2_bzCompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  #AC_CHECK_LIB(bz2,BZ2_bzDecompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  #AC_CHECK_LIB(bz2,_imp__BZ2_decompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_MSG_CHECKING(if BZLIB package is complete)
+  #AC_CHECK_LIB([bz2],[BZ2_bzCompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  #AC_CHECK_LIB([bz2],[BZ2_bzDecompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  #AC_CHECK_LIB([bz2],[_imp__BZ2_decompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_MSG_CHECKING([if BZLIB package is complete])
   if test $passed -gt 0
   then
     if test $failed -gt 0
     then
-      AC_MSG_RESULT(no -- some components failed test)
+      AC_MSG_RESULT([no -- some components failed test])
       have_bzlib='no (failed tests)'
     else
       LIB_BZLIB='-lbz2'
       LIBS="$LIB_BZLIB $LIBS"
-      AC_DEFINE(HasBZLIB,1,Define if you have the bzip2 library)
-      AC_MSG_RESULT(yes)
+      AC_DEFINE([HasBZLIB],[1],[Define if you have the bzip2 library])
+      AC_MSG_RESULT([yes])
       have_bzlib='yes'
     fi
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
   fi
 fi
-AM_CONDITIONAL(HasBZLIB, test "$have_bzlib" = 'yes')
-AC_SUBST(LIB_BZLIB)
+AM_CONDITIONAL([HasBZLIB],[test "$have_bzlib" = 'yes'])
+AC_SUBST([LIB_BZLIB])
 
 #
 # Check for LZMA
@@ -1763,33 +1763,33 @@ have_lzma='no'
 LIB_LZMA=''
 if test "$with_lzma" != 'no'
 then
-  AC_MSG_CHECKING(for LZMA support )
+  AC_MSG_CHECKING([for LZMA support ])
   AC_MSG_RESULT()
   # PKG_CHECK_MODULES([LZMA], [liblzma], [], [])
   failed=0
   passed=0
-  AC_CHECK_HEADER(lzma.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_LIB(lzma,lzma_code,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_MSG_CHECKING(if LZMA package is complete)
+  AC_CHECK_HEADER([lzma.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_LIB([lzma],[lzma_code],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_MSG_CHECKING([if LZMA package is complete])
   if test $passed -gt 0
   then
     if test $failed -gt 0
     then
-      AC_MSG_RESULT(no -- some components failed test)
+      AC_MSG_RESULT([no -- some components failed test])
       have_lzma='no (failed tests)'
     else
       LIB_LZMA='-llzma'
       LIBS="$LIB_LZMA $LIBS"
-      AC_DEFINE(HasLZMA,1,Define if you have lzma compression library)
-      AC_MSG_RESULT(yes)
+      AC_DEFINE([HasLZMA],[1],[Define if you have lzma compression library])
+      AC_MSG_RESULT([yes])
       have_lzma='yes'
     fi
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
   fi
 fi
-AM_CONDITIONAL(HasLZMA, test "$have_lzma" = 'yes')
-AC_SUBST(LIB_LZMA)
+AM_CONDITIONAL([HasLZMA],[test "$have_lzma" = 'yes'])
+AC_SUBST([LIB_LZMA])
 
 #
 # Check for Zstd
@@ -1798,33 +1798,33 @@ have_zstd='no'
 LIB_ZSTD=''
 if test "$with_zstd" != 'no'
 then
-  AC_MSG_CHECKING(for Zstd support )
+  AC_MSG_CHECKING([for Zstd support ])
   AC_MSG_RESULT()
   failed=0
   passed=0
   # PKG_CHECK_MODULES([ZSTD], [libzstd], [], [])
-  AC_CHECK_HEADER(zstd.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-  AC_CHECK_LIB(zstd,ZSTD_createDStream,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  AC_MSG_CHECKING(if Zstd package is complete)
+  AC_CHECK_HEADER([zstd.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_LIB([zstd],[ZSTD_createDStream],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  AC_MSG_CHECKING([if Zstd package is complete])
   if test $passed -gt 0
   then
     if test $failed -gt 0
     then
-      AC_MSG_RESULT(no -- some components failed test)
+      AC_MSG_RESULT([no -- some components failed test])
       have_zstd='no (failed tests)'
     else
       LIB_ZSTD='-lzstd'
       LIBS="$LIB_ZSTD $LIBS"
-      AC_DEFINE(HasZSTD,1,Define if you have zstd compression library)
-      AC_MSG_RESULT(yes)
+      AC_DEFINE([HasZSTD],[1],[Define if you have zstd compression library])
+      AC_MSG_RESULT([yes])
       have_zstd='yes'
     fi
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
   fi
 fi
-AM_CONDITIONAL(HasZSTD, test "$have_zstd" = 'yes')
-AC_SUBST(LIB_ZSTD)
+AM_CONDITIONAL([HasZSTD],[test "$have_zstd" = 'yes'])
+AC_SUBST([LIB_ZSTD])
 
 #
 # Find the X11 include and library directories.
@@ -1839,7 +1839,7 @@ then
   LIBS="$LIB_X11 $LIBS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 
-  AC_DEFINE(HasX11,1,Define if you have X11 library)dnl
+  AC_DEFINE([HasX11],[1],[Define if you have X11 library])dnl
 
   #
   # Check for X11 shared memory extension
@@ -1854,13 +1854,13 @@ then
 
   if test "$have_shmctl" = 'yes'
   then
-    AC_CHECK_LIB([Xext],[XShmAttach],[LIB_XEXT='-lXext' ; AC_DEFINE(HasSharedMemory,1,X11 server supports shared memory extension)],[],[])
+    AC_CHECK_LIB([Xext],[XShmAttach],[LIB_XEXT='-lXext' ; AC_DEFINE([HasSharedMemory],[1],[X11 server supports shared memory extension])],[],[])
   fi
 
   #
   # Check for X11 shape extension
   #
-  AC_CHECK_LIB([Xext],[XShapeCombineMask],[LIB_XEXT='-lXext' ; AC_DEFINE(HasShape,1,X11 server supports shape extension)],[],[])
+  AC_CHECK_LIB([Xext],[XShapeCombineMask],[LIB_XEXT='-lXext' ; AC_DEFINE([HasShape],[1],[X11 server supports shape extension])],[],[])
 
   LIBS="$LIB_XEXT $LIBS"
 fi
@@ -1870,9 +1870,9 @@ then
 else
   have_x='no'
 fi
-AM_CONDITIONAL(HasX11, test "$have_x" = 'yes')
-AC_SUBST(LIB_X11)
-AC_SUBST(LIB_XEXT)
+AM_CONDITIONAL([HasX11],[test "$have_x" = 'yes'])
+AC_SUBST([LIB_X11])
+AC_SUBST([LIB_XEXT])
 
 #
 # If profiling, then check for -ldl and dlopen (required for Solaris & gcc)
@@ -1880,10 +1880,10 @@ AC_SUBST(LIB_XEXT)
 LIB_DL=''
 if test "$with_profiling" = 'yes'
 then
-  AC_CHECK_LIB(dl,dlopen,LIB_DL='-ldl',,)
+  AC_CHECK_LIB([dl],[dlopen],[LIB_DL='-ldl'],,)
   LIBS="$LIB_DL $LIBS"
 fi
-AC_SUBST(LIB_DL)
+AC_SUBST([LIB_DL])
 
 #
 # Check for Display Postscript
@@ -1898,7 +1898,7 @@ then
     passed=0
     O_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I${ac_x_includes}/X11"
-    AC_CHECK_HEADER(DPS/dpsXclient.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
+    AC_CHECK_HEADER([DPS/dpsXclient.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # DPS issues:
     # XFree86-4.x needs -lXt to provide XtMalloc for -ldps.
     # Cygwin doesn't deliver -lXt as a DLL, which prevents a DLL build.
@@ -1906,12 +1906,12 @@ then
     # GraphicsMagick itself doesn't use -lXt.
     have_libdps='no'
     LIBDPS_XT=''
-    AC_CHECK_LIB(dps,DPSInitialize,have_libdps='yes',have_libdps='no',)
+    AC_CHECK_LIB([dps],[DPSInitialize],[have_libdps='yes'],[have_libdps='no'],)
     if test "$have_libdps" != 'yes'
     then
       # Unset cache variable so we can try again.
       unset ac_cv_lib_dps_DPSInitialize
-      AC_CHECK_LIB(dps,DPSInitialize,have_libdps='yes',have_libdps='no',-lXt)
+      AC_CHECK_LIB([dps],[DPSInitialize],[have_libdps='yes'],[have_libdps='no'],[-lXt])
       if test "$have_libdps" = 'yes'
       then
         LIBDPS_XT='-lXt'
@@ -1923,8 +1923,8 @@ then
     else
       failed=`expr $failed + 1`
     fi
-    AC_CHECK_LIB(dpstk,XDPSPixelsPerPoint,passed=`expr $passed + 1`,failed=`expr $failed + 1`,-ldps $LIBDPS_XT)
-    AC_MSG_CHECKING(if DPS package is complete)
+    AC_CHECK_LIB([dpstk],[XDPSPixelsPerPoint],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-ldps $LIBDPS_XT])
+    AC_MSG_CHECKING([if DPS package is complete])
     if test $passed -gt 0
     then
     if test $failed -gt 0
@@ -1935,17 +1935,17 @@ then
     else
         LIB_DPS="-ldpstk -ldps ${LIBDPS_XT}"
         LIBS="$LIB_DPS $LIBS"
-        AC_DEFINE(HasDPS,1,Define if you have Display Postscript)
-        AC_MSG_RESULT(yes)
+        AC_DEFINE([HasDPS],[1],[Define if you have Display Postscript])
+        AC_MSG_RESULT([yes])
         have_dps='yes'
     fi
     else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
     CPPFLAGS=$O_CPPFLAGS
     fi
 fi
-AM_CONDITIONAL(HasDPS, test "$have_dps" = 'yes')
-AC_SUBST(LIB_DPS)
+AM_CONDITIONAL([HasDPS],[test "$have_dps" = 'yes'])
+AC_SUBST([LIB_DPS])
 
 #
 # Check for FlashPIX
@@ -1954,35 +1954,35 @@ have_fpx='no'
 LIB_FPX=''
 if test "$with_fpx" != 'no'
 then
-    AC_MSG_CHECKING(for FlashPIX components )
+    AC_MSG_CHECKING([for FlashPIX components ])
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_LANG_PUSH(C++)
-    AC_CHECK_HEADER(fpxlib.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(fpx,FPX_OpenImageByFilename,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+    AC_LANG_PUSH([C++])
+    AC_CHECK_HEADER([fpxlib.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([fpx],[FPX_OpenImageByFilename],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
     AC_LANG_POP
-    AC_MSG_CHECKING(if FlashPIX package is complete)
+    AC_MSG_CHECKING([if FlashPIX package is complete])
     if test $passed -gt 0
     then
     if test $failed -gt 0
     then
-        AC_MSG_RESULT(no -- some components failed test)
+        AC_MSG_RESULT([no -- some components failed test])
         have_fpx='no (failed tests)'
     else
         LIB_FPX='-lfpx'
         # LIBS="$LIB_FPX $LIBS"
-        AC_DEFINE(HasFPX,1,Define if you have FlashPIX library)
-        AC_MSG_RESULT(yes)
+        AC_DEFINE([HasFPX],[1],[Define if you have FlashPIX library])
+        AC_MSG_RESULT([yes])
         have_fpx='yes'
         PERLMAINCC="$CXX"
     fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasFPX, test "$have_fpx" = 'yes')
-AC_SUBST(LIB_FPX)
+AM_CONDITIONAL([HasFPX],[test "$have_fpx" = 'yes'])
+AC_SUBST([LIB_FPX])
 
 #
 # Check for LCMS v2
@@ -2000,21 +2000,21 @@ then
     # PKG_CHECK_MODULES([LCMS2], [lcms2], [], [])
 
     # Check for <lcms2.h>
-    AC_CHECK_HEADER(lcms2.h,have_lcms_header='yes',,)
+    AC_CHECK_HEADER([lcms2.h],[have_lcms_header='yes'],,)
     if test "$have_lcms_header" = 'yes'
     then
-       AC_DEFINE(HAVE_LCMS2_H,1,Define if you have the <lcms2.h> header file.)
+       AC_DEFINE([HAVE_LCMS2_H],[1],[Define if you have the <lcms2.h> header file.])
        passed=`expr $passed + 1`
     fi
 
     # Check for <lcms2/lcms2.h)
     if test "$have_lcms_header" != 'yes'
     then
-      AC_CHECK_HEADER(lcms2/lcms2.h,have_lcms_header='yes',,)
+      AC_CHECK_HEADER([lcms2/lcms2.h],[have_lcms_header='yes'],,)
       if test "$have_lcms_header" = 'yes'
       then
         passed=`expr $passed + 1`
-        AC_DEFINE(HAVE_LCMS2_LCMS2_H,1,Define if you have the <lcms2/lcms2.h> header file.)
+        AC_DEFINE([HAVE_LCMS2_LCMS2_H],[1],[Define if you have the <lcms2/lcms2.h> header file.])
       fi
     fi
 
@@ -2024,33 +2024,33 @@ then
       failed=`expr $failed + 1`
     fi
 
-    AC_CHECK_LIB(lcms2,cmsSetLogErrorHandler,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if LCMS v2 package is complete)
+    AC_CHECK_LIB([lcms2],[cmsSetLogErrorHandler],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if LCMS v2 package is complete])
     if test $passed -gt 0
     then
       if test $failed -gt 0
       then
-        AC_MSG_RESULT(no -- some components failed test)
+        AC_MSG_RESULT([no -- some components failed test])
         have_lcms2='no (failed tests)'
       else
         LIB_LCMS='-llcms2'
         LIBS="$LIB_LCMS $LIBS"
         #AC_DEFINE(HasLCMS2,1,Define if you have LCMS v2 library)
-        AC_MSG_RESULT(yes)
+        AC_MSG_RESULT([yes])
         have_lcms2='yes'
       fi
     else
-      AC_MSG_RESULT(no)
+      AC_MSG_RESULT([no])
     fi
 fi
 
 
-AM_CONDITIONAL(HasLCMS, test "$have_lcms2" = 'yes')
+AM_CONDITIONAL([HasLCMS],[test "$have_lcms2" = 'yes'])
 if test "$have_lcms2" = 'yes'
 then
-  AC_DEFINE(HasLCMS,1,[Define if you have LCMS (v2.0 or later) library])
+  AC_DEFINE([HasLCMS],[1],[Define if you have LCMS (v2.0 or later) library])
 fi
-AC_SUBST(LIB_LCMS)
+AC_SUBST([LIB_LCMS])
 
 have_png='no'
 LIB_PNG=''
@@ -2059,7 +2059,7 @@ then
   #
   # Check for PNG delegate library.
   #
-  AC_ARG_WITH(png,
+  AC_ARG_WITH([png],
       [AS_HELP_STRING([--without-png],[disable PNG support])],
       [with_png=$withval],
       [with_png='yes'])
@@ -2071,12 +2071,12 @@ then
 
 
   if test "$with_png" != 'no' ; then
-    AC_MSG_CHECKING(for PNG support )
+    AC_MSG_CHECKING([for PNG support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER(png.h,passed=`expr $passed + 1`,
-       failed=`expr $failed + 1`,)
+    AC_CHECK_HEADER([png.h],[passed=`expr $passed + 1`],
+       [failed=`expr $failed + 1`],)
 
     if test $passed -gt 0; then
       for var in 7 6 5 4 2 '' ; do
@@ -2093,7 +2093,7 @@ then
           passed=0
           if test "$with_png" = 'yes' -o "$with_png" = "libpng1${var}" ; then
             if test "${pnglib}" != 'png' ; then
-              AC_MSG_CHECKING(for LIBPNG1${var} support )
+              AC_MSG_CHECKING([for LIBPNG1${var} support ])
               AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <stdlib.h>
 #include <png.h>
@@ -2106,50 +2106,50 @@ return 0;
 ]])],[ac_cv_libpng_ok='yes'],[ac_cv_libpng_ok='no'])
               if test "$ac_cv_libpng_ok" = 'yes' ; then
                 passed=`expr $passed + 1`
-                AC_MSG_RESULT(yes)
+                AC_MSG_RESULT([yes])
               else
                 failed=`expr $failed + 1`
-                AC_MSG_RESULT(no)
+                AC_MSG_RESULT([no])
               fi
             else
               passed=`expr $passed + 1`
-              AC_MSG_RESULT(yes)
+              AC_MSG_RESULT([yes])
             fi
           fi
 
           if test $passed -gt 0 -a $failed -le 0
           then
             if test "1${var}" = '15' ; then
-              AC_CHECK_LIB(png15,png_get_io_ptr,passed=`expr $passed + 1`,
-                 failed=`expr $failed + 1`,)
-              AC_CHECK_LIB(png15,png_longjmp,passed=`expr $passed + 1`,
-                 failed=`expr $failed + 1`,)
+              AC_CHECK_LIB([png15],[png_get_io_ptr],[passed=`expr $passed + 1`],
+                 [failed=`expr $failed + 1`],)
+              AC_CHECK_LIB([png15],[png_longjmp],[passed=`expr $passed + 1`],
+                 [failed=`expr $failed + 1`],)
             fi
             if test "1${var}" = '14' ; then
-              AC_CHECK_LIB(png14,png_get_io_ptr,passed=`expr $passed + 1`,
-                 failed=`expr $failed + 1`,)
-              AC_CHECK_LIB(png14,png_get_io_state,passed=`expr $passed + 1`,
-                 failed=`expr $failed + 1`,)
+              AC_CHECK_LIB([png14],[png_get_io_ptr],[passed=`expr $passed + 1`],
+                 [failed=`expr $failed + 1`],)
+              AC_CHECK_LIB([png14],[png_get_io_state],[passed=`expr $passed + 1`],
+                 [failed=`expr $failed + 1`],)
             fi
             if test "1${var}" = '12' ; then
-              AC_CHECK_LIB(png12,png_get_io_ptr,passed=`expr $passed + 1`,
-                 failed=`expr $failed + 1`,)
+              AC_CHECK_LIB([png12],[png_get_io_ptr],[passed=`expr $passed + 1`],
+                 [failed=`expr $failed + 1`],)
             fi
             if test "1${var}" = '1' ; then
-                AC_CHECK_LIB(png,png_get_io_ptr,passed=`expr $passed + 1`,
-                   failed=`expr $failed + 1`,)
+                AC_CHECK_LIB([png],[png_get_io_ptr],[passed=`expr $passed + 1`],
+                   [failed=`expr $failed + 1`],)
             fi
             if test $passed -gt 0 -a $failed -le 0 ; then
-              AC_MSG_CHECKING(if ${pnglib} package is complete)
+              AC_MSG_CHECKING([if ${pnglib} package is complete])
               if test $passed -gt 0 ; then
                 if test $failed -gt 0 ; then
-                AC_MSG_RESULT(no -- some components failed test)
+                AC_MSG_RESULT([no -- some components failed test])
                 have_png='no (failed tests)'
                 else
                 LIB_PNG="-l${pnglib}"
                 LIBS="$LIB_PNG $LIBS"
-                AC_DEFINE(HasPNG,1,Define if you have PNG library)
-                AC_MSG_RESULT(yes)
+                AC_DEFINE([HasPNG],[1],[Define if you have PNG library])
+                AC_MSG_RESULT([yes])
                 have_png='yes'
                 fi
               fi
@@ -2160,10 +2160,10 @@ return 0;
     fi
   fi
 else
-  AC_MSG_RESULT(PNG requires zlib support)
+  AC_MSG_RESULT([PNG requires zlib support])
 fi
-AM_CONDITIONAL(HasPNG, test "$have_png" = 'yes')
-AC_SUBST(LIB_PNG)
+AM_CONDITIONAL([HasPNG],[test "$have_png" = 'yes'])
+AC_SUBST([LIB_PNG])
 
 #
 # Check for JPEG
@@ -2172,72 +2172,72 @@ have_jpeg='no'
 LIB_JPEG=''
 if test "$with_jpeg" != 'no'
 then
-    AC_MSG_CHECKING(for JPEG support )
+    AC_MSG_CHECKING([for JPEG support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
 
     # PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [], [])
 
-    AC_CHECK_HEADER(jconfig.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_HEADER(jerror.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_HEADER(jmorecfg.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_HEADER(jpeglib.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(jpeg,jpeg_read_header,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if JPEG package is complete)
+    AC_CHECK_HEADER([jconfig.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_HEADER([jerror.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_HEADER([jmorecfg.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_HEADER([jpeglib.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jpeg],[jpeg_read_header],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if JPEG package is complete])
     if test $passed -gt 0
     then
     if test $failed -gt 0
     then
-        AC_MSG_RESULT(no -- some components failed test)
+        AC_MSG_RESULT([no -- some components failed test])
         have_jpeg='no (failed tests)'
     else
         LIB_JPEG='-ljpeg'
         LIBS="$LIB_JPEG $LIBS"
-        AC_DEFINE(HasJPEG,1,Define if you have JPEG library)
-        AC_MSG_RESULT(yes)
+        AC_DEFINE([HasJPEG],[1],[Define if you have JPEG library])
+        AC_MSG_RESULT([yes])
         have_jpeg='yes'
     fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasJPEG, test "$have_jpeg" = 'yes')
-AC_SUBST(LIB_JPEG)
+AM_CONDITIONAL([HasJPEG],[test "$have_jpeg" = 'yes'])
+AC_SUBST([LIB_JPEG])
 
 #
-# Check for JPEG Version 2
+# Check for JPEG Version 2 (Jasper)
 #
 have_jp2='no'
 LIB_JP2=''
 if test "$with_jp2" != 'no'
 then
-    AC_MSG_CHECKING(for JPEG version 2 support )
+    AC_MSG_CHECKING([for JPEG version 2 support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER(jasper/jasper.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(jasper,jas_stream_fopen,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if JPEG version 2 support package is complete)
+    AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jasper],[jas_stream_fopen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if JPEG version 2 support package is complete])
     if test $passed -gt 0
     then
     if test $failed -gt 0
     then
-        AC_MSG_RESULT(no -- some components failed test)
+        AC_MSG_RESULT([no -- some components failed test])
         have_jp2='no (failed tests)'
     else
         LIB_JP2='-ljasper'
         LIBS="$LIB_JP2 $LIBS"
-        AC_DEFINE(HasJP2,1,Define if you have JPEG version 2 "Jasper" library)
-        AC_MSG_RESULT(yes)
+        AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
+        AC_MSG_RESULT([yes])
         have_jp2='yes'
     fi
     else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasJP2, test "$have_jp2" = 'yes')
-AC_SUBST(LIB_JP2)
+AM_CONDITIONAL([HasJP2],[test "$have_jp2" = 'yes'])
+AC_SUBST([LIB_JP2])
 
 # #
 # # Check for MPEG2 library
@@ -2246,32 +2246,32 @@ AC_SUBST(LIB_JP2)
 # LIB_MPEG2=''
 # if test "$with_mpeg2" != 'no'
 # then
-#     AC_MSG_CHECKING(for MPEG version 2 support )
+#     AC_MSG_CHECKING([for MPEG version 2 support ])
 #     AC_MSG_RESULT()
 #     failed=0
 #     passed=0
-#     AC_CHECK_HEADER(mpeg2dec/mpeg2.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-#     AC_CHECK_LIB(mpeg2,mpeg2_decode_data,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-#     AC_MSG_CHECKING(if MPEG version 2 support package is complete)
+#     AC_CHECK_HEADER([mpeg2dec/mpeg2.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+#     AC_CHECK_LIB([mpeg2],[mpeg2_decode_data],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+#     AC_MSG_CHECKING([if MPEG version 2 support package is complete])
 #     if test $passed -gt 0
 #     then
 #     if test $failed -gt 0
 #     then
-#       AC_MSG_RESULT(no -- some components failed test)
+#       AC_MSG_RESULT([no -- some components failed test])
 #       have_mpeg2='no (failed tests)'
 #     else
 #       LIB_MPEG2='-lmpeg2'
 #       LIBS="$LIB_MPEG2 $LIBS"
-#       AC_DEFINE(HasMPEG2,1,Define if you have MPEG2 library)
-#       AC_MSG_RESULT(yes)
+#       AC_DEFINE([HasMPEG2],[1],[Define if you have MPEG2 library])
+#       AC_MSG_RESULT([yes])
 #       have_mpeg2='yes'
 #     fi
 #     else
-#     AC_MSG_RESULT(no)
+#     AC_MSG_RESULT([no])
 #     fi
 # fi
-# AM_CONDITIONAL(HasMPEG2, test "$have_mpeg2" = 'yes')
-# AC_SUBST(LIB_MPEG2)
+# AM_CONDITIONAL([HasMPEG2],[test "$have_mpeg2" = 'yes'])
+# AC_SUBST([LIB_MPEG2])
 
 #
 # Check for TTF
@@ -2280,7 +2280,7 @@ have_ttf='no'
 LIB_TTF=''
 if test "$with_ttf" != 'no'
 then
-    AC_MSG_CHECKING(for FreeType 2.0 )
+    AC_MSG_CHECKING([for FreeType 2.0 ])
     AC_MSG_RESULT()
     failed=0
     passed=0
@@ -2300,7 +2300,7 @@ then
     freetype_cflags=''
     freeype_libs=''
     freetype_config=''
-    AC_PATH_PROG(freetype_config,freetype-config,)dnl
+    AC_PATH_PROG([freetype_config],[freetype-config],)dnl
     PKG_CHECK_MODULES([FT], [freetype2],
       [freetype_cflags=$FT_CFLAGS; freeype_libs=$FT_LIBS],
       [if test -n "$freetype_config"
@@ -2389,30 +2389,30 @@ dnl Now test for the headers
         CPPFLAGS="$OLD_CPPFLAGS"
     fi
 
-    AC_MSG_CHECKING(if FreeType package is complete)
+    AC_MSG_CHECKING([if FreeType package is complete])
     if test $passed -gt 0
     then
         if test $failed -gt 0
         then
             LIB_TTF=''
-            AC_MSG_RESULT(no -- some components failed test)
+            AC_MSG_RESULT([no -- some components failed test])
             have_ttf='no (failed tests)'
         else
             LIBS="$LIB_TTF $LIBS"
-            AC_DEFINE(HasTTF,1,Define if you have FreeType (TrueType font) library)
+            AC_DEFINE([HasTTF],[1],[Define if you have FreeType (TrueType font) library])
             if test "$ac_cv_header_ft2build_h" = 'yes'
             then
               AC_DEFINE([HAVE_FT2BUILD_H],[1],[Define to 1 if you have the <ft2build.h> header file.])
              fi
-            AC_MSG_RESULT(yes)
+            AC_MSG_RESULT([yes])
             have_ttf='yes'
         fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasTTF, test "$have_ttf" = 'yes')
-AC_SUBST(LIB_TTF)
+AM_CONDITIONAL([HasTTF],[test "$have_ttf" = 'yes'])
+AC_SUBST([LIB_TTF])
 
 #
 # Check for TIFF
@@ -2421,32 +2421,32 @@ have_tiff='no'
 LIB_TIFF=''
 if test "$with_tiff" != 'no'
 then
-    AC_MSG_CHECKING(for TIFF support )
+    AC_MSG_CHECKING([for TIFF support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
     # PKG_CHECK_MODULES([TIFF], [libtiff-4], [], [])
-    AC_CHECK_HEADER(tiff.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_HEADER(tiffio.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(tiff,TIFFOpen,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(tiff,TIFFClientOpen,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(tiff,TIFFIsByteSwapped,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(tiff,TIFFReadRGBATile,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_CHECK_LIB(tiff,TIFFReadRGBAStrip,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if TIFF package is complete)
+    AC_CHECK_HEADER([tiff.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_HEADER([tiffio.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([tiff],[TIFFOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFClientOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFIsByteSwapped],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFReadRGBATile],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFReadRGBAStrip],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if TIFF package is complete])
     if test $passed -gt 0
     then
         if test $failed -gt 0
         then
-            AC_MSG_RESULT(no -- some components failed test)
+            AC_MSG_RESULT([no -- some components failed test])
             have_tiff='no (failed tests)'
         else
             LIB_TIFF='-ltiff'
             LIBS="$LIB_TIFF $LIBS"
-            AC_DEFINE(HasTIFF,1,Define if you have TIFF library)
-            AC_MSG_RESULT(yes)
+            AC_DEFINE([HasTIFF],[1],[Define if you have TIFF library])
+            AC_MSG_RESULT([yes])
             have_tiff='yes'
-            AC_CHECK_HEADERS(tiffconf.h)
+            AC_CHECK_HEADERS([tiffconf.h])
             AC_CHECK_FUNCS([TIFFIsCODECConfigured \
                             TIFFMergeFieldInfo \
                             TIFFSetErrorHandlerExt \
@@ -2455,11 +2455,11 @@ then
                             TIFFSwabArrayOfTriples])
         fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
 AM_CONDITIONAL([HasTIFF], [test "$have_tiff" = 'yes'])
-AC_SUBST(LIB_TIFF)
+AC_SUBST([LIB_TIFF])
 
 #
 # Check for JBIG
@@ -2468,32 +2468,32 @@ have_jbig='no'
 LIB_JBIG=''
 if test "$with_jbig" != 'no'
 then
-    AC_MSG_CHECKING(for JBIG support )
+    AC_MSG_CHECKING([for JBIG support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER(jbig.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-    AC_CHECK_LIB(jbig,jbg_dec_init,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-    AC_MSG_CHECKING(if JBIG package is complete)
+    AC_CHECK_HEADER([jbig.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jbig],[jbg_dec_init],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if JBIG package is complete])
     if test $passed -gt 0
     then
     if test $failed -gt 0
     then
-        AC_MSG_RESULT(no -- some components failed test)
+        AC_MSG_RESULT([no -- some components failed test])
         have_jbig='no (failed tests)'
     else
         LIB_JBIG='-ljbig'
         LIBS="$LIB_JBIG $LIBS"
-        AC_DEFINE(HasJBIG,1,Define if you have JBIG library)
-        AC_MSG_RESULT(yes)
+        AC_DEFINE([HasJBIG],[1],[Define if you have JBIG library])
+        AC_MSG_RESULT([yes])
         have_jbig='yes'
     fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasJBIG, test "$have_jbig" = 'yes')
-AC_SUBST(LIB_JBIG)
+AM_CONDITIONAL([HasJBIG],[test "$have_jbig" = 'yes'])
+AC_SUBST([LIB_JBIG])
 
 #
 # Check for WEBP
@@ -2502,7 +2502,7 @@ have_webp='no'
 LIB_WEBP=''
 if test "$with_webp" != 'no'
 then
-    AC_MSG_CHECKING(for WEBP support )
+    AC_MSG_CHECKING([for WEBP support ])
     AC_MSG_RESULT()
     failed=0
     passed=0
@@ -2511,25 +2511,25 @@ then
     AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"],[],[-lwebp])
-    AC_MSG_CHECKING(if WEBP package is complete)
+    AC_MSG_CHECKING([if WEBP package is complete])
     if test $passed -gt 0
     then
         if test $failed -gt 0
         then
-            AC_MSG_RESULT(no -- some components failed test)
+            AC_MSG_RESULT([no -- some components failed test])
             have_webp='no (failed tests)'
         else
             LIBS="$LIB_WEBP $LIBS"
-            AC_DEFINE(HasWEBP,1,Define if you have WEBP library)
-            AC_MSG_RESULT(yes)
+            AC_DEFINE([HasWEBP],[1],[Define if you have WEBP library])
+            AC_MSG_RESULT([yes])
             have_webp='yes'
         fi
     else
-        AC_MSG_RESULT(no)
+        AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL(HasWEBP, test "$have_webp" = 'yes')
-AC_SUBST(LIB_WEBP)
+AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
+AC_SUBST([LIB_WEBP])
 
 #
 # Check for XML
@@ -2806,7 +2806,7 @@ AC_SUBST([PERLMAINCC])
 
 # Subdirectory under lib to place GraphicsMagick lib files
 MagickLibSubdir="${PACKAGE_NAME}-${PACKAGE_VERSION}"
-AC_DEFINE_UNQUOTED(MagickLibSubdir,"$MagickLibSubdir",Subdirectory of lib where GraphicsMagick architecture dependent files are installed)
+AC_DEFINE_UNQUOTED([MagickLibSubdir],["$MagickLibSubdir"],[Subdirectory of lib where GraphicsMagick architecture dependent files are installed])
 
 # Path to GraphicsMagick bin directory
 MagickBinPath="${BIN_DIR}"
@@ -2816,8 +2816,8 @@ case "${build_os}" in
     MagickBinPathDefine=`$WinPathScript "$MagickBinPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickBinPath,"$MagickBinPathDefine",Directory where executables are installed.)
-AC_SUBST(MagickBinPath)
+AC_DEFINE_UNQUOTED([MagickBinPath],["$MagickBinPathDefine"],[Directory where executables are installed.])
+AC_SUBST([MagickBinPath])
 
 # Path to GraphicsMagick lib
 MagickLibPath="${LIB_DIR}/${MagickLibSubdir}"
@@ -2827,12 +2827,12 @@ case "${build_os}" in
     MagickLibPathDefine=`$WinPathScript "$MagickLibPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickLibPath,"$MagickLibPathDefine",Directory where architecture-dependent files live.)
-AC_SUBST(MagickLibPath)
+AC_DEFINE_UNQUOTED([MagickLibPath],["$MagickLibPathDefine"],[Directory where architecture-dependent files live.])
+AC_SUBST([MagickLibPath])
 
 # Subdirectory under lib to place GraphicsMagick configuration files
 MagickLibConfigSubDir="${MagickLibSubdir}/config"
-AC_DEFINE_UNQUOTED(MagickLibConfigSubDir,"$MagickLibConfigSubDir",Subdirectory of lib where architecture-dependent configuration files live.)
+AC_DEFINE_UNQUOTED([MagickLibConfigSubDir],["$MagickLibConfigSubDir"],[Subdirectory of lib where architecture-dependent configuration files live.])
 MagickLibConfigPath="${LIB_DIR}/${MagickLibConfigSubDir}"
 MagickLibConfigPathDefine="${MagickLibConfigPath}/"
 case "${build_os}" in
@@ -2840,13 +2840,13 @@ case "${build_os}" in
     MagickLibConfigPathDefine=`$WinPathScript "$MagickLibConfigPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickLibConfigPath,"$MagickLibConfigPathDefine",Directory where architecture-dependent configuration files live.)
-AC_SUBST(MagickLibConfigPath)
+AC_DEFINE_UNQUOTED([MagickLibConfigPath],["$MagickLibConfigPathDefine"],[Directory where architecture-dependent configuration files live.])
+AC_SUBST([MagickLibConfigPath])
 
 #
 # Subdirectory under lib to place GraphicsMagick coder module files
 MagickCoderModulesSubdir="${MagickLibSubdir}/modules-Q${QuantumDepth}/coders"
-AC_DEFINE_UNQUOTED(MagickCoderModulesSubdir,"$MagickCoderModulesSubdir",Subdirectory of lib where coder modules are installed)
+AC_DEFINE_UNQUOTED([MagickCoderModulesSubdir],["$MagickCoderModulesSubdir"],[Subdirectory of lib where coder modules are installed])
 MagickCoderModulesPath="${LIB_DIR}/${MagickCoderModulesSubdir}"
 MagickCoderModulesPathDefine="${MagickCoderModulesPath}/"
 case "${build_os}" in
@@ -2854,13 +2854,13 @@ case "${build_os}" in
     MagickCoderModulesPathDefine=`$WinPathScript "$MagickCoderModulesPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickCoderModulesPath,"$MagickCoderModulesPathDefine",Location of coder modules)
-AC_SUBST(MagickCoderModulesPath)
+AC_DEFINE_UNQUOTED([MagickCoderModulesPath],["$MagickCoderModulesPathDefine"],[Location of coder modules])
+AC_SUBST([MagickCoderModulesPath])
 
 #
 # Subdirectory under lib to place GraphicsMagick filter module files
 MagickFilterModulesSubdir="${MagickLibSubdir}/modules-Q${QuantumDepth}/filters"
-AC_DEFINE_UNQUOTED(MagickFilterModulesSubdir,"$MagickFilterModulesSubdir",Subdirectory of lib where filter modules are installed)
+AC_DEFINE_UNQUOTED([MagickFilterModulesSubdir],["$MagickFilterModulesSubdir"],[Subdirectory of lib where filter modules are installed])
 MagickFilterModulesPath="${LIB_DIR}/${MagickFilterModulesSubdir}"
 MagickFilterModulesPathDefine="${MagickFilterModulesPath}/"
 case "${build_os}" in
@@ -2868,8 +2868,8 @@ case "${build_os}" in
     MagickFilterModulesPathDefine=`$WinPathScript "$MagickFilterModulesPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickFilterModulesPath,"$MagickFilterModulesPathDefine",Location of filter modules)
-AC_SUBST(MagickFilterModulesPath)
+AC_DEFINE_UNQUOTED([MagickFilterModulesPath],["$MagickFilterModulesPathDefine"],[Location of filter modules])
+AC_SUBST([MagickFilterModulesPath])
 
 #
 # Path to GraphicsMagick share files
@@ -2881,12 +2881,12 @@ case "${build_os}" in
     MagickSharePathDefine=`$WinPathScript "$MagickSharePathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickSharePath,"$MagickSharePathDefine",Directory where architecture-independent files live.)
-AC_SUBST(MagickSharePath)
+AC_DEFINE_UNQUOTED([MagickSharePath],["$MagickSharePathDefine"],[Directory where architecture-independent files live.])
+AC_SUBST([MagickSharePath])
 
 # Subdirectory under share to place GraphicsMagick configuration files
 MagickShareConfigSubDir="${MagickLibSubdir}/config"
-AC_DEFINE_UNQUOTED(MagickShareConfigSubDir,"$MagickShareConfigSubDir",Subdirectory of lib where architecture-independent configuration files live.)
+AC_DEFINE_UNQUOTED([MagickShareConfigSubDir],["$MagickShareConfigSubDir"],[Subdirectory of lib where architecture-independent configuration files live.])
 MagickShareConfigPath="${DATA_DIR}/${MagickShareConfigSubDir}"
 MagickShareConfigPathDefine="${MagickShareConfigPath}/"
 case "${build_os}" in
@@ -2894,8 +2894,8 @@ case "${build_os}" in
     MagickShareConfigPathDefine=`$WinPathScript "$MagickShareConfigPathDefine" 1`
     ;;
 esac
-AC_DEFINE_UNQUOTED(MagickShareConfigPath,"$MagickShareConfigPathDefine",Directory where architecture-independent configuration files live.)
-AC_SUBST(MagickShareConfigPath)
+AC_DEFINE_UNQUOTED([MagickShareConfigPath],["$MagickShareConfigPathDefine"],[Directory where architecture-independent configuration files live.])
+AC_SUBST([MagickShareConfigPath])
 
 # Extra options to pass to dcraw via delegates.mgk.  This substition
 # is done directly on delegates.mgk and has no effect on the compiled
@@ -2910,7 +2910,7 @@ if test "$have_tiff" = 'yes' ; then
    DcrawExtraOptions="$DcrawExtraOptions -T"
 fi
 DcrawExtraOptions=`echo $DcrawExtraOptions | sed -e 's/  */ /g'`
-AC_SUBST(DcrawExtraOptions)
+AC_SUBST([DcrawExtraOptions])
 
 #
 # program_transform_name is formed for use in a Makefile, so create a
@@ -2965,32 +2965,32 @@ dnl ZipDelegateDefault='gzip'
 # Search for delegates
 dnl AC_PATH_PROG(AutotraceDecodeDelegate, "$AutotraceDecodeDelegateDefault", "$AutotraceDecodeDelegateDefault")
 dnl AC_PATH_PROG(BZIPDelegate, "$BZIPDelegateDefault", "$BZIPDelegateDefault")
-AC_PATH_PROGS(BrowseDelegate, "$BrowseDelegateDefault" firefox konqueror google-chrome mozilla lynx, "$BrowseDelegateDefault")
-AC_PATH_PROG(CGMDecodeDelegate, "$CGMDecodeDelegateDefault", "$CGMDecodeDelegateDefault")
-dnl AC_PATH_PROG(CatDelegate, "$CatDelegateDefault", "$CatDelegateDefault")
-AC_PATH_PROG(DCRAWDecodeDelegate, "$DCRAWDecodeDelegateDefault", "$DCRAWDecodeDelegateDefault")
-AC_PATH_PROG(DOTDecodeDelegate, "$DOTDecodeDelegateDefault", "$DOTDecodeDelegateDefault")
-AC_PATH_PROG(DVIDecodeDelegate, "$DVIDecodeDelegateDefault", "$DVIDecodeDelegateDefault")
-dnl AC_PATH_PROG(EchoDelegate, "$EchoDelegateDefault", "$EchoDelegateDefault")
-AC_PATH_PROG(EditorDelegate, "$EditorDelegateDefault", "$EditorDelegateDefault")
-AC_PATH_PROG(FIGDecodeDelegate, "$FIGDecodeDelegateDefault", "$FIGDecodeDelegateDefault")
-AC_PATH_PROG(GMDelegate, "$GMDelegateDefault", "$GMDelegateDefault")
-dnl AC_PATH_PROG(GnuplotDecodeDelegate, "$GnuplotDecodeDelegateDefault", "$GnuplotDecodeDelegateDefault")
-AC_PATH_PROG(HPGLDecodeDelegate, "$HPGLDecodeDelegateDefault", "$HPGLDecodeDelegateDefault")
-AC_PATH_PROG(HTMLDecodeDelegate, "$HTMLDecodeDelegateDefault", "$HTMLDecodeDelegateDefault")
-AC_PATH_PROG(ILBMDecodeDelegate, "$ILBMDecodeDelegateDefault", "$ILBMDecodeDelegateDefault")
-AC_PATH_PROG(ILBMEncodeDelegate, "$ILBMEncodeDelegateDefault", "$ILBMEncodeDelegateDefault")
-AC_PATH_PROG(LPDelegate, "$LPDelegateDefault", no)
-AC_PATH_PROG(LPRDelegate, "$LPRDelegateDefault", no)
-AC_PATH_PROG(LaunchDelegate, "$LaunchDelegateDefault", "$LaunchDelegateDefault")
+AC_PATH_PROGS([BrowseDelegate], ["$BrowseDelegateDefault" firefox konqueror google-chrome mozilla lynx], ["$BrowseDelegateDefault"])
+AC_PATH_PROG([CGMDecodeDelegate], ["$CGMDecodeDelegateDefault"], ["$CGMDecodeDelegateDefault"])
+dnl AC_PATH_PROG([CatDelegate], ["$CatDelegateDefault"], ["$CatDelegateDefault"])
+AC_PATH_PROG([DCRAWDecodeDelegate], ["$DCRAWDecodeDelegateDefault"], ["$DCRAWDecodeDelegateDefault"])
+AC_PATH_PROG([DOTDecodeDelegate], ["$DOTDecodeDelegateDefault"], ["$DOTDecodeDelegateDefault"])
+AC_PATH_PROG([DVIDecodeDelegate], ["$DVIDecodeDelegateDefault"], ["$DVIDecodeDelegateDefault"])
+dnl AC_PATH_PROG([EchoDelegate], ["$EchoDelegateDefault"], ["$EchoDelegateDefault"])
+AC_PATH_PROG([EditorDelegate], ["$EditorDelegateDefault"], ["$EditorDelegateDefault"])
+AC_PATH_PROG([FIGDecodeDelegate], ["$FIGDecodeDelegateDefault"], ["$FIGDecodeDelegateDefault"])
+AC_PATH_PROG([GMDelegate], ["$GMDelegateDefault"], ["$GMDelegateDefault"])
+dnl AC_PATH_PROG([GnuplotDecodeDelegate], [$GnuplotDecodeDelegateDefault"], ["$GnuplotDecodeDelegateDefault"])
+AC_PATH_PROG([HPGLDecodeDelegate], ["$HPGLDecodeDelegateDefault"], ["$HPGLDecodeDelegateDefault"])
+AC_PATH_PROG([HTMLDecodeDelegate], ["$HTMLDecodeDelegateDefault"], ["$HTMLDecodeDelegateDefault"])
+AC_PATH_PROG([ILBMDecodeDelegate], ["$ILBMDecodeDelegateDefault"], ["$ILBMDecodeDelegateDefault"])
+AC_PATH_PROG([ILBMEncodeDelegate], ["$ILBMEncodeDelegateDefault"], ["$ILBMEncodeDelegateDefault"])
+AC_PATH_PROG([LPDelegate], ["$LPDelegateDefault"], [no])
+AC_PATH_PROG([LPRDelegate], ["$LPRDelegateDefault"], [no])
+AC_PATH_PROG([LaunchDelegate], ["$LaunchDelegateDefault"], ["$LaunchDelegateDefault"])
 dnl AC_PATH_PROG(MANDelegate, "$MANDelegateDefault", "$MANDelegateDefault")
-AC_PATH_PROG(MPEGDecodeDelegate, "$MPEGDecodeDelegateDefault", "$MPEGDecodeDelegateDefault")
-AC_PATH_PROG(MPEGEncodeDelegate, "$MPEGEncodeDelegateDefault", "$MPEGEncodeDelegateDefault")
-AC_PATH_PROG(MVDelegate, "$MVDelegateDefault", "$MVDelegateDefault")
-dnl AC_PATH_PROG(PGPDecodeDelegate, "$PGPDecodeDelegateDefault", "$PGPDecodeDelegateDefault")
-dnl AC_PATH_PROG(POVDelegate, "$POVDelegateDefault", "$POVDelegateDefault")
+AC_PATH_PROG([MPEGDecodeDelegate], ["$MPEGDecodeDelegateDefault"], ["$MPEGDecodeDelegateDefault"])
+AC_PATH_PROG([MPEGEncodeDelegate], ["$MPEGEncodeDelegateDefault"], ["$MPEGEncodeDelegateDefault"])
+AC_PATH_PROG([MVDelegate], ["$MVDelegateDefault"], ["$MVDelegateDefault"])
+dnl AC_PATH_PROG([PGPDecodeDelegate], ["$PGPDecodeDelegateDefault"], ["$PGPDecodeDelegateDefault"])
+dnl AC_PATH_PROG([POVDelegate], ["$POVDelegateDefault"], ["$POVDelegateDefault"])
 if test "$with_gs" = 'yes' ; then
-  AC_PATH_PROG(PSDelegate, "$PSDelegateDefault", "$PSDelegateDefault")
+  AC_PATH_PROG([PSDelegate], ["$PSDelegateDefault"], ["$PSDelegateDefault"])
 else
   PSDelegate=$PSDelegateDefault
 fi
@@ -3010,7 +3010,7 @@ then
 else
   PrintDelegate="$LPDelegate -c -s"
 fi
-AC_SUBST(PrintDelegate)
+AC_SUBST([PrintDelegate])
 
 # Installed GraphicsMagick utiltity paths
 GMDelegate="${BIN_DIR}/${GMDelegateDefault}"
@@ -3027,17 +3027,17 @@ dnl have_ra_ppm='no'  ; if test "$RADDecodeDelegate" != "$RADDecodeDelegateDefau
 have_ralcgm='no'  ; if test "$CGMDecodeDelegate" != "$CGMDecodeDelegateDefault" ; then have_ralcgm='yes' ; fi
 
 # Automake conditional to support test suite
-AM_CONDITIONAL(HasPSDelegate, test "$have_gs" = 'yes')
+AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
 # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
-AC_CHECK_PROGS(RST2HTML,[rst2html.py rst2html])
-AC_SUBST(RST2HTML)
-AM_CONDITIONAL(HasRST2HTML, test "x$RST2HTML" != 'x')
+AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
+AC_SUBST([RST2HTML])
+AM_CONDITIONAL([HasRST2HTML],[test "x$RST2HTML" != 'x'])
 
 # Test for optional txt2html utility and define automake conditional HasTXT2HTML if found.
-AC_PATH_PROGS(TXT2HTML, [txt2html])
-AC_SUBST(TXT2HTML)
-AM_CONDITIONAL(HasTXT2HTML, test "$TXT2HTML" != 'x')
+AC_PATH_PROGS([TXT2HTML], [txt2html])
+AC_SUBST([TXT2HTML])
+AM_CONDITIONAL([HasTXT2HTML],[test "$TXT2HTML" != 'x'])
 
 #
 # Test for font directories
@@ -3073,11 +3073,11 @@ fi
 if test -n "$windows_font_dir"
 then
   type_include_files="$type_include_files "'<include file="type-windows.mgk" />'
-  AC_MSG_RESULT($windows_font_dir)
+  AC_MSG_RESULT([$windows_font_dir])
 else
-  AC_MSG_RESULT(not found!);
+  AC_MSG_RESULT([not found!]);
 fi
-AC_SUBST(windows_font_dir)
+AC_SUBST([windows_font_dir])
 
 # Adobe Postscript fonts on various systems
 AC_MSG_CHECKING([for Solaris OpenWindows Type 1 fonts (location of Helvetica.afm)])
@@ -3094,9 +3094,9 @@ case $host_os in
 esac
 if test -n "$openwin_fonts"
 then
-  AC_MSG_RESULT($openwin_fonts)
+  AC_MSG_RESULT([$openwin_fonts])
 else
-  AC_MSG_RESULT(not found!);
+  AC_MSG_RESULT([not found!]);
 fi
 
 # Ghostscript
@@ -3172,18 +3172,18 @@ fi
 if test "${ghostscript_font_dir}x" != 'x'
 then
   type_include_files="${type_include_files} "'<include file="type-ghostscript.mgk" />'
-  AC_MSG_RESULT($ghostscript_font_dir)
+  AC_MSG_RESULT([$ghostscript_font_dir])
 else
-  AC_MSG_RESULT(not found!);
+  AC_MSG_RESULT([not found!]);
 fi
-AC_SUBST(ghostscript_font_dir)
+AC_SUBST([ghostscript_font_dir])
 case "${build_os}" in
   mingw* )
     PSDelegate=`$WinPathScript "$PSDelegate" 1`
     ;;
 esac
 
-AC_SUBST(type_include_files)
+AC_SUBST([type_include_files])
 
 #
 # Handle case where user doesn't want frozen paths
@@ -3230,65 +3230,65 @@ dnl  ZipDelegate="$ZipDelegateDefault"
 fi
 
 # Delegate substitutions
-dnl AC_SUBST(AutotraceDecodeDelegate)
-dnl AC_SUBST(BZIPDelegate)
-AC_SUBST(BrowseDelegate)
-dnl AC_SUBST(CGMDecodeDelegate)
-dnl AC_SUBST(CatDelegate)
-AC_SUBST(ConvertDelegate)
-AC_SUBST(DOTDecodeDelegate)
-AC_SUBST(DVIDecodeDelegate)
-dnl AC_SUBST(EchoDelegate)
-AC_SUBST(EditorDelegate)
-AC_SUBST(FIGDecodeDelegate)
-dnl AC_SUBST(GnuplotDecodeDelegate)
-AC_SUBST(HPGLDecodeDelegate)
-AC_SUBST(HTMLDecodeDelegate)
-AC_SUBST(ILBMDecodeDelegate)
-AC_SUBST(ILBMEncodeDelegate)
-AC_SUBST(LPDelegate)
-AC_SUBST(LaunchDelegate)
-dnl AC_SUBST(MANDelegate)
-AC_SUBST(MPEGDecodeDelegate)
-AC_SUBST(MPEGEncodeDelegate)
-dnl AC_SUBST(MVDelegate)
-AC_SUBST(MogrifyDelegate)
-dnl AC_SUBST(PGPDecodeDelegate)
-dnl AC_SUBST(POVDelegate)
-AC_SUBST(PSDelegate)
-dnl AC_SUBST(RADDecodeDelegate)
-dnl AC_SUBST(RLEEncodeDelegate)
-dnl AC_SUBST(RMDelegate)
-dnl AC_SUBST(SCANDecodeDelegate)
-AC_SUBST(ShowImageDelegate)
-dnl AC_SUBST(TXTDelegate)
-dnl AC_SUBST(WMFDecodeDelegate)
-dnl AC_SUBST(WWWDecodeDelegate)
-dnl AC_SUBST(ZipDelegate)
+dnl AC_SUBST([AutotraceDecodeDelegate])
+dnl AC_SUBST([BZIPDelegate])
+AC_SUBST([BrowseDelegate])
+dnl AC_SUBST([CGMDecodeDelegate])
+dnl AC_SUBST([CatDelegate])
+AC_SUBST([ConvertDelegate])
+AC_SUBST([DOTDecodeDelegate])
+AC_SUBST([DVIDecodeDelegate])
+dnl AC_SUBST([EchoDelegate])
+AC_SUBST([EditorDelegate])
+AC_SUBST([FIGDecodeDelegate])
+dnl AC_SUBST([GnuplotDecodeDelegate])
+AC_SUBST([HPGLDecodeDelegate])
+AC_SUBST([HTMLDecodeDelegate])
+AC_SUBST([ILBMDecodeDelegate])
+AC_SUBST([ILBMEncodeDelegate])
+AC_SUBST([LPDelegate])
+AC_SUBST([LaunchDelegate])
+dnl AC_SUBST([MANDelegate])
+AC_SUBST([MPEGDecodeDelegate])
+AC_SUBST([MPEGEncodeDelegate])
+dnl AC_SUBST([MVDelegate])
+AC_SUBST([MogrifyDelegate])
+dnl AC_SUBST([PGPDecodeDelegate])
+dnl AC_SUBST([POVDelegate])
+AC_SUBST([PSDelegate])
+dnl AC_SUBST([RADDecodeDelegate])
+dnl AC_SUBST([RLEEncodeDelegate])
+dnl AC_SUBST([RMDelegate])
+dnl AC_SUBST([SCANDecodeDelegate])
+AC_SUBST([ShowImageDelegate])
+dnl AC_SUBST([TXTDelegate])
+dnl AC_SUBST([WMFDecodeDelegate])
+dnl AC_SUBST([WWWDecodeDelegate])
+dnl AC_SUBST([ZipDelegate])
 
 #
 # RedHat RPM support (http://rpm5.org/)
 #
 RPM=''
-AC_CHECK_PROGS(RPM,[rpmbuild rpm])
-AC_SUBST(RPM)
-AM_CONDITIONAL(HAS_RPM, test "x$RPM" != "x" )
+AC_CHECK_PROGS([RPM],[rpmbuild rpm])
+AC_SUBST([RPM])
+AM_CONDITIONAL([HAS_RPM],[test "x$RPM" != "x"])
 
 #
 # 7ZIP support (http://p7zip.sourceforge.net/)
 #
 P7ZIP=''
-AC_CHECK_PROGS(P7ZIP,[7za])
+AC_CHECK_PROGS([P7ZIP],[7za])
 AC_SUBST(P7ZIP)
-AM_CONDITIONAL(HAS_P7ZIP, test "x$P7ZIP" != "x" )
+AM_CONDITIONAL([HAS_P7ZIP],[test "x$P7ZIP" != "x"])
 
 #
 # ZIP support (http://www.info-zip.org/Zip.html)
 #
 ZIP=''
-AC_CHECK_PROGS(ZIP,[zip])
-AC_SUBST(ZIP)
-AM_CONDITIONAL(HAS_ZIP, test "x$ZIP" != "x" )
+AC_CHECK_PROGS([ZIP],[zip])
+AC_SUBST([ZIP])
+AM_CONDITIONAL([HAS_ZIP],[test "x$ZIP" != "x"])
 
 #
 # Ghostscript related configuration.
@@ -3306,14 +3306,14 @@ GSVersion='unknown'
 if test $have_gs = 'yes'
 then
 
-  AC_MSG_CHECKING(for Ghostscript version)
+  AC_MSG_CHECKING([for Ghostscript version])
   if GSVersion=`$PSDelegate --version`
   then
     :
   else
     GSVersion=`$PSDelegate --help | sed -e '1q' | awk '{ print $3 }'`
   fi
-  AC_MSG_RESULT($GSVersion)
+  AC_MSG_RESULT([$GSVersion])
 
   # GSColorDevice # AS_MESSAGE_LOG_FD
   AC_MSG_CHECKING([for gs color device])
@@ -3328,7 +3328,7 @@ then
       GSColorDevice=ppmraw
     fi
   fi
-  AC_MSG_RESULT($GSColorDevice)
+  AC_MSG_RESULT([$GSColorDevice])
 
   # GSColorAlphaDevice
   AC_MSG_CHECKING([for gs color+alpha device])
@@ -3338,7 +3338,7 @@ then
   else
     GSColorAlphaDevice=$GSColorDevice
   fi
-  AC_MSG_RESULT($GSColorAlphaDevice)
+  AC_MSG_RESULT([$GSColorAlphaDevice])
 
   # GSGrayDevice
   AC_MSG_CHECKING([for gs gray device])
@@ -3348,7 +3348,7 @@ then
   else
     GSGrayDevice=ppmraw
   fi
-  AC_MSG_RESULT($GSGrayDevice)
+  AC_MSG_RESULT([$GSGrayDevice])
 
   # GSPaletteDevice
   AC_MSG_CHECKING([for gs pallet device])
@@ -3368,7 +3368,7 @@ then
   else
     GSMonoDevice=ppmraw
   fi
-  AC_MSG_RESULT($GSMonoDevice)
+  AC_MSG_RESULT([$GSMonoDevice])
 
   # GSCMYKDevice
   AC_MSG_CHECKING([for gs CMYK device])
@@ -3381,7 +3381,7 @@ then
       break
     fi
   done
-  AC_MSG_RESULT($GSCMYKDevice)
+  AC_MSG_RESULT([$GSCMYKDevice])
 
   # GSPDFDevice
   AC_MSG_CHECKING([for gs PDF writing device])
@@ -3391,7 +3391,7 @@ then
   else
     GSPDFDevice=nodevice
   fi
-  AC_MSG_RESULT($GSPDFDevice)
+  AC_MSG_RESULT([$GSPDFDevice])
 
   # GSPSDevice
   AC_MSG_CHECKING([for gs PS writing device])
@@ -3404,7 +3404,7 @@ then
       break
     fi
   done
-  AC_MSG_RESULT($GSPSDevice)
+  AC_MSG_RESULT([$GSPSDevice])
 
   # GSEPSDevice
   AC_MSG_CHECKING([for gs EPS writing device])
@@ -3417,20 +3417,20 @@ then
       break
     fi
   done
-  AC_MSG_RESULT($GSEPSDevice)
+  AC_MSG_RESULT([$GSEPSDevice])
 
 fi
 
-AC_SUBST(GSMonoDevice)
-AC_SUBST(GSCMYKDevice)
-AC_SUBST(GSGrayDevice)
-AC_SUBST(GSPaletteDevice)
-AC_SUBST(GSColorDevice)
-AC_SUBST(GSColorAlphaDevice)
-AC_SUBST(GSPDFDevice)
-AC_SUBST(GSPSDevice)
-AC_SUBST(GSEPSDevice)
-AC_SUBST(GSVersion)
+AC_SUBST([GSMonoDevice])
+AC_SUBST([GSCMYKDevice])
+AC_SUBST([GSGrayDevice])
+AC_SUBST([GSPaletteDevice])
+AC_SUBST([GSColorDevice])
+AC_SUBST([GSColorAlphaDevice])
+AC_SUBST([GSPDFDevice])
+AC_SUBST([GSPSDevice])
+AC_SUBST([GSEPSDevice])
+AC_SUBST([GSVersion])
 
 #
 # PerlMagick-related configuration
@@ -3443,12 +3443,12 @@ if test "$with_perl" != 'no'
 then
     if test "$with_perl" != 'yes'
     then
-        AC_CACHE_CHECK(for perl,ac_cv_path_PERL,ac_cv_path_PERL="$with_perl");
+        AC_CACHE_CHECK([for perl],[ac_cv_path_PERL],[ac_cv_path_PERL="$with_perl"]);
         PERL=$ac_cv_path_PERL
-        AC_SUBST(PERL)dnl
+        AC_SUBST([PERL])dnl
         have_perl="$ac_cv_path_PERL"
     else
-        AC_PATH_PROGS(PERL,perl perl5,)dnl
+        AC_PATH_PROGS([PERL],[perl perl5],)dnl
         if test "$ac_cv_path_PERL"
         then
           have_perl="$ac_cv_path_PERL"
@@ -3475,12 +3475,12 @@ then
   fi
 
   # Is PERL's MakeMaker new enough to support DESTDIR?
-  AC_PROG_PERL_VERSION(5.8.1,[PERL_SUPPORTS_DESTDIR='yes'],[PERL_SUPPORTS_DESTDIR='no'])
+  AC_PROG_PERL_VERSION([5.8.1],[PERL_SUPPORTS_DESTDIR='yes'],[PERL_SUPPORTS_DESTDIR='no'])
 fi
-AM_CONDITIONAL(WITH_PERL, test "$have_perl" != 'no')
-AM_CONDITIONAL(WITH_PERL_STATIC, test $with_perl_static = 'yes')
-AM_CONDITIONAL(WITH_PERL_DYNAMIC, test $with_perl_dynamic = 'yes')
-AC_SUBST(PERL_SUPPORTS_DESTDIR)
+AM_CONDITIONAL([WITH_PER]L,[test "$have_perl" != 'no'])
+AM_CONDITIONAL([WITH_PERL_STATIC],[test $with_perl_static = 'yes'])
+AM_CONDITIONAL([WITH_PERL_DYNAMIC],[test $with_perl_dynamic = 'yes'])
+AC_SUBST([PERL_SUPPORTS_DESTDIR])
 
 # Determine path to pick up GraphicsMagick library from for use with building PerlMagick
 MAGICKLIBDIR="${LIB_DIR}"
@@ -3504,8 +3504,8 @@ then
   MAGICKLIBDIR="${builddir}/magick/${libtool_objdir}"
   MAGICKLIB="-L${MAGICKLIBDIR} -lGraphicsMagick"
 fi
-AC_SUBST(MAGICKLIB)
-AC_SUBST(MAGICKLIBDIR)
+AC_SUBST([MAGICKLIB])
+AC_SUBST([MAGICKLIBDIR])
 
 # Create a simple string containing format names for all delegate libraries
 # DELEGATES is used to select sub-directories in the PerlMagick test suite
@@ -3621,8 +3621,8 @@ fi
 # Remove extraneous spaces from output variables (asthetic)
 DELEGATES=`echo $DELEGATES | sed -e 's/  */ /g'`
 MAGICK_FEATURES=`echo $MAGICK_FEATURES | sed -e 's/  */ /g'`
-AC_SUBST(DELEGATES)
-AC_SUBST(MAGICK_FEATURES)
+AC_SUBST([DELEGATES])
+AC_SUBST([MAGICK_FEATURES])
 
 #
 # Handle special compiler flags
@@ -3668,8 +3668,8 @@ else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
-AC_SUBST(MAGICK_DEP_LIBS)
-AC_SUBST(MAGICK_EXTRA_DEP_LIBS)
+AC_SUBST([MAGICK_DEP_LIBS])
+AC_SUBST([MAGICK_EXTRA_DEP_LIBS])
 
 #
 # Remove extraneous spaces from output variables (asthetic)
@@ -3699,32 +3699,31 @@ MAGICK_API_DEP_LIBS=`echo $MAGICK_API_DEP_LIBS | sed -e 's/  */ /g'`
 MAGICK_API_LIBS=`echo $MAGICK_API_LIBS | sed -e 's/  */ /g'`
 
 # Save configure/build parameters for later reference
-AC_DEFINE_UNQUOTED(GM_BUILD_CONFIGURE_ARGS,"$0 ${ac_configure_args}",[arguments passed to configure])
-AC_DEFINE_UNQUOTED(GM_BUILD_HOST,"${host}",[Host identification triplet])
-AC_DEFINE_UNQUOTED(GM_BUILD_CC,"${CC}",[C compiler used for compilation])
-AC_DEFINE_UNQUOTED(GM_BUILD_CXX,"${CXX}",[C++ compiler used for compilation])
-AC_DEFINE_UNQUOTED(GM_BUILD_CFLAGS,"${CFLAGS}",[CFLAGS used for C compilation])
-AC_DEFINE_UNQUOTED(GM_BUILD_CPPFLAGS,"${CPPFLAGS}",[CPPFLAGS used for preprocessing])
-AC_DEFINE_UNQUOTED(GM_BUILD_CXXFLAGS,"${CXXFLAGS}",[CXXFLAGS used for C++ compilation])
-AC_DEFINE_UNQUOTED(GM_BUILD_LDFLAGS,"${LDFLAGS}",[LDFLAGS used for linking])
-AC_DEFINE_UNQUOTED(GM_BUILD_LIBS,"${MAGICK_API_DEP_LIBS}",[LIBS used for linking])
+AC_DEFINE_UNQUOTED([GM_BUILD_CONFIGURE_ARGS],["$0 ${ac_configure_args}"],[arguments passed to configure])
+AC_DEFINE_UNQUOTED([GM_BUILD_HOST],["${host}"],[Host identification triplet])
+AC_DEFINE_UNQUOTED([GM_BUILD_CC],["${CC}"],[C compiler used for compilation])
+AC_DEFINE_UNQUOTED([GM_BUILD_CXX],["${CXX}"],[C++ compiler used for compilation])
+AC_DEFINE_UNQUOTED([GM_BUILD_CFLAGS],["${CFLAGS}"],[CFLAGS used for C compilation])
+AC_DEFINE_UNQUOTED([GM_BUILD_CPPFLAGS],["${CPPFLAGS}"],[CPPFLAGS used for preprocessing])
+AC_DEFINE_UNQUOTED([GM_BUILD_CXXFLAGS],["${CXXFLAGS}"],[CXXFLAGS used for C++ compilation])
+AC_DEFINE_UNQUOTED([GM_BUILD_LDFLAGS],["${LDFLAGS}"],[LDFLAGS used for linking])
+AC_DEFINE_UNQUOTED([GM_BUILD_LIBS],["${MAGICK_API_DEP_LIBS}"],[LIBS used for linking])
 
 # Pass only user-provided LIBS as "global" libraries
 LIBS=$LIBS_USER
 
-#AC_SUBST(CPPFLAGS)
-AC_SUBST(X_CFLAGS)
-#AC_SUBST(LDFLAGS)
-#AC_SUBST(X_PRE_LIBS)
-#AC_SUBST(X_LIBS)
-#AC_SUBST(X_EXTRA_LIBS)
+#AC_SUBST([CPPFLAGS])
+AC_SUBST([X_CFLAGS])
+#AC_SUBST([LDFLAGS])
+#AC_SUBST([X_PRE_LIBS])
+#AC_SUBST([X_LIBS])
+#AC_SUBST([X_EXTRA_LIBS])
 
-
-AC_SUBST(MAGICK_API_CFLAGS)
-AC_SUBST(MAGICK_API_CPPFLAGS)
-AC_SUBST(MAGICK_API_PC_CPPFLAGS)
-AC_SUBST(MAGICK_API_LDFLAGS)
-AC_SUBST(MAGICK_API_LIBS)
+AC_SUBST([MAGICK_API_CFLAGS])
+AC_SUBST([MAGICK_API_CPPFLAGS])
+AC_SUBST([MAGICK_API_PC_CPPFLAGS])
+AC_SUBST([MAGICK_API_LDFLAGS])
+AC_SUBST([MAGICK_API_LIBS])
 
 AC_CONFIG_FILES(\
         GraphicsMagick.spec \

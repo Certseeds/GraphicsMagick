@@ -6825,7 +6825,7 @@ case "${host_os}" in
     native_win32_build='yes'
     ;;
 esac
- if test "${native_win32_build}" = 'yes' ; then
+ if test "${native_win32_build}" = 'yes'; then
   WIN32_NATIVE_BUILD_TRUE=
   WIN32_NATIVE_BUILD_FALSE='#'
 else
@@ -6833,7 +6833,7 @@ else
   WIN32_NATIVE_BUILD_FALSE=
 fi
 
- if test "${cygwin_build}" = 'yes' ; then
+ if test "${cygwin_build}" = 'yes'; then
   CYGWIN_BUILD_TRUE=
   CYGWIN_BUILD_FALSE='#'
 else
@@ -19254,7 +19254,7 @@ case "${with_quantum_depth}" in
   8 ) ;;
   16 ) ;;
   32 ) ;;
-  * ) as_fn_error 16 "\"Pixel quantum depth must have value of 8" "$LINENO" 5 ;;
+  * ) as_fn_error $? "Pixel quantum depth must have value of 8, 16, or 32" "$LINENO" 5 ;;
 esac
 QuantumDepth="$with_quantum_depth"
 
@@ -19475,7 +19475,7 @@ if test "$with_lzma" != 'yes' ; then
 fi
 
 # # Disable MPEG.
-# AC_ARG_WITH(mpeg2,
+# AC_ARG_WITH([mpeg2],
 #             AS_HELP_STRING([--without-mpeg2],
 #                            [disable MPEG support]),
 #             [with_mpeg2=$withval],
@@ -23917,9 +23917,9 @@ fi
   else
     failed=`expr $failed + 1`
   fi
-  #AC_CHECK_LIB(bz2,BZ2_bzCompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  #AC_CHECK_LIB(bz2,BZ2_bzDecompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-  #AC_CHECK_LIB(bz2,_imp__BZ2_decompress,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+  #AC_CHECK_LIB([bz2],[BZ2_bzCompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  #AC_CHECK_LIB([bz2],[BZ2_bzDecompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+  #AC_CHECK_LIB([bz2],[_imp__BZ2_decompress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if BZLIB package is complete" >&5
 $as_echo_n "checking if BZLIB package is complete... " >&6; }
   if test $passed -gt 0
@@ -26057,7 +26057,7 @@ fi
 
 
 #
-# Check for JPEG Version 2
+# Check for JPEG Version 2 (Jasper)
 #
 have_jp2='no'
 LIB_JP2=''
@@ -26160,32 +26160,32 @@ fi
 # LIB_MPEG2=''
 # if test "$with_mpeg2" != 'no'
 # then
-#     AC_MSG_CHECKING(for MPEG version 2 support )
+#     AC_MSG_CHECKING([for MPEG version 2 support ])
 #     AC_MSG_RESULT()
 #     failed=0
 #     passed=0
-#     AC_CHECK_HEADER(mpeg2dec/mpeg2.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`)
-#     AC_CHECK_LIB(mpeg2,mpeg2_decode_data,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
-#     AC_MSG_CHECKING(if MPEG version 2 support package is complete)
+#     AC_CHECK_HEADER([mpeg2dec/mpeg2.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+#     AC_CHECK_LIB([mpeg2],[mpeg2_decode_data],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+#     AC_MSG_CHECKING([if MPEG version 2 support package is complete])
 #     if test $passed -gt 0
 #     then
 #     if test $failed -gt 0
 #     then
-#       AC_MSG_RESULT(no -- some components failed test)
+#       AC_MSG_RESULT([no -- some components failed test])
 #       have_mpeg2='no (failed tests)'
 #     else
 #       LIB_MPEG2='-lmpeg2'
 #       LIBS="$LIB_MPEG2 $LIBS"
-#       AC_DEFINE(HasMPEG2,1,Define if you have MPEG2 library)
-#       AC_MSG_RESULT(yes)
+#       AC_DEFINE([HasMPEG2],[1],[Define if you have MPEG2 library])
+#       AC_MSG_RESULT([yes])
 #       have_mpeg2='yes'
 #     fi
 #     else
-#     AC_MSG_RESULT(no)
+#     AC_MSG_RESULT([no])
 #     fi
 # fi
-# AM_CONDITIONAL(HasMPEG2, test "$have_mpeg2" = 'yes')
-# AC_SUBST(LIB_MPEG2)
+# AM_CONDITIONAL([HasMPEG2],[test "$have_mpeg2" = 'yes'])
+# AC_SUBST([LIB_MPEG2])
 
 #
 # Check for TTF
@@ -29425,7 +29425,7 @@ fi
 done
 
 
- if test "x$RPM" != "x" ; then
+ if test "x$RPM" != "x"; then
   HAS_RPM_TRUE=
   HAS_RPM_FALSE='#'
 else
@@ -29481,7 +29481,7 @@ fi
 done
 
 
- if test "x$P7ZIP" != "x" ; then
+ if test "x$P7ZIP" != "x"; then
   HAS_P7ZIP_TRUE=
   HAS_P7ZIP_FALSE='#'
 else
@@ -29537,7 +29537,7 @@ fi
 done
 
 
- if test "x$ZIP" != "x" ; then
+ if test "x$ZIP" != "x"; then
   HAS_ZIP_TRUE=
   HAS_ZIP_FALSE='#'
 else
@@ -30150,13 +30150,12 @@ _ACEOF
 # Pass only user-provided LIBS as "global" libraries
 LIBS=$LIBS_USER
 
-#AC_SUBST(CPPFLAGS)
+#AC_SUBST([CPPFLAGS])
 
-#AC_SUBST(LDFLAGS)
-#AC_SUBST(X_PRE_LIBS)
-#AC_SUBST(X_LIBS)
-#AC_SUBST(X_EXTRA_LIBS)
-
+#AC_SUBST([LDFLAGS])
+#AC_SUBST([X_PRE_LIBS])
+#AC_SUBST([X_LIBS])
+#AC_SUBST([X_EXTRA_LIBS])
 
 
 
