@@ -1730,11 +1730,14 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
                                     &image->exception)) == (Image *) NULL)
             break;
           status &= SetImageClipMask(image,clip_mask);
+          /*
+            SetImageClipMask() clones the provided clip_mask image so
+            destroy original reference.
+          */
           DestroyImage(clip_mask);
           if (status == MagickFail)
             break;
           image_clip_mask = *ImageGetClipMaskInlined(image);
-          break;
         }
       else
         {

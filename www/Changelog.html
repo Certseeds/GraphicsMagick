@@ -35,6 +35,15 @@
 <div class="document">
 
 
+<p>2020-10-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/render.c (DrawClipPath): Remove break statement so that
+added clip-mask image is initialized properly and rendered-on as
+expected.  Thanks to László Böszörményi for reporting this problem
+prior to release.</li>
+</ul>
+</blockquote>
 <p>2020-10-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -168,7 +177,7 @@ DTOLONG_MIN.</li>
 enabled.</li>
 <li>configure.ac: Add a --without-gs configure option to disable
 reading PS, EPS, and PDF formats via an external Ghostscript
-delegate program.  This is indended as an absolute security
+delegate program.  This is intended as an absolute security
 measure for sites that want to be assured to avoid executing
 Ghostscript even though it is installed on the system.  Removal of
 PS and PDF reading support breaks reading other formats which are

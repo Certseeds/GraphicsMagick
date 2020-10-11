@@ -1,3 +1,10 @@
+2020-10-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawClipPath): Remove break statement so that
+	added clip-mask image is initialized properly and rendered-on as
+	expected.  Thanks to László Böszörményi for reporting this problem
+	prior to release.
+
 2020-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac (AC_PROG_CC_STDC): AC_PROG_CC_STDC is no longer
@@ -113,7 +120,7 @@
 
 	* configure.ac: Add a --without-gs configure option to disable
 	reading PS, EPS, and PDF formats via an external Ghostscript
-	delegate program.  This is indended as an absolute security
+	delegate program.  This is intended as an absolute security
 	measure for sites that want to be assured to avoid executing
 	Ghostscript even though it is installed on the system.  Removal of
 	PS and PDF reading support breaks reading other formats which are
