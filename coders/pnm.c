@@ -1177,7 +1177,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             Allocate next image structure.
           */
-          AllocateNextImage(image_info,image); /* oss-fuzz 25247 memory leak */
+          AllocateNextImage(image_info,image);
           if (image->next == (Image *) NULL)
             {
               DestroyImageList(image);
