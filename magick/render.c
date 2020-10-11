@@ -5922,6 +5922,8 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       if (primitive_info->text == (char *) NULL)
         break;
       clone_info=CloneImageInfo((ImageInfo *) NULL);
+      clone_info->subimage=0;
+      clone_info->subrange=1;
       if (LocaleNCompare(primitive_info->text,"data:",5) == 0)
         {
           composite_image=ReadInlineImage(clone_info,primitive_info->text,
@@ -5978,7 +5980,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           (void) SetMonitorHandler(handler);
           if (status == MagickFail)
             {
-              DestroyImage(composite_image);
+              DestroyImageList(composite_image);
               break;
             }
         }

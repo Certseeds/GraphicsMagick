@@ -3,6 +3,10 @@
 	* magick/render.c (DrawPrimitive): Use DestroyImageList() to
 	destroy composite_image since it may be a list.  Fixes oss-fuzz
 	25247 "Indirect-leak in MagickMalloc".
+	(DrawPrimitive): Add ImageInfo properties to request only
+	returning the first frame if the in-line image is a list.  Also,
+	add a missing DestroyImageList() request if multiple-frames were
+	returned.
 
 	* magick/transform.c (TransformImage): Use ReplaceImageInList()
 	replace transformed image in list.
