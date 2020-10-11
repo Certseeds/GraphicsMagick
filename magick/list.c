@@ -768,10 +768,16 @@ MagickExport void ReplaceImageInList(Image **images,Image *image)
   assert((*images)->signature == MagickSignature);
   image->next=(*images)->next;
   if (image->next != (Image *) NULL)
-    image->next->previous=image;
+    {
+      image->next->previous=image;
+      (*images)->next=(Image *) NULL;
+    }
   image->previous=(*images)->previous;
   if (image->previous != (Image *) NULL)
-    image->previous->next=image;
+    {
+      image->previous->next=image;
+      (*images)->previous=(Image *) NULL;
+    }
   DestroyImage(*images);
   (*images)=image;
 }

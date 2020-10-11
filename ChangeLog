@@ -1,5 +1,15 @@
 2020-10-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawPrimitive): Use DestroyImageList() to
+	destroy composite_image since it may be a list.  Fixes oss-fuzz
+	25247 "Indirect-leak in MagickMalloc".
+
+	* magick/transform.c (TransformImage): Use ReplaceImageInList()
+	replace transformed image in list.
+
+	* magick/list.c (ReplaceImageInList): Remove previous and next
+	references from removed image before destroying it.
+
 	* magick/render.c (DrawClipPath): Remove break statement so that
 	added clip-mask image is initialized properly and rendered-on as
 	expected.  Thanks to László Böszörményi for reporting this problem

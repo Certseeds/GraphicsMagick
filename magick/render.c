@@ -5990,7 +5990,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       affine.tx=x;
       affine.ty=y;
       status&=DrawAffineImage(image,composite_image,&affine);
-      DestroyImage(composite_image);
+      DestroyImageList(composite_image);
       break;
     }
     default:

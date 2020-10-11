@@ -464,6 +464,9 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
 %  default values.  The next member of image points to the newly allocated
 %  image.  If there is a memory shortage, next is assigned NULL.
 %
+%  It is expected that the image next pointer is null, since otherwise
+%  there is likely to be a memory leak.  In the future this may be enforced.
+%
 %  The format of the AllocateNextImage method is:
 %
 %      void AllocateNextImage(const ImageInfo *image_info,Image *image)
@@ -485,6 +488,9 @@ MagickExport void AllocateNextImage(const ImageInfo *image_info,Image *image)
   */
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+#if 0
+  assert(image->next == (Image *) NULL);
+#endif
   image->next=AllocateImage(image_info);
   if (image->next == (Image *) NULL)
     return;
@@ -1382,6 +1388,10 @@ MagickExport ImageInfo *CloneImageInfo(const ImageInfo *image_info)
 %  DestroyImage() dereferences an image, deallocating memory associated with
 %  the image if the reference count becomes zero.  There is no effect if the
 %  image pointer is null.
+%
+%  In the interest of avoiding dangling pointers or memory leaks, the image
+%  previous and next pointers should be null when this function is called,
+%  and no other image should refer to it.  In the future this may be enforced.
 %
 %  The format of the DestroyImage method is:
 %

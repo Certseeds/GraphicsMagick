@@ -206,6 +206,8 @@ void AllocateNextImage( const <a class="reference external" href="../api/types.h
 <p>Use AllocateNextImage() to initialize the next image in a sequence to
 default values.  The next member of image points to the newly allocated
 image.  If there is a memory shortage, next is assigned NULL.</p>
+<p>It is expected that the image next pointer is null, since otherwise
+there is likely to be a memory leak.  In the future this may be enforced.</p>
 <p>The format of the AllocateNextImage method is:</p>
 <pre class="literal-block">
 void AllocateNextImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
@@ -437,6 +439,9 @@ void DestroyImage( <a class="reference external" href="../api/types.html#image">
 <p>DestroyImage() dereferences an image, deallocating memory associated with
 the image if the reference count becomes zero.  There is no effect if the
 image pointer is null.</p>
+<p>In the interest of avoiding dangling pointers or memory leaks, the image
+previous and next pointers should be null when this function is called,
+and no other image should refer to it.  In the future this may be enforced.</p>
 <p>The format of the DestroyImage method is:</p>
 <pre class="literal-block">
 void DestroyImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );

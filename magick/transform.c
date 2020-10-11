@@ -1634,7 +1634,8 @@ MagickExport Image *ShaveImage(const Image *image,
 %
 %  A description of each parameter follows:
 %
-%    o image: The image The transformed image is returned as this parameter.
+%    o image: The image to transform. The resulting transformed image is
+%      returned via this parameter.
 %
 %    o crop_geometry: A crop geometry string.  This geometry defines a
 %      subregion of the image to crop.
@@ -1767,10 +1768,7 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
       return status;
     }
 
-  previous=transform_image->previous;
-  resize_image->next=transform_image->next;
-  DestroyImage(transform_image);
-  transform_image=resize_image;
+  ReplaceImageInList(&transform_image,resize_image);
   *image=transform_image;
   return status;
 }
