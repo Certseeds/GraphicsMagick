@@ -189,6 +189,9 @@ MagickExport Image *ConstituteImage(const unsigned long width,
   size_t
     length;
 
+  unsigned int
+    storage_type_depth = QuantumDepth;
+
   /*
     Allocate image structure.
   */
@@ -204,6 +207,18 @@ MagickExport Image *ConstituteImage(const unsigned long width,
       NonzeroWidthAndHeightRequired);
   image->columns=width;
   image->rows=height;
+
+  switch (type)
+    {
+    case CharPixel : storage_type_depth = sizeof(unsigned char)*8 ; break;
+    case ShortPixel : storage_type_depth = sizeof(unsigned short)*8 ; break;
+    case IntegerPixel : storage_type_depth = sizeof(unsigned short)*8 ; break;
+    case LongPixel : storage_type_depth = sizeof(unsigned long)*8 ; break;
+    case FloatPixel : storage_type_depth = sizeof(float)*8 ; break;
+    case DoublePixel : storage_type_depth = sizeof(double)*8 ; break;
+    }
+
+  image->depth = Min(storage_type_depth,QuantumDepth);
 
   /*
     Handle a few common special cases in order to improve performance.

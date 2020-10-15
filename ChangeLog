@@ -1,3 +1,9 @@
+2020-10-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (ConstituteImage): Set image depth
+	appropriately based on the storage size specified by StorageType
+	and QuantumDepth.
+
 2020-10-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawPrimitive): Use DestroyImageList() to
