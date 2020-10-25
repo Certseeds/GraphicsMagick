@@ -3664,6 +3664,15 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
+                if ((bounds.width == 0) || (bounds.height == 0))
+                {
+                    char resource_str[MaxTextExtent];
+                    FormatString(resource_str,"pattern dimensions %lux%lu", bounds.width,bounds.height);
+                    ThrowException(&image->exception,DrawError,
+                                   InvalidPrimitiveArgument,resource_str);
+                    status=MagickFail;
+                    break;
+                }
                 for (p=q; *q != '\0'; )
                 {
                   MagickGetToken(q,&q,token,token_max_length);

@@ -1,3 +1,10 @@
+2020-10-25  Bob Friesenhahn  <bfriesen@bobsdell>
+
+	* magick/render.c (DrawImage): Reject pattern image with a
+	dimension of zero.  Fixes oss-fuzz issue 26382
+	"graphicsmagick:coder_MVG_fuzzer: Floating-point-exception in
+	DrawPrimitive".
+
 2020-10-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/constitute.c (ConstituteImage): Set image depth
