@@ -15,6 +15,16 @@ extern MagickExport void
 extern MagickExport size_t
   MagickArraySize(const size_t count,const size_t size) MAGICK_FUNC_CONST;
 
+extern MagickExport
+  void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, size_t size);
+
+extern MagickExport
+  void *_MagickAllocateResourceLimitedMemory(size_t size);
+
+extern MagickExport
+  void _MagickFreeResourceLimitedMemory(void *p);
+
+
 /*
   Allocate memory
 */
@@ -40,6 +50,38 @@ extern MagickExport size_t
   MagickFree(_magick_mp);       \
   memory=0;                     \
 }
+
+/*
+  Allocate memory (resource limited)
+ */
+#define MagickAllocateResourceLimitedMemory(type,size)           \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) : \
+   ((type) _MagickAllocateResourceLimitedMemory((size_t) (size))))
+
+#define MagickAllocateResourceLimitedArray(type,count,size)     \
+  ((type) _MagickReallocateResourceLimitedMemory(0,count,size))
+
+#define MagickReallocateResourceLimitedMemory(type,memory,size)        \
+{ \
+    size_t _new_size = (size_t) (size); \
+    void *_magick_mp = _MagickReallocateResourceLimitedMemory(memory,1,_new_size); \
+    memory=(type) _magick_mp; \
+}
+
+#define MagickReallocateResourceLimitedArray(type,memory,count,size)    \
+{ \
+    size_t _new_count = (size_t) (count); \
+    size_t _new_size = (size_t) (size); \
+    void *_magick_mp = _MagickReallocateResourceLimitedMemory(memory,_new_count,_new_size); \
+    memory=(type) _magick_mp; \
+}
+
+#define MagickFreeResourceLimitedMemory(memory) \
+  {                                             \
+    void *_magick_mp=memory;                    \
+    _MagickFreeResourceLimitedMemory(_magick_mp);      \
+    memory=0;                                   \
+  }
 
 /*
   Reallocate memory using provided pointer.  If reallocation fails

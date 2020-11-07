@@ -197,7 +197,7 @@ DrawInfoGetCompositePath(const DrawInfo * draw_info)
   Forward declarations.
 */
 static PrimitiveInfo  /* added Image* param so DrawInfo::stroke_width can be clamped */
-  *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *);
+  *TraceStrokePolygon(const Image *,const DrawInfo *,const PrimitiveInfo *,ExceptionInfo *exception);
 
 static MagickPassFail
   DrawBoundingRectangles(Image *image,const DrawInfo *draw_info,
@@ -584,7 +584,7 @@ ReversePoints(PointInfo *points,const size_t number_points)
 }
 
 static PolygonInfo *
-ConvertPathToPolygon(const PathInfo *path_info)
+ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
 {
   size_t
     edge,
@@ -622,10 +622,12 @@ ConvertPathToPolygon(const PathInfo *path_info)
     return((PolygonInfo *) NULL);
   number_edges=16;
   polygon_info->edges=
-    MagickAllocateArray(EdgeInfo *,number_edges,sizeof(EdgeInfo));
+    MagickAllocateResourceLimitedArray(EdgeInfo *,number_edges,sizeof(EdgeInfo));
   if (polygon_info->edges == (EdgeInfo *) NULL)
     {
       DestroyPolygonInfo(polygon_info);
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
       return((PolygonInfo *) NULL);
     }
   direction=0;
@@ -657,11 +659,15 @@ ConvertPathToPolygon(const PathInfo *path_info)
             if (edge == number_edges)
               {
                 number_edges<<=1;
-                MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-                                    MagickArraySize(number_edges,sizeof(EdgeInfo)));
+                MagickReallocateResourceLimitedArray(EdgeInfo *,
+                                                     polygon_info->edges,
+                                                     number_edges,
+                                                     sizeof(EdgeInfo));
                 if (polygon_info->edges == (EdgeInfo *) NULL)
                   {
                     DestroyPolygonInfo(polygon_info);
+                    ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                    UnableToDrawOnImage);
                     return((PolygonInfo *) NULL);
                   }
               }
@@ -684,10 +690,13 @@ ConvertPathToPolygon(const PathInfo *path_info)
           {
             number_points=16;
             points=
-              MagickAllocateArray(PointInfo *,number_points,sizeof(PointInfo));
+              MagickAllocateResourceLimitedArray(PointInfo *,
+                                                 number_points,sizeof(PointInfo));
             if (points == (PointInfo *) NULL)
               {
                 DestroyPolygonInfo(polygon_info);
+                ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                UnableToDrawOnImage);
                 return((PolygonInfo *) NULL);
               }
           }
@@ -716,11 +725,14 @@ ConvertPathToPolygon(const PathInfo *path_info)
         if (edge == number_edges)
           {
             number_edges<<=1;
-            MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-                                MagickArraySize(number_edges,sizeof(EdgeInfo)));
+            MagickReallocateResourceLimitedArray(EdgeInfo *,
+                                                 polygon_info->edges,
+                                                 number_edges,sizeof(EdgeInfo));
             if (polygon_info->edges == (EdgeInfo *) NULL)
               {
                 DestroyPolygonInfo(polygon_info);
+                ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                UnableToDrawOnImage);
                 return((PolygonInfo *) NULL);
               }
           }
@@ -737,10 +749,13 @@ ConvertPathToPolygon(const PathInfo *path_info)
         polygon_info->edges[edge].bounds.y2=points[n-1].y;
         number_points=16;
         points=
-          MagickAllocateArray(PointInfo *,number_points,sizeof(PointInfo));
+          MagickAllocateResourceLimitedArray(PointInfo *,
+                                             number_points,sizeof(PointInfo));
         if (points == (PointInfo *) NULL)
           {
             DestroyPolygonInfo(polygon_info);
+            ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                            UnableToDrawOnImage);
             return((PolygonInfo *) NULL);
           }
         n=1;
@@ -756,10 +771,13 @@ ConvertPathToPolygon(const PathInfo *path_info)
     if (n == number_points)
       {
         number_points<<=1;
-        MagickReallocMemory(PointInfo *,points,MagickArraySize(number_points,sizeof(PointInfo)));
+        MagickReallocateResourceLimitedArray(PointInfo *,points,
+                                             number_points,sizeof(PointInfo));
         if (points == (PointInfo *) NULL)
           {
             DestroyPolygonInfo(polygon_info);
+            ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                            UnableToDrawOnImage);
             return((PolygonInfo *) NULL);
           }
       }
@@ -775,18 +793,21 @@ ConvertPathToPolygon(const PathInfo *path_info)
     {
       if (n < 2)
         {
-          MagickFreeMemory(points);
+          MagickFreeResourceLimitedMemory(points);
         }
       else
         {
           if (edge == number_edges)
             {
               number_edges<<=1;
-              MagickReallocMemory(EdgeInfo *,polygon_info->edges,
-                                  MagickArraySize(number_edges,sizeof(EdgeInfo)));
+              MagickReallocateResourceLimitedArray(EdgeInfo *,polygon_info->edges,
+                                                   number_edges,sizeof(EdgeInfo));
               if (polygon_info->edges == (EdgeInfo *) NULL)
                 {
+                  MagickFreeResourceLimitedMemory(points);
                   DestroyPolygonInfo(polygon_info);
+                  ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                  UnableToDrawOnImage);
                   return((PolygonInfo *) NULL);
                 }
             }
@@ -862,7 +883,8 @@ LogPathInfo(const PathInfo *path_info)
 
 static PathInfo *
 ConvertPrimitiveToPath(const DrawInfo *draw_info,
-                       const PrimitiveInfo *primitive_info)
+                       const PrimitiveInfo *primitive_info,
+                       ExceptionInfo *exception)
 {
   PathInfo
     *path_info;
@@ -906,9 +928,13 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
   }
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
   path_info_elem=(2*i+6);
-  path_info=MagickAllocateArray(PathInfo *,path_info_elem,sizeof(PathInfo));
+  path_info=MagickAllocateResourceLimitedArray(PathInfo *,path_info_elem,sizeof(PathInfo));
   if (path_info == (PathInfo *) NULL)
-    return((PathInfo *) NULL);
+    {
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      return((PathInfo *) NULL);
+    }
   coordinates=0;
   n=0;
   p.x=(-1.0);
@@ -1067,7 +1093,7 @@ static size_t
 DestroyEdge(PolygonInfo * restrict polygon_info,const size_t edge)
 {
   assert(edge < polygon_info->number_edges);
-  MagickFreeMemory(polygon_info->edges[edge].points);
+  MagickFreeResourceLimitedMemory(polygon_info->edges[edge].points);
   polygon_info->number_edges--;
   if (edge < polygon_info->number_edges)
     (void) memmove(polygon_info->edges+edge,polygon_info->edges+edge+1,
@@ -1155,8 +1181,8 @@ DestroyPolygonInfo(void *polygon_info_void)
       if (polygon_info->edges != (EdgeInfo *) NULL)
         {
           for (i=0; i < polygon_info->number_edges; i++)
-            MagickFreeMemory(polygon_info->edges[i].points);
-          MagickFreeMemory(polygon_info->edges);
+            MagickFreeResourceLimitedMemory(polygon_info->edges[i].points);
+          MagickFreeResourceLimitedMemory(polygon_info->edges);
         }
       MagickFreeMemory(polygon_info);
     }
@@ -2018,12 +2044,14 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
   clone_info->miterlimit=0;
   for (i=0; primitive_info[i].primitive != UndefinedPrimitive; i++);
   number_vertices=i;
-  dash_polygon=MagickAllocateArray(PrimitiveInfo *,
-                                   (size_t) 2*number_vertices+1,
-                                   sizeof(PrimitiveInfo));
+  dash_polygon=MagickAllocateResourceLimitedArray(PrimitiveInfo *,
+                                                  (size_t) 2*number_vertices+1,
+                                                  sizeof(PrimitiveInfo));
   if (dash_polygon == (PrimitiveInfo *) NULL)
     {
       DestroyDrawInfo(clone_info);
+      ThrowException3(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
       return(MagickFail);
     }
   dash_polygon[0]=primitive_info[0];
@@ -2120,7 +2148,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
       dash_polygon[j].primitive=UndefinedPrimitive;
       status &= DrawStrokePolygon(image,clone_info,dash_polygon);
     }
-  MagickFreeMemory(dash_polygon);
+  MagickFreeResourceLimitedMemory(dash_polygon);
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    end draw-dash");
   return(status);
@@ -5181,7 +5209,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       index;
 
     path_info=(PathInfo *) NULL;
-    if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info))
+    if ((path_info=ConvertPrimitiveToPath(draw_info,primitive_info,&image->exception))
         != (PathInfo *) NULL)
       {
         if ((polygon_set=AllocateThreadViewDataSet(DestroyPolygonInfo,image,
@@ -5192,7 +5220,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
               Assign polygon for each worker thread.
             */
             for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
-              AssignThreadViewData(polygon_set,index,(void *) ConvertPathToPolygon(path_info));
+              AssignThreadViewData(polygon_set,index,(void *) ConvertPathToPolygon(path_info,&image->exception));
 
             /*
               Verify worker thread allocations.
@@ -5206,10 +5234,14 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                 }
           }
 
-        MagickFreeMemory(path_info);
+        MagickFreeResourceLimitedMemory(path_info);
       }
     if (polygon_set == (ThreadViewDataSet *) NULL)
-      return MagickFail;
+      {
+        ThrowException3(&image->exception,ResourceLimitError,MemoryAllocationFailed,
+                        UnableToDrawOnImage);
+        return MagickFail;
+      }
   }
 
   /*
@@ -6195,14 +6227,14 @@ DrawStrokePolygon(Image *image,const DrawInfo *draw_info,
       significantly different from that for the first path, so my suspicion is that
       that's where the bug is.  However, it could also be in DrawPolygonPrimitive().
     */
-    stroke_polygon=TraceStrokePolygon(image,draw_info,p);
+    stroke_polygon=TraceStrokePolygon(image,draw_info,p,&image->exception);
     if (stroke_polygon == (PrimitiveInfo *) NULL)
       {
         status=MagickFail;
         break;
       }
     status&=DrawPolygonPrimitive(image,clone_info,stroke_polygon);
-    MagickFreeMemory(stroke_polygon);
+    MagickFreeResourceLimitedMemory(stroke_polygon);
     if (status == MagickFail)
       break;
     q=p+p->coordinates-1;
@@ -6603,7 +6635,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     }
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
-  coefficients=MagickAllocateArray(double *,number_coordinates,sizeof(double));
+  coefficients=MagickAllocateResourceLimitedArray(double *,number_coordinates,sizeof(double));
   if (coefficients == (double *) NULL)
     {
       ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
@@ -6611,7 +6643,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
       status=MagickFail;
       goto trace_bezier_done;
     }
-  points=MagickAllocateArray(PointInfo *,control_points,sizeof(PointInfo));
+  points=MagickAllocateResourceLimitedArray(PointInfo *,control_points,sizeof(PointInfo));
   if (points == (PointInfo *) NULL)
     {
       ThrowException3(p_PIMgr->p_Exception,ResourceLimitError,MemoryAllocationFailed,
@@ -6663,8 +6695,8 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
     p--;
   }
  trace_bezier_done:;
-  MagickFreeMemory(points);
-  MagickFreeMemory(coefficients);
+  MagickFreeResourceLimitedMemory(points);
+  MagickFreeResourceLimitedMemory(coefficients);
   return status;
 }
 
@@ -7626,7 +7658,8 @@ TraceSquareLinecap(PrimitiveInfo *primitive_info,
 static PrimitiveInfo *
 TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::stroke_width can be clamped */
                    const DrawInfo *draw_info,
-                   const PrimitiveInfo *primitive_info)
+                   const PrimitiveInfo *primitive_info,
+                   ExceptionInfo *exception)
 {
   typedef struct _LineSegment
   {
@@ -7696,10 +7729,13 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
   /* moved path_p and path_q mem alloc to later since we might not need them */
 
   polygon_primitive=
-    MagickAllocateArray(PrimitiveInfo *,((size_t) number_vertices+2),
-                        sizeof(PrimitiveInfo));
+    MagickAllocateResourceLimitedArray(PrimitiveInfo *,
+                                       ((size_t) number_vertices+2),
+                                       sizeof(PrimitiveInfo));
   if (polygon_primitive == (PrimitiveInfo *) NULL)
     {
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
       return((PrimitiveInfo *) NULL);
     }
   (void) memcpy(polygon_primitive,primitive_info,number_vertices*
@@ -7736,10 +7772,19 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
       if  ( !DoStroke )
         {/*skip stroking*/
           /* create polygon with one element and 0 coords; DrawPolygonPrimitive() will ignore it */
-          stroke_polygon = MagickAllocateArray(PrimitiveInfo *,1,sizeof(PrimitiveInfo));
-          stroke_polygon[0] = polygon_primitive[0];
-          stroke_polygon[0].coordinates = 0;
-          MagickFreeMemory(polygon_primitive);
+          stroke_polygon = MagickAllocateResourceLimitedArray(PrimitiveInfo *,
+                                                              1,sizeof(PrimitiveInfo));
+          if (stroke_polygon == (PrimitiveInfo *) NULL)
+            {
+              ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                              UnableToDrawOnImage);
+            }
+          else
+            {
+              stroke_polygon[0] = polygon_primitive[0];
+              stroke_polygon[0].coordinates = 0;
+            }
+          MagickFreeResourceLimitedMemory(polygon_primitive);
           return(stroke_polygon);
         }/*skip stroking*/
       n=number_vertices-1;
@@ -7750,17 +7795,25 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
   /*
     Allocate paths.
   */
-  path_p=MagickAllocateArray(PointInfo *,(size_t) max_strokes_p+max_strokes_extra,sizeof(PointInfo));
+  path_p=MagickAllocateResourceLimitedArray(PointInfo *,
+                                            (size_t) max_strokes_p+max_strokes_extra,
+                                            sizeof(PointInfo));
   if (path_p == (PointInfo *) NULL)
     {
-      MagickFreeMemory(polygon_primitive);
+      MagickFreeResourceLimitedMemory(polygon_primitive);
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
       return((PrimitiveInfo *) NULL);
     }
-  path_q=MagickAllocateArray(PointInfo *,(size_t) max_strokes_q+max_strokes_extra,sizeof(PointInfo));
+  path_q=MagickAllocateResourceLimitedArray(PointInfo *,
+                                            (size_t) max_strokes_q+max_strokes_extra,
+                                            sizeof(PointInfo));
   if (path_q == (PointInfo *) NULL)
     {
-      MagickFreeMemory(path_p);
-      MagickFreeMemory(polygon_primitive);
+      MagickFreeResourceLimitedMemory(path_p);
+      MagickFreeResourceLimitedMemory(polygon_primitive);
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
       return((PrimitiveInfo *) NULL);
     }
 
@@ -7904,24 +7957,33 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
     if (p >= max_strokes_p)
       {/*p pointing into extra; time to realloc*/
          max_strokes_p+=max_strokes_extra;
-         MagickReallocMemory(PointInfo *,path_p,MagickArraySize((size_t) max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+         MagickReallocateResourceLimitedMemory(PointInfo *,path_p,
+                                               MagickArraySize((size_t) max_strokes_p+
+                                                               max_strokes_extra,
+                                                               sizeof(PointInfo)));
          if (path_p == (PointInfo *) NULL)
-      {
-             MagickFreeMemory(path_p);
-             MagickFreeMemory(path_q);
-             MagickFreeMemory(polygon_primitive);
+           {
+             MagickFreeResourceLimitedMemory(path_p);
+             MagickFreeResourceLimitedMemory(path_q);
+             MagickFreeResourceLimitedMemory(polygon_primitive);
+             ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                             UnableToDrawOnImage);
              return((PrimitiveInfo *) NULL);
            }
       }/*p pointing into extra; time to realloc*/
     if (q >= max_strokes_q)
       {/*q pointing into extra; time to realloc*/
          max_strokes_q+=max_strokes_extra;
-         MagickReallocMemory(PointInfo *,path_q,MagickArraySize((size_t) max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+         MagickReallocateResourceLimitedArray(PointInfo *,path_q,
+                                              (size_t) max_strokes_q+max_strokes_extra,
+                                              sizeof(PointInfo));
          if (path_q == (PointInfo *) NULL)
            {
-             MagickFreeMemory(path_p);
-             MagickFreeMemory(path_q);
-             MagickFreeMemory(polygon_primitive);
+             MagickFreeResourceLimitedMemory(path_p);
+             MagickFreeResourceLimitedMemory(path_q);
+             MagickFreeResourceLimitedMemory(polygon_primitive);
+             ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                             UnableToDrawOnImage);
              return((PrimitiveInfo *) NULL);
            }
       }/*q pointing into extra; time to realloc*/
@@ -7983,12 +8045,16 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
           if  ( (q+arc_segments) >= max_strokes_q )
             {/*q+arc_segments will point into extra; time to realloc*/
               max_strokes_q+=arc_segments+max_strokes_extra;
-              MagickReallocMemory(PointInfo *,path_q,MagickArraySize((size_t) max_strokes_q+max_strokes_extra,sizeof(PointInfo)));
+              MagickReallocateResourceLimitedArray(PointInfo *,path_q,
+                                                   (size_t) max_strokes_q+max_strokes_extra,
+                                                   sizeof(PointInfo));
               if (path_q == (PointInfo *) NULL)
                 {
-                  MagickFreeMemory(path_p);
-                  MagickFreeMemory(path_q);
-                  MagickFreeMemory(polygon_primitive);
+                  MagickFreeResourceLimitedMemory(path_p);
+                  MagickFreeResourceLimitedMemory(path_q);
+                  MagickFreeResourceLimitedMemory(polygon_primitive);
+                  ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                  UnableToDrawOnImage);
                   return((PrimitiveInfo *) NULL);
                 }
             }/*q+arc_segments will point into extra; time to realloc*/
@@ -8067,12 +8133,16 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
           if  ( (p+arc_segments) >= max_strokes_p )
             {/*p+arc_segments will point into extra; time to realloc*/
               max_strokes_p+=arc_segments+max_strokes_extra;
-              MagickReallocMemory(PointInfo *,path_p,MagickArraySize((size_t) max_strokes_p+max_strokes_extra,sizeof(PointInfo)));
+              MagickReallocateResourceLimitedArray(PointInfo *,path_p,
+                                                   (size_t) max_strokes_p+max_strokes_extra,
+                                                   sizeof(PointInfo));
               if (path_p == (PointInfo *) NULL)
                 {
-                  MagickFreeMemory(path_p);
-                  MagickFreeMemory(path_q);
-                  MagickFreeMemory(polygon_primitive);
+                  MagickFreeResourceLimitedMemory(path_p);
+                  MagickFreeResourceLimitedMemory(path_q);
+                  MagickFreeResourceLimitedMemory(polygon_primitive);
+                  ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                                  UnableToDrawOnImage);
                   return((PrimitiveInfo *) NULL);
                 }
             }/*p+arc_segments will point into extra; time to realloc*/
@@ -8108,44 +8178,49 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
     Trace stroked polygon.
   */
   stroke_polygon=
-    MagickAllocateArray(PrimitiveInfo *,MagickArraySize((size_t) p+q+2,(size_t) closed_path+2),
+    MagickAllocateResourceLimitedArray(PrimitiveInfo *,
+                        MagickArraySize((size_t) p+q+2,(size_t) closed_path+2),
                         sizeof(PrimitiveInfo));
-  if (stroke_polygon != (PrimitiveInfo *) NULL)
+  if (stroke_polygon == (PrimitiveInfo *) NULL)
     {
-      for (i=0; i < (long) p; i++)
-      {
-        stroke_polygon[i]=polygon_primitive[0];
-        stroke_polygon[i].point=path_p[i];
-      }
-      if (closed_path)
-        {
-          stroke_polygon[i]=polygon_primitive[0];
-          stroke_polygon[i].point=stroke_polygon[0].point;
-          i++;
-        }
-      for ( ; i < (long) (p+q+closed_path); i++)
-      {
-        stroke_polygon[i]=polygon_primitive[0];
-        stroke_polygon[i].point=path_q[p+q+closed_path-(i+1)];
-      }
-      if (closed_path)
-        {
-          stroke_polygon[i]=polygon_primitive[0];
-          stroke_polygon[i].point=stroke_polygon[p+closed_path].point;
-          i++;
-        }
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      goto trace_stroke_polygon_done;
+    }
+
+  for (i=0; i < (long) p; i++)
+    {
+      stroke_polygon[i]=polygon_primitive[0];
+      stroke_polygon[i].point=path_p[i];
+    }
+  if (closed_path)
+    {
       stroke_polygon[i]=polygon_primitive[0];
       stroke_polygon[i].point=stroke_polygon[0].point;
       i++;
-      stroke_polygon[i].primitive=UndefinedPrimitive;
-      stroke_polygon[0].coordinates=(size_t) p+q+(size_t) 2*closed_path+1;
     }
+  for ( ; i < (long) (p+q+closed_path); i++)
+    {
+      stroke_polygon[i]=polygon_primitive[0];
+      stroke_polygon[i].point=path_q[p+q+closed_path-(i+1)];
+    }
+  if (closed_path)
+    {
+      stroke_polygon[i]=polygon_primitive[0];
+      stroke_polygon[i].point=stroke_polygon[p+closed_path].point;
+      i++;
+    }
+  stroke_polygon[i]=polygon_primitive[0];
+  stroke_polygon[i].point=stroke_polygon[0].point;
+  i++;
+  stroke_polygon[i].primitive=UndefinedPrimitive;
+  stroke_polygon[0].coordinates=(size_t) p+q+(size_t) 2*closed_path+1;
 
  trace_stroke_polygon_done:;
 
-  MagickFreeMemory(path_p);
-  MagickFreeMemory(path_q);
-  MagickFreeMemory(polygon_primitive);
+  MagickFreeResourceLimitedMemory(path_p);
+  MagickFreeResourceLimitedMemory(path_q);
+  MagickFreeResourceLimitedMemory(polygon_primitive);
   return(stroke_polygon);
 }
 

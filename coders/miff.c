@@ -729,8 +729,8 @@ do { \
       MagickFreeMemory(profiles); \
       number_of_profiles=0; \
     } \
-  MagickFreeMemory(pixels); \
-  MagickFreeMemory(compress_pixels); \
+  MagickFreeResourceLimitedMemory(pixels); \
+  MagickFreeResourceLimitedMemory(compress_pixels); \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 
@@ -1622,7 +1622,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     pixels_size=MagickArraySize(packet_size,image->columns);
     if (pixels_size == 0)
       ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
-    pixels=MagickAllocateMemory(unsigned char *,pixels_size);
+    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,pixels_size);
     if (pixels == (unsigned char *) NULL)
       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     length=(size_t) (1.01*pixels_size);
@@ -1633,7 +1633,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     else
       ThrowMIFFReaderException(CoderError,ArithmeticOverflow,image);
     compressed_length = length;
-    compress_pixels=MagickAllocateMemory(unsigned char *,compressed_length);
+    compress_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,compressed_length);
     if (compress_pixels == (unsigned char *) NULL)
       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     /*
@@ -1900,8 +1900,8 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         }
       } /* End switch (image->compression) */
 
-    MagickFreeMemory(pixels);
-    MagickFreeMemory(compress_pixels);
+    MagickFreeResourceLimitedMemory(pixels);
+    MagickFreeResourceLimitedMemory(compress_pixels);
 
     if (EOFBlob(image))
       {

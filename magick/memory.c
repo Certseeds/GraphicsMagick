@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -37,6 +37,7 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#include "magick/resource.h"
 #include "magick/utility.h"
 
 #if defined(MAGICK_MEMORY_HARD_LIMIT)
@@ -576,4 +577,200 @@ MagickExport void MagickFreeAligned(void *memory)
       MagickFree(*((void **)memory-1));
 #endif
     }
+}
+
+/*
+  Structure for tracking resource-limited memory allocation.
+ */
+typedef struct _MagickMemoryResource_T
+{
+  void *memory;                 /* Pointer to memory allocation */
+  size_t alloc_size;            /* Requested allocation size */
+  size_t alloc_size_real;       /* Real/underlying allocation size */
+  size_t signature;             /* Initialized to MagickSignature */
+
+} MagickMemoryResource_T;
+
+
+/*
+  Clean up a MagickMemoryResource_T, releasing referenced memory and
+  resource allocation.  Not safe if embedded in the memory buffer
+  being released!
+*/
+static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_resource)
+{
+  if (memory_resource->memory != 0)
+    {
+      MagickFree(memory_resource->memory);
+      memory_resource->memory=0;
+    }
+  if (memory_resource->alloc_size != 0)
+    LiberateMagickResource(MemoryResource, memory_resource->alloc_size);
+  memory_resource->alloc_size_real=0;
+  memory_resource->alloc_size=0;
+}
+
+
+/*
+  Reallocate resource-limited array memory based on pointer to
+  existing allocation, object count, and object size.
+
+  This works like MagickRealloc() except for supporting count and size
+  arguments similar to calloc().  GNU libc has a reallocarray()
+  function using similar arguments.
+
+  Alignment concerns: 128-bit SSE registers have an alignment
+  requirement of 16 bytes, the 256-bit Intel AVX registers have an
+  alignment requirement of 32 bytes, and the 512-bit Intel AVX-512
+  registers have an alignment requirement of 64 bytes, that is.
+
+  Linux malloc produces allocations aligned to 16-bytes.
+ */
+/* Return MemoryResource_T pointer given user-land pointer */
+#define MagickAccessMemoryResource_T_From_Pub(p) \
+  ((MagickMemoryResource_T *) ((char *) p-sizeof(MagickMemoryResource_T)))
+/* Return user-land pointer given private base allocation pointer */
+#define UserLandPointerGivenBaseAlloc(p) \
+  ((char *)p+sizeof(MagickMemoryResource_T))
+MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, size_t size)
+{
+  MagickMemoryResource_T memory_resource;
+  size_t size_diff;
+  const size_t new_size =  MagickArraySize(count,size);
+  char *res;
+
+  if (p != 0)
+    {
+      assert(((ptrdiff_t) p - sizeof(MagickMemoryResource_T)) > 0);
+      (void) memcpy(&memory_resource,
+                    (void *) MagickAccessMemoryResource_T_From_Pub(p),
+                    sizeof(MagickMemoryResource_T));
+#if 0
+      fprintf(stderr,"IN:  memory_resource.memory = %p, res_p = %p, mr_ptr = %p\n",
+              memory_resource.memory,
+              p,
+              _MagickAccessMemoryResource_T(p));
+#endif
+      assert(memory_resource.signature == MagickSignature);
+    }
+  else
+    {
+      memory_resource.memory = 0;
+      memory_resource.alloc_size = 0;
+      memory_resource.alloc_size_real = 0;
+      memory_resource.signature = MagickSignature;
+    }
+
+  do
+    {
+      if (((new_size == 0) && (count != 0) && (size != 0)) ||
+           (new_size > SIZE_MAX/2) || (SIZE_MAX-new_size <= sizeof(MagickMemoryResource_T)))
+        {
+           /* Deallocate all allocated memory (if any) */
+          _MagickFreeResourceLimitedMemory_T(&memory_resource);
+#if defined(ENOMEM)
+              errno = ENOMEM;
+#endif /* if defined(ENOMEM) */
+              break;
+        }
+      else if (new_size == 0)
+        {
+          /* Deallocate all allocated memory (if any) */
+          _MagickFreeResourceLimitedMemory_T(&memory_resource);
+          break;
+        }
+      else if (new_size > memory_resource.alloc_size)
+        {
+          /* Allocate or enlarge memory */
+          size_diff = new_size - memory_resource.alloc_size;
+          if (AcquireMagickResource(MemoryResource,size_diff) == MagickPass)
+            {
+              memory_resource.alloc_size = new_size;
+              if (new_size > memory_resource.alloc_size_real)
+                {
+                  void *realloc_memory;
+                  /* FIXME: Maybe over-allocate here if re-alloc? */
+                  memory_resource.alloc_size_real = new_size;
+                  realloc_memory = (ReallocFunc)(memory_resource.memory,
+                                                 memory_resource.alloc_size_real+
+                                                 sizeof(MagickMemoryResource_T));
+                  if (realloc_memory != 0)
+                    {
+                      memory_resource.memory = realloc_memory;
+                    }
+                  else
+                    {
+                      LiberateMagickResource(MemoryResource, size_diff);
+                      _MagickFreeResourceLimitedMemory_T(&memory_resource);
+#if defined(ENOMEM)
+                      errno = ENOMEM;
+#endif /* if defined(ENOMEM) */
+                    }
+                }
+            }
+          else
+            {
+              /* Deallocate all memory */
+              _MagickFreeResourceLimitedMemory_T(&memory_resource);
+#if defined(ENOMEM)
+              errno = ENOMEM;
+#endif /* if defined(ENOMEM) */
+            }
+          break;
+        }
+      else if (new_size < memory_resource.alloc_size)
+        {
+          /* Reduce memory */
+          size_diff = memory_resource.alloc_size - new_size;
+          LiberateMagickResource(MemoryResource,size_diff);
+          memory_resource.alloc_size = new_size;
+          /* FIXME: Maybe actually realloc to smaller size here? */
+
+          break;
+        }
+    } while (0);
+
+  if (memory_resource.memory != 0)
+    {
+      (void) memcpy((void *) memory_resource.memory,&memory_resource,
+                    sizeof(MagickMemoryResource_T));
+    }
+
+  res = memory_resource.memory ? UserLandPointerGivenBaseAlloc(memory_resource.memory) : 0;
+
+#if 0
+  fprintf(stderr,"OUT: memory_resource.memory = %p (allign %lu), res_p = %p (allign = %lu)\n",
+          memory_resource.memory, (unsigned long) ((ptrdiff_t) memory_resource.memory % 16LU),
+          res, (unsigned long) ((ptrdiff_t) res % 16LU));
+#endif
+
+#if 0
+  fprintf(stderr,"OUT: memory_resource.memory = %p, res_p = %p, mr_ptr = %p\n",
+          memory_resource.memory,
+          res,
+          _MagickAccessMemoryResource_T(res));
+#endif
+
+  return res;
+}
+
+/*
+  Allocate resource-limited memory.  Similar to MagickMalloc().
+
+  Memory must be released using MagickFreeMemoryResource().
+*/
+MagickExport void *_MagickAllocateResourceLimitedMemory(size_t size)
+{
+    return _MagickReallocateResourceLimitedMemory(0,1,size);
+}
+
+/*
+  Free resource-limited memory which was allocated by
+  MagickReallocMemoryResource() or MagickMallocMemoryResource().
+
+  Similar to MagickFree().
+*/
+MagickExport void _MagickFreeResourceLimitedMemory(void *p)
+{
+    _MagickReallocateResourceLimitedMemory(p,0,0);
 }
