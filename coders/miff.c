@@ -2239,8 +2239,8 @@ static void WriteRunlengthPacket(const Image *image,
 
 #define ThrowMIFFWriterException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(compress_pixels)            \
-  MagickFreeMemory(pixels); \
+  MagickFreeResourceLimitedMemory(compress_pixels) \
+  MagickFreeResourceLimitedMemory(pixels); \
   ThrowWriterException(code_,reason_,image_); \
 }
 
@@ -2383,12 +2383,12 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
     if (compression == RLECompression)
       packet_size+=quantum_size/8;
     length=packet_size*image->columns;
-    pixels=MagickAllocateMemory(unsigned char *,length);
+    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
     length=(size_t) (1.01*packet_size*image->columns+600);
     if ((compression == BZipCompression) || (compression == ZipCompression))
       if (length != (unsigned int) length)
         compression=NoCompression;
-    compress_pixels=MagickAllocateMemory(unsigned char *,length);
+    compress_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
     if ((pixels == (unsigned char *) NULL) ||
         (compress_pixels == (unsigned char *) NULL))
       ThrowMIFFWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -2889,8 +2889,8 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(pixels);
-    MagickFreeMemory(compress_pixels);
+    MagickFreeResourceLimitedMemory(pixels);
+    MagickFreeResourceLimitedMemory(compress_pixels);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
