@@ -1013,6 +1013,10 @@ available from the generated Makefiles:
      install' must be done before the test suite will work but usually
      the software can be tested prior to installation.
 
+     The test suite requires sufficient RAM memory to run.  The memory
+     requirement is 128MB for the Q8 build, or 256MB for the Q16
+     build, or 512MB for the Q32 build.
+
   'make clean'
 
      Remove everything in the build directory created by 'make'

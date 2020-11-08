@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>UNIX/Cygwin/MinGW/MSYS2 Compilation</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
@@ -1066,9 +1066,13 @@ Build the package</blockquote>
 Install the package</blockquote>
 <p>'make check'</p>
 <blockquote>
-Run tests using the uninstalled software. On some systems, 'make
+<p>Run tests using the uninstalled software. On some systems, 'make
 install' must be done before the test suite will work but usually
-the software can be tested prior to installation.</blockquote>
+the software can be tested prior to installation.</p>
+<p>The test suite requires sufficient RAM memory to run.  The memory
+requirement is 128MB for the Q8 build, or 256MB for the Q16
+build, or 512MB for the Q32 build.</p>
+</blockquote>
 <p>'make clean'</p>
 <blockquote>
 Remove everything in the build directory created by 'make'</blockquote>
