@@ -658,18 +658,20 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
           {
             if (edge == number_edges)
               {
+                EdgeInfo *new_edges;
                 number_edges<<=1;
-                MagickReallocateResourceLimitedArray(EdgeInfo *,
-                                                     polygon_info->edges,
-                                                     number_edges,
-                                                     sizeof(EdgeInfo));
-                if (polygon_info->edges == (EdgeInfo *) NULL)
+                new_edges=MagickReallocateResourceLimitedArray(EdgeInfo *,
+                                                               polygon_info->edges,
+                                                               number_edges,
+                                                               sizeof(EdgeInfo));
+                if (new_edges == (EdgeInfo *) NULL)
                   {
                     DestroyPolygonInfo(polygon_info);
                     ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                                     UnableToDrawOnImage);
                     return((PolygonInfo *) NULL);
                   }
+                polygon_info->edges=new_edges;
               }
             polygon_info->edges[edge].number_points=n;
             polygon_info->edges[edge].scanline=(-1.0);
@@ -682,6 +684,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
             polygon_info->edges[edge].bounds=bounds;
             polygon_info->edges[edge].bounds.y1=points[0].y;
             polygon_info->edges[edge].bounds.y2=points[n-1].y;
+            polygon_info->number_edges=edge+1;
             points=(PointInfo *) NULL;
             ghostline=MagickFalse;
             edge++;
@@ -724,17 +727,19 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         point=points[n-1];
         if (edge == number_edges)
           {
+            EdgeInfo *new_edges;
             number_edges<<=1;
-            MagickReallocateResourceLimitedArray(EdgeInfo *,
-                                                 polygon_info->edges,
-                                                 number_edges,sizeof(EdgeInfo));
-            if (polygon_info->edges == (EdgeInfo *) NULL)
+            new_edges=MagickReallocateResourceLimitedArray(EdgeInfo *,
+                                                           polygon_info->edges,
+                                                           number_edges,sizeof(EdgeInfo));
+            if (new_edges == (EdgeInfo *) NULL)
               {
                 DestroyPolygonInfo(polygon_info);
                 ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                                 UnableToDrawOnImage);
                 return((PolygonInfo *) NULL);
               }
+            polygon_info->edges=new_edges;
           }
         polygon_info->edges[edge].number_points=n;
         polygon_info->edges[edge].scanline=(-1.0);
@@ -747,6 +752,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         polygon_info->edges[edge].bounds=bounds;
         polygon_info->edges[edge].bounds.y1=points[0].y;
         polygon_info->edges[edge].bounds.y2=points[n-1].y;
+        polygon_info->number_edges=edge+1;
         number_points=16;
         points=
           MagickAllocateResourceLimitedArray(PointInfo *,
@@ -770,16 +776,19 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
       continue;
     if (n == number_points)
       {
+        PointInfo *new_points;
         number_points<<=1;
-        MagickReallocateResourceLimitedArray(PointInfo *,points,
-                                             number_points,sizeof(PointInfo));
-        if (points == (PointInfo *) NULL)
+        new_points=MagickReallocateResourceLimitedArray(PointInfo *,points,
+                                                        number_points,sizeof(PointInfo));
+        if (new_points == (PointInfo *) NULL)
           {
+            MagickFreeResourceLimitedMemory(points);
             DestroyPolygonInfo(polygon_info);
             ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                             UnableToDrawOnImage);
             return((PolygonInfo *) NULL);
           }
+        points=new_points;
       }
     point=path_info[i].point;
     points[n]=point;
@@ -799,10 +808,11 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         {
           if (edge == number_edges)
             {
+              EdgeInfo *new_edges;
               number_edges<<=1;
-              MagickReallocateResourceLimitedArray(EdgeInfo *,polygon_info->edges,
-                                                   number_edges,sizeof(EdgeInfo));
-              if (polygon_info->edges == (EdgeInfo *) NULL)
+              new_edges=MagickReallocateResourceLimitedArray(EdgeInfo *,polygon_info->edges,
+                                                             number_edges,sizeof(EdgeInfo));
+              if (new_edges == (EdgeInfo *) NULL)
                 {
                   MagickFreeResourceLimitedMemory(points);
                   DestroyPolygonInfo(polygon_info);
@@ -810,6 +820,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
                                   UnableToDrawOnImage);
                   return((PolygonInfo *) NULL);
                 }
+              polygon_info->edges=new_edges;
             }
           polygon_info->edges[edge].number_points=n;
           polygon_info->edges[edge].scanline=(-1.0);
@@ -823,6 +834,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
           polygon_info->edges[edge].bounds.y1=points[0].y;
           polygon_info->edges[edge].bounds.y2=points[n-1].y;
           ghostline=MagickFalse;
+          polygon_info->number_edges=edge+1;
           edge++;
         }
     }
@@ -7956,12 +7968,13 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
       }
     if (p >= max_strokes_p)
       {/*p pointing into extra; time to realloc*/
+        PointInfo *new_path_p;
          max_strokes_p+=max_strokes_extra;
-         MagickReallocateResourceLimitedMemory(PointInfo *,path_p,
-                                               MagickArraySize((size_t) max_strokes_p+
-                                                               max_strokes_extra,
-                                                               sizeof(PointInfo)));
-         if (path_p == (PointInfo *) NULL)
+         new_path_p=MagickReallocateResourceLimitedArray(PointInfo *,path_p,
+                                                         (size_t) max_strokes_p+
+                                                         max_strokes_extra,
+                                                         sizeof(PointInfo));
+         if (new_path_p == (PointInfo *) NULL)
            {
              MagickFreeResourceLimitedMemory(path_p);
              MagickFreeResourceLimitedMemory(path_q);
@@ -7970,14 +7983,16 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
                              UnableToDrawOnImage);
              return((PrimitiveInfo *) NULL);
            }
+         path_p=new_path_p;
       }/*p pointing into extra; time to realloc*/
     if (q >= max_strokes_q)
       {/*q pointing into extra; time to realloc*/
+        PointInfo *new_path_q;
          max_strokes_q+=max_strokes_extra;
-         MagickReallocateResourceLimitedArray(PointInfo *,path_q,
+         new_path_q=MagickReallocateResourceLimitedArray(PointInfo *,path_q,
                                               (size_t) max_strokes_q+max_strokes_extra,
                                               sizeof(PointInfo));
-         if (path_q == (PointInfo *) NULL)
+         if (new_path_q == (PointInfo *) NULL)
            {
              MagickFreeResourceLimitedMemory(path_p);
              MagickFreeResourceLimitedMemory(path_q);
@@ -7986,6 +8001,7 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
                              UnableToDrawOnImage);
              return((PrimitiveInfo *) NULL);
            }
+         path_q=new_path_q;
       }/*q pointing into extra; time to realloc*/
     dot_product=dx.q*dy.p-dx.p*dy.q;
     if (dot_product <= 0.0)
@@ -8044,11 +8060,12 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
           /* in case arc_segments is big */
           if  ( (q+arc_segments) >= max_strokes_q )
             {/*q+arc_segments will point into extra; time to realloc*/
+              PointInfo *new_path_q;
               max_strokes_q+=arc_segments+max_strokes_extra;
-              MagickReallocateResourceLimitedArray(PointInfo *,path_q,
+              new_path_q=MagickReallocateResourceLimitedArray(PointInfo *,path_q,
                                                    (size_t) max_strokes_q+max_strokes_extra,
                                                    sizeof(PointInfo));
-              if (path_q == (PointInfo *) NULL)
+              if (new_path_q == (PointInfo *) NULL)
                 {
                   MagickFreeResourceLimitedMemory(path_p);
                   MagickFreeResourceLimitedMemory(path_q);
@@ -8057,6 +8074,7 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
                                   UnableToDrawOnImage);
                   return((PrimitiveInfo *) NULL);
                 }
+              path_q=new_path_q;
             }/*q+arc_segments will point into extra; time to realloc*/
           path_q[q].x=box_q[1].x;
           path_q[q].y=box_q[1].y;
@@ -8132,11 +8150,12 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
           /* in case arc_segments is big */
           if  ( (p+arc_segments) >= max_strokes_p )
             {/*p+arc_segments will point into extra; time to realloc*/
+              PointInfo *new_path_p;
               max_strokes_p+=arc_segments+max_strokes_extra;
-              MagickReallocateResourceLimitedArray(PointInfo *,path_p,
+              new_path_p=MagickReallocateResourceLimitedArray(PointInfo *,path_p,
                                                    (size_t) max_strokes_p+max_strokes_extra,
                                                    sizeof(PointInfo));
-              if (path_p == (PointInfo *) NULL)
+              if (new_path_p == (PointInfo *) NULL)
                 {
                   MagickFreeResourceLimitedMemory(path_p);
                   MagickFreeResourceLimitedMemory(path_q);
@@ -8145,6 +8164,7 @@ TraceStrokePolygon(const Image *image,  /* added Image* param so DrawInfo::strok
                                   UnableToDrawOnImage);
                   return((PrimitiveInfo *) NULL);
                 }
+              path_p=new_path_p;
             }/*p+arc_segments will point into extra; time to realloc*/
           path_p[p++]=box_p[1];
           for (j=1; j < arc_segments; j++)

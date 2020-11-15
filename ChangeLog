@@ -1,3 +1,13 @@
+2020-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPathToPolygon): Fix memory leak upon
+	memory reallocation failure.  Addresses oss-fuzz 27351
+	"Direct-leak in _MagickReallocateResourceLimitedMemory".
+
+	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Return
+	pointer to the allocation similar to realloc() and do not
+	automatically free existing memory upon allocation failure.
+
 2020-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* common.shi.in: Apply some resource limits while running the test

@@ -591,6 +591,29 @@ typedef struct _MagickMemoryResource_T
 
 } MagickMemoryResource_T;
 
+#define MAGICK_DEBUG_RL_MEMORY 0
+
+/* Return MemoryResource_T pointer given user-land pointer */
+#define MagickAccessMemoryResource_T_From_Pub(p) \
+  ((MagickMemoryResource_T *) ((char *) p-sizeof(MagickMemoryResource_T)))
+/* Return user-land pointer given private base allocation pointer */
+#define UserLandPointerGivenBaseAlloc(p) \
+  ((char *)p+sizeof(MagickMemoryResource_T))
+/* Trace MemoryResource_T content given a pointer to it */
+#if defined(MAGICK_DEBUG_RL_MEMORY) && MAGICK_DEBUG_RL_MEMORY
+#define TraceMagickAccessMemoryResource_T(operation,memory_resource)    \
+  fprintf(stderr,__FILE__ ":%d - %s memory_resource: memory=%p (user %p)," \
+          " alloc_size=%zu,"                                            \
+          " alloc_size_real=%zu\n",                                     \
+          __LINE__,                                                     \
+          operation,                                                    \
+          (memory_resource)->memory,                                    \
+          (memory_resource)->memory ? UserLandPointerGivenBaseAlloc((memory_resource)->memory) : 0, \
+          (memory_resource)->alloc_size,                                \
+          (memory_resource)->alloc_size_real);
+#else
+#define TraceMagickAccessMemoryResource_T(operation,memory_resource) ;
+#endif
 
 /*
   Clean up a MagickMemoryResource_T, releasing referenced memory and
@@ -599,6 +622,7 @@ typedef struct _MagickMemoryResource_T
 */
 static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_resource)
 {
+  TraceMagickAccessMemoryResource_T("FREE",memory_resource);
   if (memory_resource->memory != 0)
     {
       MagickFree(memory_resource->memory);
@@ -626,18 +650,18 @@ static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_re
 
   Linux malloc produces allocations aligned to 16-bytes.
  */
-/* Return MemoryResource_T pointer given user-land pointer */
-#define MagickAccessMemoryResource_T_From_Pub(p) \
-  ((MagickMemoryResource_T *) ((char *) p-sizeof(MagickMemoryResource_T)))
-/* Return user-land pointer given private base allocation pointer */
-#define UserLandPointerGivenBaseAlloc(p) \
-  ((char *)p+sizeof(MagickMemoryResource_T))
 MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, size_t size)
 {
   MagickMemoryResource_T memory_resource;
   size_t size_diff;
   const size_t new_size =  MagickArraySize(count,size);
-  char *res;
+  void *res;
+  MagickPassFail
+    status = MagickPass;
+
+#if defined(MAGICK_DEBUG_RL_MEMORY) && MAGICK_DEBUG_RL_MEMORY
+  fprintf(stderr,"%d: p = %p, count = %zu, size =%zu\n", __LINE__, p, count, size);
+#endif
 
   if (p != 0)
     {
@@ -645,12 +669,6 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
       (void) memcpy(&memory_resource,
                     (void *) MagickAccessMemoryResource_T_From_Pub(p),
                     sizeof(MagickMemoryResource_T));
-#if 0
-      fprintf(stderr,"IN:  memory_resource.memory = %p, res_p = %p, mr_ptr = %p\n",
-              memory_resource.memory,
-              p,
-              _MagickAccessMemoryResource_T(p));
-#endif
       assert(memory_resource.signature == MagickSignature);
     }
   else
@@ -660,18 +678,19 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
       memory_resource.alloc_size_real = 0;
       memory_resource.signature = MagickSignature;
     }
+  TraceMagickAccessMemoryResource_T("BEFORE", &memory_resource);
 
   do
     {
       if (((new_size == 0) && (count != 0) && (size != 0)) ||
-           (new_size > SIZE_MAX/2) || (SIZE_MAX-new_size <= sizeof(MagickMemoryResource_T)))
+          (new_size > SIZE_MAX/2) || (SIZE_MAX-new_size <= sizeof(MagickMemoryResource_T)))
         {
-           /* Deallocate all allocated memory (if any) */
-          _MagickFreeResourceLimitedMemory_T(&memory_resource);
+          /* Memory allocation FAILED */
 #if defined(ENOMEM)
-              errno = ENOMEM;
+          errno = ENOMEM;
 #endif /* if defined(ENOMEM) */
-              break;
+          status = MagickFail;
+          break;
         }
       else if (new_size == 0)
         {
@@ -685,36 +704,40 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
           size_diff = new_size - memory_resource.alloc_size;
           if (AcquireMagickResource(MemoryResource,size_diff) == MagickPass)
             {
-              memory_resource.alloc_size = new_size;
               if (new_size > memory_resource.alloc_size_real)
                 {
                   void *realloc_memory;
                   /* FIXME: Maybe over-allocate here if re-alloc? */
-                  memory_resource.alloc_size_real = new_size;
                   realloc_memory = (ReallocFunc)(memory_resource.memory,
-                                                 memory_resource.alloc_size_real+
-                                                 sizeof(MagickMemoryResource_T));
+                                                 new_size+sizeof(MagickMemoryResource_T));
                   if (realloc_memory != 0)
                     {
                       memory_resource.memory = realloc_memory;
+                      memory_resource.alloc_size = new_size;
+                      memory_resource.alloc_size_real = new_size;
                     }
                   else
                     {
-                      LiberateMagickResource(MemoryResource, size_diff);
-                      _MagickFreeResourceLimitedMemory_T(&memory_resource);
+                      /* Memory re-allocation FAILED */
 #if defined(ENOMEM)
                       errno = ENOMEM;
 #endif /* if defined(ENOMEM) */
+                      status = MagickFail;
                     }
+                }
+              else
+                {
+                  /* Re-allocation is not required */
+                  memory_resource.alloc_size = new_size;
                 }
             }
           else
             {
-              /* Deallocate all memory */
-              _MagickFreeResourceLimitedMemory_T(&memory_resource);
+              /* Acquire memory resource FAILED */
 #if defined(ENOMEM)
               errno = ENOMEM;
 #endif /* if defined(ENOMEM) */
+              status = MagickFail;
             }
           break;
         }
@@ -725,7 +748,6 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
           LiberateMagickResource(MemoryResource,size_diff);
           memory_resource.alloc_size = new_size;
           /* FIXME: Maybe actually realloc to smaller size here? */
-
           break;
         }
     } while (0);
@@ -735,21 +757,10 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
       (void) memcpy((void *) memory_resource.memory,&memory_resource,
                     sizeof(MagickMemoryResource_T));
     }
+  TraceMagickAccessMemoryResource_T("AFTER", &memory_resource);
 
-  res = memory_resource.memory ? UserLandPointerGivenBaseAlloc(memory_resource.memory) : 0;
-
-#if 0
-  fprintf(stderr,"OUT: memory_resource.memory = %p (allign %lu), res_p = %p (allign = %lu)\n",
-          memory_resource.memory, (unsigned long) ((ptrdiff_t) memory_resource.memory % 16LU),
-          res, (unsigned long) ((ptrdiff_t) res % 16LU));
-#endif
-
-#if 0
-  fprintf(stderr,"OUT: memory_resource.memory = %p, res_p = %p, mr_ptr = %p\n",
-          memory_resource.memory,
-          res,
-          _MagickAccessMemoryResource_T(res));
-#endif
+  res = ((status == MagickPass) && memory_resource.memory) ?
+    UserLandPointerGivenBaseAlloc(memory_resource.memory) : 0;
 
   return res;
 }
