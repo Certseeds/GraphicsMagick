@@ -37,6 +37,9 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE
+#  include <mcheck.h>
+#endif /* if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE */
 #if defined(MSWINDOWS) || defined(__CYGWIN__)
 # include "magick/nt_feature.h"
 #endif
@@ -1186,6 +1189,10 @@ InitializeMagickEx(const char *path, unsigned int options,
       SPINLOCK_RELEASE;
       return status;
     }
+
+#if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE
+  mtrace();
+#endif /* f defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE */
 
   /* Save initialization options in case we need them later */
   initialize_magick_options = options;
