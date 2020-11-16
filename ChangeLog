@@ -1,5 +1,12 @@
 2020-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/svg.c (ReadSVGImage): Fix memory leak due to CDATA block,
+	and some other possible small leaks.
+
+	* magick/magick.c (InitializeMagickEx): Set C pre-processor
+	definition USE_GLIBC_MTRACE to 1 in order to enable Linux mtrace
+	support.
+
 	* magick/render.c (ConvertPathToPolygon): Fix memory leak upon
 	memory reallocation failure.  Addresses oss-fuzz 27351
 	"Direct-leak in _MagickReallocateResourceLimitedMemory".

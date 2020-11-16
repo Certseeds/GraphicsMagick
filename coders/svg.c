@@ -851,12 +851,18 @@ SVGEndDocument(void *context)
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.endDocument()");
   svg_info=(SVGInfo *) context;
-  MagickFreeMemory(svg_info->offset);
-  MagickFreeMemory(svg_info->stop_color);
+  MagickFreeMemory(svg_info->size);
+  MagickFreeMemory(svg_info->title);
+  MagickFreeMemory(svg_info->comment);
   MagickFreeMemory(svg_info->scale);
+  MagickFreeMemory(svg_info->stop_color);
+  MagickFreeMemory(svg_info->offset);
   MagickFreeMemory(svg_info->text);
   MagickFreeMemory(svg_info->vertices);
   MagickFreeMemory(svg_info->url);
+
+  /* Don't free xmlParserCtxtPtr parser which is used later */
+
   if (svg_info->document != (xmlDocPtr) NULL)
     {
       xmlFreeDoc(svg_info->document);
@@ -3707,7 +3713,11 @@ SVGCDataBlock(void *context,const xmlChar *value,int length)
       (void) xmlTextConcat(child,value,length);
       return;
     }
-  (void) xmlAddChild(parser->node,xmlNewCDataBlock(parser->myDoc,value,length));
+  /* Create a new node containing a CDATA block. */
+  /* FIXME: parser->myDoc is null so add fails.  What do do? */
+  child=xmlNewCDataBlock(parser->myDoc,value,length);
+  if (xmlAddChild(parser->node,child) == (xmlNodePtr) NULL)
+    xmlFreeNode(child);
 }
 
 static void
@@ -3919,6 +3929,10 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SAXHandler=(&SAXModules);
   svg_info.parser=xmlCreatePushParserCtxt(SAXHandler,&svg_info,(char *) NULL,0,
                                           image->filename);
+  if (svg_info.parser == (xmlParserCtxtPtr) NULL)
+    {
+      /* FIXME: Handle failure! */
+    }
   while ((n=ReadBlob(image,MaxTextExtent-1,message)) != 0)
     {
       message[n]='\0';
@@ -3932,6 +3946,12 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
     seeing the document end.
   */
   SVGEndDocument(&svg_info);
+  if (svg_info.parser->myDoc != (xmlDocPtr) NULL)
+    xmlFreeDoc(svg_info.parser->myDoc);
+  /*
+    Free all the memory used by a parser context. However the parsed
+    document in ctxt->myDoc is not freed (so we just did that).
+  */
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
   (void) fclose(file);
