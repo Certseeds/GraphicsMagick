@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to July 25, 2020
+This file was last updated to reflect changes up to November 16, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -24,14 +24,14 @@ release and not attempt to patch older releases.
 
 Special Issues:
 
-*
+* None
 
 Security Fixes:
 
 * GraphicsMagick is now participating in Google's oss-fuzz project due
   to the contributions and assistance of Alex Gaynor. Since February 4
-  2018, 416 issues have been opened by oss-fuzz (some of which were
-  benign build issues) and 0 issues remain open.  The issues list is
+  2018, 431 issues have been opened by oss-fuzz (some of which were
+  benign build issues) and 2 issues remain open.  The issues list is
   available at https://bugs.chromium.org/p/oss-fuzz/issues/list under
   search term "graphicsmagick".  Issues are available for anyone to
   view and duplicate if they have been in "Verified" status for 30
@@ -43,9 +43,19 @@ Security Fixes:
 
 Bug fixes:
 
+* ConstituteImage(): Set image depth appropriately based on the
+  storage size specified by StorageType and QuantumDepth.
+
+* GetImageBoundingBox(): Fix problem that MagickTrimImage with extreme
+  fuzz values could produce an image with negative width.
+
 * ImageToFile(): Improve error handling to avoid possible deferred
   deletion of temporary files, causing unexpected excessive use of
   temporary file space.
+
+* MagickCondSignal(): Improvements to conditional signal handler
+  registration (which avoids over-riding signal handlers previously
+  registered by an API user).
 
 * ModifyCache(): Fix memory leak.
 
@@ -60,8 +70,13 @@ Bug fixes:
 * MVG: Fixes to 'push clip-path foo' and 'pop clip-path foo' parsing
   to eliminate a class of malign behavior.
 
+* SVG: Memory leak fixes.
+
 * TIFF: WEBP compression only supports a depth of 8 so force that
   value.
+
+* Wand MagickSetSamplingFactors(): Correct formatting of sampling
+  factors string.
 
 New Features:
 
@@ -96,10 +111,22 @@ API Updates:
 
 Feature improvements:
 
+* A simple resource-limit respecting memory allocator has been
+  developed for internal use wherever arbitrarily-large amounts of
+  memory might be requested.  This will gradually be added wherever it
+  appears to be needed.  The memory resource limits are at the overall
+  process level.
+
+* MVG Renderer / DrawImage(): Use resource-limit respecting memory
+  allocators for remaining large memory allocations.
+
 * PNG writer: Don't skip optional Exif identifier code if it isn't present.
 
 * DPX reader/writer: decode/encode of 10-bit packed DPX is now twice
-  as fast as it was due to code simplification.
+  as fast due to code simplification.
+
+* TIFF reader: Apply the same resource limits to TIFF tile sizes as
+  apply to the image itself.
 
 Windows Delegate Updates/Additions:
 
@@ -107,10 +134,22 @@ Windows Delegate Updates/Additions:
 
 Build Changes:
 
-* Support the configure option --without-gs configure option to
-  disable reading PS, EPS, and PDF formats via an external Ghostscript
-  delegate program.  This corresponds to the HasGS definition in the
-  source code.
+* configure.ac: Update syntax to avoid using deprecated syntax
+  according to Autoconf 2.69.  Also added copious m4 quoting.
+
+* Support the configure option --without-gs to disable reading PS,
+  EPS, and PDF formats via an external Ghostscript delegate program.
+  This corresponds to the HasGS definition in the source code.
+
+* Support the configure option --without-gdi32 to support disabling
+  use of the Microsoft Windows gdi32 library if it is not wanted.
+
+* The Automake-based test suite now applies a memory limit of 128MB
+  for the Q8, or 256MB for the Q16, or 512MB for the Q32 build, as
+  well as setting a disk space limit of 0.  The limits place an upper
+  bound on the resources required, while assuring that tests do pass
+  with resource limits applied, while also assuring that disk-based
+  pixel-cache files are not used.
 
 Behavior Changes:
 

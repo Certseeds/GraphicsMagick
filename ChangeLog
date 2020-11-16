@@ -1,3 +1,7 @@
+2020-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news to the date November 16, 2020.
+
 2020-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (ReadSVGImage): Fix memory leak due to CDATA block,
