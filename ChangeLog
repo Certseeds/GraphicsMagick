@@ -1,3 +1,9 @@
+2020-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/utils.cc (class MagickState): Set DiskResource limit to
+	zero so that pixel cache won't spill over to using temporary
+	files.
+
 2020-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news to the date November 16, 2020.
