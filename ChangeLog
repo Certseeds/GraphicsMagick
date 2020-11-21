@@ -1,5 +1,8 @@
 2020-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/Hg.rst: Describe how to clone the repository from
+	SourceForge using the ssh protocol rather than https.
+
 	* coders/ps.c (WritePSImage): Fix problem when writing PseudoClass
 	image with a colormap larger than two entries as bilevel.
 	Previous implementation was assuming that the colormap would only

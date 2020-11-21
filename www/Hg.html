@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>GraphicsMagick Mercurial</title>
 <meta content="GraphicsMagick is a robust collection of tools and libraries to read, write, and manipulate an image in any of the more popular image formats including GIF, JPEG, PNG, PDF, and Photo CD. With GraphicsMagick you can create GIFs dynamically making it suitable for Web applications.  You can also resize, rotate, sharpen, color reduce, or add special effects to an image and save your completed work in the same or differing image format. " name="description" />
 <meta content="GraphicsMagick, PerlMagick, visualization, image processing, software development, simulation, image, software, Magick++" name="keywords" />
@@ -41,7 +41,7 @@
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<p class="topic-title">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#what-is-mercurial" id="id1">What is Mercurial?</a></li>
 <li><a class="reference internal" href="#web-access" id="id2">Web Access</a></li>
@@ -84,6 +84,15 @@ directory, issue the command:</p>
 <pre class="literal-block">
 hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 </pre>
+<p>Please note that since the introduction of an HTTP load balancer,
+SourceForge has become unreliable when cloning with the default http
+protocol.  Due to this, using ssh protocol may be required.  Any
+SourceForge user who has submitted a SSH private key to SourceForge
+may use Mercurial over SSH to clone the repository.  The ssh clone
+syntax looks like this (replacing <cite>YOURID</cite> with your SourceForge user
+name):</p>
+<blockquote>
+hg clone <a class="reference external" href="ssh://YOURID&#64;hg.code.sf.net/p/graphicsmagick/code">ssh://YOURID&#64;hg.code.sf.net/p/graphicsmagick/code</a> GM</blockquote>
 </div>
 <div class="section" id="selecting-a-version-of-the-code">
 <h1><a class="toc-backref" href="#id4">Selecting a version of the code</a></h1>

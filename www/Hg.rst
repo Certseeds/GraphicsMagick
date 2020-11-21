@@ -58,6 +58,16 @@ directory, issue the command::
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 
+Please note that since the introduction of an HTTP load balancer,
+SourceForge has become unreliable when cloning with the default http
+protocol.  Due to this, using ssh protocol may be required.  Any
+SourceForge user who has submitted a SSH private key to SourceForge
+may use Mercurial over SSH to clone the repository.  The ssh clone
+syntax looks like this (replacing `YOURID` with your SourceForge user
+name):
+
+  hg clone ssh://YOURID@hg.code.sf.net/p/graphicsmagick/code GM
+
 Selecting a version of the code
 ========================================
 
