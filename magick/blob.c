@@ -1966,20 +1966,6 @@ MagickExport void *GetConfigureBlob(const char *filename,char *path,
   }
 
 #if defined(UseInstalledMagick)
-  /*
-Date: Fri, 20 Nov 2020 09:11:09 +0100
-From: Pro Turm <proturm6@gmail.com>
-Reply-To: Requests for help with GraphicsMagick <graphicsmagick-help@lists.sourceforge.net>
-To: Requests for help with GraphicsMagick <graphicsmagick-help@lists.sourceforge.net>
-Subject: Re: [GM-help] SVG to PNG
-PS Please register a bug in blob.c
-If MagickLibConfigPath is shorter, i.e. has a shorter length, then when
-iterating the path_map , first the MagickShareConfigPath is iterated, than
-the LibConfigPath:
-.
-.
-.
-   */
 
 # if defined(MagickShareConfigPath)
   AddConfigurePath(path_map,&path_index,MagickShareConfigPath,exception);
