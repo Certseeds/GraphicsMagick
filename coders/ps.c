@@ -1260,6 +1260,8 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
             /*
               Dump image as grayscale.
             */
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Writing image as grayscale...");
             i++;
             bp=buffer;
             for (y=0; y < (long) image->rows; y++)
@@ -1308,11 +1310,9 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
             /*
               Dump image as bitmap.
             */
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Writing image as monochrome bitmap...");
             (void) SetImageType(image,BilevelType);
-            polarity=PixelIntensityToQuantum(&image->colormap[0]) < (MaxRGB/2);
-            if (image->colors == 2)
-              polarity=PixelIntensityToQuantum(&image->colormap[1]) <
-                PixelIntensityToQuantum(&image->colormap[0]);
             count=0;
             bp=buffer;
             for (y=0; y < (long) image->rows; y++)
@@ -1327,8 +1327,16 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
               for (x=0; x < (long) image->columns; x++)
               {
                 byte<<=1;
-                if (indexes[x] != polarity)
-                  byte|=0x01;
+                if (image->storage_class == PseudoClass)
+                  {
+                    if (GetGraySample(&image->colormap[indexes[x]]) >= MaxRGB/2)
+                      byte|=0x01;
+                  }
+                else
+                  {
+                    if (GetGraySample(p) >= MaxRGB/2)
+                      byte|=0x01;
+                  }
                 bit++;
                 if (bit == 8)
                   {
@@ -1391,6 +1399,9 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
               /*
                 Dump runlength-encoded DirectColor packets.
               */
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Writing image as DirectColor "
+                                    "(RLE compressed)...");
               bp=buffer;
               for (y=0; y < (long) image->rows; y++)
               {
@@ -1446,6 +1457,9 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
               /*
                 Dump uncompressed DirectColor packets.
               */
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Writing image as DirectColor "
+                                    "(uncompressed)...");
               i=0;
               bp=buffer;
               for (y=0; y < (long) image->rows; y++)
@@ -1520,6 +1534,10 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
               /*
                 Dump runlength-encoded PseudoColor packets.
               */
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Writing image as PseudoColor "
+                                    "(%u colors, RLE compressed)...",
+                                    image->colors);
               i=0;
               bp=buffer;
               for (y=0; y < (long) image->rows; y++)
@@ -1579,6 +1597,10 @@ static unsigned int WritePSImage(const ImageInfo *image_info,Image *image)
               /*
                 Dump uncompressed PseudoColor packets.
               */
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Writing image as PseudoColor "
+                                    "(%u colors, unompressed)...",
+                                    image->colors);
               i=0;
               bp=buffer;
               for (y=0; y < (long) image->rows; y++)

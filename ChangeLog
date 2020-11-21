@@ -1,3 +1,12 @@
+2020-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/ps.c (WritePSImage): Fix problem when writing PseudoClass
+	image with a colormap larger than two entries as bilevel.
+	Previous implementation was assuming that the colormap would only
+	include two entries for a monochrome image, but many entries may
+	exist in the colormap which were never used.  Fixes SourceForge
+	issue #635 "gm convert failure from .pgm to .eps".
+
 2020-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/utils.cc (class MagickState): Set DiskResource limit to
