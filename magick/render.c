@@ -5182,6 +5182,66 @@ GetPixelOpacity(PolygonInfo * restrict polygon_info,const double mid,
   return(subpath_opacity);
 }
 
+static PolygonInfo* ClonePolygonInfo(const PolygonInfo* orig_polygon_info, ExceptionInfo *exception)
+{
+  PolygonInfo
+    *polygon_info = (PolygonInfo *) NULL;
+
+  size_t
+    edge;
+
+  if (orig_polygon_info == (PolygonInfo *) NULL)
+    return polygon_info;
+
+  if ((polygon_info=MagickAllocateMemory(PolygonInfo *,sizeof(PolygonInfo))) == (PolygonInfo *) NULL)
+    {
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      return polygon_info;
+    }
+
+  polygon_info->number_edges=0;
+
+  if ((polygon_info->edges=
+       MagickAllocateResourceLimitedArray(EdgeInfo *,
+                                          orig_polygon_info->number_edges,
+                                          sizeof(EdgeInfo))) == (EdgeInfo *) NULL)
+    {
+      ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                      UnableToDrawOnImage);
+      DestroyPolygonInfo(polygon_info);
+      polygon_info=(PolygonInfo *) NULL;
+      return polygon_info;
+    }
+
+  (void) memcpy(polygon_info->edges,orig_polygon_info->edges,
+                orig_polygon_info->number_edges*sizeof(EdgeInfo));
+
+  for (edge = 0; edge < orig_polygon_info->number_edges; edge++)
+    polygon_info->edges[edge].points = (PointInfo *) NULL;
+
+  polygon_info->number_edges=orig_polygon_info->number_edges;
+  for (edge = 0; edge < polygon_info->number_edges; edge++)
+    {
+      if ((polygon_info->edges[edge].points=
+           MagickAllocateResourceLimitedArray(PointInfo *,
+                                              polygon_info->edges[edge].number_points,
+                                              sizeof(PointInfo))) == (PointInfo *) NULL)
+        {
+          ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
+                          UnableToDrawOnImage);
+          DestroyPolygonInfo(polygon_info);
+          polygon_info=(PolygonInfo *) NULL;
+          return polygon_info;
+        }
+
+      (void) memcpy(polygon_info->edges[edge].points,orig_polygon_info->edges[edge].points,
+                    polygon_info->edges[edge].number_points*sizeof(PointInfo));
+    }
+
+  return polygon_info;
+}
+
 static MagickPassFail
 DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                      const PrimitiveInfo *primitive_info)
@@ -5196,8 +5256,15 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
   ThreadViewDataSet
     * restrict polygon_set = (ThreadViewDataSet *) NULL;
 
+  magick_uint64_t
+    total_pixels;
+
   MagickPassFail
     status = MagickPass;
+
+  int
+    max_threads,
+    num_threads;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -5210,9 +5277,30 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
   if (primitive_info->coordinates <= 1)   /*single point polygons have zero area; don't draw*/
     return(MagickPass);
 
+  /*
+    Determine the number of threads to use.
+   */
+  total_pixels = ((magick_uint64_t) image->rows * image->columns);
+
+  max_threads=omp_get_max_threads();
+  num_threads=max_threads;
+
+  if (total_pixels < 250000UL)
+    num_threads=Min(num_threads,1);
+  else if (total_pixels < 1000000UL)
+    num_threads=Min(num_threads,4);
+  else if (total_pixels < 9000000UL)
+    num_threads=Min(num_threads,8);
+
+  /* fprintf(stderr,"Using %d threads\n", num_threads); */
+
   {
     /*
       Allocate and initialize thread-specific polygon sets.
+
+      There are thread-specific sets because GetPixelOpacity modifies
+      Edges (via DestroyEdge() and modifies Edge scanline and
+      highwater)
     */
     PathInfo
       * restrict path_info;
@@ -5228,16 +5316,39 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                                                    &image->exception))
             != (ThreadViewDataSet *) NULL)
           {
+            unsigned int
+              allocated_views;
+
+            PolygonInfo
+              *polygon_info;
+
+            allocated_views=GetThreadViewDataSetAllocatedViews(polygon_set);
+            if ((int) allocated_views > num_threads)
+              allocated_views=num_threads;
+
             /*
               Assign polygon for each worker thread.
+
+              Only the first polygon set needs to be from
+              ConvertPathToPolygon() since they start off the same.
+              Otherwise an optimized clone can be used instead.
+
+              To that end, we have now written ClonePolygonInfo()
+
+              FIXME: A better solution would be to figure out how
+              threads can share common data while adding minimal
+              locking.  The current algorithms do unfriendly things
+              such as compacting the structure using memmove().
             */
-            for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
-              AssignThreadViewData(polygon_set,index,(void *) ConvertPathToPolygon(path_info,&image->exception));
+            polygon_info=ConvertPathToPolygon(path_info,&image->exception);
+            for (index=0; index < allocated_views; index++)
+            AssignThreadViewData(polygon_set,index,index == 0 ? (void *) polygon_info :
+                                 ClonePolygonInfo(polygon_info,&image->exception));
 
             /*
               Verify worker thread allocations.
             */
-            for (index=0; index < GetThreadViewDataSetAllocatedViews(polygon_set); index++)
+            for (index=0; index < allocated_views; index++)
               if (AccessThreadViewDataById(polygon_set,index) == (void *) NULL)
                 {
                   DestroyThreadViewDataSet(polygon_set);
@@ -5360,11 +5471,12 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       x_stop=(long) floor(bounds.x2+0.5);   /* rounds n.5 to n+1 */
       y_start=(long) ceil(bounds.y1-0.5);
       y_stop=(long) floor(bounds.y2+0.5);
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status)
 #  else
-#    pragma omp parallel for schedule(guided) shared(status)
+#    pragma omp parallel for num_threads(2) schedule(guided) shared(status)
 #  endif
 #endif
       for (y=y_start; y <= y_stop; y++)
@@ -5433,12 +5545,13 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       x_stop=(long) floor(bounds.x2+0.5);   /* rounds n.5 to n+1 */
       y_start=(long) ceil(bounds.y1-0.5);
       y_stop=(long) floor(bounds.y2+0.5);
+
 #if 1
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(status)
 #  else
-#    pragma omp parallel for schedule(static) shared(status)
+#    pragma omp parallel for num_threads(num_threads) schedule(dynamic) shared(status)
 #  endif
 #endif
 #endif
@@ -5484,6 +5597,8 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
                     Fill and/or stroke.  The fill_opacity returned by GetPixelOpacity()
                     handles partial pixel coverage at the edge of a polygon, where
                     0==no coverage and 1==full coverage
+
+                    GetPixelOpacity() modifies some properties referenced by polygon_info.
                   */
                   fill_opacity=GetPixelOpacity(polygon_info,mid,fill,
                                                draw_info->fill_rule,

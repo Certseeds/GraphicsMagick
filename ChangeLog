@@ -1,3 +1,10 @@
+2020-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPolygonPrimitive): Try to minimize the
+	impact of too many threads due to replicated data until such time
+	as the data structures can be re-designed to directly support
+	threading.
+
 2020-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/Hg.rst: Describe how to clone the repository from
