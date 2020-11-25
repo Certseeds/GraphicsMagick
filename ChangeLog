@@ -1,3 +1,9 @@
+2020-11-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPathToPolygon): Make sure not to leak
+	points from added Edge.  Fixes oss-fuzz 27608 "Direct-leak in
+	_MagickReallocateResourceLimitedMemory".
+
 2020-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawPolygonPrimitive): Try to minimize the

@@ -684,10 +684,10 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
             polygon_info->edges[edge].bounds=bounds;
             polygon_info->edges[edge].bounds.y1=points[0].y;
             polygon_info->edges[edge].bounds.y2=points[n-1].y;
-            polygon_info->number_edges=edge+1;
             points=(PointInfo *) NULL;
             ghostline=MagickFalse;
             edge++;
+            polygon_info->number_edges=edge;
           }
         if (points == (PointInfo *) NULL)
           {
@@ -770,6 +770,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         bounds.x1=point.x;
         bounds.x2=point.x;
         edge++;
+        polygon_info->number_edges=edge;
       }
     direction=next_direction;
     if (points == (PointInfo *) NULL)
@@ -834,8 +835,8 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
           polygon_info->edges[edge].bounds.y1=points[0].y;
           polygon_info->edges[edge].bounds.y2=points[n-1].y;
           ghostline=MagickFalse;
-          polygon_info->number_edges=edge+1;
           edge++;
+          polygon_info->number_edges=edge;
         }
     }
   polygon_info->number_edges=edge;
