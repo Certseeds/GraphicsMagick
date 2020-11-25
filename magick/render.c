@@ -2025,6 +2025,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
   double
     length,
     maximum_length,
+    maximum_length_limit,
     offset,
     scale,
     total_length;
@@ -2068,7 +2069,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
       return(MagickFail);
     }
   dash_polygon[0]=primitive_info[0];
-  scale=ExpandAffine(&draw_info->affine);
+  scale=ExpandAffine(&draw_info->affine); /* oss-fuzz 24236 scale=121287375, total_length=542727042660000, maximum_length=605375610468750! */
   length=scale*draw_info->dash_pattern[0];
   offset=draw_info->dash_offset != 0.0 ? scale*draw_info->dash_offset : 0.0;
   j=1;
@@ -2095,11 +2096,31 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
   }
   maximum_length=0.0;
   total_length=0.0;
+  maximum_length_limit=100.0*sqrt((double)image->columns*(double)image->columns+
+                                  (double) image->rows*(double) image->rows+
+                                  +MagickEpsilon);
   for (i=1; (i < number_vertices) && (length >= 0.0); i++)
   {
     dx=primitive_info[i].point.x-primitive_info[i-1].point.x;
     dy=primitive_info[i].point.y-primitive_info[i-1].point.y;
     maximum_length=sqrt(dx*dx+dy*dy+MagickEpsilon);
+    /*
+      Apply an arbitrary limit on maximum length in order to avoid
+      seemingly unending iterations due to affine and other factors
+      (e.g. oss-fuzz 10614 & 24236).
+
+      FIXME: It is TBD if the arbitrary limit factors used have any
+      basis in reality!  Please report if this limit causes issues
+      with valid files.
+    */
+    if (maximum_length > maximum_length_limit)
+      {
+        char message[MaxTextExtent];
+        FormatString(message,"Maximum length: %g, Scale: %g", maximum_length, scale);
+        ThrowException(&image->exception,DrawError,UnreasonableDashPolygonLength,message);
+        status=MagickFail;
+        goto draw_dash_polygon_fail;
+      }
     if (length == 0.0)
       {
         if (draw_info->dash_pattern[n] != 0.0)
@@ -2161,6 +2182,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
       dash_polygon[j].primitive=UndefinedPrimitive;
       status &= DrawStrokePolygon(image,clone_info,dash_polygon);
     }
+ draw_dash_polygon_fail:;
   MagickFreeResourceLimitedMemory(dash_polygon);
   DestroyDrawInfo(clone_info);
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    end draw-dash");

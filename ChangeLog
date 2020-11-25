@@ -3,6 +3,10 @@
 	* magick/render.c (ConvertPathToPolygon): Make sure not to leak
 	points from added Edge.  Fixes oss-fuzz 27608 "Direct-leak in
 	_MagickReallocateResourceLimitedMemory".
+	(DrawDashPolygon): Place an aribrary limit on stroke dash polygon
+	unit maximum length in order to avoid possibly rendering
+	"forever".  Addresses oss-fuzz 24236 "Timeout in
+	coder_MVG_fuzzer".
 
 2020-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
