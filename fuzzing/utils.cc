@@ -2,6 +2,10 @@ class MagickState {
 public:
     MagickState() {
         Magick::InitializeMagick(nullptr);
+
+        // Trace exception events to help diagnose issues.
+        MagickLib::SetLogEventMask("exception");
+
         // Oss-fuzz itself (ASAN/UBSAN) seems to require memory and
         // the memory limit may be total virtual memory and not based
         // only on memory allocations and actual RSS. Formats like

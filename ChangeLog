@@ -1,3 +1,12 @@
+2020-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/utils.cc (class MagickState): Enable tracing of
+	exception events in order to help discover the origin of errors.
+	If too much output comes out, then this will be removed.
+
+	* magick/render.c (ConvertPathToPolygon): Attempt to fix leak of
+	'points' on memory allocation failure.
+
 2020-11-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (ConvertPathToPolygon): Make sure not to leak

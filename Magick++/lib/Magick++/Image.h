@@ -53,7 +53,7 @@ namespace Magick
   // alternative to the default "log.mgk" based initialization.
   //
 
-  // Specify default events which will result in a log event (comma-comma-separated list)
+  // Specify default events which will result in a log event (comma-separated list)
   void MagickDLLDecl SetLogDefaultEventType(const std::string &events_);
 
   // Specify default maximum log file generations before overwriting the first name.
