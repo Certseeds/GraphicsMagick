@@ -666,6 +666,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
                                                                sizeof(EdgeInfo));
                 if (new_edges == (EdgeInfo *) NULL)
                   {
+                    MagickFreeResourceLimitedMemory(points);
                     DestroyPolygonInfo(polygon_info);
                     ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                                     UnableToDrawOnImage);
@@ -734,6 +735,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
                                                            number_edges,sizeof(EdgeInfo));
             if (new_edges == (EdgeInfo *) NULL)
               {
+                MagickFreeResourceLimitedMemory(points);
                 DestroyPolygonInfo(polygon_info);
                 ThrowException3(exception,ResourceLimitError,MemoryAllocationFailed,
                                 UnableToDrawOnImage);
@@ -752,6 +754,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         polygon_info->edges[edge].bounds=bounds;
         polygon_info->edges[edge].bounds.y1=points[0].y;
         polygon_info->edges[edge].bounds.y2=points[n-1].y;
+        points=(PointInfo *) NULL;
         polygon_info->number_edges=edge+1;
         number_points=16;
         points=
@@ -770,7 +773,6 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
         bounds.x1=point.x;
         bounds.x2=point.x;
         edge++;
-        polygon_info->number_edges=edge;
       }
     direction=next_direction;
     if (points == (PointInfo *) NULL)
@@ -834,6 +836,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
           polygon_info->edges[edge].bounds=bounds;
           polygon_info->edges[edge].bounds.y1=points[0].y;
           polygon_info->edges[edge].bounds.y2=points[n-1].y;
+          points=(PointInfo *) NULL;
           ghostline=MagickFalse;
           edge++;
           polygon_info->number_edges=edge;
