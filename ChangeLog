@@ -1,5 +1,8 @@
 2020-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Improve RGBATiledMethod progress
+	monitor so it reports more steps.
+
 	* fuzzing/utils.cc (class MagickState): Enable tracing of
 	exception events in order to help discover the origin of errors.
 	If too much output comes out, then this will be removed.

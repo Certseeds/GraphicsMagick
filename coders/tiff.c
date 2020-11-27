@@ -3310,7 +3310,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             size_t
               tile_pixels_size,
-              tile_total_pixels;
+              tile_total_pixels,
+              tile_num=0,
+              tiles_total;
 
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3326,14 +3328,18 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(CoderError,ImageIsNotTiled,image);
               }
             tile_total_pixels=MagickArraySize(tile_columns,tile_rows);
+            tiles_total=(((image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
+                         *((image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)));
             if (logging)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading TIFF tiles ...");
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "TIFF tile geometry %ux%u, %" MAGICK_SIZE_T_F "u pixels",
+                                      "TIFF tile geometry %ux%u, %" MAGICK_SIZE_T_F "u pixels/tile"
+                                      ", %" MAGICK_SIZE_T_F "u tiles",
                                       (unsigned int)tile_columns,
                                       (unsigned int)tile_rows,
-                                      (MAGICK_SIZE_T) tile_total_pixels);
+                                      (MAGICK_SIZE_T) tile_total_pixels,
+                                      (MAGICK_SIZE_T) tiles_total);
               }
             /*
               Obtain the maximum number of bytes required to contain a tile.
@@ -3433,6 +3439,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     /*
                       Obtain one tile.  Origin is bottom left of tile.
                     */
+                    tile_num++;
                     if (!TIFFReadRGBATile(tiff,x,y,tile_pixels))
                       {
                         status=MagickFail;
@@ -3477,6 +3484,16 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         p+=tile_columns-tile_columns_remaining;
                         q-=((size_t) image->columns+tile_columns_remaining);
                       }
+                    if (image->previous == (Image *) NULL)
+                      if (QuantumTick(tile_num,tiles_total))
+                        if (!MagickMonitorFormatted(tile_num,
+                                                    tiles_total,
+                                                    exception,
+                                                    LoadImageText,image->filename,
+                                                    image->columns,image->rows))
+                          {
+                            status=MagickFail;
+                          }
                     if (status == MagickFail)
                       break;
                   }
@@ -3493,15 +3510,6 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     status=MagickFail;
                     break;
                   }
-                if (image->previous == (Image *) NULL)
-                  if (QuantumTick(y,image->rows))
-                    if (!MagickMonitorFormatted(y,image->rows,exception,
-                                                LoadImageText,image->filename,
-                                                image->columns,image->rows))
-                      {
-                        status=MagickFail;
-                        break;
-                      }
               }
             LiberateMagickResource(MemoryResource,tile_pixels_size);
             MagickFreeMemory(tile_pixels);
