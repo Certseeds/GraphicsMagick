@@ -2,6 +2,8 @@
 
 	* coders/tiff.c (ReadTIFFImage): Improve RGBATiledMethod progress
 	monitor so it reports more steps.
+	(ReadTIFFImage): Improve TiledMethod progress monitor so it
+	reports more steps.
 
 	* fuzzing/utils.cc (class MagickState): Enable tracing of
 	exception events in order to help discover the origin of errors.

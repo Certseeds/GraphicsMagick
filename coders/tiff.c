@@ -2921,7 +2921,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               quantum_type;
 
             size_t
-              tile_total_pixels;
+              tile_total_pixels,
+              tile_num=0,
+              tiles_total;
 
             if (logging)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3031,6 +3033,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                          image);
               }
             memset(tile,0,(size_t) tile_size_max);
+            tiles_total=(((image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
+                         *((image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)))*max_sample;
             /*
               Compute per-row stride.
             */
@@ -3082,6 +3086,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         /*
                           Read a tile.
                         */
+                        tile_num++;
                         if ((tile_size=TIFFReadTile(tiff,tile,x,y,0,sample)) == -1)
                           {
                             status=MagickFail;
@@ -3144,24 +3149,21 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               }
                             p += stride;
                           }
+                        if (image->previous == (Image *) NULL)
+                          if (QuantumTick(tile_num,tiles_total))
+                            if (!MagickMonitorFormatted(tile_num,
+                                                        tiles_total,
+                                                        exception,
+                                                        LoadImageText,image->filename,
+                                                        image->columns,image->rows))
+                              {
+                                status=MagickFail;
+                              }
                         if (status == MagickFail)
                           break;
                       }
                     if (status == MagickFail)
                       break;
-
-                    if (image->previous == (Image *) NULL)
-                      if (QuantumTick((y+sample*image->rows)/tile_rows,
-                                      (image->rows*max_sample)/tile_rows))
-                        if (!MagickMonitorFormatted((y+sample*image->rows)/tile_rows,
-                                                    (image->rows*max_sample)/tile_rows,
-                                                    exception,
-                                                    LoadImageText,image->filename,
-                                                    image->columns,image->rows))
-                          {
-                            status=MagickFail;
-                            break;
-                          }
                   }
                 if (status == MagickFail)
                   break;
