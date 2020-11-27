@@ -1,5 +1,8 @@
 2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/dib.c (ReadDIBImage): Use resource-limited memory allocator.
+	(WriteDIBImage): Use resource-limited memory allocator.
+
 	* coders/bmp.c (ReadBMPImage): Use resource-limited memory
 	allocator.
 	(WriteBMPImage): Use resource-limited memory allocator.
