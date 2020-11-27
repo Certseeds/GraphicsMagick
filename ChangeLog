@@ -1,3 +1,9 @@
+2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Use resource-limited memory
+	allocator.
+	(WriteBMPImage): Use resource-limited memory allocator.
+
 2020-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Improve RGBATiledMethod progress
