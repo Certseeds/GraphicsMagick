@@ -1,8 +1,11 @@
 2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jbig.c (WriteJBIGImage): Use resource-limited memory
+	allocator.
+
 	* coders/fits.c (ReadFITSImage): Use resource-limited memory
 	allocator.
-	(WriteFITSImage): Use resource-limited memory
+	(WriteFITSImage): Use resource-limited memory allocator.
 
 	* coders/dib.c (ReadDIBImage): Use resource-limited memory
 	allocator.
