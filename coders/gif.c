@@ -980,17 +980,24 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 header[count]='\0';
                 if (count+offset+1 >= allocation_length)
                   {
+                    char *comments_new;
                     allocation_length=allocation_length+count+1;
                     MagickRoundUpStringLength(allocation_length);
-                    MagickReallocMemory(char *,comments,allocation_length);
-                    if (comments == (char *) NULL)
-                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                    comments_new=MagickReallocateResourceLimitedMemory(char *,
+                                                                       comments,
+                                                                       allocation_length);
+                    if (comments_new == (char *) NULL)
+                      {
+                        MagickFreeResourceLimitedMemory(comments);
+                        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                      }
+                    comments=comments_new;
                     (void) strlcpy(&comments[offset],(char *)header,allocation_length-offset);
                   }
               }
             (void) SetImageAttribute(image,"comment",NULL);
             (void) SetImageAttribute(image,"comment",comments);
-            MagickFreeMemory(comments);
+            MagickFreeResourceLimitedMemory(comments);
             break;
           }
           case 0xff:
