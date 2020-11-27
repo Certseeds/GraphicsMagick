@@ -1,5 +1,9 @@
 2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/webp.c (ReadWEBPImage): Use resource-limited memory
+	allocator.
+	(WriteWEBPImage): Use resource-limited memory allocator.
+
 	* coders/jbig.c (WriteJBIGImage): Use resource-limited memory
 	allocator.
 
