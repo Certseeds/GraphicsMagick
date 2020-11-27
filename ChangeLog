@@ -1,5 +1,8 @@
 2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Magick++/lib/Magick++/Drawable.h: Remove inheritance from
+	std::unary_function, which was removed in C++'17.
+
 	* coders/webp.c (ReadWEBPImage): Use resource-limited memory
 	allocator.
 	(WriteWEBPImage): Use resource-limited memory allocator.

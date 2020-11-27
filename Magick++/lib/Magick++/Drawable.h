@@ -121,11 +121,10 @@ namespace Magick
                                         const Coordinate& right_ );
 
   //
-  // Base class for all drawable objects
+  // Base class for all drawable objects (used to inherit from
+  // std::unary_function, but it was removed in C++'17).
   //
-  //struct MagickDLLDecl std::unary_function<MagickLib::DrawContext,void>;
-  class MagickDLLDecl DrawableBase:
-    public std::unary_function<MagickLib::DrawContext,void>
+  class MagickDLLDecl DrawableBase
   {
   public:
     // Constructor
