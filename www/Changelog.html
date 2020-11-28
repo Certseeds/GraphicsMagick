@@ -38,6 +38,12 @@
 <p>2020-11-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/png.c (ReadOneJNGImage): Verify and enforce
+Alpha_compression_method values.  Request that color and alpha
+decoders return just one frame.  Force decoder format to disable
+auto-detection.  Assume that coder messed up and might have
+returned more than one frame.  Fixes oss-fuzz 28013 &quot;Indirect-leak
+· MagickMalloc&quot;.</li>
 <li>magick/memory-private.h (MagickReallocateResourceLimitedMemory):
 Fix typo in macro definition which resulted in a memory
 reallocation leak!</li>

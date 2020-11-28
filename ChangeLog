@@ -1,5 +1,12 @@
 2020-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOneJNGImage): Verify and enforce
+	Alpha_compression_method values.  Request that color and alpha
+	decoders return just one frame.  Force decoder format to disable
+	auto-detection.  Assume that coder messed up and might have
+	returned more than one frame.  Fixes oss-fuzz 28013 "Indirect-leak
+	· MagickMalloc".
+
 	* magick/memory-private.h (MagickReallocateResourceLimitedMemory):
 	Fix typo in macro definition which resulted in a memory
 	reallocation leak!

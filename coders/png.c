@@ -3047,12 +3047,12 @@ DestroyJNG(unsigned char *chunk,Image **color_image,
   }
   if (*color_image)
   {
-    DestroyImage(*color_image);
+    DestroyImageList(*color_image);
     *color_image = (Image *)NULL;
   }
   if (*alpha_image)
   {
-    DestroyImage(*alpha_image);
+    DestroyImageList(*alpha_image);
     *alpha_image = (Image *)NULL;
   }
 }
@@ -3433,6 +3433,20 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
 
           if (!image_info->ping && jng_color_type >= 12)
             {
+              if ((jng_alpha_compression_method != 0) &&
+                  (jng_alpha_compression_method != 8))
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "Unsupported Alpha_compression_method: %u",
+                                          jng_alpha_compression_method);
+                  DestroyJNG(chunk,&color_image,&color_image_info,
+                             &alpha_image,&alpha_image_info);
+                  ThrowException(exception,CorruptImageError,ImproperImageHeader,
+                                 image->filename);
+                  return ((Image *)NULL);
+                }
+
               alpha_image_info=MagickAllocateMemory(ImageInfo *,
                                                     sizeof(ImageInfo));
               if (alpha_image_info == (ImageInfo *) NULL)
@@ -3743,7 +3757,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           ThrowException(exception,CorruptImageError,
                          ImageFileDoesNotContainAnyImageData,image->filename);
         }
-      DestroyImage(color_image);
+      DestroyImageList(color_image);
       color_image=(Image *) NULL;
       return (Image *) NULL;
     }
@@ -3758,6 +3772,9 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
       FormatString(color_image_info->filename,"JPEG:%.1024s",color_image->filename);
 
       color_image_info->ping=MagickFalse;   /* To do: avoid this */
+      color_image_info->subimage=0;
+      color_image_info->subrange=1;
+
       jng_image=ReadImage(color_image_info,exception);
       (void) LiberateUniqueFileResource(color_image->filename);
       DestroyImage(color_image);
@@ -3842,6 +3859,17 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         {
           if (jng_color_type >= 12)
             {
+              /*
+                Alpha is stored in PNG or JPEG format:
+                  Alpha_compression_method:
+                    1 byte.
+                      0: PNG grayscale IDAT format.
+                      8: JNG 8-bit grayscale JDAA format
+              */
+              const char *jng_alpha_magick=
+                (jng_alpha_compression_method == 0 ? "PNG" :
+                 (jng_alpha_compression_method == 8 ? "JPEG" :
+                  "UNKNOWN"));
               if (jng_alpha_compression_method == 0)
                 {
                   png_byte
@@ -3855,10 +3883,12 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               CloseBlob(alpha_image);
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                     "    Reading opacity from alpha_blob.");
-
-              FormatString(alpha_image_info->filename,"%.1024s",
-                           alpha_image->filename);
+                   "    Reading opacity from %s alpha_blob.",
+                                      jng_alpha_magick);
+              FormatString(alpha_image_info->filename,"%s:%.1024s",
+                           jng_alpha_magick, alpha_image->filename);
+              alpha_image_info->subimage=0;
+              alpha_image_info->subrange=1;
 
               jng_image=ReadImage(alpha_image_info,exception);
 
@@ -3875,7 +3905,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                  if (logging)
                    {
                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "    Read jng_image.");
+                          "    Read jng_image (%s)",image->magick);
                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "      jng_image->width=%lu, jng_image->height=%lu",
                           (unsigned long)jng_width,(unsigned long)jng_height);
@@ -3919,7 +3949,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                    &alpha_image,&alpha_image_info);
                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                      " Destroy the JNG image");
-                 DestroyImage(jng_image);
+                 DestroyImageList(jng_image);
                  jng_image = (Image *)NULL;
                }
             }
