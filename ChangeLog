@@ -5,7 +5,7 @@
 	decoders return just one frame.  Force decoder format to disable
 	auto-detection.  Assume that coder messed up and might have
 	returned more than one frame.  Fixes oss-fuzz 28013 "Indirect-leak
-	· MagickMalloc".
+	. MagickMalloc".
 
 	* magick/memory-private.h (MagickReallocateResourceLimitedMemory):
 	Fix typo in macro definition which resulted in a memory
