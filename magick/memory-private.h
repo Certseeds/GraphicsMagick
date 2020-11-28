@@ -62,7 +62,7 @@ extern MagickExport
   ((type) _MagickReallocateResourceLimitedMemory(0,(size_t) (count),(size_t) (size)))
 
 #define MagickReallocateResourceLimitedMemory(type,memory,size)         \
-  ((type) _MagickReallocateResourceLimitedMemory(0,1,(size_t) (size)))
+  ((type) _MagickReallocateResourceLimitedMemory(memory,1,(size_t) (size)))
 
 #define MagickReallocateResourceLimitedArray(type,memory,count,size)    \
   ((type) _MagickReallocateResourceLimitedMemory(memory,(size_t) (count),(size_t) (size)))

@@ -591,7 +591,9 @@ typedef struct _MagickMemoryResource_T
 
 } MagickMemoryResource_T;
 
+#if !defined(MAGICK_DEBUG_RL_MEMORY)
 #define MAGICK_DEBUG_RL_MEMORY 0
+#endif /* if !defined(MAGICK_DEBUG_RL_MEMORY) */
 
 /* Return MemoryResource_T pointer given user-land pointer */
 #define MagickAccessMemoryResource_T_From_Pub(p) \

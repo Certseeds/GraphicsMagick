@@ -1,5 +1,9 @@
 2020-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/memory-private.h (MagickReallocateResourceLimitedMemory):
+	Fix typo in macro definition which resulted in a memory
+	reallocation leak!
+
 	* Magick++/lib/Magick++/Drawable.h: Decided to continue using
 	std::unary_function if C++ version is less than C++'17 since
 	otherwise it may be changing an interface.

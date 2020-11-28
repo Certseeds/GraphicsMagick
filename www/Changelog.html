@@ -38,6 +38,9 @@
 <p>2020-11-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/memory-private.h (MagickReallocateResourceLimitedMemory):
+Fix typo in macro definition which resulted in a memory
+reallocation leak!</li>
 <li>Magick++/lib/Magick++/Drawable.h: Decided to continue using
 std::unary_function if C++ version is less than C++'17 since
 otherwise it may be changing an interface.</li>
