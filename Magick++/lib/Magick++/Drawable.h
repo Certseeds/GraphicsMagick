@@ -124,7 +124,13 @@ namespace Magick
   // Base class for all drawable objects (used to inherit from
   // std::unary_function, but it was removed in C++'17).
   //
+  // https://en.cppreference.com/w/cpp/utility/functional/unary_function
+  // https://en.cppreference.com/w/cpp/utility/functional/function
+  //
   class MagickDLLDecl DrawableBase
+#if __cplusplus < 201703L
+  : public std::unary_function<MagickLib::DrawContext,void>
+#endif // if __cplusplus < 201703L
   {
   public:
     // Constructor
