@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to November 16, 2020
+This file was last updated to reflect changes up to November 28, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -53,6 +53,12 @@ Bug fixes:
   deletion of temporary files, causing unexpected excessive use of
   temporary file space.
 
+* JNG: Add validations for alpha compression method values and use
+  this information to enforce decoding using the appropriate
+  sub-format (rather than auto-detecting the format).  Also, address
+  memory leaks which may occur if the sub-decoder does something other
+  than was expected.
+
 * MagickCondSignal(): Improvements to conditional signal handler
   registration (which avoids over-riding signal handlers previously
   registered by an API user).
@@ -69,6 +75,12 @@ Bug fixes:
 
 * MVG: Fixes to 'push clip-path foo' and 'pop clip-path foo' parsing
   to eliminate a class of malign behavior.
+
+* MVG: Place an aribrary limit on stroke dash polygon unit maximum
+  length in order to avoid possibly rendering "forever".
+
+* PS: Fix corrupt image when writing PseudoClass image with a colormap
+  larger than two entries as bilevel.
 
 * SVG: Memory leak fixes.
 
@@ -136,6 +148,10 @@ Build Changes:
 
 * configure.ac: Update syntax to avoid using deprecated syntax
   according to Autoconf 2.69.  Also added copious m4 quoting.
+
+* Magick++ Drawable base class no longer uses std::unary_function when
+  compiled using C++'17 or later, since this feature has been removed
+  from the language.
 
 * Support the configure option --without-gs to disable reading PS,
   EPS, and PDF formats via an external Ghostscript delegate program.

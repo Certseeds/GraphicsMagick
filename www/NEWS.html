@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to November 16, 2020</p>
+<p>This file was last updated to reflect changes up to November 28, 2020</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -118,6 +118,11 @@ fuzz values could produce an image with negative width.</li>
 <li>ImageToFile(): Improve error handling to avoid possible deferred
 deletion of temporary files, causing unexpected excessive use of
 temporary file space.</li>
+<li>JNG: Add validations for alpha compression method values and use
+this information to enforce decoding using the appropriate
+sub-format (rather than auto-detecting the format).  Also, address
+memory leaks which may occur if the sub-decoder does something other
+than was expected.</li>
 <li>MagickCondSignal(): Improvements to conditional signal handler
 registration (which avoids over-riding signal handlers previously
 registered by an API user).</li>
@@ -130,6 +135,10 @@ then always use simple pixel replication as per the MNG
 specification.</li>
 <li>MVG: Fixes to 'push clip-path foo' and 'pop clip-path foo' parsing
 to eliminate a class of malign behavior.</li>
+<li>MVG: Place an aribrary limit on stroke dash polygon unit maximum
+length in order to avoid possibly rendering &quot;forever&quot;.</li>
+<li>PS: Fix corrupt image when writing PseudoClass image with a colormap
+larger than two entries as bilevel.</li>
 <li>SVG: Memory leak fixes.</li>
 <li>TIFF: WEBP compression only supports a depth of 8 so force that
 value.</li>
@@ -187,6 +196,9 @@ apply to the image itself.</li>
 <ul class="simple">
 <li>configure.ac: Update syntax to avoid using deprecated syntax
 according to Autoconf 2.69.  Also added copious m4 quoting.</li>
+<li>Magick++ Drawable base class no longer uses std::unary_function when
+compiled using C++'17 or later, since this feature has been removed
+from the language.</li>
 <li>Support the configure option --without-gs to disable reading PS,
 EPS, and PDF formats via an external Ghostscript delegate program.
 This corresponds to the HasGS definition in the source code.</li>
