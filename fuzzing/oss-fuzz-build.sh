@@ -56,7 +56,7 @@ popd
 echo "=== Building libtiff..."
 pushd "$SRC/libtiff"
 autoreconf -fiv
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK"
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --disable-old-jpeg
 make -j$(nproc)
 make install
 popd

@@ -1,5 +1,7 @@
 2020-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/oss-fuzz-build.sh: Disable old JPEG support in libtiff.
+
 	* coders/mat.c (ReadMATImage): Use resource-limited memory
 	allocator.
 	(WriteMATLABImage): Use resource-limited memory allocator.
