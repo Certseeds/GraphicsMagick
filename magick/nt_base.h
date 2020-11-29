@@ -203,6 +203,10 @@ extern "C" {
 #  define HAVE__ALIGNED_MALLOC 1
 #endif
 
+#if defined(_VISUALC_) && (_MSC_VER >= 1900) && !defined(HAVE_STDINT_H)
+#   define HAVE_STDINT_H 1
+#endif
+
 /*
   Windows provides Unix-style access() via _access()
  */
