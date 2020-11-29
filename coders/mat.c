@@ -343,20 +343,20 @@ magick_off_t TotalSize = 0;
     (void) unlink(clone_info->filename);
   }
 
-  cache_block = MagickAllocateMemory(unsigned char *,(size_t)((*Size<16384) ? *Size : 16384));
+  cache_block = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)((*Size<16384) ? *Size : 16384));
   if(cache_block==NULL) return NULL;
-  decompress_block = MagickAllocateMemory(unsigned char *,(size_t)(4096));
+  decompress_block = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)(4096));
   if(decompress_block==NULL)
   {
-    MagickFreeMemory(cache_block);
+    MagickFreeResourceLimitedMemory(cache_block);
     return NULL;
   }
 
   mat_file = AcquireTemporaryFileStream(clone_info->filename,BinaryFileIOMode);
   if(!mat_file)
   {
-    MagickFreeMemory(cache_block);
-    MagickFreeMemory(decompress_block);
+    MagickFreeResourceLimitedMemory(cache_block);
+    MagickFreeResourceLimitedMemory(decompress_block);
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Cannot create file stream for decompressed image");
     return NULL;
   }
@@ -369,8 +369,8 @@ magick_off_t TotalSize = 0;
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Failed to initialize zlib");
       ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
-      MagickFreeMemory(cache_block);
-      MagickFreeMemory(decompress_block);
+      MagickFreeResourceLimitedMemory(cache_block);
+      MagickFreeResourceLimitedMemory(decompress_block);
       (void)fclose(mat_file);
       LiberateTemporaryFile(clone_info->filename);
       return NULL;
@@ -394,8 +394,8 @@ magick_off_t TotalSize = 0;
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Corrupt inflate stream");
           inflateEnd(&zip_info);
-          MagickFreeMemory(cache_block);
-          MagickFreeMemory(decompress_block);
+          MagickFreeResourceLimitedMemory(cache_block);
+          MagickFreeResourceLimitedMemory(decompress_block);
           (void)fclose(mat_file);
           LiberateTemporaryFile(clone_info->filename);
           ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
@@ -415,8 +415,8 @@ DblBreak:
 
   inflateEnd(&zip_info);                        /* Release all caches used by zip. */
   (void)fclose(mat_file);
-  MagickFreeMemory(cache_block);
-  MagickFreeMemory(decompress_block);
+  MagickFreeResourceLimitedMemory(cache_block);
+  MagickFreeResourceLimitedMemory(decompress_block);
   *Size = TotalSize;
 
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL) goto UnlinkFile;
@@ -455,7 +455,7 @@ UnlinkFile:
   } \
   if(clone_info) \
     DestroyImageInfo(clone_info);    \
-  MagickFreeMemory(BImgBuff); \
+  MagickFreeResourceLimitedMemory(BImgBuff); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -596,7 +596,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     }
 
         /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
     if(BImgBuff == NULL) RET_CHECK(image);
 
     if(HDR.Type[1]==0)          /* Find Min and Max Values for doubles */
@@ -722,14 +722,14 @@ skip_reading_current:
     image->colors=0;
 
       /* row scan buffer is no longer needed */
-    MagickFreeMemory(BImgBuff);
+    MagickFreeResourceLimitedMemory(BImgBuff);
     BImgBuff = NULL;
   }
 
 ImportImagePixelAreaFailed:
 ExitLoop:
 
-  if(BImgBuff!=NULL) MagickFreeMemory(BImgBuff);
+  if(BImgBuff!=NULL) MagickFreeResourceLimitedMemory(BImgBuff);
 
   return image;
 }
@@ -1115,7 +1115,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     }
 
   /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateArray(unsigned char *,(size_t) (ldblk),sizeof(double));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,(size_t) (ldblk),sizeof(double));    /* Ldblk was set in the check phase */
     if (BImgBuff == NULL)
       goto NoMemory;
     (void) memset(BImgBuff,0,ldblk*sizeof(double));
@@ -1289,7 +1289,7 @@ skip_reading_current:
     image->colors=0;
 
       /* row scan buffer is no longer needed */
-    MagickFreeMemory(BImgBuff);
+    MagickFreeResourceLimitedMemory(BImgBuff);
     BImgBuff = NULL;
 
     if(--Frames>0)
@@ -1319,7 +1319,7 @@ skip_reading_current:
   }
 
 END_OF_READING:
-  MagickFreeMemory(BImgBuff);
+  MagickFreeResourceLimitedMemory(BImgBuff);
   CloseBlob(image);
 
   {
@@ -1452,7 +1452,7 @@ static MagickPassFail WriteMATLABImage(const ImageInfo *image_info,Image *image)
   pixels=(unsigned char *) NULL;
   while(image!=NULL)
   {
-    pixels=MagickAllocateMemory(unsigned char *,image->rows);
+    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,image->rows);
     if (pixels == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -1527,13 +1527,13 @@ BreakAll:
 
     while(padding-->0) (void) WriteBlobByte(image,0);
 
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
     if(status == MagickFail || image->next==NULL) break;
     image=SyncNextImageInList(image);
   }
 
   CloseBlob(image);
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
 
   if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return MAT");
