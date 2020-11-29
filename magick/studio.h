@@ -142,6 +142,10 @@ extern "C" {
 #  include <sys/timeb.h>
 #endif
 
+#if defined(HAVE_STDINT_H)
+#  include <stdint.h>
+#endif
+
 #if defined(POSIX)
 #  if defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
 #    define dirent direct
@@ -191,15 +195,6 @@ extern "C" {
   Include common bits shared with api.h
 */
 #include "magick/common.h"
-
-#if defined(MSWINDOWS)
-# include "magick/nt_base.h"
-#endif /* defined(MSWINDOWS) */
-
-#if defined(HAVE_STDINT_H)
-#  include <stdint.h>
-#endif
-
 /*
   Enable use of numeric message IDs and a translation table in order
   to support multiple locales.
@@ -223,6 +218,10 @@ extern "C" {
 #if defined(POSIX)
 # include "magick/unix_port.h"
 #endif /* defined(POSIX) */
+
+#if defined(MSWINDOWS)
+# include "magick/nt_base.h"
+#endif /* defined(MSWINDOWS) */
 
 #if defined(HAVE_MMAP_FILEIO) && !defined(MSWINDOWS)
 # include <sys/mman.h>
