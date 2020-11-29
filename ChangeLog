@@ -1,5 +1,8 @@
 2020-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/magick_types.h.in: Provide PTRDIFF_MAX for Visual Studio
+	if it is missing.
+
 	* fuzzing/oss-fuzz-build.sh: Disable old JPEG support in libtiff.
 
 	* coders/mat.c (ReadMATImage): Use resource-limited memory
