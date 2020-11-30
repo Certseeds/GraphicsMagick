@@ -2173,7 +2173,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
     bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
-  if ((row_bytes >= (size_t) PTRDIFF_MAX) || (bytes_per_line == 0) ||
+  if ((row_bytes >= (size_t) SIZE_MAX/2) || (bytes_per_line == 0) ||
       (bytes_per_line > 0x7FFFU) || ((row_bytes+MaxCount*2U) >= 0x7FFFU))
     ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
   buffer=MagickAllocateMemory(unsigned char *,PictInfoSize);

@@ -81,24 +81,12 @@ extern "C" {
 #  define MAGICK_SIZE_T unsigned __int64
 #  define MAGICK_SSIZE_T_F "I64"
 #  define MAGICK_SSIZE_T signed __int64
-#  if !defined(PTRDIFF_MIN)
-#    define PTRDIFF_MIN (_I64_MIN)
-#  endif /* if !defined(PTRDIFF_MIN) */
-#  if !defined(PTRDIFF_MAX)
-#    define PTRDIFF_MAX (_I64_MAX)
-#  endif /* if !defined(PTRDIFF_MAX) */
 #  else
   typedef unsigned long magick_uintptr_t;
 #  define MAGICK_SIZE_T_F "l"
 #  define MAGICK_SIZE_T unsigned long
 #  define MAGICK_SSIZE_T_F "l"
 #  define MAGICK_SSIZE_T long
-#  if !defined(PTRDIFF_MIN)
-#    define PTRDIFF_MIN (_I32_MIN)
-#  endif /* if !defined(PTRDIFF_MIN) */
-#  if !defined(PTRDIFF_MAX)
-#    define PTRDIFF_MAX (_I32_MAX)
-#  endif /* if !defined(PTRDIFF_MAX) */
 #  endif // defined(WIN64)
 
 #else
