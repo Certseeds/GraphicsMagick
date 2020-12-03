@@ -1,3 +1,7 @@
+2020-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick_types.h.in: Stop trying to define PTRDIFF_MAX.
+
 2020-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magick_types.h.in: Provide PTRDIFF_MAX for Visual Studio
