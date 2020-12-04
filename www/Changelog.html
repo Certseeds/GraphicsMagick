@@ -40,7 +40,10 @@
 <ul class="simple">
 <li>magick/render.c (DrawImage): Verify that affine scaling factors
 are not zero.  Fixes oss-fuzz 28293 &quot;Divide-by-zero -
-InverseAffineMatrix&quot;.</li>
+InverseAffineMatrix&quot;.
+(DrawPolygonPrimitive): Thread error status check was at wrong
+scope, resulting in code executing when it should have quit.
+Fixes oss-fuzz 28292 &quot;Integer-overflow - DrawPolygonPrimitive&quot;.</li>
 </ul>
 </blockquote>
 <p>2020-12-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

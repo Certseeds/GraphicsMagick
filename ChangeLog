@@ -3,6 +3,9 @@
 	* magick/render.c (DrawImage): Verify that affine scaling factors
 	are not zero.  Fixes oss-fuzz 28293 "Divide-by-zero -
 	InverseAffineMatrix".
+	(DrawPolygonPrimitive): Thread error status check was at wrong
+	scope, resulting in code executing when it should have quit.
+	Fixes oss-fuzz 28292 "Integer-overflow - DrawPolygonPrimitive".
 
 2020-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

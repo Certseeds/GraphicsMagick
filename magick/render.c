@@ -5592,10 +5592,10 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
       fill=(primitive_info->method == FillToBorderMethod) ||
         (primitive_info->method == FloodfillMethod);
 
-      x_start=(long) ceil(bounds.x1-0.5);   /* rounds n.5 to n */
-      x_stop=(long) floor(bounds.x2+0.5);   /* rounds n.5 to n+1 */
-      y_start=(long) ceil(bounds.y1-0.5);
-      y_stop=(long) floor(bounds.y2+0.5);
+      x_start=(long) ceil(bounds.x1-0.5); /* FIXME: validate */  /* rounds n.5 to n */
+      x_stop=(long) floor(bounds.x2+0.5); /* FIXME: validate */  /* rounds n.5 to n+1 */
+      y_start=(long) ceil(bounds.y1-0.5); /* FIXME: validate */
+      y_stop=(long) floor(bounds.y2+0.5); /* FIXME: validate */
 
 #if 1
 #if defined(HAVE_OPENMP)
@@ -5725,15 +5725,15 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
               if (!SyncImagePixelsEx(image,&image->exception))
                 thread_status=MagickFail;
 
-              if (thread_status == MagickFail)
-                {
-                  status=thread_status;
+            } /* if (thread_status != MagickFail) */
+          if (thread_status == MagickFail)
+            {
+              status=thread_status;
 #if defined(HAVE_OPENMP)
 #  pragma omp flush (status)
 #endif
-                }
             }
-        }
+        } /* for (y=y_start */
     }
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"    end draw-polygon");
 
