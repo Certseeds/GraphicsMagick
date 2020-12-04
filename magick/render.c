@@ -1238,6 +1238,7 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
            const long y,const SegmentInfo *edge)
 {
   double
+    dval,
     intercept,
     z;
 
@@ -1258,11 +1259,13 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
   if (affine->sx > MagickEpsilon)
     {
       intercept=(-z/affine->sx);
-      x=(long) ceil(intercept+MagickEpsilon-0.5);
+      dval=ceil(intercept+MagickEpsilon-0.5);
+      x=(long) dval; /* FIXME: validate */
       if (x > inverse_edge.x1)
         inverse_edge.x1=x;
       intercept=(-z+image->columns)/affine->sx;
-      x=(long) ceil(intercept-MagickEpsilon-0.5);
+      dval=ceil(intercept-MagickEpsilon-0.5);
+      x=(long) dval; /* FIXME: validate */
       if (x < inverse_edge.x2)
         inverse_edge.x2=x;
     }
@@ -1270,11 +1273,13 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
     if (affine->sx < -MagickEpsilon)
       {
         intercept=(-z+image->columns)/affine->sx;
-        x=(long) ceil(intercept+MagickEpsilon-0.5);
+        dval=ceil(intercept+MagickEpsilon-0.5);
+        x=(long) dval; /* FIXME: validate */
         if (x > inverse_edge.x1)
           inverse_edge.x1=x;
         intercept=(-z/affine->sx);
-        x=(long) ceil(intercept-MagickEpsilon-0.5);
+        dval=ceil(intercept-MagickEpsilon-0.5);
+        x=(long) dval; /* FIXME: validate */
         if (x < inverse_edge.x2)
           inverse_edge.x2=x;
       }
@@ -1291,11 +1296,13 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
   if (affine->rx > MagickEpsilon)
     {
       intercept=(-z /affine->rx);
-      x=(long) ceil(intercept+MagickEpsilon-0.5);
+      dval=ceil(intercept+MagickEpsilon-0.5);
+      x=(long) dval; /* FIXME: validate */
       if (x > inverse_edge.x1)
         inverse_edge.x1=x;
       intercept=(-z+image->rows)/affine->rx;
-      x=(long) ceil(intercept-MagickEpsilon-0.5);
+      dval=ceil(intercept-MagickEpsilon-0.5);
+      x=(long) dval; /* FIXME: validate */
       if (x < inverse_edge.x2)
         inverse_edge.x2=x;
     }
@@ -1303,11 +1310,13 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
     if (affine->rx < -MagickEpsilon)
       {
         intercept=(-z+image->rows)/affine->rx;
-        x=(long) ceil(intercept+MagickEpsilon-0.5);
+        dval=ceil(intercept+MagickEpsilon-0.5);
+        x=(long) dval; /* FIXME: validate */
         if (x > inverse_edge.x1)
           inverse_edge.x1=x;
         intercept=(-z/affine->rx);
-        x=(long) ceil(intercept-MagickEpsilon-0.5);
+        dval=ceil(intercept-MagickEpsilon-0.5);
+        x=(long) dval; /* FIXME: validate */
         if (x < inverse_edge.x2)
           inverse_edge.x2=x;
       }
@@ -1329,7 +1338,7 @@ InverseAffineMatrix(const AffineMatrix *affine)
   double
     determinant;
 
-  determinant=1.0/(affine->sx*affine->sy-affine->rx*affine->ry);
+  determinant=1.0/(affine->sx*affine->sy-affine->rx*affine->ry); /* runtime error: division by zero */
   inverse_affine.sx=determinant*affine->sy;
   inverse_affine.rx=determinant*(-affine->rx);
   inverse_affine.ry=determinant*(-affine->ry);
@@ -2844,6 +2853,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   break;
                 if (MagickAtoFChk(token,&affine.sx) != MagickPass)
                   break;
+                if (affine.sx < MagickEpsilon)
+                  break;
                 if (MagickGetToken(q,&q,token,token_max_length) < 1)
                   break;
                 if (*token == ',')
@@ -2864,6 +2875,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   if (MagickGetToken(q,&q,token,token_max_length) < 1)
                     break;
                 if (MagickAtoFChk(token,&affine.sy) != MagickPass)
+                  break;
+                if (affine.sy < MagickEpsilon)
                   break;
                 if (MagickGetToken(q,&q,token,token_max_length) < 1)
                   break;
@@ -2968,6 +2981,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 affine.sy=draw_info->bounds.y2;
                 affine.tx=draw_info->bounds.x1;
                 affine.ty=draw_info->bounds.y1;
+                if ((affine.sx < MagickEpsilon) || (affine.sy < MagickEpsilon))
+                  status=MagickFail;
                 break;
               }
             status=MagickFail;
@@ -3839,11 +3854,21 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
+            if (affine.sx < MagickEpsilon)
+              {
+                status=MagickFail;
+                break;
+              }
             MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
               MagickGetToken(q,&q,token,token_max_length);
             if (MagickAtoFChk(token,&affine.sy) != MagickPass)
               status=MagickFail;
+            if (affine.sx < MagickEpsilon)
+              {
+                status=MagickFail;
+                break;
+              }
             break;
           }
         if (LocaleCompare("skewX",keyword) == 0)

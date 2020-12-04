@@ -1,3 +1,9 @@
+2020-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Verify that affine scaling factors
+	are not zero.  Fixes oss-fuzz 28293 "Divide-by-zero -
+	InverseAffineMatrix".
+
 2020-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magick_types.h.in: Stop trying to define PTRDIFF_MAX.
