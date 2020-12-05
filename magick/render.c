@@ -1760,7 +1760,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
   assert(name != (const char *) NULL);
-  FormatString(clip_path,"[%.1024s]",name);
+  FormatString(clip_path,"[MVG:%.1024s]",name);
   attribute=GetImageAttribute(image,clip_path);
   if (attribute == (ImageAttribute *) NULL)
     return(MagickPass);
@@ -1925,7 +1925,7 @@ DrawCompositeMask(Image *image,const DrawInfo *draw_info, const char *name)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
-  FormatString(composite_path,"[%.1024s]",name);
+  FormatString(composite_path,"[MVG:%.1024s]",name);
   do
     {
       if ((attribute=GetImageAttribute(image,composite_path)) == (ImageAttribute *) NULL)
@@ -2363,7 +2363,7 @@ char *  ExtractTokensBetweenPushPop (
           *pExtractedLength = ExtractedLength;
         return NULL;
     }
-  FormatString(name,"[%.1024s]",token);
+  FormatString(name,"[MVG:%.1024s]",token);
   FormatString(pop_message,"push %.512s %.512s", pop_string, token);
 
   /* search for "pop <pop_string>" */
@@ -2453,7 +2453,7 @@ char * InsertAttributeIntoInputStream (
       *pStatus = MagickFail;
       return(q);
     }
-  FormatString(AttributeName,"[%.1024s]",*ptoken);
+  FormatString(AttributeName,"[MVG:%.1024s]",*ptoken);
   attribute=GetImageAttribute(image,AttributeName);
   if (attribute == (ImageAttribute *) NULL)
     {
@@ -2853,8 +2853,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   break;
                 if (MagickAtoFChk(token,&affine.sx) != MagickPass)
                   break;
-                if (affine.sx < MagickEpsilon)
-                  break;
                 if (MagickGetToken(q,&q,token,token_max_length) < 1)
                   break;
                 if (*token == ',')
@@ -2875,8 +2873,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   if (MagickGetToken(q,&q,token,token_max_length) < 1)
                     break;
                 if (MagickAtoFChk(token,&affine.sy) != MagickPass)
-                  break;
-                if (affine.sy < MagickEpsilon)
                   break;
                 if (MagickGetToken(q,&q,token,token_max_length) < 1)
                   break;
@@ -2981,8 +2977,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 affine.sy=draw_info->bounds.y2;
                 affine.tx=draw_info->bounds.x1;
                 affine.ty=draw_info->bounds.y1;
-                if ((affine.sx < MagickEpsilon) || (affine.sy < MagickEpsilon))
-                  status=MagickFail;
                 break;
               }
             status=MagickFail;
@@ -3057,7 +3051,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;    /* if drawing clip path, ignore changes to fill color */
-            FormatString(pattern,"[%.1024s]",token);
+            FormatString(pattern,"[MVG:%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               (void) DrawPatternPath(image,draw_info,token,
                 &graphic_context[n]->fill_pattern);
@@ -3602,11 +3596,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                     status=MagickFail;
                     break;
                   }
-                FormatString(key,"[%.1024s]",name);
+                FormatString(key,"[MVG:%.1024s]",name);
                 /* SetImageAttribute concatenates values! Delete with NULL */
                 (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
-                FormatString(key,"[%.1024s-geometry]",name);
+                FormatString(key,"[MVG:%.1024s-geometry]",name);
                 FormatString(geometry,"%gx%g%+g%+g",
                   Max(AbsoluteValue(bounds.x2-bounds.x1+1),1),
                   Max(AbsoluteValue(bounds.y2-bounds.y1+1),1),
@@ -3771,11 +3765,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   }
                 (void) strncpy(token,p,q-p-4);
                 token[q-p-4]='\0';
-                FormatString(key,"[%.1024s]",name);
+                FormatString(key,"[MVG:%.1024s]",name);
                 /* SetImageAttribute concatenates values! Delete with NULL */
                 (void) SetImageAttribute(image,key,NULL);
                 (void) SetImageAttribute(image,key,token);
-                FormatString(key,"[%.1024s-geometry]",name);
+                FormatString(key,"[MVG:%.1024s-geometry]",name);
                 FormatString(geometry,"%lux%lu%+ld%+ld",bounds.width,
                   bounds.height,bounds.x,bounds.y);
                 /* SetImageAttribute concatenates values! Delete with NULL */
@@ -3854,21 +3848,11 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                 status=MagickFail;
                 break;
               }
-            if (affine.sx < MagickEpsilon)
-              {
-                status=MagickFail;
-                break;
-              }
             MagickGetToken(q,&q,token,token_max_length);
             if (*token == ',')
               MagickGetToken(q,&q,token,token_max_length);
             if (MagickAtoFChk(token,&affine.sy) != MagickPass)
               status=MagickFail;
-            if (affine.sx < MagickEpsilon)
-              {
-                status=MagickFail;
-                break;
-              }
             break;
           }
         if (LocaleCompare("skewX",keyword) == 0)
@@ -3910,7 +3894,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
             MagickGetToken(q,&q,token,token_max_length);
             if  ( IsDrawInfoSVGCompliantClippingPath(graphic_context[n]) )
               break;    /* if drawing clip path, ignore changes to stroke color */
-            FormatString(pattern,"[%.1024s]",token);
+            FormatString(pattern,"[MVG:%.1024s]",token);
             if (GetImageAttribute(image,pattern) != (ImageAttribute *) NULL)
               {
                 if ((status &= DrawPatternPath(image,draw_info,token,
@@ -4964,11 +4948,11 @@ DrawPatternPath(Image *image,const DrawInfo *draw_info,const char *name,
   assert(image->signature == MagickSignature);
   assert(draw_info != (const DrawInfo *) NULL);
   assert(name != (const char *) NULL);
-  FormatString(attribute,"[%.1024s]",name);
+  FormatString(attribute,"[MVG:%.1024s]",name);
   path=GetImageAttribute(image,attribute);
   if (path == (ImageAttribute *) NULL)
     return(MagickFail);
-  FormatString(attribute,"[%.1024s-geometry]",name);
+  FormatString(attribute,"[MVG:%.1024s-geometry]",name);
   geometry=GetImageAttribute(image,attribute);
   if (geometry == (ImageAttribute *) NULL)
     return(MagickFail);

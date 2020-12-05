@@ -1,3 +1,10 @@
+2020-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Use unique image attribute space
+	for MVG symbols.  Fixes oss-fuzz 28111 "Timeout -
+	coder_MVG_fuzzer", oss-fuzz 28170 "Stack-overflow - DrawImage",
+	and oss-fuzz 28292 "Integer-overflow - DrawPolygonPrimitive".
+
 2020-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Verify that affine scaling factors
