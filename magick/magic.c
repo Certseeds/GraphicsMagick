@@ -92,7 +92,6 @@ StaticMagic[] =
   MAGIC("GIF", 0, "GIF8"),
   MAGIC("HDF", 1, "HDF"),
   MAGIC("HPGL", 0, "IN;"),
-  MAGIC("HPGL", 0, "\033E\033"),
   MAGIC("HTML", 1, "HTML"),
   MAGIC("HTML", 1, "html"),
   MAGIC("ILBM", 8, "ILBM"),

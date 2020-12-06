@@ -1,3 +1,9 @@
+2020-12-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magic.c: Don't send files which test positive for PCL to
+	the HPGL delegate, which is normally 'hp2xx'.  Fixes SourceForge
+	bug 607 "Slow to convert HP PCL printer data".
+
 2020-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Use unique image attribute space
