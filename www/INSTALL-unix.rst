@@ -184,6 +184,19 @@ follows (execute 'configure --help' to see all options).
 Optional Features
 ~~~~~~~~~~~~~~~~~
 
+--disable-compressed-files
+
+    disable reading and writing of gzip/bzip stream files
+
+    Normally support for being able to read and write gzip/bzip stream
+    files (files which are additionally compressed using gzip or bzip)
+    is a good thing, but for some formats it is necessary to
+    decompress an entire input file before it may be validated and
+    read.  Decompressing the file may take a lot of time and disk
+    space.  If input files are not trustworthy, an apparently small
+    file can take much more resources than expected.  Use this option
+    to reject such files.
+
 --enable-prof
 
     enable 'prof' profiling support (default disabled)

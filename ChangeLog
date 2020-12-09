@@ -1,3 +1,8 @@
+2020-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Document the '--disable-compressed-files'
+	configure option, which was added on July 15th.
+
 2020-12-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/magic.c: Don't send files which test positive for PCL to

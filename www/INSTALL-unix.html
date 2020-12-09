@@ -222,6 +222,19 @@ follows (execute 'configure --help' to see all options).</p>
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--disable-compressed-files</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">disable reading and writing of gzip/bzip stream files</p>
+<p class="last">Normally support for being able to read and write gzip/bzip stream
+files (files which are additionally compressed using gzip or bzip)
+is a good thing, but for some formats it is necessary to
+decompress an entire input file before it may be validated and
+read.  Decompressing the file may take a lot of time and disk
+space.  If input files are not trustworthy, an apparently small
+file can take much more resources than expected.  Use this option
+to reject such files.</p>
+</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--enable-prof</span></kbd></td>
 <td>enable 'prof' profiling support (default disabled)</td></tr>
