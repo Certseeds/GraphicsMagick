@@ -3281,11 +3281,8 @@ DrawImage(Image *image,const DrawInfo *draw_info)
                   break;
                 }
               (void) CloneString(&graphic_context[n]->extra->composite_path,token);
-              if (DrawCompositeMask(image,graphic_context[n],
-                                    graphic_context[n]->extra->composite_path)
-                  == MagickFail)
-                status=MagickFail;
-              if (status == MagickFail)
+              status &= DrawCompositeMask(image,graphic_context[n],
+                                          graphic_context[n]->extra->composite_path);
               break;
             }
         if (LocaleCompare("matte",keyword) == 0)

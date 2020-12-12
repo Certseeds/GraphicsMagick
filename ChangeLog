@@ -1,3 +1,9 @@
+2020-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix regression when parsing "mask"
+	which was added by changeset 16305:f33a0fb3d8e4 on July 15, 2020
+	since the last formal release.  This impacts MVG and SVG.
+
 2020-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/INSTALL-unix.rst: Document the '--disable-compressed-files'
