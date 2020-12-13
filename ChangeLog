@@ -1,3 +1,9 @@
+2020-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (InsertAttributeIntoInputStream): Provide a more
+	useful diagnostic for when a "use" or "class" argument id is not
+	defined.
+
 2020-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Fix regression when parsing "mask"

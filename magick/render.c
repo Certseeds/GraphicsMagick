@@ -2427,6 +2427,7 @@ char *  ExtractTokensBetweenPushPop (
 */
 static
 char * InsertAttributeIntoInputStream (
+  const char *keyword,        /* MVG keyword for diagnostics/debugging */
   char * q,                   /* address of pointer into primitive string*/
   char ** pprimitive,         /* ptr to ptr to primitive string buffer */
   size_t * pprimitive_extent,
@@ -2459,7 +2460,12 @@ char * InsertAttributeIntoInputStream (
     {
       /* the client specifies whether or not an undefined attribute is an error */
       if  ( UndefAttrIsError )
-        *pStatus = MagickFail;
+        {
+          char message[MaxTextExtent];
+          FormatString(message,"Primitive \"%s\" id \"%s\" not defined",keyword,*ptoken);
+          ThrowException(&image->exception,DrawError,InvalidPrimitiveArgument,message);
+          *pStatus = MagickFail;
+        }
       return(q);
     }
 
@@ -2920,8 +2926,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("class",keyword) == 0)
           {/*class*/
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
-              &status,MagickFalse/*UndefAttrIsError*/);
+            q = InsertAttributeIntoInputStream(keyword,q,&primitive,&primitive_extent,
+                                               &token,&token_max_length,image,
+                                               &status,MagickFalse/*UndefAttrIsError*/);
             break;
           }/*class*/
         if (LocaleCompare("clip-path",keyword) == 0)
@@ -4257,8 +4264,9 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("use",keyword) == 0)
           {
-            q = InsertAttributeIntoInputStream(q,&primitive,&primitive_extent,&token,&token_max_length,image,
-              &status,MagickTrue/*UndefAttrIsError*/);
+            q = InsertAttributeIntoInputStream(keyword,q,&primitive,&primitive_extent,
+                                               &token,&token_max_length,image,
+                                               &status,MagickTrue/*UndefAttrIsError*/);
             break;
           }
         status=MagickFail;
