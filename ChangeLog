@@ -1,5 +1,8 @@
 2020-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/svg.c (ReadSVGImage): Properly support 'ping' mode so
+	'identify' works as expected.
+
 	* magick/render.c (InsertAttributeIntoInputStream): Provide a more
 	useful diagnostic for when a "use" or "class" argument id is not
 	defined.

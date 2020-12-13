@@ -6409,11 +6409,16 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
         char
           key[MaxTextExtent];
 
-        /* Extract attribute key string. */
+        /*
+          Extract attribute key string.
+
+          FIXME: does not handle nested specification so that
+          '%[[MVG]]' results in '[MVG]'.
+        */
         p++;
         for (i=0; (i < MaxTextExtent-1) && (*p) && (*p != ']'); i++)
           {
-          key[i]=(*p++);
+            key[i]=(*p++);
           }
         if (']' != *p)
           break;

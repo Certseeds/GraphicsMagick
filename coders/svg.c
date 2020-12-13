@@ -3956,8 +3956,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
   (void) fclose(file);
   CloseBlob(image);
-  DestroyImage(image);
-  image=(Image *) NULL;
+  image->columns=svg_info.width;
+  image->rows=svg_info.height;
   if (!image_info->ping && (exception->severity == UndefinedException))
     {
       ImageInfo
@@ -3966,6 +3966,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Draw image.
       */
+      DestroyImage(image);
+      image=(Image *) NULL;
       clone_info=CloneImageInfo(image_info);
       clone_info->blob=(_BlobInfoPtr_) NULL;
       clone_info->length=0;
@@ -3980,21 +3982,26 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
     }
   /*
-    Free resources.
+    Add/update image attributes
+  */
+  if (image != (Image *) NULL)
+    {
+      /* Title */
+      if (svg_info.title != (char *) NULL)
+        (void) SetImageAttribute(image,"title",svg_info.title);
+
+      /* Comment */
+      if (svg_info.comment != (char *) NULL)
+        (void) SetImageAttribute(image,"comment",svg_info.comment);
+    }
+  /*
+    Free resources allocated above (also freed by SVGEndDocument()).
   */
   MagickFreeMemory(svg_info.size);
-  if (svg_info.title != (char *) NULL)
-    {
-      if (image != (Image *) NULL)
-        (void) SetImageAttribute(image,"title",svg_info.title);
-      MagickFreeMemory(svg_info.title);
-    }
-  if (svg_info.comment != (char *) NULL)
-    {
-      if (image != (Image *) NULL)
-        (void) SetImageAttribute(image,"comment",svg_info.comment);
-      MagickFreeMemory(svg_info.comment);
-    }
+  MagickFreeMemory(svg_info.title);
+  MagickFreeMemory(svg_info.comment);
+  MagickFreeMemory(svg_info.scale);
+  MagickFreeMemory(svg_info.text);
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);
