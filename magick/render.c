@@ -2730,9 +2730,6 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     return(MagickFail);
   primitive_extent=strlen(primitive);
 
-  /* SetImageAttribute concatenates values! Delete with NULL */
-  (void) SetImageAttribute(image,"[MVG]",NULL);
-  (void) SetImageAttribute(image,"[MVG]",primitive);
   if (getenv("MAGICK_SKIP_RENDERING") != NULL)
     {
       MagickFreeMemory(primitive);
@@ -6111,6 +6108,9 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
         FIXME: AnnotateImage sometimes returns error status here
         without throwing exception and under conditions which should
         be ok when rendering (e.g. off-canvas drawing).
+
+        AnnotateImage() recurses back to DrawImage().
+        DrawImage--> DrawPrimitive() --> AnnotateImage() --> DrawImage
       */
       status&=AnnotateImage(image,clone_info);
       DestroyDrawInfo(clone_info);

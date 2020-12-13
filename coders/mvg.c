@@ -234,6 +234,9 @@ static Image *ReadMVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       DestroyDrawInfo(draw_info);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(image,"[MVG]",NULL);
+  (void) SetImageAttribute(image,"[MVG]",draw_info->primitive);
   (void) DrawImage(image,draw_info);
   DestroyDrawInfo(draw_info);
   CloseBlob(image);

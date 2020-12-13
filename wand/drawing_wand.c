@@ -3976,6 +3976,9 @@ WandExport unsigned int DrawRender(const DrawingWand *drawing_wand)
   CurrentContext->primitive=drawing_wand->mvg;
   (void) LogMagickEvent(DrawEvent,GetMagickModule(),"MVG:\n'%s'\n",
     drawing_wand->mvg);
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(drawing_wand->image,"[MVG]",NULL);
+  (void) SetImageAttribute(drawing_wand->image,"[MVG]",CurrentContext->primitive);
   status=DrawImage(drawing_wand->image, CurrentContext);
   CurrentContext->primitive=(char *) NULL;
   return status;

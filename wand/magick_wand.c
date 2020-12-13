@@ -2016,6 +2016,9 @@ WandExport unsigned int MagickDrawImage(MagickWand *wand,
         DestroyDrawInfo(draw_info);
       return(False);
     }
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(wand->image,"[MVG]",NULL);
+  (void) SetImageAttribute(wand->image,"[MVG]",draw_info->primitive);
   status=DrawImage(wand->image,draw_info);
   if (status == False)
     CopyException(&wand->exception,&wand->image->exception);

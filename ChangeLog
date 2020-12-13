@@ -1,5 +1,10 @@
 2020-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (DrawImage): Set '[MVG]' image attribute at
+	appropriate places outside of DrawImage() since DrawImage()
+	sometimes recurses into itself, trashing the image attribute.  One
+	example of recursion is in the text annotation code.
+
 	* coders/svg.c (ReadSVGImage): Properly support 'ping' mode so
 	'identify' works as expected.
 
