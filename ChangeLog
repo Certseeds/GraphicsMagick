@@ -1,3 +1,10 @@
+2020-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/paint.c (OpaqueImage): Assure that image type is promoted
+	as required based on fill color.  Fixes unexpected results
+	discovered by Stuart McDonagh and reported via the
+	graphicsmagick-help mailing list on December 14, 2020.
+
 2020-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Set '[MVG]' image attribute at

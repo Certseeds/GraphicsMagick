@@ -2269,7 +2269,7 @@ static MagickPassFail MagickAddSizeT(const size_t b, const size_t o, size_t *r)
   return (((*r < b) || (*r < o)) ? MagickFail : MagickPass);
 }
 
-static const char *recursion_key ="[DrawImageRecursion]";
+static const char recursion_key[] = "[DrawImageRecursion]";
 static long DrawImageGetCurrentRecurseLevel(Image *image)
 {
   const ImageAttribute
