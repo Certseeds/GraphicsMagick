@@ -1,3 +1,8 @@
+2020-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/paint.c (OpaqueImage): Changing the image storage class
+	is not required.
+
 2020-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/paint.c (OpaqueImage): Assure that image type is promoted

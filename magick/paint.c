@@ -681,18 +681,6 @@ OpaqueImage(Image *image,const PixelPacket target,const PixelPacket fill)
       is_grayscale = MagickFalse;
     }
 
-  if (image->storage_class == PseudoClass)
-    {
-      IndexPacket
-        index;
-
-      for (index = 0; index < image->colors; index++)
-        if (FuzzyColorMatch(&image->colormap[index],&fill,image->fuzz))
-          break;
-      if (index == image->colors)
-        image->storage_class = DirectClass;
-    }
-
   /*
     Make image color opaque.
   */
