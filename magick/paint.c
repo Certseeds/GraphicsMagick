@@ -687,7 +687,7 @@ OpaqueImage(Image *image,const PixelPacket target,const PixelPacket fill)
         index;
 
       for (index = 0; index < image->colors; index++)
-        if (ColorMatch(&image->colormap[index],&fill))
+        if (FuzzyColorMatch(&image->colormap[index],&fill,image->fuzz))
           break;
       if (index == image->colors)
         image->storage_class = DirectClass;
