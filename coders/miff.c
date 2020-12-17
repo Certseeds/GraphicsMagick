@@ -170,13 +170,29 @@ ImportRLEPixels(Image *image,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(source != (const unsigned char *) NULL);
+
+  /*
+    FIXME: gray DirectClass pixels (quantum_type=GrayQuantum and
+    GrayAlphaQuantum ) should be properly supported with RLE since
+    modern ImageMagick supports it.  For the moment we support it by
+    reading as PseudoClass using IndexQuantum.
+   */
   assert((quantum_size == 8) || (quantum_size == 16) || (quantum_size == 32));
-  assert(((quantum_type == IndexQuantum) && (image->storage_class == PseudoClass)) ||
-         ((quantum_type == IndexAlphaQuantum) && (image->storage_class == PseudoClass)) ||
-         ((quantum_type == CMYKAQuantum) && (image->storage_class == DirectClass) && image->matte) ||
-         ((quantum_type == CMYKQuantum) && (image->storage_class == DirectClass) && !image->matte) ||
-         ((quantum_type == RGBAQuantum) && (image->storage_class == DirectClass) && image->matte) ||
-         ((quantum_type == RGBQuantum) && (image->storage_class == DirectClass) && !image->matte));
+  if (!(((quantum_type == IndexQuantum) && (image->storage_class == PseudoClass)) ||
+        ((quantum_type == IndexAlphaQuantum) && (image->storage_class == PseudoClass)) ||
+        /*  ((quantum_type == GrayQuantum) && (image->storage_class == DirectClass) && !image->matte) ||*/
+        /*  ((quantum_type == GrayAlphaQuantum) && (image->storage_class == DirectClass) && image->matte) ||*/
+        ((quantum_type == CMYKAQuantum) && (image->storage_class == DirectClass) && image->matte) ||
+        ((quantum_type == CMYKQuantum) && (image->storage_class == DirectClass) && !image->matte) ||
+        ((quantum_type == RGBAQuantum) && (image->storage_class == DirectClass) && image->matte) ||
+        ((quantum_type == RGBQuantum) && (image->storage_class == DirectClass) && !image->matte)))
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "RLE decompression not supported for QuantumType=%s, ClassType=%s, Matte=%s",
+                            QuantumTypeToString(quantum_type),ClassTypeToString(image->storage_class),
+                            image->matte ? "True" : "False");
+      ThrowBinaryException(CoderError,RLECompressionNotSupported,image->filename);
+    }
 
   p=source;
   q=AccessMutablePixels(image);
@@ -1606,6 +1622,17 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               quantum_type=RGBAQuantum;
           }
       }
+    if ((quantum_type == GrayQuantum) && (MaxValueGivenBits(depth) <= MaxMap))
+      {
+        /*
+          Create image colormap and read grey image as PseudoClass.
+        */
+        if (!AllocateImageColormap(image,MaxValueGivenBits(depth)+1))
+          ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+        quantum_type=IndexQuantum;
+      }
+
      /*
       Allocate image pixels.
     */

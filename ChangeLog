@@ -1,3 +1,11 @@
+2020-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ImportRLEPixels): Change from C assertion to
+	exception report.  Fixes oss-fuzz 28703 "ASSERT · ((quantum_type
+	== IndexQuantum) && (image->storage_class ...".
+	(ReadMIFFImage): Read Gray DirectClass image as PseudoClass so it
+	has a colormap, and we have a RLE decode implementation for it.
+
 2020-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/paint.c (OpaqueImage): Changing the image storage class
