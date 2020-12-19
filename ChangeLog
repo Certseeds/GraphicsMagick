@@ -1,3 +1,8 @@
+2020-12-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Update Automake to 1.16.3 and bootstrap to pick up latest
+	config.guess and config.sub.
+
 2020-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ImportRLEPixels): Change from C assertion to
