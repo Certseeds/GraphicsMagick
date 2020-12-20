@@ -195,9 +195,9 @@ static unsigned int IsPCX(const unsigned char *magick,const size_t length)
 */
 #define ThrowPCXReaderException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(page_table) \
-  MagickFreeMemory(pcx_pixels); \
-  MagickFreeMemory(scanline); \
+  MagickFreeResourceLimitedMemory(page_table) \
+  MagickFreeResourceLimitedMemory(pcx_pixels); \
+  MagickFreeResourceLimitedMemory(scanline); \
   ThrowReaderException(code_,reason_,image_); \
 }
 static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -282,7 +282,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       magic=ReadBlobLSBLong(image);
       if (magic != 987654321)
         ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
-      page_table=MagickAllocateArray(ExtendedSignedIntegralType *,
+      page_table=MagickAllocateResourceLimitedArray(ExtendedSignedIntegralType *,
                                      1024,sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
         ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -523,13 +523,13 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (((size_t) pcx_info.bits_per_pixel*pcx_info.planes*image->columns) >
          ((size_t) pcx_packets*8U)))
       ThrowPCXReaderException(CorruptImageError,ImproperImageHeader,image);
-    pcx_pixels=MagickAllocateMemory(unsigned char *,pcx_packets);
+    pcx_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,pcx_packets);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     scanline_size=MagickArraySize(Max(image->columns,
                                       (size_t) pcx_info.bytes_per_line),
                                   Max(pcx_info.planes,8));
-    scanline=MagickAllocateMemory(unsigned char *,scanline_size);
+    scanline=MagickAllocateResourceLimitedMemory(unsigned char *,scanline_size);
     if (scanline == (unsigned char *) NULL)
       ThrowPCXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     (void) memset(scanline,0,scanline_size);
@@ -773,8 +773,8 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(scanline);
-    MagickFreeMemory(pcx_pixels);
+    MagickFreeResourceLimitedMemory(scanline);
+    MagickFreeResourceLimitedMemory(pcx_pixels);
     if (EOFBlob(image))
       {
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
@@ -814,7 +814,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
   }
   if (page_table != (ExtendedSignedIntegralType *) NULL)
-    MagickFreeMemory(page_table);
+    MagickFreeResourceLimitedMemory(page_table);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
@@ -977,9 +977,9 @@ static MagickPassFail WriteRLEPixels(Image *image,
 
 #define LiberatePCXAllocations()                \
   {                                             \
-    MagickFreeMemory(pcx_colormap);             \
-    MagickFreeMemory(pcx_pixels);               \
-    MagickFreeMemory(page_table);               \
+    MagickFreeResourceLimitedMemory(pcx_colormap);             \
+    MagickFreeResourceLimitedMemory(pcx_pixels);               \
+    MagickFreeResourceLimitedMemory(page_table);               \
   }
 
 #define ThrowPCXWriterException(code_,reason_,image_) \
@@ -1057,7 +1057,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       */
       write_dcx=MagickTrue;
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
-      page_table=MagickAllocateMemory(ExtendedSignedIntegralType *,
+      page_table=MagickAllocateResourceLimitedMemory(ExtendedSignedIntegralType *,
         1024*sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
         ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1156,7 +1156,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     /*
       Dump colormap to file.
     */
-    pcx_colormap=MagickAllocateMemory(unsigned char *,3*256);
+    pcx_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,3*256);
     if (pcx_colormap == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     for (i=0; i < (3*256); i++)
@@ -1177,7 +1177,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     for (i=0; i < 58; i++)
       (void) WriteBlobByte(image,'\0');
     /* Allocate memory for one pixel row. */
-    pcx_pixels=MagickAllocateArray(unsigned char *,bytes_per_line,pcx_info.planes);
+    pcx_pixels=MagickAllocateResourceLimitedArray(unsigned char *,bytes_per_line,pcx_info.planes);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=pcx_pixels;
@@ -1324,8 +1324,8 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
 
     (void) WriteBlobByte(image,pcx_info.colormap_signature);
     (void) WriteBlob(image,3*256,(char *) pcx_colormap);
-    MagickFreeMemory(pcx_pixels);
-    MagickFreeMemory(pcx_colormap);
+    MagickFreeResourceLimitedMemory(pcx_pixels);
+    MagickFreeResourceLimitedMemory(pcx_colormap);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
@@ -1350,7 +1350,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
       for (i=0; i <= (long) scene; i++)
         (void) WriteBlobLSBLong(image,(unsigned long) page_table[i]);
-      MagickFreeMemory(page_table);
+      MagickFreeResourceLimitedMemory(page_table);
     }
   if (status == False)
     ThrowPCXWriterException(FileOpenError,UnableToWriteFile,image);

@@ -1,5 +1,8 @@
 2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (ReadPCXImage): Use managed memory allocators.
+	(WritePCXImage): Use managed memory allocators.
+
 	* coders/mac.c (ReadMACImage): Use managed memory allocators.
 
 	* coders/pict.c (ReadPICTImage): Use managed memory allocators.
