@@ -639,7 +639,8 @@ static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_re
 
 /*
   Reallocate resource-limited array memory based on pointer to
-  existing allocation, object count, and object size.
+  existing allocation, object count, and object size.  Freshly
+  allocated memory is cleared to zero if the clear flag is set.
 
   This works like MagickRealloc() except for supporting count and size
   arguments similar to calloc().  GNU libc has a reallocarray()
@@ -652,7 +653,10 @@ static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_re
 
   Linux malloc produces allocations aligned to 16-bytes.
  */
-MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, size_t size)
+MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
+                                                          const size_t count,
+                                                          const size_t size,
+                                                          const MagickBool clear)
 {
   MagickMemoryResource_T memory_resource;
   size_t size_diff;
@@ -714,6 +718,10 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
                                                  new_size+sizeof(MagickMemoryResource_T));
                   if (realloc_memory != 0)
                     {
+                      if (clear)
+                        (void) memset(UserLandPointerGivenBaseAlloc(realloc_memory)+
+                                      memory_resource.alloc_size,0,size_diff);
+
                       memory_resource.memory = realloc_memory;
                       memory_resource.alloc_size = new_size;
                       memory_resource.alloc_size_real = new_size;
@@ -729,6 +737,10 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
                 }
               else
                 {
+                   if (clear)
+                     (void) memset(UserLandPointerGivenBaseAlloc(memory_resource.memory)+
+                                   memory_resource.alloc_size,0,size_diff);
+
                   /* Re-allocation is not required */
                   memory_resource.alloc_size = new_size;
                 }
@@ -772,9 +784,9 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,size_t count, 
 
   Memory must be released using MagickFreeMemoryResource().
 */
-MagickExport void *_MagickAllocateResourceLimitedMemory(size_t size)
+MagickExport void *_MagickAllocateResourceLimitedMemory(const size_t size)
 {
-    return _MagickReallocateResourceLimitedMemory(0,1,size);
+  return _MagickReallocateResourceLimitedMemory(0,1,size,MagickFalse);
 }
 
 /*
@@ -785,5 +797,5 @@ MagickExport void *_MagickAllocateResourceLimitedMemory(size_t size)
 */
 MagickExport void _MagickFreeResourceLimitedMemory(void *p)
 {
-    _MagickReallocateResourceLimitedMemory(p,0,0);
+  _MagickReallocateResourceLimitedMemory(p,0,0,MagickFalse);
 }
