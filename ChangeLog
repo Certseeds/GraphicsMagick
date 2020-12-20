@@ -1,5 +1,7 @@
 2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mac.c (ReadMACImage): Use managed memory allocators.
+
 	* coders/pict.c (ReadPICTImage): Use managed memory allocators.
 	(WritePICTImage): Use managed memory allocators.
 

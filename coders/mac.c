@@ -115,8 +115,8 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping) goto DONE_READING;
 
   /* ----- Load RLE compressed raster ----- */
-  ldblk = (image->depth*image->columns) /8;
-  BImgBuff = MagickAllocateMemory(unsigned char *, ((size_t)ldblk));
+  ldblk = (MagickArraySize(image->depth,image->columns)) /8;
+  BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *, ((size_t)ldblk));
   if (BImgBuff==NULL)
   NoMemory:
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -186,7 +186,7 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
     }
   if (BImgBuff!=NULL)
-    MagickFreeMemory(BImgBuff);
+    MagickFreeResourceLimitedMemory(BImgBuff);
   if (EOFBlob(image))
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
 
