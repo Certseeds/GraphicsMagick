@@ -35,6 +35,18 @@
 <div class="document">
 
 
+<p>2020-12-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/pict.c (ReadPICTImage): Use managed memory allocators.
+(WritePICTImage): Use managed memory allocators.</li>
+<li>magick/memory.c (_MagickReallocateResourceLimitedMemory): Add a
+'clear' parameter which indicates that freshly allocated memory
+should be zeroed.  Added &quot;Cleared&quot; versions of the private managed
+memory macros and updated all managed memory macros to exclusively
+use this function.</li>
+</ul>
+</blockquote>
 <p>2020-12-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

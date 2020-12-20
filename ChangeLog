@@ -1,3 +1,14 @@
+2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/pict.c (ReadPICTImage): Use managed memory allocators.
+	(WritePICTImage): Use managed memory allocators.
+
+	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Add a
+	'clear' parameter which indicates that freshly allocated memory
+	should be zeroed.  Added "Cleared" versions of the private managed
+	memory macros and updated all managed memory macros to exclusively
+	use this function.
+
 2020-12-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Update Automake to 1.16.3 and bootstrap to pick up latest
