@@ -1,3 +1,9 @@
+2020-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mpc.c (ReadMPCImage): Use correct deallocator for page
+	geometry.  Fixes oss-fuzz 28853 "Heap-buffer-overflow READ {*} -
+	_MagickReallocateResourceLimitedMemory".
+
 2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/yuv.c: Use resource-limited memory allocator.

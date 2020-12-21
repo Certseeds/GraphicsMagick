@@ -637,7 +637,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     geometry=GetPageGeometry(values);
                     (void) GetGeometry(geometry,&image->page.x,&image->page.y,
                       &image->page.width,&image->page.height);
-                    MagickFreeResourceLimitedMemory(geometry);
+                    MagickFreeMemory(geometry);
                     break;
                   }
                 if (LocaleNCompare(keyword,"profile-",8) == 0)
