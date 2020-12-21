@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -849,8 +849,8 @@ GetPalmPaletteGivenBits(const unsigned int bits,
 */
 #define ThrowPALMReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(one_row); \
-  MagickFreeMemory(lastrow); \
+  MagickFreeResourceLimitedMemory(one_row); \
+  MagickFreeResourceLimitedMemory(lastrow); \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 static Image *ReadPALMImage(const ImageInfo *image_info,
@@ -1098,14 +1098,14 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
     ThrowPALMReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   alloc_size = Max(palm_header.bytes_per_row,MagickArraySize(2,image->columns));
-  one_row = MagickAllocateMemory(unsigned char *,alloc_size);
+  one_row = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size);
   if (one_row == (unsigned char *) NULL)
     ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) memset(one_row,0,alloc_size);
   if (palm_header.compression_type == PALM_COMPRESSION_SCANLINE)
     {
       alloc_size = Max(palm_header.bytes_per_row,MagickArraySize(2,image->columns));
-      lastrow = MagickAllocateMemory(unsigned char *,alloc_size);
+      lastrow = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size);
       if (lastrow == (unsigned char *) NULL)
         ThrowPALMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       (void) memset(lastrow,0,alloc_size);
@@ -1253,8 +1253,8 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
         }
     }
 
-  MagickFreeMemory(one_row);
-  MagickFreeMemory(lastrow);
+  MagickFreeResourceLimitedMemory(one_row);
+  MagickFreeResourceLimitedMemory(lastrow);
   CloseBlob(image);
   StopTimer(&image->timer);
   return(image);
@@ -1812,14 +1812,14 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
 
   if (palm_image->compression == FaxCompression)
     {
-      lastrow = MagickAllocateMemory(unsigned char *,bytes_per_row);
+      lastrow = MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_row);
       if (lastrow == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
-  one_row = MagickAllocateMemory(unsigned char *,bytes_per_row);
+  one_row = MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_row);
   if (one_row == (unsigned char *) NULL)
     {
-      MagickFreeMemory(lastrow);
+      MagickFreeResourceLimitedMemory(lastrow);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
 
@@ -1953,8 +1953,8 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
 
   CloseBlob(image);
   DestroyImage(palm_image);
-  MagickFreeMemory(one_row);
-  MagickFreeMemory(lastrow);
+  MagickFreeResourceLimitedMemory(one_row);
+  MagickFreeResourceLimitedMemory(lastrow);
   return(True);
 }
 #endif /* if ENABLE_PALM_WRITER */

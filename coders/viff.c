@@ -505,7 +505,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         if (BlobIsSeekable(image) &&
             (GetBlobSize(image)-TellBlob(image) < (magick_off_t) viff_colormap_size))
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-        viff_colormap=MagickAllocateMemory(unsigned char *,viff_colormap_size);
+        viff_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,viff_colormap_size);
         if (viff_colormap == (unsigned char *) NULL)
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                image);
@@ -515,7 +515,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
         if (ReadBlob(image,viff_colormap_size,(char *) viff_colormap)
             != viff_colormap_size)
           {
-            MagickFreeMemory(viff_colormap);
+            MagickFreeResourceLimitedMemory(viff_colormap);
             ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           }
 
@@ -565,7 +565,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
                 image->colormap[i % image->colors].blue=
                   ScaleCharToQuantum((unsigned int) value);
         }
-        MagickFreeMemory(viff_colormap);
+        MagickFreeResourceLimitedMemory(viff_colormap);
         break;
       }
       default:
@@ -639,7 +639,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     if (BlobIsSeekable(image) &&
         (GetBlobSize(image)-TellBlob(image) < (magick_off_t) alloc_size))
       ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
-    viff_pixels=MagickAllocateArray(unsigned char *,
+    viff_pixels=MagickAllocateResourceLimitedArray(unsigned char *,
                                     MagickArraySize(bytes_per_pixel,
                                                     max_packets),
                                     sizeof(Quantum));
@@ -648,7 +648,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
     if (ReadBlob(image,bytes_per_pixel*max_packets,(char *) viff_pixels)
         != bytes_per_pixel*max_packets)
       {
-        MagickFreeMemory(viff_pixels);
+        MagickFreeResourceLimitedMemory(viff_pixels);
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
     lsb_first=1;
@@ -862,7 +862,7 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
                   break;
           }
         }
-    MagickFreeMemory(viff_pixels);
+    MagickFreeResourceLimitedMemory(viff_pixels);
     if (image->storage_class == PseudoClass)
       (void) SyncImage(image);
     if (EOFBlob(image))
@@ -1203,7 +1203,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
     /*
       Convert MIFF to VIFF raster pixels.
     */
-    viff_pixels=MagickAllocateMemory(unsigned char *,packets);
+    viff_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,packets);
     if (viff_pixels == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=viff_pixels;
@@ -1245,7 +1245,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
           /*
             Dump colormap to file.
           */
-          viff_colormap=MagickAllocateMemory(unsigned char *,
+          viff_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,
                                              MagickArraySize(3,image->colors));
           if (viff_colormap == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
@@ -1258,7 +1258,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
           for (i=0; i < (long) image->colors; i++)
             *q++=ScaleQuantumToChar(image->colormap[i].blue);
           (void) WriteBlob(image, (size_t)3*image->colors,(char *) viff_colormap);
-          MagickFreeMemory(viff_colormap);
+          MagickFreeResourceLimitedMemory(viff_colormap);
           /*
             Convert PseudoClass packet to VIFF colormapped pixels.
           */
@@ -1356,7 +1356,7 @@ static unsigned int WriteVIFFImage(const ImageInfo *image_info,Image *image)
             }
           }
     (void) WriteBlob(image,packets,(char *) viff_pixels);
-    MagickFreeMemory(viff_pixels);
+    MagickFreeResourceLimitedMemory(viff_pixels);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);

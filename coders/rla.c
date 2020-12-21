@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -84,7 +84,7 @@
 
 #define ThrowRLAReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(scanlines); \
+  MagickFreeResourceLimitedMemory(scanlines); \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -503,7 +503,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowRLAReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
   number_channels=rla_info.number_channels+rla_info.number_matte_channels;
-  scanlines=MagickAllocateArray(magick_uint32_t *,image->rows,sizeof(magick_uint32_t));
+  scanlines=MagickAllocateResourceLimitedArray(magick_uint32_t *,image->rows,sizeof(magick_uint32_t));
   if (scanlines == (magick_uint32_t *) NULL)
     ThrowRLAReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   if (*rla_info.description != '\0')
@@ -710,7 +710,7 @@ static Image *ReadRLAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (EOFBlob(image))
     ThrowRLAReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   CloseBlob(image);
-  MagickFreeMemory(scanlines);
+  MagickFreeResourceLimitedMemory(scanlines);
   StopTimer(&image->timer);
   return(image);
 }

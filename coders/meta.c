@@ -268,15 +268,22 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
       break;
     if ((q-p+1) >= (int) len)
       {
+        unsigned char
+          *new_p;
+
         int
           tlen;
 
         tlen=q-p;
         len<<=1;
-        MagickReallocMemory(unsigned char *,p,(len+2));
-        *b=(char *) p;
-        if (p == (unsigned char *) NULL)
-          break;
+        new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
+        *b=(char *) new_p;
+        if (new_p == (unsigned char *) NULL)
+          {
+            MagickFreeResourceLimitedMemory(p);
+            break;
+          }
+        p=new_p;
         q=p+tlen;
       }
     *q=(unsigned char) c;
@@ -336,7 +343,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
 
   dataset = 0;
   recnum = 0;
-  line = MagickAllocateMemory(char *,inputlen);
+  line = MagickAllocateResourceLimitedMemory(char *,inputlen);
   if (line == (char *) NULL)
     goto parse8BIM_failure;
   savedpos = 0;
@@ -345,10 +352,10 @@ static long parse8BIM(Image *ifile, Image *ofile)
     state=0;
     next=0;
 
-    token = MagickAllocateMemory(char *,inputlen);
+    token = MagickAllocateResourceLimitedMemory(char *,inputlen);
     if (token == (char *) NULL)
       goto parse8BIM_failure;
-    newstr = MagickAllocateMemory(char *,inputlen);
+    newstr = MagickAllocateResourceLimitedMemory(char *,inputlen);
     if (newstr == (char *) NULL)
       goto parse8BIM_failure;
     while (Tokenizer(&token_info, 0, token, inputlen, line,
@@ -382,7 +389,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateMemory(char *,strlen(newstr)+1);
+                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
                 if (name == (char *) NULL)
                   goto parse8BIM_failure;
                 (void) strcpy(name,newstr);
@@ -509,11 +516,11 @@ static long parse8BIM(Image *ifile, Image *ofile)
           }
       state++;
     }
-    MagickFreeMemory(token);
-    MagickFreeMemory(newstr);
-    MagickFreeMemory(name);
+    MagickFreeResourceLimitedMemory(token);
+    MagickFreeResourceLimitedMemory(newstr);
+    MagickFreeResourceLimitedMemory(name);
   }
-  MagickFreeMemory(line);
+  MagickFreeResourceLimitedMemory(line);
   if (savedolen > 0)
     {
       long diff = outputlen - savedolen;
@@ -530,10 +537,10 @@ static long parse8BIM(Image *ifile, Image *ofile)
   return outputlen;
 
  parse8BIM_failure:
-  MagickFreeMemory(token);
-  MagickFreeMemory(newstr);
-  MagickFreeMemory(name);
-  MagickFreeMemory(line);
+  MagickFreeResourceLimitedMemory(token);
+  MagickFreeResourceLimitedMemory(newstr);
+  MagickFreeResourceLimitedMemory(name);
+  MagickFreeResourceLimitedMemory(line);
   return 0L;
 }
 
@@ -560,15 +567,22 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
       break;
    if ((q-p+1) >= (int) len)
       {
+        unsigned char
+          *new_p;
+
         int
           tlen;
 
         tlen=q-p;
         len<<=1;
-        MagickReallocMemory(unsigned char *,p,(len+2));
-        *b=(char *) p;
-        if (p == (unsigned char *) NULL)
-          break;
+        new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
+        *b=(char *) new_p;
+        if (new_p == (unsigned char *) NULL)
+          {
+            MagickFreeResourceLimitedMemory(p);
+            break;
+          }
+        p=new_p;
         q=p+tlen;
       }
     *q=(unsigned char) c;
@@ -624,7 +638,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
 
   dataset = 0;
   recnum = 0;
-  line = MagickAllocateMemory(char *,inputlen);
+  line = MagickAllocateResourceLimitedMemory(char *,inputlen);
   if (line == (char *) NULL)
     goto parse8BIMW_failure;
   name = token = (char *)NULL;
@@ -638,10 +652,10 @@ static long parse8BIMW(Image *ifile, Image *ofile)
 
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "META CODER Parse8BIM: %s (%lu)",line, (unsigned long) inputlen);
-    token = MagickAllocateMemory(char *,inputlen);
+    token = MagickAllocateResourceLimitedMemory(char *,inputlen);
     if (token == (char *) NULL)
       goto parse8BIMW_failure;
-    newstr = MagickAllocateMemory(char *,inputlen);
+    newstr = MagickAllocateResourceLimitedMemory(char *,inputlen);
     if (newstr == (char *) NULL)
       goto parse8BIMW_failure;
     while (Tokenizer(&token_info, 0, token, inputlen, line,
@@ -675,7 +689,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateMemory(char *,strlen(newstr)+1);
+                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
                 if (name == (char *) NULL)
                   goto parse8BIMW_failure;
                 (void) strcpy(name,newstr);
@@ -802,11 +816,11 @@ static long parse8BIMW(Image *ifile, Image *ofile)
           }
       state++;
     }
-    MagickFreeMemory(token);
-    MagickFreeMemory(newstr);
-    MagickFreeMemory(name);
+    MagickFreeResourceLimitedMemory(token);
+    MagickFreeResourceLimitedMemory(newstr);
+    MagickFreeResourceLimitedMemory(name);
   }
-  MagickFreeMemory(line);
+  MagickFreeResourceLimitedMemory(line);
   if (savedolen > 0)
     {
       long diff = outputlen - savedolen;
@@ -822,10 +836,10 @@ static long parse8BIMW(Image *ifile, Image *ofile)
   return outputlen;
 
  parse8BIMW_failure:
-  MagickFreeMemory(token);
-  MagickFreeMemory(newstr);
-  MagickFreeMemory(name);
-  MagickFreeMemory(line);
+  MagickFreeResourceLimitedMemory(token);
+  MagickFreeResourceLimitedMemory(newstr);
+  MagickFreeResourceLimitedMemory(name);
+  MagickFreeResourceLimitedMemory(line);
   return 0L;
 }
 
@@ -1146,7 +1160,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
         {
           DestroyImage(buff);
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image)
+                               image);
         }
       (void) memset(blob,0,length);
       AttachBlob(buff->blob,blob,length);
@@ -1214,7 +1228,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
         {
           DestroyImage(buff);
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image)
+                               image);
         }
       AttachBlob(buff->blob,blob,length);
       if (LocaleCompare(image_info->magick,"APP1JPEG") == 0)
@@ -1285,7 +1299,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
             i,
             length;
 
-          buffer=MagickAllocateMemory(char *,MaxBufferSize);
+          buffer=MagickAllocateResourceLimitedMemory(char *,MaxBufferSize);
           if (buffer != (char *) NULL)
             {
               i=0;
@@ -1301,7 +1315,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
                 if (i < length)
                   break;
               }
-              MagickFreeMemory(buffer);
+              MagickFreeResourceLimitedMemory(buffer);
             }
 #endif
         }
@@ -1326,7 +1340,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
         {
           DestroyImage(buff);
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image)
+                               image);
         }
       AttachBlob(buff->blob,blob,length);
       for ( ; ; )
@@ -1986,7 +2000,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *, (size_t) taglen+1);
+    str=MagickAllocateResourceLimitedMemory(unsigned char *, (size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");
@@ -1997,7 +2011,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
       c=ReadBlobByte(ifile);
       if (c == EOF)
         {
-          MagickFreeMemory(str);
+          MagickFreeResourceLimitedMemory(str);
           return -1;
         }
       str[tagindx] = (unsigned char) c;
@@ -2011,7 +2025,7 @@ static int formatIPTC(Image *ifile, Image *ofile)
       FormatString(temp, "%d#%d=",(unsigned int)dataset, (unsigned int) recnum);
     (void) WriteBlobString(ofile,temp);
     formatString( ofile, (char *)str, taglen );
-    MagickFreeMemory(str);
+    MagickFreeResourceLimitedMemory(str);
 
     tagsfound++;
 
@@ -2113,7 +2127,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
       }
     if (taglen < 0) return -1;
     /* make a buffer to hold the tag data and snag it from the input stream */
-    str=MagickAllocateMemory(unsigned char *,(size_t) taglen+1);
+    str=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) taglen+1);
     if (str == (unsigned char *) NULL)
       {
         (void) printf("MemoryAllocationFailed");
@@ -2124,7 +2138,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
       c = *s++; len--;
       if (len < 0)
         {
-          MagickFreeMemory(str);
+          MagickFreeResourceLimitedMemory(str);
           return -1;
         }
       str[tagindx] = (unsigned char) c;
@@ -2138,7 +2152,7 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
       FormatString(temp, "%d#%d=",(unsigned int)dataset, (unsigned int) recnum);
     (void) WriteBlobString(ofile,temp);
     formatString( ofile, (char *)str, taglen );
-    MagickFreeMemory(str);
+    MagickFreeResourceLimitedMemory(str);
 
     tagsfound++;
   }
@@ -2148,8 +2162,8 @@ static int formatIPTCfromBuffer(Image *ofile, char *s, long len)
 #define Format8BIMLiberate()                    \
   do                                            \
     {                                           \
-      MagickFreeMemory(PString);                \
-      MagickFreeMemory(str);                    \
+      MagickFreeResourceLimitedMemory(PString);                \
+      MagickFreeResourceLimitedMemory(str);                    \
     } while(0);
 
 static int format8BIM(Image *ifile, Image *ofile)
@@ -2225,7 +2239,7 @@ static int format8BIM(Image *ifile, Image *ofile)
             goto format8BIMError;
           }
         plen = (unsigned char) c;
-        PString=MagickAllocateMemory(unsigned char *,(size_t) plen+1);
+        PString=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) plen+1);
         if (PString == (unsigned char *) NULL)
           {
             ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,
@@ -2265,7 +2279,7 @@ static int format8BIM(Image *ifile, Image *ofile)
           goto format8BIMError;
         }
       /* make a buffer to hold the data and snag it from the input stream */
-      str=MagickAllocateMemory(unsigned char *,(size_t) Size+1);
+      str=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) Size+1);
       if (str == (unsigned char *) NULL)
         {
           ThrowException(&ofile->exception,ResourceLimitError,MemoryAllocationFailed,

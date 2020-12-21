@@ -717,13 +717,18 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
       user_data=(unsigned char *) NULL;
       while (user_data_length < cin_file_info.user_defined_length)
         {
+          unsigned char *new_user_data;
           read_size=Min(block_size,cin_file_info.user_defined_length-user_data_length);
-          MagickReallocMemory(unsigned char *,user_data,user_data_length+read_size);
-          if (user_data == (unsigned char *) NULL)
-            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          new_user_data=MagickReallocateResourceLimitedMemory(unsigned char *,user_data,user_data_length+read_size);
+          if (new_user_data == (unsigned char *) NULL)
+            {
+              MagickFreeResourceLimitedMemory(user_data);
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            }
+          user_data=new_user_data;
           if (ReadBlob(image,read_size,user_data+user_data_length) != read_size)
             {
-              MagickFreeMemory(user_data);
+              MagickFreeResourceLimitedMemory(user_data);
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }
           user_data_length += read_size;
@@ -731,10 +736,10 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
         }
       if (!SetImageProfile(image,"CINEONUSERDATA",user_data,user_data_length))
         {
-          MagickFreeMemory(user_data);
+          MagickFreeResourceLimitedMemory(user_data);
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
         }
-      MagickFreeMemory(user_data);
+      MagickFreeResourceLimitedMemory(user_data);
     }
 
   if (image_info->ping)
@@ -796,7 +801,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
         {
           scandata_bytes=4;
           scale_to_short=64;
-          scandata=MagickAllocateMemory(unsigned char *,scandata_bytes);
+          scandata=MagickAllocateResourceLimitedMemory(unsigned char *,scandata_bytes);
           if (scandata == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           scanline=scandata;
@@ -838,14 +843,14 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
                                               image->columns,image->rows))
                     break;
             }
-          MagickFreeMemory(scandata);
+          MagickFreeResourceLimitedMemory(scandata);
           break;
         }
       case 3:
         {
           scandata_bytes=MagickArraySize(image->columns,4);
           scale_to_short=64;
-          scandata=MagickAllocateMemory(unsigned char *,scandata_bytes);
+          scandata=MagickAllocateResourceLimitedMemory(unsigned char *,scandata_bytes);
           if (scandata == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           for (y=0; y < image->rows; y++)
@@ -891,7 +896,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
                                               image->columns,image->rows))
                     break;
             }
-          MagickFreeMemory(scandata);
+          MagickFreeResourceLimitedMemory(scandata);
           break;
         }
       default:
@@ -1476,7 +1481,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
     scale_from_short=(65535U / (65535U >> (16-bits_per_sample)));
 
     scanline_bytes=MagickArraySize(image->columns,4);
-    scanline=MagickAllocateMemory(unsigned char *,scanline_bytes);
+    scanline=MagickAllocateResourceLimitedMemory(unsigned char *,scanline_bytes);
     if (scanline == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     (void) memset(scanline,0,scanline_bytes);
@@ -1519,7 +1524,7 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
                                         image->columns,image->rows))
               break;
       }
-    MagickFreeMemory(scanline);
+    MagickFreeResourceLimitedMemory(scanline);
   }
 
   if ((magick_off_t) cin_file_info.file_size != TellBlob(image))

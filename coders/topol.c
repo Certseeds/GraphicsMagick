@@ -321,7 +321,7 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
     DestroyImageInfo(clone_info); \
   if (palette) \
     DestroyImage(palette); \
-  MagickFreeMemory(BImgBuff); \
+  MagickFreeResourceLimitedMemory(BImgBuff); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -638,7 +638,7 @@ NoPalette:
    case 0:
    case 1:
      ldblk = (long) ((depth * image->columns + 7) / 8);
-     BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) ldblk);   /*Ldblk was set in the check phase */
+     BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk);   /*Ldblk was set in the check phase */
      if (BImgBuff == NULL)
         ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
      (void) SeekBlob(image, 512 /*sizeof(Header)*/, SEEK_SET);
@@ -664,12 +664,12 @@ NoPalette:
                 }
 
        ldblk = (long)((depth * Header.TileWidth + 7) / 8);
-       BImgBuff = MagickAllocateMemory(unsigned char *,(size_t) ldblk); /*Ldblk was set in the check phase */
+       BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk); /*Ldblk was set in the check phase */
        if (BImgBuff == NULL)
          ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        /* dlazdice.create(Header.TileWidth,Header.TileHeight,p.Planes); */
-       Offsets = MagickAllocateArray(magick_uint32_t *,
+       Offsets = MagickAllocateResourceLimitedArray(magick_uint32_t *,
                                      MagickArraySize((size_t)TilesAcross,(size_t)TilesDown),
                                      sizeof(magick_uint32_t));
        if(Offsets==NULL)
@@ -678,7 +678,7 @@ NoPalette:
        (void)SeekBlob(image, Header.TileOffsets, SEEK_SET);
        if(ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets) < 0)
        {
-         MagickFreeMemory(Offsets);
+         MagickFreeResourceLimitedMemory(Offsets);
          ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
        }
 
@@ -688,7 +688,7 @@ NoPalette:
            ldblk = Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX];
            if(SeekBlob(image, ldblk, SEEK_SET) != ldblk)
              {                                                  /* When seek does not reach required place, bail out. */
-               MagickFreeMemory(Offsets);
+               MagickFreeResourceLimitedMemory(Offsets);
                ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
                break;
              }
@@ -706,7 +706,7 @@ NoPalette:
 
              if(ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
              {
-               MagickFreeMemory(Offsets);
+               MagickFreeResourceLimitedMemory(Offsets);
                ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
                break;
              }
@@ -715,14 +715,14 @@ NoPalette:
              if(InsertRow(depth, BImgBuff, i+TilY, image, TilX,
                     (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options))
              {
-               MagickFreeMemory(Offsets);
+               MagickFreeResourceLimitedMemory(Offsets);
                ThrowTOPOLReaderException(CorruptImageError,TooMuchImageDataInFile, image);
                break;
              }
           }
         }
 
-       MagickFreeMemory(Offsets);
+       MagickFreeResourceLimitedMemory(Offsets);
        break;
       }
     }
@@ -730,7 +730,7 @@ NoPalette:
 
   /* Finish: */
 DONE_READING:
-  MagickFreeMemory(BImgBuff);
+  MagickFreeResourceLimitedMemory(BImgBuff);
   if (palette != NULL)
     DestroyImage(palette);
   if (clone_info != NULL)

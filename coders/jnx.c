@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2012-2018 GraphicsMagick Group
+% Copyright (C) 2012-2020 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -109,7 +109,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
                           TileInfo->PicOffset, TileInfo->PicSize);
 
   if ((alloc_size > TileInfo->PicSize) &&
-      (blob = MagickAllocateMemory(unsigned char *,alloc_size)) != NULL)
+      (blob = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size)) != NULL)
     {
       /* Add missing JPEG header bytes */
       blob[0] = 0xFF;
@@ -178,7 +178,7 @@ ExtractTileJPG(Image * image, const ImageInfo * image_info,
           ThrowException(exception,BlobError,UnableToSeekToOffset,
                          image->filename);
         }
-      MagickFreeMemory(blob);
+      MagickFreeResourceLimitedMemory(blob);
     }
   else
     {
@@ -389,7 +389,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
 
-      PositionList = MagickAllocateArray(TJNXTileInfo *,
+      PositionList = MagickAllocateResourceLimitedArray(TJNXTileInfo *,
                                          JNXLevelInfo[i].TileCount,
                                          sizeof(TJNXTileInfo));
       if (PositionList == NULL)
@@ -416,7 +416,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
                PositionList[j].PicSize > file_size))
             {
               (void) SetMagickResourceLimit(MapResource, SaveLimit);
-              MagickFreeMemory(PositionList);
+              MagickFreeResourceLimitedMemory(PositionList);
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }
         }
@@ -442,7 +442,7 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
               break;
         }
 
-      MagickFreeMemory(PositionList);
+      MagickFreeResourceLimitedMemory(PositionList);
     }
 
   CloseBlob(image);

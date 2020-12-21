@@ -172,7 +172,7 @@ static unsigned int Huffman2DEncodeImage(const ImageInfo *image_info,
   for (i=1; i < (long) TIFFNumberOfStrips(tiff); i++)
     if (byte_count[i] > strip_size)
       strip_size=byte_count[i];
-  buffer=MagickAllocateMemory(unsigned char *,strip_size);
+  buffer=MagickAllocateResourceLimitedMemory(unsigned char *,strip_size);
   if (buffer == (unsigned char *) NULL)
     {
       TIFFClose(tiff);
@@ -194,7 +194,7 @@ static unsigned int Huffman2DEncodeImage(const ImageInfo *image_info,
       Ascii85Encode(image,(unsigned long) buffer[j]);
     Ascii85Flush(image);
   }
-  MagickFreeMemory(buffer);
+  MagickFreeResourceLimitedMemory(buffer);
   TIFFClose(tiff);
   (void) LiberateTemporaryFile(filename);
   return(True);
@@ -856,7 +856,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
               Allocate pixel array.
             */
             length=number_pixels;
-            pixels=MagickAllocateMemory(unsigned char *,length);
+            pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
             if (pixels == (unsigned char *) NULL)
               ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                 image);
@@ -891,7 +891,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
               status=LZWEncodeImage(image,length,pixels);
             else
               status=PackbitsEncodeImage(image,length,pixels);
-            MagickFreeMemory(pixels);
+            MagickFreeResourceLimitedMemory(pixels);
             if (!status)
               {
                 CloseBlob(image);
@@ -968,7 +968,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
               */
               length=MagickArraySize(image->colorspace == CMYKColorspace ? 4 : 3,
                 number_pixels);
-              pixels=MagickAllocateMemory(unsigned char *,length);
+              pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
               if (pixels == (unsigned char *) NULL)
                 ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
               /*
@@ -1026,7 +1026,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
                   CloseBlob(image);
                   return(False);
                 }
-              MagickFreeMemory(pixels);
+              MagickFreeResourceLimitedMemory(pixels);
               break;
             }
             case NoCompression:
@@ -1114,7 +1114,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
                 Allocate pixel array.
               */
               length=number_pixels;
-              pixels=MagickAllocateMemory(unsigned char *,length);
+              pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
               if (pixels == (unsigned char *) NULL)
                 ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
               /*
@@ -1146,7 +1146,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
                 status=LZWEncodeImage(image,length,pixels);
               else
                 status=PackbitsEncodeImage(image,length,pixels);
-              MagickFreeMemory(pixels);
+              MagickFreeResourceLimitedMemory(pixels);
               if (!status)
                 {
                   CloseBlob(image);

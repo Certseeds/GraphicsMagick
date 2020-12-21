@@ -38,11 +38,59 @@
 <p>2020-12-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li>coders/pcx.c (ReadPCXImage): Use managed memory allocators.
-(WritePCXImage): Use managed memory allocators.</li>
-<li>coders/mac.c (ReadMACImage): Use managed memory allocators.</li>
-<li>coders/pict.c (ReadPICTImage): Use managed memory allocators.
-(WritePICTImage): Use managed memory allocators.</li>
+<li>coders/yuv.c: Use resource-limited memory allocator.</li>
+<li>coders/xwd.c: Use resource-limited memory allocator.</li>
+<li>coders/xpm.c: Use resource-limited memory allocator.</li>
+<li>coders/xcf.c: Use resource-limited memory allocator.</li>
+<li>coders/xbm.c: Use resource-limited memory allocator.</li>
+<li>coders/wpg.c: Use resource-limited memory allocator.</li>
+<li>coders/viff.c: Use resource-limited memory allocator.</li>
+<li>coders/vicar.c: Use resource-limited memory allocator.</li>
+<li>coders/uil.c: Use resource-limited memory allocator.</li>
+<li>coders/txt.c: Use resource-limited memory allocator.</li>
+<li>coders/topol.c: Use resource-limited memory allocator.</li>
+<li>coders/tim.c: Use resource-limited memory allocator.</li>
+<li>coders/tiff.c: Use resource-limited memory allocator.</li>
+<li>coders/tga.c: Use resource-limited memory allocator.</li>
+<li>coders/sun.c: Use resource-limited memory allocator.</li>
+<li>coders/sgi.c: Use resource-limited memory allocator.</li>
+<li>coders/sfw.c: Use resource-limited memory allocator.</li>
+<li>coders/rle.c: Use resource-limited memory allocator.</li>
+<li>coders/rla.c: Use resource-limited memory allocator.</li>
+<li>coders/rgb.c: Use resource-limited memory allocator.</li>
+<li>coders/psd.c: Use resource-limited memory allocator.</li>
+<li>coders/ps3.c: Use resource-limited memory allocator.</li>
+<li>coders/ps2.c: Use resource-limited memory allocator.</li>
+<li>coders/pnm.c: Use resource-limited memory allocator.</li>
+<li>coders/pdf.c: Use resource-limited memory allocator.</li>
+<li>coders/pdb.c: Use resource-limited memory allocator.</li>
+<li>coders/pcl.c: Use resource-limited memory allocator.</li>
+<li>coders/pcd.c: Use resource-limited memory allocator.</li>
+<li>coders/palm.c: Use resource-limited memory allocator.</li>
+<li>coders/mtv.c: Use resource-limited memory allocator.</li>
+<li>coders/mpc.c: Use resource-limited memory allocator.</li>
+<li>coders/meta.c: Use resource-limited memory allocator.</li>
+<li>coders/map.c: Use resource-limited memory allocator.</li>
+<li>coders/jpeg.c: Use resource-limited memory allocator.</li>
+<li>coders/jp2.c: Use resource-limited memory allocator.</li>
+<li>coders/jnx.c: Use resource-limited memory allocator.</li>
+<li>coders/icon.c: Use resource-limited memory allocator.</li>
+<li>coders/hrz.c: Use resource-limited memory allocator.</li>
+<li>coders/histogram.c: Use resource-limited memory allocator.</li>
+<li>coders/gray.c: Use resource-limited memory allocator.</li>
+<li>coders/fpx.c: Use resource-limited memory allocator.</li>
+<li>coders/emf.c: Use resource-limited memory allocator.</li>
+<li>coders/dpx.c: Use resource-limited memory allocator.</li>
+<li>coders/dps.c: Use resource-limited memory allocator.</li>
+<li>coders/dcm.c: Use resource-limited memory allocator.</li>
+<li>coders/cut.c: Use resource-limited memory allocator.</li>
+<li>coders/cmyk.c: Use resource-limited memory allocator.</li>
+<li>coders/cineon.c: Use resource-limited memory allocator.</li>
+<li>coders/avs.c: Use resource-limited memory allocator.</li>
+<li>coders/art.c: Use resource-limited memory allocator.</li>
+<li>coders/pcx.c: Use resource-limited memory allocator.</li>
+<li>coders/mac.c: Use resource-limited memory allocator.</li>
+<li>coders/pict.c: Use resource-limited memory allocator.</li>
 <li>magick/memory.c (_MagickReallocateResourceLimitedMemory): Add a
 'clear' parameter which indicates that freshly allocated memory
 should be zeroed.  Added &quot;Cleared&quot; versions of the private managed

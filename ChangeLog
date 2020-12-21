@@ -1,12 +1,110 @@
 2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* coders/pcx.c (ReadPCXImage): Use managed memory allocators.
-	(WritePCXImage): Use managed memory allocators.
+	* coders/yuv.c: Use resource-limited memory allocator.
 
-	* coders/mac.c (ReadMACImage): Use managed memory allocators.
+	* coders/xwd.c: Use resource-limited memory allocator.
 
-	* coders/pict.c (ReadPICTImage): Use managed memory allocators.
-	(WritePICTImage): Use managed memory allocators.
+	* coders/xpm.c: Use resource-limited memory allocator.
+
+	* coders/xcf.c: Use resource-limited memory allocator.
+
+	* coders/xbm.c: Use resource-limited memory allocator.
+
+	* coders/wpg.c: Use resource-limited memory allocator.
+
+	* coders/viff.c: Use resource-limited memory allocator.
+
+	* coders/vicar.c: Use resource-limited memory allocator.
+
+	* coders/uil.c: Use resource-limited memory allocator.
+
+	* coders/txt.c: Use resource-limited memory allocator.
+
+	* coders/topol.c: Use resource-limited memory allocator.
+
+	* coders/tim.c: Use resource-limited memory allocator.
+
+	* coders/tiff.c: Use resource-limited memory allocator.
+
+	* coders/tga.c: Use resource-limited memory allocator.
+
+	* coders/sun.c: Use resource-limited memory allocator.
+
+	* coders/sgi.c: Use resource-limited memory allocator.
+
+	* coders/sfw.c: Use resource-limited memory allocator.
+
+	* coders/rle.c: Use resource-limited memory allocator.
+
+	* coders/rla.c: Use resource-limited memory allocator.
+
+	* coders/rgb.c: Use resource-limited memory allocator.
+
+	* coders/psd.c: Use resource-limited memory allocator.
+
+	* coders/ps3.c: Use resource-limited memory allocator.
+
+	* coders/ps2.c: Use resource-limited memory allocator.
+
+	* coders/pnm.c: Use resource-limited memory allocator.
+
+	* coders/pdf.c: Use resource-limited memory allocator.
+
+	* coders/pdb.c: Use resource-limited memory allocator.
+
+	* coders/pcl.c: Use resource-limited memory allocator.
+
+	* coders/pcd.c: Use resource-limited memory allocator.
+
+	* coders/palm.c: Use resource-limited memory allocator.
+
+	* coders/mtv.c: Use resource-limited memory allocator.
+
+	* coders/mpc.c: Use resource-limited memory allocator.
+
+	* coders/meta.c: Use resource-limited memory allocator.
+
+	* coders/map.c: Use resource-limited memory allocator.
+
+	* coders/jpeg.c: Use resource-limited memory allocator.
+
+	* coders/jp2.c: Use resource-limited memory allocator.
+
+	* coders/jnx.c: Use resource-limited memory allocator.
+
+	* coders/icon.c: Use resource-limited memory allocator.
+
+	* coders/hrz.c: Use resource-limited memory allocator.
+
+	* coders/histogram.c: Use resource-limited memory allocator.
+
+	* coders/gray.c: Use resource-limited memory allocator.
+
+	* coders/fpx.c: Use resource-limited memory allocator.
+
+	* coders/emf.c: Use resource-limited memory allocator.
+
+	* coders/dpx.c: Use resource-limited memory allocator.
+
+	* coders/dps.c: Use resource-limited memory allocator.
+
+	* coders/dcm.c: Use resource-limited memory allocator.
+
+	* coders/cut.c: Use resource-limited memory allocator.
+
+	* coders/cmyk.c: Use resource-limited memory allocator.
+
+	* coders/cineon.c: Use resource-limited memory allocator.
+
+	* coders/avs.c: Use resource-limited memory allocator.
+
+	* coders/art.c: Use resource-limited memory allocator.
+
+	* coders/pcx.c: Use resource-limited memory allocator.
+
+	* coders/mac.c: Use resource-limited memory allocator.
+
+	* coders/pict.c: Use resource-limited memory allocator.
 
 	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Add a
 	'clear' parameter which indicates that freshly allocated memory

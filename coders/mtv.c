@@ -157,7 +157,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     /*
       Convert MTV raster image to pixel packets.
     */
-    pixels=MagickAllocateArray(unsigned char *,image->columns,3);
+    pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,3);
     if (pixels == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     row_size= (size_t) image->columns*3;
@@ -185,7 +185,7 @@ static Image *ReadMTVImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
     if (EOFBlob(image))
       {
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
@@ -366,7 +366,7 @@ static unsigned int WriteMTVImage(const ImageInfo *image_info,Image *image)
       Allocate memory for pixels.
     */
     (void) TransformColorspace(image,RGBColorspace);
-    pixels=MagickAllocateMemory(unsigned char *,
+    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,
       image->columns*sizeof(PixelPacket));
     if (pixels == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -396,7 +396,7 @@ static unsigned int WriteMTVImage(const ImageInfo *image_info,Image *image)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);

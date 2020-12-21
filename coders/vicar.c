@@ -277,7 +277,7 @@ static Image *ReadVICARImage(const ImageInfo *image_info,
   /*
     Read VICAR pixels.
   */
-  scanline=MagickAllocateMemory(unsigned char *,image->columns);
+  scanline=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns);
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
   for (y=0; y < (long) image->rows; y++)
@@ -297,7 +297,7 @@ static Image *ReadVICARImage(const ImageInfo *image_info,
                                   image->columns,image->rows))
         break;
   }
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   if (EOFBlob(image))
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
   CloseBlob(image);
@@ -440,7 +440,7 @@ static unsigned int WriteVICARImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate memory for scanline.
   */
-  scanline=MagickAllocateMemory(unsigned char *,image->columns);
+  scanline=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns);
   if (scanline == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
@@ -459,7 +459,7 @@ static unsigned int WriteVICARImage(const ImageInfo *image_info,Image *image)
                                     image->columns,image->rows))
           break;
   }
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   CloseBlob(image);
   return(True);
 }

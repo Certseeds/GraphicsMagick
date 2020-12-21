@@ -343,7 +343,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
 #define ThrowNOTXTReaderException(code_,reason_,image_) \
       do {                                              \
-        MagickFreeMemory(BImgBuff);                     \
+        MagickFreeResourceLimitedMemory(BImgBuff);                     \
         ThrowReaderException(code_,reason_,image_);     \
       } while (0);
 
@@ -649,7 +649,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /* Assure that all image pixels are initialized to black */
         SetImage(image,OpaqueOpacity);
 
-        BImgBuff = MagickAllocateArray(unsigned char *,
+        BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,
                                        ((size_t)x+1),
                                        ((size_t)((image->matte) ? 4 : 3)
                                          * NumOfPlanes/8));
@@ -870,7 +870,7 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
           }
         /* Note that DImgBuff and WImgBuff point to BImgBuff */
-        MagickFreeMemory(BImgBuff);
+        MagickFreeResourceLimitedMemory(BImgBuff);
       } while(!EOFBlob(image) && NextImagePos>0);
 
       goto FINISH_TXT;

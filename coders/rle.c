@@ -191,8 +191,8 @@ static unsigned int IsRLE(const unsigned char *magick,const size_t length)
 */
 #define ThrowRLEReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(colormap); \
-  MagickFreeMemory(rle_pixels); \
+  MagickFreeResourceLimitedMemory(colormap); \
+  MagickFreeResourceLimitedMemory(rle_pixels); \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -365,7 +365,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         Read image colormaps.  Color map values are stored as 16 bit
         quantities, left justified in the word.
       */
-      colormap=MagickAllocateArray(unsigned char *,number_colormaps,
+      colormap=MagickAllocateResourceLimitedArray(unsigned char *,number_colormaps,
                                    map_length);
       if (colormap == (unsigned char *) NULL)
         ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,
@@ -400,7 +400,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         arbitrary string.
       */
       length=ReadBlobLSBShort(image);
-      comment=MagickAllocateMemory(char *,(size_t) length+1);
+      comment=MagickAllocateResourceLimitedMemory(char *,(size_t) length+1);
       if (comment == (char *) NULL)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -411,7 +411,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       if (ReadBlob(image,length,comment) != length)
         {
-          MagickFreeMemory(comment);
+          MagickFreeResourceLimitedMemory(comment);
           ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
       comment[length]='\0';
@@ -427,7 +427,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void) SetImageAttribute(image,"comment",comment);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Comment: '%s'", comment);
-      MagickFreeMemory(comment);
+      MagickFreeResourceLimitedMemory(comment);
       if ((length & 0x01) == 0)
         (void) ReadBlobByte(image);
     }
@@ -437,7 +437,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   if (image_info->ping)
     {
-      MagickFreeMemory(colormap);
+      MagickFreeResourceLimitedMemory(colormap);
       CloseBlob(image);
       StopTimer(&image->timer);
       return(image);
@@ -453,7 +453,7 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
   rle_bytes=MagickArraySize(number_pixels,number_planes);
   if ((number_pixels == 0) || (rle_bytes == 0))
     ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  rle_pixels=MagickAllocateArray(unsigned char *,number_pixels,
+  rle_pixels=MagickAllocateResourceLimitedArray(unsigned char *,number_pixels,
                                  number_planes);
   if (rle_pixels == (unsigned char *) NULL)
     ThrowRLEReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -761,8 +761,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->colors=0;
         }
     }
-  MagickFreeMemory(colormap);
-  MagickFreeMemory(rle_pixels);
+  MagickFreeResourceLimitedMemory(colormap);
+  MagickFreeResourceLimitedMemory(rle_pixels);
   if (EOFBlob(image))
     {
       ThrowRLEReaderException(CorruptImageError,UnexpectedEndOfFile,image);

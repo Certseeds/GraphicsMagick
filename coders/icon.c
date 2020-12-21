@@ -260,7 +260,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     data_alloc_size=Max(data_alloc_size,icon_file.directory[i].size);
   }
-  data=MagickAllocateMemory(unsigned char *,data_alloc_size);
+  data=MagickAllocateResourceLimitedMemory(unsigned char *,data_alloc_size);
   if (data == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   for (i=0; i < icon_file.count; i++)
@@ -288,7 +288,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Failed to seek to offset %u",
                                 icon_file.directory[i].offset);
-        MagickFreeMemory(data);
+        MagickFreeResourceLimitedMemory(data);
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
     if ((count=ReadBlob(image,icon_file.directory[i].size,data)) != icon_file.directory[i].size)
@@ -299,7 +299,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
                                   " (expected %" MAGICK_SIZE_T_F  "u bytes)",
                                   (MAGICK_SIZE_T) count,
                                   (MAGICK_SIZE_T) icon_file.directory[i].size);
-        MagickFreeMemory(data);
+        MagickFreeResourceLimitedMemory(data);
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
     format[0]='\0';
@@ -309,7 +309,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
       (void) strcpy(format,"PNG");
     if (format[0] == '\0')
       {
-        MagickFreeMemory(data);
+        MagickFreeResourceLimitedMemory(data);
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
       }
     if (image->logging)
@@ -335,7 +335,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
       }
     if (icon_image == (Image *) NULL)
       {
-        MagickFreeMemory(data);
+        MagickFreeResourceLimitedMemory(data);
         DestroyImageList(image);
         return((Image *) NULL);
       }
@@ -373,7 +373,7 @@ static Image *ReadIconImage(const ImageInfo *image_info,
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
-  MagickFreeMemory(data);
+  MagickFreeResourceLimitedMemory(data);
   return(image);
 }
 

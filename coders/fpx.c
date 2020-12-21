@@ -267,7 +267,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Note image label.
         */
-        label=MagickAllocateMemory(char *,summary_info.title.length+1);
+        label=MagickAllocateResourceLimitedMemory(char *,summary_info.title.length+1);
         if (label == (char *) NULL)
           {
             FPX_ClearSystem();
@@ -277,7 +277,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strlcpy(label,(char *) summary_info.title.ptr,
           summary_info.title.length+1);
         (void) SetImageAttribute(image,"label",label);
-        MagickFreeMemory(label);
+        MagickFreeResourceLimitedMemory(label);
       }
   if (summary_info.comments_valid)
     if ((summary_info.comments.length != 0) &&
@@ -289,7 +289,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Note image comment.
         */
-        comments=MagickAllocateMemory(char *,summary_info.comments.length+1);
+        comments=MagickAllocateResourceLimitedMemory(char *,summary_info.comments.length+1);
         if (comments == (char *) NULL)
           {
             FPX_ClearSystem();
@@ -299,7 +299,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strlcpy(comments,(char *) summary_info.comments.ptr,
           summary_info.comments.length+1);
         (void) SetImageAttribute(image,"comment",comments);
-        MagickFreeMemory(comments);
+        MagickFreeResourceLimitedMemory(comments);
       }
   /*
     Determine resolution by subimage specification.
@@ -352,7 +352,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Allocate memory for the image and pixel buffer.
   */
-  scanline=MagickAllocateMemory(unsigned char *,colorspace.numberOfComponents*
+  scanline=MagickAllocateResourceLimitedMemory(unsigned char *,colorspace.numberOfComponents*
     image->columns*(tile_height+1));
   if (scanline == (unsigned char *) NULL)
     {
@@ -409,7 +409,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (long) tile_height,&fpx_info);
         if (fpx_status == FPX_LOW_MEMORY_ERROR)
           {
-            MagickFreeMemory(scanline);
+            MagickFreeResourceLimitedMemory(scanline);
             (void) FPX_CloseImage(flashpix);
             FPX_ClearSystem();
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
@@ -453,7 +453,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (!MagickMonitor(LoadImageText,y,image->rows,exception))
         break;
   }
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   (void) FPX_CloseImage(flashpix);
   FPX_ClearSystem();
   StopTimer(&image->timer);
@@ -906,7 +906,7 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate pixels.
   */
-  pixels=MagickAllocateMemory(unsigned char *,
+  pixels=MagickAllocateResourceLimitedMemory(unsigned char *,
     colorspace.numberOfComponents*image->columns);
   if (pixels == (unsigned char *) NULL)
     {
@@ -1081,7 +1081,7 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
     }
   (void) FPX_CloseImage(flashpix);
   FPX_ClearSystem();
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   return(True);
 }
 #else

@@ -258,14 +258,14 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
-  buffer=MagickAllocateMemory(unsigned char *,buffer_size);
+  buffer=MagickAllocateResourceLimitedMemory(unsigned char *,buffer_size);
   if (buffer == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   buffer_end=buffer+buffer_size-1;
   count=ReadBlob(image,buffer_size,(char *) buffer);
   if ((count != buffer_size) || (LocaleNCompare((char *) buffer,"SFW",3) != 0))
     {
-      MagickFreeMemory(buffer);
+      MagickFreeResourceLimitedMemory(buffer);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
     }
   /*
@@ -276,7 +276,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if ((header == (unsigned char *) NULL) ||
       (header+6+134 > buffer_end)) /* 134 ~ Minimum JFIF size */
     {
-      MagickFreeMemory(buffer);
+      MagickFreeResourceLimitedMemory(buffer);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
     }
     /*
@@ -294,7 +294,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   {
     if (offset+4 > buffer_end)
       {
-        MagickFreeMemory(buffer);
+        MagickFreeResourceLimitedMemory(buffer);
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
       }
     TranslateSFWMarker(offset);
@@ -307,7 +307,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
     (unsigned char *) "\377\311",2);
   if (data == (unsigned char *) NULL)
     {
-      MagickFreeMemory(buffer);
+      MagickFreeResourceLimitedMemory(buffer);
       ThrowReaderException(CorruptImageError,ImproperImageHeader,image)
     }
   TranslateSFWMarker(data++);  /* translate eoi marker */
@@ -320,7 +320,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   file=AcquireTemporaryFileStream(temporary_filename,BinaryFileIOMode);
   if (file == (FILE *) NULL)
     {
-      MagickFreeMemory(buffer);
+      MagickFreeResourceLimitedMemory(buffer);
       DestroyImageInfo(clone_info);
       ThrowReaderTemporaryFileException(image_info->filename)
     }
@@ -329,7 +329,7 @@ static Image *ReadSFWImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) fwrite(offset+1,(size_t) (data-offset),1,file);
   status=ferror(file);
   (void) fclose(file);
-  MagickFreeMemory(buffer);
+  MagickFreeResourceLimitedMemory(buffer);
   if (status)
     {
       (void) LiberateTemporaryFile(temporary_filename);

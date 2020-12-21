@@ -248,7 +248,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
     quantum_size=32;
   samples_per_pixel=MagickGetQuantumSamplesPerPixel(quantum_type);
   packet_size=(quantum_size*samples_per_pixel)/8;
-  scanline=MagickAllocateArray(unsigned char *,packet_size,image->tile_info.width);
+  scanline=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->tile_info.width);
   if (scanline == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   tile_packets=(size_t) packet_size*image->tile_info.width;
@@ -345,7 +345,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
         AllocateNextImage(image_info,image);
         if (image->next == (Image *) NULL)
           {
-            MagickFreeMemory(scanline);
+            MagickFreeResourceLimitedMemory(scanline);
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
           }
         image=SyncNextImageInList(image);
@@ -354,7 +354,7 @@ static Image *ReadGRAYImage(const ImageInfo *image_info,
           break;
       }
   } while (count != 0);
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
@@ -621,7 +621,7 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
     /*
       Allocate scanline
     */
-    scanline=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+    scanline=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->columns);
     if (scanline == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     /*
@@ -685,7 +685,7 @@ static unsigned int WriteGRAYImage(const ImageInfo *image_info,Image *image)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(scanline);
+    MagickFreeResourceLimitedMemory(scanline);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);

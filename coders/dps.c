@@ -256,7 +256,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
   /*
     Get the colormap colors.
   */
-  colors=MagickAllocateMemory(XColor *,
+  colors=MagickAllocateResourceLimitedMemory(XColor *,
                               visual_info->colormap_size*sizeof(XColor));
   if (colors == (XColor *) NULL)
     {
@@ -433,7 +433,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
       if (!AllocateImageColormap(image,visual_info->colormap_size))
         {
           DestroyImage(image);
-          MagickFreeMemory(colors);
+          MagickFreeResourceLimitedMemory(colors);
           XDestroyImage(dps_image);
           MagickXFreeResources(display,visual_info,map_info,(MagickXPixelInfo *) NULL,
             (XFontStruct *) NULL,&resource_info,(MagickXWindowInfo *) NULL);
@@ -472,7 +472,7 @@ static Image *ReadDPSImage(const ImageInfo *image_info,
       break;
     }
   }
-  MagickFreeMemory(colors);
+  MagickFreeResourceLimitedMemory(colors);
   XDestroyImage(dps_image);
   if (image->storage_class == PseudoClass)
     (void) SyncImage(image);
