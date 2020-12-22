@@ -1935,7 +1935,8 @@ MagickExport Image *EdgeImage(const Image *image,const double radius,
   kernel[i/2]=(double) width*width-1.0;
   edge_image=ConvolveImage(image,width,kernel,exception);
   MagickFreeMemory(kernel);
-  edge_image->is_grayscale=image->is_grayscale;
+  if (edge_image != (Image *) NULL)
+    edge_image->is_grayscale=image->is_grayscale;
   return(edge_image);
 }
 

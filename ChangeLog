@@ -1,5 +1,35 @@
 2020-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c (BlobWrite): Update Jasper stream OPs callback
+	function signatures to exactly match latest jas_stream_ops_t
+	definition.  This avoids an annoying warning when using Jasper
+	2.0.12 but now causes annoying warnings when using 1.900.1.
+
+	* magick/decorate.c (FrameImage): Skip attempting to render top or
+	bottom of ornamental border if its height is zero.
+
+	* magick/image.c (CloneImage): Set image signature right away in
+	case it needs to be destroyed while it is being constructed.
+
+	* wand/drawtest.c (main): MagickGetFilename() allocates a new
+	string so make sure to free it.
+
+	* tests/constitute.c (main): Destroy ExceptionInfo to avoid memory
+	leak if an exception was thrown.
+
+	* magick/effect.c (EdgeImage): Fix null pointer dereference if
+	edge image failed to be created.
+
+	* magick/compress.c (HuffmanEncode2Image): Fix error handling
+	issues.
+
+	* magick/command.c (CompareImageCommand): Fix memory leaks when an
+	input image failed to be read.
+	(CompositeImageCommand): Fix memory leaks when an input image
+	failed to be read.
+
+	* coders/fax.c (WriteFAXImage): Fix error handling.
+
 	* coders/mpc.c (ReadMPCImage): Use correct deallocator for page
 	geometry.  Fixes oss-fuzz 28853 "Heap-buffer-overflow READ {*} -
 	_MagickReallocateResourceLimitedMemory".

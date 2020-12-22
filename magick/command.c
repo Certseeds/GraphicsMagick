@@ -2263,21 +2263,15 @@ static OptionStatus CheckOptionValue(const char *option, const char *value)
 */
 #define ThrowCompareException(code,reason,description) \
 { \
-  DestroyImageList(compare_image); \
-  DestroyImageList(difference_image); \
-  DestroyImageList(reference_image); \
+  status=MagickFail; \
   ThrowException(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto compare_cleanup_and_return; \
 }
 #define ThrowCompareException3(code,reason,description) \
 { \
-  DestroyImageList(compare_image); \
-  DestroyImageList(difference_image); \
-  DestroyImageList(reference_image); \
+  status=MagickFail; \
   ThrowException3(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail);                        \
+  goto compare_cleanup_and_return; \
 }
 MagickExport MagickPassFail
 CompareImageCommand(ImageInfo *image_info,
@@ -2754,13 +2748,19 @@ CompareImageCommand(ImageInfo *image_info,
   if (compare_image == (Image *) NULL)
     {
       if (exception->severity == UndefinedException)
-        ThrowCompareException(OptionError,RequestDidNotReturnAnImage,
-          (char *) NULL);
-      return(MagickFail);
+        ThrowException(exception,OptionError,RequestDidNotReturnAnImage,(char *) NULL);
+    }
+  if (reference_image == (Image *) NULL)
+    {
+      if (exception->severity == UndefinedException)
+        ThrowException(exception,OptionError,MissingAnImageFilename,(char *) NULL);
     }
   if ((reference_image == (Image *) NULL) ||
       (compare_image == (Image *) NULL))
-    ThrowCompareException(OptionError,MissingAnImageFilename,(char *) NULL);
+    {
+      status=MagickFail;
+      goto compare_cleanup_and_return;
+    }
 
   /*
     Apply any user settings to images prior to compare.
@@ -2865,6 +2865,8 @@ CompareImageCommand(ImageInfo *image_info,
             }
         }
     }
+
+ compare_cleanup_and_return:
 
   DestroyImageList(difference_image);
   DestroyImageList(reference_image);
@@ -3116,23 +3118,15 @@ static void LiberateCompositeOptions(CompositeOptions *option_info)
 #define NotInitialized  (unsigned int) (~0)
 #define ThrowCompositeException(code,reason,description) \
 { \
-  LiberateCompositeOptions(&option_info); \
-  DestroyImageList(image); \
-  DestroyImageList(composite_image); \
-  DestroyImageList(mask_image); \
+  status=MagickFail; \
   ThrowException(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto composite_cleanup_and_return; \
 }
 #define ThrowCompositeException3(code,reason,description) \
 { \
-  LiberateCompositeOptions(&option_info); \
-  DestroyImageList(image); \
-  DestroyImageList(composite_image); \
-  DestroyImageList(mask_image); \
+  status=MagickFail; \
   ThrowException3(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto composite_cleanup_and_return; \
 }
 MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
@@ -4095,9 +4089,9 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
   if (image == (Image *) NULL)
     {
       if (exception->severity == UndefinedException)
-        ThrowCompositeException(OptionError,RequestDidNotReturnAnImage,
-          (char *) NULL);
-      return(MagickFail);
+        ThrowException(exception,OptionError,RequestDidNotReturnAnImage,(char *) NULL);
+      status=MagickFail;
+      goto composite_cleanup_and_return;
     }
   if (i != (argc-1))
     ThrowCompositeException(OptionError,MissingAnImageFilename,(char *) NULL);
@@ -4122,6 +4116,9 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
       (void) ConcatenateString(&(*metadata),"\n");
       MagickFreeMemory(text);
     }
+
+  composite_cleanup_and_return:
+
   LiberateCompositeOptions(&option_info);
   DestroyImageList(composite_image);
   DestroyImageList(mask_image);

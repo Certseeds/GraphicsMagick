@@ -68,7 +68,7 @@ int main ( int argc, char **argv )
     {
       char
         *option = argv[arg];
-    
+
       if (*option == '-')
         {
           if (LocaleCompare("debug",option+1) == 0)
@@ -295,7 +295,7 @@ int main ( int argc, char **argv )
       exit_status = 1;
       goto program_exit;
     }
-  
+
   if ( !IsImagesEqual(original, final) )
     {
       CatchException(&original->exception);
@@ -328,6 +328,7 @@ int main ( int argc, char **argv )
   if (imageInfo)
     DestroyImageInfo(imageInfo);
   imageInfo = 0;
+  DestroyExceptionInfo( &exception );
 
   DestroyMagick();
 

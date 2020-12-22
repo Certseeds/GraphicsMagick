@@ -273,8 +273,8 @@ ModuleExport void UnregisterFAXImage(void)
 %
 %  A description of each parameter follows.
 %
-%    o status: Method WriteFAXImage return True if the image is written.
-%      False is returned is there is a memory shortage or if the image file
+%    o status: Method WriteFAXImage return MagickPass if the image is written.
+%      MagickFail is returned is there is a memory shortage or if the image file
 %      fails to write.
 %
 %    o image_info: Specifies a pointer to a ImageInfo structure.
@@ -283,12 +283,12 @@ ModuleExport void UnregisterFAXImage(void)
 %
 %
 */
-static unsigned int WriteFAXImage(const ImageInfo *image_info,Image *image)
+static MagickPassFail WriteFAXImage(const ImageInfo *image_info,Image *image)
 {
   ImageInfo
     *clone_info;
 
-  unsigned int
+  MagickPassFail
     status;
 
   unsigned long
@@ -305,9 +305,9 @@ static unsigned int WriteFAXImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-  image_list_length=GetImageListLength(image);
-  if (status == False)
+  if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+  image_list_length=GetImageListLength(image);
   clone_info=CloneImageInfo(image_info);
   (void) strcpy(clone_info->magick,"FAX");
   scene=0;
@@ -316,15 +316,19 @@ static unsigned int WriteFAXImage(const ImageInfo *image_info,Image *image)
     /*
       Convert MIFF to monochrome.
     */
-    (void) TransformColorspace(image,RGBColorspace);
-    status=HuffmanEncodeImage(clone_info,image);
+    status &= TransformColorspace(image,RGBColorspace);
+    if (status != MagickPass)
+      break;
+    status &= HuffmanEncodeImage(clone_info,image);
+    if (status != MagickPass)
+      break;
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,image_list_length,
-                                  &image->exception,SaveImagesText,
-                                  image->filename);
-    if (status == False)
+    status &= MagickMonitorFormatted(scene++,image_list_length,
+                                     &image->exception,SaveImagesText,
+                                     image->filename);
+    if (status != MagickPass)
       break;
   } while (clone_info->adjoin);
   DestroyImageInfo(clone_info);

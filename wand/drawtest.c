@@ -423,7 +423,9 @@ int main ( int argc, char **argv )
 
       if ((status = MagickReadImage( canvas, "xc:white" )) == MagickFail)
         {
-          fprintf ( stderr, "Failed to read canvas image %s\n", MagickGetFilename(canvas) );
+          char *canvas_name = MagickGetFilename(canvas);
+          fprintf ( stderr, "Failed to read canvas image %s\n", canvas_name );
+          free(canvas_name);
           ThrowAPIException(canvas);
         }
 

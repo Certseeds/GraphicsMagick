@@ -1100,6 +1100,7 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToCloneImage);
   (void) memset(clone_image,0,sizeof(Image));
+  clone_image->signature=MagickSignature;
 
   /* allocate and initialize struct for extra Image members */
   ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
@@ -1167,7 +1168,6 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   clone_image->endian=image->endian;
   clone_image->gravity=image->gravity;
   clone_image->compose=image->compose;
-  clone_image->signature=MagickSignature;
   (void) CloneImageAttributes(clone_image,image);
   clone_image->scene=image->scene;
   clone_image->dispose=image->dispose;

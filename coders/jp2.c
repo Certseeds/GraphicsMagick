@@ -276,7 +276,7 @@ typedef struct _StreamManager
     *image;
 } StreamManager;
 
-static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
+static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
 {
   size_t
     count;
@@ -288,7 +288,7 @@ static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
   return ((int) count);
 }
 
-static int BlobWrite(jas_stream_obj_t *object,char *buffer,const int length)
+static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
 {
   size_t
     count;

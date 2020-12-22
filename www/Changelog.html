@@ -38,6 +38,27 @@
 <p>2020-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>coders/jp2.c (BlobWrite): Update Jasper stream OPs callback
+function signatures to exactly match latest jas_stream_ops_t
+definition.  This avoids an annoying warning when using Jasper
+2.0.12 but now causes annoying warnings when using 1.900.1.</li>
+<li>magick/decorate.c (FrameImage): Skip attempting to render top or
+bottom of ornamental border if its height is zero.</li>
+<li>magick/image.c (CloneImage): Set image signature right away in
+case it needs to be destroyed while it is being constructed.</li>
+<li>wand/drawtest.c (main): MagickGetFilename() allocates a new
+string so make sure to free it.</li>
+<li>tests/constitute.c (main): Destroy ExceptionInfo to avoid memory
+leak if an exception was thrown.</li>
+<li>magick/effect.c (EdgeImage): Fix null pointer dereference if
+edge image failed to be created.</li>
+<li>magick/compress.c (HuffmanEncode2Image): Fix error handling
+issues.</li>
+<li>magick/command.c (CompareImageCommand): Fix memory leaks when an
+input image failed to be read.
+(CompositeImageCommand): Fix memory leaks when an input image
+failed to be read.</li>
+<li>coders/fax.c (WriteFAXImage): Fix error handling.</li>
 <li>coders/mpc.c (ReadMPCImage): Use correct deallocator for page
 geometry.  Fixes oss-fuzz 28853 &quot;Heap-buffer-overflow READ {*} -
 _MagickReallocateResourceLimitedMemory&quot;.</li>
