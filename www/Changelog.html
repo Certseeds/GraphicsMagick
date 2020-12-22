@@ -35,13 +35,49 @@
 <div class="document">
 
 
+<p>2020-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>magick/image.c (AllocateImage): Satisfy conditions for
+DestroyImage() as soon as possible and use it for clean-up on
+error.  Added more error checks.
+(CloneImage): Satisfy conditions for DestroyImage() as soon as
+possible and use it for clean-up on error.  Don't attempt to copy
+colormap if colors is zero.  Added more error checks.
+(DestroyImage): Assure that we can destroy a partially-constructed
+Image.</li>
+<li>magick/effect.c (BlurImage): Fix null pointer dereference if
+image failed to be created.
+(DespeckleImage): Fix null pointer dereference if image failed to
+be created.
+(EnhanceImage): Fix null pointer dereference if image failed to be
+created.
+(GaussianBlurImage): Fix null pointer dereference if image failed
+to be created.
+(MedianFilterImage): Fix null pointer dereference if image failed
+to be created.
+(MotionBlurImage): Fix null pointer dereference if image failed to
+be created.
+(ReduceNoiseImage): Fix null pointer dereference if image failed to
+be created.
+(ShadeImage): Fix null pointer dereference if image failed to be
+created.
+(SharpenImage): Fix null pointer dereference if image failed to be
+created.
+(SpreadImage): Fix null pointer dereference if image failed to be
+created.</li>
+</ul>
+</blockquote>
 <p>2020-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
 <li>coders/jp2.c (BlobWrite): Update Jasper stream OPs callback
 function signatures to exactly match latest jas_stream_ops_t
 definition.  This avoids an annoying warning when using Jasper
-2.0.12 but now causes annoying warnings when using 1.900.1.</li>
+2.0.23 but now causes annoying warnings when using 2.0.12 or
+1.900.1. There does not appear to be a useful way to determine the
+Jasper numeric version (only a C string is available) from its
+header files.</li>
 <li>magick/decorate.c (FrameImage): Skip attempting to render top or
 bottom of ornamental border if its height is zero.</li>
 <li>magick/image.c (CloneImage): Set image signature right away in

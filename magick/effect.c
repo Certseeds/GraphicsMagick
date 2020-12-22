@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1019,7 +1019,7 @@ BlurImage(const Image *original_image,const double radius,
 
   MagickFreeMemory(kernel);
 
-  if (status != MagickFail)
+  if (blur_image != (Image *) NULL)
     blur_image->is_grayscale=original_image->is_grayscale;
 
   return(blur_image);
@@ -1870,7 +1870,8 @@ MagickExport Image *DespeckleImage(const Image *image,ExceptionInfo *exception)
       return (Image *) NULL;
     }
 
-  despeckle_image->is_grayscale=image->is_grayscale;
+  if (despeckle_image != (Image *) NULL)
+    despeckle_image->is_grayscale=image->is_grayscale;
   return(despeckle_image);
 }
 
@@ -2252,7 +2253,8 @@ MagickExport Image *EnhanceImage(const Image *image,ExceptionInfo *exception)
           }
       }
   }
-  enhance_image->is_grayscale=image->is_grayscale;
+  if (enhance_image != (Image *) NULL)
+    enhance_image->is_grayscale=image->is_grayscale;
   return(enhance_image);
 }
 
@@ -2335,7 +2337,8 @@ MagickExport Image *GaussianBlurImage(const Image *image,const double radius,
   }
   blur_image=ConvolveImage(image,width,kernel,exception);
   MagickFreeMemory(kernel);
-  blur_image->is_grayscale=image->is_grayscale;
+  if (blur_image != (Image *) NULL)
+    blur_image->is_grayscale=image->is_grayscale;
   return(blur_image);
 }
 
@@ -2827,7 +2830,8 @@ MagickExport Image *MedianFilterImage(const Image *image,const double radius,
       }
   }
   DestroyThreadViewDataSet(data_set);
-  median_image->is_grayscale=image->is_grayscale;
+  if (median_image != (Image *) NULL)
+    median_image->is_grayscale=image->is_grayscale;
   return(median_image);
 }
 
@@ -3110,7 +3114,8 @@ MagickExport Image *MotionBlurImage(const Image *image,const double radius,
   }
   MagickFreeMemory(kernel);
   MagickFreeMemory(offsets);
-  blur_image->is_grayscale=image->is_grayscale;
+  if (blur_image != (Image *) NULL)
+    blur_image->is_grayscale=image->is_grayscale;
   return(blur_image);
 }
 
@@ -3864,7 +3869,8 @@ MagickExport Image *ReduceNoiseImage(const Image *image,const double radius,
         }
     }
   DestroyThreadViewDataSet(data_set);
-  noise_image->is_grayscale=image->is_grayscale;
+  if (noise_image != (Image *) NULL)
+    noise_image->is_grayscale=image->is_grayscale;
   return(noise_image);
 }
 
@@ -4075,9 +4081,12 @@ MagickExport Image *ShadeImage(const Image *image,const unsigned int gray,
           }
       }
   }
-  shade_image->is_grayscale=image->is_grayscale;
-  if (gray)
-    shade_image->is_grayscale=True;
+  if (shade_image != (Image *) NULL)
+    {
+      shade_image->is_grayscale=image->is_grayscale;
+      if (gray)
+        shade_image->is_grayscale=True;
+    }
   return(shade_image);
 }
 
@@ -4160,7 +4169,8 @@ MagickExport Image *SharpenImage(const Image *image,const double radius,
   kernel[i/2]=(-2.0)*normalize;
   sharp_image=ConvolveImage(image,width,kernel,exception);
   MagickFreeMemory(kernel);
-  sharp_image->is_grayscale=image->is_grayscale;
+  if (sharp_image != (Image *) NULL)
+    sharp_image->is_grayscale=image->is_grayscale;
   return(sharp_image);
 }
 
@@ -4436,8 +4446,11 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
       }
   }
   MagickFreeMemory(offsets);
-  spread_image->is_grayscale=image->is_grayscale;
-  spread_image->is_monochrome=image->is_monochrome;
+  if (spread_image != (Image *) NULL)
+    {
+      spread_image->is_grayscale=image->is_grayscale;
+      spread_image->is_monochrome=image->is_monochrome;
+    }
   return(spread_image);
 }
 
