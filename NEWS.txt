@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to November 28, 2020
+This file was last updated to reflect changes up to December 23, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -28,16 +28,18 @@ Special Issues:
 
 Security Fixes:
 
-* GraphicsMagick is now participating in Google's oss-fuzz project due
-  to the contributions and assistance of Alex Gaynor. Since February 4
-  2018, 431 issues have been opened by oss-fuzz (some of which were
-  benign build issues) and 2 issues remain open.  The issues list is
-  available at https://bugs.chromium.org/p/oss-fuzz/issues/list under
-  search term "graphicsmagick".  Issues are available for anyone to
-  view and duplicate if they have been in "Verified" status for 30
-  days, or if they have been in "New" status for 90 days.  Please
-  consult the GraphicsMagick ChangeLog file, Mercurial repository
-  commit log, and the oss-fuzz issues list for details.
+* GraphicsMagick is participating in Google's oss-fuzz project due to
+  the contributions and assistance of Alex Gaynor. Since February 4
+  2018, 452 issues have been opened by oss-fuzz (some of which were
+  benign build issues such as SourceForge Mercurial not working
+  correctly) and 6 issues remain open (all of which are marked in an
+  "unreproducible" state).  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
 
 * WPG: Fixes for heap buffer overflow.
 
@@ -79,10 +81,16 @@ Bug fixes:
 * MVG: Place an aribrary limit on stroke dash polygon unit maximum
   length in order to avoid possibly rendering "forever".
 
+* PCL: No longer attempt to handle reading HP PCL format via the
+  external 'hp2xx' program since it seems worthless for that task.
+
 * PS: Fix corrupt image when writing PseudoClass image with a colormap
   larger than two entries as bilevel.
 
 * SVG: Memory leak fixes.
+
+* SVG reader: Now support 'ping' support so the identify command works
+  as expected.
 
 * TIFF: WEBP compression only supports a depth of 8 so force that
   value.
@@ -127,7 +135,13 @@ Feature improvements:
   developed for internal use wherever arbitrarily-large amounts of
   memory might be requested.  This will gradually be added wherever it
   appears to be needed.  The memory resource limits are at the overall
-  process level.
+  process level.  The MVG/SVG rendering code is updated to use this
+  new allocator.  Almost all of the coders (image format
+  readers/writers) have now been updated to use this new allocator.
+  This means that '-limit memory 300MB' would be more complete and
+  meaningful now.  Temporary allocations by the image processing
+  algorithms (other than for the images themselves) are still not
+  accounted for in the resource limiting.
 
 * MVG Renderer / DrawImage(): Use resource-limit respecting memory
   allocators for remaining large memory allocations.
@@ -152,6 +166,18 @@ Build Changes:
 * Magick++ Drawable base class no longer uses std::unary_function when
   compiled using C++'17 or later, since this feature has been removed
   from the language.
+
+* Support the configure option --disable-compressed-files to disable
+  automatic decompress of gzip and bzip2 compressed files (e.g. files
+  with extension 'gz' or 'bz2', and sometimes 'svgz', but sometimes
+  posing as some other format).  It turns out that there are some
+  extremely compressed files (e.g. over 1000x compression ratio) which
+  can take a long time to decompress and produce large temporary
+  files.  We currently normally wait for the whole file to be
+  decompressed before decoding it.  The only exception is for coders
+  with native 'blob' support and which do not require seeking, and
+  that the user forced forced the format by adding a magick prefix
+  like "DPX:file.dpx" to avoid the automatic file format detection.
 
 * Support the configure option --without-gs to disable reading PS,
   EPS, and PDF formats via an external Ghostscript delegate program.

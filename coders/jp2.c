@@ -276,7 +276,33 @@ typedef struct _StreamManager
     *image;
 } StreamManager;
 
+/*
+  I/O read/write callbacks changed
+
+  Cnt argument changed from 'int' to 'unsigned' on 6/29/20 (2.0.19).
+
+  Write write buf pointer changed from 'char *' to 'const char *' on 8/14/20
+
+  Old interface:
+  int (*read_)(jas_stream_obj_t *obj, char *buf, int cnt);
+  int (*write_)(jas_stream_obj_t *obj, char *buf, int cnt);
+
+  New interface:
+  int (*read_)(jas_stream_obj_t *obj, char *buf, unsigned cnt);
+  int (*write_)(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
+
+  We have yet to find a useful way to determine the version of the
+  JasPer library using the C pre-processor.
+ */
+#if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE)
+#define MAGICK_JP2_NEW_STREAM_INTERFACE 0
+#endif /* if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE) */
+
+#if MAGICK_JP2_NEW_STREAM_INTERFACE
 static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
+#else
+static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
+#endif
 {
   size_t
     count;
@@ -288,7 +314,11 @@ static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
   return ((int) count);
 }
 
+#if MAGICK_JP2_NEW_STREAM_INTERFACE
 static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
+#else
+static int BlobWrite(jas_stream_obj_t *object,char *buffer,const int length)
+#endif
 {
   size_t
     count;

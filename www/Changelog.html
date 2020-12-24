@@ -35,6 +35,27 @@
 <div class="document">
 
 
+<p>2020-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>coders/jp2.c: JasPer changed its jas_stream_ops_t callback
+interfaces in releases 2.0.19 and 2.0.20.  Revert to providing the
+older interfaces by default, but use a
+MAGICK_JP2_NEW_STREAM_INTERFACE pre-processor definition to
+support selecting the new interfaces.  We don't know how to
+usefully tell the JasPer version at compile time!  Luckily, using
+the older interfaces only causes a compiler warning rather than a
+run-time issue.</li>
+<li>coders/mac.c (ReadMACImage): Use size_t type for 'ldblk' to
+avoid possible overflow.</li>
+</ul>
+</blockquote>
+<p>2020-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li>NEWS.txt: Update the news to the date December 23, 2020.</li>
+</ul>
+</blockquote>
 <p>2020-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
