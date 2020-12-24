@@ -1504,7 +1504,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
         for (p=image->colormap, j=0; j < Max(image->colors-1,1); j++, p++)
           if (ColorMatch(&image->background_color,p))
             break;
-        (void) WriteBlobByte(image,(long) j);  /* background color */
+        (void) WriteBlobByte(image,(magick_uint8_t) j);  /* background color */
         (void) WriteBlobByte(image,0x0);  /* reserved */
         (void) WriteBlob(image,3*(((size_t) 1) << bits_per_pixel),(char *) colormap);
         for (j=0; j < 768; j++)
@@ -1548,7 +1548,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
               while (strlen(p) != 0)
                 {
                   count=Min(strlen(p),255);
-                  (void) WriteBlobByte(image,(long) count);
+                  (void) WriteBlobByte(image, (magick_uint8_t)count);
                   for (i=0; i < count; i++)
                     (void) WriteBlobByte(image,*p++);
                 }
