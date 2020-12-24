@@ -78,7 +78,7 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Image *image;
   unsigned int y;
   unsigned char x8, rep, b;
-  long ldblk;
+  size_t ldblk;
   unsigned char *BImgBuff = NULL;
   unsigned char *DataPtr;
   unsigned int status;
@@ -116,7 +116,7 @@ static Image *ReadMACImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   /* ----- Load RLE compressed raster ----- */
   ldblk = (MagickArraySize(image->depth,image->columns)) /8;
-  BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *, ((size_t)ldblk));
+  BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,ldblk);
   if (BImgBuff==NULL)
   NoMemory:
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
