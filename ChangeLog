@@ -1,5 +1,8 @@
 2020-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/segment.c (Classify): Remove variables from function
+	global scope that don't need outer scope.
+
 	* coders/jp2.c: JasPer changed its jas_stream_ops_t callback
 	interfaces in releases 2.0.19 and 2.0.20.  Revert to providing the
 	older interfaces by default, but use a
