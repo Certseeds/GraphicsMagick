@@ -3628,6 +3628,49 @@ MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value
 }
 
 /*
+  Convert a double to a long, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/)
+{
+  long lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=LONG_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=LONG_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (dval > LONG_MAX)
+        {
+          lval=LONG_MAX;
+          break;
+        }
+      if (dval < LONG_MIN)
+        {
+          lval=LONG_MIN;
+          break;
+        }
+      lval=(long) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
 %                                                                             %

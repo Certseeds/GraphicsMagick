@@ -4403,7 +4403,8 @@ InterpolateViewColor(ViewInfo *view,
     p3_area,
     p_area;
 
-  p=AcquireCacheViewPixels(view,(long) x_offset,(long) y_offset,2,2,exception);
+  p=AcquireCacheViewPixels(view,MagickDoubleToLong(x_offset),
+                           MagickDoubleToLong(y_offset),2,2,exception);
   if (p == (const PixelPacket *) NULL)
     return MagickFail;
 

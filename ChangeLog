@@ -1,5 +1,10 @@
 2020-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/render.c (AffineEdge): Use MagickDoubleToLong();
+
+	* magick/utility.c (MagickDoubleToLong): New private function to
+	convert a 'double' to a 'long' with the minimum amount of harm.
+
 	* magick/segment.c (Classify): Remove variables from function
 	global scope that don't need outer scope.
 

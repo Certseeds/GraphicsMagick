@@ -541,6 +541,7 @@
 #define MagickConstrainColormapIndex GmMagickConstrainColormapIndex
 #define MagickCreateDirectoryPath GmMagickCreateDirectoryPath
 #define MagickDestroyCommandInfo GmMagickDestroyCommandInfo
+#define MagickDoubleToLong GmMagickDoubleToLong
 #define MagickFindRawImageMinMax GmMagickFindRawImageMinMax
 #define MagickFmax GmMagickFmax
 #define MagickFmin GmMagickFmin
@@ -816,6 +817,7 @@
 #define RegisterICONImage GmRegisterICONImage
 #define RegisterIDENTITYImage GmRegisterIDENTITYImage
 #define RegisterINFOImage GmRegisterINFOImage
+#define RegisterJBIGImage GmRegisterJBIGImage
 #define RegisterJNXImage GmRegisterJNXImage
 #define RegisterJP2Image GmRegisterJP2Image
 #define RegisterJPEGImage GmRegisterJPEGImage
@@ -852,7 +854,6 @@
 #define RegisterPREVIEWImage GmRegisterPREVIEWImage
 #define RegisterPS2Image GmRegisterPS2Image
 #define RegisterPS3Image GmRegisterPS3Image
-#define RegisterPSDImage GmRegisterPSDImage
 #define RegisterPSImage GmRegisterPSImage
 #define RegisterPWPImage GmRegisterPWPImage
 #define RegisterRGBImage GmRegisterRGBImage
@@ -933,6 +934,12 @@
 #define SetImageProfile GmSetImageProfile
 #define SetImageType GmSetImageType
 #define SetImageVirtualPixelMethod GmSetImageVirtualPixelMethod
+#define SetLogDefaultEventType GmSetLogDefaultEventType
+#define SetLogDefaultFileName GmSetLogDefaultFileName
+#define SetLogDefaultFormat GmSetLogDefaultFormat
+#define SetLogDefaultGenerations GmSetLogDefaultGenerations
+#define SetLogDefaultLimit GmSetLogDefaultLimit
+#define SetLogDefaultOutputType GmSetLogDefaultOutputType
 #define SetLogEventMask GmSetLogEventMask
 #define SetLogFormat GmSetLogFormat
 #define SetMagickInfo GmSetMagickInfo
@@ -1033,6 +1040,7 @@
 #define UnregisterICONImage GmUnregisterICONImage
 #define UnregisterIDENTITYImage GmUnregisterIDENTITYImage
 #define UnregisterINFOImage GmUnregisterINFOImage
+#define UnregisterJBIGImage GmUnregisterJBIGImage
 #define UnregisterJNXImage GmUnregisterJNXImage
 #define UnregisterJP2Image GmUnregisterJP2Image
 #define UnregisterJPEGImage GmUnregisterJPEGImage
@@ -1069,7 +1077,6 @@
 #define UnregisterPREVIEWImage GmUnregisterPREVIEWImage
 #define UnregisterPS2Image GmUnregisterPS2Image
 #define UnregisterPS3Image GmUnregisterPS3Image
-#define UnregisterPSDImage GmUnregisterPSDImage
 #define UnregisterPSImage GmUnregisterPSImage
 #define UnregisterPWPImage GmUnregisterPWPImage
 #define UnregisterRGBImage GmUnregisterRGBImage

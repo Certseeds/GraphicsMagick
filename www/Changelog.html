@@ -38,6 +38,9 @@
 <p>2020-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>magick/render.c (AffineEdge): Use MagickDoubleToLong();</li>
+<li>magick/utility.c (MagickDoubleToLong): New private function to
+convert a 'double' to a 'long' with the minimum amount of harm.</li>
 <li>magick/segment.c (Classify): Remove variables from function
 global scope that don't need outer scope.</li>
 <li>coders/jp2.c: JasPer changed its jas_stream_ops_t callback

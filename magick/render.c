@@ -244,6 +244,7 @@ static void
 
 #define STROKE_WIDTH_LIMIT(image) ((2.0*1.415) * Max((image)->columns,(image)->rows))
 
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1238,7 +1239,6 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
            const long y,const SegmentInfo *edge)
 {
   double
-    dval,
     intercept,
     z;
 
@@ -1259,13 +1259,11 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
   if (affine->sx > MagickEpsilon)
     {
       intercept=(-z/affine->sx);
-      dval=ceil(intercept+MagickEpsilon-0.5);
-      x=(long) dval; /* FIXME: validate */
+      x=MagickDoubleToLong(ceil(intercept+MagickEpsilon-0.5)); /* FIXME: validate */
       if (x > inverse_edge.x1)
         inverse_edge.x1=x;
       intercept=(-z+image->columns)/affine->sx;
-      dval=ceil(intercept-MagickEpsilon-0.5);
-      x=(long) dval; /* FIXME: validate */
+      x=MagickDoubleToLong(ceil(intercept-MagickEpsilon-0.5)); /* FIXME: validate */
       if (x < inverse_edge.x2)
         inverse_edge.x2=x;
     }
@@ -1273,13 +1271,11 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
     if (affine->sx < -MagickEpsilon)
       {
         intercept=(-z+image->columns)/affine->sx;
-        dval=ceil(intercept+MagickEpsilon-0.5);
-        x=(long) dval; /* FIXME: validate */
+        x=MagickDoubleToLong(ceil(intercept+MagickEpsilon-0.5)); /* FIXME: validate */
         if (x > inverse_edge.x1)
           inverse_edge.x1=x;
         intercept=(-z/affine->sx);
-        dval=ceil(intercept-MagickEpsilon-0.5);
-        x=(long) dval; /* FIXME: validate */
+        x=MagickDoubleToLong(ceil(intercept-MagickEpsilon-0.5)); /* FIXME: validate */
         if (x < inverse_edge.x2)
           inverse_edge.x2=x;
       }
@@ -1296,13 +1292,11 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
   if (affine->rx > MagickEpsilon)
     {
       intercept=(-z /affine->rx);
-      dval=ceil(intercept+MagickEpsilon-0.5);
-      x=(long) dval; /* FIXME: validate */
+      x=MagickDoubleToLong(ceil(intercept+MagickEpsilon-0.5)); /* FIXME: validate */
       if (x > inverse_edge.x1)
         inverse_edge.x1=x;
       intercept=(-z+image->rows)/affine->rx;
-      dval=ceil(intercept-MagickEpsilon-0.5);
-      x=(long) dval; /* FIXME: validate */
+      x=MagickDoubleToLong(ceil(intercept-MagickEpsilon-0.5)); /* FIXME: validate */
       if (x < inverse_edge.x2)
         inverse_edge.x2=x;
     }
@@ -1310,13 +1304,11 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
     if (affine->rx < -MagickEpsilon)
       {
         intercept=(-z+image->rows)/affine->rx;
-        dval=ceil(intercept+MagickEpsilon-0.5);
-        x=(long) dval; /* FIXME: validate */
+        x=MagickDoubleToLong(ceil(intercept+MagickEpsilon-0.5)); /* FIXME: validate */
         if (x > inverse_edge.x1)
           inverse_edge.x1=x;
         intercept=(-z/affine->rx);
-        dval=ceil(intercept-MagickEpsilon-0.5);
-        x=(long) dval; /* FIXME: validate */
+        x=MagickDoubleToLong(ceil(intercept-MagickEpsilon-0.5)); /* FIXME: validate */
         if (x < inverse_edge.x2)
           inverse_edge.x2=x;
       }
@@ -1336,9 +1328,11 @@ InverseAffineMatrix(const AffineMatrix *affine)
     inverse_affine;
 
   double
-    determinant;
+    determinant,
+    divisor;
 
-  determinant=1.0/(affine->sx*affine->sy-affine->rx*affine->ry); /* runtime error: division by zero */
+  divisor=affine->sx*affine->sy-affine->rx*affine->ry;
+  determinant=1.0/divisor; /* oss-fuzz 28293 runtime error: division by zero */
   inverse_affine.sx=determinant*affine->sy;
   inverse_affine.rx=determinant*(-affine->rx);
   inverse_affine.ry=determinant*(-affine->ry);
@@ -2247,6 +2241,7 @@ DrawDashPolygon(const DrawInfo *draw_info,const PrimitiveInfo *primitive_info,
 %
 %
 */
+
 static MagickBool
 IsPoint(const char *point)
 {
