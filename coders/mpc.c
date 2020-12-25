@@ -143,6 +143,9 @@ do { \
     } \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
+
+#define ReadMPCMaxKeyWordCount 256 /* Arbitrary limit on number of keywords in MPC frame */
+
 static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   char
@@ -387,6 +390,16 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "First keyword/value must be 'id=MagickCache'");
+                ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
+            /*
+              Arbitrarily limit the number of header keywords to avoid DOS attempts.
+            */
+            if (keyword_count > ReadMPCMaxKeyWordCount)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Excessive key word count %u"
+                                      " (Denial of service attempt?)",keyword_count);
                 ThrowMPCReaderException(CorruptImageError,ImproperImageHeader,image);
               }
             /*
@@ -646,6 +659,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       *new_profiles;
 
                     i=(long) number_of_profiles;
+
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
                                                                       (size_t) i+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)

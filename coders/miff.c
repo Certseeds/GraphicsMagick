@@ -750,6 +750,8 @@ do { \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 
+#define ReadMIFFMaxKeyWordCount 256 /* Arbitrary limit on keywords in one MIFF frame */
+
 static Image *ReadMIFFImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -956,7 +958,6 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                                       keyword);
                 ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
               }
-
             /*
               Get values.
 
@@ -1006,6 +1007,16 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "First keyword/value must be 'id=ImageMagick'");
+                ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
+            /*
+              Arbitrarily limit the number of header keywords to avoid DOS attempts.
+            */
+            if (keyword_count > ReadMIFFMaxKeyWordCount)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Excessive key word count %u"
+                                      " (Denial of service attempt?)",keyword_count);
                 ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
               }
             /*

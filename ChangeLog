@@ -1,3 +1,12 @@
+2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Arbitrarily limit the number of
+	header keywords to avoid DOS attempts.
+
+	* coders/mpc.c (ReadMPCImage): Arbitrarily limit the number of
+	header keywords to avoid DOS attempts.  Fixes oss-fuzz 28956
+	"Timeout - coder_MPC_fuzzer".
+
 2020-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (AffineEdge): Use MagickDoubleToLong();
