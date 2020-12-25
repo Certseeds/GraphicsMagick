@@ -732,17 +732,17 @@ static void ZLIBFreeFunc(voidpf opaque, voidpf address)
 
 #define ThrowMIFFReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(comment); \
-  MagickFreeMemory(values); \
+  MagickFreeResourceLimitedMemory(comment); \
+  MagickFreeResourceLimitedMemory(values); \
   if (number_of_profiles > 0) \
     { \
       unsigned int _index; \
       for (_index=0; _index < number_of_profiles; _index++) \
         { \
           MagickFreeMemory(profiles[_index].name); \
-          MagickFreeMemory(profiles[_index].info); \
+          MagickFreeResourceLimitedMemory(profiles[_index].info); \
         } \
-      MagickFreeMemory(profiles); \
+      MagickFreeResourceLimitedMemory(profiles); \
       number_of_profiles=0; \
     } \
   MagickFreeResourceLimitedMemory(pixels); \
@@ -893,7 +893,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
             Read comment-- any text between { }.
           */
           comment_length=MaxTextExtent;
-          comment=MagickAllocateMemory(char *,comment_length);
+          comment=MagickAllocateResourceLimitedMemory(char *,comment_length);
           if (comment == (char *) NULL)
             ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
               image);
@@ -905,11 +905,18 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               break;
             if ((size_t) (p-comment+1) >= comment_length)
               {
+                char
+                  *new_comment;
+
                 *p='\0';
                 comment_length<<=1;
-                MagickReallocMemory(char *,comment,comment_length);
-                if (comment == (char *) NULL)
-                  break;
+                new_comment=MagickReallocateResourceLimitedMemory(char *,comment,comment_length);
+                if (new_comment == (char *) NULL)
+                  {
+                    MagickFreeResourceLimitedMemory(comment);
+                    break;
+                  }
+                comment=new_comment;
                 p=comment+strlen(comment);
               }
             *p=c;
@@ -921,7 +928,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Comment: \"%s\"", comment);
           (void) SetImageAttribute(image,"comment",comment);
           comment_count++;
-          MagickFreeMemory(comment);
+          MagickFreeResourceLimitedMemory(comment);
           c=ReadBlobByte(image);
         }
       else
@@ -966,7 +973,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               spaces and/or new-lines must be surrounded by braces.
             */
             values_length=MaxTextExtent;
-            values=MagickAllocateMemory(char *,values_length);
+            values=MagickAllocateResourceLimitedMemory(char *,values_length);
             if (values == (char *) NULL)
               ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
             values[0]='\0';
@@ -981,11 +988,18 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               {
                 if ((size_t) (p-values+1) >= values_length)
                   {
+                    char
+                      *new_values;
+
                     *p='\0';
                     values_length<<=1;
-                    MagickReallocMemory(char *,values,values_length);
-                    if (values == (char *) NULL)
-                      break;
+                    new_values=MagickReallocateResourceLimitedMemory(char *,values,values_length);
+                    if (new_values == (char *) NULL)
+                      {
+                        MagickFreeResourceLimitedMemory(values);
+                        break;
+                      }
+                    values=new_values;
                     p=values+strlen(values);
                   }
                 if (values == (char *) NULL)
@@ -1066,15 +1080,26 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 /* Legacy ImageMagick 4.2.9 used keyword "color-profile" for ICC profile */
                 if (LocaleCompare(keyword,"color-profile") == 0)
                   {
+                    ProfileInfo
+                      *new_profiles;
+
                     if (MagickAtoL(values) <= 0)
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
-                    MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
-                    if (profiles == (ProfileInfo *) NULL)
+                    new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
+                                                                      (size_t) i+1,sizeof(ProfileInfo));
+                    if (new_profiles == (ProfileInfo *) NULL)
                       {
-                        MagickFreeMemory(values);
+                        for (i=0; i < number_of_profiles; i++)
+                          {
+                            MagickFreeMemory(profiles[i].name);
+                            MagickFreeResourceLimitedMemory(profiles[i].info);
+                          }
+                        MagickFreeResourceLimitedMemory(profiles);
+                        MagickFreeResourceLimitedMemory(values);
                         ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                       }
+                    profiles=new_profiles;
                     profiles[i].name=AllocateString("icc");
                     profiles[i].length=MagickAtoL(values);
                     profiles[i].info=(unsigned char *) NULL;
@@ -1248,15 +1273,26 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if ((LocaleNCompare(keyword,"profile-",8) == 0) ||
                     (LocaleNCompare(keyword,"profile:",8) == 0))
                   {
+                    ProfileInfo
+                      *new_profiles;
+
                     if (MagickAtoL(values) <= 0)
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=(long) number_of_profiles;
-                    MagickReallocMemory(ProfileInfo *,profiles,(i+1)*sizeof(ProfileInfo));
-                    if (profiles == (ProfileInfo *) NULL)
+                    new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
+                                                                      (size_t) i+1,sizeof(ProfileInfo));
+                    if (new_profiles == (ProfileInfo *) NULL)
                       {
-                        MagickFreeMemory(values);
+                        for (i=0; i < number_of_profiles; i++)
+                          {
+                            MagickFreeMemory(profiles[i].name);
+                            MagickFreeResourceLimitedMemory(profiles[i].info);
+                          }
+                        MagickFreeResourceLimitedMemory(profiles);
+                        MagickFreeResourceLimitedMemory(values);
                         ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                       }
+                    profiles=new_profiles;
                     profiles[i].name=AllocateString(keyword+8);
                     profiles[i].length=MagickAtoL(values);
                     profiles[i].info=(unsigned char *) NULL;
@@ -1370,7 +1406,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 break;
               }
             }
-            MagickFreeMemory(values);
+            MagickFreeResourceLimitedMemory(values);
           }
         else
           {
@@ -1479,9 +1515,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     (magick_off_t) profiles[i].length) ||
                    (profiles[i].length < 15*1024*1024)))
                 {
-                  profiles[i].info=MagickAllocateMemory(unsigned char *,profiles[i].length);
+                  profiles[i].info=MagickAllocateResourceLimitedMemory(unsigned char *,profiles[i].length);
                   if (profiles[i].info == (unsigned char *) NULL)
-                    ThrowMIFFReaderException(CorruptImageError,UnableToReadGenericProfile,
+                    ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                              image);
                   if (ReadBlob(image,profiles[i].length,profiles[i].info)
                       != profiles[i].length)
@@ -1500,9 +1536,9 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 }
             }
           MagickFreeMemory(profiles[i].name);
-          MagickFreeMemory(profiles[i].info);
+          MagickFreeResourceLimitedMemory(profiles[i].info);
         }
-        MagickFreeMemory(profiles);
+        MagickFreeResourceLimitedMemory(profiles);
         number_of_profiles=0;
       }
 
@@ -1527,7 +1563,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               Read image colormap from file.
             */
             packet_size=3*depth/8;
-            colormap=MagickAllocateMemory(unsigned char *,packet_size*image->colors);
+            colormap=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->colors);
             if (colormap == (unsigned char *) NULL)
               ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                 image);
@@ -1586,7 +1622,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     }
                 }
               } /* switch (depth) */
-            MagickFreeMemory(colormap);
+            MagickFreeResourceLimitedMemory(colormap);
           }
       }
     if (image_info->ping && (image_info->subrange != 0))
@@ -2688,7 +2724,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
           Allocate colormap.
         */
         packet_size=3*depth/8;
-        colormap=MagickAllocateMemory(unsigned char *,packet_size*image->colors);
+        colormap=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->colors);
         if (colormap == (unsigned char *) NULL)
           ThrowMIFFWriterException(ResourceLimitError,MemoryAllocationFailed,
                                    image);
@@ -2746,7 +2782,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 #endif /* QuantumDepth > 16 */
           } /* switch (depth) */
         (void) WriteBlob(image,packet_size*image->colors,colormap);
-        MagickFreeMemory(colormap);
+        MagickFreeResourceLimitedMemory(colormap);
       }
     /*
       Write image pixels to file.

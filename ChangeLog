@@ -1,7 +1,13 @@
 2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mpc.c (ReadMPCImage): Report correct exception reason.
+
 	* coders/miff.c (ReadMIFFImage): Arbitrarily limit the number of
 	header keywords to avoid DOS attempts.
+	(ReadMIFFImage): Finish updates to use resource-limited memory
+	allocator.
+	(WriteMIFFImage): Finish updates to use resource-limited memory
+	allocator.
 
 	* coders/mpc.c (ReadMPCImage): Arbitrarily limit the number of
 	header keywords to avoid DOS attempts.  Fixes oss-fuzz 28956
