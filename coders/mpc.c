@@ -872,13 +872,13 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 {
                   profiles[i].info=MagickAllocateResourceLimitedMemory(unsigned char *,profiles[i].length);
                   if (profiles[i].info == (unsigned char *) NULL)
-                    ThrowMPCReaderException(CorruptImageError,UnableToReadGenericProfile,
+                    ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,
                                              image);
                   if (ReadBlob(image,profiles[i].length,profiles[i].info)
                       != profiles[i].length)
                     ThrowMPCReaderException(CorruptImageError,
-                                             UnexpectedEndOfFile,
-                                             image);
+                                            UnexpectedEndOfFile,
+                                            image);
                   (void) SetImageProfile(image,profiles[i].name,profiles[i].info,profiles[i].length);
                 }
               else
