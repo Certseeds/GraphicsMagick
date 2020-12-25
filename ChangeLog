@@ -1,5 +1,7 @@
 2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* design/pixel-cache.dot: Fix reported syntax errors.
+
 	* coders/mpc.c (ReadMPCImage): Report correct exception reason.
 
 	* coders/miff.c (ReadMIFFImage): Arbitrarily limit the number of
