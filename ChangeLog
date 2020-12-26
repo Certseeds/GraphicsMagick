@@ -1,5 +1,7 @@
 2020-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* version.sh: Updates in preparation for the 1.3.36 release.
+
 	* bootstrap: Fix config.guess and config.sub download URLs.
 
 2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
