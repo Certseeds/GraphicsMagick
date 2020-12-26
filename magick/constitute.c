@@ -189,6 +189,9 @@ MagickExport Image *ConstituteImage(const unsigned long width,
   size_t
     length;
 
+  unsigned int
+    storage_type_depth = QuantumDepth;
+
   /*
     Allocate image structure.
   */
@@ -204,6 +207,18 @@ MagickExport Image *ConstituteImage(const unsigned long width,
       NonzeroWidthAndHeightRequired);
   image->columns=width;
   image->rows=height;
+
+  switch (type)
+    {
+    case CharPixel : storage_type_depth = sizeof(unsigned char)*8 ; break;
+    case ShortPixel : storage_type_depth = sizeof(unsigned short)*8 ; break;
+    case IntegerPixel : storage_type_depth = sizeof(unsigned short)*8 ; break;
+    case LongPixel : storage_type_depth = sizeof(unsigned long)*8 ; break;
+    case FloatPixel : storage_type_depth = sizeof(float)*8 ; break;
+    case DoublePixel : storage_type_depth = sizeof(double)*8 ; break;
+    }
+
+  image->depth = Min(storage_type_depth,QuantumDepth);
 
   /*
     Handle a few common special cases in order to improve performance.
@@ -1122,7 +1137,7 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
 
   *min=0.0;
   *max=1.0;
-  status=MagickFail;
+  status=MagickPass;
 
   filepos = TellBlob(image);
 
@@ -1138,8 +1153,8 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
             read_func = ReadBlob;
 
             MagickFindMinMax(status,image,read_func,char,scanline_octets,
-                             scanline_buffer,min,max)
-              break;
+                             scanline_buffer,min,max);
+            break;
           }
         case ShortPixel:
           {
@@ -1196,7 +1211,8 @@ MagickFindRawImageMinMax(Image *image, EndianType endian,
           }
         }
 
-      (void) SeekBlob(image, filepos, SEEK_SET);
+      if (SeekBlob(image, filepos, SEEK_SET) != filepos)
+        status = MagickFail;
     }
 
   return status;
@@ -1586,7 +1602,14 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
               DestroyImage(image);
               return((Image *) NULL);
             }
-          (void) ImageToFile(image,clone_info->filename,exception);
+          if (ImageToFile(image,clone_info->filename,exception) == MagickFail)
+            {
+              LiberateTemporaryFile(clone_info->filename);
+              CloseBlob(image);
+              DestroyImageInfo(clone_info);
+              DestroyImage(image);
+              return(MagickFail);
+            }
           clone_info->temporary=True;
         }
       CloseBlob(image);

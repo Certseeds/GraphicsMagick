@@ -851,12 +851,18 @@ SVGEndDocument(void *context)
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.endDocument()");
   svg_info=(SVGInfo *) context;
-  MagickFreeMemory(svg_info->offset);
-  MagickFreeMemory(svg_info->stop_color);
+  MagickFreeMemory(svg_info->size);
+  MagickFreeMemory(svg_info->title);
+  MagickFreeMemory(svg_info->comment);
   MagickFreeMemory(svg_info->scale);
+  MagickFreeMemory(svg_info->stop_color);
+  MagickFreeMemory(svg_info->offset);
   MagickFreeMemory(svg_info->text);
   MagickFreeMemory(svg_info->vertices);
   MagickFreeMemory(svg_info->url);
+
+  /* Don't free xmlParserCtxtPtr parser which is used later */
+
   if (svg_info->document != (xmlDocPtr) NULL)
     {
       xmlFreeDoc(svg_info->document);
@@ -3707,7 +3713,11 @@ SVGCDataBlock(void *context,const xmlChar *value,int length)
       (void) xmlTextConcat(child,value,length);
       return;
     }
-  (void) xmlAddChild(parser->node,xmlNewCDataBlock(parser->myDoc,value,length));
+  /* Create a new node containing a CDATA block. */
+  /* FIXME: parser->myDoc is null so add fails.  What do do? */
+  child=xmlNewCDataBlock(parser->myDoc,value,length);
+  if (xmlAddChild(parser->node,child) == (xmlNodePtr) NULL)
+    xmlFreeNode(child);
 }
 
 static void
@@ -3919,6 +3929,10 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   SAXHandler=(&SAXModules);
   svg_info.parser=xmlCreatePushParserCtxt(SAXHandler,&svg_info,(char *) NULL,0,
                                           image->filename);
+  if (svg_info.parser == (xmlParserCtxtPtr) NULL)
+    {
+      /* FIXME: Handle failure! */
+    }
   while ((n=ReadBlob(image,MaxTextExtent-1,message)) != 0)
     {
       message[n]='\0';
@@ -3932,12 +3946,18 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
     seeing the document end.
   */
   SVGEndDocument(&svg_info);
+  if (svg_info.parser->myDoc != (xmlDocPtr) NULL)
+    xmlFreeDoc(svg_info.parser->myDoc);
+  /*
+    Free all the memory used by a parser context. However the parsed
+    document in ctxt->myDoc is not freed (so we just did that).
+  */
   xmlFreeParserCtxt(svg_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
   (void) fclose(file);
   CloseBlob(image);
-  DestroyImage(image);
-  image=(Image *) NULL;
+  image->columns=svg_info.width;
+  image->rows=svg_info.height;
   if (!image_info->ping && (exception->severity == UndefinedException))
     {
       ImageInfo
@@ -3946,6 +3966,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Draw image.
       */
+      DestroyImage(image);
+      image=(Image *) NULL;
       clone_info=CloneImageInfo(image_info);
       clone_info->blob=(_BlobInfoPtr_) NULL;
       clone_info->length=0;
@@ -3960,21 +3982,26 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) strlcpy(image->filename,image_info->filename,MaxTextExtent);
     }
   /*
-    Free resources.
+    Add/update image attributes
+  */
+  if (image != (Image *) NULL)
+    {
+      /* Title */
+      if (svg_info.title != (char *) NULL)
+        (void) SetImageAttribute(image,"title",svg_info.title);
+
+      /* Comment */
+      if (svg_info.comment != (char *) NULL)
+        (void) SetImageAttribute(image,"comment",svg_info.comment);
+    }
+  /*
+    Free resources allocated above (also freed by SVGEndDocument()).
   */
   MagickFreeMemory(svg_info.size);
-  if (svg_info.title != (char *) NULL)
-    {
-      if (image != (Image *) NULL)
-        (void) SetImageAttribute(image,"title",svg_info.title);
-      MagickFreeMemory(svg_info.title);
-    }
-  if (svg_info.comment != (char *) NULL)
-    {
-      if (image != (Image *) NULL)
-        (void) SetImageAttribute(image,"comment",svg_info.comment);
-      MagickFreeMemory(svg_info.comment);
-    }
+  MagickFreeMemory(svg_info.title);
+  MagickFreeMemory(svg_info.comment);
+  MagickFreeMemory(svg_info.scale);
+  MagickFreeMemory(svg_info.text);
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);

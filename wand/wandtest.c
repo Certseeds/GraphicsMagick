@@ -82,9 +82,10 @@
 #define ThrowAPIException(wand) \
 { \
   description=MagickGetException(wand,&severity); \
+  (void) fflush(stdout); \
   (void) fprintf(stderr,"%s %s %d %.1024s\n",GetMagickModule(),description); \
   free(description); \
-  exit(-1); \
+  exit(EXIT_FAILURE); \
 }
 
 int main(int argc,char **argv)
@@ -125,7 +126,7 @@ int main(int argc,char **argv)
   if ((columns != 640) || (rows != 480))
     {
       (void) fprintf(stderr,"Unexpected magick wand size\n");
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   (void) fprintf(stdout,"Reading images...\n");
   {
@@ -244,7 +245,7 @@ int main(int argc,char **argv)
       if (pixels[i] != primary_colors[i])
         {
           (void) fprintf(stderr,"Get pixels does not match set pixels\n");
-          exit(1);
+          exit(EXIT_FAILURE);
         }
   }
   (void) MagickSetImageIndex(magick_wand,3);
@@ -255,6 +256,8 @@ int main(int argc,char **argv)
   MagickResetIterator(magick_wand);
   while (MagickNextImage(magick_wand) != False)
     {
+      static const double sampling_factors[6] = { 1, 1, 1, 1, 1, 1 };
+      MagickSetSamplingFactors(magick_wand,sizeof(sampling_factors)/sizeof(sampling_factors[0]), sampling_factors);
       MagickSetImageDepth( magick_wand, 8);
       MagickSetImageCompression( magick_wand, RLECompression);
     }
@@ -265,5 +268,5 @@ int main(int argc,char **argv)
   if (status == False)
     ThrowAPIException(magick_wand);
   DestroyMagickWand(magick_wand);
-  return(0);
+  return(EXIT_SUCCESS);
 }

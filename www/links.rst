@@ -236,9 +236,3 @@ Stock Photos
 =============
 
 `MorgueFile <http://www.morguefile.com/>`_, Free high-resolution stock photo images.
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

@@ -184,13 +184,13 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (!AllocateImageColormap(image,pixel_mode == 1 ? 256 : 16))
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
-          tim_colormap=MagickAllocateMemory(unsigned char *, (size_t)image->colors*2);
+          tim_colormap=MagickAllocateResourceLimitedArray(unsigned char *,image->colors,2);
           if (tim_colormap == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
           if (ReadBlob(image, (size_t)2*image->colors,(char *) tim_colormap) != (size_t)2*image->colors)
             {
-              MagickFreeMemory(tim_colormap);
+              MagickFreeResourceLimitedMemory(tim_colormap);
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             }
           p=tim_colormap;
@@ -203,7 +203,7 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colormap[i].red=ScaleCharToQuantum(ScaleColor5to8(word & 0x1fU));
               image->colormap[i].opacity=OpaqueOpacity;
             }
-          MagickFreeMemory(tim_colormap);
+          MagickFreeResourceLimitedMemory(tim_colormap);
           if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "PSX-TIM read CLUT with %u entries",
@@ -270,12 +270,12 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (CheckImagePixelLimits(image, exception) != MagickPass)
         ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-      tim_pixels=MagickAllocateMemory(unsigned char *,image_size);
+      tim_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,image_size);
       if (tim_pixels == (unsigned char *) NULL)
         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       if (ReadBlob(image,image_size,(char *) tim_pixels) != image_size)
         {
-          MagickFreeMemory(tim_pixels);
+          MagickFreeResourceLimitedMemory(tim_pixels);
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
 
@@ -436,13 +436,13 @@ static Image *ReadTIMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
         default:
           {
-            MagickFreeMemory(tim_pixels);
+            MagickFreeResourceLimitedMemory(tim_pixels);
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           }
         }
       if (image->storage_class == PseudoClass)
         (void) SyncImage(image);
-      MagickFreeMemory(tim_pixels);
+      MagickFreeResourceLimitedMemory(tim_pixels);
       if (EOFBlob(image))
         {
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,

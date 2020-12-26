@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -82,8 +82,8 @@ static unsigned int
 */
 #define ThrowMAPReaderException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(colormap); \
-  MagickFreeMemory(pixels);                   \
+  MagickFreeResourceLimitedMemory(colormap); \
+  MagickFreeResourceLimitedMemory(pixels);                   \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -140,7 +140,7 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (!AllocateImageColormap(image,image->offset ? image->offset : 256))
     ThrowMAPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   packet_size=image->colors > 256 ? 6 : 3;
-  colormap=MagickAllocateArray(unsigned char *,packet_size,image->colors);
+  colormap=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->colors);
   if (colormap == (unsigned char *) NULL)
     ThrowMAPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
@@ -167,7 +167,7 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->colormap[i].blue=(*p++ << 8U);
       image->colormap[i].blue|=(*p++);
     }
-  MagickFreeMemory(colormap);
+  MagickFreeResourceLimitedMemory(colormap);
   if (image_info->ping)
     {
       CloseBlob(image);
@@ -177,7 +177,7 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read image pixels.
   */
   packet_size=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+  pixels=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->columns);
   if (pixels == (unsigned char *) NULL)
     ThrowMAPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   for (y=0; y < (long) image->rows; y++)
@@ -202,7 +202,7 @@ static Image *ReadMAPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (!SyncImagePixelsEx(image,exception))
       break;
   }
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   CloseBlob(image);
   return(image);
 }
@@ -303,8 +303,8 @@ ModuleExport void UnregisterMAPImage(void)
 */
 #define ThrowMAPWriterException(code_,reason_,image_) \
 do { \
-  MagickFreeMemory(colormap); \
-  MagickFreeMemory(pixels);                   \
+  MagickFreeResourceLimitedMemory(colormap); \
+  MagickFreeResourceLimitedMemory(pixels);                   \
   ThrowWriterException(code_,reason_,image_); \
 } while (0);
 static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
@@ -352,11 +352,11 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
   if (SetImageType(image,PaletteType) == MagickFail)
     ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   packet_size=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateArray(unsigned char *,image->columns,packet_size);
+  pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,packet_size);
   if (pixels == (unsigned char *) NULL)
     ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   packet_size=image->colors > 256 ? 6 : 3;
-  colormap=MagickAllocateArray(unsigned char *,packet_size,image->colors);
+  colormap=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->colors);
   if (colormap == (unsigned char *) NULL)
     ThrowMAPWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -386,7 +386,7 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
   if (WriteBlob(image, (size_t) packet_size*image->colors,(char *) colormap) !=
       (size_t) packet_size*image->colors)
     ThrowMAPWriterException(FileOpenError,UnableToWriteFile,image);
-  MagickFreeMemory(colormap);
+  MagickFreeResourceLimitedMemory(colormap);
   /*
     Write image pixels to file.
   */
@@ -408,7 +408,7 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
     if (WriteBlob(image,q-pixels,(char *) pixels) != (size_t) (q-pixels))
       ThrowMAPWriterException(FileOpenError,UnableToWriteFile,image);
   }
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   CloseBlob(image);
   return(status);
 }

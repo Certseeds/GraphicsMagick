@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>GraphicsMagick Core C API</title>
 <link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
 </head>
@@ -13,23 +13,23 @@
 <img src="../images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
 <span class="title">GraphicsMagick</span>
 <form action="http://www.google.com/search">
-	<input type="hidden" name="domains" value="www.graphicsmagick.org" />
-	<input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
-    <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
 
 <div class="navmenu">
 <ul>
-<li><a href="../index.html">Home</a></li>
-<li><a href="../project.html">Project</a></li>
-<li><a href="../download.html">Download</a></li>
-<li><a href="../README.html">Install</a></li>
-<li><a href="../Hg.html">Source</a></li>
-<li><a href="../NEWS.html">News</a> </li>
-<li><a href="../utilities.html">Utilities</a></li>
-<li><a href="../programming.html">Programming</a></li>
-<li><a href="../reference.html">Reference</a></li>
+  <li><a href="../index.html">Home</a></li>
+  <li><a href="../project.html">Project</a></li>
+  <li><a href="../download.html">Download</a></li>
+  <li><a href="../README.html">Install</a></li>
+  <li><a href="../Hg.html">Source</a></li>
+  <li><a href="../NEWS.html">News</a> </li>
+  <li><a href="../utilities.html">Utilities</a></li>
+  <li><a href="../programming.html">Programming</a></li>
+  <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
 <div class="document" id="graphicsmagick-core-c-api">
@@ -77,6 +77,7 @@ and normalize</li>
 <li><a class="reference external" href="image.html">Image</a>: Miscellaneous image methods</li>
 <li><a class="reference external" href="import.html">Import</a> : Import image pixels from common representations</li>
 <li><a class="reference external" href="list.html">List</a>: Manage image lists</li>
+<li><a class="reference external" href="log.html">Log</a>: Event logging support</li>
 <li><a class="reference external" href="magick.html">Magick</a>: Image format support interfaces</li>
 <li><a class="reference external" href="memory.html">Memory</a>: Memory allocation methods</li>
 <li><a class="reference external" href="monitor.html">Monitor</a>: Progress monitor callbacks</li>
@@ -89,6 +90,7 @@ and normalize</li>
 <li><a class="reference external" href="profile.html">Profile</a>: Attached profile access</li>
 <li><a class="reference external" href="quantize.html">Quantize</a>: Reduce image colors or assign image colors from colormap</li>
 <li><a class="reference external" href="registry.html">Registry</a>: Store and retrieve images in memory by ID</li>
+<li><a class="reference external" href="render.html">Render</a>: Render vector graphics</li>
 <li><a class="reference external" href="resize.html">Resize</a>: Resize an Image</li>
 <li><a class="reference external" href="resource.html">Resource</a>: Set and get resource limits</li>
 <li><a class="reference external" href="segment.html">Segment</a>: Coalese similar image colors</li>
@@ -279,8 +281,11 @@ out.miff'.</p>
 <p>The GraphicsMagick-config script reproduces the options which were used to
 compile the GraphicsMagick utilities. Using compatible options ensures that
 your program will compile and run.</p>
-<hr class="docutils" />
-<p>Copyright © GraphicsMagick Group 2002 - 2020</p>
+</div>
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

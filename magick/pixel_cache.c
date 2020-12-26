@@ -1003,7 +1003,7 @@ ReadCacheIndexes(const Cache cache,const NexusInfo *nexus_info,
   assert(cache != (Cache) NULL);
   cache_info=(CacheInfo *) cache;
   assert(cache_info->signature == MagickSignature);
-  if (!cache_info->indexes_valid)
+  if (!(cache_info->indexes_valid && (nexus_info->indexes != (IndexPacket *) NULL)))
     return(MagickFail);
   if (nexus_info->in_core)
     return(MagickPass);
@@ -1994,13 +1994,13 @@ AcquireCacheNexus(const Image *image,const long x,const long y,
 static MagickPassFail
 ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
 {
-  long
+  unsigned long
     y;
 
   register const PixelPacket
     *r;
 
-  register long
+  register unsigned long
     x;
 
   register PixelPacket
@@ -2036,9 +2036,9 @@ ClipCacheNexus(Image *image,const NexusInfo *nexus_info)
                       nexus_info->region.width,nexus_info->region.height,mask_nexus,
                       &image->exception);
   if ((p != (PixelPacket *) NULL) && (r != (const PixelPacket *) NULL))
-    for (y=0; y < (long) nexus_info->region.height; y++)
+    for (y=0; y < nexus_info->region.height; y++)
       {
-        for (x=0; x < (long) nexus_info->region.width; x++)
+        for (x=0; x < nexus_info->region.width; x++)
           {
             if (r->red == TransparentOpacity)
               q->red=p->red;
@@ -2277,15 +2277,16 @@ SyncCacheNexus(Image *image,const NexusInfo *nexus_info,
       if (*ImageGetClipMaskInlined(image) != (Image *) NULL)
         if (!ClipCacheNexus(image,nexus_info))
           status=MagickFail;
-    /* added mask */
-    if  ( status != MagickFail )
-      {
-        if (*ImageGetCompositeMaskInlined(image) != (Image *) NULL)
-          {
-            if (!CompositeCacheNexus(image,nexus_info))
-              status=MagickFail;
-          }
-      }
+
+      /* added mask */
+      if  ( status != MagickFail )
+        {
+          if (*ImageGetCompositeMaskInlined(image) != (Image *) NULL)
+            {
+              if (!CompositeCacheNexus(image,nexus_info))
+                status=MagickFail;
+            }
+        }
 
       if (status != MagickFail)
         if ((status=WriteCachePixels(cache_info,nexus_info)) == MagickFail)
@@ -4402,7 +4403,8 @@ InterpolateViewColor(ViewInfo *view,
     p3_area,
     p_area;
 
-  p=AcquireCacheViewPixels(view,(long) x_offset,(long) y_offset,2,2,exception);
+  p=AcquireCacheViewPixels(view,MagickDoubleToLong(x_offset),
+                           MagickDoubleToLong(y_offset),2,2,exception);
   if (p == (const PixelPacket *) NULL)
     return MagickFail;
 
@@ -4547,6 +4549,11 @@ ModifyCache(Image *image, ExceptionInfo *exception)
               if (status == MagickFail)
                 DestroyCacheInfo(clone_image.cache);
             }
+          else
+            {
+              DestroyCacheInfo(clone_image.cache);
+              clone_image.cache=(CacheInfo *) NULL;
+            }
           DestroySemaphoreInfo(&clone_image.semaphore);
 
           if (status != MagickFail)
@@ -4555,7 +4562,7 @@ ModifyCache(Image *image, ExceptionInfo *exception)
               image->cache=clone_image.cache;
             }
           if (status == MagickFail)
-            fprintf(stderr,"ModifyCache failed!\n");
+            fprintf(stderr,"ModifyCache failed!\n"); /* oss-fuzz-20871 leaked clone_image.cache allocated by GetCacheInfo(&clone_image.cache) */
           /* fprintf(stderr,"ModifyCache: Thread %d exits (cache_info = %p)\n",
              omp_get_thread_num(),image->cache); */
         }
@@ -4567,7 +4574,10 @@ ModifyCache(Image *image, ExceptionInfo *exception)
       cache if necessary.
     */
     if (destroy_cache)
-      DestroyCacheInfo(cache_info);
+      {
+        DestroyCacheInfo(cache_info);
+        cache_info=(CacheInfo *) NULL;
+      }
 
     if (status != MagickFail)
       {

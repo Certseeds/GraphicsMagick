@@ -26,6 +26,9 @@
 .. _IndexPacket:          ../api/types.html#indexpacket
 .. _InterlaceType:        ../api/types.html#interlacetype
 .. _LayerType:            ../api/types.html#layertype
+.. _LogEventType:         ../api/types.html#logeventtype
+.. _LogMethod:            ../api/types.html#logmethod
+.. _LogOutputType:        ../api/types.html#logoutputtype
 .. _MagickInfo:           ../api/types.html#magickinfo
 .. _MonitorHandler:       ../api/types.html#monitorhandler
 .. _MontageInfo:          ../api/types.html#montageinfo

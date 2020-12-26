@@ -854,7 +854,11 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "Enter HorizontalFilter() ...");
+                          "Horizontal Filter: %lux%lu => %lux%lu "
+                          "(x_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
+                          source->columns, source->rows,
+                          destination->columns, destination->rows,
+                          x_factor, blur, (MAGICK_SIZE_T) span);
 
   quantum = *quantum_p;
 
@@ -1066,7 +1070,7 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "%s exit HorizontalFilter()",
+                          "%s exit Horizontal Filter",
                           (status == MagickFail ? "Error" : "Normal"));
 
   *quantum_p = quantum;
@@ -1102,7 +1106,11 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "Enter VerticalFilter() ...");
+                          "Vertical Filter: %lux%lu => %lux%lu "
+                          "(y_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
+                          source->columns, source->rows,
+                          destination->columns, destination->rows,
+                          y_factor, blur, (MAGICK_SIZE_T) span);
 
   quantum = *quantum_p;
 
@@ -1318,7 +1326,7 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 
   if (IsEventLogging())
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
-                          "%s exit VerticalFilter()",
+                          "%s exit Vertical Filter",
                           (status == MagickFail ? "Error" : "Normal"));
 
   *quantum_p = quantum;
@@ -1409,7 +1417,10 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   else
     source_image=CloneImage(resize_image,image->columns,rows,True,exception);
   if (source_image == (Image *) NULL)
-    return ((Image *) NULL);
+    {
+      DestroyImage(resize_image);
+      return ((Image *) NULL);
+    }
 
   /*
     Allocate filter contribution info.
@@ -1453,6 +1464,10 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   */
   status=MagickPass;
   quantum=0;
+  if (IsEventLogging())
+    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                          "Resize filter order: %s",
+                          order ? "Horizontal/Vertical" : "Vertical/Horizontal");
   if (order)
     {
       span=(size_t) source_image->columns+resize_image->rows;
@@ -1498,7 +1513,8 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
 %
 %  SampleImage() scales an image to the desired dimensions with pixel
 %  sampling.  Unlike other scaling methods, this method does not introduce
-%  any additional color into the scaled image.
+%  any additional color into the scaled image. SampleImage() is extremely
+%  fast and may be used where speed is most important.
 %
 %  The format of the SampleImage method is:
 %
@@ -1663,7 +1679,10 @@ SampleImage(const Image *image,const unsigned long columns,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  ScaleImage() changes the size of an image to the given dimensions.
+%  ScaleImage() changes the size of an image to the specified dimensions.
+%  This method is reasonably fast but it is not currently multi-threaded
+%  and does not support image filters. The quality of the resized image
+%  is sufficient for most purposes.
 %
 %  The format of the ScaleImage method is:
 %
@@ -2103,8 +2122,10 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  ThumbnailImage() changes the size of an image to the given dimensions.
-%  This method was designed by Bob Friesenhahn as a low cost thumbnail
-%  generator.
+%  This method was designed as a low cost thumbnail generator.
+%  ThumbnailImage() is typically very fast but an attempt is made to improve
+%  quality by first using a simple sampling algorithm for part of the
+%  reduction, and then a filtering algorithm to produce the final image.
 %
 %  The format of the ThumbnailImage method is:
 %

@@ -83,7 +83,7 @@ static unsigned int
 */
 #define ThrowYUVReaderException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(scanline);                 \
+  MagickFreeResourceLimitedMemory(scanline);  \
   DestroyImage(chroma_image);                 \
   DestroyImage(resize_image);                 \
   ThrowReaderException(code_,reason_,image_); \
@@ -184,9 +184,9 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Allocate memory for a scanline.
   */
   if (interlace == NoInterlace)
-    scanline=MagickAllocateMemory(unsigned char *,(size_t) 2*image->columns+2);
+    scanline=MagickAllocateResourceLimitedMemory(unsigned char *,MagickArraySize(2,image->columns)+2);
   else
-    scanline=MagickAllocateMemory(unsigned char *,image->columns);
+    scanline=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns);
   if (scanline == (unsigned char *) NULL)
     ThrowYUVReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   do
@@ -417,7 +417,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (image->next == (Image *) NULL)
           {
             DestroyImageList(image);
-            MagickFreeMemory(scanline);
+            MagickFreeResourceLimitedMemory(scanline);
             return((Image *) NULL);
           }
         image=SyncNextImageInList(image);
@@ -427,7 +427,7 @@ static Image *ReadYUVImage(const ImageInfo *image_info,ExceptionInfo *exception)
           break;
       }
   } while (count != 0);
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);

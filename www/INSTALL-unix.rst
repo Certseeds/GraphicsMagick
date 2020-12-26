@@ -184,6 +184,19 @@ follows (execute 'configure --help' to see all options).
 Optional Features
 ~~~~~~~~~~~~~~~~~
 
+--disable-compressed-files
+
+    disable reading and writing of gzip/bzip stream files
+
+    Normally support for being able to read and write gzip/bzip stream
+    files (files which are additionally compressed using gzip or bzip)
+    is a good thing, but for some formats it is necessary to
+    decompress an entire input file before it may be validated and
+    read.  Decompressing the file may take a lot of time and disk
+    space.  If input files are not trustworthy, an apparently small
+    file can take much more resources than expected.  Use this option
+    to reject such files.
+
 --enable-prof
 
     enable 'prof' profiling support (default disabled)
@@ -830,15 +843,16 @@ almost as easy to compile GraphicsMagick under MSYS2 as it is under
 Linux!
 
 When using MSYS2, requesting to install these packages using 'pacman
--S' (in addition to compilation tools for C/C++) should result in
-getting up to speed very quicky with a featureful build:
+-S' should result in getting up to speed very quicky with a featureful
+build:
 
-mingw-w64-x86_64-bzip2, mingw-w64-x86_64-freetype,
-mingw-w64-x86_64-ghostscript, mingw-w64-x86_64-jbigkit,
-mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libjpeg-turbo,
-mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtool,
-mingw-w64-x86_64-libwebp mingw-w64-x86_64-libwmf,
-mingw-w64-x86_64-libxml2, mingw-w64-x86_64-zlib
+mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
+mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
+mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp
+mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
+mingw-w64-x86_64-zlib
 
 GraphicsMagick may also be built using the free MinGW
 ("Minimalistic GNU for Windows") package, available from
@@ -1012,6 +1026,10 @@ available from the generated Makefiles:
      install' must be done before the test suite will work but usually
      the software can be tested prior to installation.
 
+     The test suite requires sufficient RAM memory to run.  The memory
+     requirement is 128MB for the Q8 build, or 256MB for the Q16
+     build, or 512MB for the Q32 build.
+
   'make clean'
 
      Remove everything in the build directory created by 'make'
@@ -1098,8 +1116,3 @@ the developer's environment environment and your own may include the
 compiler, the CPU type, and the library versions used. The
 GraphicsMagick developers use the current release of all dependent
 libraries.
-
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

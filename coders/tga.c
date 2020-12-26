@@ -985,7 +985,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           /*
             Dump colormap to file (blue, green, red byte order).
           */
-          targa_colormap=MagickAllocateArray(unsigned char *,
+          targa_colormap=MagickAllocateResourceLimitedArray(unsigned char *,
                                              tga_info.colormap_length,3);
           if (targa_colormap == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
@@ -999,13 +999,13 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
             }
           (void) WriteBlob(image, (size_t)3*tga_info.colormap_length,
                            (char *) targa_colormap);
-          MagickFreeMemory(targa_colormap);
+          MagickFreeResourceLimitedMemory(targa_colormap);
         }
       /*
         Convert MIFF to TGA raster pixels.
       */
       count=(size_t) ((MagickArraySize(tga_info.bits_per_pixel,image->columns)) >> 3);
-      tga_pixels=MagickAllocateMemory(unsigned char *,count);
+      tga_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,count);
       if (tga_pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
       for (y=(long) (image->rows-1); y >= 0; y--)
@@ -1061,7 +1061,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
                                           image->columns,image->rows))
                 break;
         }
-      MagickFreeMemory(tga_pixels);
+      MagickFreeResourceLimitedMemory(tga_pixels);
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);

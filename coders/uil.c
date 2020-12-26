@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -209,7 +209,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
             Map all the transparent pixels.
           */
           number_pixels=image->columns*image->rows;
-          matte_image=MagickAllocateMemory(unsigned char *,number_pixels);
+          matte_image=MagickAllocateResourceLimitedMemory(unsigned char *,number_pixels);
           if (matte_image == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
               image);
@@ -252,7 +252,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
           }
         }
       if (matte_image != (unsigned char *) NULL)
-        MagickFreeMemory(matte_image);
+        MagickFreeResourceLimitedMemory(matte_image);
     }
   /*
     Compute the character per pixel.

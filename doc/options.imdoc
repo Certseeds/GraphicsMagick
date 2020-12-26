@@ -1163,12 +1163,17 @@ use different endianness.
 </dd>
 
 <dt>dpx:swap-samples={true|false}</dt>
+<dt>dpx:swap-samples-read={true|false}</dt>
+<dt>dpx:swap-samples-write={true|false}</dt>
 <dd>GraphicsMagick strives to adhere to the DPX standard but certain
-aspects of the standard can be quite confusing. As a result, some 10-bit
-DPX files have Red and Blue interchanged, or Cb and Cr interchanged due
-to an different interpretation of the standard, or getting the wires
-crossed. The swap-samples option may be supplied when reading or writing
-in order to read or write using the necessary sample order.
+aspects of the standard can be quite confusing. As a result, some
+10-bit DPX files have Red and Blue interchanged, or Cb and Cr
+interchanged due to an different interpretation of the standard, or
+getting the wires crossed. The swap-samples option may be supplied
+when reading or writing in order to read or write using the necessary
+sample order.  Use swap-samples-read when swapping should only occur
+in the reader, or swap-samples-write when swapping should only occur
+in the writer.
 </dd>
 
 <dt>gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}</dt>
@@ -3476,8 +3481,16 @@ is implied by <s>-mask</s>.</pp>
 If the image does not have a matte channel, create an opaque one.</pp>
 
 <pp>
-Use <s>+matte</s> to ignore the matte channel and to avoid writing a
+Use <s>+matte</s> to ignore the matte channel (treats it as opaque) and to avoid writing a
 matte channel in the output file.</pp>
+
+<pp>
+For the compare command, <s>-matte</s> will add an opaque matte
+channel to images if they do not already have a matte channel, and
+matte will be enabled for both images.  Likewise, if <s>+matte</s> is
+used, the matte channel is disabled for both images.  This makes it
+easier to compare images regardless of if they already have a matte
+channel.</pp>
 
 </utils>
 
@@ -3888,7 +3901,7 @@ result is a gray image.</pp>
 <pp>Select an operator from <s>Add</s>, <s>And</s>, <s>Assign</s>,
 <s>Depth</s>, <s>Divide</s>, <s>Gamma</s>, <s>Negate</s>,
 <s>LShift</s>, <s>Log</s>, <s>Max</s>, <s>Min</s>, <s>Multiply</s>,
-<s>Or</s>, <s>Pow</s> <s>RShift</s>, <s>Subtract</s>,
+<s>Or</s>, <s>Pow</s>, <s>RShift</s>, <s>Subtract</s>,
 <s>Threshold</s>, <s>Threshold-White</s>,
 <s>Threshold-White-Negate</s>, <s>Threshold-Black</s>,
 <s>Threshold-Black-Negate</s>, <s>Xor</s>, <s>Noise-Gaussian</s>,

@@ -980,17 +980,24 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 header[count]='\0';
                 if (count+offset+1 >= allocation_length)
                   {
+                    char *comments_new;
                     allocation_length=allocation_length+count+1;
                     MagickRoundUpStringLength(allocation_length);
-                    MagickReallocMemory(char *,comments,allocation_length);
-                    if (comments == (char *) NULL)
-                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                    comments_new=MagickReallocateResourceLimitedMemory(char *,
+                                                                       comments,
+                                                                       allocation_length);
+                    if (comments_new == (char *) NULL)
+                      {
+                        MagickFreeResourceLimitedMemory(comments);
+                        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                      }
+                    comments=comments_new;
                     (void) strlcpy(&comments[offset],(char *)header,allocation_length-offset);
                   }
               }
             (void) SetImageAttribute(image,"comment",NULL);
             (void) SetImageAttribute(image,"comment",comments);
-            MagickFreeMemory(comments);
+            MagickFreeResourceLimitedMemory(comments);
             break;
           }
           case 0xff:
@@ -1497,7 +1504,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
         for (p=image->colormap, j=0; j < Max(image->colors-1,1); j++, p++)
           if (ColorMatch(&image->background_color,p))
             break;
-        (void) WriteBlobByte(image,(long) j);  /* background color */
+        (void) WriteBlobByte(image,(magick_uint8_t) j);  /* background color */
         (void) WriteBlobByte(image,0x0);  /* reserved */
         (void) WriteBlob(image,3*(((size_t) 1) << bits_per_pixel),(char *) colormap);
         for (j=0; j < 768; j++)
@@ -1541,7 +1548,7 @@ static MagickPassFail WriteGIFImage(const ImageInfo *image_info,Image *image)
               while (strlen(p) != 0)
                 {
                   count=Min(strlen(p),255);
-                  (void) WriteBlobByte(image,(long) count);
+                  (void) WriteBlobByte(image, (magick_uint8_t)count);
                   for (i=0; i < count; i++)
                     (void) WriteBlobByte(image,*p++);
                 }

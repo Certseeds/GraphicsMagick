@@ -262,7 +262,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
                           (image->columns > 1536 ? 3U : 1U));
   pcd_table[2]=pcd_table[1]=pcd_table[0]=(PCDTable *) NULL;
   pcd_length[2]=pcd_length[1]=pcd_length[0]=0;
-  buffer=MagickAllocateMemory(unsigned char *,0x800);
+  buffer=MagickAllocateResourceLimitedMemory(unsigned char *,0x800);
   if (buffer == (unsigned char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
       (char *) NULL);
@@ -273,7 +273,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
   {
     PCDGetBits(8);
     length=(sum & 0xff)+1;
-    pcd_table[i]=MagickAllocateArray(PCDTable *,length,sizeof(PCDTable));
+    pcd_table[i]=MagickAllocateResourceLimitedArray(PCDTable *,length,sizeof(PCDTable));
     if (pcd_table[i] == (PCDTable *) NULL)
       {
         ThrowException(&image->exception,ResourceLimitError,
@@ -420,8 +420,8 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
     Free memory.
   */
   for (i=0; i < (image->columns > 1536 ? 3 : 1); i++)
-    MagickFreeMemory(pcd_table[i]);
-  MagickFreeMemory(buffer);
+    MagickFreeResourceLimitedMemory(pcd_table[i]);
+  MagickFreeResourceLimitedMemory(buffer);
   return(status);
 }
 
@@ -530,9 +530,9 @@ static Image *OverviewImage(const ImageInfo *image_info,Image *images,
 
 #define ThrowPCDReaderException(code_,reason_,image_) \
   {                                                   \
-    MagickFreeMemory(chroma1);                        \
-    MagickFreeMemory(chroma2);                        \
-    MagickFreeMemory(luma);                           \
+    MagickFreeResourceLimitedMemory(chroma1);                        \
+    MagickFreeResourceLimitedMemory(chroma2);                        \
+    MagickFreeResourceLimitedMemory(luma);                           \
     ThrowReaderException(code_,reason_,image_);       \
   }
 
@@ -660,9 +660,9 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   number_pixels=MagickArraySize(image->columns,image->rows);
   if (number_pixels == 0 || number_pixels+1 < number_pixels)
     ThrowPCDReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  chroma1=MagickAllocateMemory(unsigned char *,number_pixels+1);
-  chroma2=MagickAllocateMemory(unsigned char *,number_pixels+1);
-  luma=MagickAllocateMemory(unsigned char *,number_pixels+1);
+  chroma1=MagickAllocateResourceLimitedMemory(unsigned char *,number_pixels+1);
+  chroma2=MagickAllocateResourceLimitedMemory(unsigned char *,number_pixels+1);
+  luma=MagickAllocateResourceLimitedMemory(unsigned char *,number_pixels+1);
   if ((chroma1 == (unsigned char *) NULL) ||
       (chroma2 == (unsigned char *) NULL) ||
       (luma == (unsigned char *) NULL))
@@ -768,9 +768,9 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     image->columns,image->rows))
           break;
       }
-      MagickFreeMemory(chroma2);
-      MagickFreeMemory(chroma1);
-      MagickFreeMemory(luma);
+      MagickFreeResourceLimitedMemory(chroma2);
+      MagickFreeResourceLimitedMemory(chroma1);
+      MagickFreeResourceLimitedMemory(luma);
       while (image->previous != (Image *) NULL)
         image=image->previous;
       CloseBlob(image);
@@ -869,9 +869,9 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                   image->columns,image->rows))
         break;
   }
-  MagickFreeMemory(chroma2);
-  MagickFreeMemory(chroma1);
-  MagickFreeMemory(luma);
+  MagickFreeResourceLimitedMemory(chroma2);
+  MagickFreeResourceLimitedMemory(chroma1);
+  MagickFreeResourceLimitedMemory(luma);
   if (LocaleCompare(image_info->magick,"PCDS") == 0)
     image->colorspace=sRGBColorspace;
   else

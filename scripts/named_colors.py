@@ -1,9 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:expandtab
 
 #* Author: Mark Mitchell
 #* Copyright 2008  Mark Mitchell
 #* License: see __license__ below.
+
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
 
 import sys
 import re
@@ -341,7 +345,7 @@ Magick++">
 <hr>
 <p>Here are some example color selections to choose from or define
 your own. GraphicsMagick understands color names or hex values (.e.g.
-white or #ffffff). 
+white or #ffffff).
 </p>
 <table class="named-colors">
 <colgroup>
@@ -378,7 +382,7 @@ def from_magick_file():
     f = file(sys.argv[1])
     first_line = f.readline()
     if not first_line.startswith('<?xml version='):
-        print >> sys.stderr, "'%s' does not seem like a color.mgk file"
+        print("'%s' does not seem like a color.mgk file", file=sys.stderr)
         sys.exit(1)
 
     re_colors = re.compile(r'name="([^"]+)"\s+red="([^"]+)"\s+green="([^"]+)"\s+blue="([^"]+)"\s+')
@@ -405,12 +409,11 @@ if __name__ == '__main__':
 
     #<tr><td>Name</td><td>Color</td><td>R,G,B</td><td>Hex</td></tr>
     tr = '<tr><td>%s</td><td class="%s" bgcolor="#%02x%02x%02x">%s</td><td>%s, %s, %s</td><td>#%02x%02x%02x</td></tr>'
-    print head
+    print(head)
     for name, r, g, b in named_colors_rgb:
         if r+g+b < 320:
             level = 'dark'
         else:
             level = 'light'
-        print tr % (name, level, r, g, b, name, r, g, b, r, g, b)
-    print tail
-
+        print(tr % (name, level, r, g, b, name, r, g, b, r, g, b))
+    print(tail)

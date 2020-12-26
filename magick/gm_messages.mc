@@ -1283,6 +1283,18 @@ unbalanced graphic context push-pop
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorUnbalancedPushPop
+Language        = English
+unbalanced push-pop
+.
+
+MessageId       = +1
+SymbolicName    = DrawErrorUnreasonableDashPolygonLength
+Language        = English
+unreasonable dash polygon length
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorUnreasonableGradientSize
 Language        = English
 unreasonable gradient image size

@@ -284,7 +284,7 @@ CompressionType is used to express the desired compression type when
 encoding an image. Be aware that most image types only support a sub-set
 of the available compression types. If the compression type specified is
 incompatable with the image, GraphicsMagick selects a compression type
-compatable with the image type.
+compatable with the image type, which might be no compression at all.
 
 
 .. table:: CompressionType
@@ -313,6 +313,19 @@ compatable with the image type.
    +---------------------------+---------------------------------------------------------------------+
    |ZipCompression             |Lempel-Ziv compression (LZ77) as used in PKZIP and GNU gzip.         |
    +---------------------------+---------------------------------------------------------------------+
+   |LZMACompression            |LZMA - Lempel-Ziv-Markov chain algorithm                             |
+   +---------------------------+---------------------------------------------------------------------+
+   |JPEG2000Compression        |JPEG 2000 - ISO/IEC std 15444-1                                      |
+   +---------------------------+---------------------------------------------------------------------+
+   |JBIG1Compression           |JBIG v1 - ISO/IEC std 11544 / ITU-T rec T.82                         |
+   +---------------------------+---------------------------------------------------------------------+
+   |JBIG2Compression           |JBIG v2 - ISO/IEC std 14492 / ITU-T rec T.88                         |
+   +---------------------------+---------------------------------------------------------------------+
+   |ZSTDCompression            |Facebook's Zstandard/Zstd                                            |
+   +---------------------------+---------------------------------------------------------------------+
+   |WebPCompression            |Google's WebP                                                        |
+   +---------------------------+---------------------------------------------------------------------+
+
 
 DecorationType
 ==============
@@ -747,6 +760,103 @@ position an object. A common default for gravity is NorthWestGravity.
    +--------------------------+----------------------------------------------------------------------+
    |SouthEastGravity          |Position object at bottom-right of region                             |
    +--------------------------+----------------------------------------------------------------------+
+
+LogEventType
+============
+
+LogEventType specifies the log event type to match one or more log
+areas.  Although defined as an enum type, the values are based on
+unsigned integer flags value with one mask bit set, more than one mask
+bit set, or all of the assigned mask bits set.  Values are boolean
+ORed together to represent multiple event types.
+
+.. table:: LogEventType
+
+   +--------------------------+----------------------------------------------------------------------+
+   |       Enumeration        |                             Description                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |UndefinedEventMask        | No events specified                                                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |NoEventsMask              | No events specified                                                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |ConfigureEventMask        | Configuration event (related to initialization or shutdown)          |
+   +--------------------------+----------------------------------------------------------------------+
+   |AnnotateEventMask         | Annotation event (text drawing)                                      |
+   +--------------------------+----------------------------------------------------------------------+
+   |RenderEventMask           | Rendering event (vector drawing)                                     |
+   +--------------------------+----------------------------------------------------------------------+
+   |TransformEventMask        | Image transformation event (e.g. cropping)                           |
+   +--------------------------+----------------------------------------------------------------------+
+   |LocaleEventMask           | Locale event (internationalization)                                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |CoderEventMask            | Coder event (file decode or encode)                                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |X11EventMask              | X11 event (event related to use of X11)                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |CacheEventMask            | Pixel cache event (pixel storage in memory or on disk)               |
+   +--------------------------+----------------------------------------------------------------------+
+   |BlobEventMask             | Blob event (I/O to/from memory or a file)                            |
+   +--------------------------+----------------------------------------------------------------------+
+   |DeprecateEventMask        | Deprecation event (use of a function which will be removed)          |
+   +--------------------------+----------------------------------------------------------------------+
+   |UserEventMask             | User event (event allowed for the user, not otherwise used)          |
+   +--------------------------+----------------------------------------------------------------------+
+   |ResourceEventMask         | Resource event (resource limit assignment, allocation/deallocation)  |
+   +--------------------------+----------------------------------------------------------------------+
+   |TemporaryFileEventMask    | Temporary file event (temporary file created or removed)             |
+   +--------------------------+----------------------------------------------------------------------+
+   |ExceptionEventMask        | Exception event (a warning or error was reported into ExceptionInfo) |
+   +--------------------------+----------------------------------------------------------------------+
+   |OptionEventMask           | Option event (something related to a user provided option)           |
+   +--------------------------+----------------------------------------------------------------------+
+   |InformationEventMask      | Information event                                                    |
+   +--------------------------+----------------------------------------------------------------------+
+   |WarningEventMask          | Warning event (a warning was reported into ExceptionInfo)            |
+   +--------------------------+----------------------------------------------------------------------+
+   |ErrorEventMask            | Error event (an error was reported into ExceptionInfo)               |
+   +--------------------------+----------------------------------------------------------------------+
+   |FatalErrorEventMask       | Fatal error event (a fatal error was reported into ExceptionInfo)    |
+   +--------------------------+----------------------------------------------------------------------+
+   |AllEventsMask             | All events (matches any/all events)                                  |
+   +--------------------------+----------------------------------------------------------------------+
+
+
+LogMethod
+=========
+
+LogMethod is a call-back function type in the form::
+
+  typedef void (*LogMethod)(const ExceptionType type,const char *text)
+
+LogOutputType
+=============
+
+LogOutputType specifies how/where logging ("tracing") output is to be directed.
+
+.. table:: LogOutputType
+
+   +--------------------------+----------------------------------------------------------------------+
+   |       Enumeration        |                             Description                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |DisabledOutput            |Reporting disabled                                                    |
+   +--------------------------+----------------------------------------------------------------------+
+   |UndefinedOutput           |Reporting disabled                                                    |
+   +--------------------------+----------------------------------------------------------------------+
+   |StdoutOutput              |Log to stdout in "human readable" format                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |StderrOutput              |Log to stderr in "human readable" format                              |
+   +--------------------------+----------------------------------------------------------------------+
+   |XMLFileOutput             |Log to a file in an XML format                                        |
+   +--------------------------+----------------------------------------------------------------------+
+   |TXTFileOutput             |Log to a file in a text format                                        |
+   +--------------------------+----------------------------------------------------------------------+
+   |Win32DebugOutput          |Windows, Output events to the application/system debugger.            |
+   +--------------------------+----------------------------------------------------------------------+
+   |Win32EventlogOutput       |Windows, Output events to the Application event log.                  |
+   +--------------------------+----------------------------------------------------------------------+
+   |MethodOutput              |Log by calling registered C-language callback function                |
+   +--------------------------+----------------------------------------------------------------------+
+
 
 Image
 =====
@@ -2065,9 +2175,3 @@ MagickXResourceInfo
     char
       home_directory[MaxTextExtent];
   } XResourceInfo;
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

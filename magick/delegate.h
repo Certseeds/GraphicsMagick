@@ -67,7 +67,7 @@ extern MagickExport MagickPassFail
 
 #if defined(MAGICK_IMPLEMENTATION)
 
-#if defined(HasGS)
+#if defined(HasGSLIB)
 #include "ghostscript/iapi.h"
 #endif
 

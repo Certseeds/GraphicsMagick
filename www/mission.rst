@@ -40,8 +40,3 @@ The objectives of the GraphicsMagick project are to:
 
 * Value, and respect the contributions of developers, and observe and
   respect the copyrights of other projects.
-
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

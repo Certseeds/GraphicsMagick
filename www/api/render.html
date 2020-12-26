@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>render</title>
 <link rel="stylesheet" href="../docutils-api.css" type="text/css" />
 </head>
@@ -13,23 +13,23 @@
 <img src="../images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
 <span class="title">GraphicsMagick</span>
 <form action="http://www.google.com/search">
-	<input type="hidden" name="domains" value="www.graphicsmagick.org" />
-	<input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
-    <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
 
 <div class="navmenu">
 <ul>
-<li><a href="../index.html">Home</a></li>
-<li><a href="../project.html">Project</a></li>
-<li><a href="../download.html">Download</a></li>
-<li><a href="../README.html">Install</a></li>
-<li><a href="../Hg.html">Source</a></li>
-<li><a href="../NEWS.html">News</a> </li>
-<li><a href="../utilities.html">Utilities</a></li>
-<li><a href="../programming.html">Programming</a></li>
-<li><a href="../reference.html">Reference</a></li>
+  <li><a href="../index.html">Home</a></li>
+  <li><a href="../project.html">Project</a></li>
+  <li><a href="../download.html">Download</a></li>
+  <li><a href="../README.html">Install</a></li>
+  <li><a href="../Hg.html">Source</a></li>
+  <li><a href="../NEWS.html">News</a> </li>
+  <li><a href="../utilities.html">Utilities</a></li>
+  <li><a href="../programming.html">Programming</a></li>
+  <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
 <div class="document" id="render">
@@ -37,7 +37,7 @@
 <h2 class="subtitle" id="low-level-methods-to-draw-on-an-image">Low-level methods to draw on an image</h2>
 
 <div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<p class="topic-title">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#clonedrawinfo" id="id13">CloneDrawInfo</a></li>
 <li><a class="reference internal" href="#destroydrawinfo" id="id14">DestroyDrawInfo</a></li>
@@ -84,7 +84,7 @@ void DestroyDrawInfo( <a class="reference external" href="../api/types.html#draw
 <div class="section" id="id2">
 <h2>Description</h2>
 <p>DestroyDrawInfo() deallocates memory associated with an DrawInfo
-structure.</p>
+structure.  Nothing is done if the pointer passed is NULL.</p>
 <p>The format of the DestroyDrawInfo method is:</p>
 <pre class="literal-block">
 void DestroyDrawInfo( <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );
@@ -250,6 +250,11 @@ MagickPassFail DrawPatternPath( <a class="reference external" href="../api/types
 </dl>
 </div>
 </div>
+</div>
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

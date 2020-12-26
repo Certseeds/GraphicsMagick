@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to February 23, 2020
+This file was last updated to reflect changes up to December 26, 2020
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,196 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.36 (December 26, 2020)
+==========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project due to
+  the contributions and assistance of Alex Gaynor. Since February 4
+  2018, 454 issues have been opened by oss-fuzz (some of which were
+  benign build issues such as SourceForge Mercurial not working
+  correctly) and 7 issues remain open (all of which are marked in an
+  "unreproducible" state).  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+* WPG: Fixes for heap buffer overflow.
+
+Bug fixes:
+
+* ConstituteImage(): Set image depth appropriately based on the
+  storage size specified by StorageType and QuantumDepth.
+
+* GetImageBoundingBox(): Fix problem that MagickTrimImage with extreme
+  fuzz values could produce an image with negative width.
+
+* ImageToFile(): Improve error handling to avoid possible deferred
+  deletion of temporary files, causing unexpected excessive use of
+  temporary file space.
+
+* JNG: Add validations for alpha compression method values and use
+  this information to enforce decoding using the appropriate
+  sub-format (rather than auto-detecting the format).  Also, address
+  memory leaks which may occur if the sub-decoder does something other
+  than was expected.
+
+* MagickCondSignal(): Improvements to conditional signal handler
+  registration (which avoids over-riding signal handlers previously
+  registered by an API user).
+
+* ModifyCache(): Fix memory leak.
+
+* ReadCacheIndexes(): Don't blunder into accessing a null pointer if
+  the using code has ignored a previous error report bubled-up from
+  SetNexus().
+
+* MNG: When doing image scaling and the image width or height is 1
+  then always use simple pixel replication as per the MNG
+  specification.
+
+* MVG: Fixes to 'push clip-path foo' and 'pop clip-path foo' parsing
+  to eliminate a class of malign behavior.
+
+* MVG: Place an aribrary limit on stroke dash polygon unit maximum
+  length in order to avoid possibly rendering "forever".
+
+* PCL: No longer attempt to handle reading HP PCL format via the
+  external 'hp2xx' program since it seems worthless for that task.
+
+* PS: Fix corrupt image when writing PseudoClass image with a colormap
+  larger than two entries as bilevel.
+
+* SVG: Memory leak fixes.
+
+* SVG reader: Now support 'ping' support so the identify command works
+  as expected.
+
+* TIFF: WEBP compression only supports a depth of 8 so force that
+  value.
+
+* Wand MagickSetSamplingFactors(): Correct formatting of sampling
+  factors string.
+
+New Features:
+
+* Logging is now fully programmable.
+
+* DPX format: Support dpx:swap-samples-read define which behaves
+  similar to dpx:swap-samples, but is only applied when reading, as
+  well as dpx:swap-samples-write, which is only applied when
+  writing. This provides for use when there is both reading and
+  writing in the same operation (otherwise the final result was no
+  effect!).
+
+API Updates:
+
+* magick/api.h: Add "magick/enum_strings.h" to API headers.
+
+* New log settings accessor C functions: SetLogDefaultFileName(),
+  SetLogDefaultFormat(), SetLogDefaultOutputType(),
+  SetLogDefaultLogMethod(), SetLogDefaultLimit(),
+  SetLogDefaultGenerations(), SetLogDefaultEventType().  These
+  functions allow a program to set the same parameters which may be
+  set by loading a "log.mgk" function.  If a default logging callback
+  was provided via SetLogDefaultLogMethod() such that MethodOutput is
+  used, then the search for a "log.mgk" is avoided entirely.
+
+* New log settings accessor C++ functions: SetLogDefaultFileName(),
+  SetLogDefaultFormat(), SetLogDefaultOutputType(),
+  SetLogDefaultLogMethod(), SetLogDefaultLimit(),
+  SetLogDefaultGenerations(), SetLogDefaultEventType().  These C++
+  functions just pass through to the equivalent C functions and
+  provide the same benefits.
+
+Feature improvements:
+
+* A simple resource-limit respecting memory allocator has been
+  developed for internal use wherever arbitrarily-large amounts of
+  memory might be requested.  This will gradually be added wherever it
+  appears to be needed.  The memory resource limits are at the overall
+  process level.  The MVG/SVG rendering code is updated to use this
+  new allocator.  Almost all of the coders (image format
+  readers/writers) have now been updated to use this new allocator.
+  This means that '-limit memory 300MB' would be more complete and
+  meaningful now.  Temporary allocations by the image processing
+  algorithms (other than for the images themselves) are still not
+  accounted for in the resource limiting.
+
+* MVG Renderer / DrawImage(): Use resource-limit respecting memory
+  allocators for remaining large memory allocations.
+
+* PNG writer: Don't skip optional Exif identifier code if it isn't present.
+
+* DPX reader/writer: decode/encode of 10-bit packed DPX is now twice
+  as fast due to code simplification.
+
+* TIFF reader: Apply the same resource limits to TIFF tile sizes as
+  apply to the image itself.
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* configure.ac: Update syntax to avoid using deprecated syntax
+  according to Autoconf 2.69.  Also added copious m4 quoting.
+
+* Magick++ Drawable base class no longer uses std::unary_function when
+  compiled using C++'17 or later, since this feature has been removed
+  from the language.
+
+* Support the configure option --disable-compressed-files to disable
+  automatic decompress of gzip and bzip2 compressed files (e.g. files
+  with extension 'gz' or 'bz2', and sometimes 'svgz', but sometimes
+  posing as some other format).  It turns out that there are some
+  extremely compressed files (e.g. over 1000x compression ratio) which
+  can take a long time to decompress and produce large temporary
+  files.  We currently normally wait for the whole file to be
+  decompressed before decoding it.  The only exception is for coders
+  with native 'blob' support and which do not require seeking, and
+  that the user forced forced the format by adding a magick prefix
+  like "DPX:file.dpx" to avoid the automatic file format detection.
+
+* Support the configure option --without-gs to disable reading PS,
+  EPS, and PDF formats via an external Ghostscript delegate program.
+  This corresponds to the HasGS definition in the source code.
+
+* Support the configure option --without-gdi32 to support disabling
+  use of the Microsoft Windows gdi32 library if it is not wanted.
+
+* The Automake-based test suite now applies a memory limit of 128MB
+  for the Q8, or 256MB for the Q16, or 512MB for the Q32 build, as
+  well as setting a disk space limit of 0.  The limits place an upper
+  bound on the resources required, while assuring that tests do pass
+  with resource limits applied, while also assuring that disk-based
+  pixel-cache files are not used.
+
+Behavior Changes:
+
+* Previously the formatting settings from "log.mgk" were only used
+  when writing to a file, or to the console, via a file handle.  Now
+  the log formatting has been normalized so that the settings provided
+  by "log.mgk" (or SetLogDefaultFormat()) will always be used.  It is
+  possible this may result in some formatting changes.
+
+* In the Windows Visual Studio build, the ProvideDllMain option is now
+  disabled by default (can still be enabled) since it causes
+  InitializeMagick() to be invoked prior to when the program's main()
+  routine is called, thereby blocking configuration activities or use
+  of InitializeMagickEx().  With this change it is even more
+  imperative that InitializeMagick() be explicitly invoked by all
+  programs using GraphicsMagick.
 
 1.3.35 (February 23, 2020)
 ==========================
@@ -4720,10 +4910,3 @@ The objectives of GraphicsMagick are to:
   * Improve memory efficiency.
   * Use a release process which assures a working product.
   * Maintain an accurate ChangeLog.
-
-
----------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2018

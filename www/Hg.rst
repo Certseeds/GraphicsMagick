@@ -58,6 +58,16 @@ directory, issue the command::
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 
+Please note that since the introduction of an HTTP load balancer,
+SourceForge has become unreliable when cloning with the default http
+protocol.  Due to this, using ssh protocol may be required.  Any
+SourceForge user who has submitted a SSH private key to SourceForge
+may use Mercurial over SSH to clone the repository.  The ssh clone
+syntax looks like this (replacing `YOURID` with your SourceForge user
+name):
+
+  hg clone ssh://YOURID@hg.code.sf.net/p/graphicsmagick/code GM
+
 Selecting a version of the code
 ========================================
 
@@ -233,10 +243,3 @@ Mercurial Topics
 
 * `Merge Tool Configuration <https://www.mercurial-scm.org/wiki/MergeToolConfiguration>`_
 * `Keep "My" or "Their" files when doing a merge <https://www.mercurial-scm.org/wiki/TipsAndTricks#Keep_.22My.22_or_.22Their.22_files_when_doing_a_merge>`_
-
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2012 - 2020

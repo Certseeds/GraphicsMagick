@@ -235,11 +235,11 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
-
 static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
 {
   PixelPacket *colormap;
 
+  /* FIXME: This implementation would be better using a true realloc */
   colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
   if (colormap != (PixelPacket *) NULL)
     {
@@ -403,7 +403,7 @@ return RetVal;
   x++; \
   if((long) x>=ldblk) \
   { \
-    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,y,image,bpp)==MagickFail) { RetVal=-6; goto unpack_wpg_raser_error; } \
     x=0; \
     y++; \
     if(y>=image->rows) break; \
@@ -413,9 +413,12 @@ return RetVal;
 
 /** Call this function to ensure that all data matrix is filled with something. This function
  * is used only to error recovery. */
-static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
-                                int bpp, long ldblk)
+static MagickPassFail ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigned long y, Image *image,
+                                          int bpp, long ldblk)
 {
+  MagickPassFail
+    status = MagickPass;
+
   while(y<image->rows && image->exception.severity!=UndefinedException)
   {
     if((long) x<ldblk) 
@@ -427,9 +430,13 @@ static void ZeroFillMissingData(unsigned char *BImgBuff,unsigned long x, unsigne
         x = 0;		/* Next pass will need to clear whole row */
     }
     if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
-      break;
+      {
+        status = MagickFail;
+        break;
+      }
     y++;
   }
+  return status;
 }
 
 
@@ -461,7 +468,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Raster allocation size: %ld byte%s",
                         ldblk, (ldblk > 1 ? "s" : ""));
-  BImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
+  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk);
   if(BImgBuff==NULL) return(-2);
   (void) memset(BImgBuff,0,(size_t) ldblk);
 
@@ -471,7 +478,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
       if(i==EOF)
         {
           ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
-          MagickFreeMemory(BImgBuff);
+          MagickFreeResourceLimitedMemory(BImgBuff);
           return(-5);
         }
       bbuf = i;
@@ -503,7 +510,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
           if(i==EOF)
           {
             ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
-            MagickFreeMemory(BImgBuff);
+            MagickFreeResourceLimitedMemory(BImgBuff);
             return -7;
           }
           RunCount = i;
@@ -515,7 +522,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
                 y++;
                 ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
               }
-            MagickFreeMemory(BImgBuff);
+            MagickFreeResourceLimitedMemory(BImgBuff);
             return(-3);
           }
           for(i=0; i<(int)RunCount; i++)
@@ -523,13 +530,12 @@ static int UnpackWPGRaster(Image *image,int bpp)
                         /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
                 {                  
-                  MagickFreeMemory(BImgBuff);
+                  MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
                 { 
-                  ZeroFillMissingData(BImgBuff,x,y,image,bpp,ldblk);
-                  MagickFreeMemory(BImgBuff);
+                  MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-6);
                 }
               y++;
@@ -537,7 +543,8 @@ static int UnpackWPGRaster(Image *image,int bpp)
         }
       }
     }
-  MagickFreeMemory(BImgBuff);
+unpack_wpg_raser_error:;
+  MagickFreeResourceLimitedMemory(BImgBuff);
   return(RetVal);
 }
 
@@ -552,7 +559,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
   x++; \
   if((long) x >= ldblk) \
   { \
-    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) RetVal=-6; \
+    if(InsertRow(BImgBuff,(long) y,image,bpp)==MagickFail) { RetVal=-6; goto unpack_wpg2_error; } \
     x=0; \
     y++; \
     XorMe = 0; \
@@ -565,8 +572,8 @@ static int UnpackWPGRaster(Image *image,int bpp)
 #define FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff) \
   do \
     { \
-      MagickFreeMemory(BImgBuff); \
-      MagickFreeMemory(UpImgBuff); \
+      MagickFreeResourceLimitedMemory(BImgBuff); \
+      MagickFreeResourceLimitedMemory(UpImgBuff); \
     } while(0);
 
 /* WPG2 raster reader. */
@@ -600,10 +607,10 @@ static int UnpackWPG2Raster(Image *image, int bpp)
   x=0;
   y=0;
   ldblk=(long) ((bpp*image->columns+7)/8);
-  BImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
+  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk);
   if(BImgBuff==NULL)
     return(-2);
-  UpImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
+  UpImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk);
   if(UpImgBuff==NULL)
   {
     FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
@@ -729,6 +736,7 @@ static int UnpackWPG2Raster(Image *image, int bpp)
             }
         }
     }
+unpack_wpg2_error:;
   FreeUnpackWPG2RasterAllocs(BImgBuff,UpImgBuff);
   return(RetVal);
 }
@@ -899,7 +907,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   */
   if (GetBlobStreamData(image) == (unsigned char *) NULL)
     {
-      ps_data_alloc=MagickAllocateMemory(unsigned char *, PS_Size);
+      ps_data_alloc=MagickAllocateResourceLimitedMemory(unsigned char *, PS_Size);
       if (ps_data_alloc == (unsigned char *) NULL)
         {
           if (image->logging)
@@ -917,7 +925,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   ps_data=ps_data_alloc;
   if (ReadBlobZC(image,PS_Size,&ps_data) != PS_Size)
     {
-      MagickFreeMemory(ps_data_alloc);
+      MagickFreeResourceLimitedMemory(ps_data_alloc);
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Failed to read %"MAGICK_SIZE_T_F"u bytes of data at"
@@ -938,7 +946,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   */
   if ((clone_info=CloneImageInfo(image_info)) == NULL)
     {
-      MagickFreeMemory(ps_data_alloc);
+      MagickFreeResourceLimitedMemory(ps_data_alloc);
       return(image);
     }
   clone_info->blob=(void *) NULL;
@@ -948,7 +956,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content from blob...", clone_info->magick);
   image2 = BlobToImage(clone_info, ps_data, PS_Size, &image->exception );
-  MagickFreeMemory(ps_data_alloc);
+  MagickFreeResourceLimitedMemory(ps_data_alloc);
   if (!image2)
     {
       goto FINISH_UNL;
@@ -1359,8 +1367,6 @@ UnpackRaster:
                     if ( (image->colors < (1UL<<bpp)) && (bpp != 24) )
                       if (!ReallocColormap(image,1U<<bpp))
                         goto NoMemory;
-                      /* MagickReallocMemory(PixelPacket *,image->colormap, */
-                      /*                     (size_t) (1U<<bpp)*sizeof(PixelPacket)); */
                 }
 
               if(bpp == 1)
@@ -1563,11 +1569,6 @@ UnpackRaster:
                     if( image->colors<(1UL<<bpp) && bpp!=24 )
                       if (!ReallocColormap(image,1U<<bpp))
                         goto NoMemory;
-                  /*
-                    Above was formerly this, but causes use of uninitialized memory:
-                        MagickReallocMemory(PixelPacket *,image->colormap,
-                                            (size_t) (1U<<bpp)*sizeof(PixelPacket));
-                  */
                 }
 
 
@@ -1576,7 +1577,7 @@ UnpackRaster:
                 case 0:    /*Uncompressed raster*/
                   {
                     ldblk=(long) ((bpp*image->columns+7)/8);
-                    BImgBuff=MagickAllocateMemory(unsigned char *,(size_t) ldblk);
+                    BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) ldblk);
                     if(BImgBuff == (unsigned char *) NULL)
                       goto NoMemory;
 
@@ -1584,18 +1585,18 @@ UnpackRaster:
                       {
                         if (ReadBlob(image,ldblk,(char *) BImgBuff) != (size_t) ldblk)
                           {
-                            MagickFreeMemory(BImgBuff);
+                            MagickFreeResourceLimitedMemory(BImgBuff);
                             ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
                             goto DecompressionFailed;
                           }
                         if(InsertRow(BImgBuff,i,image,bpp) == MagickFail)
                         {
-                          if(BImgBuff) MagickFreeMemory(BImgBuff);
+                          if(BImgBuff) MagickFreeResourceLimitedMemory(BImgBuff);
                           goto DecompressionFailed;
                         }
                       }
 
-                    if(BImgBuff) MagickFreeMemory(BImgBuff);
+                    if(BImgBuff) MagickFreeResourceLimitedMemory(BImgBuff);
                     break;
                   }
                 case 1:    /*RLE for WPG2 */

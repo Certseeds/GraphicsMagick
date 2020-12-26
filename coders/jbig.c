@@ -401,9 +401,6 @@ static unsigned int WriteJBIGImage(const ImageInfo *image_info,Image *image)
   unsigned int
     status;
 
-  size_t
-    number_packets;
-
   unsigned long
     scene;
 
@@ -433,8 +430,7 @@ static unsigned int WriteJBIGImage(const ImageInfo *image_info,Image *image)
       Allocate pixel data.
     */
     bytes_per_row=((image->columns+7) >> 3);
-    number_packets=bytes_per_row*image->rows;
-    pixels=MagickAllocateMemory(unsigned char *,number_packets);
+    pixels=MagickAllocateResourceLimitedArray(unsigned char *,bytes_per_row,image->rows);
     if (pixels == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     /*
@@ -504,7 +500,7 @@ static unsigned int WriteJBIGImage(const ImageInfo *image_info,Image *image)
     */
     jbg_enc_out(&jbig_info);
     jbg_enc_free(&jbig_info);
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);

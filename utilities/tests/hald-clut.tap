@@ -8,6 +8,8 @@
 # Number of tests we plan to execute
 test_plan_fn 12
 
+# Identity for level 12 produces a 1728x1728 pixels image.
+# Identity for level 10 produces a 1000x1000 pixels image.
 OUTFILE=HaldClutIdentity_out.miff
 levels='2 7 8 10 12'
 for level in $levels

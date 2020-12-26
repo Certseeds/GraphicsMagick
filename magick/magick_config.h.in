@@ -6,6 +6,9 @@
 /* Define if coders and filters are to be built as modules. */
 #undef BuildMagickModules
 
+/* Disable reading and writing of gzip/bzip files */
+#undef DISABLE_COMPRESSED_FILES
+
 /* Disable OpenMP for algorithms which sometimes run slower */
 #undef DisableSlowOpenMP
 
@@ -408,6 +411,9 @@
 /* Define if you have FlashPIX library */
 #undef HasFPX
 
+/* Enable use of Ghostscript */
+#undef HasGS
+
 /* Define if you have JBIG library */
 #undef HasJBIG
 
@@ -561,9 +567,6 @@
 
 /* Number of bits in a pixel Quantum (8/16/32) */
 #undef QuantumDepth
-
-/* Define as the return type of signal handlers (`int' or `void'). */
-#undef RETSIGTYPE
 
 /* Setjmp/longjmp are thread safe */
 #undef SETJMP_IS_THREAD_SAFE

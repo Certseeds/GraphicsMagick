@@ -661,14 +661,29 @@ OpaqueImage(Image *image,const PixelPacket target,const PixelPacket fill)
   MagickPassFail
     status=MagickPass;
 
-  /*
-    Make image color opaque.
-  */
+  MagickBool
+    is_monochrome = image->is_monochrome,
+    is_grayscale = image->is_grayscale;
+
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   options.fuzz=image->fuzz;
   options.fill=fill;
   options.target=target;
+
+  /*
+    Assure that image type is promoted as required based on color
+  */
+  if ((is_grayscale || IsGrayColorspace(image->colorspace)) && !IsGray(fill))
+    {
+      if ((is_monochrome) && !IsBlackPixel(fill) && !IsWhitePixel(fill))
+        is_monochrome = MagickFalse;
+      is_grayscale = MagickFalse;
+    }
+
+  /*
+    Make image color opaque.
+  */
   if (image->storage_class == PseudoClass)
     {
       assert(image->colormap != (PixelPacket *) NULL);
@@ -684,6 +699,9 @@ OpaqueImage(Image *image,const PixelPacket target,const PixelPacket fill)
                                     image->columns,image->rows,
                                     image,&image->exception);
     }
+
+  image->is_monochrome = is_monochrome;
+  image->is_grayscale = is_grayscale;
 
   return(status);
 }

@@ -106,9 +106,3 @@ To compile on Unix, the command looks something like this::
 The GraphicsMagickWand-config script reproduces the options which were used to
 compile the GraphicsMagick wand library. Using compatible options ensures that
 your program will compile and run.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2009 - 2020

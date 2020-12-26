@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
 <title>magick_wand</title>
 <link rel="stylesheet" href="../docutils-api.css" type="text/css" />
 </head>
@@ -13,23 +13,23 @@
 <img src="../images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
 <span class="title">GraphicsMagick</span>
 <form action="http://www.google.com/search">
-	<input type="hidden" name="domains" value="www.graphicsmagick.org" />
-	<input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
-    <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
 
 <div class="navmenu">
 <ul>
-<li><a href="../index.html">Home</a></li>
-<li><a href="../project.html">Project</a></li>
-<li><a href="../download.html">Download</a></li>
-<li><a href="../README.html">Install</a></li>
-<li><a href="../Hg.html">Source</a></li>
-<li><a href="../NEWS.html">News</a> </li>
-<li><a href="../utilities.html">Utilities</a></li>
-<li><a href="../programming.html">Programming</a></li>
-<li><a href="../reference.html">Reference</a></li>
+  <li><a href="../index.html">Home</a></li>
+  <li><a href="../project.html">Project</a></li>
+  <li><a href="../download.html">Download</a></li>
+  <li><a href="../README.html">Install</a></li>
+  <li><a href="../Hg.html">Source</a></li>
+  <li><a href="../NEWS.html">News</a> </li>
+  <li><a href="../utilities.html">Utilities</a></li>
+  <li><a href="../programming.html">Programming</a></li>
+  <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
 <div class="document" id="magick-wand">
@@ -5986,11 +5986,13 @@ unsigned int MagickSetSamplingFactors( MagickWand *wand, const unsigned long num
 <dl class="docutils">
 <dt>wand:</dt>
 <dd>The magick wand.</dd>
-<dt>number_factoes:</dt>
-<dd>The number of factors.</dd>
+<dt>number_factors:</dt>
+<dd>The number of factors.  This value should be evenly
+divisible by two.</dd>
 <dt>sampling_factors:</dt>
 <dd>An array of doubles representing the sampling factor
-for each color component (in RGB order).</dd>
+for each color component (in RGB order).  Two double values must be
+provided for each color component.</dd>
 </dl>
 </div>
 </div>
@@ -6765,6 +6767,11 @@ MagickWand NewMagickWand( void );
 </pre>
 </div>
 </div>
+</div>
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

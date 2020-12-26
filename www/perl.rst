@@ -1493,10 +1493,3 @@ The following illustrates how you can use a numeric status code::
   $status = $image->Read('rose.png');
   $status =~ /(\d+)/;
   die "unable to continue" if ($1 == ResourceLimitError);
-
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

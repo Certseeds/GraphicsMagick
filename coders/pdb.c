@@ -344,7 +344,7 @@ static unsigned int IsPDB(const unsigned char *magick,const size_t length)
 */
 #define ThrowPDBReaderException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(pixels);                   \
+  MagickFreeResourceLimitedMemory(pixels);                   \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -506,7 +506,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   packets=MagickArraySize(MagickArraySize(bits_per_pixel,image->columns)/8,
                           image->rows);
-  pixels=MagickAllocateMemory(unsigned char *,packets + (packets != 0 ? 256 : 0));
+  pixels=MagickAllocateResourceLimitedMemory(unsigned char *,packets + (packets != 0 ? 256 : 0));
   if (pixels == (unsigned char *) NULL)
     ThrowPDBReaderException(ResourceLimitWarning,MemoryAllocationFailed,image);
   (void) memset(pixels,0,packets+256);
@@ -517,7 +517,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->compression=NoCompression;
       if (ReadBlob(image,packets,(char *) pixels) != packets)
         {
-          MagickFreeMemory(pixels);
+          MagickFreeResourceLimitedMemory(pixels);
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         }
       break;
@@ -655,7 +655,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowPDBReaderException(CorruptImageError,ImproperImageHeader,image);
       }
   }
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   if (EOFBlob(image))
     ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
       image->filename);
@@ -675,7 +675,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       c=ReadBlobByte(image);
       length=MaxTextExtent;
-      comment=MagickAllocateMemory(char *,length+1);
+      comment=MagickAllocateResourceLimitedMemory(char *,length+1);
       if (comment != (char *) NULL)
         {
           register char
@@ -686,11 +686,18 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               if ((size_t) (p-comment) >= length)
                 {
+                  char
+                    *new_comment;
+
                   length<<=1;
                   length+=MaxTextExtent;
-                  MagickReallocMemory(char *,comment,length+1);
-                  if (comment == (char *) NULL)
-                    break;
+                  new_comment=MagickReallocateResourceLimitedMemory(char *,comment,length+1);
+                  if (new_comment == (char *) NULL)
+                    {
+                      MagickFreeResourceLimitedMemory(comment);
+                      break;
+                    }
+                  comment=new_comment;
                   p=comment+strlen(comment);
                 }
               *p=c;
@@ -701,7 +708,7 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (comment == (char *) NULL)
         ThrowPDBReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       (void) SetImageAttribute(image,"comment",comment);
-      MagickFreeMemory(comment);
+      MagickFreeResourceLimitedMemory(comment);
     }
   CloseBlob(image);
   StopTimer(&image->timer);
@@ -817,9 +824,9 @@ static unsigned char *EncodeRLE(unsigned char *destination,
 
 #define ThrowPDBWriterException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(buffer);                     \
-  MagickFreeMemory(p);                          \
-  MagickFreeMemory(scanline);                   \
+  MagickFreeResourceLimitedMemory(buffer);                     \
+  MagickFreeResourceLimitedMemory(p);                          \
+  MagickFreeResourceLimitedMemory(scanline);                   \
   ThrowWriterException(code_,reason_,image_); \
 }
 
@@ -945,15 +952,15 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   packets=MagickArraySize(MagickArraySize(MagickArraySize(bits_per_pixel,
                                                           pdb_image.width)/8,
                                           pdb_image.height),2);
-  p=MagickAllocateMemory(unsigned char *,packets);
+  p=MagickAllocateResourceLimitedMemory(unsigned char *,packets);
   if (p == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
-  buffer=MagickAllocateMemory(unsigned char *,512);
+  buffer=MagickAllocateResourceLimitedMemory(unsigned char *,512);
   if (buffer == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
   (void) memset(buffer,0,512);
   packet_size=bits_per_pixel > 8 ? 2: 1;
-  scanline=MagickAllocateArray(unsigned char *,image->columns,packet_size);
+  scanline=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,packet_size);
   if (scanline == (unsigned char *) NULL)
     ThrowPDBWriterException(ResourceLimitWarning,MemoryAllocationFailed,image);
   (void) TransformColorspace(image,RGBColorspace);
@@ -1025,8 +1032,8 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
         break;
   }
   q=EncodeRLE(q,buffer,literal,repeat);
-  MagickFreeMemory(scanline);
-  MagickFreeMemory(buffer);
+  MagickFreeResourceLimitedMemory(scanline);
+  MagickFreeResourceLimitedMemory(buffer);
   /*
     Write the Image record header.
   */
@@ -1063,7 +1070,7 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlobMSBShort(image,pdb_image.width);
   (void) WriteBlobMSBShort(image,pdb_image.height);
   (void) WriteBlob(image,q-p,p);
-  MagickFreeMemory(p);
+  MagickFreeResourceLimitedMemory(p);
   if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
     (void) WriteBlobString(image,comment->value);
   CloseBlob(image);

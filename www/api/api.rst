@@ -32,6 +32,7 @@ GraphicsMagick Core C API
 .. _Image : image.html
 .. _Import : import.html
 .. _List : list.html
+.. _Log : log.html
 .. _Magick : magick.html
 .. _Memory : memory.html
 .. _Monitor : monitor.html
@@ -44,6 +45,7 @@ GraphicsMagick Core C API
 .. _Profile : profile.html
 .. _Quantize : quantize.html
 .. _Registry : registry.html
+.. _Render : render.html
 .. _Resize : resize.html
 .. _Resource : resource.html
 .. _Segment : segment.html
@@ -93,6 +95,7 @@ documentation, please reference the types_ documentation as required:
   * Image_: Miscellaneous image methods
   * Import_ : Import image pixels from common representations
   * List_: Manage image lists
+  * Log_: Event logging support
   * Magick_: Image format support interfaces
   * Memory_: Memory allocation methods
   * Monitor_: Progress monitor callbacks
@@ -105,6 +108,7 @@ documentation, please reference the types_ documentation as required:
   * Profile_: Attached profile access
   * Quantize_: Reduce image colors or assign image colors from colormap
   * Registry_: Store and retrieve images in memory by ID
+  * Render_: Render vector graphics
   * Resize_: Resize an Image
   * Resource_: Set and get resource limits
   * Segment_: Coalese similar image colors
@@ -296,9 +300,3 @@ out.miff'.
 The GraphicsMagick-config script reproduces the options which were used to
 compile the GraphicsMagick utilities. Using compatible options ensures that
 your program will compile and run.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

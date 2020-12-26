@@ -700,7 +700,7 @@ MagickExport MagickPassFail HuffmanDecodeImage(Image *image)
     }  \
 }
 MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
-  Image *image, WriteByteHook write_byte, void *info)
+                                                Image *image, WriteByteHook write_byte, void *info)
 {
   const HuffmanTable
     *entry;
@@ -765,14 +765,19 @@ MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
   scanline=MagickAllocateMemory(unsigned char *,(size_t) width+1);
   if (scanline == (unsigned char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
-      (char *) NULL);
+                         (char *) NULL);
   huffman_image=CloneImage(image,0,0,True,&image->exception);
   if (huffman_image == (Image *) NULL)
     {
       MagickFreeMemory(scanline);
       return(MagickFail);
     }
-  status &= SetImageType(huffman_image,BilevelType);
+  if (SetImageType(huffman_image,BilevelType) != MagickPass)
+    {
+      CopyException(&image->exception,&huffman_image->exception);
+      MagickFreeMemory(scanline);
+      return(MagickFail);
+    }
   byte=0;
   bit=0x80;
   if (is_fax == True)
@@ -790,103 +795,107 @@ MagickExport MagickPassFail HuffmanEncode2Image(const ImageInfo *image_info,
   polarity=(PixelIntensity(&huffman_image->colormap[0]) < (MaxRGB/2));
   if (huffman_image->colors == 2)
     polarity=(PixelIntensityToQuantum(&huffman_image->colormap[0]) <
-      PixelIntensityToQuantum(&huffman_image->colormap[1]) ? 0x00 : 0x01);
+              PixelIntensityToQuantum(&huffman_image->colormap[1]) ? 0x00 : 0x01);
   q=scanline;
   for (i=0; i < width; i++) /* was: for (i=(long) width; i > 0; i--) */
     *q++=(unsigned char) polarity;
   q=scanline;
   for (y=0; y < huffman_image->rows; y++)
-  {
-    p=AcquireImagePixels(huffman_image,0,y,huffman_image->columns,1,
-      &huffman_image->exception);
-    if (p == (const PixelPacket *) NULL)
-      {
-        status=MagickFail;
-        break;
-      }
-    indexes=AccessImmutableIndexes(huffman_image);
-    for (x=0; x < huffman_image->columns; x++)
     {
-      *q=(unsigned char) (indexes[x] == polarity ? !polarity : polarity);
-      q++;
-    }
-    /*
-      Huffman encode scanline.
-    */
-    q=scanline;
-    for (n=(long) width; n > 0; )
-    {
-      /*
-        Output white run.
-      */
-      for (runlength=0; ((n > 0) && (*q == polarity)); n--)
-      {
-        q++;
-        runlength++;
-      }
-      if (runlength >= 64)
+      p=AcquireImagePixels(huffman_image,0,y,huffman_image->columns,1,
+                           &huffman_image->exception);
+      indexes=AccessImmutableIndexes(huffman_image);
+      if ((p == (const PixelPacket *) NULL) ||
+          (indexes == (const IndexPacket *) NULL))
         {
-          if (runlength < 1792)
-            entry=MWTable+(((size_t) runlength/64)-1);
-          else
-            entry=EXTable+(Min(runlength,2560)-1792)/64;
-          runlength-=entry->count;
-          HuffmanOutputCode(entry);
+          status=MagickFail;
+          break;
         }
-      entry=TWTable+Min(runlength,63);
-      HuffmanOutputCode(entry);
-      if (n != 0)
+      for (x=0; x < huffman_image->columns; x++)
+        {
+          *q=(unsigned char) (indexes[x] == polarity ? !polarity : polarity);
+          q++;
+        }
+      /*
+        Huffman encode scanline.
+      */
+      q=scanline;
+      for (n=(long) width; n > 0; )
         {
           /*
-            Output black run.
+            Output white run.
           */
-          for (runlength=0; ((*q != polarity) && (n > 0)); n--)
-          {
-            q++;
-            runlength++;
-          }
+          for (runlength=0; ((n > 0) && (*q == polarity)); n--)
+            {
+              q++;
+              runlength++;
+            }
           if (runlength >= 64)
             {
-              entry=MBTable+(((size_t) runlength/64)-1);
-              if (runlength >= 1792)
+              if (runlength < 1792)
+                entry=MWTable+(((size_t) runlength/64)-1);
+              else
                 entry=EXTable+(Min(runlength,2560)-1792)/64;
               runlength-=entry->count;
               HuffmanOutputCode(entry);
             }
-          entry=TBTable+Min(runlength,63);
+          entry=TWTable+Min(runlength,63);
           HuffmanOutputCode(entry);
+          if (n != 0)
+            {
+              /*
+                Output black run.
+              */
+              for (runlength=0; ((*q != polarity) && (n > 0)); n--)
+                {
+                  q++;
+                  runlength++;
+                }
+              if (runlength >= 64)
+                {
+                  entry=MBTable+(((size_t) runlength/64)-1);
+                  if (runlength >= 1792)
+                    entry=EXTable+(Min(runlength,2560)-1792)/64;
+                  runlength-=entry->count;
+                  HuffmanOutputCode(entry);
+                }
+              entry=TBTable+Min(runlength,63);
+              HuffmanOutputCode(entry);
+            }
+        } /* for (n=... */
+      /*
+        End of line.
+      */
+      for (k=0; k < 11; k++)
+        OutputBit(0);
+      OutputBit(1);
+      q=scanline;
+      if (huffman_image->previous == (Image *) NULL)
+        if (QuantumTick(y,huffman_image->rows))
+          if (!MagickMonitorFormatted(y,huffman_image->rows,&image->exception,
+                                      "[%s] Huffman encode image...",image->filename))
+            {
+              status=MagickFail;
+              break;
+            }
+    } /* for (y=... */
+  if (status == MagickPass)
+    {
+      /*
+        End of page.
+      */
+      for (i=0; i < 6; i++)
+        {
+          for (k=0; k < 11; k++)
+            OutputBit(0);
+          OutputBit(1);
         }
+      /*
+        Flush bits.
+      */
+      if (bit != 0x80U)
+        (void) (*write_byte)(image,(magick_uint8_t)byte,info);
     }
-    /*
-      End of line.
-    */
-    for (k=0; k < 11; k++)
-      OutputBit(0);
-    OutputBit(1);
-    q=scanline;
-    if (huffman_image->previous == (Image *) NULL)
-      if (QuantumTick(y,huffman_image->rows))
-        if (!MagickMonitorFormatted(y,huffman_image->rows,&image->exception,
-                                    "[%s] Huffman encode image...",image->filename))
-          {
-            status=MagickFail;
-            break;
-          }
-  }
-  /*
-    End of page.
-  */
-  for (i=0; i < 6; i++)
-  {
-    for (k=0; k < 11; k++)
-      OutputBit(0);
-    OutputBit(1);
-  }
-  /*
-    Flush bits.
-  */
-  if (bit != 0x80U)
-    (void) (*write_byte)(image,(magick_uint8_t)byte,info);
   DestroyImage(huffman_image);
   MagickFreeMemory(scanline);
   return(status);

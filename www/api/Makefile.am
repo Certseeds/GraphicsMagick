@@ -39,6 +39,7 @@ WWWAPI_HTML_TARGETS = \
 	$(WWWAPIDIR)/image.html \
 	$(WWWAPIDIR)/import.html \
 	$(WWWAPIDIR)/list.html \
+	$(WWWAPIDIR)/log.html \
 	$(WWWAPIDIR)/magick.html \
 	$(WWWAPIDIR)/memory.html \
 	$(WWWAPIDIR)/monitor.html \
@@ -92,6 +93,7 @@ WWWWAPI_FILES = \
 	www/api/image.html \
 	www/api/import.html \
 	www/api/list.html \
+	www/api/log.html \
 	www/api/magick.html \
 	www/api/memory.html \
 	www/api/monitor.html \

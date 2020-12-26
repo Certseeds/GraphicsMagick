@@ -77,7 +77,7 @@ $$QuantumDepth
 // DestroyMagick() so that the user doesn't need to.  Note that
 // repeated calls to InitializeMagick() are ignored so if a path must
 // be passed to InitializeMagick(), then disable this setting.
-#define ProvideDllMain
+#undef ProvideDllMain
 
 
 /////////////
@@ -140,6 +140,9 @@ $$QuantumDepth
 // discovered by the configure program and work if the source is
 // extracted to a 'fpx' subdirectory.
 // #undef HasFPX
+
+// Define to support Ghostscript as DLL or external program
+#define HasGS
 
 // Define to use the JBIG library
 #define HasJBIG

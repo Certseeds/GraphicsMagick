@@ -428,7 +428,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (!AllocateImageColormap(image,image->colors))
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
             image);
-        sun_colormap=MagickAllocateMemory(unsigned char *,image->colors);
+        sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,image->colors);
         if (sun_colormap == (unsigned char *) NULL)
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                image);
@@ -460,7 +460,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colormap[i].blue=ScaleCharToQuantum(sun_colormap[i]);
             break;
           } while (1);
-        MagickFreeMemory(sun_colormap);
+        MagickFreeResourceLimitedMemory(sun_colormap);
         if (MagickFail == status)
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         break;
@@ -476,14 +476,14 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (!AllocateImageColormap(image,image->colors))
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                image);
-        sun_colormap=MagickAllocateMemory(unsigned char *,sun_info.maplength);
+        sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,sun_info.maplength);
         if (sun_colormap == (unsigned char *) NULL)
           ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
             image);
         if (ReadBlob(image,sun_info.maplength,(char *) sun_colormap) !=
             sun_info.maplength)
           status = MagickFail;
-        MagickFreeMemory(sun_colormap);
+        MagickFreeResourceLimitedMemory(sun_colormap);
         if (MagickFail == status)
           ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
         break;
@@ -560,13 +560,13 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       }
 
-    sun_data=MagickAllocateMemory(unsigned char *,sun_data_length);
+    sun_data=MagickAllocateResourceLimitedMemory(unsigned char *,sun_data_length);
     if (sun_data == (unsigned char *) NULL)
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     if ((count=ReadBlob(image,sun_data_length,(char *) sun_data))
         != sun_data_length)
       {
-        MagickFreeMemory(sun_data);
+        MagickFreeResourceLimitedMemory(sun_data);
         ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
       }
     sun_pixels=sun_data;
@@ -575,18 +575,18 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Read run-length encoded raster pixels (padded to 16-bit boundary).
         */
-        sun_pixels=MagickAllocateMemory(unsigned char *,bytes_per_image);
+        sun_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_image);
         if (sun_pixels == (unsigned char *) NULL)
           {
-            MagickFreeMemory(sun_data);
+            MagickFreeResourceLimitedMemory(sun_data);
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
           }
         status &= DecodeImage(sun_data,sun_data_length,sun_pixels,bytes_per_image);
-        MagickFreeMemory(sun_data);
+        MagickFreeResourceLimitedMemory(sun_data);
         if (status != MagickPass)
           {
-            MagickFreeMemory(sun_pixels);
+            MagickFreeResourceLimitedMemory(sun_pixels);
             ThrowReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
           }
       }
@@ -714,7 +714,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
           }
         }
-    MagickFreeMemory(sun_pixels);
+    MagickFreeResourceLimitedMemory(sun_pixels);
     if (EOFBlob(image))
       {
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
@@ -990,7 +990,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
         */
         pad=(image->columns & 0x01 ? 1 : 0);
         length=(image->columns + pad) *sizeof(PixelPacket);
-        pixels=MagickAllocateMemory(unsigned char *,length);
+        pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
         if (pixels == (unsigned char *) NULL)
           ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
             image);
@@ -1022,7 +1022,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
                                           image->columns,image->rows))
                 break;
         }
-        MagickFreeMemory(pixels);
+        MagickFreeResourceLimitedMemory(pixels);
       }
     else
       if (characteristics.monochrome)

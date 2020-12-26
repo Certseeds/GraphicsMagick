@@ -179,7 +179,7 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
               }
           }
         length=MaxTextExtent;
-        comment=MagickAllocateMemory(char *,length+sizeof(P7Comment));
+        comment=MagickAllocateResourceLimitedMemory(char *,length+sizeof(P7Comment));
         p=comment;
         offset=p-comment;
         if (comment != (char *) NULL)
@@ -190,12 +190,19 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
                 size_t
                   text_length;
 
+                char
+                  *new_comment;
+
                 text_length=(size_t) (p-comment);
                 length<<=1;
                 length+=MaxTextExtent;
-                MagickReallocMemory(char *,comment,length+sizeof(P7Comment));
-                if (comment == (char *) NULL)
-                  break;
+                new_comment=MagickReallocateResourceLimitedMemory(char *,comment,length+sizeof(P7Comment));
+                if (new_comment == (char *) NULL)
+                  {
+                    MagickFreeResourceLimitedMemory(comment);
+                    break;
+                  }
+                comment=new_comment;
                 p=comment+text_length;
               }
             c=ReadBlobByte(image);
@@ -212,7 +219,7 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
           can span multiple lines.
         */
         (void) SetImageAttribute(image,"comment",comment);
-        MagickFreeMemory(comment);
+        MagickFreeResourceLimitedMemory(comment);
         continue;
       }
   } while (!isdigit(c));
@@ -1954,7 +1961,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
             /*
               Allocate memory for pixels.
             */
-            pixels=MagickAllocateMemory(unsigned char *,bytes_per_row);
+            pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_row);
             if (pixels == (unsigned char *) NULL)
               ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                                    image);
@@ -2036,7 +2043,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                                                 image->columns,image->rows))
                       break;
               }
-            MagickFreeMemory(pixels);
+            MagickFreeResourceLimitedMemory(pixels);
 
             break;
           }
@@ -2082,11 +2089,11 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                 for (i=0; i < 2; i++)
                   for (j=0; j < 16; j++)
                     {
-                      red_map[i][j]=MagickAllocateMemory(unsigned short *,
+                      red_map[i][j]=MagickAllocateResourceLimitedMemory(unsigned short *,
                                                          256*sizeof(unsigned short));
-                      green_map[i][j]=MagickAllocateMemory(unsigned short *,
+                      green_map[i][j]=MagickAllocateResourceLimitedMemory(unsigned short *,
                                                            256*sizeof(unsigned short));
-                      blue_map[i][j]=MagickAllocateMemory(unsigned short *,
+                      blue_map[i][j]=MagickAllocateResourceLimitedMemory(unsigned short *,
                                                           256*sizeof(unsigned short));
                       if ((red_map[i][j] == (unsigned short *) NULL) ||
                           (green_map[i][j] == (unsigned short *) NULL) ||
@@ -2095,9 +2102,9 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                           for (i=0; i < 2; i++)
                             for (j=0; j < 16; j++)
                               {
-                                MagickFreeMemory(green_map[i][j]);
-                                MagickFreeMemory(blue_map[i][j]);
-                                MagickFreeMemory(red_map[i][j]);
+                                MagickFreeResourceLimitedMemory(green_map[i][j]);
+                                MagickFreeResourceLimitedMemory(blue_map[i][j]);
+                                MagickFreeResourceLimitedMemory(red_map[i][j]);
                               }
                           ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                                                image);
@@ -2174,9 +2181,9 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                 for (i=0; i < 2; i++)
                   for (j=0; j < 16; j++)
                     {
-                      MagickFreeMemory(green_map[i][j]);
-                      MagickFreeMemory(blue_map[i][j]);
-                      MagickFreeMemory(red_map[i][j]);
+                      MagickFreeResourceLimitedMemory(green_map[i][j]);
+                      MagickFreeResourceLimitedMemory(blue_map[i][j]);
+                      MagickFreeResourceLimitedMemory(red_map[i][j]);
                     }
                 break;
           }

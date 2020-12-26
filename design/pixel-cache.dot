@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 - 2019 GraphicsMagick Group
+  Copyright (C) 2008 - 2020 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with
@@ -27,13 +27,13 @@ digraph "pixel-cache" {
   size="18,8";
   /* rankdir=LR; */
   rankdir=TB;
-  {rank=same; AccessCacheViewPixels AcquireCacheViewPixels AcquireOneCacheViewPixel \
-                CloseCacheView GetCacheViewIndexes GetCacheViewPixels OpenCacheView \
+  {rank=same; AccessCacheViewPixels AcquireCacheViewPixels AcquireOneCacheViewPixel
+                CloseCacheView GetCacheViewIndexes GetCacheViewPixels OpenCacheView
                 SetCacheViewPixels SyncCacheViewPixels };
 
-  {rank=same; AccessImmutableIndexes AccessMutableIndexes AccessMutablePixels \
-                AcquireImagePixels AcquireOnePixelByReference GetImagePixels \
-                GetImagePixelsEx GetIndexes GetOnePixel GetPixels SetImagePixels \
+  {rank=same; AccessImmutableIndexes AccessMutableIndexes AccessMutablePixels
+                AcquireImagePixels AcquireOnePixelByReference GetImagePixels
+                GetImagePixelsEx GetIndexes GetOnePixel GetPixels SetImagePixels
                 SetImagePixelsEx SyncImagePixels SyncImagePixelsEx };
 
   {rank=same; WriteCacheIndexes WriteCachePixels ReadCachePixels ReadCacheIndexes };

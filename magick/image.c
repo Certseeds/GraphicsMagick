@@ -307,7 +307,8 @@ AddDefinitions(ImageInfo *image_info,const char *definitions,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % AllocateImage() returns a pointer to an image structure initialized to
-% default values.
+% default values.  Currently a failure in this function results in a fatal
+% error, resulting in program exit.
 %
 %  The format of the AllocateImage method is:
 %
@@ -332,17 +333,21 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   /*
     Allocate image structure.
   */
-  allocate_image=MagickAllocateMemory(Image *,sizeof(Image));
+  allocate_image=MagickAllocateClearedMemory(Image *,sizeof(Image));
   if (allocate_image == (Image *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateImage);
-  (void) memset(allocate_image,0,sizeof(Image));
+
+  allocate_image->signature=MagickSignature;
+  allocate_image->semaphore=AllocateSemaphoreInfo(); /* Fatal errors on failure */
+  allocate_image->reference_count=1;
+  /* Entry conditions for DestroyImage() are now satisfied */
 
   /* allocate and initialize struct for extra Image members */
-  ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
+  ImgExtra = MagickAllocateClearedMemory(ImageExtra *,sizeof(ImageExtra));
   if  ( ImgExtra == (ImageExtra *) NULL )
-    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,UnableToAllocateImage);
-  memset(ImgExtra,0,sizeof(*ImgExtra));
+    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
+                      UnableToAllocateImage);
   allocate_image->extra = ImgExtra;
 
   /*
@@ -365,17 +370,24 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   allocate_image->orientation=UndefinedOrientation;
   GetTimerInfo(&allocate_image->timer);
   GetCacheInfo(&allocate_image->cache);
+  if (allocate_image->cache == (_CacheInfoPtr_) NULL)
+    {
+      DestroyImage(allocate_image);
+      MagickFatalError3(ResourceLimitError,MemoryAllocationFailed,
+                        UnableToAllocateImage);
+    }
   allocate_image->blob=CloneBlobInfo((BlobInfo *) NULL);
   allocate_image->logging=IsEventLogging();
   allocate_image->is_monochrome=MagickTrue;
   allocate_image->is_grayscale=MagickTrue;
-  allocate_image->semaphore=AllocateSemaphoreInfo();
-  LockSemaphoreInfo((SemaphoreInfo *) allocate_image->semaphore);
-  allocate_image->reference_count=1;
-  UnlockSemaphoreInfo((SemaphoreInfo *) allocate_image->semaphore);
-  allocate_image->signature=MagickSignature;
   allocate_image->default_views=AllocateThreadViewSet(allocate_image,
                                                       &allocate_image->exception);
+  if (allocate_image->default_views == (_ThreadViewSetPtr_) NULL)
+    {
+      DestroyImage(allocate_image);
+      MagickFatalError3(ResourceLimitError,MemoryAllocationFailed,
+                        UnableToAllocateImage);
+    }
   if (image_info == (ImageInfo *) NULL)
     return(allocate_image);
   /*
@@ -444,7 +456,14 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   allocate_image->ping=image_info->ping;
 
   if (image_info->attributes != (Image *) NULL)
-    (void) CloneImageAttributes(allocate_image,image_info->attributes);
+    {
+      if (CloneImageAttributes(allocate_image,image_info->attributes) != MagickPass)
+        {
+          DestroyImage(allocate_image);
+          MagickFatalError3(ResourceLimitError,MemoryAllocationFailed,
+                            UnableToAllocateImage);
+        }
+    }
 
   return(allocate_image);
 }
@@ -463,6 +482,9 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
 %  Use AllocateNextImage() to initialize the next image in a sequence to
 %  default values.  The next member of image points to the newly allocated
 %  image.  If there is a memory shortage, next is assigned NULL.
+%
+%  It is expected that the image next pointer is null, since otherwise
+%  there is likely to be a memory leak.  In the future this may be enforced.
 %
 %  The format of the AllocateNextImage method is:
 %
@@ -485,6 +507,9 @@ MagickExport void AllocateNextImage(const ImageInfo *image_info,Image *image)
   */
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+#if 0
+  assert(image->next == (Image *) NULL);
+#endif
   image->next=AllocateImage(image_info);
   if (image->next == (Image *) NULL)
     return;
@@ -1078,9 +1103,6 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   ImageExtra
     *ImgExtra;
 
-  size_t
-    length;
-
   /*
     Clone the image.
   */
@@ -1089,17 +1111,24 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  clone_image=MagickAllocateMemory(Image *,sizeof(Image));
+  clone_image=MagickAllocateClearedMemory(Image *,sizeof(Image));
   if (clone_image == (Image *) NULL)
     ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToCloneImage);
-  (void) memset(clone_image,0,sizeof(Image));
+
+  clone_image->signature=MagickSignature;
+  clone_image->semaphore=AllocateSemaphoreInfo(); /* Fatal errors on failure */
+  clone_image->reference_count=1;
+  /* Entry conditions for DestroyImage() are now satisfied */
 
   /* allocate and initialize struct for extra Image members */
-  ImgExtra = MagickAllocateMemory(ImageExtra *,sizeof(ImageExtra));
+  ImgExtra = MagickAllocateClearedMemory(ImageExtra *,sizeof(ImageExtra));
   if  ( ImgExtra == (ImageExtra *) NULL )
-    ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,UnableToCloneImage);
-  memset(ImgExtra,0,sizeof(*ImgExtra));
+    {
+      DestroyImage(clone_image);
+      ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
+                           UnableToCloneImage);
+    }
   clone_image->extra = ImgExtra;
 
   clone_image->storage_class=image->storage_class;
@@ -1115,20 +1144,25 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   clone_image->depth=image->depth;
   if (image->colormap != (PixelPacket *) NULL)
     {
-      /*
-        Allocate and copy the image colormap.
-      */
-      clone_image->colors=image->colors;
-      length=image->colors*sizeof(PixelPacket);
-      clone_image->colormap=MagickAllocateMemory(PixelPacket *,length);
-      if (clone_image->colormap == (PixelPacket *) NULL)
+      size_t
+        length;
+
+      length=MagickArraySize(image->colors,sizeof(PixelPacket));
+      if (length != 0)
         {
-          DestroyImage(clone_image);
-          ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
-                               UnableToCloneImage);
+          /*
+            Allocate and copy the image colormap.
+          */
+          clone_image->colors=image->colors;
+          clone_image->colormap=MagickAllocateMemory(PixelPacket *,length);
+          if (clone_image->colormap == (PixelPacket *) NULL)
+            {
+              DestroyImage(clone_image);
+              ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
+                                   UnableToCloneImage);
+            }
+          (void) memcpy(clone_image->colormap,image->colormap,length);
         }
-      length=image->colors*sizeof(PixelPacket);
-      (void) memcpy(clone_image->colormap,image->colormap,length);
     }
   clone_image->background_color=image->background_color;
   clone_image->border_color=image->border_color;
@@ -1139,7 +1173,14 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
     Clone attached profiles.
   */
   if (image->profiles)
-    clone_image->profiles=MagickMapCloneMap(image->profiles,exception);
+    {
+      clone_image->profiles=MagickMapCloneMap(image->profiles,exception);
+      if (clone_image->profiles == (void *) NULL)
+        {
+          DestroyImage(clone_image);
+          return (Image *) NULL;
+        }
+    }
   clone_image->orientation=image->orientation;
   clone_image->rendering_intent=image->rendering_intent;
   clone_image->units=image->units;
@@ -1158,7 +1199,6 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   clone_image->endian=image->endian;
   clone_image->gravity=image->gravity;
   clone_image->compose=image->compose;
-  clone_image->signature=MagickSignature;
   (void) CloneImageAttributes(clone_image,image);
   clone_image->scene=image->scene;
   clone_image->dispose=image->dispose;
@@ -1166,7 +1206,6 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
   clone_image->iterations=image->iterations;
   clone_image->total_colors=image->total_colors;
   clone_image->error=image->error;
-  clone_image->semaphore=AllocateSemaphoreInfo();
   clone_image->logging=image->logging;
   clone_image->timer=image->timer;
   GetExceptionInfo(&clone_image->exception);
@@ -1180,9 +1219,6 @@ MagickExport Image *CloneImage(const Image *image,const unsigned long columns,
     MaxTextExtent);
   (void) strlcpy(clone_image->magick,image->magick,MaxTextExtent);
   (void) strlcpy(clone_image->filename,image->filename,MaxTextExtent);
-  LockSemaphoreInfo((SemaphoreInfo *) clone_image->semaphore);
-  clone_image->reference_count=1;
-  UnlockSemaphoreInfo((SemaphoreInfo *) clone_image->semaphore);
   clone_image->previous=(Image *) NULL;
   clone_image->list=(Image *) NULL;
   clone_image->next=(Image *) NULL;
@@ -1380,6 +1416,10 @@ MagickExport ImageInfo *CloneImageInfo(const ImageInfo *image_info)
 %  the image if the reference count becomes zero.  There is no effect if the
 %  image pointer is null.
 %
+%  In the interest of avoiding dangling pointers or memory leaks, the image
+%  previous and next pointers should be null when this function is called,
+%  and no other image should refer to it.  In the future this may be enforced.
+%
 %  The format of the DestroyImage method is:
 %
 %      void DestroyImage(Image *image)
@@ -1429,13 +1469,23 @@ MagickExport void DestroyImage(Image *image)
     Destroy image pixel cache.
   */
   DestroyImagePixels(image);
-  if (image->extra->clip_mask != (Image *) NULL)
-    DestroyImage(image->extra->clip_mask);
-  image->extra->clip_mask=(Image *) NULL;
-  if (image->extra->composite_mask != (Image *) NULL)
-    DestroyImage(image->extra->composite_mask);
-  image->extra->composite_mask=(Image *) NULL;
-  MagickFreeMemory(image->extra);
+  /*
+    Destroy ImageExtra
+   */
+  if (image->extra != (ImageExtra *) NULL)
+    {
+      if (image->extra->clip_mask != (Image *) NULL)
+        {
+          DestroyImage(image->extra->clip_mask);
+          image->extra->clip_mask=(Image *) NULL;
+        }
+      if (image->extra->composite_mask != (Image *) NULL)
+        {
+          DestroyImage(image->extra->composite_mask);
+          image->extra->composite_mask=(Image *) NULL;
+        }
+      MagickFreeMemory(image->extra);
+    }
   MagickFreeMemory(image->montage);
   MagickFreeMemory(image->directory);
   MagickFreeMemory(image->colormap);
@@ -2937,21 +2987,21 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   static const char
     *virtual_delegates[] =
     {
-      "AUTOTRACE",
-      "BROWSE",
-      "EDIT",
-      "GS-COLOR",
-      "GS-COLOR+ALPHA",
-      "GS-GRAY",
-      "GS-MONO",
-      "LAUNCH",
-      "MPEG-ENCODE",
-      "PRINT",
-      "SCAN",
-      "SHOW",
-      "TMP",
-      "WIN",
-      NULL
+     "AUTOTRACE",
+     "BROWSE",
+     "EDIT",
+     "GS-COLOR",
+     "GS-COLOR+ALPHA",
+     "GS-GRAY",
+     "GS-MONO",
+     "LAUNCH",
+     "MPEG-ENCODE",
+     "PRINT",
+     "SCAN",
+     "SHOW",
+     "TMP",
+     "WIN",
+     NULL
     };
 
   char
@@ -3181,18 +3231,25 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           /*
             Copy standard input or pipe to temporary file.
           */
-          if(!AcquireTemporaryFileName(filename))
+          if (!AcquireTemporaryFileName(filename))
             {
               CloseBlob(image);
               DestroyImage(image);
               return(MagickFail);
             }
-          (void) ImageToFile(image,filename,exception);
+          if (ImageToFile(image,filename,exception) == MagickFail)
+            {
+              LiberateTemporaryFile(filename);
+              CloseBlob(image);
+              DestroyImage(image);
+              return(MagickFail);
+            }
           CloseBlob(image);
           (void) strcpy(image->filename,filename);
           status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
           if (status == MagickFail)
             {
+              LiberateTemporaryFile(filename);
               DestroyImage(image);
               return(MagickFail);
             }
@@ -3309,7 +3366,7 @@ SetImageOpacityCallBack(void *mutable_data,         /* User provided mutable dat
     }
   return MagickPass;
 }
-MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
+MagickExport MagickPassFail SetImageOpacity(Image *image,const unsigned int opacity_val)
 {
   const unsigned int
     opacity = opacity_val;
@@ -3317,6 +3374,9 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
   MagickBool
     is_grayscale,
     is_monochrome;
+
+  MagickPassFail
+    status = MagickPass;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -3329,10 +3389,10 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
       /*
         Attenuate existing opacity channel
       */
-      (void) PixelIterateMonoModify(ModulateImageOpacityCallBack,NULL,
-                                    "[%s] Modulate opacity...",
-                                    NULL,&opacity,0,0,image->columns,image->rows,
-                                    image,&image->exception);
+      status&=PixelIterateMonoModify(ModulateImageOpacityCallBack,NULL,
+                                     "[%s] Modulate opacity...",
+                                     NULL,&opacity,0,0,image->columns,image->rows,
+                                     image,&image->exception);
     }
   else
     {
@@ -3340,13 +3400,14 @@ MagickExport void SetImageOpacity(Image *image,const unsigned int opacity_val)
         Add new opacity channel or make existing opacity channel opaque
       */
       image->matte=True;
-      (void) PixelIterateMonoModify(SetImageOpacityCallBack,NULL,
-                                    "[%s] Set opacity...",
-                                    NULL,&opacity,0,0,image->columns,image->rows,
-                                    image,&image->exception);
+      status&=PixelIterateMonoModify(SetImageOpacityCallBack,NULL,
+                                     "[%s] Set opacity...",
+                                     NULL,&opacity,0,0,image->columns,image->rows,
+                                     image,&image->exception);
     }
   image->is_grayscale=is_grayscale;
   image->is_monochrome=is_monochrome;
+  return status;
 }
 
 /*

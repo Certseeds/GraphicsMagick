@@ -374,6 +374,16 @@ ScribbleImage (MagickWand *canvas)
   return status;
 }
 
+#define ThrowAPIException(wand) \
+{ \
+  ExceptionType severity; \
+  char *description=MagickGetException(wand,&severity); \
+  (void) fflush(stdout); \
+  (void) fprintf(stderr,"%s %s %d %.1024s\n",GetMagickModule(),description); \
+  free(description); \
+  break; \
+}
+
 int main ( int argc, char **argv )
 {
   MagickWand
@@ -387,58 +397,88 @@ int main ( int argc, char **argv )
 
   if ( argc != 2 )
     {
-      printf ( "Usage: %s filename\n", argv[0] );
-      exit( 1 );
+      fprintf ( stderr,  "Usage: %s filename\n", argv[0] );
+      exit( EXIT_FAILURE );
     }
 
   outfile[MaxTextExtent-1]='\0';
   (void) strncpy( outfile, argv[1], MaxTextExtent-1 );
 
-  if (LocaleNCompare("drawtest",argv[0],7) == 0)
-    InitializeMagick((char *) NULL);
-  else
-    InitializeMagick(*argv);
+  InitializeMagick(*argv);
 
   /*
    * Create canvas image
    */
-  canvas=NewMagickWand();
-  if (MagickFail !=  status)
-    if ((status = MagickSetSize( canvas, 596, 842 )) == MagickFail)
-      printf ( "Failed to set image size\n" );
 
-  if (MagickPass == status)
-    if ((status = MagickReadImage( canvas, "xc:white" )) == MagickFail)
-      printf ( "Failed to read canvas image %s\n", MagickGetFilename(canvas) );
+  do
+    {
+      canvas=NewMagickWand();
+      if ((status = MagickSetSize( canvas, 596, 842 )) == MagickFail)
+        {
+          fprintf ( stderr, "Failed to set image size\n" );
+          ThrowAPIException(canvas);
+        }
 
-  /*
-   * Scribble on image
-   */
-  if (MagickPass == status)
-    if ((status = ScribbleImage( canvas ))  == MagickFail)
-      printf ( "Failed draw on image\n" );
+      fprintf(stderr, "Set the image size\n");
 
-  /*
-   * Set depth to 8
-   */
-  if (MagickPass == status)
-    status=MagickSetImageDepth( canvas, 8);
+      if ((status = MagickReadImage( canvas, "xc:white" )) == MagickFail)
+        {
+          char *canvas_name = MagickGetFilename(canvas);
+          fprintf ( stderr, "Failed to read canvas image %s\n", canvas_name );
+          free(canvas_name);
+          ThrowAPIException(canvas);
+        }
 
-  /*
-   * Set RLE compression
-   */
-  if (MagickPass == status)
-    status=MagickSetImageCompression( canvas, RLECompression);
+      fprintf(stderr, "Got the image canvas image\n");
 
-  /*
-   * Save image to file
-   */
-  if (MagickPass == status)
-    if ((status = MagickWriteImage ( canvas, outfile )) == MagickFail)
-      printf ( "Failed to write image file %s\n", outfile );
+      /*
+       * Scribble on image
+       */
+      if ((status = ScribbleImage( canvas ))  == MagickFail)
+        {
+          fprintf ( stderr, "Failed draw on image\n" );
+          ThrowAPIException(canvas);
+        }
+
+      fprintf(stderr, "Scribbled on the image\n");
+
+      /*
+       * Set depth to 8
+       */
+      if ((status=MagickSetImageDepth( canvas, 8)) == MagickFail)
+        {
+          fprintf ( stderr, "Failed to set the image depth\n" );
+          ThrowAPIException(canvas);
+        }
+
+      fprintf(stderr, "Set the canvas depth\n");
+
+      /*
+       * Set RLE compression
+       */
+      if ((status=MagickSetImageCompression( canvas, RLECompression)) == MagickFail)
+        {
+          fprintf ( stderr, "Failed to set the image compression\n" );
+          ThrowAPIException(canvas);
+        }
+
+      fprintf(stderr, "Set the image compression\n");
+
+      /*
+       * Save image to file
+       */
+      if ((status = MagickWriteImage ( canvas, outfile )) == MagickFail)
+        {
+          fprintf ( stderr, "Failed to write image file %s\n", outfile );
+          ThrowAPIException(canvas);
+        }
+
+      fprintf(stderr, "Wrote the output file\n");
+
+    } while (0);
 
   DestroyMagickWand( canvas );
   DestroyMagick();
 
-  return (MagickPass == status ? 0 : 1);
+  return (MagickPass == status ? EXIT_SUCCESS : EXIT_FAILURE);
 }

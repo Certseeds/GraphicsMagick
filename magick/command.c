@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2263,21 +2263,15 @@ static OptionStatus CheckOptionValue(const char *option, const char *value)
 */
 #define ThrowCompareException(code,reason,description) \
 { \
-  DestroyImageList(compare_image); \
-  DestroyImageList(difference_image); \
-  DestroyImageList(reference_image); \
+  status=MagickFail; \
   ThrowException(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto compare_cleanup_and_return; \
 }
 #define ThrowCompareException3(code,reason,description) \
 { \
-  DestroyImageList(compare_image); \
-  DestroyImageList(difference_image); \
-  DestroyImageList(reference_image); \
+  status=MagickFail; \
   ThrowException3(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail);                        \
+  goto compare_cleanup_and_return; \
 }
 MagickExport MagickPassFail
 CompareImageCommand(ImageInfo *image_info,
@@ -2301,6 +2295,12 @@ CompareImageCommand(ImageInfo *image_info,
 
   MetricType
     metric=UndefinedMetric;
+
+  enum {
+        UndefinedMatte,
+        IgnoreMatte,
+        StoreMatte
+  } matte=UndefinedMatte;
 
   DifferenceImageOptions
     difference_options;
@@ -2629,7 +2629,13 @@ CompareImageCommand(ImageInfo *image_info,
       case 'm':
       {
         if (LocaleCompare("matte",option+1) == 0)
-          break;
+          {
+            if (*option == '+')
+              matte=IgnoreMatte;
+            else
+              matte=StoreMatte;
+            break;
+          }
         if (LocaleCompare("maximum-error",option+1) == 0)
           {
             if (*option == '-')
@@ -2729,7 +2735,7 @@ CompareImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         ThrowCompareException(OptionError,UnrecognizedOption,option)
       }
@@ -2742,13 +2748,19 @@ CompareImageCommand(ImageInfo *image_info,
   if (compare_image == (Image *) NULL)
     {
       if (exception->severity == UndefinedException)
-        ThrowCompareException(OptionError,RequestDidNotReturnAnImage,
-          (char *) NULL);
-      return(MagickFail);
+        ThrowException(exception,OptionError,RequestDidNotReturnAnImage,(char *) NULL);
+    }
+  if (reference_image == (Image *) NULL)
+    {
+      if (exception->severity == UndefinedException)
+        ThrowException(exception,OptionError,MissingAnImageFilename,(char *) NULL);
     }
   if ((reference_image == (Image *) NULL) ||
       (compare_image == (Image *) NULL))
-    ThrowCompareException(OptionError,MissingAnImageFilename,(char *) NULL);
+    {
+      status=MagickFail;
+      goto compare_cleanup_and_return;
+    }
 
   /*
     Apply any user settings to images prior to compare.
@@ -2764,6 +2776,24 @@ CompareImageCommand(ImageInfo *image_info,
       (void) TransformColorspace(reference_image,image_info->colorspace);
       (void) TransformColorspace(compare_image,image_info->colorspace);
     }
+
+  if (matte != UndefinedMatte)
+  {
+    if (matte == IgnoreMatte)
+      {
+        reference_image->matte=MagickFalse;
+        compare_image->matte=MagickFalse;
+      }
+    else if (matte == StoreMatte)
+      {
+        if (reference_image->matte == MagickFalse)
+          SetImageOpacity(reference_image,OpaqueOpacity);
+        reference_image->matte=MagickTrue;
+        if (compare_image->matte == MagickFalse)
+          SetImageOpacity(compare_image,OpaqueOpacity);
+        compare_image->matte=MagickTrue;
+      }
+  }
 
   if (metric != UndefinedMetric)
   {
@@ -2835,6 +2865,8 @@ CompareImageCommand(ImageInfo *image_info,
             }
         }
     }
+
+ compare_cleanup_and_return:
 
   DestroyImageList(difference_image);
   DestroyImageList(reference_image);
@@ -3086,23 +3118,15 @@ static void LiberateCompositeOptions(CompositeOptions *option_info)
 #define NotInitialized  (unsigned int) (~0)
 #define ThrowCompositeException(code,reason,description) \
 { \
-  LiberateCompositeOptions(&option_info); \
-  DestroyImageList(image); \
-  DestroyImageList(composite_image); \
-  DestroyImageList(mask_image); \
+  status=MagickFail; \
   ThrowException(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto composite_cleanup_and_return; \
 }
 #define ThrowCompositeException3(code,reason,description) \
 { \
-  LiberateCompositeOptions(&option_info); \
-  DestroyImageList(image); \
-  DestroyImageList(composite_image); \
-  DestroyImageList(mask_image); \
+  status=MagickFail; \
   ThrowException3(exception,code,reason,description); \
-  LiberateArgumentList(argc,argv); \
-  return(MagickFail); \
+  goto composite_cleanup_and_return; \
 }
 MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
   int argc,char **argv,char **metadata,ExceptionInfo *exception)
@@ -4001,7 +4025,7 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -4065,9 +4089,9 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
   if (image == (Image *) NULL)
     {
       if (exception->severity == UndefinedException)
-        ThrowCompositeException(OptionError,RequestDidNotReturnAnImage,
-          (char *) NULL);
-      return(MagickFail);
+        ThrowException(exception,OptionError,RequestDidNotReturnAnImage,(char *) NULL);
+      status=MagickFail;
+      goto composite_cleanup_and_return;
     }
   if (i != (argc-1))
     ThrowCompositeException(OptionError,MissingAnImageFilename,(char *) NULL);
@@ -4092,6 +4116,9 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
       (void) ConcatenateString(&(*metadata),"\n");
       MagickFreeMemory(text);
     }
+
+  composite_cleanup_and_return:
+
   LiberateCompositeOptions(&option_info);
   DestroyImageList(composite_image);
   DestroyImageList(mask_image);
@@ -6026,7 +6053,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("view",option+1) == 0)
           {
@@ -8624,7 +8651,7 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -9962,7 +9989,6 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
       {
         if (LocaleCompare("label",option+1) == 0)
           {
-            fprintf(stderr,"%d: Handling label\n",__LINE__);
             (void) SetImageAttribute(*image,"label",(char *) NULL);
             if (*option == '-')
               {
@@ -15012,7 +15038,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("verbose",option+1) == 0)
+        if (LocaleCompare("version",option+1) == 0)
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -16959,9 +16985,9 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 
   /* Ghostscript Library */
   supported=MagickFalse;
-#if defined(HasGS)
+#if defined(HasGSLIB)
   supported=MagickTrue;
-#endif /* defined(HasGS) */
+#endif /* defined(HasGSLIB) */
   PrintFeature("Ghostscript (Library)", supported);
 
   /* JBIG */

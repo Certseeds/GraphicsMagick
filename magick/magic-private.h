@@ -10,7 +10,7 @@
 */
 
 extern MagickExport MagickPassFail
-  InitializeMagicInfo(void);
+  InitializeMagicInfo(void) MAGICK_FUNC_CONST;
 
 extern MagickExport void
   DestroyMagicInfo(void);

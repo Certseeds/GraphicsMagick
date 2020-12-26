@@ -9,7 +9,7 @@
   Log methods.
 */
 
-extern MagickExport void
+extern void
   DestroyLogInfo(void);
 
 extern MagickPassFail

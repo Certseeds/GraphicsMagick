@@ -248,6 +248,7 @@ MAGICK_INCLUDE_HDRS = \
 	magick/draw.h \
 	magick/effect.h \
 	magick/enhance.h \
+	magick/enum_strings.h \
 	magick/error.h \
 	magick/forward.h \
 	magick/fx.h \

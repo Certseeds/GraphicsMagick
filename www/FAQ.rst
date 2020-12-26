@@ -111,25 +111,16 @@ will be no more need to develop specialized code for a GPU.  Today 16
 core CPUs are readily available for purchase in systems at reasonable
 prices, and this trend is certain to continue.
 
-Intel's `Xeon Phi <http://en.wikipedia.org/wiki/Xeon_Phi>`_ offers a
-61 core 'x86 CPU in a GPU-like plugin form-factor which provides over
-a TeraFLOP of performance.  Being based on power-hungry plug-in cards,
-this solution suffers from many of the issues associated with GPUs.
-However, since it supports OpenMP, it may be a suitable target for
-executing some GraphicsMagick algorithms. Effective use of Xeon Phi
-currently requires use of Intel's development tools so from that
-standpoint it is not much more open than GPUs.
-
 Future multi-core CPUs will use a similar amount of power to today's
 CPUs, will idle at very low power consumption levels, and will fit
 into a very small chassis.  Due to this trend, there is no value
 obtained by expending energy toward developing specialized code for
-today's GPUs.
+today's GPUs in GraphicsMagick.
 
 What is the meaning of "magick"?
 --------------------------------
 
-According to the infamous British accultist `Aleister Crowley
+According to the infamous British occultist `Aleister Crowley
 <http://en.wikipedia.org/wiki/Aleister_Crowley>`_, the definition of
 `magick <http://en.wikipedia.org/wiki/Magick_(Aleister_Crowley)>`_ is
 "the science and art of causing change to occur in conformity with the
@@ -768,9 +759,3 @@ By default `identify` reports only the most basic properties::
   seaworld.jpg JPEG 1530x1020+0+0 DirectClass 8-bit 204.0K 0.000u 0:01
 
 but with -verbose it can report on a large number of properties.
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

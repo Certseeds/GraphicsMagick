@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -276,7 +276,33 @@ typedef struct _StreamManager
     *image;
 } StreamManager;
 
+/*
+  I/O read/write callbacks changed
+
+  Cnt argument changed from 'int' to 'unsigned' on 6/29/20 (2.0.19).
+
+  Write write buf pointer changed from 'char *' to 'const char *' on 8/14/20
+
+  Old interface:
+  int (*read_)(jas_stream_obj_t *obj, char *buf, int cnt);
+  int (*write_)(jas_stream_obj_t *obj, char *buf, int cnt);
+
+  New interface:
+  int (*read_)(jas_stream_obj_t *obj, char *buf, unsigned cnt);
+  int (*write_)(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
+
+  We have yet to find a useful way to determine the version of the
+  JasPer library using the C pre-processor.
+ */
+#if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE)
+#define MAGICK_JP2_NEW_STREAM_INTERFACE 0
+#endif /* if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE) */
+
+#if MAGICK_JP2_NEW_STREAM_INTERFACE
+static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
+#else
 static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
+#endif
 {
   size_t
     count;
@@ -288,7 +314,11 @@ static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
   return ((int) count);
 }
 
+#if MAGICK_JP2_NEW_STREAM_INTERFACE
+static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
+#else
 static int BlobWrite(jas_stream_obj_t *object,char *buffer,const int length)
+#endif
 {
   size_t
     count;
@@ -334,7 +364,10 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
   stream->rwlimit_=(-1);
   stream->obj_=MagickAllocateMemory(jas_stream_obj_t *,sizeof(StreamManager));
   if (stream->obj_ == (jas_stream_obj_t *) NULL)
-    return((jas_stream_t *) NULL);
+    {
+      MagickFreeMemory(stream);
+      return((jas_stream_t *) NULL);
+    }
   stream->ops_=stream_ops;
   stream->openmode_=JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
   stream->bufbase_=stream->tinybuf_;
@@ -350,7 +383,7 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
 #define ThrowJP2ReaderException(code_,reason_,image_) \
 { \
   for (component=0; component < (long) number_components; component++) \
-    MagickFreeMemory(channel_lut[component]); \
+    MagickFreeResourceLimitedMemory(channel_lut[component]); \
   if (pixels) \
     jas_matrix_destroy(pixels); \
   if (jp2_stream) \
@@ -580,7 +613,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       scale_to_quantum=MaxRGBDouble/max_value;
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Channel %d scale is %g", component, scale_to_quantum);
-      channel_lut[component]=MagickAllocateArray(Quantum *, (size_t) max_value+1,sizeof(Quantum));
+      channel_lut[component]=MagickAllocateResourceLimitedArray(Quantum *, (size_t) max_value+1,sizeof(Quantum));
       if (channel_lut[component] == (Quantum *) NULL)
         ThrowJP2ReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       for(i=0; i <= max_value; i++)
@@ -703,7 +736,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   }
 
   for (component=0; component < (long) number_components; component++)
-    MagickFreeMemory(channel_lut[component]);
+    MagickFreeResourceLimitedMemory(channel_lut[component]);
   jas_matrix_destroy(pixels);
   (void) jas_stream_close(jp2_stream);
   jas_image_destroy(jp2_image);
@@ -1010,7 +1043,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     double
       scale_to_component;
 
-    lut=MagickAllocateArray(unsigned short *,MaxMap+1,sizeof(*lut));
+    lut=MagickAllocateResourceLimitedArray(unsigned short *,MaxMap+1,sizeof(*lut));
     if (lut == (unsigned short *) NULL)
       {
         jas_image_destroy(jp2_image);
@@ -1073,7 +1106,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   jp2_pixels=jas_matrix_create(1,(unsigned int) image->columns);
   if (jp2_pixels == (jas_matrix_t *) NULL)
     {
-      MagickFreeMemory(lut);
+      MagickFreeResourceLimitedMemory(lut);
       jas_image_destroy(jp2_image);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
@@ -1212,7 +1245,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   status=jas_image_encode(jp2_image,jp2_stream,format,options);
   (void) jas_stream_close(jp2_stream);
   MagickFreeMemory(options);
-  MagickFreeMemory(lut);
+  MagickFreeResourceLimitedMemory(lut);
   jas_matrix_destroy(jp2_pixels);
   jas_image_destroy(jp2_image);
   if (status)

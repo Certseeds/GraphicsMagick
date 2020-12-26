@@ -1184,19 +1184,19 @@ DPXOrientationToOrientationType(const unsigned int orientation)
 }
 
 #define LSBOctetsToPackedU32Word(scanline,packed_u32) \
-{ \
+do { \
   packed_u32  = (((magick_uint32_t) *scanline++)); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 8); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 16); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 24); \
-}
+ } while(0)
 #define MSBOctetsToPackedU32Word(scanline,packed_u32) \
-{ \
+do { \
   packed_u32  = (((magick_uint32_t) *scanline++) << 24); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 16); \
   packed_u32 |= (((magick_uint32_t) *scanline++) << 8); \
   packed_u32 |= (((magick_uint32_t) *scanline++)); \
-}
+ } while(0)
 
 /*
   Scale from a video level to a full-range level.
@@ -1292,7 +1292,7 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
       if (bits_per_sample == 10)
         {
           register magick_uint32_t
-            packed_u32;
+            packed_u32 = 0;
 
           register unsigned int
             datum;
@@ -1339,38 +1339,22 @@ STATIC void ReadRowSamples(const unsigned char *scanline,
 
           if (endian_type == MSBEndian)
             {
-              for (i=samples_per_row/3; i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  MSBOctetsToPackedU32Word(scanline,packed_u32);
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
+                  datum = i % 3;
+                  if (datum == 0)
+                    MSBOctetsToPackedU32Word(scanline,packed_u32);
                   *sp++=(packed_u32 >> shifts[datum]) & 0x3FF;
-                }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  MSBOctetsToPackedU32Word(scanline,packed_u32);
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
                 }
             }
           else if (endian_type == LSBEndian)
             {
-              for (i=samples_per_row/3; i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  LSBOctetsToPackedU32Word(scanline,packed_u32);
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
-                  *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
+                  datum = i % 3;
+                  if (datum == 0)
+                    LSBOctetsToPackedU32Word(scanline,packed_u32);
                   *sp++=(packed_u32 >> shifts[datum]) & 0x3FF;
-                }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  LSBOctetsToPackedU32Word(scanline,packed_u32);
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    *sp++=(packed_u32 >> shifts[datum++]) & 0x3FF;
                 }
             }
           return;
@@ -1564,8 +1548,8 @@ STATIC void TentUpsampleChroma(PixelPacket *pixels, unsigned long columns)
 
 #define ThrowDPXReaderException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(map_Y); \
-  MagickFreeMemory(map_CbCr); \
+  MagickFreeResourceLimitedMemory(map_Y); \
+  MagickFreeResourceLimitedMemory(map_CbCr); \
   if (samples_set) \
     DestroyThreadViewDataSet(samples_set);    \
   if (scanline_set) \
@@ -1894,13 +1878,20 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           while (user_data_length < dpx_file_info.user_defined_length)
             {
+              unsigned char
+                *new_user_data;
+
               read_size=Min(block_size,dpx_file_info.user_defined_length-user_data_length);
-              MagickReallocMemory(unsigned char *,user_data,user_data_length+read_size);
-              if (user_data == (unsigned char *) NULL)
-                ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+              new_user_data=MagickReallocateResourceLimitedMemory(unsigned char *,user_data,user_data_length+read_size);
+              if (new_user_data == (unsigned char *) NULL)
+                {
+                  MagickFreeResourceLimitedMemory(user_data);
+                  ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                }
+              user_data=new_user_data;
               if (ReadBlob(image,read_size,user_data+user_data_length) != read_size)
                 {
-                  MagickFreeMemory(user_data);
+                  MagickFreeResourceLimitedMemory(user_data);
                   ThrowDPXReaderException(CorruptImageError,UnexpectedEndOfFile,image);
                 }
               user_data_length += read_size;
@@ -1911,10 +1902,10 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           StringToAttribute(image,"DPX:user.data.id",dpx_user_data->user_id);
           if (!SetImageProfile(image,"DPXUSERDATA",user_data,user_data_length))
             {
-              MagickFreeMemory(user_data);
+              MagickFreeResourceLimitedMemory(user_data);
               ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
             }
-          MagickFreeMemory(user_data);
+          MagickFreeResourceLimitedMemory(user_data);
         }
     }
   /*
@@ -2388,13 +2379,13 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Maximum number of bits per sample in any element: %u",
                         max_bits_per_sample);
-  map_Y=MagickAllocateArray(Quantum *,
+  map_Y=MagickAllocateResourceLimitedArray(Quantum *,
                             MaxValueGivenBits(max_bits_per_sample)+1,
                             sizeof(Quantum));
   if (map_Y == (Quantum *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  map_CbCr=MagickAllocateArray(Quantum *,
+  map_CbCr=MagickAllocateResourceLimitedArray(Quantum *,
                                MaxValueGivenBits(max_bits_per_sample)+1,
                                sizeof(Quantum));
   if (map_CbCr == (Quantum *) NULL)
@@ -2534,7 +2525,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
         }
-      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")))
+      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")) ||
+          (definition_value=AccessDefinition(image_info,"dpx","swap-samples-read")))
         {
           if (LocaleCompare(definition_value,"false") != 0)
             swap_word_datums = swap_word_datums ? MagickFalse : MagickTrue;
@@ -3048,8 +3040,8 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->is_monochrome=is_monochrome;
   image->is_grayscale=is_grayscale;
   image->depth=Min(QuantumDepth,image->depth);
-  MagickFreeMemory(map_CbCr);
-  MagickFreeMemory(map_Y);
+  MagickFreeResourceLimitedMemory(map_CbCr);
+  MagickFreeResourceLimitedMemory(map_Y);
   DestroyThreadViewDataSet(scanline_set);
   DestroyThreadViewDataSet(samples_set);
   StopTimer(&image->timer);
@@ -3218,19 +3210,19 @@ STATIC U16 OrientationTypeToDPXOrientation(const OrientationType orientation_typ
 }
 
 #define LSBPackedU32WordToOctets(packed_u32,scanline) \
-{ \
+do { \
   *scanline++=(unsigned char) ((packed_u32) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 8) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 16) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 24) & 0xFF); \
-}
+ } while(0)
 #define MSBPackedU32WordToOctets(packed_u32,scanline) \
-{ \
+do { \
   *scanline++=(unsigned char) ((packed_u32 >> 24) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 16) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32 >> 8) & 0xFF); \
   *scanline++=(unsigned char) ((packed_u32) & 0xFF); \
-}
+ } while(0)
 
 /*
   WordStreamLSBWrite support
@@ -3358,47 +3350,37 @@ STATIC void WriteRowSamples(const sample_t *samples,
                 }
             }
 
+          datum=0;
+          packed_u32=0;
           if (endian_type == MSBEndian)
             {
-              /* Standard specified datum order */
-              for (i=(samples_per_row/3); i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  packed_u32=0;
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  if (datum == 2)
+                    {
+                      MSBPackedU32WordToOctets(packed_u32,scanline);
+                      packed_u32=0;
+                    }
+                  datum = i % 3;
                   packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
-                  MSBPackedU32WordToOctets(packed_u32,scanline);
                 }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  packed_u32=0;
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= ((magick_uint32_t) *samples++ << shifts[datum++]);
-                  MSBPackedU32WordToOctets(packed_u32,scanline);
-                }
+              if ((samples_per_row+1) % 3 )
+                MSBPackedU32WordToOctets(packed_u32,scanline);
             }
           else if (endian_type == LSBEndian)
             {
-              /* Standard specified datum order */
-              for (i=(samples_per_row/3); i != 0; --i)
+              for (i=0; i < samples_per_row; i++)
                 {
-                  datum=0;
-                  packed_u32=0;
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
+                  if (datum == 2)
+                    {
+                      LSBPackedU32WordToOctets(packed_u32,scanline);
+                      packed_u32=0;
+                    }
+                  datum = i % 3;
                   packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum]);
-                  LSBPackedU32WordToOctets(packed_u32,scanline);
                 }
-              if ((samples_per_row % 3))
-                {
-                  datum=0;
-                  packed_u32=0;
-                  for (i=(samples_per_row % 3); i != 0; --i)
-                    packed_u32 |= (((magick_uint32_t) *samples++) << shifts[datum++]);
-                  LSBPackedU32WordToOctets(packed_u32,scanline);
-                }
+              if ((samples_per_row+1) % 3 )
+                LSBPackedU32WordToOctets(packed_u32,scanline);
             }
           return;
         }
@@ -3675,10 +3657,10 @@ STATIC void WriteRowSamples(const sample_t *samples,
 
 #define ThrowDPXWriterException(code_,reason_,image_)    \
 { \
-  MagickFreeMemory(map_CbCr);   \
-  MagickFreeMemory(map_Y); \
-  MagickFreeMemory(samples); \
-  MagickFreeMemory(scanline); \
+  MagickFreeResourceLimitedMemory(map_CbCr);   \
+  MagickFreeResourceLimitedMemory(map_Y); \
+  MagickFreeResourceLimitedMemory(samples); \
+  MagickFreeResourceLimitedMemory(scanline); \
   if (chroma_image) \
     DestroyImage(chroma_image); \
   ThrowWriterException(code_,reason_,image_); \
@@ -4352,7 +4334,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate row samples.
   */
-  samples=MagickAllocateArray(sample_t *,image->columns,
+  samples=MagickAllocateResourceLimitedArray(sample_t *,image->columns,
                               max_samples_per_pixel*sizeof(sample_t));
   if (samples == (sample_t *) NULL)
     ThrowDPXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -4361,7 +4343,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate row scanline.
   */
-  scanline=MagickAllocateMemory(unsigned char *,row_octets);
+  scanline=MagickAllocateResourceLimitedMemory(unsigned char *,row_octets);
   if (scanline == (unsigned char *) NULL)
     ThrowDPXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) memset((void *) scanline,0,row_octets);
@@ -4369,12 +4351,12 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate sample translation map storage.
   */
-  map_Y=MagickAllocateArray(sample_t *,MaxMap+1,sizeof(sample_t));
+  map_Y=MagickAllocateResourceLimitedArray(sample_t *,MaxMap+1,sizeof(sample_t));
   if (map_Y == (sample_t *) NULL)
     ThrowDPXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) memset((void *) map_Y,0,(MaxMap+1)*sizeof(sample_t));
 
-  map_CbCr=MagickAllocateArray(sample_t *,MaxMap+1,sizeof(sample_t));
+  map_CbCr=MagickAllocateResourceLimitedArray(sample_t *,MaxMap+1,sizeof(sample_t));
   if (map_CbCr == (sample_t *) NULL)
     ThrowDPXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   (void) memset((void *) map_CbCr,0,(MaxMap+1)*sizeof(sample_t));
@@ -4544,12 +4526,12 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
           if ((bits_per_sample == 10) && (packing_method != PackingMethodPacked))
             swap_word_datums = MagickTrue;
         }
-      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")))
+      if ((definition_value=AccessDefinition(image_info,"dpx","swap-samples")) ||
+          (definition_value=AccessDefinition(image_info,"dpx","swap-samples-write")))
         {
           if (LocaleCompare(definition_value,"false") != 0)
             swap_word_datums = swap_word_datums ? MagickFalse : MagickTrue;
         }
-
       /*
         Create a chroma image if we are subsampling YCbCr.
       */
@@ -4795,10 +4777,10 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
       }
   }
 
-  MagickFreeMemory(map_CbCr);
-  MagickFreeMemory(map_Y);
-  MagickFreeMemory(samples);
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(map_CbCr);
+  MagickFreeResourceLimitedMemory(map_Y);
+  MagickFreeResourceLimitedMemory(samples);
+  MagickFreeResourceLimitedMemory(scanline);
   CloseBlob(image);
   if (chroma_image != (Image *) NULL)
     {

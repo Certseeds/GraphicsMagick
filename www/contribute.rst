@@ -102,9 +102,3 @@ the GraphicsMagick project:
 
 * Complete the port of ralcgm to Windows so that it may be used as a
   delegate under Windows.
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

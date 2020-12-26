@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -122,6 +122,7 @@ static unsigned int IsEPT(const unsigned char *magick,const size_t length)
 %
 %
 */
+#if defined(HasGS)
 static Image *ReadEPTImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -390,16 +391,6 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
       DestroyImageInfo(clone_info);
     }
   (void) LiberateTemporaryFile((char *) image_info->filename);
-#if defined(HasDPS)
-  if (image == (Image *) NULL)
-    {
-      /*
-        Ghostscript has failed-- try the Display Postscript Extension.
-      */
-      (void) FormatString((char *) image_info->filename,"dps:%.1024s",filename);
-      image=ReadImage(image_info,exception);
-    }
-#endif /* defined(HasDPS) */
   if (image == (Image *) NULL)
     if (UndefinedException == exception->severity)
       ThrowException(exception,DelegateError,PostscriptDelegateFailed,filename);
@@ -418,6 +409,7 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
     }
   return(image);
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -448,7 +440,9 @@ ModuleExport void RegisterEPTImage(void)
     *entry;
 
   entry=SetMagickInfo("EPT");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadEPTImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;
@@ -459,7 +453,9 @@ ModuleExport void RegisterEPTImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("EPT2");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadEPTImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;
@@ -470,7 +466,9 @@ ModuleExport void RegisterEPTImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("EPT3");
+#if defined(HasGS)
   entry->decoder=(DecoderHandler) ReadEPTImage;
+#endif /* if defined(HasGS) */
   entry->encoder=(EncoderHandler) WriteEPTImage;
   entry->magick=(MagickHandler) IsEPT;
   entry->adjoin=False;

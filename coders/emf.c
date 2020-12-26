@@ -150,7 +150,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
           DeleteMetaFile(hOld);
           return((HENHMETAFILE) NULL);
         }
-      pBits=MagickAllocateMemory(LPBYTE,dwSize);
+      pBits=MagickAllocateResourceLimitedMemory(LPBYTE,dwSize);
       if (pBits == (LPBYTE) NULL)
         {
           DeleteMetaFile(hOld);
@@ -158,7 +158,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
         }
       if (GetMetaFileBitsEx(hOld,dwSize,pBits) == 0)
         {
-          MagickFreeMemory(pBits);
+          MagickFreeResourceLimitedMemory(pBits);
           DeleteMetaFile(hOld);
           return((HENHMETAFILE) NULL);
         }
@@ -173,7 +173,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
       hTemp=SetWinMetaFileBits(dwSize,pBits,hDC,&mp);
       ReleaseDC(NULL,hDC);
       DeleteMetaFile(hOld);
-      MagickFreeMemory(pBits);
+      MagickFreeResourceLimitedMemory(pBits);
       GetEnhMetaFileHeader(hTemp,sizeof(ENHMETAHEADER),&emfh);
       *width=emfh.rclFrame.right-emfh.rclFrame.left;
       *height=emfh.rclFrame.bottom-emfh.rclFrame.top;
@@ -187,7 +187,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
   if (hFile == INVALID_HANDLE_VALUE)
     return(NULL);
   dwSize=GetFileSize(hFile,NULL);
-  pBits=MagickAllocateMemory(LPBYTE,dwSize);
+  pBits=MagickAllocateResourceLimitedMemory(LPBYTE,dwSize);
   if (pBits == (LPBYTE) NULL)
     {
       CloseHandle(hFile);
@@ -197,7 +197,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
   CloseHandle(hFile);
   if (((PAPMHEADER) pBits)->dwKey != 0x9ac6cdd7l)
     {
-      MagickFreeMemory(pBits);
+      MagickFreeResourceLimitedMemory(pBits);
       return((HENHMETAFILE) NULL);
     }
   /*
@@ -214,7 +214,7 @@ static HENHMETAFILE ReadEnhMetaFile(const char *szFileName,long *width,
   hDC=GetDC(NULL);
   hTemp=SetWinMetaFileBits(dwSize,&(pBits[sizeof(APMHEADER)]),hDC,&mp);
   ReleaseDC(NULL,hDC);
-  MagickFreeMemory(pBits);
+  MagickFreeResourceLimitedMemory(pBits);
   return(hTemp);
 }
 
@@ -308,31 +308,34 @@ static Image *ReadEMFImage(const ImageInfo *image_info,
 /*         flags; */
 
       geometry=GetPageGeometry(image_info->page);
-      p=strchr(geometry,'>');
-      if (!p)
+      if (geometry != NULL)
         {
-          /*flags=*/ (void) GetMagickGeometry(geometry,&sans,&sans,&image->columns,
-            &image->rows);
-          if (image->x_resolution != 0.0)
-            image->columns=(unsigned int)
-              ((image->columns*image->x_resolution)+0.5);
-          if (image->y_resolution != 0.0)
-            image->rows=(unsigned int)
-              ((image->rows*image->y_resolution)+0.5);
+          p=strchr(geometry,'>');
+          if (!p)
+            {
+              /*flags=*/ (void) GetMagickGeometry(geometry,&sans,&sans,&image->columns,
+                                                  &image->rows);
+              if (image->x_resolution != 0.0)
+                image->columns=(unsigned int)
+                  ((image->columns*image->x_resolution)+0.5);
+              if (image->y_resolution != 0.0)
+                image->rows=(unsigned int)
+                  ((image->rows*image->y_resolution)+0.5);
+            }
+          else
+            {
+              *p='\0';
+              /*flags=*/ (void) GetMagickGeometry(geometry,&sans,&sans,&image->columns,
+                                                  &image->rows);
+              if (image->x_resolution != 0.0)
+                image->columns=(unsigned int)
+                  (((image->columns*image->x_resolution)/72.0)+0.5);
+              if (image->y_resolution != 0.0)
+                image->rows=(unsigned int)
+                  (((image->rows*image->y_resolution)/72.0)+0.5);
+            }
+          MagickFreeMemory(geometry);
         }
-      else
-        {
-          *p='\0';
-          /*flags=*/ (void) GetMagickGeometry(geometry,&sans,&sans,&image->columns,
-            &image->rows);
-          if (image->x_resolution != 0.0)
-            image->columns=(unsigned int)
-              (((image->columns*image->x_resolution)/72.0)+0.5);
-          if (image->y_resolution != 0.0)
-            image->rows=(unsigned int)
-              (((image->rows*image->y_resolution)/72.0)+0.5);
-        }
-      MagickFreeMemory(geometry);
     }
   hDC=GetDC(NULL);
   if (!hDC)

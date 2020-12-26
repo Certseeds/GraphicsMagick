@@ -235,9 +235,3 @@ Acknowledgements
 Paul Raveling, USC Information Sciences Institute, for the original idea
 of using space subdivision for the color reduction algorithm. With Paul's
 permission, this document is an adaptation from a document he wrote.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

@@ -4237,6 +4237,9 @@ MagickExport int DrawRender(const DrawContext context)
 
   CurrentContext->primitive = context->mvg;
   (void) LogMagickEvent(RenderEvent,GetMagickModule(),"MVG:\n'%s'\n",context->mvg);
+  /* SetImageAttribute concatenates values! Delete with NULL */
+  (void) SetImageAttribute(context->image,"[MVG]",NULL);
+  (void) SetImageAttribute(context->image,"[MVG]",CurrentContext->primitive);
   (void) DrawImage(context->image, CurrentContext);
   CurrentContext->primitive = (char *) NULL;
 

@@ -65,9 +65,3 @@ Python_               PgMagick provides the power and ease of the C++ API, but i
 
 *Some of these languages and scripting environments are supported by the
 GraphicsMagick Group while others are developed and supported by third parties.*
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

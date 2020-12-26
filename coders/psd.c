@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2017 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -449,7 +449,7 @@ static const char* ModeToString( PSDImageType inType )
 
 #define ThrowPSDReaderException(code_,reason_,image_)   \
   {                                                     \
-    MagickFreeMemory(layer_info);                       \
+    MagickFreeResourceLimitedMemory(layer_info);                       \
     ThrowReaderException(code_,reason_,image_);         \
   }
 
@@ -697,7 +697,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             Duotone image data;  the format of this data is undocumented.
           */
-          data=MagickAllocateMemory(unsigned char *,length);
+          data=MagickAllocateResourceLimitedMemory(unsigned char *,length);
           if (data == (unsigned char *) NULL) {
             if(logging)
               {
@@ -709,7 +709,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     image);
           }
           (void) ReadBlob(image,length,data);
-          MagickFreeMemory(data);
+          MagickFreeResourceLimitedMemory(data);
         }
       else
         {
@@ -763,7 +763,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                 "  reading image resources (IPTC) - %ld bytes",
                                 (long) length);
         }
-      data=MagickAllocateMemory(unsigned char *,length);
+      data=MagickAllocateResourceLimitedMemory(unsigned char *,length);
       if (data == (unsigned char *) NULL)
         {
           if (logging)
@@ -786,7 +786,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ThrowPSDReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       (void) SetImageProfile(image,"IPTC",data,length);
-      MagickFreeMemory(data);
+      MagickFreeResourceLimitedMemory(data);
     }
 
   /*
@@ -855,7 +855,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
           else
             {
-              layer_info=MagickAllocateArray(LayerInfo *,number_layers,sizeof(LayerInfo));
+              layer_info=MagickAllocateResourceLimitedArray(LayerInfo *,number_layers,sizeof(LayerInfo));
               if (layer_info == (LayerInfo *) NULL)
                 {
                   if (logging)
@@ -1354,7 +1354,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   DestroyImage(image);
                   returnImage = layer_info[0].image;
 #endif
-                  MagickFreeMemory(layer_info);
+                  MagickFreeResourceLimitedMemory(layer_info);
 
                   if (logging)
                     {
@@ -1687,7 +1687,7 @@ static MagickPassFail WriteWhiteBackground( Image* image )
 
   int numChannels = 3, i, bytecount, dim = (int) (image->rows*numChannels);
 
-  scanline=MagickAllocateMemory(char *,(image->columns/128)*2 + 2);
+  scanline=MagickAllocateResourceLimitedMemory(char *,(image->columns/128)*2 + 2);
   if (scanline == (char *) NULL)
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,NULL);
 
@@ -1730,7 +1730,7 @@ static MagickPassFail WriteWhiteBackground( Image* image )
       (void) WriteBlob( image, count, scanline );
     }
 
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
 
   return MagickPass;
 }
@@ -1806,7 +1806,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   packet_size=image->depth > 8 ? 6 : 3;
   if (image->matte)
     packet_size+=image->depth > 8 ? 2 : 1;
-  pixels=MagickAllocateArray(unsigned char *,
+  pixels=MagickAllocateResourceLimitedArray(unsigned char *,
                              packet_size,
                              MagickArraySize(image->columns,
                                              sizeof(PixelPacket)));
@@ -2045,7 +2045,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
   else
     WriteImageChannels( image, image, pixels );
 
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   CloseBlob(image);
   return(True);
 }

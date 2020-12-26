@@ -643,12 +643,7 @@ static unsigned int WritePreviewImage(const ImageInfo *image_info,Image *image)
         Free image directory.
       */
       MagickFreeMemory(montage_image->montage);
-      montage_image->montage=(char *) NULL;
-      if (image->directory != (char *) NULL)
-        {
-          MagickFreeMemory(montage_image->directory);
-          montage_image->directory=(char *) NULL;
-        }
+      MagickFreeMemory(montage_image->directory);
     }
   FormatString(montage_image->filename,"miff:%.1024s",image_info->filename);
   status=WriteImage(image_info,montage_image);

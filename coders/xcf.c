@@ -352,7 +352,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
       }
   }
 
-  xcfdata = xcfodata = MagickAllocateMemory(XCFPixelPacket *,data_length);
+  xcfdata = xcfodata = MagickAllocateResourceLimitedMemory(XCFPixelPacket *,data_length);
   graydata = (unsigned char *) xcfdata;  /* used by gray and indexed */
 
   if (xcfdata == (XCFPixelPacket *) NULL)
@@ -364,7 +364,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
   nmemb_read_successfully = ReadBlob(image, data_length, xcfdata);
   if (nmemb_read_successfully != data_length)
     {
-      MagickFreeMemory(xcfodata);
+      MagickFreeResourceLimitedMemory(xcfodata);
       ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
     }
 
@@ -372,7 +372,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
   if (q == (PixelPacket *) NULL)
     {
       CopyException(&image->exception,&tile_image->exception);
-      MagickFreeMemory(xcfodata);
+      MagickFreeResourceLimitedMemory(xcfodata);
       return MagickFail;
     }
 
@@ -403,7 +403,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
         }
     }
 
-  MagickFreeMemory(xcfodata);
+  MagickFreeResourceLimitedMemory(xcfodata);
   return MagickPass;
 }
 
@@ -440,7 +440,7 @@ static MagickPassFail load_tile_rle (Image* image,
 
   bpp = (int) inDocInfo->bpp;
 
-  xcfdata = xcfodata = MagickAllocateMemory(unsigned char *,data_length);
+  xcfdata = xcfodata = MagickAllocateResourceLimitedMemory(unsigned char *,data_length);
   if (xcfdata == (unsigned char *) NULL)
     {
       ThrowException(&image->exception,ResourceLimitError,MemoryAllocationFailed,NULL);
@@ -455,7 +455,7 @@ static MagickPassFail load_tile_rle (Image* image,
                               "Read %lu bytes, expected %lu bytes",
                               (unsigned long) nmemb_read_successfully,
                               (unsigned long) data_length);
-      MagickFreeMemory(xcfodata);
+      MagickFreeResourceLimitedMemory(xcfodata);
       ThrowBinaryException(CorruptImageError,UnexpectedEndOfFile,image->filename);
     }
 
@@ -628,12 +628,12 @@ static MagickPassFail load_tile_rle (Image* image,
       if (SyncImagePixelsEx(tile_image,&tile_image->exception) == MagickFail)
         break;
     }
-  MagickFreeMemory(xcfodata);
+  MagickFreeResourceLimitedMemory(xcfodata);
   return MagickPass;
 
  bogus_rle:
   if (xcfodata)
-    MagickFreeMemory(xcfodata);
+    MagickFreeResourceLimitedMemory(xcfodata);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(), "Failed to RLE-decode tile");
   ThrowBinaryException(CorruptImageError,CorruptImage,image->filename);
@@ -1357,7 +1357,7 @@ static MagickPassFail ReadOneLayer( Image* image, XCFDocInfo* inDocInfo, XCFLaye
               }                                                \
           }                                                    \
       }                                                        \
-    MagickFreeMemory(layer_info);                              \
+    MagickFreeResourceLimitedMemory(layer_info);                              \
   } while (0);
 static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
@@ -1760,7 +1760,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               last_layer);
 
       /* allocate our array of layer info blocks */
-      layer_info=MagickAllocateArray(XCFLayerInfo *,
+      layer_info=MagickAllocateResourceLimitedArray(XCFLayerInfo *,
                                      number_layers,
                                      sizeof(XCFLayerInfo));
       if (layer_info == (XCFLayerInfo *) NULL)
@@ -1791,7 +1791,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           saved_pos = TellBlob(image);
           if (saved_pos < 0)
             {
-              MagickFreeMemory(layer_info);
+              MagickFreeResourceLimitedMemory(layer_info);
               ThrowReaderException(BlobError,UnableToObtainOffset,image);
             }
 
@@ -1832,7 +1832,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           layer_info[j].image = (Image *) NULL;
                         }
                     }
-                  MagickFreeMemory(layer_info);
+                  MagickFreeResourceLimitedMemory(layer_info);
 #endif
                   DestroyLayerInfo(number_layers,layer_info);
                   CopyException(exception,&image->exception);
@@ -1938,7 +1938,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #endif
         }
 
-      MagickFreeMemory(layer_info);
+      MagickFreeResourceLimitedMemory(layer_info);
 
 #if 0  /* BOGUS: do we need the channels?? */
       while (True)

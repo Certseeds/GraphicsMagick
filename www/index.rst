@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.35 (Released February 23, 2020) `download release`__
+Current Release              1.3.36 (Released December 26, 2020) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -173,9 +173,3 @@ Here are just a few examples of what GraphicsMagick can do:
   * Decorate an image with a border or frame
 
   * Describe the format and characteristics of an image
-
-------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

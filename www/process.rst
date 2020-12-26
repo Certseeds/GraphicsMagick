@@ -94,9 +94,3 @@ Release Phase
   final release.
 
   Exit Criteria: None
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

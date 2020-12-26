@@ -21,9 +21,3 @@ Formats_ - File formats supported by GraphicsMagick.
 MIFF_ - Magick Image File Format.
 
 Links_ - Some links we find useful.
-
---------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2012 - 2020

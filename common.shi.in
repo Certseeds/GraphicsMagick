@@ -1,5 +1,5 @@
 # -*- shell-script -*-
-# Copyright (C) 2012-2017 GraphicsMagick Group
+# Copyright (C) 2012-2020 GraphicsMagick Group
 # Definitions of optional features and configuration values for this build.
 # Intended for use by test scripts.
 MAGICK_FEATURES='@MAGICK_FEATURES@'
@@ -18,4 +18,30 @@ MAGICK_CODER_STABILITY='BROKEN'
 MAGICK_FONT='@abs_top_srcdir@/PerlMagick/demo/Generic.ttf'
 
 PATH="@abs_top_builddir@/utilities:${PATH}"
+
+# Number of bits in a pixel Quantum (8/16/32)
+QuantumDepth=@QuantumDepth@
+
+# Memory limit (in MB) for a 'Q8' build
+Q8_MEMORY_LIMIT=128
+
+# Apply some resource limits (FAX/G4 need 2592x3508 pixel image!)
+if test -z "$MAGICK_LIMIT_MEMORY" ; then
+    export MAGICK_LIMIT_MEMORY=`expr $Q8_MEMORY_LIMIT '*' '(' $QuantumDepth / 8 ')'`MB
+fi
+if test -z "$MAGICK_LIMIT_WIDTH" ; then
+    export MAGICK_LIMIT_WIDTH=2592
+fi
+if test -z "$MAGICK_LIMIT_HEIGHT" ; then
+    export MAGICK_LIMIT_HEIGHT=3508
+fi
+if test -z "$MAGICK_LIMIT_DISK" ; then
+    export MAGICK_LIMIT_DISK=0
+fi
+# Enable debug traces for exceptions
+if test -z "MAGICK_DEBUG" ; then
+    export MAGICK_DEBUG=exception
+fi
+printf "Resource Limits: MAGICK_LIMIT_MEMORY=%s MAGICK_LIMIT_WIDTH=%s MAGICK_LIMIT_HEIGHT=%s MAGICK_LIMIT_DISK=%s\n\n" "$MAGICK_LIMIT_MEMORY" "$MAGICK_LIMIT_WIDTH" "$MAGICK_LIMIT_HEIGHT" "$MAGICK_LIMIT_DISK"
+
 set +a

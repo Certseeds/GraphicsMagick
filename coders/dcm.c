@@ -5533,12 +5533,12 @@ static MagickPassFail DCM_InitDCM(DicomStream *dcm,int verbose)
 
 static void DCM_DestroyDCM(DicomStream *dcm)
 {
-  MagickFreeMemory(dcm->offset_arr);
-  MagickFreeMemory(dcm->data);
+  MagickFreeResourceLimitedMemory(dcm->offset_arr);
+  MagickFreeResourceLimitedMemory(dcm->data);
 #if defined(USE_GRAYMAP)
-  MagickFreeMemory(dcm->graymap);
+  MagickFreeResourceLimitedMemory(dcm->graymap);
 #endif
-  MagickFreeMemory(dcm->rescale_map);
+  MagickFreeResourceLimitedMemory(dcm->rescale_map);
 }
 
 /*
@@ -5940,7 +5940,7 @@ static MagickPassFail funcDCM_LUT(Image *image,DicomStream *dcm,ExceptionInfo *e
 
   colors=dcm->length/dcm->bytes_per_pixel;
   dcm->datum=(long) colors;
-  dcm->graymap=MagickAllocateArray(unsigned short *,colors,sizeof(unsigned short));
+  dcm->graymap=MagickAllocateResourceLimitedArray(unsigned short *,colors,sizeof(unsigned short));
   if (dcm->graymap == (unsigned short *) NULL)
     {
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -6322,7 +6322,7 @@ static MagickPassFail DCM_ReadElement(Image *image, DicomStream *dcm,ExceptionIn
           ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
           return MagickFail;
         }
-      dcm->data=MagickAllocateArray(unsigned char *,(dcm->length+1),dcm->quantum);
+      dcm->data=MagickAllocateResourceLimitedArray(unsigned char *,(dcm->length+1),dcm->quantum);
       if (dcm->data == (unsigned char *) NULL)
         {
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -6456,7 +6456,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
   if (dcm->rescale_map == (Quantum *) NULL)
     {
       size_t num_entries = Max((size_t) MaxMap+1,(size_t) dcm->max_value_in+1);
-      dcm->rescale_map=MagickAllocateArray(Quantum *,num_entries,sizeof(Quantum));
+      dcm->rescale_map=MagickAllocateResourceLimitedArray(Quantum *,num_entries,sizeof(Quantum));
       if (dcm->rescale_map == NULL)
         {
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -7141,7 +7141,7 @@ static MagickPassFail DCM_ReadOffsetTable(Image *image,DicomStream *dcm,Exceptio
       return MagickFail;
     }
 
-  dcm->offset_arr=MagickAllocateArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));
+  dcm->offset_arr=MagickAllocateResourceLimitedArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));
   if (dcm->offset_arr == (magick_uint32_t *) NULL)
     {
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -7449,7 +7449,7 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       pfunc=parse_funcs[dicom_info[dcm.index].funce];
       if (pfunc != (DicomElemParseFunc *)NULL)
         status=pfunc(image,&dcm,exception);
-      MagickFreeMemory(dcm.data);
+      MagickFreeResourceLimitedMemory(dcm.data);
       dcm.data = NULL;
       dcm.length = 0;
       if (status == MagickPass)

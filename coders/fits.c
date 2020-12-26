@@ -585,7 +585,7 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
                 }
             }
 
-          fits_pixels=MagickAllocateArray(unsigned char *, image->columns, packet_size);
+          fits_pixels=MagickAllocateResourceLimitedArray(unsigned char *, image->columns, packet_size);
           if (fits_pixels == (unsigned char *) NULL)
             ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -654,7 +654,7 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
                                             image->columns,image->rows))
                   break;
             }
-          MagickFreeMemory(fits_pixels);
+          MagickFreeResourceLimitedMemory(fits_pixels);
           if (EOFBlob(image))
             {
               ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, image->filename);
@@ -761,8 +761,8 @@ ModuleExport void UnregisterFITSImage(void)
   This functions inserts one row into a HDU. Note that according to
   FITS spec a card image contains 80 bytes of ASCII data.
 
-  buffer - 2880 byte logical FITS record.
-  data   - string data to append
+  buffer - 2880 byte logical FITS record (initially memset to 0).
+  data   - string data to append at offset
   offset - offset into FITS record to write the data.
 */
 int InsertRowHDU(char *buffer, const char *data, int offset)
@@ -778,7 +778,7 @@ int InsertRowHDU(char *buffer, const char *data, int offset)
   if (len > (size_t) (((size_t)FITS_BLOCK_SIZE)-offset))
         len = ((size_t) FITS_BLOCK_SIZE)-offset;
 
-  (void) strncpy(buffer+offset,data,len);
+  (void) memcpy(buffer+offset,data,len);
   return offset +80;
 }
 
@@ -875,15 +875,15 @@ static MagickPassFail WriteFITSImage(const ImageInfo *image_info,Image *image)
     Allocate image memory.
   */
   packet_size=quantum_size/8;
-  fits_info=MagickAllocateMemory(char *,FITS_BLOCK_SIZE);
+  fits_info=MagickAllocateResourceLimitedMemory(char *,FITS_BLOCK_SIZE);
   if (fits_info == (char *) NULL)
     {
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
-  pixels=MagickAllocateArray(unsigned char *,packet_size,image->columns);
+  pixels=MagickAllocateResourceLimitedArray(unsigned char *,packet_size,image->columns);
   if (pixels == (unsigned char *) NULL)
     {
-      MagickFreeMemory(fits_info);
+      MagickFreeResourceLimitedMemory(fits_info);
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
 
@@ -949,9 +949,9 @@ static MagickPassFail WriteFITSImage(const ImageInfo *image_info,Image *image)
       memset(fits_info, 0, y);
       (void)WriteBlob(image,y,(char *) fits_info);
     }
-  MagickFreeMemory(fits_info);
+  MagickFreeResourceLimitedMemory(fits_info);
 
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   CloseBlob(image);
   return(True);
 }

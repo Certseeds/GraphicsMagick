@@ -184,20 +184,20 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     Read WEBP file.
   */
   length = (size_t) GetBlobSize(image); /* FIXME, does not work with stream */
-  stream=MagickAllocateArray(unsigned char *,
-                             length,sizeof(*stream));
+  stream=MagickAllocateResourceLimitedArray(unsigned char *,
+                                            length,sizeof(*stream));
   if (stream == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   count=(long) ReadBlob(image,length,(char *) stream);
   if (count != (size_t) length)
     {
-      MagickFreeMemory(stream);
+      MagickFreeResourceLimitedMemory(stream);
       ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     }
   if ((webp_status=WebPGetFeatures(stream,length,&stream_features)) != VP8_STATUS_OK)
     {
-      MagickFreeMemory(stream);
+      MagickFreeResourceLimitedMemory(stream);
 
       switch (webp_status)
         {
@@ -250,14 +250,14 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   image->matte=(stream_features.has_alpha ? MagickTrue : MagickFalse);
   if (image->ping)
     {
-      MagickFreeMemory(stream);
+      MagickFreeResourceLimitedMemory(stream);
       CloseBlob(image);
       StopTimer(&image->timer);
       return(image);
     }
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
-      MagickFreeMemory(stream);
+      MagickFreeResourceLimitedMemory(stream);
       ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     }
   if (image->matte)
@@ -270,7 +270,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
                                            &stream_features.height);
   if (pixels == (unsigned char *) NULL)
     {
-      MagickFreeMemory(stream);
+      MagickFreeResourceLimitedMemory(stream);
       ThrowReaderException(CoderError,NoDataReturned,image);
     }
 
@@ -299,7 +299,10 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     }
 
 #if defined(SUPPORT_WEBP_MUX)
-  /* Read features out of the WebP container */
+  /*
+    Read features out of the WebP container
+    https://developers.google.com/speed/webp/docs/container-api
+  */
   {
     uint32_t webp_flags=0;
     WebPData flag_data;
@@ -309,20 +312,23 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     (void) memset(&flag_data,0,sizeof(flag_data));
     WebPMuxGetFeatures(mux,&webp_flags);
 
-    if (webp_flags & ICCP_FLAG) {
-      WebPMuxGetChunk(mux,"ICCP",&flag_data);
-      AppendImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & ICCP_FLAG)
+      {
+        WebPMuxGetChunk(mux,"ICCP",&flag_data);
+        SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
+      }
 
-    if (webp_flags & EXIF_FLAG) {
-      WebPMuxGetChunk(mux,"EXIF",&flag_data);
-      AppendImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & EXIF_FLAG)
+      {
+        WebPMuxGetChunk(mux,"EXIF",&flag_data);
+        SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+      }
 
-    if (webp_flags & XMP_FLAG) {
-      WebPMuxGetChunk(mux,"XMP",&flag_data);
-      AppendImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
-    }
+    if (webp_flags & XMP_FLAG)
+      {
+        WebPMuxGetChunk(mux,"XMP",&flag_data);
+        SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
+      }
 
     WebPMuxDelete(mux);
   }
@@ -333,7 +339,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   */
   free(pixels);
   pixels=(unsigned char *) NULL;
-  MagickFreeMemory(stream);
+  MagickFreeResourceLimitedMemory(stream);
   CloseBlob(image);
   StopTimer(&image->timer);
   return(image);
@@ -720,7 +726,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
         Allocate memory for pixels.
       */
       per_column = MagickArraySize(MagickArraySize(4,image->rows),sizeof(*pixels));
-      pixels=MagickAllocateArray(unsigned char *,image->columns,per_column);
+      pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,per_column);
       if (pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -751,7 +757,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
         webp_status=WebPPictureImportRGB(&picture,pixels,3*picture.width);
       else
         webp_status=WebPPictureImportRGBA(&picture,pixels,4*picture.width);
-      MagickFreeMemory(pixels);
+      MagickFreeResourceLimitedMemory(pixels);
     }
 
   if (webp_status)

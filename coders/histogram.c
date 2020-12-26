@@ -223,18 +223,18 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
     Allocate histogram count arrays.
   */
   length=Max(ScaleQuantumToChar(MaxRGB)+1,histogram_image->columns);
-  red=MagickAllocateArray(long *,length,sizeof(long));
-  green=MagickAllocateArray(long *,length,sizeof(long));
-  blue=MagickAllocateArray(long *,length,sizeof(long));
+  red=MagickAllocateResourceLimitedArray(long *,length,sizeof(long));
+  green=MagickAllocateResourceLimitedArray(long *,length,sizeof(long));
+  blue=MagickAllocateResourceLimitedArray(long *,length,sizeof(long));
   if ((red == (long *) NULL) || (green == (long *) NULL) ||
       (blue == (long *) NULL))
     {
-      MagickFreeMemory(red);
-      MagickFreeMemory(green);
-      MagickFreeMemory(blue);
+      MagickFreeResourceLimitedMemory(red);
+      MagickFreeResourceLimitedMemory(green);
+      MagickFreeResourceLimitedMemory(blue);
       DestroyImage(histogram_image);
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image)
-        }
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
   (void) memset(red,0,length*sizeof(long));
   (void) memset(green,0,length*sizeof(long));
   (void) memset(blue,0,length*sizeof(long));
@@ -311,9 +311,9 @@ static unsigned int WriteHISTOGRAMImage(const ImageInfo *image_info,
   /*
     Free memory resources.
   */
-  MagickFreeMemory(blue);
-  MagickFreeMemory(green);
-  MagickFreeMemory(red);
+  MagickFreeResourceLimitedMemory(blue);
+  MagickFreeResourceLimitedMemory(green);
+  MagickFreeResourceLimitedMemory(red);
   file=AcquireTemporaryFileStream(filename,BinaryFileIOMode);
   if (file == (FILE *) NULL)
     {

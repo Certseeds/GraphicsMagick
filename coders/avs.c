@@ -85,7 +85,7 @@ static unsigned int
 #define AVS_HEIGHT_LIMIT 65536UL /* Artificially limit height to 64K pixels */
 #define ThrowAVSReaderException(code_,reason_,image_)   \
   {                                                     \
-    MagickFreeMemory(pixels);                           \
+    MagickFreeResourceLimitedMemory(pixels);                           \
     ThrowReaderException(code_,reason_,image_);         \
   }
 static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -160,7 +160,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
         break;
     if (CheckImagePixelLimits(image, exception) != MagickPass)
       ThrowAVSReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-    pixels=MagickAllocateArray(unsigned char *,image->columns,4);
+    pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,4);
     if (pixels == (unsigned char *) NULL)
       ThrowAVSReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     row_bytes=(size_t) 4*image->columns;
@@ -199,7 +199,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
               break;
             }
     }
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
 
     if (MagickFail == status)
       break;
@@ -383,7 +383,7 @@ static unsigned int WriteAVSImage(const ImageInfo *image_info,Image *image)
     /*
       Allocate memory for pixels.
     */
-    pixels=MagickAllocateMemory(unsigned char *,image->columns*sizeof(PixelPacket));
+    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns*sizeof(PixelPacket));
     if (pixels == (unsigned char *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     /*
@@ -412,7 +412,7 @@ static unsigned int WriteAVSImage(const ImageInfo *image_info,Image *image)
                                       image->columns,image->rows))
             break;
     }
-    MagickFreeMemory(pixels);
+    MagickFreeResourceLimitedMemory(pixels);
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);

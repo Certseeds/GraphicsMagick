@@ -84,7 +84,7 @@ static unsigned int
 */
 #define ThrowCMYKReaderException(code_,reason_,image_) \
 { \
-  MagickFreeMemory(scanline);                 \
+  MagickFreeResourceLimitedMemory(scanline);                 \
   ThrowReaderException(code_,reason_,image_); \
 }
 static Image *ReadCMYKImage(const ImageInfo *image_info,
@@ -185,7 +185,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
       image->matte=True;
       packet_size=(quantum_size*5)/8;
     }
-  scanline=MagickAllocateArray(unsigned char *,
+  scanline=MagickAllocateResourceLimitedArray(unsigned char *,
                                packet_size,image->columns);
   if (scanline == (unsigned char *) NULL)
     ThrowCMYKReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -553,7 +553,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           break;
       }
   } while (count != 0);
-  MagickFreeMemory(scanline);
+  MagickFreeResourceLimitedMemory(scanline);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
@@ -730,10 +730,17 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
     /*
       Allocate memory for pixels.
     */
-    MagickReallocMemory(unsigned char *,pixels,
-                        MagickArraySize(packet_size,image->columns));
-    if (pixels == (unsigned char *) NULL)
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    unsigned char
+      *new_pixels;
+
+    new_pixels=MagickReallocateResourceLimitedArray(unsigned char *,pixels,
+                                                    packet_size,image->columns);
+    if (new_pixels == (unsigned char *) NULL)
+      {
+        MagickFreeResourceLimitedMemory(pixels);
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      }
+    pixels=new_pixels;
 
     /*
       Initialize export options.
@@ -961,7 +968,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
     if (status == False)
       break;
   } while (image_info->adjoin);
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;

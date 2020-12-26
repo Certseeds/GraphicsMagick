@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2016 GraphicsMagick Group
+% Copyright (C) 2003 - 2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -959,6 +959,11 @@ MagickExport MagickPassFail
 InvokePostscriptDelegate(const unsigned int verbose,
                          const char *command,ExceptionInfo *exception)
 {
+  int
+    status;
+
+#if defined(HasGS)
+
   register long
     i;
 
@@ -968,10 +973,7 @@ InvokePostscriptDelegate(const unsigned int verbose,
   int
     argc;
 
-  int
-    status;
-
-#if defined(HasGS) || defined(MSWINDOWS)
+#if (defined(HasGSLIB) || defined(MSWINDOWS))
 
   gs_main_instance
     *interpreter;
@@ -984,7 +986,7 @@ InvokePostscriptDelegate(const unsigned int verbose,
     *gs_func;
 
   gs_func=NTGhostscriptDLLVectors();
-#elif defined(HasGS)
+#elif defined(HasGSLIB)
   GhostscriptVectors
     gs_func_struct;
 
@@ -1075,7 +1077,7 @@ InvokePostscriptDelegate(const unsigned int verbose,
                             "Returning with success");
       return(MagickPass);
     }
-#endif /* defined(HasGS) || defined(MSWINDOWS) */
+#endif /* defined(HasGSLIB) || defined(MSWINDOWS) */
 
   status=MagickFail;
   {
@@ -1114,6 +1116,18 @@ InvokePostscriptDelegate(const unsigned int verbose,
         MagickFreeMemory(argv);
       }
   }
+#else
+
+  /*
+    Ghostscript is not supported at all!
+  */
+  (void) verbose;
+  (void) command;
+  (void) exception;
+
+  status = MagickFail;
+
+#endif /* if defined(HasGS) */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Returning with %s", status == MagickFail ?
@@ -1408,10 +1422,12 @@ static unsigned int ReadConfigureFile(const char *basename,
                       path[MaxTextExtent];
 
                     BinPath[0]=0;
+#if defined(HasGS)
                     /* Substitute @PSDelegate@ with path to Ghostscript */
                     NTGhostscriptEXE(path,MaxTextExtent-1);
                     SubstituteString((char **) &delegate_list->commands,
                                      "@PSDelegate@",path);
+#endif /* if defined(HasGS) */
 
 # if defined(UseInstalledMagick)
 #  if defined(MagickBinPath)

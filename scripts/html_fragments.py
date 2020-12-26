@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:expandtab:tw=100:
 
 #* Author: Mark Mitchell
@@ -25,15 +26,17 @@ banner_logo = 'images/gm-107x76.png' # relative to top directory
 # url_prefix attribute should already be fixed up.
 
 url_prefix = '' # trailing slash always needed
+# For SF, substitute with: '<br><img src="https://sourceforge.net/sflogo.php?group_id=73485&type=1" border="0" alt=SourceForge width="88" height="31">'
+sponsor_logo_html = '<!--SPONSOR_LOGO-->'
 
 banner_template = """
 <div class="banner">
 <img src="%(url_prefix)s%(banner_logo)s" alt="GraphicMagick logo" width="107" height="76" />
 <span class="title">GraphicsMagick</span>
 <form action="http://www.google.com/search">
-	<input type="hidden" name="domains" value="www.graphicsmagick.org" />
-	<input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
-    <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
 """
@@ -42,28 +45,31 @@ banner_template = """
 nav_template = """
 <div class="navmenu">
 <ul>
-<li><a href="%(url_prefix)sindex.html">Home</a></li>
-<li><a href="%(url_prefix)sproject.html">Project</a></li>
-<li><a href="%(url_prefix)sdownload.html">Download</a></li>
-<li><a href="%(url_prefix)sREADME.html">Install</a></li>
-<li><a href="%(url_prefix)sHg.html">Source</a></li>
-<li><a href="%(url_prefix)sNEWS.html">News</a> </li>
-<li><a href="%(url_prefix)sutilities.html">Utilities</a></li>
-<li><a href="%(url_prefix)sprogramming.html">Programming</a></li>
-<li><a href="%(url_prefix)sreference.html">Reference</a></li>
+  <li><a href="%(url_prefix)sindex.html">Home</a></li>
+  <li><a href="%(url_prefix)sproject.html">Project</a></li>
+  <li><a href="%(url_prefix)sdownload.html">Download</a></li>
+  <li><a href="%(url_prefix)sREADME.html">Install</a></li>
+  <li><a href="%(url_prefix)sHg.html">Source</a></li>
+  <li><a href="%(url_prefix)sNEWS.html">News</a> </li>
+  <li><a href="%(url_prefix)sutilities.html">Utilities</a></li>
+  <li><a href="%(url_prefix)sprogramming.html">Programming</a></li>
+  <li><a href="%(url_prefix)sreference.html">Reference</a></li>
 </ul>
 </div>
 """
 
-footer_template = """
-<hr class="divider">
-<div class="footer">
-    <p><a href="%(url_prefix)sCopyright.html">Copyright</a>GraphicsMagick Group 2002 - 2020</p>
+# hr class was "divider".  Changed to "docutils"
+# footer div class was "footer".  Changed to "document" so text style matches document.
+footer_template = u"""
+<hr class="docutils">
+<div class="document">
+    <p><a href="%(url_prefix)sCopyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020%(sponsor_logo_html)s</p>
 </div>
 """
 
 def make_footer():
     return footer_template % { 'url_prefix' : url_prefix,
+                               'sponsor_logo_html' : sponsor_logo_html,
                              }
 
 def make_banner():
@@ -86,3 +92,4 @@ footer = None
 if __name__ == '__main__':
     print((make_banner()))
     print((make_nav()))
+    print((make_footer()))

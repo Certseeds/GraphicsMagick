@@ -524,6 +524,12 @@ DPX files:
     supplied when reading or writing in order to read or write using
     the necessary sample order.
 
+-define dpx:swap-samples-read={true|false}
+    Similar to dpx:swap-samples but only applied while reading.
+
+-define dpx:swap-samples-write={true|false}
+    Similar to dpx:swap-samples but only applied while writing.
+
 -interlace plane
     By default, samples are stored contiguously in a single element
     when possible. Specifying '-interlace plane' causes each sample
@@ -635,9 +641,3 @@ Use
    gm identify -format '%[dpx:*]' foo.dpx
 
 to list all DPX header attributes.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>image</title>
 <link rel="stylesheet" href="../docutils-api.css" type="text/css" />
 </head>
@@ -13,23 +13,23 @@
 <img src="../images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
 <span class="title">GraphicsMagick</span>
 <form action="http://www.google.com/search">
-	<input type="hidden" name="domains" value="www.graphicsmagick.org" />
-	<input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
-    <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
 
 <div class="navmenu">
 <ul>
-<li><a href="../index.html">Home</a></li>
-<li><a href="../project.html">Project</a></li>
-<li><a href="../download.html">Download</a></li>
-<li><a href="../README.html">Install</a></li>
-<li><a href="../Hg.html">Source</a></li>
-<li><a href="../NEWS.html">News</a> </li>
-<li><a href="../utilities.html">Utilities</a></li>
-<li><a href="../programming.html">Programming</a></li>
-<li><a href="../reference.html">Reference</a></li>
+  <li><a href="../index.html">Home</a></li>
+  <li><a href="../project.html">Project</a></li>
+  <li><a href="../download.html">Download</a></li>
+  <li><a href="../README.html">Install</a></li>
+  <li><a href="../Hg.html">Source</a></li>
+  <li><a href="../NEWS.html">News</a> </li>
+  <li><a href="../utilities.html">Utilities</a></li>
+  <li><a href="../programming.html">Programming</a></li>
+  <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
 <div class="document" id="image">
@@ -37,7 +37,7 @@
 <h2 class="subtitle" id="miscellaneous-image-methods">Miscellaneous image methods</h2>
 
 <div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
+<p class="topic-title">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#accessdefinition" id="id70">AccessDefinition</a></li>
 <li><a class="reference internal" href="#adddefinition" id="id71">AddDefinition</a></li>
@@ -179,7 +179,8 @@ length string as value for a key.</dd>
 <div class="section" id="id7">
 <h2>Description</h2>
 <p>AllocateImage() returns a pointer to an image structure initialized to
-default values.</p>
+default values.  Currently a failure in this function results in a fatal
+error, resulting in program exit.</p>
 <p>The format of the AllocateImage method is:</p>
 <pre class="literal-block">
 <a class="reference external" href="../api/types.html#image">Image</a> *AllocateImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info );
@@ -206,6 +207,8 @@ void AllocateNextImage( const <a class="reference external" href="../api/types.h
 <p>Use AllocateNextImage() to initialize the next image in a sequence to
 default values.  The next member of image points to the newly allocated
 image.  If there is a memory shortage, next is assigned NULL.</p>
+<p>It is expected that the image next pointer is null, since otherwise
+there is likely to be a memory leak.  In the future this may be enforced.</p>
 <p>The format of the AllocateNextImage method is:</p>
 <pre class="literal-block">
 void AllocateNextImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
@@ -437,6 +440,9 @@ void DestroyImage( <a class="reference external" href="../api/types.html#image">
 <p>DestroyImage() dereferences an image, deallocating memory associated with
 the image if the reference count becomes zero.  There is no effect if the
 image pointer is null.</p>
+<p>In the interest of avoiding dangling pointers or memory leaks, the image
+previous and next pointers should be null when this function is called,
+and no other image should refer to it.  In the future this may be enforced.</p>
 <p>The format of the DestroyImage method is:</p>
 <pre class="literal-block">
 void DestroyImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
@@ -1064,6 +1070,11 @@ MagickPassFail StripImage( <a class="reference external" href="../api/types.html
 </dl>
 </div>
 </div>
+</div>
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

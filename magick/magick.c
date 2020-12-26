@@ -37,6 +37,9 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE
+#  include <mcheck.h>
+#endif /* if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE */
 #if defined(MSWINDOWS) || defined(__CYGWIN__)
 # include "magick/nt_feature.h"
 #endif
@@ -178,7 +181,7 @@ DestroyMagick(void)
   DestroyColorInfo();           /* Color database */
   DestroyDelegateInfo();        /* External delegate information */
   DestroyTypeInfo();            /* Font information */
-  DestroyMagicInfo();           /* File format detection */
+  /*DestroyMagicInfo();*/       /* File format detection */
   DestroyMagickInfoList();      /* Coder registrations + modules */
   DestroyConstitute();          /* Constitute semaphore */
   DestroyMagickRegistry();      /* Registered images */
@@ -186,7 +189,9 @@ DestroyMagick(void)
   DestroyMagickRandomGenerator(); /* Random number generator */
   DestroyTemporaryFiles();      /* Temporary files */
 #if defined(MSWINDOWS)
+#if defined(HasGS)
   NTGhostscriptUnLoadDLL();     /* Ghostscript DLL */
+#endif /* if defined(HasGS) */
 #endif /* defined(MSWINDOWS) */
   /*
     Destroy logging last since some components log their destruction.
@@ -611,63 +616,94 @@ static RETSIGTYPE MagickPanicSignalHandler(int signo);
 static RETSIGTYPE MagickSignalHandler(int signo);
 
 /*
-  Signal function which prevents interrupted system calls from
-  automatically being restarted. From W. Richard Stevens "Advanced
-  Programming in the UNIX Environment", Chapter 10.14.
+  Signal function which only sets the signal handler if it its handling
+  is still set to SIG_DFL. This ensures that signal handlers are not
+  registered for signals which are being ignored, or that the API
+  user has already registered before invoking InitializeMagick.
+
+  Due to a weakness in the POSIX APIs, the only way to see the handler
+  which was registered before is by registering a new handler.
+
+  If an API user registers its own signal hander, then it is responsible
+  for invoking DestroyMagick when a signal is received.
 */
-static Sigfunc *
-MagickSignal(int signo, Sigfunc *func)
+static void
+MagickCondSignal(int signo, Sigfunc *func)
 {
 #if defined(HAVE_SIGACTION) && defined(HAVE_SIGEMPTYSET)
   struct sigaction
     act,
     oact;
 
+  /*
+    Signal set-up code which prevents interrupted system calls from
+    automatically being restarted. From W. Richard Stevens "Advanced
+    Programming in the UNIX Environment", Chapter 10.14.
+  */
   act.sa_handler=func;
   (void) sigemptyset(&act.sa_mask);
   act.sa_flags=0;
 #  if defined(SA_INTERRUPT)  /* SunOS */
   act.sa_flags |= SA_INTERRUPT;
-#  endif
+#  endif /* if defined(SA_INTERRUPT) */
 #  if defined(SA_ONSTACK)  /* Use alternate signal stack if available */
   act.sa_flags |= SA_ONSTACK;
-#  endif
-  if (sigaction(signo, &act, &oact) < 0)
-    return (SIG_ERR);
-  return (oact.sa_handler);
+#  endif /* if defined(SA_ONSTACK) */
+
+  (void) memset(&oact, 0, sizeof(oact));
+  if (sigaction(signo, &act, &oact) == 0)
+    {
+      if ((oact.sa_flags & SA_SIGINFO) ||
+          (oact.sa_handler != SIG_DFL))
+        {
+          /* Restore prior handler! */
+          if (sigaction(signo, &oact, &act) != 0)
+            (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                  "Failed to restore prior signal handler for signal ID %d!",signo);
+          else
+            (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                  "Restored prior signal handler for signal ID %d!",signo);
+        }
+      else
+        {
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Registered signal handler for signal ID %d",signo);
+        }
+    }
+  else
+    {
+      (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                            "Failed to register signal handler for signal ID %d!",signo);
+    }
+
 #else
-  return signal(signo, func);
-#endif
-}
-
-/*
-  Signal function which only sets the signal handler if it its handling
-  is still set to SIG_DFL. This ensures that signal handlers are not
-  registered for signals which are being ignored, or that the API
-  user has already registered before invoking InitializeMagick.
-
-  If an API user registers its own signal hander, then it is responsible
-  for invoking DestroyMagick when a signal is received.
-*/
-static Sigfunc *
-MagickCondSignal(int signo, Sigfunc *func)
-{
   Sigfunc *
     o_handler;
 
-  if ((o_handler=MagickSignal(signo,func)) != SIG_ERR)
+  if ((o_handler=signal(signo, func)) != SIG_ERR)
     {
-      /*
-        If handler is not the default, then restore the previous
-        setting.
-      */
       if (o_handler != SIG_DFL)
-        (void) MagickSignal(signo,o_handler);
+        {
+          /* Restore prior handler! */
+          if (signal(signo, o_handler) ==  SIG_ERR)
+            (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                  "Failed to restore prior signal handler for signal ID %d!",signo);
+          else
+            (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                  "Restored prior signal handler for signal ID %d!",signo);
+        }
       else
-        (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-          "Registered signal handler for signal ID %d",signo);
+        {
+          (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                "Registered signal handler for signal ID %d",signo);
+        }
     }
-  return (o_handler);
+  else
+    {
+      (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                            "Failed to register signal handler for signal ID %d!",signo);
+    }
+#endif
 }
 
 /*
@@ -1021,49 +1057,49 @@ InitializeMagickSignalHandlers(void)
 #if 0
   /* termination of child process */
 #if defined(SIGCHLD)
-  (void) MagickCondSignal(SIGCHLD,MagickIgnoreSignalHandler);
+  MagickCondSignal(SIGCHLD,MagickIgnoreSignalHandler);
 #endif
 #endif
 
   /* hangup, default terminate */
 #if defined(SIGHUP)
-  (void) MagickCondSignal(SIGHUP,MagickSignalHandler);
+  MagickCondSignal(SIGHUP,MagickSignalHandler);
 #endif
   /* interrupt (CONTROL-c), default terminate */
 #if defined(SIGINT)
-  (void) MagickCondSignal(SIGINT,MagickSignalHandler);
+  MagickCondSignal(SIGINT,MagickSignalHandler);
 #endif
   /* quit (CONTROL-\), default terminate with core */
 #if defined(SIGQUIT)
-  (void) MagickCondSignal(SIGQUIT,MagickPanicSignalHandler);
+  MagickCondSignal(SIGQUIT,MagickPanicSignalHandler);
 #endif
   /* software-triggered abort, default terminate with core */
 #if defined(SIGABRT)
-  (void) MagickCondSignal(SIGABRT,MagickPanicSignalHandler);
+  MagickCondSignal(SIGABRT,MagickPanicSignalHandler);
 #endif
   /* floating point exception, default terminate with core */
 #if defined(SIGFPE)
-  (void) MagickCondSignal(SIGFPE,MagickPanicSignalHandler);
+  MagickCondSignal(SIGFPE,MagickPanicSignalHandler);
 #endif
   /* software termination signal from kill, default terminate */
 #if defined(SIGTERM)
-  (void) MagickCondSignal(SIGTERM,MagickSignalHandler);
+  MagickCondSignal(SIGTERM,MagickSignalHandler);
 #endif
   /* Bus Error */
 #if defined(SIGBUS)
-  (void) MagickCondSignal(SIGBUS,MagickPanicSignalHandler);
+  MagickCondSignal(SIGBUS,MagickPanicSignalHandler);
 #endif
   /* segmentation fault */
 #if defined(SIGSEGV)
-  (void) MagickCondSignal(SIGSEGV,MagickPanicSignalHandler);
+  MagickCondSignal(SIGSEGV,MagickPanicSignalHandler);
 #endif
   /* exceeded cpu limit, default terminate */
 #if defined(SIGXCPU)
-  (void) MagickCondSignal(SIGXCPU,MagickSignalHandler);
+  MagickCondSignal(SIGXCPU,MagickSignalHandler);
 #endif
   /* exceeded file size limit, default terminate */
 #if defined(SIGXFSZ)
-  (void) MagickCondSignal(SIGXFSZ,MagickSignalHandler);
+  MagickCondSignal(SIGXFSZ,MagickSignalHandler);
 #endif
 }
 
@@ -1153,6 +1189,10 @@ InitializeMagickEx(const char *path, unsigned int options,
       SPINLOCK_RELEASE;
       return status;
     }
+
+#if defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE
+  mtrace();
+#endif /* f defined(USE_GLIBC_MTRACE) && USE_GLIBC_MTRACE */
 
   /* Save initialization options in case we need them later */
   initialize_magick_options = options;
@@ -1253,7 +1293,7 @@ InitializeMagickEx(const char *path, unsigned int options,
   InitializeMagickRegistry();       /* Image/blob registry */
   InitializeConstitute();           /* Constitute semaphore */
   InitializeMagickInfoList();       /* Coder registrations + modules */
-  InitializeMagicInfo();            /* File format detection */
+  /*InitializeMagicInfo();*/        /* File format detection */
   InitializeTypeInfo();             /* Font information */
   InitializeDelegateInfo();         /* External delegate information */
   InitializeColorInfo();            /* Color database */

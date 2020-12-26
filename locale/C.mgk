@@ -667,6 +667,9 @@
       <Message name="UnbalancedGraphicContextPushPop">
         unbalanced graphic context push-pop
       </Message>
+      <Message name="UnbalancedPushPop">
+        unbalanced push-pop
+      </Message>
       <Message name="TooManyCoordinates">
         too many coordinates
       </Message>
@@ -693,6 +696,9 @@
       </Message>
       <Message name="UnreasonableGradientSize">
         unreasonable gradient image size
+      </Message>
+      <Message name="UnreasonableDashPolygonLength">
+        unreasonable dash polygon length
       </Message>
       <Message name="UnableToDrawOnImage">
         unable to draw on image

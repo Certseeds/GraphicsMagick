@@ -1222,7 +1222,7 @@ MagickXBestPixel(Display *display,const Colormap colormap,
 #define MagickXVisualColormapSize(visual_info) Min( (int) (\
   ((visual_info->class == TrueColor) || (visual_info->class == DirectColor)) ? \
     (int) (visual_info->red_mask | visual_info->green_mask | visual_info->blue_mask) : \
-    visual_info->colormap_size),(1 << visual_info->depth))
+    visual_info->colormap_size),(1L << visual_info->depth))
 
 MagickExport XVisualInfo *
 MagickXBestVisualInfo(Display *display,

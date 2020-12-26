@@ -5,6 +5,9 @@
 # Copyright 2008 Mark Mitchell
 # License: Same as GraphicsMagick.
 
+# Use Python 3 print function in Python >= 2.6
+from __future__ import print_function
+
 __doc__ = """Runs rst2htmldeco.py on all files in the rst_pagelist.txt list.
 
 Usage:
@@ -34,11 +37,11 @@ def main(argv=None):
         argv = sys.argv
 
     if len(argv) < 2:
-        print >> sys.stderr, __doc__
+        print(__doc__, file=sys.stderr)
         return 1
 
     if argv[1] in ('-h', '--help'):
-        print >> sys.stdout, __doc__
+        print(__doc__, file=sys.stdout)
         return 0
 
     rstlist_file = argv[1]
@@ -74,7 +77,7 @@ def main(argv=None):
         try:
             rstfile, outfile, stylesheet_url, url_prefix = line.split(None, 3)
         except ValueError:
-            print >> sys.stderr, "Line %u of %s: improper format" % (cnt, rstlist_file)
+            print("Line %u of %s: improper format" % (cnt, rstlist_file), file=sys.stderr)
             return 1
 
         rstfile_path = os.path.join(gm_topdir, rstfile.strip())
@@ -83,7 +86,7 @@ def main(argv=None):
                 '--url-prefix=%s' % url_prefix,
                 rstfile_path,
                 outfile_path]
-        print 'rst2htmldeco.py %s' % ' '.join(args)
+        print('rst2htmldeco.py %s' % ' '.join(args))
         rst2htmldeco.main(args)
 
     f.close()

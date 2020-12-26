@@ -54,10 +54,12 @@
 static char
   *NTslsearchpath = (char *) NULL;
 #endif
+#if defined(HasGS)
 static void
   *gs_dll_handle = (void *)NULL;
 static GhostscriptVectors
     gs_vectors;
+#endif /* if defined(HasGS) */
 
 static MagickPassFail NTstrerror_r(LONG errnum, char *strerrbuf, size_t  buflen);
 
@@ -1288,7 +1290,7 @@ NTGhostscriptFind(const char **gs_productfamily,
                             "  Searching for %s...",
                             products[product_index]);
       FormatString(key,"SOFTWARE\\%s",products[product_index]);
-      
+
       /*
         long WINAPI RegOpenKeyEx(const HKEY hKey, const LPCTSTR
         lpSubKey, const DWORD ulOptions, const REGSAM samDesired,
@@ -1412,7 +1414,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   static int
     gs_major_version=0,
-    gs_minor_version=0;  
+    gs_minor_version=0;
 
   unsigned int
     i;
@@ -1455,6 +1457,7 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   return MagickFail;
 }
+#if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1615,6 +1618,7 @@ MagickExport int NTGhostscriptEXE(char *path, int path_length)
 
   return FALSE;
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1777,6 +1781,7 @@ MagickExport int NTGhostscriptFonts(char *path, int path_length)
 
   return FALSE;
 }
+#if defined(HasGS)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1867,6 +1872,7 @@ MagickExport int NTGhostscriptUnLoadDLL(void)
 
   return False;
 }
+#endif /* if defined(HasGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

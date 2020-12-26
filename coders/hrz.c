@@ -116,7 +116,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->ping) goto DONE_READING;
 
   /* ----- Load RLE compressed raster ----- */
-  BImgBuff=MagickAllocateMemory(unsigned char *,((size_t) ldblk));  /*Ldblk was set in the check phase*/
+  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,((size_t) ldblk));  /*Ldblk was set in the check phase*/
   if(BImgBuff==NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -136,7 +136,7 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
 
   if(BImgBuff!=NULL)
-    MagickFreeMemory(BImgBuff);
+    MagickFreeResourceLimitedMemory(BImgBuff);
   if (EOFBlob(image))
     ThrowException(exception, CorruptImageError, UnexpectedEndOfFile, image->filename);
 

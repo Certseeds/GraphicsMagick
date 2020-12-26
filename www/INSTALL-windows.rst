@@ -764,8 +764,3 @@ Windows Distribution Build Procedure
 
   13. Distribution package is available named similar to
       ``GM\VisualMagick\bin\GraphicsMagick-1.3-Q8-dll.exe``
-
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

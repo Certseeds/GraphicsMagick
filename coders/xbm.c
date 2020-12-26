@@ -300,7 +300,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if ((image->columns % 16) && ((image->columns % 16) < 9)  && (version == 10))
     padding=1;
   bytes_per_line=((size_t) image->columns+7)/8+padding;
-  data=MagickAllocateArray(unsigned char *,image->rows,bytes_per_line);
+  data=MagickAllocateResourceLimitedArray(unsigned char *,image->rows,bytes_per_line);
   if (data == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   /*
@@ -346,7 +346,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       value=XBMInteger(image,4,hex_digits);
       if (value < 0)
         {
-          MagickFreeMemory(data);
+          MagickFreeResourceLimitedMemory(data);
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       *p++=(unsigned char) value;
@@ -359,7 +359,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       value=XBMInteger(image,2,hex_digits);
       if (value < 0)
         {
-          MagickFreeMemory(data);
+          MagickFreeResourceLimitedMemory(data);
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       *p++=(unsigned char) value;
@@ -394,7 +394,7 @@ static Image *ReadXBMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                   image->columns,image->rows))
          break;
   }
-  MagickFreeMemory(data);
+  MagickFreeResourceLimitedMemory(data);
   (void) SyncImage(image);
   CloseBlob(image);
   StopTimer(&image->timer);

@@ -15,6 +15,16 @@ extern MagickExport void
 extern MagickExport size_t
   MagickArraySize(const size_t count,const size_t size) MAGICK_FUNC_CONST;
 
+extern MagickExport
+  void *_MagickReallocateResourceLimitedMemory(void *p,const size_t count,const size_t size,const MagickBool clear);
+
+extern MagickExport
+  void *_MagickAllocateResourceLimitedMemory(const size_t size);
+
+extern MagickExport
+  void _MagickFreeResourceLimitedMemory(void *p);
+
+
 /*
   Allocate memory
 */
@@ -40,6 +50,35 @@ extern MagickExport size_t
   MagickFree(_magick_mp);       \
   memory=0;                     \
 }
+
+/*
+  Allocate/Reallocate/Free memory (resource limited)
+ */
+#define MagickAllocateResourceLimitedMemory(type,size)                  \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
+   ((type) _MagickReallocateResourceLimitedMemory(0,1,(size_t) (size),MagickFalse)))
+
+#define MagickAllocateResourceLimitedClearedMemory(type,size)           \
+  ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
+   ((type) _MagickReallocateResourceLimitedMemory(0,1,(size_t) (size),MagickTrue)))
+
+#define MagickAllocateResourceLimitedArray(type,count,size)             \
+  ((type) _MagickReallocateResourceLimitedMemory(0,(size_t) (count),(size_t) (size),MagickFalse))
+
+#define MagickAllocateResourceLimitedClearedArray(type,count,size)      \
+  ((type) _MagickReallocateResourceLimitedMemory(0,(size_t) (count),(size_t) (size),MagickTrue))
+
+#define MagickReallocateResourceLimitedMemory(type,memory,size)         \
+  ((type) _MagickReallocateResourceLimitedMemory(memory,1,(size_t) (size),MagickFalse))
+
+#define MagickReallocateResourceLimitedArray(type,memory,count,size)    \
+  ((type) _MagickReallocateResourceLimitedMemory(memory,(size_t) (count),(size_t) (size),MagickFalse))
+
+#define MagickReallocateResourceLimitedClearedArray(type,memory,count,size) \
+  ((type) _MagickReallocateResourceLimitedMemory(memory,(size_t) (count),(size_t) (size),MagickTrue))
+
+#define MagickFreeResourceLimitedMemory(memory) \
+  memory=_MagickReallocateResourceLimitedMemory(memory,0,0,MagickFalse);
 
 /*
   Reallocate memory using provided pointer.  If reallocation fails

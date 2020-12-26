@@ -167,10 +167,10 @@ double Magick::Options::colorFuzz ( void ) const
   return _imageInfo->fuzz;
 }
 
-// Enable printing of debug messages from ImageMagick
+// Enable printing of debug messages from GraphicsMagick
 void Magick::Options::debug ( bool flag_ )
 {
-  if(flag_)
+  if (flag_)
     {
       SetLogEventMask("All");
     }
@@ -181,7 +181,7 @@ void Magick::Options::debug ( bool flag_ )
 }
 bool Magick::Options::debug ( void ) const
 {
-  if( IsEventLogging() )
+  if ( IsEventLogging() )
     {
       return true;
     }

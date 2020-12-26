@@ -1551,7 +1551,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         }
     }
 
-  jpeg_pixels=MagickAllocateArray(JSAMPLE *,
+  jpeg_pixels=MagickAllocateResourceLimitedArray(JSAMPLE *,
                                   jpeg_info.output_components,
                                   MagickArraySize(image->columns,
                                                   sizeof(JSAMPLE)));
@@ -1570,7 +1570,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   if (setjmp(error_manager.error_recovery))
     {
       /* Error handling code executed if longjmp was invoked */
-      MagickFreeMemory(jpeg_pixels);
+      MagickFreeResourceLimitedMemory(jpeg_pixels);
       jpeg_destroy_decompress(&jpeg_info);
       if (image->exception.severity > exception->severity)
         CopyException(exception,&image->exception);
@@ -1714,7 +1714,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         (void) jpeg_finish_decompress(&jpeg_info);
     }
   jpeg_destroy_decompress(&jpeg_info);
-  MagickFreeMemory(jpeg_pixels);
+  MagickFreeResourceLimitedMemory(jpeg_pixels);
   CloseBlob(image);
 
   /*
@@ -1988,7 +1988,7 @@ static void WriteICCProfile(j_compress_ptr jpeg_info,
 
 
     length=Min(profile_length-i,65519);
-    profile=MagickAllocateMemory(unsigned char *,length+14);
+    profile=MagickAllocateResourceLimitedMemory(unsigned char *,length+14);
     if (profile == (unsigned char *) NULL)
       break;
     (void) strcpy((char *) profile,"ICC_PROFILE");
@@ -1997,7 +1997,7 @@ static void WriteICCProfile(j_compress_ptr jpeg_info,
     for (j=0; j < (long) length; j++)
       profile[j+14]=color_profile[i+j];
     jpeg_write_marker(jpeg_info,ICC_MARKER,profile,(unsigned int) length+14);
-    MagickFreeMemory(profile);
+    MagickFreeResourceLimitedMemory(profile);
   }
 }
 
@@ -2030,7 +2030,7 @@ static void WriteIPTCProfile(j_compress_ptr jpeg_info,
 
     length=Min(profile_length-i,65500);
     roundup=(length & 0x01); /* round up for Photoshop */
-    profile=MagickAllocateMemory(unsigned char *,length+roundup+tag_length);
+    profile=MagickAllocateResourceLimitedMemory(unsigned char *,length+roundup+tag_length);
     if (profile == (unsigned char *) NULL)
       break;
 #ifdef GET_ONLY_IPTC_DATA
@@ -2047,7 +2047,7 @@ static void WriteIPTCProfile(j_compress_ptr jpeg_info,
       profile[length+tag_length]=0;
     jpeg_write_marker(jpeg_info,IPTC_MARKER,profile,(unsigned int)
       (length+roundup+tag_length));
-    MagickFreeMemory(profile);
+    MagickFreeResourceLimitedMemory(profile);
   }
 }
 
@@ -2887,7 +2887,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   /*
     Convert MIFF to JPEG raster pixels.
   */
-  jpeg_pixels=MagickAllocateArray(JSAMPLE *,
+  jpeg_pixels=MagickAllocateResourceLimitedArray(JSAMPLE *,
     jpeg_info.input_components*image->columns,sizeof(JSAMPLE));
   if (jpeg_pixels == (JSAMPLE *) NULL)
     {
@@ -3128,7 +3128,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   if (huffman_memory)
     LiberateMagickResource(MemoryResource,huffman_memory);
   jpeg_destroy_compress(&jpeg_info);
-  MagickFreeMemory(jpeg_pixels);
+  MagickFreeResourceLimitedMemory(jpeg_pixels);
   CloseBlob(image);
   return(True);
 }

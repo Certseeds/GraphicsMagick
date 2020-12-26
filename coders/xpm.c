@@ -151,7 +151,7 @@ static char **StringToListMod(char *text)
   for (p=text; *p != '\0'; p++)
     if (*p == '\n')
       lines++;
-  textlist=MagickAllocateMemory(char **,(lines+1)*sizeof(char *));
+  textlist=MagickAllocateResourceLimitedMemory(char **,(lines+1)*sizeof(char *));
   if (textlist == (char **) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToConvertText);
@@ -224,10 +224,10 @@ static char *ParseColor(char *data)
 do { \
   if (keys) \
     for (i=0; i < (long) image->colors; i++) \
-      MagickFreeMemory(keys[i]); \
-  MagickFreeMemory(keys); \
-  MagickFreeMemory(textlist); \
-  MagickFreeMemory(xpm_buffer); \
+      MagickFreeResourceLimitedMemory(keys[i]); \
+  MagickFreeResourceLimitedMemory(keys); \
+  MagickFreeResourceLimitedMemory(textlist); \
+  MagickFreeResourceLimitedMemory(xpm_buffer); \
   ThrowReaderException(code_,reason_,image_); \
 } while (0);
 
@@ -297,13 +297,14 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Read XPM file.
   */
   length=MaxTextExtent;
-  xpm_buffer=MagickAllocateMemory(char *,length);
+  xpm_buffer=MagickAllocateResourceLimitedMemory(char *,length);
   if (xpm_buffer != (char *) NULL)
     {
       xpm_buffer[0]='\0';
       p=xpm_buffer;
       while (ReadBlobString(image,p) != (char *) NULL)
         {
+          char *new_xpm_buffer;
           if (*p == '#')
             if ((p == xpm_buffer) || (*(p-1) == '\n'))
               continue;
@@ -313,9 +314,13 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (((size_t) (p-xpm_buffer)+MaxTextExtent+1) < length)
             continue;
           length<<=1;
-          MagickReallocMemory(char *,xpm_buffer,length);
-          if (xpm_buffer == (char *) NULL)
-            break;
+          new_xpm_buffer=MagickReallocateResourceLimitedMemory(char *,xpm_buffer,length);
+          if (new_xpm_buffer == (char *) NULL)
+            {
+              MagickFreeResourceLimitedMemory(xpm_buffer);
+              break;
+            }
+          xpm_buffer=new_xpm_buffer;
           p=xpm_buffer+strlen(xpm_buffer);
         }
     }
@@ -403,7 +408,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Initialize image structure.
   */
-  keys=MagickAllocateArray(char **,image->colors,sizeof(char *));
+  keys=MagickAllocateResourceLimitedArray(char **,image->colors,sizeof(char *));
   if (keys == (char **) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   for (i=0; i < (long) image->colors; i++)
@@ -429,7 +434,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    %lu: %s", i-1, textlist[i-1]);
     if (strlen(p) < width)
       break;
-    keys[j]=MagickAllocateMemory(char *,(size_t) width+1);
+    keys[j]=MagickAllocateResourceLimitedMemory(char *,(size_t) width+1);
     if (keys[j] == (char *) NULL)
       ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     keys[j][width]='\0';
@@ -531,10 +536,10 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Free resources.
   */
   for (i=0; i < (long) image->colors; i++)
-    MagickFreeMemory(keys[i]);
-  MagickFreeMemory(keys);
-  MagickFreeMemory(textlist);
-  MagickFreeMemory(xpm_buffer);
+    MagickFreeResourceLimitedMemory(keys[i]);
+  MagickFreeResourceLimitedMemory(keys);
+  MagickFreeResourceLimitedMemory(textlist);
+  MagickFreeResourceLimitedMemory(xpm_buffer);
   CloseBlob(image);
   StopTimer(&image->timer);
   return(image);

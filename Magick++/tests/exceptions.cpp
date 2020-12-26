@@ -15,6 +15,9 @@ using namespace Magick;
 
 int main( int /*argc*/, char ** argv)
 {
+  // Trace exception events to help diagnose issues.
+  SetLogDefaultEventType("exception");
+
   // Initialize GraphicsMagick
   InitializeMagick(*argv);
 

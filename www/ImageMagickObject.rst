@@ -122,9 +122,3 @@ working.
 
 Sometime in the future, MagickCMD may assume the place of gm.exe in the
 "utils" distribution in order to decrease the overall package size.
-
--------------------------------------------------------------------------------
-
-.. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
-
-Copyright |copy| GraphicsMagick Group 2002 - 2020

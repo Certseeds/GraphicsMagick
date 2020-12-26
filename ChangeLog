@@ -1,7 +1,923 @@
+2020-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* version.sh: Updates in preparation for the 1.3.36 release.
+
+	* bootstrap: Fix config.guess and config.sub download URLs.
+
+2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* design/pixel-cache.dot: Fix reported syntax errors.
+
+	* coders/mpc.c (ReadMPCImage): Report correct exception reason.
+
+	* coders/miff.c (ReadMIFFImage): Arbitrarily limit the number of
+	header keywords to avoid DOS attempts.
+	(ReadMIFFImage): Finish updates to use resource-limited memory
+	allocator.
+	(WriteMIFFImage): Finish updates to use resource-limited memory
+	allocator.
+
+	* coders/mpc.c (ReadMPCImage): Arbitrarily limit the number of
+	header keywords to avoid DOS attempts.  Fixes oss-fuzz 28956
+	"Timeout - coder_MPC_fuzzer".
+
+2020-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (AffineEdge): Use MagickDoubleToLong();
+
+	* magick/utility.c (MagickDoubleToLong): New private function to
+	convert a 'double' to a 'long' with the minimum amount of harm.
+
+	* magick/segment.c (Classify): Remove variables from function
+	global scope that don't need outer scope.
+
+	* coders/jp2.c: JasPer changed its jas_stream_ops_t callback
+	interfaces in releases 2.0.19 and 2.0.20.  Revert to providing the
+	older interfaces by default, but use a
+	MAGICK_JP2_NEW_STREAM_INTERFACE pre-processor definition to
+	support selecting the new interfaces.  We don't know how to
+	usefully tell the JasPer version at compile time!  Luckily, using
+	the older interfaces only causes a compiler warning rather than a
+	run-time issue.
+
+	* coders/mac.c (ReadMACImage): Use size_t type for 'ldblk' to
+	avoid possible overflow.
+
+2020-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news to the date December 23, 2020.
+
+2020-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (AllocateImage): Satisfy conditions for
+	DestroyImage() as soon as possible and use it for clean-up on
+	error.  Added more error checks.
+	(CloneImage): Satisfy conditions for DestroyImage() as soon as
+	possible and use it for clean-up on error.  Don't attempt to copy
+	colormap if colors is zero.  Added more error checks.
+	(DestroyImage): Assure that we can destroy a partially-constructed
+	Image.
+
+	* magick/effect.c (BlurImage): Fix null pointer dereference if
+	image failed to be created.
+	(DespeckleImage): Fix null pointer dereference if image failed to
+	be created.
+	(EnhanceImage): Fix null pointer dereference if image failed to be
+	created.
+	(GaussianBlurImage): Fix null pointer dereference if image failed
+	to be created.
+	(MedianFilterImage): Fix null pointer dereference if image failed
+	to be created.
+	(MotionBlurImage): Fix null pointer dereference if image failed to
+	be created.
+	(ReduceNoiseImage): Fix null pointer dereference if image failed to
+	be created.
+	(ShadeImage): Fix null pointer dereference if image failed to be
+	created.
+	(SharpenImage): Fix null pointer dereference if image failed to be
+	created.
+	(SpreadImage): Fix null pointer dereference if image failed to be
+	created.
+
+2020-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jp2.c (BlobWrite): Update Jasper stream OPs callback
+	function signatures to exactly match latest jas_stream_ops_t
+	definition.  This avoids an annoying warning when using Jasper
+	2.0.23 but now causes annoying warnings when using 2.0.12 or
+	1.900.1. There does not appear to be a useful way to determine the
+	Jasper numeric version (only a C string is available) from its
+	header files.
+
+	* magick/decorate.c (FrameImage): Skip attempting to render top or
+	bottom of ornamental border if its height is zero.
+
+	* magick/image.c (CloneImage): Set image signature right away in
+	case it needs to be destroyed while it is being constructed.
+
+	* wand/drawtest.c (main): MagickGetFilename() allocates a new
+	string so make sure to free it.
+
+	* tests/constitute.c (main): Destroy ExceptionInfo to avoid memory
+	leak if an exception was thrown.
+
+	* magick/effect.c (EdgeImage): Fix null pointer dereference if
+	edge image failed to be created.
+
+	* magick/compress.c (HuffmanEncode2Image): Fix error handling
+	issues.
+
+	* magick/command.c (CompareImageCommand): Fix memory leaks when an
+	input image failed to be read.
+	(CompositeImageCommand): Fix memory leaks when an input image
+	failed to be read.
+
+	* coders/fax.c (WriteFAXImage): Fix error handling.
+
+	* coders/mpc.c (ReadMPCImage): Use correct deallocator for page
+	geometry.  Fixes oss-fuzz 28853 "Heap-buffer-overflow READ {*} -
+	_MagickReallocateResourceLimitedMemory".
+
+2020-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/yuv.c: Use resource-limited memory allocator.
+
+	* coders/xwd.c: Use resource-limited memory allocator.
+
+	* coders/xpm.c: Use resource-limited memory allocator.
+
+	* coders/xcf.c: Use resource-limited memory allocator.
+
+	* coders/xbm.c: Use resource-limited memory allocator.
+
+	* coders/wpg.c: Use resource-limited memory allocator.
+
+	* coders/viff.c: Use resource-limited memory allocator.
+
+	* coders/vicar.c: Use resource-limited memory allocator.
+
+	* coders/uil.c: Use resource-limited memory allocator.
+
+	* coders/txt.c: Use resource-limited memory allocator.
+
+	* coders/topol.c: Use resource-limited memory allocator.
+
+	* coders/tim.c: Use resource-limited memory allocator.
+
+	* coders/tiff.c: Use resource-limited memory allocator.
+
+	* coders/tga.c: Use resource-limited memory allocator.
+
+	* coders/sun.c: Use resource-limited memory allocator.
+
+	* coders/sgi.c: Use resource-limited memory allocator.
+
+	* coders/sfw.c: Use resource-limited memory allocator.
+
+	* coders/rle.c: Use resource-limited memory allocator.
+
+	* coders/rla.c: Use resource-limited memory allocator.
+
+	* coders/rgb.c: Use resource-limited memory allocator.
+
+	* coders/psd.c: Use resource-limited memory allocator.
+
+	* coders/ps3.c: Use resource-limited memory allocator.
+
+	* coders/ps2.c: Use resource-limited memory allocator.
+
+	* coders/pnm.c: Use resource-limited memory allocator.
+
+	* coders/pdf.c: Use resource-limited memory allocator.
+
+	* coders/pdb.c: Use resource-limited memory allocator.
+
+	* coders/pcl.c: Use resource-limited memory allocator.
+
+	* coders/pcd.c: Use resource-limited memory allocator.
+
+	* coders/palm.c: Use resource-limited memory allocator.
+
+	* coders/mtv.c: Use resource-limited memory allocator.
+
+	* coders/mpc.c: Use resource-limited memory allocator.
+
+	* coders/meta.c: Use resource-limited memory allocator.
+
+	* coders/map.c: Use resource-limited memory allocator.
+
+	* coders/jpeg.c: Use resource-limited memory allocator.
+
+	* coders/jp2.c: Use resource-limited memory allocator.
+
+	* coders/jnx.c: Use resource-limited memory allocator.
+
+	* coders/icon.c: Use resource-limited memory allocator.
+
+	* coders/hrz.c: Use resource-limited memory allocator.
+
+	* coders/histogram.c: Use resource-limited memory allocator.
+
+	* coders/gray.c: Use resource-limited memory allocator.
+
+	* coders/fpx.c: Use resource-limited memory allocator.
+
+	* coders/emf.c: Use resource-limited memory allocator.
+
+	* coders/dpx.c: Use resource-limited memory allocator.
+
+	* coders/dps.c: Use resource-limited memory allocator.
+
+	* coders/dcm.c: Use resource-limited memory allocator.
+
+	* coders/cut.c: Use resource-limited memory allocator.
+
+	* coders/cmyk.c: Use resource-limited memory allocator.
+
+	* coders/cineon.c: Use resource-limited memory allocator.
+
+	* coders/avs.c: Use resource-limited memory allocator.
+
+	* coders/art.c: Use resource-limited memory allocator.
+
+	* coders/pcx.c: Use resource-limited memory allocator.
+
+	* coders/mac.c: Use resource-limited memory allocator.
+
+	* coders/pict.c: Use resource-limited memory allocator.
+
+	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Add a
+	'clear' parameter which indicates that freshly allocated memory
+	should be zeroed.  Added "Cleared" versions of the private managed
+	memory macros and updated all managed memory macros to exclusively
+	use this function.
+
+2020-12-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Update Automake to 1.16.3 and bootstrap to pick up latest
+	config.guess and config.sub.
+
+2020-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ImportRLEPixels): Change from C assertion to
+	exception report.  Fixes oss-fuzz 28703 "ASSERT · ((quantum_type
+	== IndexQuantum) && (image->storage_class ...".
+	(ReadMIFFImage): Read Gray DirectClass image as PseudoClass so it
+	has a colormap, and we have a RLE decode implementation for it.
+
+2020-12-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/paint.c (OpaqueImage): Changing the image storage class
+	is not required.
+
+2020-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/paint.c (OpaqueImage): Assure that image type is promoted
+	as required based on fill color.  Fixes unexpected results
+	discovered by Stuart McDonagh and reported via the
+	graphicsmagick-help mailing list on December 14, 2020.
+
+2020-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Set '[MVG]' image attribute at
+	appropriate places outside of DrawImage() since DrawImage()
+	sometimes recurses into itself, trashing the image attribute.  One
+	example of recursion is in the text annotation code.
+
+	* coders/svg.c (ReadSVGImage): Properly support 'ping' mode so
+	'identify' works as expected.
+
+	* magick/render.c (InsertAttributeIntoInputStream): Provide a more
+	useful diagnostic for when a "use" or "class" argument id is not
+	defined.
+
+2020-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Fix regression when parsing "mask"
+	which was added by changeset 16305:f33a0fb3d8e4 on July 15, 2020
+	since the last formal release.  This impacts MVG and SVG.
+
+2020-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Document the '--disable-compressed-files'
+	configure option, which was added on July 15th.
+
+2020-12-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magic.c: Don't send files which test positive for PCL to
+	the HPGL delegate, which is normally 'hp2xx'.  Fixes SourceForge
+	bug 607 "Slow to convert HP PCL printer data".
+
+2020-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Use unique image attribute space
+	for MVG symbols.  Fixes oss-fuzz 28111 "Timeout -
+	coder_MVG_fuzzer", oss-fuzz 28170 "Stack-overflow - DrawImage",
+	and oss-fuzz 28292 "Integer-overflow - DrawPolygonPrimitive".
+
+2020-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Verify that affine scaling factors
+	are not zero.  Fixes oss-fuzz 28293 "Divide-by-zero -
+	InverseAffineMatrix".
+	(DrawPolygonPrimitive): Thread error status check was at wrong
+	scope, resulting in code executing when it should have quit.
+
+2020-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick_types.h.in: Stop trying to define PTRDIFF_MAX.
+
+2020-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick_types.h.in: Provide PTRDIFF_MAX for Visual Studio
+	if it is missing.
+
+	* fuzzing/oss-fuzz-build.sh: Disable old JPEG support in libtiff.
+
+	* coders/mat.c (ReadMATImage): Use resource-limited memory
+	allocator.
+	(WriteMATLABImage): Use resource-limited memory allocator.
+
+2020-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news to the date November 28, 2020.
+
+	* coders/png.c (ReadOneJNGImage): Verify and enforce
+	Alpha_compression_method values.  Request that color and alpha
+	decoders return just one frame.  Force decoder format to disable
+	auto-detection.  Assume that coder messed up and might have
+	returned more than one frame.  Fixes oss-fuzz 28013 "Indirect-leak
+	. MagickMalloc".
+
+	* magick/memory-private.h (MagickReallocateResourceLimitedMemory):
+	Fix typo in macro definition which resulted in a memory
+	reallocation leak!
+
+	* Magick++/lib/Magick++/Drawable.h: Decided to continue using
+	std::unary_function if C++ version is less than C++'17 since
+	otherwise it may be changing an interface.
+
+2020-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/gif.c (ReadGIFImage): Use resource-limited memory
+	allocator when reading the comment extension.
+
+	* Magick++/lib/Magick++/Drawable.h: Remove inheritance from
+	std::unary_function, which was removed in C++'17.
+
+	* coders/webp.c (ReadWEBPImage): Use resource-limited memory
+	allocator.
+	(WriteWEBPImage): Use resource-limited memory allocator.
+
+	* coders/jbig.c (WriteJBIGImage): Use resource-limited memory
+	allocator.
+
+	* coders/fits.c (ReadFITSImage): Use resource-limited memory
+	allocator.
+	(WriteFITSImage): Use resource-limited memory allocator.
+
+	* coders/dib.c (ReadDIBImage): Use resource-limited memory
+	allocator.
+	(WriteDIBImage): Use resource-limited memory allocator.
+
+	* coders/bmp.c (ReadBMPImage): Use resource-limited memory
+	allocator.
+	(WriteBMPImage): Use resource-limited memory allocator.
+
+2020-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Improve RGBATiledMethod progress
+	monitor so it reports more steps.
+	(ReadTIFFImage): Improve TiledMethod progress monitor so it
+	reports more steps.
+
+	* fuzzing/utils.cc (class MagickState): Enable tracing of
+	exception events in order to help discover the origin of errors.
+	If too much output comes out, then this will be removed.
+
+	* magick/render.c (ConvertPathToPolygon): Attempt to fix leak of
+	'points' on memory allocation failure.
+
+2020-11-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (ConvertPathToPolygon): Make sure not to leak
+	points from added Edge.  Fixes oss-fuzz 27608 "Direct-leak in
+	_MagickReallocateResourceLimitedMemory".
+	(DrawDashPolygon): Place an aribrary limit on stroke dash polygon
+	unit maximum length in order to avoid possibly rendering
+	"forever".  Addresses oss-fuzz 24236 "Timeout in
+	coder_MVG_fuzzer".
+
+2020-11-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPolygonPrimitive): Try to minimize the
+	impact of too many threads due to replicated data until such time
+	as the data structures can be re-designed to directly support
+	threading.
+
+2020-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/Hg.rst: Describe how to clone the repository from
+	SourceForge using the ssh protocol rather than https.
+
+	* coders/ps.c (WritePSImage): Fix problem when writing PseudoClass
+	image with a colormap larger than two entries as bilevel.
+	Previous implementation was assuming that the colormap would only
+	include two entries for a monochrome image, but many entries may
+	exist in the colormap which were never used.  Fixes SourceForge
+	issue #635 "gm convert failure from .pgm to .eps".
+
+2020-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/utils.cc (class MagickState): Set DiskResource limit to
+	zero so that pixel cache won't spill over to using temporary
+	files.
+
+2020-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news to the date November 16, 2020.
+
+2020-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (ReadSVGImage): Fix memory leak due to CDATA block,
+	and some other possible small leaks.
+
+	* magick/magick.c (InitializeMagickEx): Set C pre-processor
+	definition USE_GLIBC_MTRACE to 1 in order to enable Linux mtrace
+	support.
+
+	* magick/render.c (ConvertPathToPolygon): Fix memory leak upon
+	memory reallocation failure.  Addresses oss-fuzz 27351
+	"Direct-leak in _MagickReallocateResourceLimitedMemory".
+
+	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Return
+	pointer to the allocation similar to realloc() and do not
+	automatically free existing memory upon allocation failure.
+
+2020-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* common.shi.in: Apply some resource limits while running the test
+	suite.
+	(Q8_MEMORY_LIMIT): Set the test suite memory limit to 128MB for
+	Q8, or 256MB for Q16, or 512MB for the Q32 build.
+	(MAGICK_LIMIT_DISK): Set the test suite disk space limit to 0 to
+	avoid spilling over into disk files when the memory limit runs
+	out.
+
+	* coders/miff.c (WriteMIFFImage): Update to use resource-limit
+	respecting memory allocators.
+
+2020-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): Update to use resource-limit
+	respecting memory allocators.
+
+	* magick/render.c (DrawImage): Update to use resource-limit
+	respecting memory allocators.
+
+	* magick/memory.c (_MagickReallocateResourceLimitedMemory): Add
+	new private interfaces for allocating private memory while
+	respecting resource limits.
+
+2020-10-25  Bob Friesenhahn  <bfriesen@bobsdell>
+
+	* magick/render.c (DrawImage): Reject pattern image with a
+	dimension of zero.  Fixes oss-fuzz issue 26382
+	"graphicsmagick:coder_MVG_fuzzer: Floating-point-exception in
+	DrawPrimitive".
+
+2020-10-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (ConstituteImage): Set image depth
+	appropriately based on the storage size specified by StorageType
+	and QuantumDepth.
+
+2020-10-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPrimitive): Use DestroyImageList() to
+	destroy composite_image since it may be a list.  Fixes oss-fuzz
+	25247 "Indirect-leak in MagickMalloc".
+	(DrawPrimitive): Add ImageInfo properties to request only
+	returning the first frame if the in-line image is a list.  Also,
+	add a missing DestroyImageList() request if multiple-frames were
+	returned.
+
+	* magick/transform.c (TransformImage): Use ReplaceImageInList()
+	replace transformed image in list.
+
+	* magick/list.c (ReplaceImageInList): Remove previous and next
+	references from removed image before destroying it.
+
+	* magick/render.c (DrawClipPath): Remove break statement so that
+	added clip-mask image is initialized properly and rendered-on as
+	expected.  Thanks to László Böszörményi for reporting this problem
+	prior to release.
+
+2020-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac (AC_PROG_CC_STDC): AC_PROG_CC_STDC is no longer
+	required since AC_PROG_CC now provides its useful function.
+	AC_PROG_CC_STDC is marked as obsolete after Autoconf 2.69.
+	Quote all arguments to m4 macros.
+
+2020-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Update syntax to avoid using deprecated syntax
+	according to Autoconf 2.69.
+
+2020-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/webp.c (ReadWEBPImage): Use SetImageProfile() rather than
+	AppendImageProfile().
+
+2020-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/magick_wand.c (MagickSetSamplingFactors): Correct
+	formatting of sampling factors string.  Fixes SourceForge issue
+	633 "MagickSetSamplingFactors() API mismatch - comma separated
+	values instead of 1x1 ".
+
+2020-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawPrimitive): Improve error checking related
+	to ImagePrimitive.
+
+	* magick/resize.c (ResizeImage): If CloneImage() of resize_image
+	to source_image fails then free source_image allocation before
+	returning in order to prevent memory leak.
+
+	* magick/image.c (CloneImage): Free clone_image allocation if
+	ImgExtra allocation fails in order to prevent memory leak.  Fixes
+	oss-fuzz 25342 "Indirect-leak in MagickMalloc".
+	(SetImageOpacity): SetImageOpacity() now returns error status
+	since it is possible for it to fail.
+
+2020-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Ignore corrupt whitepoint and
+	primary chromaticities tags.  Fixes oss-fuzz issue 25507
+	"Divide-by-zero in DoubleToRational".  The divide by zero is
+	actually in libtiff, but the bad values from the input file were
+	propagated through GraphicsMagick.
+
+2020-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/analyze.c (GetImageBoundingBox): Use solution proposed by
+	Troy Patteson to solve SourceForge issue 345 "MagickTrimImage with
+	extreme fuzz can produce image with negative width".
+
+2020-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Apply the same resource limits to
+	TIFF tile sizes as apply to the image itself.  Fixes oss-fuzz
+	issues 24523 "Timeout in coder_TIFF_fuzzer" and 24810 "Timeout in
+	coder_PTIF_fuzzer".
+
+2020-08-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Add --without-gdi32 configure option to support
+	disabling use of the Microsoft Windows gdi32 library if it is not
+	wanted.
+
+2020-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Remove the assumption that a native Windows build
+	means that Ghostscript may be available so that MinGW tests which
+	depend on Ghostcript are attributed proper XFAIL status by the
+	test suite.
+
+2020-08-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (MagickCondSignal): Explicitly initialize 'oact'
+	prior to calling sigaction() in order to attempt to surmount
+	apparent oss-fuzz framework issue.
+
+2020-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/delegate.c, magick/magick.c, magick/nt_base.c: Fix
+	compilation errors under MinGW when Ghostscript support is
+	disabled.
+
+2020-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/nt_base.c: Fix compilation issue noticed under MinGW.
+
+	* magick/render.c (DrawImage): Handle the case that
+	ExtractTokensBetweenPushPop() can return NULL.  Fixes oss-fuzz
+	24659 "Null-dereference READ in DrawImage".
+
+	* magick/magick.c (MagickCondSignal): Re-implement to handle the
+	case where a new-style 'siginfo' signal handler was previously
+	registered, as well as the legacy type.  This may address oss-fuzz
+	24690 "Use-of-uninitialized-value in MagickCondSignal".
+
+2020-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/drawtest.c: Use structured error handling and report all
+	output to stderr so it does not screw up TAP tests.
+
+	* magick/render.c (DTOLONG_MIN): Correct 32-bit definition of
+	DTOLONG_MIN.
+
+	* wand/wandtests.tap: Wand drawtest requires FreeType.
+
+	* NEWS.txt: Update with changes up to 2020-07-26.
+
+	* VisualMagick/magick/magick_config.h.in (HasGS): Default HasGS to
+	enabled.
+
+	* configure.ac: Add a --without-gs configure option to disable
+	reading PS, EPS, and PDF formats via an external Ghostscript
+	delegate program.  This is intended as an absolute security
+	measure for sites that want to be assured to avoid executing
+	Ghostscript even though it is installed on the system.  Removal of
+	PS and PDF reading support breaks reading other formats which are
+	handled by executing an external program to first convert to PS or
+	PDF formats.
+
+	* magick/delegate.c (InvokePostscriptDelegate): Use HasGS to
+	enable use of the Ghostscript delegate.  Change the existing
+	legacy HasGS ifdefs to HasGSLIB.
+
+2020-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Fix compilation error when
+	COMPRESSION_WEBP is not defined.
+
+2020-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Fix enableval syntax for
+	--disable-compressed-files.
+
+2020-07-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (CompareImageCommand): Merge changeset by
+	谢致邦 (XIE Zhibang) which adds 'matte' support to the compare
+	command. However, substantially reduce the amount of changes
+	by avoiding adding a new public function.  Documentation
+	regarding how 'compare' uses this option is also added.
+
+	* magick/command.c: Merge changeset by谢致邦 (XIE Zhibang)
+	regarding Some duplicate "verbose" should be "version".
+
+	* configure.ac, magick/blob.c: Merge changeset by Przemysław
+	Sobala regarding "Configure: add --with(out)-compressed-files
+	option".  The configure option was changed to
+	--disable-compressed-files during the merge since it is more
+	appropriate.
+
+2020-07-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes up to 2020-07-15.
+
+	* magick/render.c (DrawImage): Improve error handling so errors
+	are returned when they should be.  Fixes oss-fuzz 24117
+	"Stack-overflow in DrawImage" and oss-fuzz 24126 "Timeout in
+	coder_MVG_fuzzer".  Restore the original behavior of
+	DrawClipPath() when there is no matching clip-path attribute.
+
+2020-07-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes up to 2020-07-12.
+
+2020-07-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/xwindow.c (MagickXVisualColormapSize): Fix UBSAN integer
+	overflow warning.
+
+	* magick/render.c (DrawClipPath): Report only a warning if there
+	is no clip mask.
+	(ExtractTokensBetweenPushPop): Verify that the expected/required
+	pop statement is indeed found.  Fixes oss-fuzz 23498 "Timeout in
+	coder_MVG_fuzzer".
+
+2020-06-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (ReadImage): Improve error handling related
+	to ImageToFile().
+
+	* magick/image.c (SetImageInfo): Improve error handling related to
+	ImageToFile().
+
+	* coders/mat.c: Check MagickFindRawImageMinMax() return status.
+
+	* magick/constitute.c (MagickFindRawImageMinMax): Verify that the
+	original seek position was restored.
+
+2020-06-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Apply stricter range limits when
+	converting a double to a long in order to avoid integer overflow.
+	Fixes oss-fuzz 23304 "Integer-overflow in DrawImage".
+	(DrawClipPath): If there is no matching clip-path attribute then
+	return an informative error.  Fixes oss-fuzz 23187 "Stack-overflow
+	in DrawImage" which is actually a case of DrawImage() /
+	DrawClipPath() recursion.
+
+2020-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (UnpackWPGRaster): Fix oss-fuzz 23042
+	"Heap-buffer-overflow in ImportGrayQuantumType" and oss-fuzz
+	"Heap-buffer-overflow in InsertRow" which are both from the same
+	cause.
+
+2020-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (ClipCacheNexus): Change x and y variables
+	to unsigned type.
+
+2020-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): WebP compression only supports a
+	depth of 8.  Fixes oss-fuzz 22560 "Use-of-uninitialized-value in
+	GammaToLinear".
+
+2020-05-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): Terminate reading when a pixel
+	cache resource limit is hit rather than moving on to heap buffer
+	overflow.  Fixes oss-fuzz 20045, 20318, 21956
+
+	* coders/png.c (ReadMNGImage): If the image width is 1, then X
+	magnification is done by by simple pixel replication.  If the
+	image height is 1, then Y magnification is done by simple pixel
+	replication.  Fixes oss-fuzz issue 19025 "Heap-buffer-overflow in
+	ReadMNGImage" and oss-fuzz issue 19026 "ASSERT: yy < (long)
+	large_image->rows". It appears that CERT has assigned
+	CVE-2020-12672 for oss-fuzz issue 19025.  Note that the heap
+	overwrite is only one byte.
+
+2020-05-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update with changes up to 2020-04-23.
+
+2020-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadDPXImage): Support dpx:swap-samples-read
+	define which behaves similar to dpx:swap-samples, but is only
+	applied when reading.  This provides for use when there is both
+	reading and writing in the same operation.
+	(WriteDPXImage): Support dpx:swap-samples-write define which
+	behaves similar to dpx:swap-samples, but is only applied when
+	writing.  This provides for use when there is both reading and
+	writing in the same operation.
+
+2020-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick: Fix remaining GCC 10 warnings.
+
+2020-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/transform.c (GetImageMosaicDimensions): Mark function as pure.
+
+	* magick/effect.c (GetNonpeakMedianList): Mark function as pure.
+
+	* coders/fits.c (InsertRowHDU): Fix scary-sounding GCC 10 warning,
+	which is actually benign.
+
+	* config/config.sub: Update to latest config.sub
+
+	* config/config.guess: Update to latest config.guess.
+
+	* Makefile.am: Update to Automake 1.16.2
+
+2020-04-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/dpx.c (ReadRowSamples): Simplify 10-bit packed decoding.
+	(WriteRowSamples): Simplify 10-bit packed encoding.
+
+	* coders/locale.c (ReadConfigureFile): Ignore comment element if
+	it was not found or is too short.
+
+	* magick/pixel_cache.c (ReadCacheIndexes): If SetNexus() has
+	previously failed to allocate the staging buffer and thus reported
+	an exception to the user, then ReadCacheIndexes() should report an
+	error rather than blundering into copying indexes data to a null
+	pointer.
+
+	* magick/effect.c (AdaptiveThresholdImage): Assure that we don't
+	attempt to write to output pixels if they have not been selected
+	yet.
+
+	* magick/utility.c (ExpandFilenames): Properly handle NULL
+	filelist and NULL filelist entries.
+	(GetGeometry): Assure that there is no one-character stack read
+	overflow when reading the geometry buffer.
+
+2020-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Restore xz to oss-fuzz build due to
+	build problems getting worked out.
+
+2020-03-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh (MAGICK_LIBS): Remove mention of
+	liblzma.a in the oss-fuzz build until its build problems get
+	worked out.
+
+2020-03-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Skip building xz in the oss-fuzz
+	build until its build problems get worked out.
+
+2020-03-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfoPost): Don't load log.mgk if
+	logging is already configured to use MethodOutput.
+
+2020-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/log.c (InitializeLogInfoPost): Mark that logging is
+	configured, regardless of if "log.mgk" was discovered.
+
+2020-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/magick/magick_config.h.in: ProvideDllMain is now
+	disabled by default since it causes InitializeMagick() to be
+	invoked prior to when the program's main() routine is called,
+	thereby blocking configuration activities or use of
+	InitializeMagickEx().  With this change it is even more imperative
+	that InitializeMagick() be explicitly invoked by all programs
+	using GraphicsMagick.
+
+	* magick/log.c (LogMagickEventList): Always use/respect the
+	configured log format as might be obtained from "log.mgk" or
+	SetLogDefaultFormat().
+
+	* magick/utility.c (MagickFormatString): Return the size of the
+	formatted string.
+	(MagickFormatStringList): Return the size of the formatted string.
+	(FormatString): Return the size of the formatted string.
+	(FormatStringList): Return the size of the formatted string.
+
+2020-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/api/types.rst: Improved types documentation and added more
+	hyperlinks.
+
+	* scripts/format_c_api_doc.py: Add hyperlinks for 'LogMethod' and
+	'LogOutputType' type documentation.
+
+	* Magick++/lib/Image.cpp (SetLogDefaultEventType): New C++ function to
+	forward to C interface.
+	(SetLogDefaultGenerations): New C++ function to forward to C
+	interface.
+	(SetLogDefaultLimit): New C++ function to forward to C interface.
+	(SetLogDefaultFormat(): New C++ function to forward to C
+	interface.
+	(SetLogDefaultLogMethod): New C++ function to forward to C
+	interface.
+	(SetLogDefaultFileName): New C++ function to forward to C
+	interface.
+	(SetLogDefaultOutputType): New C++ function to forward to C
+	interface.
+
+	* magick/log.c (SetLogDefaultEventType): New function to support
+	setting the default set of events which will result in a log
+	event.
+	(SetLogDefaultGenerations): New function to specify the maximum
+	number of log files maintain before circulating back to overwrite
+	the first name.
+	(SetLogDefaultLimit): New function to specify the maximum number
+	of logging events which may occur before creating a new log file.
+	(SetLogDefaultLogMethod): New function to provide a call-back
+	function to be invoked for each log event when the logging method
+	type is MethodOutput.
+	(SetLogDefaultOutputType): New function to set the logging output
+	destination.
+	(SetLogDefaultFormat): New function to provide the format of the
+	logging output.
+	(SetLogDefaultFileName): New function to provide the file name,
+	or file path, to be written to for each log event.
+	(InitializeLogInfo): If a default logging callback was provided
+	via SetLogDefaultLogMethod() then skip searching for "log.mgk".
+	In this case it is assumed that the API user has already changed
+	any other logging default which would have been updated by
+	"log.mgk" so it would be harmful to search for it, or read from
+	it.
+
+2020-03-10  Troy Patteson  <troyp@ieee.org>
+
+	* coders/png.c (WriteOnePNGImage): Don't skip optional Exif
+	identifier code if it isn't present.
+
+2020-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/pixel_cache.c (ModifyCache): Destroy clone_image.cache if
+	ClonePixelCache() reports failure.  Fixes oss-fuzz 20871
+	"graphicsmagick:coder_MVG_fuzzer: Direct-leak in
+	MagickMallocAligned".
+
+	* magick/log.c (LogMagickEventList): Prepare source module base
+	name more efficiently.  Move MethodOutput implementation to the
+	front so it is not filtered by other active blocks.
+	(LogMagickEventList): Cache broken-down time structure in LogInfo
+	and recompute only when needed.
+
+2020-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (HorizontalFilter): Improve tracing.
+	(VerticalFilter): Improve tracing.
+	(ResizeImage): Improve tracing.
+
+	* www/api/api.rst: Add functions from log.c and render.c.
+
+	* magick/log.c (DestroyLogInfo): DestroyLogInfo is no longer
+	marked MagickExport.
+
+2020-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/api.h: Add "magick/enum_strings.h" to API headers.
+	Requested by Przemysław Sobala via posting to the
+	graphicsmagick-help mailing list on 2020-02-27.
+
+	* scripts/html_fragments.py: Automatically generate HTML footer
+	content and include commented HTML fragment which may be
+	substituted with SF tracker for SourceForge web site.
+
 2020-02-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* version.sh: Updates in preparation for the 1.3.35 release.
-	Merge changes for 1.3.35 into GraphicsMagick-1_3 branch.
 
 	* www/INSTALL-windows.rst: Update Windows installation and build
 	documentation.

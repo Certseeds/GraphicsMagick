@@ -303,6 +303,10 @@ static void DefaultErrorHandler(const ExceptionType severity,const char *reason,
       if (description != (char *) NULL)
         (void) fprintf(stderr," (%.1024s)",description);
     }
+  /*
+    FIXME: The following captures a random errno value rather than the
+    errno associated with the actual error.
+  */
   if ((severity != OptionError) && errno)
     (void) fprintf(stderr," [%.1024s]",GetErrorMessageString(errno));
   (void) fprintf(stderr,".\n");
@@ -664,7 +668,7 @@ MagickExport void MagickError(const ExceptionType error,const char *reason,
 %  MagickFatalError() calls the fatal error handler methods with an error
 %  reason.  The fatal error handler is not expected to return!
 %
-%  The format of the MagickError method is:
+%  The format of the MagickFatalError method is:
 %
 %      void MagickFatalError(const ExceptionType error,const char *reason,
 %        const char *description)
@@ -933,6 +937,7 @@ MagickExport WarningHandler SetWarningHandler(WarningHandler handler)
 MagickExport void ThrowException(ExceptionInfo *exception,
   const ExceptionType severity,const char *reason,const char *description)
 {
+  const int orig_errno=errno;
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   LockSemaphoreInfo(error_semaphore);
@@ -952,7 +957,7 @@ MagickExport void ThrowException(ExceptionInfo *exception,
     MagickFreeMemory(exception->description);
     exception->description=new_description;
   }
-  exception->error_number=errno;
+  exception->error_number=orig_errno;
   MagickFreeMemory(exception->module);
   MagickFreeMemory(exception->function);
   exception->line=0UL;
@@ -1013,6 +1018,7 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
                                        const char *function,
                                        const unsigned long line)
 {
+  const int orig_errno=errno;
   MagickBool ignore = MagickFalse;
   assert(exception != (ExceptionInfo *) NULL);
   assert(function != (const char *) NULL);
@@ -1057,7 +1063,7 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
         exception->description=new_description;
       }
 
-      exception->error_number=errno;
+      exception->error_number=orig_errno;
       {
         char *new_module = NULL;
         if (module)

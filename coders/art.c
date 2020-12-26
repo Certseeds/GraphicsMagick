@@ -124,7 +124,7 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
-  BImgBuff=MagickAllocateMemory(unsigned char *,((size_t) ldblk));  /*Ldblk was set in the check phase*/
+  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,((size_t) ldblk));  /*Ldblk was set in the check phase*/
   if (BImgBuff==NULL)
   NoMemory:
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -141,7 +141,7 @@ static Image *ReadARTImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (void)ImportImagePixelArea(image,GrayQuantum,1,BImgBuff,NULL,0);
       if (!SyncImagePixelsEx(image,exception)) break;
     }
-  MagickFreeMemory(BImgBuff);
+  MagickFreeResourceLimitedMemory(BImgBuff);
 
   if (i != height)
     ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -206,7 +206,7 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
   DataSize = (long)((image->columns+7) / 8);
   Padding = (unsigned char)((-(long) DataSize) & 0x01);
 
-  pixels=MagickAllocateMemory(unsigned char *,(size_t) (DataSize));
+  pixels=MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) (DataSize));
   if (pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -247,7 +247,7 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
   }
 
   CloseBlob(image);
-  MagickFreeMemory(pixels);
+  MagickFreeResourceLimitedMemory(pixels);
 
   if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return ART");

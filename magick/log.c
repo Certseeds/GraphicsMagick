@@ -50,21 +50,8 @@
 #define MagickLogFilename  "log.mgk"
 
 /*
-  Typedef declarations.
+  Run-time Logger Info
 */
-typedef enum
-{
-  DisabledOutput = 0x0000,
-  UndefinedOutput = 0x0000,
-  StdoutOutput = 0x0001,
-  StderrOutput = 0x0002,
-  XMLFileOutput = 0x0004,
-  TXTFileOutput = 0x0008,
-  Win32DebugOutput = 0x0010,
-  Win32EventlogOutput = 0x0020,
-  MethodOutput = 0x0040
-} LogOutputType;
-
 typedef struct _LogInfo
 {
   SemaphoreInfo
@@ -99,7 +86,37 @@ typedef struct _LogInfo
     filename[256],
     format[200];
 
+  time_t
+    last_seconds;
+
+  struct tm
+    last_tm;
+
 } LogInfo;
+
+/*
+  Static Logger Defaults
+*/
+typedef struct _LogInfoDefaults
+{
+  unsigned long
+    generations, /* 3 */
+    limit; /* 2000 */
+
+  LogEventType
+    events; /* NoEventsMask */
+
+  LogOutputType
+    output_type; /* StderrOutput */
+
+  LogMethod
+    method;  /* (LogMethod) 0 */
+
+  char
+    filename[256], /* "Magick-%d.log" */
+    format[200]; /* "%t %r %u %p %m/%f/%l/%d:\n  %e" */
+
+} LogInfoDefaults;
 
 /*
   This table maps between masks and the various event id's that can occur
@@ -175,6 +192,17 @@ static const struct
 */
 static LogInfo
 *log_info = (LogInfo *) NULL;
+
+static LogInfoDefaults log_info_defaults =
+  {
+    3, /* unsigned long generations */
+    2000, /* unsigned long limit */
+    NoEventsMask, /* LogEventType events */
+    StderrOutput, /* LogOutputType output_type */
+    (LogMethod) 0, /* LogMethod */
+    "Magick-%d.log", /* char filename[256] */
+    "%t %r %u %p %m/%f/%l/%d:\n  %e", /* char format[200] */
+  };
 
 /*
   Forward declarations.
@@ -238,7 +266,7 @@ static LogEventType ParseEvents(const char *event_string)
 %
 %
 */
-MagickExport void DestroyLogInfo(void)
+void DestroyLogInfo(void)
 {
   if (log_info->file != (FILE *) NULL)
     if ((log_info->file != stdout) && (log_info->file != stderr))
@@ -270,6 +298,12 @@ MagickExport void DestroyLogInfo(void)
 %  fatal error for the whole program.  All of the allocations performed by
 %  this function are released by DestroyLogInfo().
 %
+%  Normally this function will search for a "log.mgk" file from which to
+%  obtain logging defaults, and use compiled-in defaults if the "log.mgk"
+%  file is not found.  The search for "log.mgk" is skipped if the default
+%  logging method is MethodOutput and a logging call-back has been
+%  registered.
+%
 %  The format of the InitializeLogInfo method is:
 %
 %      MagickPassFail InitializeLogInfo(void)
@@ -287,7 +321,7 @@ InitializeLogInfo(void)
   /*
     Initialize LogInfo
   */
-  log_info=MagickAllocateMemory(LogInfo *,sizeof(LogInfo));
+  log_info=MagickAllocateClearedMemory(LogInfo *,sizeof(LogInfo));
   if (log_info == (LogInfo *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
       UnableToAllocateLogInfo);
@@ -306,18 +340,19 @@ InitializeLogInfo(void)
 
   log_info->file=(FILE *) NULL;
   GetTimerInfo(&log_info->timer);
-  log_info->generations=3;
-  log_info->limit=2000;
+  log_info->generations=log_info_defaults.generations;
+  log_info->limit=log_info_defaults.limit;
   log_info->generation=0;
   log_info->count=0;
-  log_info->events=NoEventsMask;
-  log_info->output_type=StderrOutput;
-  log_info->method=0;
+  log_info->events=log_info_defaults.events;
+  log_info->output_type=log_info_defaults.output_type;
+  log_info->method=log_info_defaults.method;
   log_info->log_configured=MagickFalse;
+  log_info->last_seconds=0;
 
   (void) strlcpy(log_info->path,"(default)",sizeof(log_info->path));
-  (void) strlcpy(log_info->filename,"Magick-%d.log",sizeof(log_info->filename));
-  (void) strlcpy(log_info->format,"%t %r %u %p %m/%f/%l/%d:\n  %e",
+  (void) strlcpy(log_info->filename,log_info_defaults.filename,sizeof(log_info->filename));
+  (void) strlcpy(log_info->format,log_info_defaults.format,
                  sizeof(log_info->format));
 
 #if defined(__COVERITY__)
@@ -334,8 +369,11 @@ InitializeLogInfo(void)
 
 #if UseInstalledMagick
   /*
-    Try to read the log configuration file.
+    Try to read the log configuration file if not using call-back
+    method.
   */
+  if (!((log_info->output_type & MethodOutput) &&
+        (log_info->method != (LogMethod) NULL)))
   {
     ExceptionInfo
       exception;
@@ -386,16 +424,21 @@ InitializeLogInfoPost(void)
     *p;
 
   /*
-    Try to read the log configuration file.
+    Try to read the log configuration file if not using call-back
+    method.
   */
   if (!log_info->log_configured)
   {
-    ExceptionInfo
-      exception;
+    if (!((log_info->output_type & MethodOutput) &&
+          (log_info->method != (LogMethod) NULL)))
+      {
+        ExceptionInfo
+          exception;
 
-    GetExceptionInfo(&exception);
-    (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
-    DestroyExceptionInfo(&exception);
+        GetExceptionInfo(&exception);
+        (void) ReadLogConfigureFile(MagickLogFilename,0,&exception);
+        DestroyExceptionInfo(&exception);
+      }
 
     /*
       Set override logging flags using the value of MAGICK_DEBUG if it
@@ -403,6 +446,11 @@ InitializeLogInfoPost(void)
     */
     if ((p=getenv("MAGICK_DEBUG")) != (const char *) NULL)
       (void) SetLogEventMask(p);
+
+    /*
+      Claim that logging was successfully configured
+    */
+    log_info->log_configured=MagickTrue;
   }
 
   return MagickPass;
@@ -419,12 +467,13 @@ InitializeLogInfoPost(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  IsEventLogging() returns True if logging of events is enabled otherwise
-%  False.
+%  IsEventLogging() returns MagickTrue if logging of events is enabled otherwise
+%  MagickFalse.  This can be used to enable logging code which is otherwise
+%  not needed.
 %
 %  The format of the IsEventLogging method is:
 %
-%      unsigned int IsEventLogging(void)
+%      MagickBool IsEventLogging(void)
 %
 %
 */
@@ -444,12 +493,13 @@ MagickExport MagickBool IsEventLogging(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  LogMagickEvent() logs an event as determined by the log configuration file.
-%  If an error occurs, False is returned otherwise True.
+%  LogMagickEvent() logs an event as determined by the current logging
+%  configuration. If an error occurs, MagickFail is returned otherwise
+%  MagickPass.
 %
 %  The format of the LogMagickEvent method is:
 %
-%      unsigned int LogMagickEvent(const LogEventType type,const char *module,
+%      MagickPassFail LogMagickEvent(const LogEventType type,const char *module,
 %        const char *function,const unsigned long line,const char *format,...)
 %
 %  A description of each parameter follows:
@@ -466,31 +516,38 @@ MagickExport MagickBool IsEventLogging(void)
 %
 %
 */
-MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
-  const char *module,const char *function,const unsigned long line,
-  const char *format,va_list operands)
+MagickExport MagickPassFail
+LogMagickEventList(const ExceptionType type,
+                   const char *module,const char *function,
+                   const unsigned long line,
+                   const char *format,va_list operands)
 {
-  char
+  const char
     *domain,
-    *severity,
-#if defined(MSWINDOWS)
-    nteventtype,
-#endif
+    *modulebase,
+    *severity;
+
+  register const char
+    *p;
+
+  size_t
+    message_len=0;
+
+  char
+    message[MaxTextExtent],
     event[MaxTextExtent],
-    srcname[MaxTextExtent],
-    timestamp[MaxTextExtent];
+    timestamp[16];
+
+#if defined(MSWINDOWS)
+  char
+    nteventtype;
+#endif
 
   double
     elapsed_time,
     user_time;
 
-  register const char
-    *p;
-
   struct tm
-#if defined(HAVE_LOCALTIME_R)
-    tm_buf,
-#endif /* if defined(HAVE_LOCALTIME_R) */
     *time_meridian;
 
   time_t
@@ -546,87 +603,206 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
             }
         }
       if (!enabled)
-        return(True);
+        return(MagickPass);
     }
+
+  event[0]='\0';
+  message[0]='\0';
+  timestamp[0]='\0';
 
   /* fixup module info to just include the filename - and not the
      whole path to the file. This makes the log huge for no good
      reason */
-  GetPathComponent(module,TailPath,srcname);
+  for (modulebase=module+strlen(module)-1; modulebase > module; modulebase--)
+    if (IsBasenameSeparator(*modulebase))
+      {
+        modulebase++;
+        break;
+      }
 
-  LockSemaphoreInfo(log_info->log_semaphore);
   switch (((unsigned int) type) % 100)
-  {
-    case UndefinedException: domain=(char *) "Undefined"; break;
-    case ExceptionBase: domain=(char *) "Exception"; break;
-    case ResourceBase: domain=(char *) "Resource"; break;
-    /* case ResourceLimitBase: domain=(char *) "ResourceLimit"; break; */
-    case TypeBase: domain=(char *) "Type"; break;
-    /* case AnnotateBase: domain=(char *) "Annotate"; break; */
-    case OptionBase: domain=(char *) "Option"; break;
-    case DelegateBase: domain=(char *) "Delegate"; break;
-    case MissingDelegateBase: domain=(char *) "MissingDelegate"; break;
-    case CorruptImageBase: domain=(char *) "CorruptImage"; break;
-    case FileOpenBase: domain=(char *) "FileOpen"; break;
-    case BlobBase: domain=(char *) "Blob"; break;
-    case StreamBase: domain=(char *) "Stream"; break;
-    case CacheBase: domain=(char *) "Cache"; break;
-    case CoderBase: domain=(char *) "Coder"; break;
-    case ModuleBase: domain=(char *) "Module"; break;
-    case DrawBase: domain=(char *) "Draw"; break;
-    /* case RenderBase: domain=(char *) "Render"; break; */
-    case ImageBase: domain=(char *) "image"; break;
-    case TemporaryFileBase: domain=(char *) "TemporaryFile"; break;
-    case TransformBase: domain=(char *) "Transform"; break;
-    case XServerBase: domain=(char *) "XServer"; break;
-    case X11Base: domain=(char *) "X11"; break;
-    case UserBase: domain=(char *) "User"; break;
-    case MonitorBase: domain=(char *) "Monitor"; break;
-    case LocaleBase: domain=(char *) "Locale"; break;
-    case DeprecateBase: domain=(char *) "Deprecate"; break;
-    case RegistryBase: domain=(char *) "Registry"; break;
-    case ConfigureBase: domain=(char *) "Configure"; break;
-    default: domain=(char *) "UnknownEvent"; break;
-  }
+    {
+    case UndefinedException: domain="Undefined"; break;
+    case ExceptionBase: domain="Exception"; break;
+    case ResourceBase: domain="Resource"; break;
+      /* case ResourceLimitBase: domain="ResourceLimit"; break; */
+    case TypeBase: domain="Type"; break;
+      /* case AnnotateBase: domain="Annotate"; break; */
+    case OptionBase: domain="Option"; break;
+    case DelegateBase: domain="Delegate"; break;
+    case MissingDelegateBase: domain="MissingDelegate"; break;
+    case CorruptImageBase: domain="CorruptImage"; break;
+    case FileOpenBase: domain="FileOpen"; break;
+    case BlobBase: domain="Blob"; break;
+    case StreamBase: domain="Stream"; break;
+    case CacheBase: domain="Cache"; break;
+    case CoderBase: domain="Coder"; break;
+    case ModuleBase: domain="Module"; break;
+    case DrawBase: domain="Draw"; break;
+      /* case RenderBase: domain="Render"; break; */
+    case ImageBase: domain="image"; break;
+    case TemporaryFileBase: domain="TemporaryFile"; break;
+    case TransformBase: domain="Transform"; break;
+    case XServerBase: domain="XServer"; break;
+    case X11Base: domain="X11"; break;
+    case UserBase: domain="User"; break;
+    case MonitorBase: domain="Monitor"; break;
+    case LocaleBase: domain="Locale"; break;
+    case DeprecateBase: domain="Deprecate"; break;
+    case RegistryBase: domain="Registry"; break;
+    case ConfigureBase: domain="Configure"; break;
+    default: domain="UnknownEvent"; break;
+    }
   switch ((((unsigned int) type) / 100) * 100)
-  {
-    case EventException: severity=(char *) "Event"; break;
-    case WarningException: severity=(char *) "Warning"; break;
-    case ErrorException: severity=(char *) "Error"; break;
-    case FatalErrorException: severity=(char *) "FatalError"; break;
-    default: severity=(char *) "Unknown"; break;
-  }
+    {
+    case EventException: severity="Event"; break;
+    case WarningException: severity="Warning"; break;
+    case ErrorException: severity="Error"; break;
+    case FatalErrorException: severity="FatalError"; break;
+    default: severity="Unknown"; break;
+    }
 #if defined(MSWINDOWS)
   switch ((type / 100) * 100)
-  {
+    {
     case EventException: nteventtype=EVENTLOG_INFORMATION_TYPE; break;
     case WarningException: nteventtype=EVENTLOG_WARNING_TYPE; break;
     case ErrorException: nteventtype=EVENTLOG_ERROR_TYPE; break;
     case FatalErrorException: nteventtype=EVENTLOG_ERROR_TYPE; break;
     default: nteventtype=EVENTLOG_INFORMATION_TYPE; break;
-  }
+    }
 #endif
-#if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(event,MaxTextExtent,format,operands);
-#else
-#  if defined(HAVE_VSPRINTF)
-  (void) vsprintf(event,format,operands);
-#  else
-#    error Neither vsnprintf or vsprintf is available.
-#  endif
-#endif
+  MagickFormatStringList(event,sizeof(event),format,operands);
+  LockSemaphoreInfo(log_info->log_semaphore);
   seconds=time((time_t *) NULL);
+  if (seconds == log_info->last_seconds)
+    {
+      time_meridian=&log_info->last_tm;
+    }
+  else
+    {
+      log_info->last_seconds=seconds;
 #if defined(HAVE_LOCALTIME_R)
-  time_meridian=localtime_r(&seconds, &tm_buf);
+      time_meridian=localtime_r(&seconds, &log_info->last_tm);
 #else
-  time_meridian=localtime(&seconds); /* Thread-unsafe version */
+      time_meridian=localtime(&seconds); /* Possibly thread-unsafe version */
+      (void) memcpy(&log_info->last_tm,time_meridian,sizeof(log_info->last_tm));
 #endif /* if defined(HAVE_LOCALTIME_R) */
+    }
   elapsed_time=GetElapsedTime(&log_info->timer);
   user_time=GetUserTime(&log_info->timer);
   (void) ContinueTimer((TimerInfo *) &log_info->timer);
-  FormatString(timestamp,"%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+
-    1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
-    time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+  (void) MagickFormatString(timestamp,sizeof(timestamp),"%04d%02d%02d%02d%02d%02d",time_meridian->tm_year+
+                            1900,time_meridian->tm_mon+1,time_meridian->tm_mday,
+                            time_meridian->tm_hour,time_meridian->tm_min,time_meridian->tm_sec);
+
+  if (!(((unsigned int) log_info->output_type) & XMLFileOutput))
+    {
+      /*
+        Format message in a "human readable" format.
+      */
+      for (p=log_info->format; *p != '\0'; p++)
+        {
+          /*
+            Process formatting characters in text.
+          */
+          if ((*p == '\\') && (*(p+1) == 'r'))
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\r");
+              p++;
+              continue;
+            }
+          if ((*p == '\\') && (*(p+1) == 'n'))
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\n");
+              p++;
+              continue;
+            }
+          if (*p != '%')
+            {
+              message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%c",*p);
+              continue;
+            }
+          p++;
+          switch (*p)
+            {
+            case 'd':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",domain);
+                break;
+              }
+            case 'e':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",event);
+                break;
+              }
+            case 'f':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",function);
+                break;
+              }
+            case 'l':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%lu",line);
+                break;
+              }
+            case 'm':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",modulebase);
+                break;
+              }
+            case 'p':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%ld",(long) getpid());
+                break;
+              }
+            case 'r':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%ld:%-9.6f",(long) (elapsed_time/60.0),
+                                                fmod(elapsed_time,60.0));
+                break;
+              }
+            case 's':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%.1024s",severity);
+                break;
+              }
+            case 't':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%02d:%02d:%02d",time_meridian->tm_hour,
+                                                time_meridian->tm_min,time_meridian->tm_sec);
+                break;
+              }
+            case 'u':
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%0.3fu",user_time);
+                break;
+              }
+            default:
+              {
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%%");
+                message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"%c",*p);
+                break;
+              }
+            }
+        }
+
+      /*
+        Add a new-line to message for messages which need it.  This avoids buffering or I/O later.
+      */
+      if (((unsigned int) log_info->output_type) &
+          ((unsigned int) Win32DebugOutput|Win32EventlogOutput|StdoutOutput|StderrOutput))
+        {
+          message_len+=MagickFormatString(&message[message_len],sizeof(message)-message_len,"\n");
+        }
+    }
+
+  if ((log_info->output_type & MethodOutput) &&
+      (log_info->method != (LogMethod) NULL))
+    {
+      log_info->method(type,message);
+      UnlockSemaphoreInfo(log_info->log_semaphore);
+      return(MagickPass);
+    }
   if (((unsigned int) log_info->output_type) & XMLFileOutput)
     {
       /*
@@ -661,16 +837,16 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
         }
       (void) fprintf(log_info->file,"<record>\n");
       (void) fprintf(log_info->file,"  <timestamp>%.1024s</timestamp>\n",
-        timestamp);
+                     timestamp);
       (void) fprintf(log_info->file,
-        "  <elapsed-time>%ld:%-9.6f</elapsed-time>\n",
-        (long) (elapsed_time/60.0),fmod(elapsed_time,60.0));
+                     "  <elapsed-time>%ld:%-9.6f</elapsed-time>\n",
+                     (long) (elapsed_time/60.0),fmod(elapsed_time,60.0));
       (void) fprintf(log_info->file,"  <user-time>%0.3f</user-time>\n",
-        user_time);
+                     user_time);
       (void) fprintf(log_info->file,"  <pid>%ld</pid>\n",(long) getpid());
-      (void) fprintf(log_info->file,"  <module>%.1024s</module>\n",srcname);
+      (void) fprintf(log_info->file,"  <module>%.1024s</module>\n",modulebase);
       (void) fprintf(log_info->file,"  <function>%.1024s</function>\n",
-        function);
+                     function);
       (void) fprintf(log_info->file,"  <line>%lu</line>\n",line);
       (void) fprintf(log_info->file,"  <domain>%.1024s</domain>\n",domain);
       (void) fprintf(log_info->file,"  <severity>%.1024s</severity>\n",severity);
@@ -678,7 +854,7 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
       (void) fprintf(log_info->file,"</record>\n");
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
-      return(True);
+      return(MagickPass);
     }
   if (((unsigned int) log_info->output_type) & TXTFileOutput)
     {
@@ -709,55 +885,29 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
           if (log_info->generation >= log_info->generations)
             log_info->generation=0;
         }
-        (void) fprintf(log_info->file,
-                       "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu"
-                       " %.1024s %.1024s %.1024s\n",
-                       timestamp, (long) (elapsed_time/60.0),
-                       fmod(elapsed_time,60.0),
-                       user_time, (long) getpid(), srcname, function, line, domain,
-                       severity, event);
+      (void) fprintf(log_info->file,"%s",message);
       (void) fflush(log_info->file);
       UnlockSemaphoreInfo(log_info->log_semaphore);
-      return(True);
+      return(MagickPass);
     }
 #if defined(MSWINDOWS)
   if (log_info->output_type & Win32DebugOutput)
     {
-      char
-        buffer[MaxTextExtent];
-
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
-                   domain, severity, event);
-      OutputDebugString(buffer);
+      OutputDebugString(message);
     }
   if (log_info->output_type & Win32EventlogOutput)
     {
 #define LOGGING_ERROR_CODE 0
-      char
-        buffer[MaxTextExtent];
-
       LPCSTR
         szList[1];
 
       HANDLE
         hSource;
 
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
-                   domain, severity, event);
       hSource = RegisterEventSource(NULL, MagickPackageName);
       if (hSource != NULL)
         {
-          szList[0]=buffer;
+          szList[0]=message;
           ReportEvent(hSource,nteventtype,0,LOGGING_ERROR_CODE,NULL,1,0,szList,NULL);
           DeregisterEventSource(hSource);
         }
@@ -768,128 +918,20 @@ MagickExport  unsigned int LogMagickEventList(const ExceptionType type,
     {
       FILE
         *file;
+
       /*
-        Log to stdout in a "human readable" format.
+        Log to stdout/stderr in a "human readable" format.
       */
       file = stdout;
       if (((unsigned int) log_info->output_type) & StderrOutput)
         file = stderr;
-      for (p=log_info->format; *p != '\0'; p++)
-      {
-        /*
-          Process formatting characters in text.
-        */
-        if ((*p == '\\') && (*(p+1) == 'r'))
-          {
-            (void) fprintf(file,"\r");
-            p++;
-            continue;
-          }
-        if ((*p == '\\') && (*(p+1) == 'n'))
-          {
-            (void) fprintf(file,"\n");
-            p++;
-            continue;
-          }
-        if (*p != '%')
-          {
-            (void) fprintf(file,"%c",*p);
-            continue;
-          }
-        p++;
-        switch (*p)
-        {
-          case 'd':
-          {
-            (void) fprintf(file,"%.1024s",domain);
-            break;
-          }
-          case 'e':
-          {
-            (void) fprintf(file,"%.1024s",event);
-            break;
-          }
-          case 'f':
-          {
-            (void) fprintf(file,"%.1024s",function);
-            break;
-          }
-          case 'l':
-          {
-            (void) fprintf(file,"%lu",line);
-            break;
-          }
-          case 'm':
-          {
-            register const char
-              *lp;
-
-            for (lp=srcname+strlen(srcname)-1; lp > srcname; lp--)
-              if (*lp == *DirectorySeparator)
-                {
-                  lp++;
-                  break;
-                }
-            (void) fprintf(file,"%.1024s",lp);
-            break;
-          }
-          case 'p':
-          {
-            (void) fprintf(file,"%ld",(long) getpid());
-            break;
-          }
-          case 'r':
-          {
-            (void) fprintf(file,"%ld:%-9.6f",(long) (elapsed_time/60.0),
-              fmod(elapsed_time,60.0));
-            break;
-          }
-          case 's':
-          {
-            (void) fprintf(file,"%.1024s",severity);
-            break;
-          }
-          case 't':
-          {
-            (void) fprintf(file,"%02d:%02d:%02d",time_meridian->tm_hour,
-              time_meridian->tm_min,time_meridian->tm_sec);
-            break;
-          }
-          case 'u':
-          {
-            (void) fprintf(file,"%0.3fu",user_time);
-            break;
-          }
-          default:
-          {
-            (void) fprintf(file,"%%");
-            (void) fprintf(file,"%c",*p);
-            break;
-          }
-        }
-      }
-      (void) fprintf(file,"\n");
+      (void) fprintf(file,"%s",message);
       (void) fflush(file);
     }
-  if ((log_info->output_type & MethodOutput) &&
-      (log_info->method != (LogMethod) NULL))
-    {
-      char
-        buffer[MaxTextExtent];
-
-      FormatString(buffer,
-                   "%.1024s %ld:%-9.6f %0.3f %ld %.1024s %.1024s %lu %.1024s"
-                   " %.1024s %.1024s\n",
-                   timestamp, (long) (elapsed_time/60.0),
-                   fmod(elapsed_time,60.0),
-                   user_time, (long) getpid(), srcname, function, line,
-                   domain, severity, event);
-      log_info->method(type,buffer);
-    }
   UnlockSemaphoreInfo(log_info->log_semaphore);
-  return(True);
+  return(MagickPass);
 }
-MagickExport unsigned int LogMagickEvent(const ExceptionType type,
+MagickExport MagickPassFail LogMagickEvent(const ExceptionType type,
   const char *module,const char *function,const unsigned long line,
   const char *format,...)
 {
@@ -921,7 +963,7 @@ MagickExport unsigned int LogMagickEvent(const ExceptionType type,
 %
 %  The format of the ReadLogConfigureFile method is:
 %
-%      unsigned int ReadLogConfigureFile(const char *basename,
+%      MagickPassFail ReadLogConfigureFile(const char *basename,
 %        const unsigned int depth,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
@@ -1128,9 +1170,279 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
   MagickFreeMemory(xml);
 
   if ((depth == 0) && (status == MagickPass))
-    log_info->log_configured=True;
+    log_info->log_configured=MagickTrue;
 
   return(status);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t E v e n t T y p e                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultEventType() accepts a comma-delimited list (Annotate, Blob,
+%  Cache, Coder, Configure, Deprecate, Error, Exception,  FatalError,
+%  Information, Locale, Option, Render, Resource, TemporaryFile, Transform,
+%  User, Warning, or X11) that determines the default set of events to log.
+%  All other events are ignored.  By default, no logging is enabled.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.  The events may be modified later after
+%  InitializeMagick() has been called using the SetLogEventMask() function.
+%
+%  The format of SetLogDefaultEventType method is:
+%
+%      void SetLogDefaultEventType( const char *events )
+%
+%  A description of each parameter follows:
+%
+%    o events: Comma-separated list of events to report.
+%
+%
+*/
+MagickExport void SetLogDefaultEventType(const char *events)
+{
+  if (events != NULL)
+    {
+      LogEventType event_flags=ParseEvents(events);
+      log_info_defaults.events=event_flags;
+    }
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t G e n e r a t i o n s                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultGenerations() specifies the maximum number of log files
+%  to maintain before circulating back to overwrite the first name.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultGenerations method is:
+%
+%      void SetLogDefaultGenerations(const unsigned long generations)
+%
+%  A description of each parameter follows:
+%
+%    o generations: Number of log files to maintain before circulating back to
+%      the first name.
+%
+%
+*/
+MagickExport void SetLogDefaultGenerations(const unsigned long generations)
+{
+  log_info_defaults.generations=generations;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t L i m i t                                       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultLimit() specifies the maximum number of logging events which
+%  may occur before creating a new log file.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultLimit method is:
+%
+%      void SetLogDefaultLimit(const unsigned long limit)
+%
+%  A description of each parameter follows:
+%
+%    o limit: Maximum number of logging events before creating a new log file.
+%
+%
+*/
+MagickExport void SetLogDefaultLimit(const unsigned long limit)
+{
+  log_info_defaults.limit=limit;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t L o g M e t h o d                               %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultLogMethod() provides a call-back function to be invoked
+%  for each log event when the logging method type is MethodOutput.
+%  This call-back function is supported when MethodOutput is enabled
+%  in the log output type.  MethodOutput is automatically enabled if
+%  a call-back function is provided, and disabled if the call-back
+%  function is NULL.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultLogMethod method is:
+%
+%      void SetLogDefaultLogMethod( const LogMethod method )
+%
+%  A description of each parameter follows:
+%
+%    o method: Call-back function to be invoked for each log event.
+%
+%
+*/
+MagickExport void SetLogDefaultLogMethod(const LogMethod method)
+{
+  if (method == (LogMethod) NULL)
+    {
+      log_info_defaults.output_type=(LogOutputType)
+        (log_info_defaults.output_type & ~MethodOutput);
+    }
+  else
+    {
+      log_info_defaults.output_type=(LogOutputType)
+        (log_info_defaults.output_type | MethodOutput);
+    }
+
+  log_info_defaults.method=method;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t O u t p u t T y p e                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultOutputType() sets the logging output destination.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultOutputType method is:
+%
+%      void SetLogDefaultOutputType( const LogOutputType output_type )
+%
+%  A description of each parameter follows:
+%
+%    o output_type: The logging output destination.  One of the enumerated
+%       values of LogOutputType.
+%
+%
+*/
+MagickExport void SetLogDefaultOutputType(const LogOutputType output_type)
+{
+  log_info_defaults.output_type=output_type;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t F o r ma t                                      %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultFormat() provides the format of the logging output.
+%  The specification supports these special format characters:
+%
+%    %d   domain
+%    %e   event
+%    %f   function
+%    %l   line
+%    %m   module
+%    %p   process ID
+%    %r   real CPU time
+%    %t   wall clock time
+%    %u   user CPU time
+%    %%   percent sign
+%    \n   newline
+%    \r   carriage return
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultFormat method is:
+%
+%      void SetLogDefaultFormat( const char *format )
+%
+%  A description of each parameter follows:
+%
+%    o format: The format of the logging output.
+%
+%
+*/
+MagickExport void SetLogDefaultFormat( const char *format )
+{
+  (void) strlcpy(log_info_defaults.format,format,sizeof(log_info_defaults.format));
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S e t L o g D e f a u l t F i l e N a m e                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SetLogDefaultFileName() provides the file name, or file path, to be
+%  written to for each log event.  Place a %d in the file name in order to
+%  support multiple log generations.  This setting is only used when the
+%  log output type uses an output file.
+%
+%  This function should be called prior to InitializeMagick() since it
+%  provides defaults used by InitializeMagick() while the logging system
+%  is initialized.
+%
+%  The format of SetLogDefaultFileName method is:
+%
+%      void SetLogDefaultFileName( const char *filename )
+%
+%  A description of each parameter follows:
+%
+%    o filename: File name, or file path to write log output to.
+%
+%
+*/
+MagickExport void SetLogDefaultFileName( const char *filename )
+{
+  (void) strlcpy(log_info_defaults.filename,filename,sizeof(log_info_defaults.filename));
 }
 
 /*
@@ -1144,11 +1456,14 @@ static MagickPassFail ReadLogConfigureFile(const char *basename,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetLogEventMask() accepts a comma-delimited list that determines which
-%  events to log.  All other events are ignored.  By default, no logging is
-%  enabled.  This method returns the updated log event mask.
+%  SetLogEventMask() accepts a comma-delimited list (Annotate, Blob, Cache,
+%  Coder, Configure, Deprecate, Error, Exception,  FatalError, Information,
+%  Locale, Option, Render, Resource, TemporaryFile, Transform, User,
+%  Warning, or X11) that determines which events to log.  All other events
+%  are ignored.  By default, no logging is enabled.  This method returns
+%  the updated log event mask.
 %
-%  The format of the AcquireString method is:
+%  The format of the SetLogEventMask method is:
 %
 %      unsigned long SetLogEventMask(const char *events)
 %
@@ -1190,14 +1505,27 @@ MagickExport unsigned long SetLogEventMask(const char *events)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SetLogFormat() sets the format for the "human readable" log record.
+%  The format specification supports these special format characters:
+%
+%    %d   domain,
+%    %e   event,
+%    %f   function,
+%    %l   line,
+%    %m   module,
+%    %p   process ID,
+%    %r   real CPU time,
+%    %t   wall clock time,
+%    %u   user CPU time,
+%    %%   percent sign,
+%    \n   newline,
+%    \r   carriage return
 %
 %  The format of the LogMagickFormat method is:
 %
-%      SetLogFormat(const char *format)
+%      void SetLogFormat(const char *format)
 %
 %  A description of each parameter follows:
 %
@@ -1223,19 +1551,18 @@ MagickExport void SetLogFormat(const char *format)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetLogMethod() sets the method that should be called when logging.
+%  SetLogMethod() sets the method to be called when logging.
 %
 %  The format of the SetLogMethod method is:
 %
-%      SetLogFormat(LogMethod)
+%      void SetLogMethod(LogMethod method)
 %
 %  A description of each parameter follows:
 %
-%    o method: pointer to a method that will be called when LogMagickEvent is
-%      being called.
+%    o method: pointer to a method of type LogMethod that will be called when LogMagickEvent
+%      is called.  Pass a null pointer to remove a registered method.
 %
 %
 */
@@ -1243,8 +1570,17 @@ MagickExport void SetLogMethod(LogMethod method)
 {
   LockSemaphoreInfo(log_info->log_semaphore);
 
-  log_info->output_type=(LogOutputType) (log_info->output_type |
-    MethodOutput);
+  if (method == (LogMethod) NULL)
+    {
+      log_info->output_type=(LogOutputType)
+        (log_info->output_type & ~MethodOutput);
+    }
+  else
+    {
+      log_info->output_type=(LogOutputType)
+        (log_info->output_type | MethodOutput);
+    }
+
   log_info->method=method;
 
   UnlockSemaphoreInfo(log_info->log_semaphore);

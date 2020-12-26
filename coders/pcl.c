@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2020 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -960,7 +960,7 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
         Assign row buffer
       */
       bytes_per_line=(image->columns*bits_per_pixel+7)/8;
-      pixels=MagickAllocateMemory(unsigned char *,bytes_per_line);
+      pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_line);
       if (pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -970,19 +970,19 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
       last_row_compression = PCL_UndefinedCompression;
       if (image_info->compression != NoCompression)
         {
-          MagickFreeMemory(last_row_pixels);
-          last_row_pixels=MagickAllocateMemory(unsigned char *,bytes_per_line);
+          MagickFreeResourceLimitedMemory(last_row_pixels);
+          last_row_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_line);
           if (last_row_pixels == (unsigned char *) NULL)
             {
-              MagickFreeMemory(pixels);
+              MagickFreeResourceLimitedMemory(pixels);
               ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
             }
-          MagickFreeMemory(output_row);
-          output_row=MagickAllocateMemory(unsigned char *,bytes_per_line);
+          MagickFreeResourceLimitedMemory(output_row);
+          output_row=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_line);
           if (output_row == (unsigned char *) NULL)
             {
-              MagickFreeMemory(pixels);
-              MagickFreeMemory(last_row_pixels);
+              MagickFreeResourceLimitedMemory(pixels);
+              MagickFreeResourceLimitedMemory(last_row_pixels);
               ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
             }
             memset(last_row_pixels,0,bytes_per_line);
@@ -1206,9 +1206,9 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
         }
 
       (void) WriteBlobString(image,"\033*rB");  /* end graphics */
-      MagickFreeMemory(pixels);
-      MagickFreeMemory(last_row_pixels);
-      MagickFreeMemory(output_row);
+      MagickFreeResourceLimitedMemory(pixels);
+      MagickFreeResourceLimitedMemory(last_row_pixels);
+      MagickFreeResourceLimitedMemory(output_row);
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);

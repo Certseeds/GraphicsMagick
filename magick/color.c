@@ -410,7 +410,7 @@ MagickExport MagickBool FuzzyColorMatch(const PixelPacket *p,
 %  which specify the number of times each unique color occurs in the image.
 %  The referenced colors parameter is updated with the number of unique colors
 %  in the image. The returned array should be deallocated by the user once it
-%  is no longer ndded.
+%  is no longer needed.
 %
 %  The format of the GetColorHistogram method is:
 %

@@ -1071,9 +1071,12 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
       /* ListFiles() may change current directory without restoring. */
       if ((strlen(current_directory) > 0) && (chdir(current_directory) != 0))
         {
-          for (j=0; j < number_files; j++)
-            MagickFreeMemory(filelist[j]);
-          MagickFreeMemory(filelist);
+          if (filelist != (char **) NULL)
+            {
+              for (j=0; j < number_files; j++)
+                MagickFreeMemory(filelist[j]);
+              MagickFreeMemory(filelist);
+            }
           MagickFatalError(ConfigureFatalError,UnableToRestoreCurrentDirectory,
                            NULL);
         }
@@ -1088,9 +1091,12 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
             not matching anything (abc* and there's no file starting with
             abc). Do the same for behaviour consistent with that.
           */
-          for (j=0; j < number_files; j++)
-            MagickFreeMemory(filelist[j]);
-          MagickFreeMemory(filelist);
+          if (filelist != (char **) NULL)
+            {
+              for (j=0; j < number_files; j++)
+                MagickFreeMemory(filelist[j]);
+              MagickFreeMemory(filelist);
+            }
           continue;
         }
 
@@ -1109,7 +1115,9 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
           char
             filename_buffer[MaxTextExtent];
 
-          *filename_buffer='\0';
+          if (filelist[j] == (const char *) NULL)
+            continue;
+          filename_buffer[0]='\0';
           if (strlcat(filename_buffer,path,sizeof(filename_buffer))
               >= sizeof(filename_buffer))
             MagickFatalError2(ResourceLimitFatalError,"Path buffer overflow",
@@ -1228,11 +1236,13 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method FormatString prints formatted output of a variable argument list.
+%  Method FormatString prints formatted output of a variable argument list
+%  buffer, limiting its output to MaxTextExtent.
+%  The formatted size (as would be returned by strlen()) is returned.
 %
 %  The format of the FormatString method is:
 %
-%      void FormatString(char *string,const char *format,...)
+%      size_t FormatString(char *string,const char *format,...)
 %
 %  A description of each parameter follows.
 %
@@ -1245,23 +1255,38 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
 %
 %
 */
-MagickExport void FormatStringList(char *string,const char *format,
-                                   va_list operands)
+MagickExport size_t FormatStringList(char *string,const char *format,
+                                     va_list operands)
 {
+  size_t
+    fls = 0;
+
+  int
+    fli;
+
 #if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(string,MaxTextExtent,format,operands);
+  fli=vsnprintf(string,MaxTextExtent,format,operands);
 #else
-  (void) vsprintf(string,format,operands);
+  fli=vsprintf(string,format,operands);
 #endif
+  if (fli >= MaxTextExtent)
+    fls=MaxTextExtent-1;
+  else if (fli > 0)
+    fls=(size_t) fli;
+  return fls;
 }
-MagickExport void FormatString(char *string,const char *format,...)
+MagickExport size_t FormatString(char *string,const char *format,...)
 {
   va_list
     operands;
 
+  size_t
+    formatted_len;
+
   va_start(operands,format);
-  FormatStringList(string, format, operands);
+  formatted_len=FormatStringList(string, format, operands);
   va_end(operands);
+  return formatted_len;
 }
 
 /*
@@ -1674,7 +1699,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
             {
               /* Check for too many characters. */
               i++;
-              if (i == sizeof(geometry))
+              if (i == sizeof(geometry)-1)
                 return NoValue;
 
               *q=*c;
@@ -1699,7 +1724,7 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
   bounds.x=0;
   bounds.y=0;
   p=geometry;
-  while ((isspace((int)(*p))))
+  while ((*p != '\0') && (isspace((int)(*p))))
     p++;
   if (*p == '\0')
     return(flags);
@@ -3603,6 +3628,49 @@ MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value
 }
 
 /*
+  Convert a double to a long, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/)
+{
+  long lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=LONG_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=LONG_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (dval > LONG_MAX)
+        {
+          lval=LONG_MAX;
+          break;
+        }
+      if (dval < LONG_MIN)
+        {
+          lval=LONG_MIN;
+          break;
+        }
+      lval=(long) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
 %                                                                             %
@@ -3681,11 +3749,12 @@ double MagickFmax(const double x, const double y)
 %
 %  Method MagickFormatString prints formatted output of a variable
 %  argument list buffer, limiting its output to a specified buffer size.
+%  The formatted size (as would be returned by strlen()) is returned.
 %
 %  The format of the MagickFormatString method is:
 %
-%      void MagickFormatString(char *string,const size_t length,
-%                              const char *format,...)
+%      size_t MagickFormatString(char *string,const size_t length,
+%                                const char *format,...)
 %
 %  A description of each parameter follows.
 %
@@ -3702,27 +3771,48 @@ double MagickFmax(const double x, const double y)
 %
 %
 */
-MagickExport void MagickFormatStringList(char *string,
-                                         const size_t length,
-                                         const char *format,
-                                         va_list operands)
+MagickExport size_t MagickFormatStringList(char *string,
+                                           const size_t length,
+                                           const char *format,
+                                           va_list operands)
 {
+  size_t
+    fls = 0;
+
+  int
+    fli;
+
+  if (length > 0)
+    {
 #if defined(HAVE_VSNPRINTF)
-  (void) vsnprintf(string,length,format,operands);
+      fli=vsnprintf(string,length,format,operands);
 #else
-  (void) vsprintf(string,format,operands);
+      fli=vsprintf(string,format,operands);
 #endif
+      if (fli > 0)
+        {
+          if ((size_t) fli >= length)
+            fls=length-1;
+          else
+            fls=(size_t) fli;
+        }
+    }
+  return fls;
 }
-MagickExport void MagickFormatString(char *string,
-                                     const size_t length,
-                                     const char *format,...)
+MagickExport size_t MagickFormatString(char *string,
+                                       const size_t length,
+                                       const char *format,...)
 {
   va_list
     operands;
 
+  size_t
+    formatted_len;
+
   va_start(operands,format);
-  MagickFormatStringList(string, length, format, operands);
+  formatted_len=MagickFormatStringList(string, length, format, operands);
   va_end(operands);
+  return formatted_len;
 }
 
 /*
@@ -6362,11 +6452,16 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
         char
           key[MaxTextExtent];
 
-        /* Extract attribute key string. */
+        /*
+          Extract attribute key string.
+
+          FIXME: does not handle nested specification so that
+          '%[[MVG]]' results in '[MVG]'.
+        */
         p++;
         for (i=0; (i < MaxTextExtent-1) && (*p) && (*p != ']'); i++)
           {
-          key[i]=(*p++);
+            key[i]=(*p++);
           }
         if (']' != *p)
           break;
