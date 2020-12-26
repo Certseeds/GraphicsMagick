@@ -1,3 +1,7 @@
+2020-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* bootstrap: Fix config.guess and config.sub download URLs.
+
 2020-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* design/pixel-cache.dot: Fix reported syntax errors.
