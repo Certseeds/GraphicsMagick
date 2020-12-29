@@ -294,14 +294,14 @@ typedef struct _StreamManager
   We have yet to find a useful way to determine the version of the
   JasPer library using the C pre-processor.
  */
-#if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE)
-#define MAGICK_JP2_NEW_STREAM_INTERFACE 0
-#endif /* if !defined(MAGICK_JP2_NEW_STREAM_INTERFACE) */
+#if !defined(MAGICK_JP2_OLD_STREAM_INTERFACE)
+#define MAGICK_JP2_OLD_STREAM_INTERFACE 0
+#endif /* if !defined(MAGICK_JP2_OLD_STREAM_INTERFACE) */
 
-#if MAGICK_JP2_NEW_STREAM_INTERFACE
-static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
-#else
+#if MAGICK_JP2_OLD_STREAM_INTERFACE
 static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
+#else
+static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
 #endif
 {
   size_t
@@ -314,10 +314,10 @@ static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
   return ((int) count);
 }
 
-#if MAGICK_JP2_NEW_STREAM_INTERFACE
-static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
-#else
+#if MAGICK_JP2_OLD_STREAM_INTERFACE
 static int BlobWrite(jas_stream_obj_t *object,char *buffer,const int length)
+#else
+static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
 #endif
 {
   size_t

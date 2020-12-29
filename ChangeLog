@@ -1,5 +1,16 @@
 2020-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c: JasPer changed its jas_stream_ops_t callback
+	interfaces in releases 2.0.19 and 2.0.20.  Provide the newer
+	interfaces by default, but use a MAGICK_JP2_OLD_STREAM_INTERFACE
+	pre-processor definition to support selecting the old interfaces.
+	This mostly eliminates compilation warnings since the interfaces
+	are mostly binary compatible (within the positive range of an
+	integer).  In the 1.3.36 a MAGICK_JP2_NEW_STREAM_INTERFACE
+	definition was supported. It is assumed that Jasper libraries
+	should soon be updated to the latest version due to severe
+	security defects in older releases.
+
 	* configure.ac: The gdi32 test was faulty since both gdi32 and
 	user32 libraries are required.
 
