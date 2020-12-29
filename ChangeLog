@@ -1,3 +1,8 @@
+2020-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: The gdi32 test was faulty since both gdi32 and
+	user32 libraries are required.
+
 2020-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* version.sh: Updates in preparation for the 1.3.36 release.

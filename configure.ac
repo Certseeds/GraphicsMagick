@@ -642,10 +642,10 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
-# Enable Windows lgdi32 library
+# Enable Windows gdi32/user32 libraries
 AC_ARG_WITH([gdi32],
               AS_HELP_STRING([--without-gdi32],
-                             [disable Windows gdi32 support]),
+                             [disable Windows gdi32/user32 (clipboard) support]),
               [with_gdi32=$withval],
               [with_gdi32='yes'])
 if test "$with_gdi32" != 'yes' ; then
@@ -2739,7 +2739,7 @@ AC_SUBST([LIB_WMF_DEPS])
 
 
 #
-# Check for Windows gdi32 library
+# Check for Windows gdi32/user32 libraries (for Windows clipboard support)
 #
 have_gdi32='no'
 if test "$with_gdi32" != 'no'
@@ -2749,11 +2749,14 @@ then
   AC_MSG_RESULT()
   failed=0
   passed=0
+  found_libuser32=0
   found_libgdi32=0
   AC_CHECK_HEADER([windows.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_HEADER([winuser.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[#include <windows.h>])
   AC_CHECK_HEADER([wingdi.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[#include <windows.h>])
-  AC_CHECK_LIB([gdi32],[OpenClipboard],[found_libgdi32=`expr $found_libgdi32 + 1`],,)
-  if test $found_libgdi32 -gt 0
+  AC_CHECK_LIB([user32],[OpenClipboard],[found_libuser32=`expr $found_libuser32 + 1`],[],)
+  AC_CHECK_LIB([gdi32],[CreateDIBSection],[found_libgdi32=`expr $found_libgdi32 + 1`],[],[-luser32])
+  if test $found_libuser32 -gt 0 -a  $found_libgdi32 -gt 0
   then
     passed=`expr $passed + 1`
   else
@@ -2767,7 +2770,7 @@ then
       AC_MSG_RESULT([no -- some components failed test])
       have_gdi32='no (failed tests)'
     else
-      LIB_GDI32='-lgdi32'
+      LIB_GDI32='-lgdi32 -luser32'
       LIBS="$LIB_GDI32 $LIBS"
       AC_DEFINE([HasWINGDI32],[1],[Define to use the Windows GDI32 library])
       AC_MSG_RESULT([yes])
