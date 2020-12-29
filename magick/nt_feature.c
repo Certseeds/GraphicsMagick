@@ -78,6 +78,7 @@
 %
 %
 */
+#if defined(HasWINGDI32)
 MagickExport void *CropImageToHBITMAP(Image *image,
   const RectangleInfo *geometry,ExceptionInfo *exception)
 {
@@ -217,6 +218,7 @@ MagickExport void *CropImageToHBITMAP(Image *image,
 
   return (void *)bitmapH;
 }
+#endif /* if defined(HasWINGDI32) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -612,6 +614,7 @@ MagickExport TypeInfo* NTGetTypeList( void )
 %
 %
 */
+#if defined(HasWINGDI32)
 MagickExport void *ImageToHBITMAP(Image* image)
 {
   unsigned long
@@ -696,5 +699,6 @@ MagickExport void *ImageToHBITMAP(Image* image)
 
   return (void *)bitmapH;
 }
+#endif /* if defined(HasWINGDI32) */
 
 #endif

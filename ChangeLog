@@ -1,5 +1,8 @@
 2020-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_feature.c (CropImageToHBITMAP): Dependent on HasWINGDI32.
+	(ImageToHBITMAP): Dependent on HasWINGDI32.
+
 	* coders/jp2.c: JasPer changed its jas_stream_ops_t callback
 	interfaces in releases 2.0.19 and 2.0.20.  Provide the newer
 	interfaces by default, but use a MAGICK_JP2_OLD_STREAM_INTERFACE

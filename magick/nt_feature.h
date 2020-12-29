@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 GraphicsMagick Group
+  Copyright (C) 2003-2020 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -23,9 +23,11 @@ extern "C" {
 extern MagickExport char
   *NTRegistryKeyLookup(const char *key);
 
+#if defined(HasWINGDI32)
 extern MagickExport void
   *CropImageToHBITMAP(Image *,const RectangleInfo *,ExceptionInfo *),
   *ImageToHBITMAP(Image* image);
+#endif /* if defined(HasWINGDI32) */
 
 #if !defined(XS_VERSION)
 
