@@ -31,7 +31,7 @@ extern MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value);
 extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value);
 extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
-extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/);
+extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
 
 /*
   Compute a value which is the next kilobyte power of 2 larger than

@@ -575,6 +575,16 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
 
         tlen=q-p;
         len<<=1;
+        /*
+          FIXME: Something wrong here!
+In function ‘parse8BIMW’,
+    inlined from ‘ReadMETAImage’ at .../GM/coders/meta.c:1193:18:
+.../GM/coders/meta.c:663:12: warning: ‘%s’ directive argument is null [-Wformat-overflow=]
+  663 |     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  664 |                           "META CODER Parse8BIM: %s (%lu)",line, (unsigned long) inputlen);
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        */
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
         *b=(char *) new_p;
         if (new_p == (unsigned char *) NULL)

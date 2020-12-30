@@ -109,9 +109,6 @@ void DestroyMagickRandomGenerator()
 MagickExport void
 InitializeMagickRandomKernel(MagickRandomKernel *kernel)
 {
-  MagickBool
-    done = MagickFalse;
-
   kernel->z = 0U;
   kernel->w = 0U;
 #if defined(POSIX) && HAVE_DEV_URANDOM
@@ -122,6 +119,9 @@ InitializeMagickRandomKernel(MagickRandomKernel *kernel)
       test for it produces an invalid result.
   */
   {
+    MagickBool
+      done = MagickFalse;
+
     int
       file;
 
@@ -142,6 +142,9 @@ InitializeMagickRandomKernel(MagickRandomKernel *kernel)
     Is claimed to be supported under Windows XP
   */
   {
+    MagickBool
+      done = MagickFalse;
+
     HCRYPTPROV
       hProvider = 0;
 

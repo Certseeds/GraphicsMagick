@@ -162,7 +162,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
   int
     c;
 
-  register long
+  register unsigned long
     i;
 
   register unsigned char
@@ -860,7 +860,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     */
     if (number_of_profiles > 0)
       {
-        for (i=0; i < (long) number_of_profiles; i++)
+        for (i=0; i < number_of_profiles; i++)
         {
           if (profiles[i].length > 0)
             {
@@ -906,7 +906,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
           ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,
             image);
         if (image->colors == 0)
-          for (i=0; i < 256; i++)
+          for (i=0; i < 256U; i++)
           {
             image->colormap[i].red=ScaleCharToQuantum(i);
             image->colormap[i].green=ScaleCharToQuantum(i);
@@ -932,14 +932,14 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (void) ReadBlob(image, (size_t) packet_size*image->colors,colormap);
             p=colormap;
             if (image->depth <= 8)
-              for (i=0; i < (long) image->colors; i++)
+              for (i=0; i < image->colors; i++)
               {
                 image->colormap[i].red=ScaleCharToQuantum(*p++);
                 image->colormap[i].green=ScaleCharToQuantum(*p++);
                 image->colormap[i].blue=ScaleCharToQuantum(*p++);
               }
             else
-              for (i=0; i < (long) image->colors; i++)
+              for (i=0; i < image->colors; i++)
               {
                 image->colormap[i].red=(*p++ << 8);
                 image->colormap[i].red|=(*p++);
@@ -1114,7 +1114,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
   ExtendedSignedIntegralType
     offset;
 
-  register long
+  register unsigned long
     i;
 
   unsigned int
@@ -1438,7 +1438,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
         */
         q=colormap;
         if (image->depth <= 8)
-          for (i=0; i < (long) image->colors; i++)
+          for (i=0; i < image->colors; i++)
           {
             *q++=image->colormap[i].red;
             *q++=image->colormap[i].green;
@@ -1446,7 +1446,7 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
           }
 #if QuantumDepth > 8
         else
-          for (i=0; i < (long) image->colors; i++)
+          for (i=0; i < image->colors; i++)
           {
             *q++=image->colormap[i].red >> 8;
             *q++=image->colormap[i].red & 0xff;

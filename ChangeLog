@@ -1,5 +1,10 @@
 2020-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mpc.c (ReadMPCImage): 'i' should be unsigned.
+
+	* magick/random.c (InitializeMagickRandomKernel): 'done' is not
+	used in all compilation implementations.
+
 	* magick/nt_feature.c (CropImageToHBITMAP): Dependent on HasWINGDI32.
 	(ImageToHBITMAP): Dependent on HasWINGDI32.
 
