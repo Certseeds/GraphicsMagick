@@ -38,6 +38,16 @@
 <p>2020-12-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>tests/rwfile_sized.tap: Add tests for CMYK, RGB, and RGBA raw
+interlaced files.</li>
+<li>tests/rwblob.c (main): Add a -interlace option.</li>
+<li>tests/rwfile.c (main): Add a -interlace option.</li>
+<li>coders/cmyk.c (ReadCMYKImage): Fix broken reading of planar
+CYMYK/CMYKA files.  Regression added in the 1.3.27 release.</li>
+<li>coders/rgb.c (ReadRGBImage): Fix broken reading of planar RGB
+files.  This regression was added while adding security fixes
+starting in the 1.3.27 release. Fixes SourceForge issue #637
+&quot;Import of raw RGB image data fails since 1.3.27.</li>
 <li>coders/dpx.c: Add casts to avoid warnings when compiling under
 MinGW.</li>
 <li>coders/meta.c (super_fgets_w): Assure that returned pointer

@@ -273,6 +273,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
           Line interlacing:  RRR...GGG...BBB...RRR...GGG...BBB...
         */
         packet_size=(quantum_size)/8;
+        tile_packets=(size_t) packet_size*image->tile_info.width;
         for (y=0; y < image->tile_info.y; y++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -333,6 +334,7 @@ static Image *ReadRGBImage(const ImageInfo *image_info,ExceptionInfo *exception)
               ThrowRGBReaderException(FileOpenError,UnableToOpenFile,image);
           }
         packet_size=(quantum_size)/8;
+        tile_packets=(size_t) packet_size*image->tile_info.width;
         for (y=0; y < image->tile_info.y; y++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
