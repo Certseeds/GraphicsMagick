@@ -266,18 +266,17 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
     c=ReadBlobByte(file);
     if (c == EOF || c == '\n')
       break;
-    if ((q-p+1) >= (int) len)
+    if ((size_t) (q-p+1) >= len)
       {
         unsigned char
           *new_p;
 
-        int
+        size_t
           tlen;
 
-        tlen=q-p;
+        tlen=(size_t) (q-p);
         len<<=1;
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
-        *b=(char *) new_p;
         if (new_p == (unsigned char *) NULL)
           {
             MagickFreeResourceLimitedMemory(p);
@@ -288,19 +287,20 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
       }
     *q=(unsigned char) c;
   }
+  *b=(char *)p;
   *blen=0;
   if (p != (unsigned char *) NULL)
     {
-      int
+      size_t
         tlen;
 
-      tlen=q-p;
+      tlen=(size_t) (q-p);
       if (tlen == 0)
         return (char *) NULL;
       p[tlen] = '\0';
       *blen=++tlen;
     }
-  return (char *)p;
+  return *b;
 }
 
 #define BUFFER_SZ 4096
@@ -565,28 +565,17 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
       break;
    if (EOFBlob(file))
       break;
-   if ((q-p+1) >= (int) len)
+   if ((size_t) (q-p+1) >= len)
       {
         unsigned char
           *new_p;
 
-        int
+        size_t
           tlen;
 
-        tlen=q-p;
+        tlen=(size_t) (q-p);
         len<<=1;
-        /*
-          FIXME: Something wrong here!
-In function ‘parse8BIMW’,
-    inlined from ‘ReadMETAImage’ at .../GM/coders/meta.c:1193:18:
-.../GM/coders/meta.c:663:12: warning: ‘%s’ directive argument is null [-Wformat-overflow=]
-  663 |     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  664 |                           "META CODER Parse8BIM: %s (%lu)",line, (unsigned long) inputlen);
-      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        */
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
-        *b=(char *) new_p;
         if (new_p == (unsigned char *) NULL)
           {
             MagickFreeResourceLimitedMemory(p);
@@ -597,19 +586,20 @@ In function ‘parse8BIMW’,
       }
     *q=(unsigned char) c;
   }
+  *b=(char *)p;
   *blen=0;
-  if ((*b) != (char *) NULL)
+  if (p != (unsigned char *) NULL)
     {
-      int
+      size_t
         tlen;
 
-      tlen=q-p;
+      tlen=(size_t) (q-p);
       if (tlen == 0)
         return (char *) NULL;
       p[tlen] = '\0';
       *blen=++tlen;
     }
-  return (char *) p;
+  return *b;
 }
 
 static long parse8BIMW(Image *ifile, Image *ofile)

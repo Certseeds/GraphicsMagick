@@ -1,5 +1,12 @@
 2020-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/meta.c (super_fgets_w): Assure that returned pointer
+	value is the same as reported via 'b'.  Use size_t for sizes
+	rather than int.
+	(super_fgets): Assure that returned pointer
+	value is the same as reported via 'b'.  Use size_t for sizes
+	rather than int.
+
 	* coders/miff.c (ReadMIFFImage): 'i' should be unsigned.
 	(WriteMIFFImage): 'i' should be unsigned.
 
