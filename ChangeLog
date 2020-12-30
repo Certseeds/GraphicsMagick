@@ -1,3 +1,8 @@
+2020-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/miff.c (ReadMIFFImage): 'i' should be unsigned.
+	(WriteMIFFImage): 'i' should be unsigned.
+
 2020-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mpc.c (ReadMPCImage): 'i' should be unsigned.
