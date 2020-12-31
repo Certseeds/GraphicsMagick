@@ -20,6 +20,7 @@ UTILITIES_XFAIL_TESTS =
 
 # Tests to run
 UTILITIES_TESTS = \
+	utilities/tests/convert.tap \
 	utilities/tests/effects.tap \
 	utilities/tests/pipe.tap \
 	utilities/tests/hald-clut.tap \
@@ -44,6 +45,7 @@ UTILITIES_EXTRA_DIST = \
 	$(UTILITIES_MANS) \
 	$(UTILITIES_TESTS) \
 	utilities/tests/BetaRGB.icc \
+	utilities/tests/convert-cmds.txt \
 	utilities/tests/common.sh \
 	utilities/tests/sunrise.jpg \
 	utilities/tests/sunrise.miff
