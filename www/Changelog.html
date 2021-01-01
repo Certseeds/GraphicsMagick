@@ -37,8 +37,12 @@
 
 <p>2021-01-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* Copyright.txt: Copyright year updates and ChangeLog rotation for
-the new year.</blockquote>
+<p>* configure.ac: Skip library symbol tests for gdi32 since these
+fail with the MSYS2 w64-i686 compiler and well as i686 Cygwin.
+The failures caused a build regression for i686 MSYS2/Cygwin.</p>
+<p>* Copyright.txt: Copyright year updates and ChangeLog rotation for
+the new year.</p>
+</blockquote>
 </div>
 
 <hr class="docutils">

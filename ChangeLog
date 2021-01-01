@@ -1,4 +1,8 @@
 2021-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * configure.ac: Skip library symbol tests for gdi32 since these
+        fail with the MSYS2 w64-i686 compiler and well as i686 Cygwin.
+        The failures caused a build regression for i686 MSYS2/Cygwin.
+
         * Copyright.txt: Copyright year updates and ChangeLog rotation for
         the new year.
