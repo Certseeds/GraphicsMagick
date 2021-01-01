@@ -19,6 +19,57 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+1.3.37 (? ?, 2021)
+==========================
+
+Special Issues:
+
+* None
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project due to
+  the contributions and assistance of Alex Gaynor. Since February 4
+  2018, ??? issues have been opened by oss-fuzz (some of which were
+  benign build issues such as SourceForge Mercurial not working
+  correctly) and ? issues remain open.  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+
+Bug fixes:
+
+* None
+
+New Features:
+
+* None
+
+API Updates:
+
+* None
+
+Feature improvements:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* None
+
+Behavior Changes:
+
+* None
+
+
 1.3.36 (December 26, 2020)
 ==========================
 
