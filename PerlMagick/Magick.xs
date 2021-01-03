@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -252,12 +252,14 @@ static char
   {
     "Undefined", "None", "Line", "Plane", "Partition", (char *) NULL
   },
+/*
   *LogEventTypes[] =
   {
     "No", "Configure", "Annotate", "Render", "Transform", "Locale",
     "Coder", "X11", "Cache", "Blob", "Deprecate", "User", "Resource",
     "TemporaryFile", "Exception", "All", (char *) NULL
   },
+*/
   *MethodTypes[] =
   {
     "Point", "Replace", "Floodfill", "FillToBorder", "Reset", (char *) NULL
@@ -742,6 +744,16 @@ static void DestroyPackageInfo(struct PackageInfo *info)
   DestroyQuantizeInfo(info->quantize_info);
   MagickFreeMemory(info);
 }
+/*
+  Quiet warnings which are due to Perl's Macros.  Don't do a 'pop' since
+  more auto-generated stuff is written to the end of the output file which
+  while appear after the pop
+*/
+#if (defined(__GNUC__) && __GNUC__ >= 5)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wclobbered"
+#endif
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -864,6 +876,9 @@ static Image *GetList(pTHX_ SV *reference,SV ***reference_vector,int *current,
             }
       }
       return(image);
+    }
+  default:
+    {
     }
   }
   (void) fprintf(stderr,"GetList: UnrecognizedType %ld\n",
@@ -2449,7 +2464,9 @@ BlobToImage(ref,...)
       *image;
 
     int
-      ac,
+      ac;
+
+    volatile int
       n;
 
     jmp_buf
@@ -6776,7 +6793,7 @@ Ping(ref,...)
     unsigned int
       status;
 
-    unsigned long
+    long
       count;
 
     dMY_CXT;
@@ -6837,7 +6854,7 @@ Ping(ref,...)
       if (exception.severity != UndefinedException)
         CatchException(&exception);
       count+=GetImageListLength(image);
-      EXTEND(sp,4*count);
+      EXTEND(sp,(SSize_t)4*count);
       for (next=image; next; next=next->next)
       {
         FormatString(message,"%lu",next->columns);
@@ -6914,8 +6931,8 @@ QueryColor(ref,...)
           colors;
 
         colorlist=GetColorList("*",&colors);
-        EXTEND(sp,colors);
-        for (i=0; i < (long) colors; i++)
+        EXTEND(sp,(SSize_t)colors);
+        for (i=0; i < (SSize_t)colors; i++)
         {
           PUSHs(sv_2mortal(newSVpv(colorlist[i],0)));
           MagickFreeMemory(colorlist[i]);
@@ -6923,7 +6940,7 @@ QueryColor(ref,...)
         MagickFreeMemory(colorlist);
         goto MethodException;
       }
-    EXTEND(sp,4*items);
+    EXTEND(sp,(SSize_t)4*items);
     GetExceptionInfo(&exception);
     for (i=1; i < items; i++)
     {
@@ -7055,7 +7072,7 @@ QueryFont(ref,...)
           types;
 
         typelist=GetTypeList("*",&types);
-        EXTEND(sp,types);
+        EXTEND(sp,(SSize_t)types);
         for (i=0; i < (long) types; i++)
         {
           PUSHs(sv_2mortal(newSVpv(typelist[i],0)));
@@ -7064,7 +7081,7 @@ QueryFont(ref,...)
         MagickFreeMemory(typelist);
         goto MethodException;
       }
-    EXTEND(sp,10*items);
+    EXTEND(sp,(SSize_t)10*items);
     GetExceptionInfo(&exception);
     for (i=1; i < items; i++)
     {
@@ -7408,7 +7425,7 @@ QueryFormat(ref,...)
     ExceptionInfo
       exception;
 
-    register int
+    register long
       i;
 
     volatile const MagickInfo
@@ -8019,6 +8036,11 @@ Write(ref,...)
     MY_CXT.error_jump=NULL;
     XSRETURN(1);
   }
+/*
+#if (defined(__GNUC__) && __GNUC__ >= 5)
+#pragma GCC diagnostic pop
+#endif
+*/
 
 # Local Variables:
 # mode: c

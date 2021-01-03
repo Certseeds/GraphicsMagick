@@ -1,3 +1,11 @@
+2021-01-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * PerlMagick/Magick.xs: Remove GCC warnings which spewed out at
+        increased warning levels.
+
+        * magick/magick_types.h.in: Hide definitions not intended for the
+        rest of the world under "if defined(MAGICK_IMPLEMENTATION)".
+
 2021-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * configure.ac: Skip library symbol tests for gdi32 since these

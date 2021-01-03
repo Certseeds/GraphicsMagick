@@ -49,6 +49,22 @@ extern "C" {
   IEEE Std 1003.1 (1990), 2004 types.  Not part of ANSI C!
   ssize_t          -- signed type for a count of bytes or an error indication ("%zd")
                                               ? to SSIZE_MAX
+ Useful inttypes.h "printf" formatters:
+
+  magick_int8_t PRId8
+  magick_uint8_t PRIu8
+  magick_int16_t PRId16
+  magick_uint16_t PRIu16
+  magick_int32_t PRId32
+  magick_uint32_t PRIu32
+  magick_int64_t PRId64
+  magick_uint64_t PRIu64
+  magick_uintmax_t ju
+  magick_uintptr_t tu
+  size_t zu
+  ptrdiff_t td
+  ssize_t zd?
+
 */
 
 #if (defined(WIN32) || defined(WIN64)) && \
@@ -63,14 +79,17 @@ extern "C" {
   typedef unsigned short magick_uint16_t;
 
   typedef signed int  magick_int32_t;
-#  define MAGICK_INT32_F ""
   typedef unsigned int magick_uint32_t;
-#  define MAGICK_UINT32_F ""
 
   typedef signed __int64  magick_int64_t;
-# define MAGICK_INT64_F "I64"
   typedef unsigned __int64 magick_uint64_t;
-# define MAGICK_UINT64_F "I64"
+
+#  if defined(MAGICK_IMPLEMENTATION)
+
+#  define MAGICK_INT32_F ""
+#  define MAGICK_UINT32_F ""
+#  define MAGICK_INT64_F "I64"
+#  define MAGICK_UINT64_F "I64"
 
   typedef magick_uint64_t magick_uintmax_t;
 
@@ -89,6 +108,8 @@ extern "C" {
 #  define MAGICK_SSIZE_T long
 #  endif // defined(WIN64)
 
+#endif /* if defined(MAGICK_IMPLEMENTATION) */
+
 #else
 
   /* The following typedefs are subtituted when using Unixish configure */
@@ -99,13 +120,16 @@ extern "C" {
   typedef @UINT16_T@ magick_uint16_t;
 
   typedef @INT32_T@  magick_int32_t;
-#  define MAGICK_INT32_F @INT32_F@
   typedef @UINT32_T@ magick_uint32_t;
-#  define MAGICK_UINT32_F @UINT32_F@
 
   typedef @INT64_T@  magick_int64_t;
-#  define MAGICK_INT64_F @INT64_F@
   typedef @UINT64_T@ magick_uint64_t;
+
+#  if defined(MAGICK_IMPLEMENTATION)
+
+#  define MAGICK_INT32_F @INT32_F@
+#  define MAGICK_UINT32_F @UINT32_F@
+#  define MAGICK_INT64_F @INT64_F@
 #  define MAGICK_UINT64_F @UINT64_F@
 
   typedef @UINTMAX_T@ magick_uintmax_t;
@@ -120,11 +144,16 @@ extern "C" {
 #  define MAGICK_SSIZE_T_F @MAGICK_SSIZE_T_F@
 #  define MAGICK_SSIZE_T @MAGICK_SSIZE_T@
 
+#endif /* defined(MAGICK_IMPLEMENTATION) */
+
 #endif
 
   /* 64-bit file and blob offset type */
   typedef magick_int64_t magick_off_t;
-#define MAGICK_OFF_F MAGICK_INT64_F
+
+#if defined(MAGICK_IMPLEMENTATION)
+#  define MAGICK_OFF_F MAGICK_INT64_F
+#endif /* defined(MAGICK_IMPLEMENTATION) */
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
