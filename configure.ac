@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2020 GraphicsMagick Group
+# Copyright (C) 2003-2021 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -12,7 +12,12 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT
+AC_INIT(m4_esyscmd([./version.sh packagename]),
+        m4_esyscmd([./version.sh packageversion]),
+        m4_esyscmd([./version.sh packagebugreport]),
+        m4_esyscmd([./version.sh packagetarname]),
+        m4_esyscmd([./version.sh packageurl]))
+
 AC_CONFIG_SRCDIR([magick/magick.h])
 
 # Specify directory where m4 macros may be found.
@@ -40,7 +45,7 @@ AC_SUBST(DISTCHECK_CONFIG_FLAGS)
 # Source file containing package/library versioning information.
 . ${srcdir}/version.sh
 
-echo "configuring ${PACKAGE_NAME} ${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}"
+printf "configuring ${PACKAGE_NAME} ${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}\n"
 dnl Compute the canonical host (run-time) system type variable
 AC_CANONICAL_HOST
 
@@ -87,6 +92,9 @@ AC_SUBST([PACKAGE_RELEASE_DATE])dnl
 # Substitute Mercurial branch tag
 AC_SUBST([HG_BRANCH_TAG])dnl
 
+# Package base version.  Similar to PACKAGE_VERSION but without snapshot info.
+AC_SUBST([PACKAGE_BASE_VERSION])
+
 # Definition used to define MagickLibVersion in version.h
 MAGICK_LIB_VERSION="0x"
 if test ${MAGICK_LIBRARY_CURRENT} -lt 10 ; then
@@ -104,7 +112,7 @@ MAGICK_LIB_VERSION=${MAGICK_LIB_VERSION}${MAGICK_LIBRARY_REVISION}
 AC_SUBST([MAGICK_LIB_VERSION])
 
 # Definition used to define MagickLibVersionText in version.h
-MAGICK_LIB_VERSION_TEXT="${PACKAGE_VERSION}"
+MAGICK_LIB_VERSION_TEXT="${PACKAGE_BASE_VERSION}"
 AC_SUBST([MAGICK_LIB_VERSION_TEXT])
 
 # Definition used to define MagickLibVersionNumber in version.h
@@ -117,7 +125,11 @@ AM_SANITY_CHECK
 # Generate configure header.
 AC_CONFIG_HEADERS([magick/magick_config.h magick/magick_config_api.h])
 
-AM_INIT_AUTOMAKE([$PACKAGE_NAME],["${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}"],[' '])
+# Initialize Automake
+# Don't require all the GNU mandated files
+# Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
+# nostdinc
+AM_INIT_AUTOMAKE([1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip])
 
 # Enable support for silent build rules
 AM_SILENT_RULES
@@ -2813,7 +2825,7 @@ AC_SUBST([PERLMAINCC])
 #
 
 # Subdirectory under lib to place GraphicsMagick lib files
-MagickLibSubdir="${PACKAGE_NAME}-${PACKAGE_VERSION}"
+MagickLibSubdir="${PACKAGE_NAME}-${PACKAGE_BASE_VERSION}"
 AC_DEFINE_UNQUOTED([MagickLibSubdir],["$MagickLibSubdir"],[Subdirectory of lib where GraphicsMagick architecture dependent files are installed])
 
 # Path to GraphicsMagick bin directory
@@ -2881,7 +2893,7 @@ AC_SUBST([MagickFilterModulesPath])
 
 #
 # Path to GraphicsMagick share files
-MagickShareSubdir="${PACKAGE_NAME}-${PACKAGE_VERSION}"
+MagickShareSubdir="${PACKAGE_NAME}-${PACKAGE_BASE_VERSION}"
 MagickSharePath="${DATA_DIR}/${MagickShareSubdir}"
 MagickSharePathDefine="${MagickSharePath}/"
 case "${build_os}" in
@@ -3850,4 +3862,3 @@ printf "  CXXFLAGS = $CXXFLAGS\n"
 printf "  DEFS     = $DEFS\n"
 printf "  LDFLAGS  = $LDFLAGS\n"
 printf "  LIBS     = $MAGICK_API_DEP_LIBS\n"
-printf "\n"

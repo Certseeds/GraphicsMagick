@@ -1,3 +1,12 @@
+2021-01-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * configure.ac: Updates to use recommended forms of AC_INIT and
+        AM_INIT_AUTOMAKE.  This was/is painful due to how development
+        snapshot versioning is handled.  The version string produced for
+        the snapshot version will now contain the snapshot date.  Effort
+        has been made to avoid other impacts due to AC_INIT's enforcements
+        for how version information is used.
+
 2021-01-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * PerlMagick/Magick.xs: Remove GCC warnings which spewed out at
