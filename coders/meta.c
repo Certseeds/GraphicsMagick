@@ -1202,13 +1202,14 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
             (void) WriteBlobByte(buff,c);
           }
         }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff);  /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store IPTC profile, size %lu bytes",
                             (unsigned long) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
     t8bim_failure:;
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       DetachBlob(buff->blob);
       MagickFreeMemory(blob);
       DestroyImage(buff);
@@ -1246,6 +1247,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           if ((pinfo == (ProfileInfo *) NULL) ||
               (pinfo->info == (unsigned char *) NULL) || (pinfo->length == 0))
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1254,6 +1256,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           iptc=AllocateImage((ImageInfo *) NULL);
           if (iptc == (Image *) NULL)
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1270,6 +1273,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           DestroyImage(iptc);
           if (result == 0)
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1319,7 +1323,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
             }
 #endif
         }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store APP1 profile, size %lu bytes",
@@ -1350,7 +1354,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           break;
         (void) WriteBlobByte(buff,c);
       }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store ICM profile, size %lu bytes",
@@ -1407,14 +1411,14 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
       length=GetBlobSize(buff)-12;
       blob[10]=(unsigned char) ((length >> 8) & 0xff);
       blob[11]=(unsigned char) (length & 0xff);
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store IPTC profile, size %" MAGICK_SIZE_T_F
                             "u bytes",(MAGICK_SIZE_T) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
       DetachBlob(buff->blob);
-      MagickFreeMemory(blob)
+      MagickFreeMemory(blob);
       DestroyImage(buff);
     }
   CloseBlob(image);
