@@ -1,5 +1,9 @@
 2021-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/gif.c (ReadGIFImage): Fix memory leak of global_colormap
+        if realloc of memory for comment fails.  Fixes oss-fuzz 29316
+        "Direct-leak in MagickMalloc".
+
         * coders/meta.c (ReadMETAImage): Fix double-free if blob buffer
         was reallocated after being attached to blob.  Fixes oss-fuzz
         29193 "Heap-double-free in MagickFree".

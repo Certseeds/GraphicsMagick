@@ -988,6 +988,7 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                                                        allocation_length);
                     if (comments_new == (char *) NULL)
                       {
+                        MagickFreeMemory(global_colormap);
                         MagickFreeResourceLimitedMemory(comments);
                         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                       }

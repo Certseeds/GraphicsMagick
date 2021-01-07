@@ -37,9 +37,13 @@
 
 <p>2021-01-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/meta.c (ReadMETAImage): Fix double-free if blob buffer
+<p>* coders/gif.c (ReadGIFImage): Fix memory leak of global_colormap
+if realloc of memory for comment fails.  Fixes oss-fuzz 29316
+&quot;Direct-leak in MagickMalloc&quot;.</p>
+<p>* coders/meta.c (ReadMETAImage): Fix double-free if blob buffer
 was reallocated after being attached to blob.  Fixes oss-fuzz
-29193 &quot;Heap-double-free in MagickFree&quot;.</blockquote>
+29193 &quot;Heap-double-free in MagickFree&quot;.</p>
+</blockquote>
 <p>2021-01-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * configure.ac: Updates to use recommended forms of AC_INIT and
