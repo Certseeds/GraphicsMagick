@@ -1,3 +1,8 @@
+2021-01-09  Bob Friesenhahn  <bfriesen@bobsdell>
+
+        * coders/tiff.c: Remove unintended double-charging for memory
+        resource.  Remove explicit memset where possible.
+
 2021-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/gif.c (ReadGIFImage): Fix memory leak of global_colormap
