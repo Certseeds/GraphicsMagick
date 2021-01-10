@@ -269,6 +269,26 @@ MagickExport void DestroyMagickResources(void)
   size_t
     index;
 
+#if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES
+  {
+      const ResourceInfo *info;
+
+      for (index = 1; index < ArraySize(resource_info); index++)
+      {
+          info=&resource_info[index];
+          if (info->limit_type != SummationLimit)
+              continue;
+
+          if (info->value != 0)
+          {
+              fprintf(stderr,"Resource[%s] %s! %"MAGICK_INT64_F"d remaining\n",
+                      info->name, info->value < 0 ? "underflow" : "leak", (magick_int64_t) info->value);
+              assert(info->value == 0);
+          }
+      }
+  }
+#endif /* if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES */
+
   for (index = 1; index < ArraySize(resource_info); index++)
     DestroySemaphoreInfo(&resource_info[index].semaphore);
 }
@@ -749,6 +769,9 @@ MagickExport void LiberateMagickResource(const ResourceType type,
             */
             LockSemaphoreInfo(info->semaphore);
             info->value-=size;
+#if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES
+            assert(info->value >= info->minimum);
+#endif /* if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES */
             value=info->value;
             UnlockSemaphoreInfo(info->semaphore);
             break;

@@ -1,3 +1,10 @@
+2021-01-10  Bob Friesenhahn  <bfriesen@bobsdell>
+
+        * magick/pixel_cache.c: Memory cache implementation of pixel cache
+        now uses resource limited memory allocator.  It was previously
+        resource limited, but by using the resource allocation APIs
+        directly.
+
 2021-01-09  Bob Friesenhahn  <bfriesen@bobsdell>
 
         * coders/tiff.c: Remove unintended double-charging for memory
