@@ -1,11 +1,19 @@
-2021-01-10  Bob Friesenhahn  <bfriesen@bobsdell>
+2021-01-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/pdf.c (WritePDFImage): Converting a TIF to a PDF set the
+        page MediaBox to the TIFF dimensions in pixels while the CropBox
+        is set in local context dimensions. The latter is correct, the
+        former is not.  Set the MediaBox to the proper dimension in local
+        context.  Should be the same in this context.  Patch by Hubert
+        Figuiere and retrieved from SourceForge patch #64 "Incorrect
+        MediaBox in PDF export".
 
         * magick/pixel_cache.c: Memory cache implementation of pixel cache
         now uses resource limited memory allocator.  It was previously
         resource limited, but by using the resource allocation APIs
         directly.
 
-2021-01-09  Bob Friesenhahn  <bfriesen@bobsdell>
+2021-01-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/tiff.c: Remove unintended double-charging for memory
         resource.  Remove explicit memset where possible.

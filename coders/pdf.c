@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1005,7 +1005,8 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
       FormatString(buffer,"/ProcSet %lu 0 R >>\n",object+3);
       (void) WriteBlobString(image,buffer);
       FormatString(buffer,"/MediaBox [0 0 %ld %ld]\n",
-                   media_info.width,media_info.height);
+                   (long int)(((media_info.width * dx_resolution) / x_resolution) + 0.5),
+                   (long int)(((media_info.height * dy_resolution) / y_resolution) + 0.5));
       (void) WriteBlobString(image,buffer);
       FormatString(buffer,"/CropBox [%ld %ld %ld %ld]\n",geometry.x,geometry.y,
                    geometry.x+geometry.width,geometry.y+geometry.height);

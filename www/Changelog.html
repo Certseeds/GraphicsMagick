@@ -35,13 +35,21 @@
 <div class="document">
 
 
-<p>2021-01-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;bobsdell">bfriesen<span>&#64;</span>bobsdell</a>&gt;</p>
+<p>2021-01-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/pixel_cache.c: Memory cache implementation of pixel cache
+<p>* coders/pdf.c (WritePDFImage): Converting a TIF to a PDF set the
+page MediaBox to the TIFF dimensions in pixels while the CropBox
+is set in local context dimensions. The latter is correct, the
+former is not.  Set the MediaBox to the proper dimension in local
+context.  Should be the same in this context.  Patch by Hubert
+Figuiere and retrieved from SourceForge patch #64 &quot;Incorrect
+MediaBox in PDF export&quot;.</p>
+<p>* magick/pixel_cache.c: Memory cache implementation of pixel cache
 now uses resource limited memory allocator.  It was previously
 resource limited, but by using the resource allocation APIs
-directly.</blockquote>
-<p>2021-01-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;bobsdell">bfriesen<span>&#64;</span>bobsdell</a>&gt;</p>
+directly.</p>
+</blockquote>
+<p>2021-01-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/tiff.c: Remove unintended double-charging for memory
 resource.  Remove explicit memset where possible.</blockquote>
