@@ -135,7 +135,12 @@ AM_INIT_AUTOMAKE([1.12 subdir-objects no-define nostdinc color-tests parallel-te
 AM_SILENT_RULES
 
 # Regenerate config.status if ChangeLog or version.sh is updated.
-AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/ChangeLog $(top_srcdir)/version.sh'])
+#AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/ChangeLog $(top_srcdir)/version.sh'])
+
+# Regenerate configure.ac if ChangeLog or version.sh is updated (needed for 5-argument AC_INIT)
+AC_SUBST([CONFIGURE_DEPENDENCIES],["$CONFIGURE_DEPENDENCIES \$(top_srcdir)/ChangeLog \$(top_srcdir)/version.sh"])
+
+#AC_SUBST([CONFIGURE_DEPENDENCIES],["$CONFIGURE_DEPENDENCIES \$(top_srcdir)/VERSION.txt"])
 
 PERLMAINCC=$CC
 

@@ -1,3 +1,8 @@
+2021-01-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * configure.ac (CONFIG_STATUS_DEPENDENCIES): Regenerate
+        configure.ac if ChangeLog or version.sh is updated.
+
 2021-01-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/pdf.c (WritePDFImage): Converting a TIF to a PDF set the

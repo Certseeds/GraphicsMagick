@@ -287,6 +287,10 @@ magick-version: magick/version.h
 
 magick/version.h: $(top_srcdir)/ChangeLog $(top_srcdir)/version.sh
 
+#$(srcdir)/VERSION.txt: $(srcdir)/ChangeLog $(srcdir)/version.sh
+#	cd $(srcdir) && printf "%s\n" `$(srcdir)/version.sh packageversion` > .version-tmp && \
+#	  (cmp .version-tmp VERSION.txt 2> /dev/null || mv .version-tmp VERSION.txt)
+
 
 # Automatically reconfigure libtool
 LIBTOOL_DEPS = @LIBTOOL_DEPS@

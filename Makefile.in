@@ -2400,7 +2400,7 @@ CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CGMDecodeDelegate = @CGMDecodeDelegate@
-CONFIG_STATUS_DEPENDENCIES = @CONFIG_STATUS_DEPENDENCIES@
+CONFIGURE_DEPENDENCIES = @CONFIGURE_DEPENDENCIES@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -2474,6 +2474,10 @@ LIBRARY_EXTRA_CPPFLAGS = @LIBRARY_EXTRA_CPPFLAGS@
 LIBS = @LIBS@
 LIBSTDCLDFLAGS = @LIBSTDCLDFLAGS@
 LIBTOOL = @LIBTOOL@
+
+#$(srcdir)/VERSION.txt: $(srcdir)/ChangeLog $(srcdir)/version.sh
+#	cd $(srcdir) && printf "%s\n" `$(srcdir)/version.sh packageversion` > .version-tmp && \
+#	  (cmp .version-tmp VERSION.txt 2> /dev/null || mv .version-tmp VERSION.txt)
 
 # Automatically reconfigure libtool
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
