@@ -2257,7 +2257,7 @@ IsPoint(const char *point)
   return(p != point);
 }
 
-// Add two size_t values and check for unsigned overflow.
+/* Add two size_t values and check for unsigned overflow. */
 static MagickPassFail MagickAddSizeT(const size_t b, const size_t o, size_t *r)
 {
   *r = b+o;
