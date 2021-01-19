@@ -1289,6 +1289,12 @@ unbalanced push-pop
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorUnreasonableAffineMatrix
+Language        = English
+unreasonable affine matrix
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorUnreasonableDashPolygonLength
 Language        = English
 unreasonable dash polygon length

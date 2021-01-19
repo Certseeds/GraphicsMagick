@@ -1,3 +1,9 @@
+2021-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/render.c (InverseAffineMatrix): Avoid possible division
+        by zero or absurdly extreme scaling in InverseAffineMatrix().
+        Fixes oss-fuzz 28293 "Divide-by-zero - InverseAffineMatrix".
+
 2021-01-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * configure.ac (CONFIG_STATUS_DEPENDENCIES): Regenerate
