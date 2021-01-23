@@ -1,4 +1,3 @@
-# Copyright (C) 2003-2021 GraphicsMagick Group
 #
 # Package name and versioning information for GraphicsMagick
 #
@@ -9,26 +8,21 @@
 #
 # Package base name
 #
-L_PACKAGE_NAME='GraphicsMagick'
+PACKAGE_NAME='GraphicsMagick'
 
 #
 # Package bugs/support mailing list
 #
-L_PACKAGE_BUGREPORT='graphicsmagick-bugs@lists.sourceforge.net'
-
-#
-# Package URL
-#
-L_PACKAGE_URL='http://www.GraphicsMagick.org/'
+PACKAGE_BUGREPORT='graphicsmagick-bugs@lists.sourceforge.net'
 
 # Package base version.  This is is the numeric version suffix applied to
 # PACKAGE_NAME (e.g. "1.2").
-PACKAGE_BASE_VERSION='1.4'
+PACKAGE_VERSION='1.4'
 
 #
 # Package name plus version string.
 #
-PACKAGE_STRING="$PACKAGE_NAME $PACKAGE_BASE_VERSION"
+PACKAGE_STRING="$PACKAGE_NAME $PACKAGE_VERSION"
 
 #
 # Formal Package release date
@@ -39,20 +33,7 @@ PACKAGE_RELEASE_DATE="unreleased"
 #
 # Date of last ChangeLog update
 #
-if test -f "${srcdir}/ChangeLog"
-then
-    CHANGELOG="${srcdir}/ChangeLog"
-elif test -f ChangeLog
-then
-     CHANGELOG=ChangeLog
-else
-    CHANGELOG=''
-fi
-if test -f "${CHANGELOG}"
-then
-    #PACKAGE_CHANGE_DATE=`awk '/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ { print substr($1,1,4) substr($1,6,2) substr($1,9,2); exit; }' ${srcdir}/ChangeLog`
-    PACKAGE_CHANGE_DATE=`awk '/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ { print substr($1,1,4) substr($1,6,2) substr($1,9,2); exit; }' "${CHANGELOG}"`
-fi
+PACKAGE_CHANGE_DATE=`awk '/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ { print substr($1,1,4) substr($1,6,2) substr($1,9,2); exit; }' ${srcdir}/ChangeLog`
 
 #
 # Package version addendum.  This is a suffix (if any) appended to the
@@ -122,28 +103,3 @@ MAGICK_PLUS_PLUS_LIBRARY_AGE=5
 MAGICK_WAND_LIBRARY_CURRENT=11
 MAGICK_WAND_LIBRARY_REVISION=5
 MAGICK_WAND_LIBRARY_AGE=9
-
-# Produce AC_INIT argument contents based on provided script argument
-# AC_INIT produces the same variables but without a L_ prefix.
-if test $# -eq 1
-then
-    case "$1" in
-        packagename)
-            printf "%s" "${L_PACKAGE_NAME}"
-            ;;
-        packageversion)
-            printf "%s" "${PACKAGE_BASE_VERSION}${PACKAGE_VERSION_ADDENDUM}"
-            ;;
-        packagebugreport)
-            printf "%s" "${L_PACKAGE_BUGREPORT}"
-            ;;
-        packagetarname)
-            # GraphicsMagick-1.4.020210102 --> GraphicsMagick-1.4.020210102-1.4
-            #printf "%s" "${L_PACKAGE_NAME}-${PACKAGE_BASE_VERSION}${PACKAGE_VERSION_ADDENDUM}"
-            printf "%s" "${L_PACKAGE_NAME}"
-            ;;
-        packageurl)
-            printf "%s" "${L_PACKAGE_URL}"
-            ;;
-    esac
-fi

@@ -8,6 +8,11 @@
 #
 #
 
+# Don't require all the GNU mandated files
+# Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
+# nostdinc
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+
 topincludedir = @includedir@/GraphicsMagick
 
 # CPPFLAGS required by all C/C++ code
@@ -287,10 +292,6 @@ magick-version: magick/version.h
 
 magick/version.h: $(top_srcdir)/ChangeLog $(top_srcdir)/version.sh
 
-#$(srcdir)/VERSION.txt: $(srcdir)/ChangeLog $(srcdir)/version.sh
-#	cd $(srcdir) && printf "%s\n" `$(srcdir)/version.sh packageversion` > .version-tmp && \
-#	  (cmp .version-tmp VERSION.txt 2> /dev/null || mv .version-tmp VERSION.txt)
-
 
 # Automatically reconfigure libtool
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -301,27 +302,27 @@ libtool: $(LIBTOOL_DEPS)
 # Build Windows source Zip and 7Zip balls
 #
 if HAS_ZIP
-DIST_WINDOWS_SRC_ZIP=$(PACKAGE_NAME)-$(PACKAGE_VERSION)-windows.zip
+DIST_WINDOWS_SRC_ZIP=$(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-windows.zip
 else
 DIST_WINDOWS_SRC_ZIP=
 endif
 if HAS_P7ZIP
-DIST_WINDOWS_SRC_7ZIP=$(PACKAGE_NAME)-$(PACKAGE_VERSION)-windows.7z
+DIST_WINDOWS_SRC_7ZIP=$(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-windows.7z
 else
 DIST_WINDOWS_SRC_7ZIP=
 endif
 $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
-	if test -d $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; then \
-	  chmod -R u+w $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; \
-	  rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; \
+	if test -d $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; then \
+	  chmod -R u+w $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; \
+	  rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; \
 	fi
-	hg --repository $(top_srcdir) archive --rev $(HG_BRANCH_TAG) $(PACKAGE_NAME)-$(PACKAGE_VERSION)
+	hg --repository $(top_srcdir) archive --rev $(HG_BRANCH_TAG) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
 if HAS_P7ZIP
 	rm -f $(DIST_WINDOWS_SRC_7ZIP)
-	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)
+	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
 	chmod 644 $(DIST_WINDOWS_SRC_7ZIP)
 endif # HAS_P7ZIP
-	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)
+	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
 
 #
 # RPM build support
@@ -341,11 +342,11 @@ RPMDIR=rpmbuild
 RPMARCH=$(MAGICK_TARGET_CPU)
 
 DIST_ARCHIVE_RPM= \
-	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)-1.$(RPMARCH).rpm \
-	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-$(PACKAGE_VERSION)-1.$(RPMARCH).rpm \
-	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)-1.$(RPMARCH).rpm \
-	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)-1.$(RPMARCH).rpm \
-	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)-1.$(RPMARCH).rpm
+	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
+	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
+	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
+	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
+	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm
 
 .PHONY: rpm
 rpm:

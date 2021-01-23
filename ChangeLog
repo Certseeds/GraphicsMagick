@@ -1,3 +1,11 @@
+2021-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * configure.ac: Remove updates to use recommended forms of AC_INIT
+        and AM_INIT_AUTOMAKE.  There were too many annoying side-effects
+        to daily development from these changes.  Perhaps they will be
+        re-visited if solutions for Autotools regeneration issues are
+        found.
+
 2021-01-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/render.c (InverseAffineMatrix): Avoid possible division

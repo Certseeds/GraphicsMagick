@@ -48,7 +48,7 @@ WriteMakefile
    'AUTHOR'     => 'GraphicsMagick Group',
 
    # Module version
-   'VERSION'    => '@PACKAGE_BASE_VERSION@' =~ /^([\d\.]+)/g,
+   'VERSION'    => '@PACKAGE_VERSION@' =~ /^([\d\.]+)/g,
 
    # Preprocessor defines
    'DEFINE'     => $magick_DEFS,     # e.g., '-DHAVE_SOMETHING'
