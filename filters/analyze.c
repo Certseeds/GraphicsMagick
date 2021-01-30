@@ -57,9 +57,15 @@
 %
 */
 #define PRECISION "%.0f"
-ModuleExport MagickPassFail AnalyzeImage(Image **image,
+ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
                                          const int argc,char **argv)
 {
+  Image
+    * restrict image;
+
+  char
+    text[MaxTextExtent];
+
   double
     bsumX = 0.0,
     bsumX2 = 0.0,
@@ -74,39 +80,40 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image,
   unsigned long
     y;
 
-  register unsigned long
-    x = 0;
-
-  register PixelPacket
-    *p;
-
-  char
-    text[MaxTextExtent];
-
   MagickPassFail
     status = MagickPass;
 
   ARG_NOT_USED(argc);
   ARG_NOT_USED(argv);
 
-  assert(image != (Image **) NULL);
-  assert(*image != (Image *) NULL);
-  for (y=0; y < (*image)->rows; y++)
+  assert(image_ref != (Image **) NULL);
+  assert(*image_ref != (Image *) NULL);
+  image = *image_ref;
+  for (y=0; y < image->rows; y++)
     {
-      p=GetImagePixels((*image),0,y,(*image)->columns,1);
+      register PixelPacket
+        *p;
+
+      register unsigned long
+        x = 0;
+
+      p=GetImagePixels(image,0,y,image->columns,1);
       if (p == (PixelPacket *) NULL)
-        break;
+        {
+          status = MagickFail;
+          break;
+        }
       if (y == 0)
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-          (void) SetImageAttribute((*image),"TopLeftColor",text);
+          (void) SetImageAttribute(image,"TopLeftColor",text);
         }
-      if (y == ((*image)->rows-1))
+      if (y == (image->rows-1))
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-          (void) SetImageAttribute((*image),"BottomLeftColor",text);
+          (void) SetImageAttribute(image,"BottomLeftColor",text);
         }
-      for (x=0; x < (*image)->columns; x++)
+      for (x=0; x < image->columns; x++)
         {
           TransformHSL(p->red,p->green,p->blue,&hue,&saturation,&brightness);
           brightness *= MaxRGBDouble;
@@ -121,19 +128,15 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image,
       if (y == 0)
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-          (void) SetImageAttribute((*image),"TopRightColor",text);
+          (void) SetImageAttribute(image,"TopRightColor",text);
         }
-      if (y == ((*image)->rows-1))
+      if (y == (image->rows-1))
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
-          (void) SetImageAttribute((*image),"BottomRightColor",text);
+          (void) SetImageAttribute(image,"BottomRightColor",text);
         }
     }
-  if ((x != (*image)->columns) || (y != (*image)->rows))
-    {
-      status = MagickFail;
-    }
-  else
+  if (status == MagickPass)
     {
       double
         brightness_mean,
@@ -142,15 +145,15 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image,
         saturation_stdev,
         total_pixels;
 
-      total_pixels = (double) (*image)->columns * (double) (*image)->rows;
+      total_pixels = (double) image->columns * (double) image->rows;
       brightness_mean = bsumX/total_pixels;
       FormatString(text,PRECISION,brightness_mean);
-      (void) SetImageAttribute((*image),"BrightnessMean",text);
+      (void) SetImageAttribute(image,"BrightnessMean",text);
       /*  This formula gives a slightly biased result */
       brightness_stdev =
         sqrt(bsumX2/total_pixels - (bsumX/total_pixels*bsumX/total_pixels));
       FormatString(text,PRECISION,brightness_stdev);
-      (void) SetImageAttribute((*image),"BrightnessStddev",text);
+      (void) SetImageAttribute(image,"BrightnessStddev",text);
       /* Now the correction for bias. */
       /*  stdev = stdev*sqrt((double)total_pixels/(double)(total_pixels-1)); */
       /* Now calculate the standard deviation of the mean */
@@ -158,12 +161,12 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image,
 
       saturation_mean = ssumX/total_pixels;
       FormatString(text,PRECISION,saturation_mean);
-      (void) SetImageAttribute((*image),"SaturationMean",text);
+      (void) SetImageAttribute(image,"SaturationMean",text);
       /* This formula gives a slightly biased result */
       saturation_stdev =
         sqrt(ssumX2/total_pixels - (ssumX/total_pixels*ssumX/total_pixels));
       FormatString(text,PRECISION,saturation_stdev);
-      (void) SetImageAttribute((*image),"SaturationStddev",text);
+      (void) SetImageAttribute(image,"SaturationStddev",text);
       /* Now the correction for bias. */
       /*  stdev = stdev*sqrt((double)total_pixels/(double)(total_pixels-1)); */
       /* Now calculate the standard deviation of the mean */

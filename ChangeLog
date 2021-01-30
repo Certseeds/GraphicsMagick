@@ -1,5 +1,8 @@
 2021-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * filters/analyze.c (AnalyzeImage): Tidy the structure of the code
+        a bit.
+
         * magick/module.c (ExecuteModuleProcess): Add error reporting for
         the case that the expected symbol is not resolved.
 
