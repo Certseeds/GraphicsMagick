@@ -4458,8 +4458,8 @@ For example:</pp>
 
 <pp><pre>
      gm convert logo: -process Analyze= \
-       -format "%[BrightnessMean],%[BrightnessStddev],%[SaturationMean],%[SaturationStddev]" info:-
-     51952
+       -format "%[BrightnessMean],%[BrightnessStddev]" info:-
+     51952,23294
 <pre></pp>
 
 </utils>
