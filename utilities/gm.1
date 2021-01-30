@@ -1,4 +1,4 @@
-.TH gm 1 "2021/01/01" "GraphicsMagick"
+.TH gm 1 "2021/01/29" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -3844,7 +3844,7 @@ The default preview is \fBJPEG\fP.
 \fRprocess a sequence of images using a process module
 
 The command argument has the form \fBmodule=arg1,arg2,arg3,...,argN\fP
-where \fBmodule\fP is the name of the module to invoke (e.g. "analyze")
+where \fBmodule\fP is the name of the module to invoke (e.g. "Analyze")
 and arg1,arg2,arg3,...,argN are an arbitrary number of arguments to
 pass to the process module.
 The sequence of images
@@ -3852,6 +3852,13 @@ is terminated by the appearance of any option.
 
 If the \fB-process\fP
 option appears after all of the input images, all images are processed.
+
+For example:
+
+     gm convert logo: -process Analyze= \\
+       -format "%[BrightnessMean],%[BrightnessStddev],%[SaturationMean],%[SaturationStddev]" info:-
+     51952
+
 .TP
 .B "-profile \fI<filename>"\fP
 \fRadd ICM, IPTC, or generic profile  to image

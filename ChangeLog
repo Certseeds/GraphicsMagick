@@ -1,3 +1,8 @@
+2021-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/module.c (ExecuteModuleProcess): Add error reporting for
+        the case that the expected symbol is not resolved.
+
 2021-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * configure.ac: Remove updates to use recommended forms of AC_INIT

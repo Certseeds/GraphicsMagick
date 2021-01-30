@@ -11662,7 +11662,7 @@ MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
               continue;
             next=0;
             /* FIXME: This code truncates the last character for an
-               argument like "analyze" but works for "analyze=" */
+               argument like "Analyze" but works for "Analyze=" */
             arguments=argv[i];
             t_status=Tokenizer(&token_info,0,token,length,arguments,
                                (char *) "",(char *) "=",(char *) "\"",
