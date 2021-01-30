@@ -1,5 +1,9 @@
 2021-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * VisualMagick/bin: Remove hp2xx.exe, mpeg2dec.exe, and
+        mpeg2enc.exe.  There is no value to distributing these pre-built
+        and flimsy executables in the source package.
+
         * filters/analyze.c (AnalyzeImage): Add OpenMP speed-ups.
 
 2021-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
