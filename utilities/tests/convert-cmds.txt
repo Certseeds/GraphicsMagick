@@ -101,6 +101,7 @@
 -ordered-dither intensity 3x3
 -ordered-dither all 4x4
 -paint 0x1
+-process Analyze= -format '%[BrightnessMean],%[BrightnessStddev],%[SaturationMean],%[SaturationStddev]'
 -raise 10x10
 -random-threshold all 20x80
 -recolor '1,0,0,0,1,0,0,0,1'

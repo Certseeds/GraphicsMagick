@@ -1,3 +1,7 @@
+2021-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * filters/analyze.c (AnalyzeImage): Add OpenMP speed-ups.
+
 2021-01-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * filters/analyze.c (AnalyzeImage): Tidy the structure of the code

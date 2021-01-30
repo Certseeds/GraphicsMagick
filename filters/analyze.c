@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -30,6 +30,7 @@
 #include "magick/studio.h"
 #include "magick/attribute.h"
 #include "magick/gem.h"
+#include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/utility.h"
 
@@ -60,11 +61,10 @@
 ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
                                          const int argc,char **argv)
 {
+#define AnalyzeImageText "[%s] Analyze Filter..."
+
   Image
     * restrict image;
-
-  char
-    text[MaxTextExtent];
 
   double
     bsumX = 0.0,
@@ -72,13 +72,14 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
     ssumX = 0.0,
     ssumX2 = 0.0;
 
-  double
-    brightness,
-    hue,
-    saturation;
+  long
+    y;
 
   unsigned long
-    y;
+    row_count=0;
+
+  MagickBool
+    monitor_active;
 
   MagickPassFail
     status = MagickPass;
@@ -89,26 +90,61 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
   assert(image_ref != (Image **) NULL);
   assert(*image_ref != (Image *) NULL);
   image = *image_ref;
-  for (y=0; y < image->rows; y++)
+
+  monitor_active=MagickMonitorActive();
+
+#if defined(HAVE_OPENMP)
+#  if defined(TUNE_OPENMP)
+#    pragma omp parallel for schedule(runtime) shared(row_count, status, bsumX, bsumX2, ssumX, ssumX2)
+#  else
+#    if defined(USE_STATIC_SCHEDULING_ONLY)
+#      pragma omp parallel for schedule(static) shared(row_count, status, bsumX, bsumX2, ssumX, ssumX2)
+#    else
+#      pragma omp parallel for schedule(dynamic) shared(row_count, status, bsumX, bsumX2, ssumX, ssumX2)
+#    endif
+#  endif
+#endif
+  for (y=0; y < (long) image->rows; y++)
     {
+      double
+        brightness,
+        hue,
+        saturation;
+
+      double
+        l_bsumX = 0.0,
+        l_bsumX2 = 0.0,
+        l_ssumX = 0.0,
+        l_ssumX2 = 0.0;
+
       register PixelPacket
         *p;
 
       register unsigned long
         x = 0;
 
+      MagickPassFail
+        thread_status;
+
+      char
+        text[MaxTextExtent];
+
+      thread_status=status;
+      if (thread_status == MagickFail)
+        continue;
+
       p=GetImagePixels(image,0,y,image->columns,1);
       if (p == (PixelPacket *) NULL)
         {
-          status = MagickFail;
-          break;
+          thread_status = MagickFail;
+          goto bail;
         }
       if (y == 0)
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
           (void) SetImageAttribute(image,"TopLeftColor",text);
         }
-      if (y == (image->rows-1))
+      if (y == ((long) image->rows-1))
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
           (void) SetImageAttribute(image,"BottomLeftColor",text);
@@ -117,11 +153,11 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
         {
           TransformHSL(p->red,p->green,p->blue,&hue,&saturation,&brightness);
           brightness *= MaxRGBDouble;
-          bsumX += brightness;
-          bsumX2 += brightness * brightness;
+          l_bsumX += brightness;
+          l_bsumX2 += brightness * brightness;
           saturation *= MaxRGBDouble;
-          ssumX += saturation;
-          ssumX2 += saturation * saturation;
+          l_ssumX += saturation;
+          l_ssumX2 += saturation * saturation;
           p++;
         }
       p--; /* backup one pixel to allow us to sample */
@@ -130,10 +166,53 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
           (void) SetImageAttribute(image,"TopRightColor",text);
         }
-      if (y == (image->rows-1))
+      if (y == ((long) image->rows-1))
         {
           FormatString(text,"#%02x%02x%02x",p->red,p->green,p->blue);
           (void) SetImageAttribute(image,"BottomRightColor",text);
+        }
+
+#if defined(HAVE_OPENMP)
+#  pragma omp critical (GM_Analyze_Filter_Summation)
+#endif
+      {
+        bsumX += l_bsumX;
+        bsumX2 += l_bsumX2;
+        ssumX += l_ssumX;
+        ssumX2 += l_ssumX2;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (bsumX, bsumX2, ssumX, ssumX2)
+#endif
+      }
+
+    bail:;
+
+      if (monitor_active)
+        {
+          unsigned long
+            thread_row_count;
+
+#if defined(HAVE_OPENMP)
+#  pragma omp atomic
+#endif
+          row_count++;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (row_count)
+#endif
+          thread_row_count=row_count;
+          if (QuantumTick(thread_row_count,image->rows))
+            if (!MagickMonitorFormatted(thread_row_count,image->rows,&image->exception,
+                                        AnalyzeImageText,image->filename))
+              thread_status=MagickFail;
+        }
+
+      if (thread_status == MagickFail)
+        {
+          status=MagickFail;
+#if defined(HAVE_OPENMP)
+#  pragma omp flush (status)
+#endif
         }
     }
   if (status == MagickPass)
@@ -144,6 +223,9 @@ ModuleExport MagickPassFail AnalyzeImage(Image **image_ref,
         saturation_mean,
         saturation_stdev,
         total_pixels;
+
+      char
+        text[MaxTextExtent];
 
       total_pixels = (double) image->columns * (double) image->rows;
       brightness_mean = bsumX/total_pixels;
