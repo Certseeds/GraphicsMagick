@@ -1,3 +1,8 @@
+2021-01-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/monitor.c (MagickMonitorActive): Need to export this
+        function for use by modules.
+
 2021-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * VisualMagick/bin: Remove hp2xx.exe, mpeg2dec.exe, and

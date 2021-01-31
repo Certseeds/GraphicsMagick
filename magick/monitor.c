@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -177,7 +177,7 @@ MagickMonitor(const char *text,
 %      MagickBool MagickMonitor(void)
 %
 */
-MagickBool
+MagickExport MagickBool
 MagickMonitorActive(void)
 {
   return monitor_handler != (MonitorHandler) NULL ? MagickTrue : MagickFalse;
