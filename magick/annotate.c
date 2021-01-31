@@ -780,7 +780,7 @@ char const *FindCommaDelimitedName
   for ( pEnd = pStart + 1; (c = *pEnd) && (c != ','); pEnd++ ); /*find terminating comma*/
   pNextSearchStart = pEnd;
 
-  for ( ; isspace(pEnd[-1]); pEnd-- ); /*trim trailing space; we know there is a non-space character there*/
+  for ( ; isspace((int) pEnd[-1]); pEnd-- ); /*trim trailing space; we know there is a non-space character there*/
 
   /* trim off surrounding single quotes */
   if ((*pStart == '\'') &&  (*pEnd == '\'') && ((pEnd-pStart) >= 3))

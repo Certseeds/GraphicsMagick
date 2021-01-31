@@ -2854,7 +2854,7 @@ void    ProcessStyleClassDefs (
 
               char * pStyleElement = cp;
               while  ( (c = *cp) && (c != ':') )  cp++;   /* find colon/null */
-              for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+              for  ( cp2 = cp-1; isspace((int) (*cp2)); *cp2-- = '\0');   /* trim white space */
               if  ( *cp )
                 *cp++ = '\0';   /* terminate style element string and increment */
 
@@ -2865,7 +2865,7 @@ void    ProcessStyleClassDefs (
 
                   char * pStyleValue = cp;
                   while  ( (c = *cp) && (c != ';') )  cp++;   /* find semi-colon/null */
-                  for  ( cp2 = cp-1; isspace(*cp2); *cp2-- = '\0');   /* trim white space */
+                  for  ( cp2 = cp-1; isspace((int) (*cp2)); *cp2-- = '\0');   /* trim white space */
                   if  ( *cp )
                     *cp++ = '\0';   /* terminate style value string and increment */
 
