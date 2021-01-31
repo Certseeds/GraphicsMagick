@@ -921,14 +921,13 @@ MagickExport int NTdlsetsearchpath(const char *path)
 */
 MagickExport void *NTdlsym(void *handle,const char *name)
 {
-  LPFNDLLFUNC1
-    lpfnDllFunc1;
+  void *func;
 
   /* FARPROC GetProcAddress(HMODULE hModule,LPCSTR lpProcName); */
-  lpfnDllFunc1=(LPFNDLLFUNC1) GetProcAddress(handle,name);
-  if (!lpfnDllFunc1)
-    return((void *) NULL);
-  return((void *) lpfnDllFunc1);
+  func=(void *) GetProcAddress(handle,name);
+  if (!func)
+    return (void *) NULL;
+  return func;
 }
 #endif /* !defined(HasLTDL) */
 
