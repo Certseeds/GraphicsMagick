@@ -1,3 +1,8 @@
+2021-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/tiff.c, coders/ps2.c, coders/ps3.c: Libtiff versions
+        beyond 20201219 want to use types from stdint.h.
+
 2021-01-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/monitor.c (MagickMonitorActive): Need to export this

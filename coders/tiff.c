@@ -58,6 +58,7 @@
 #include "magick/utility.h"
 #include "magick/version.h"
 #if defined(HasTIFF)
+#  include "tiffvers.h"
 #  if defined(HAVE_TIFFCONF_H)
 #    include "tiffconf.h"
 #  endif
@@ -86,6 +87,13 @@
 #if defined(TIFF_VERSION_BIG)
 #  define HasBigTIFF 1
 #endif /* defined(TIFF_BIGTIFF_VERSION) */
+
+#if defined(HAVE_STDINT_H) && (TIFFLIB_VERSION >= 20201219)
+#  undef uint16
+#  define uint16 uint16_t
+#  undef uint32
+#  define uint32 uint32_t
+#endif /* TIFFLIB_VERSION */
 
 /*
   Set to 1 in order to log low-level BLOB I/O at "coder" level.
