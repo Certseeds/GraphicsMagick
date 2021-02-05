@@ -80,7 +80,6 @@ static unsigned int
     WriteByteHook,void *);
 
 #if defined(HasTIFF)
-#include "tiffvers.h"
 #if defined(HAVE_TIFFCONF_H)
 #include "tiffconf.h"
 #endif

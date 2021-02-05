@@ -61,7 +61,6 @@ static unsigned int
   WritePS2Image(const ImageInfo *,Image *);
 
 #if defined(HasTIFF)
-#include "tiffvers.h"
 #if defined(HAVE_TIFFCONF_H)
 #  include "tiffconf.h"
 #endif

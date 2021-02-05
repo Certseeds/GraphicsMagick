@@ -58,7 +58,6 @@
 #include "magick/utility.h"
 #include "magick/version.h"
 #if defined(HasTIFF)
-#  include "tiffvers.h"
 #  if defined(HAVE_TIFFCONF_H)
 #    include "tiffconf.h"
 #  endif
