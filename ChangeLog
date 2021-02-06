@@ -1,3 +1,14 @@
+2021-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/utility.c (TranslateTextEx): If image resolution is
+        impossibly small, then report the default resolution of 72 DPI, or
+        the equivalent in centimeters if units is in
+        pixels-per-centimeter.  Addresses SourceForge bug #396 "dpi not
+        retrived (no default value)".  I do have some misgivings about
+        this solution since it is lying about the actual value.  Not all
+        usages of raster images have an associated physical reality and
+        thus resolution is not necessarily relevant.
+
 2021-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/tiff.c, coders/ps2.c, coders/ps3.c: Libtiff versions

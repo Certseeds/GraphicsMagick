@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -6308,15 +6308,19 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
       }
       case 'x':
       {
-        /* Horizontal resolution */
-        FormatString(buffer,"%g",image->x_resolution);
+        /* Horizontal resolution (default to 72.0 DPI if impossibly small) */
+        FormatString(buffer,"%g",
+                     fabs(image->x_resolution) > MagickEpsilon ? image->x_resolution :
+                     (image->units == PixelsPerCentimeterResolution ? 72.0/2.54 : 72.0));
         q+=(translate)(q,buffer,MaxTextExtent);
         break;
       }
       case 'y':
       {
-        /* Vertical resolution */
-        FormatString(buffer,"%g",image->y_resolution);
+        /* Vertical resolution (default to 72.0 DPI if impossibly small) */
+        FormatString(buffer,"%g",
+                     fabs(image->y_resolution) > MagickEpsilon ? image->y_resolution :
+                     (image->units == PixelsPerCentimeterResolution ? 72.0/2.54 : 72.0));
         q+=(translate)(q,buffer,MaxTextExtent);
         break;
       }
