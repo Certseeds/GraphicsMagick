@@ -3654,12 +3654,12 @@ MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *excepti
           lval=0;
           break;
         }
-      if (dval > LONG_MAX)
+      if (floor(dval) > ((double) LONG_MAX - 1))
         {
           lval=LONG_MAX;
           break;
         }
-      if (dval < LONG_MIN)
+      if (ceil(dval) < ((double) LONG_MIN + 1))
         {
           lval=LONG_MIN;
           break;
