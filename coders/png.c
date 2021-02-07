@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4745,7 +4745,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     igamma;
 
                   igamma=mng_get_long(p);
-                  mng_info->global_gamma=((float) igamma)*0.00001;
+                  mng_info->global_gamma=((float) igamma*0.00001f);
                   mng_info->have_global_gama=MagickTrue;
                 }
               else

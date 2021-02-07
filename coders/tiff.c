@@ -2031,8 +2031,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (planar_config == PLANARCONFIG_SEPARATE)
         image->interlace=PlaneInterlace;
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_RESOLUTIONUNIT,&units);
-      x_resolution=image->x_resolution;
-      y_resolution=image->y_resolution;
+      x_resolution=(float) image->x_resolution;
+      y_resolution=(float) image->y_resolution;
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_XRESOLUTION,&x_resolution);
       (void) TIFFGetFieldDefaulted(tiff,TIFFTAG_YRESOLUTION,&y_resolution);
       image->x_resolution=x_resolution;
@@ -5580,12 +5580,12 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             Set image primary chromaticities (x,y coordinates of RGB
             colorants and white point).
           */
-          chromaticity[0]=image->chromaticity.red_primary.x;
-          chromaticity[1]=image->chromaticity.red_primary.y;
-          chromaticity[2]=image->chromaticity.green_primary.x;
-          chromaticity[3]=image->chromaticity.green_primary.y;
-          chromaticity[4]=image->chromaticity.blue_primary.x;
-          chromaticity[5]=image->chromaticity.blue_primary.y;
+          chromaticity[0]=(float) image->chromaticity.red_primary.x;
+          chromaticity[1]=(float) image->chromaticity.red_primary.y;
+          chromaticity[2]=(float) image->chromaticity.green_primary.x;
+          chromaticity[3]=(float) image->chromaticity.green_primary.y;
+          chromaticity[4]=(float) image->chromaticity.blue_primary.x;
+          chromaticity[5]=(float) image->chromaticity.blue_primary.y;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Primary Chromaticities: "
@@ -5597,8 +5597,8 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                   chromaticity[4] /* blue_primary.x */,
                                   chromaticity[5] /* blue_primary.y */);
           (void) TIFFSetField(tiff,TIFFTAG_PRIMARYCHROMATICITIES,chromaticity);
-          chromaticity[0]=image->chromaticity.white_point.x;
-          chromaticity[1]=image->chromaticity.white_point.y;
+          chromaticity[0]=(float) image->chromaticity.white_point.x;
+          chromaticity[1]=(float) image->chromaticity.white_point.y;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "White Point: %gx%g",

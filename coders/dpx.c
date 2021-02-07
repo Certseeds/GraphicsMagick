@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2020 GraphicsMagick Group
+% Copyright (C) 2005-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -3606,9 +3606,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
     *definition_value_; \
 \
   if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
-    member.f=strtod(definition_value_, (char **) NULL); \
+    member.f=(float) strtod(definition_value_, (char **) NULL); \
   else if ((attribute_=GetImageAttribute(image,key))) \
-    member.f=strtod(attribute_->value, (char **) NULL); \
+    member.f=(float) strtod(attribute_->value, (char **) NULL); \
   else \
     SET_UNDEFINED_R32(member); \
 }

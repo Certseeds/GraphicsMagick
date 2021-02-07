@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1339,9 +1339,9 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
                 text_width = metrics.width * (ddata->scale_y / ddata->scale_x);
 
 #if defined(HasWMFlite)
-              point.x -= text_width / 2;
+              point.x -= (float) (text_width / 2.0);
 #else
-              point.x += bbox_width / 2 - text_width / 2;
+              point.x += (float) (bbox_width / 2.0 - text_width / 2.0);
 #endif
             }
         }
@@ -1436,9 +1436,9 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
       if(metrics.underline_thickness < 1.5)
         line_height *= 0.55;
       ulTL.x = 0;
-      ulTL.y = AbsoluteValue(metrics.descent) - line_height;
-      ulBR.x = metrics.width;
-      ulBR.y = AbsoluteValue(metrics.descent);
+      ulTL.y = (float) (AbsoluteValue(metrics.descent) - line_height);
+      ulBR.x = (float) metrics.width;
+      ulBR.y = (float) AbsoluteValue(metrics.descent);
 
       DrawRectangle(WmfDrawContext,
                     XC(ulTL.x), YC(ulTL.y), XC(ulBR.x), YC(ulBR.y));
@@ -1458,9 +1458,9 @@ static void ipa_draw_text(wmfAPI * API, wmfDrawText_t * draw_text)
       if(metrics.underline_thickness < 2.0)
         line_height *= 0.55;
       ulTL.x = 0;
-      ulTL.y = -(((double) metrics.ascent) / 2 + line_height / 2);
-      ulBR.x = metrics.width;
-      ulBR.y = -(((double) metrics.ascent) / 2 - line_height / 2);
+      ulTL.y = (float) -(((double) metrics.ascent) / 2.0 + line_height / 2.0);
+      ulBR.x = (float) metrics.width;
+      ulBR.y = (float) -(((double) metrics.ascent) / 2.0 - line_height / 2.0);
 
       DrawRectangle(WmfDrawContext,
                     XC(ulTL.x), YC(ulTL.y), XC(ulBR.x), YC(ulBR.y));

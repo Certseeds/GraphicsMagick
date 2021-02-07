@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1374,7 +1374,7 @@ MagickExport Image *ConvolveImage(const Image * restrict image,const unsigned in
     normalize=1.0/normalize;
     for (i=0; i < (width*width); i++)
       {
-        normal_kernel[i]=normalize*kernel[i];
+        normal_kernel[i]=(float_quantum_t) (normalize*kernel[i]);
       }
   }
 

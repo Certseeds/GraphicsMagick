@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -768,7 +768,7 @@ unsigned Flags;
  if(Flags & ROT)
         {
         x=ReadBlobLSBLong(image);       /*Rot Angle*/
-        if(Angle) *Angle=x/65536.0;
+        if(Angle) *Angle=(float) (x/65536.0);
         }
  if(Flags & (ROT|SCL))
         {

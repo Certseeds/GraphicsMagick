@@ -37,8 +37,11 @@
 
 <p>2021-02-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/utility.c (MagickDoubleToLong): Guard against LONG_MAX
-not directly representable as a double.</blockquote>
+<p>* Add explicit cast to float where implicit casts to float from
+double were occurring.</p>
+<p>* magick/utility.c (MagickDoubleToLong): Guard against LONG_MAX
+not directly representable as a double.</p>
+</blockquote>
 <p>2021-02-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * magick/utility.c (TranslateTextEx): If image resolution is

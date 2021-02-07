@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -674,27 +674,27 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
           xform.primary_info.z=(ScaleCharToMap(137));
           for (i=0; i <= (long) (0.018*MaxMap); i++)
             {
-              xform.x[i].x=(0.003962014134275617*i);
-              xform.x[i].y=((-0.002426619775463276)*i);
-              xform.x[i].z=(0.006927257754597858*i);
-              xform.y[i].x=(0.007778268551236748*i);
-              xform.y[i].y=((-0.004763965913702149)*i);
-              xform.y[i].z=((-0.005800713697502058)*i);
-              xform.z[i].x=(0.001510600706713781*i);
-              xform.z[i].y=(0.007190585689165425*i);
-              xform.z[i].z=((-0.0011265440570958)*i);
+              xform.x[i].x=(float) (0.003962014134275617*i);
+              xform.x[i].y=(float) ((-0.002426619775463276)*i);
+              xform.x[i].z=(float) (0.006927257754597858*i);
+              xform.y[i].x=(float) (0.007778268551236748*i);
+              xform.y[i].y=(float) ((-0.004763965913702149)*i);
+              xform.y[i].z=(float) ((-0.005800713697502058)*i);
+              xform.z[i].x=(float) (0.001510600706713781*i);
+              xform.z[i].y=(float) (0.007190585689165425*i);
+              xform.z[i].z=(float) ((-0.0011265440570958)*i);
             }
           for ( ; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.2201118963486454*(1.099*i-0.099));
-              xform.x[i].y=((-0.1348122097479598)*(1.099*i-0.099));
-              xform.x[i].z=(0.3848476530332144*(1.099*i-0.099));
-              xform.y[i].x=(0.4321260306242638*(1.099*i-0.099));
-              xform.y[i].y=((-0.2646647729834528)*(1.099*i-0.099));
-              xform.y[i].z=((-0.3222618720834477)*(1.099*i-0.099));
-              xform.z[i].x=(0.08392226148409894*(1.099*i-0.099));
-              xform.z[i].y=(0.3994769827314126*(1.099*i-0.099));
-              xform.z[i].z=((-0.06258578094976668)*(1.099*i-0.099));
+              xform.x[i].x=(float) (0.2201118963486454*(1.099*i-0.099));
+              xform.x[i].y=(float) ((-0.1348122097479598)*(1.099*i-0.099));
+              xform.x[i].z=(float) (0.3848476530332144*(1.099*i-0.099));
+              xform.y[i].x=(float) (0.4321260306242638*(1.099*i-0.099));
+              xform.y[i].y=(float) ((-0.2646647729834528)*(1.099*i-0.099));
+              xform.y[i].z=(float) ((-0.3222618720834477)*(1.099*i-0.099));
+              xform.z[i].x=(float) (0.08392226148409894*(1.099*i-0.099));
+              xform.z[i].y=(float) (0.3994769827314126*(1.099*i-0.099));
+              xform.z[i].z=(float) ((-0.06258578094976668)*(1.099*i-0.099));
             }
           break;
         }
@@ -714,15 +714,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.412453f*(float) i);
-              xform.x[i].y=(0.212671f*(float) i);
-              xform.x[i].z=(0.019334f*(float) i);
-              xform.y[i].x=(0.35758f*(float) i);
-              xform.y[i].y=(0.71516f*(float) i);
-              xform.y[i].z=(0.119193f*(float) i);
-              xform.z[i].x=(0.180423f*(float) i);
-              xform.z[i].y=(0.072169f*(float) i);
-              xform.z[i].z=(0.950227f*(float) i);
+              xform.x[i].x=(float) (0.412453f*(float) i);
+              xform.x[i].y=(float) (0.212671f*(float) i);
+              xform.x[i].z=(float) (0.019334f*(float) i);
+              xform.y[i].x=(float) (0.35758f*(float) i);
+              xform.y[i].y=(float) (0.71516f*(float) i);
+              xform.y[i].z=(float) (0.119193f*(float) i);
+              xform.z[i].x=(float) (0.180423f*(float) i);
+              xform.z[i].y=(float) (0.072169f*(float) i);
+              xform.z[i].z=(float) (0.950227f*(float) i);
             }
           break;
         }
@@ -747,15 +747,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.299f*(float) i); /* Red */
-              xform.x[i].y=((-0.16873f)*(float) i); /* Green */
-              xform.x[i].z=(0.500000f*(float) i); /* Blue */
-              xform.y[i].x=(0.587f*(float) i); /* Red */
-              xform.y[i].y=((-0.331264f)*(float) i); /* Green */
-              xform.y[i].z=((-0.418688f)*(float) i); /* Blue */
-              xform.z[i].x=(0.114f*(float) i); /* Red */
-              xform.z[i].y=(0.500000f*(float) i); /* Green */
-              xform.z[i].z=((-0.081312f)*(float) i); /* Blue */
+              xform.x[i].x=(float) (0.299f*(float) i); /* Red */
+              xform.x[i].y=(float) ((-0.16873f)*(float) i); /* Green */
+              xform.x[i].z=(float) (0.500000f*(float) i); /* Blue */
+              xform.y[i].x=(float) (0.587f*(float) i); /* Red */
+              xform.y[i].y=(float) ((-0.331264f)*(float) i); /* Green */
+              xform.y[i].z=(float) ((-0.418688f)*(float) i); /* Blue */
+              xform.z[i].x=(float) (0.114f*(float) i); /* Red */
+              xform.z[i].y=(float) (0.500000f*(float) i); /* Green */
+              xform.z[i].z=(float) ((-0.081312f)*(float) i); /* Blue */
             }
           break;
         }
@@ -780,15 +780,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.212600f*(float) i); /* Red */
-              xform.x[i].y=((-0.114572f)*(float) i); /* Green */
-              xform.x[i].z=(0.500000f*(float) i); /* Blue */
-              xform.y[i].x=(0.715200f*(float) i); /* Red */
-              xform.y[i].y=((-0.385428f)*(float) i); /* Green */
-              xform.y[i].z=((-0.454153f)*(float) i); /* Blue */
-              xform.z[i].x=(0.072200f*(float) i); /* Red */
-              xform.z[i].y=(0.500000f*(float) i); /* Green */
-              xform.z[i].z=((-0.045847f)*(float) i); /* Blue */
+              xform.x[i].x=(float) (0.212600f*(float) i); /* Red */
+              xform.x[i].y=(float) ((-0.114572f)*(float) i); /* Green */
+              xform.x[i].z=(float) (0.500000f*(float) i); /* Blue */
+              xform.y[i].x=(float) (0.715200f*(float) i); /* Red */
+              xform.y[i].y=(float) ((-0.385428f)*(float) i); /* Green */
+              xform.y[i].z=(float) ((-0.454153f)*(float) i); /* Blue */
+              xform.z[i].x=(float) (0.072200f*(float) i); /* Red */
+              xform.z[i].y=(float) (0.500000f*(float) i); /* Green */
+              xform.z[i].z=(float) ((-0.045847f)*(float) i); /* Blue */
             }
           break;
         }
@@ -811,27 +811,27 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
           xform.primary_info.z=(ScaleCharToMap(137));
           for (i=0; i <= (long) (0.018*MaxMap); i++)
             {
-              xform.x[i].x=(0.003962014134275617*i);
-              xform.x[i].y=((-0.002426619775463276)*i);
-              xform.x[i].z=(0.006927257754597858*i);
-              xform.y[i].x=(0.007778268551236748*i);
-              xform.y[i].y=((-0.004763965913702149)*i);
-              xform.y[i].z=((-0.005800713697502058)*i);
-              xform.z[i].x=(0.001510600706713781*i);
-              xform.z[i].y=(0.007190585689165425*i);
-              xform.z[i].z=((-0.0011265440570958)*i);
+              xform.x[i].x=(float) (0.003962014134275617*i);
+              xform.x[i].y=(float) ((-0.002426619775463276)*i);
+              xform.x[i].z=(float) (0.006927257754597858*i);
+              xform.y[i].x=(float) (0.007778268551236748*i);
+              xform.y[i].y=(float) ((-0.004763965913702149)*i);
+              xform.y[i].z=(float) ((-0.005800713697502058)*i);
+              xform.z[i].x=(float) (0.001510600706713781*i);
+              xform.z[i].y=(float) (0.007190585689165425*i);
+              xform.z[i].z=(float) ((-0.0011265440570958)*i);
             }
           for ( ; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.2201118963486454*(1.099*i-0.099));
-              xform.x[i].y=((-0.1348122097479598)*(1.099*i-0.099));
-              xform.x[i].z=(0.3848476530332144*(1.099*i-0.099));
-              xform.y[i].x=(0.4321260306242638*(1.099*i-0.099));
-              xform.y[i].y=((-0.2646647729834528)*(1.099*i-0.099));
-              xform.y[i].z=((-0.3222618720834477)*(1.099*i-0.099));
-              xform.z[i].x=(0.08392226148409894*(1.099*i-0.099));
-              xform.z[i].y=(0.3994769827314126*(1.099*i-0.099));
-              xform.z[i].z=((-0.06258578094976668)*(1.099*i-0.099));
+              xform.x[i].x=(float) (0.2201118963486454*(1.099*i-0.099));
+              xform.x[i].y=(float) ((-0.1348122097479598)*(1.099*i-0.099));
+              xform.x[i].z=(float) (0.3848476530332144*(1.099*i-0.099));
+              xform.y[i].x=(float) (0.4321260306242638*(1.099*i-0.099));
+              xform.y[i].y=(float) ((-0.2646647729834528)*(1.099*i-0.099));
+              xform.y[i].z=(float) ((-0.3222618720834477)*(1.099*i-0.099));
+              xform.z[i].x=(float) (0.08392226148409894*(1.099*i-0.099));
+              xform.z[i].y=(float) (0.3994769827314126*(1.099*i-0.099));
+              xform.z[i].z=(float) ((-0.06258578094976668)*(1.099*i-0.099));
             }
           break;
         }
@@ -856,15 +856,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.299f*(float) i);
-              xform.x[i].y=(0.596f*(float) i);
-              xform.x[i].z=(0.211f*(float) i);
-              xform.y[i].x=(0.587f*(float) i);
-              xform.y[i].y=((-0.274f)*(float) i);
-              xform.y[i].z=((-0.523f)*(float) i);
-              xform.z[i].x=(0.114f*(float) i);
-              xform.z[i].y=((-0.322f)*(float) i);
-              xform.z[i].z=(0.312f*(float) i);
+              xform.x[i].x=(float) (0.299f*(float) i);
+              xform.x[i].y=(float) (0.596f*(float) i);
+              xform.x[i].z=(float) (0.211f*(float) i);
+              xform.y[i].x=(float) (0.587f*(float) i);
+              xform.y[i].y=(float) ((-0.274f)*(float) i);
+              xform.y[i].z=(float) ((-0.523f)*(float) i);
+              xform.z[i].x=(float) (0.114f*(float) i);
+              xform.z[i].y=(float) ((-0.322f)*(float) i);
+              xform.z[i].z=(float) (0.312f*(float) i);
             }
           break;
         }
@@ -889,15 +889,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.299f*(float) i);
-              xform.x[i].y=((-0.168736f)*(float) i);
-              xform.x[i].z=(0.5f*(float) i);
-              xform.y[i].x=(0.587f*(float) i);
-              xform.y[i].y=((-0.331264f)*(float) i);
-              xform.y[i].z=((-0.418688f)*(float) i);
-              xform.z[i].x=(0.114f*(float) i);
-              xform.z[i].y=(0.5f*(float) i);
-              xform.z[i].z=((-0.081312f)*(float) i);
+              xform.x[i].x=(float) (0.299f*(float) i);
+              xform.x[i].y=(float) ((-0.168736f)*(float) i);
+              xform.x[i].z=(float) (0.5f*(float) i);
+              xform.y[i].x=(float) (0.587f*(float) i);
+              xform.y[i].y=(float) ((-0.331264f)*(float) i);
+              xform.y[i].z=(float) ((-0.418688f)*(float) i);
+              xform.z[i].x=(float) (0.114f*(float) i);
+              xform.z[i].y=(float) (0.5f*(float) i);
+              xform.z[i].z=(float) ((-0.081312f)*(float) i);
             }
           break;
         }
@@ -923,15 +923,15 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
 #endif
           for (i=0; i <= (long) MaxMap; i++)
             {
-              xform.x[i].x=(0.299f*(float) i);
-              xform.x[i].y=((-0.1474f)*(float) i);
-              xform.x[i].z=(0.615f*(float) i);
-              xform.y[i].x=(0.587f*(float) i);
-              xform.y[i].y=((-0.2895f)*(float) i);
-              xform.y[i].z=((-0.515f)*(float) i);
-              xform.z[i].x=(0.114f*(float) i);
-              xform.z[i].y=(0.4369f*(float) i);
-              xform.z[i].z=((-0.1f)*(float) i);
+              xform.x[i].x=(float) (0.299f*(float) i);
+              xform.x[i].y=(float) ((-0.1474f)*(float) i);
+              xform.x[i].z=(float) (0.615f*(float) i);
+              xform.y[i].x=(float) (0.587f*(float) i);
+              xform.y[i].y=(float) ((-0.2895f)*(float) i);
+              xform.y[i].z=(float) ((-0.515f)*(float) i);
+              xform.z[i].x=(float) (0.114f*(float) i);
+              xform.z[i].y=(float) (0.4369f*(float) i);
+              xform.z[i].z=(float) ((-0.1f)*(float) i);
             }
           break;
         }

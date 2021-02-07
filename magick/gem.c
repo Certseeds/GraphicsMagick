@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -196,10 +196,10 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
   pixel=(NOISE_FLT_T) quantum_pixel;
 
 #if QuantumDepth > 8
-  pixel /= MaxRGBDouble/255.0;
+  pixel /= (NOISE_FLT_T) (MaxRGBDouble/255.0);
 #endif
 
-  alpha=MagickRandomRealInlined(kernel);
+  alpha=(NOISE_FLT_T) MagickRandomRealInlined(kernel);
   if (alpha == 0.0)
     alpha=1.0;
   switch (noise_type)
@@ -215,7 +215,7 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
       float
         tau;
 
-      beta=MagickRandomRealInlined(kernel);
+      beta=(NOISE_FLT_T) MagickRandomRealInlined(kernel);
       sigma=SQRTF(-2.0*LOGF(alpha))*COSF(2.0*MagickPI*beta);
       tau=SQRTF(-2.0*LOGF(alpha))*SINF(2.0*MagickPI*beta);
       value=SQRTF(pixel)*SigmaGaussian*sigma+TauGaussian*tau;
@@ -227,7 +227,7 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
         sigma=255.0;
       else
         sigma=SQRTF(-2.0*LOGF(alpha));
-      beta=MagickRandomRealInlined(kernel);
+      beta=(NOISE_FLT_T) MagickRandomRealInlined(kernel);
       value=pixel*SigmaMultiplicativeGaussian*sigma*COSF(2.0*MagickPI*beta);
       break;
     }
@@ -252,7 +252,7 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
             value=SigmaLaplacian*LOGF(2.0*alpha);
           break;
         }
-      beta=1.0-alpha;
+      beta=(NOISE_FLT_T) 1.0-alpha;
       if (beta <= (0.5*NoiseEpsilon))
         value=255.0;
       else
@@ -270,7 +270,7 @@ MagickExport double GenerateDifferentialNoise(const Quantum quantum_pixel,
       limit=exp(-SigmaPoisson*(double) pixel);
       for (i=0; alpha > limit; i++)
       {
-        beta=MagickRandomRealInlined(kernel);
+        beta=(NOISE_FLT_T) MagickRandomRealInlined(kernel);
         alpha=alpha*beta;
       }
       value=pixel-((double) i/SigmaPoisson);

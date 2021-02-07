@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -1084,9 +1084,9 @@ ModuleExport void UnregisterCINEONImage(void)
     *definition_value; \
 \
   if ((definition_value=AccessDefinition(image_info,"dpx",&key[4]))) \
-    member.f=strtod(definition_value, (char **) NULL); \
+    member.f=(float) strtod(definition_value, (char **) NULL); \
   else if ((attribute=GetImageAttribute(image,key))) \
-    member.f=strtod(attribute->value, (char **) NULL); \
+    member.f=(float) strtod(attribute->value, (char **) NULL); \
   else \
     SET_UNDEFINED_R32(member); \
 }
@@ -1271,32 +1271,32 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
   SET_UNDEFINED_R32(cin_image_info.white_point[1]);
   if ( image->chromaticity.white_point.x != 0.0 && image->chromaticity.white_point.y != 0.0 )
     {
-      cin_image_info.white_point[0].f = image->chromaticity.white_point.x;
-      cin_image_info.white_point[1].f = image->chromaticity.white_point.y;
+      cin_image_info.white_point[0].f = (float) image->chromaticity.white_point.x;
+      cin_image_info.white_point[1].f = (float) image->chromaticity.white_point.y;
     }
   /* Red primary chromaticity - x,y pair */
   SET_UNDEFINED_R32(cin_image_info.red_primary_chromaticity[0]);
   SET_UNDEFINED_R32(cin_image_info.red_primary_chromaticity[1]);
   if ( image->chromaticity.red_primary.x != 0.0 &&  image->chromaticity.red_primary.y != 0.0)
     {
-      cin_image_info.red_primary_chromaticity[0].f = image->chromaticity.red_primary.x;
-      cin_image_info.red_primary_chromaticity[1].f = image->chromaticity.red_primary.y;
+      cin_image_info.red_primary_chromaticity[0].f = (float) image->chromaticity.red_primary.x;
+      cin_image_info.red_primary_chromaticity[1].f = (float) image->chromaticity.red_primary.y;
     }
   /* Green primary chromaticity - x,y pair */
   SET_UNDEFINED_R32(cin_image_info.green_primary_chromaticity[0]);
   SET_UNDEFINED_R32(cin_image_info.green_primary_chromaticity[1]);
   if ( image->chromaticity.green_primary.x != 0.0 && image->chromaticity.green_primary.y != 0.0 )
     {
-      cin_image_info.green_primary_chromaticity[0].f = image->chromaticity.green_primary.x;
-      cin_image_info.green_primary_chromaticity[1].f = image->chromaticity.green_primary.y;
+      cin_image_info.green_primary_chromaticity[0].f = (float) image->chromaticity.green_primary.x;
+      cin_image_info.green_primary_chromaticity[1].f = (float) image->chromaticity.green_primary.y;
     }
   /* Blue primary chromaticity - x,y pair */
   SET_UNDEFINED_R32(cin_image_info.blue_primary_chromaticity[0]);
   SET_UNDEFINED_R32(cin_image_info.blue_primary_chromaticity[1]);
   if ( image->chromaticity.blue_primary.x != 0.0 && image->chromaticity.blue_primary.y != 0.0 )
     {
-      cin_image_info.blue_primary_chromaticity[0].f = image->chromaticity.blue_primary.x;
-      cin_image_info.blue_primary_chromaticity[1].f = image->chromaticity.blue_primary.y;
+      cin_image_info.blue_primary_chromaticity[0].f = (float) image->chromaticity.blue_primary.x;
+      cin_image_info.blue_primary_chromaticity[1].f = (float) image->chromaticity.blue_primary.y;
     }
   /* Label text */
   AttributeToString(image_info,image,"DPX:file.project.name",cin_image_info.label_text);

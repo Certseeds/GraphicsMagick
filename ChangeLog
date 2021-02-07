@@ -1,5 +1,8 @@
 2021-02-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Add explicit cast to float where implicit casts to float from
+        double were occurring.
+
         * magick/utility.c (MagickDoubleToLong): Guard against LONG_MAX
         not directly representable as a double.
 
