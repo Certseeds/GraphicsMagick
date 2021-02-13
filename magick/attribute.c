@@ -798,8 +798,8 @@ TraceSVGClippingPath(unsigned char *blob,
                   {
                     y=ReadMSBLong(&blob,&length);
                     x=ReadMSBLong(&blob,&length);
-                    point[i].x=(double) x*columns/4096/4096;
-                    point[i].y=(double) y*rows/4096/4096;
+                    point[i].x=(double) x*columns/4096.0/4096.0;
+                    point[i].y=(double) y*rows/4096.0/4096.0;
                   }
                 if (!in_subpath)
                   {
