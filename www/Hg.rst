@@ -22,6 +22,7 @@ GraphicsMagick Mercurial
 .. _Mercurial : https://www.mercurial-scm.org/
 .. _TortoiseHg : https://tortoisehg.bitbucket.io/
 .. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
+.. _`GraphicsMagick repository at OSDN` : https://hg.osdn.net/view/graphicsmagick/GM
 
 .. contents::
 
@@ -46,17 +47,27 @@ your changes with others.
 Web Access
 =============
 
-The `GraphicsMagick repository at SourceForge`_ web interface is
-available which may be used to interactively view the latest versions
-of files, or the changes to files, using your web browser.
+The `GraphicsMagick repository at SourceForge`_ and `GraphicsMagick
+repository at OSDN`_ web interfaces are available which may be used to
+interactively view the latest versions of files (or the changes to
+files) using your web browser.  These two servers will be updated at
+about the same time so they should normally contain the same content.
 
 Cloning the Mercurial Repository
 ==================================
 
 To get the tree and place it in a sub-directory of your current working
-directory, issue the command::
+directory, issue the command to one of the two public servers::
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
+
+or::
+
+  hg clone https://hg.osdn.net/view/graphicsmagick/GM
+
+The repository is large (e.g. 239MB of Hg content, resulting in 299MB
+after files are extracted), so some time may be required to transfer
+all the changesets.  Patience is a virtue!
 
 Please note that since the introduction of an HTTP load balancer,
 SourceForge has become unreliable when cloning with the default http
@@ -75,9 +86,9 @@ By default the cloned directory is populated with files from the
 `default` (i.e. head) branch of the code, which is where active
 development happens.
 
-If you require a specific release of GraphicsMagick (e.g. 1.3.23), you may select it like::
+If you require a specific release of GraphicsMagick (e.g. 1.3.36), you may select it like::
 
-  hg update -r GraphicsMagick-1_3_23
+  hg update -r GraphicsMagick-1_3_36
 
 or if you require a specific branch of GraphicsMagick (e.g. 1.3), you may use::
 
@@ -164,18 +175,24 @@ The repository hierarchy is as follows:
 3. Stable
 
   The stable repository is available via http at
-  "http://hg.code.sf.net/p/graphicsmagick/code".  Any changes in the
-  unstable development repository are pushed to the stable repository
-  (by the developer responsible for this role) once any necessary
-  adjustments have been made, documentation files have been generated,
-  and the software test suite has passed on at least one machine.
+  "http://hg.code.sf.net/p/graphicsmagick/code" or
+  "https://hg.osdn.net/view/graphicsmagick/GM".  Any changes in the
+  unstable development repository are pushed to the stable
+  repositories (by the developer responsible for this role) once any
+  necessary adjustments have been made, documentation files have been
+  generated, and the software test suite has passed on at least one
+  machine.
 
 To build your local development repository (as quickly as possible),
 you may use these steps:
 
-1. Clone the stable respository at SourceForge::
+1. Clone the stable respository at SourceForge or OSDN::
 
      hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
+
+     or
+
+     hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
 
 2. Adjust your local repository path default to use the unstable repository.
 

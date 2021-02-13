@@ -1,3 +1,8 @@
+2021-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * www/Hg.rst: Document new redundant Mercurial server at OSDN,
+        "https://hg.osdn.net/view/graphicsmagick/GM".
+
 2021-02-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Add explicit cast to float where implicit casts to float from
