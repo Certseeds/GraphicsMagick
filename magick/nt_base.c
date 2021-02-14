@@ -1333,7 +1333,7 @@ NTGhostscriptFind(const char **gs_productfamily,
               n++;
               major_version=0;
               minor_version=0;
-              if (sscanf(key,"%d.%d",&major_version,&minor_version) != 2)
+              if (sscanf(key,"%d.%d",&major_version,&minor_version) != 2) /* FIXME: Handle d.d.d */
                 continue;
 
               (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),

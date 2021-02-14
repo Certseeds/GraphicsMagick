@@ -1,3 +1,10 @@
+2021-02-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * VisualMagick/All/All.vcproj.in: Fixes by sourcer42
+        <sourcer42@users.sourceforge.net> for the problem that Visual
+        Studio is not able to load the All project if the project supports
+        the x64 target.
+
 2021-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * www/Hg.rst: Document new redundant Mercurial server at OSDN,

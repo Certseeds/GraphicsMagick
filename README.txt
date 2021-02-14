@@ -115,11 +115,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires Ghostscript software available from
 
-    http://pages.cs.wisc.edu/~ghost/
-
-      or
-
-    http://sourceforge.net/projects/ghostscript/
+    https://www.ghostscript.com/download.html
 
   to read the Postscript or the Portable Document Format (PDF).
 

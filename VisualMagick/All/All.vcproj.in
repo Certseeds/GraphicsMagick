@@ -7,8 +7,8 @@
 	SccLocalPath=""
 	Keyword="MakeFileProj">
 	<Platforms>
-		<Platform
-			Name="Win32"/>
+		<Platform Name="Win32"/>
+		<Platform Name="x64"/>
 	</Platforms>
 	<Configurations>
 		<Configuration
@@ -28,6 +28,36 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="10"
+			UseOfMFC="0">
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+		</Configuration>
+				<Configuration
+			Name="Debug|x64"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
+			ConfigurationType="10"
+			UseOfMFC="0">
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="10"
