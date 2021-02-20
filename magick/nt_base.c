@@ -1235,11 +1235,19 @@ NTGetRegistryValue(HKEY hkeyroot, const char *key, const char *name,
 /*
   Find the latest version of Ghostscript installed on the system (if
   any).
+
+  Major version is one digit
+  Minor version is observed to two digits (zero prefixed if necessary)
+  Point version has one digit and 0 is used.
+
+  Point version was added after ghostscript 9.52
+  The gs_point_version value is valid if it is not -1.
 */
 static MagickPassFail
 NTGhostscriptFind(const char **gs_productfamily,
                   int *gs_major_version,
-                  int *gs_minor_version)
+                  int *gs_minor_version,
+                  int *gs_point_version)
 {
   /*
     These are the Ghostscript product versions we will search for.
@@ -1251,6 +1259,9 @@ NTGhostscriptFind(const char **gs_productfamily,
       "AFPL Ghostscript",
       "Aladdin Ghostscript"
     };
+
+  char
+    gs_version[MaxTextExtent];
 
   unsigned int
     product_index,
@@ -1268,6 +1279,10 @@ NTGhostscriptFind(const char **gs_productfamily,
   /* Minimum version of Ghostscript is 5.50 */
   *gs_major_version=5;
   *gs_minor_version=49;
+  *gs_point_version=0;
+
+  gs_version[0]='\0';
+
   for(whence=0; whence<=1; whence++)
   {
     const HKEY hkeyroot = hkeys[whence].hkey;
@@ -1324,31 +1339,52 @@ NTGhostscriptFind(const char **gs_productfamily,
           */
           while ((winstatus=RegEnumKeyA(hkey, n, key, cbData)) == ERROR_SUCCESS)
             {
+              char
+                gs_found_version[MaxTextExtent];
+
               int
+                count,
                 major_version,
-                minor_version;
+                minor_version,
+                point_version;
 
               (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
                                     "      RegEnumKeyA enumerated \"%s\"",key);
               n++;
               major_version=0;
               minor_version=0;
-              if (sscanf(key,"%d.%d",&major_version,&minor_version) != 2) /* FIXME: Handle d.d.d */
+              point_version=-1;
+
+              /* Version string may be like 9.27, or 9.53.0, or 9.53.3 */
+              count=sscanf(key,"%d.%d.%d",&major_version,&minor_version,&point_version);
+              if ((count != 2) && (count != 3))
                 continue;
 
-              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-                                    "      Found Ghostscript (%s) version %d.%02d",
-                                    products[product_index],
-                                    major_version,
-                                    minor_version);
+              if (count == 3)
+                FormatString(gs_found_version,"%d.%02d.%d",major_version, minor_version, point_version);
+              else
+                FormatString(gs_found_version,"%d.%02d",major_version, minor_version);
 
-              if ((major_version > *gs_major_version) ||
+              (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
+                                    "      Found Ghostscript (%s) version %s",
+                                    products[product_index],
+                                    gs_found_version);
+
+              if ((major_version > *gs_major_version)
+                  ||
                   ((major_version == *gs_major_version) &&
-                   (minor_version > *gs_minor_version)))
+                   (minor_version > *gs_minor_version))
+                  ||
+                  ((major_version == *gs_major_version) &&
+                   (minor_version == *gs_minor_version) &&
+                   (point_version > *gs_point_version))
+                  )
                 {
                   *gs_productfamily=products[product_index];
                   *gs_major_version=major_version;
                   *gs_minor_version=minor_version;
+                  *gs_point_version=point_version;
+                  (void) strlcpy(gs_version,gs_found_version,sizeof(gs_version));
                   status=MagickPass;
                 }
             }
@@ -1386,9 +1422,8 @@ NTGhostscriptFind(const char **gs_productfamily,
   if (status != MagickFail)
     {
       (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
-                            "Selected Ghostscript (%s) version %d.%02d",
-                            *gs_productfamily,*gs_major_version,
-                            *gs_minor_version);
+                            "Selected Ghostscript (%s) version %s",
+                            *gs_productfamily, gs_version);
     }
   else
     {
@@ -1396,6 +1431,7 @@ NTGhostscriptFind(const char **gs_productfamily,
                             "Failed to find Ghostscript!");
       *gs_major_version=0;
       *gs_minor_version=0;
+      *gs_point_version=-1;
     }
 
   return status;
@@ -1413,7 +1449,8 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   static int
     gs_major_version=0,
-    gs_minor_version=0;
+    gs_minor_version=0,
+    gs_point_version=-1;
 
   unsigned int
     i;
@@ -1428,13 +1465,17 @@ NTGhostscriptGetString(const char *name, char *ptr, const size_t len)
 
   if (NULL == gs_productfamily)
     (void) NTGhostscriptFind(&gs_productfamily,&gs_major_version,
-                             &gs_minor_version);
+                             &gs_minor_version,&gs_point_version);
 
   if (NULL == gs_productfamily)
     return MagickFail;
 
-  FormatString(key,"SOFTWARE\\%s\\%d.%02d",gs_productfamily,
-               gs_major_version, gs_minor_version);
+  if (gs_point_version >= 0)
+    FormatString(key,"SOFTWARE\\%s\\%d.%02d.%d",gs_productfamily,
+                 gs_major_version, gs_minor_version, gs_point_version);
+  else
+    FormatString(key,"SOFTWARE\\%s\\%d.%02d",gs_productfamily,
+                 gs_major_version, gs_minor_version);
 
   for (i=0; i < sizeof(hkeys)/sizeof(hkeys[0]); ++i)
     {

@@ -232,8 +232,9 @@ building under Microsoft Windows:
   Use of lossless JPEG is not encouraged. Unless you have a requirement
   to read lossless jpeg-encoded DICOM images, please disregard the patch.
 
-* GraphicsMagick requires the JasPer Project's JasPer library version
-  1.701.0 (or later) available via http from
+* GraphicsMagick requires the JasPer Project's JasPer library from
+  https://github.com/jasper-software/jasper, although older versions
+  1.701.0 are available via http from
 
      http://www.ece.uvic.ca/~mdadams/jasper/
 

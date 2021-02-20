@@ -37,8 +37,13 @@
 
 <p>2021-02-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* fuzzing/oss-fuzz-build.sh: Patch by Paul Kehrer to incorporate
-Jasper and libxml2 into the oss-fuzz build.</blockquote>
+<p>* magick/nt_base.c (NTGhostscriptFind,NTGhostscriptGetString):
+Handle Ghostscript point versions added after 9.52.  Fixes
+SourceForge issue #636 'Failed to find Ghostscript' with
+Ghostscript version 9.53.0+.</p>
+<p>* fuzzing/oss-fuzz-build.sh: Patch by Paul Kehrer to incorporate
+Jasper and libxml2 into the oss-fuzz build.</p>
+</blockquote>
 <p>2021-02-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * VisualMagick/All/All.vcproj.in: Fixes by sourcer42

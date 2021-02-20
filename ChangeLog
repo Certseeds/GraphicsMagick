@@ -1,5 +1,10 @@
 2021-02-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * magick/nt_base.c (NTGhostscriptFind,NTGhostscriptGetString):
+        Handle Ghostscript point versions added after 9.52.  Fixes
+        SourceForge issue #636 'Failed to find Ghostscript' with
+        Ghostscript version 9.53.0+.
+
         * fuzzing/oss-fuzz-build.sh: Patch by Paul Kehrer to incorporate
         Jasper and libxml2 into the oss-fuzz build.
 
