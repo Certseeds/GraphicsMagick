@@ -1,3 +1,8 @@
+2021-02-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * fuzzing/oss-fuzz-build.sh: Patch by Paul Kehrer to incorporate
+        Jasper and libxml2 into the oss-fuzz build.
+
 2021-02-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * VisualMagick/All/All.vcproj.in: Fixes by sourcer42

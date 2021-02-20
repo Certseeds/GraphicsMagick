@@ -79,16 +79,30 @@ make -j$(nproc)
 make install
 popd
 
+pushd "$SRC/libxml2"
+./autogen.sh --disable-shared --without-debug --without-legacy --without-python --prefix="${WORK}"
+make -j$(nproc)
+make install
+popd
+
+pushd "$SRC/jasper"
+cmake -G "Unix Makefiles" -H. -Bstaging -DJAS_ENABLE_SHARED=false -DCMAKE_INSTALL_PREFIX=$WORK
+pushd staging
+make -j$(nproc)
+make install
+popd
+popd
+
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
 echo "=== Building GraphicsMagick..."
-PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --without-perl --with-quantum-depth=16
+PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --without-perl --with-quantum-depth=16
 make "-j$(nproc)"
 make install
 
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the
 # maximum extent possible.
-MAGICK_LIBS="$WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a "
+MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a"
 
 echo "=== Building fuzzers..."
 for f in fuzzing/*_fuzzer.cc; do
