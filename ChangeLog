@@ -1,3 +1,12 @@
+2021-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c (ReadJP2Image): Validate that actual file header
+        does appear to be a supported format regardless of 'magick' being
+        forced.  Jasper appears to dispatch to other libraries if it
+        detects a known format it supports and then the program exits if
+        there is a problem.  Fixes oss-fuzz 31200
+        "graphicsmagick:coder_JPC_fuzzer: Unexpected-exit in error_exit".
+
 2021-02-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/nt_base.c (NTGhostscriptFind,NTGhostscriptGetString):

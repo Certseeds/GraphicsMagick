@@ -462,6 +462,41 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
   /*
+    Validate that this is a supported format since Jasper's own
+    recovery mechanism is just to exit.  The Jasper library appears to
+    read other formats such as JPEG via other libraries.
+  */
+  {
+    unsigned char magick[16];
+    size_t length;
+    magick_off_t pos;
+
+    /* Get current seek position (normally 0) */
+    pos=TellBlob(image);
+
+    /* Read header */
+    if ((length=ReadBlob(image,sizeof(magick),magick)) != sizeof(magick))
+      {
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
+                             image);
+      }
+
+    /* Verify that it is a supported format */
+    if (!IsJP2(magick,sizeof(magick)) &&
+        !IsJPC(magick,sizeof(magick)) &&
+        !IsPGX(magick,sizeof(magick)))
+      {
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      }
+
+    /* Restore seek position */
+    if (SeekBlob(image,pos,SEEK_SET) != pos)
+      {
+        ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+      }
+  }
+
+  /*
     Obtain a JP2 Stream.
   */
   jp2_stream=JP2StreamManager(&StreamOperators, image);
