@@ -526,13 +526,16 @@ MSLPushImage(MSLInfo *msl_info,Image *image)
                     MemoryAllocationFailed,UnableToAllocateImage);
   if ( msl_info->nGroups )
     msl_info->group_info[msl_info->nGroups-1].numImages++;
-  attribute=GetImageAttribute(msl_info->attributes[n-1],(char *) NULL);
-  while (attribute != (const ImageAttribute *) NULL)
+  if (msl_info->attributes[n-1] != (Image *) NULL)
     {
-      (void) SetImageAttribute(msl_info->attributes[n],attribute->key,NULL);
-      (void) SetImageAttribute(msl_info->attributes[n],attribute->key,
-                               attribute->value);
-      attribute=attribute->next;
+      attribute=GetImageAttribute(msl_info->attributes[n-1],(char *) NULL);
+      while (attribute != (const ImageAttribute *) NULL)
+        {
+          (void) SetImageAttribute(msl_info->attributes[n],attribute->key,NULL);
+          (void) SetImageAttribute(msl_info->attributes[n],attribute->key,
+                                   attribute->value);
+          attribute=attribute->next;
+        }
     }
 }
 

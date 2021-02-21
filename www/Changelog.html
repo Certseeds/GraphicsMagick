@@ -37,12 +37,16 @@
 
 <p>2021-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c (ReadJP2Image): Validate that actual file header
+<p>* coders/msl.c (MSLPushImage): Only clone attributes if not null.
+Should address oss-fuzz 31205 &quot;graphicsmagick:coder_MSL_fuzzer:
+ASSERT: image != (Image *) NULL&quot;.</p>
+<p>* coders/jp2.c (ReadJP2Image): Validate that actual file header
 does appear to be a supported format regardless of 'magick' being
 forced.  Jasper appears to dispatch to other libraries if it
 detects a known format it supports and then the program exits if
 there is a problem.  Fixes oss-fuzz 31200
-&quot;graphicsmagick:coder_JPC_fuzzer: Unexpected-exit in error_exit&quot;.</blockquote>
+&quot;graphicsmagick:coder_JPC_fuzzer: Unexpected-exit in error_exit&quot;.</p>
+</blockquote>
 <p>2021-02-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* magick/nt_base.c (NTGhostscriptFind,NTGhostscriptGetString):
