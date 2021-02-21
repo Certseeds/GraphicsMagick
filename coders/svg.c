@@ -2647,7 +2647,8 @@ SVGStartElement(void *context,const xmlChar *name,
             sx,
             sy;
 
-          if (svg_info->bounds.width < 0.0 || svg_info->bounds.height < 0.0)
+          if (svg_info->bounds.width < MagickEpsilon ||
+              svg_info->bounds.height < MagickEpsilon)
             {
               ThrowException(svg_info->exception,CorruptImageError,
                              NegativeOrZeroImageSize,(char *) NULL);
@@ -2656,7 +2657,8 @@ SVGStartElement(void *context,const xmlChar *name,
           if ((svg_info->view_box.width == 0.0) ||
               (svg_info->view_box.height == 0.0))
             svg_info->view_box=svg_info->bounds;
-          if (svg_info->view_box.width < 0.0 || svg_info->view_box.height < 0.0)
+          if (svg_info->view_box.width < MagickEpsilon ||
+              svg_info->view_box.height < MagickEpsilon)
             {
               ThrowException(svg_info->exception,CorruptImageError,
                              NegativeOrZeroImageSize,(char *) NULL);

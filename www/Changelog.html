@@ -37,6 +37,10 @@
 
 <p>2021-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/svg.c (SVGStartElement): Reject impossibly small bounds
+and view_box width or height.  Addresses oss-fuzz 31224
+&quot;graphicsmagick:coder_SVG_fuzzer: Divide-by-zero in
+SVGStartElement&quot;.</p>
 <p>* coders/msl.c (MSLPushImage): Only clone attributes if not null.
 Should address oss-fuzz 31205 &quot;graphicsmagick:coder_MSL_fuzzer:
 ASSERT: image != (Image *) NULL&quot;.</p>

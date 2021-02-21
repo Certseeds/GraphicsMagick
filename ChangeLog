@@ -1,5 +1,10 @@
 2021-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/svg.c (SVGStartElement): Reject impossibly small bounds
+        and view_box width or height.  Addresses oss-fuzz 31224
+        "graphicsmagick:coder_SVG_fuzzer: Divide-by-zero in
+        SVGStartElement".
+
         * coders/msl.c (MSLPushImage): Only clone attributes if not null.
         Should address oss-fuzz 31205 "graphicsmagick:coder_MSL_fuzzer:
         ASSERT: image != (Image *) NULL".
