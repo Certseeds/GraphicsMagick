@@ -2829,7 +2829,8 @@ void    ProcessStyleClassDefs (
                   pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
                   pClassDef->pName = pClassName;
                 }/*new class name*/
-              pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
+              if (pClassDef !=  ClassDefHead.pNext)
+                pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
 
               }/*found class name*/
 

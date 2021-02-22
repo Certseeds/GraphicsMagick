@@ -1,3 +1,10 @@
+2021-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (ProcessStyleClassDefs): Fix non-terminal loop
+        caused by a self-referential list which results in huge memory
+        usage.  Addresses oss-fuzz 31238 "graphicsmagick:coder_SVG_fuzzer:
+        Out-of-memory in coder_SVG_fuzzer".
+
 2021-02-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (SVGStartElement): Reject impossibly small bounds
