@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -480,15 +480,22 @@ MSLStartDocument(void *context)
 static void
 MSLEndDocument(void *context)
 {
-  /*   MSLInfo */
-  /*     *msl_info; */
+  MSLInfo
+    *msl_info;
 
-  ARG_NOT_USED(context);
   /*
     Called when the document end has been detected.
   */
-  /*   msl_info=(MSLInfo *) context; */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.endDocument()");
+  msl_info=(MSLInfo *) context;
+
+  /* Don't free xmlParserCtxtPtr parser which is used later */
+
+  if (msl_info->document != (xmlDocPtr) NULL)
+    {
+      xmlFreeDoc(msl_info->document);
+      msl_info->document=(xmlDocPtr) NULL;
+    }
 }
 
 static void
@@ -4451,8 +4458,11 @@ MSLCDataBlock(void *context,const xmlChar *value,int length)
       (void) xmlTextConcat(child,value,length);
       return;
     }
-  (void) xmlAddChild(parser->node,
-                     xmlNewCDataBlock(parser->myDoc,value,length));
+  /* Create a new node containing a CDATA block. */
+  /* FIXME: parser->myDoc is null so add fails.  What do do? */
+  child=xmlNewCDataBlock(parser->myDoc,value,length);
+  if (xmlAddChild(parser->node,child) == (xmlNodePtr) NULL)
+    xmlFreeNode(child);
 }
 
 static void
@@ -4647,6 +4657,10 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   SAXHandler=(&SAXModules);
   msl_info.parser=xmlCreatePushParserCtxt(SAXHandler,&msl_info,(char *) NULL,0,
                                           msl_image->filename);
+  if (msl_info.parser == (xmlParserCtxtPtr) NULL)
+    {
+      /* FIXME: Handle failure! */
+    }
   while (ReadBlobString(msl_image,message) != (char *) NULL)
     {
       n=(long) strlen(message);
@@ -4661,6 +4675,18 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     }
   if (msl_info.exception->severity == UndefinedException)
     (void) xmlParseChunk(msl_info.parser," ",1,True);
+
+  /*
+    Assure that our private context is freed, even if we abort before
+    seeing the document end.
+  */
+  MSLEndDocument(&msl_info);
+  if (msl_info.parser->myDoc != (xmlDocPtr) NULL)
+    xmlFreeDoc(msl_info.parser->myDoc);
+  /*
+    Free all the memory used by a parser context. However the parsed
+    document in ctxt->myDoc is not freed (so we just did that).
+  */
   xmlFreeParserCtxt(msl_info.parser);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"end SAX");
 

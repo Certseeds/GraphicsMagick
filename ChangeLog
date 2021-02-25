@@ -1,3 +1,10 @@
+2021-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLCDataBlock): Fix leak of value from
+        xmlNewCDataBlock().  Addresses oss-fuzz 31400
+        "graphicsmagick:coder_MSL_fuzzer: Direct-leak in
+        xmlNewCDataBlock".
+
 2021-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (ProcessStyleClassDefs): Fix non-terminal loop

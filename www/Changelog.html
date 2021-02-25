@@ -35,6 +35,12 @@
 <div class="document">
 
 
+<p>2021-02-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/msl.c (MSLCDataBlock): Fix leak of value from
+xmlNewCDataBlock().  Addresses oss-fuzz 31400
+&quot;graphicsmagick:coder_MSL_fuzzer: Direct-leak in
+xmlNewCDataBlock&quot;.</blockquote>
 <p>2021-02-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/svg.c (ProcessStyleClassDefs): Fix non-terminal loop
