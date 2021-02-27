@@ -6,8 +6,11 @@
         (ProcessStyleClassDefs): Fix non-terminal loop and huge memory
         allocation caused by self-referential list.  Not sure if
         implementation is as intended, but it does not crash. Addresses
-        oss-fuzz "graphicsmagick:coder_SVG_fuzzer: Out-of-memory in
+        oss-fuzz 31391 "graphicsmagick:coder_SVG_fuzzer: Out-of-memory in
         coder_SVG_fuzzer".
+        (SVGReference): Fix memory leak when parser node is null.
+        Addresses oss-fuzz 31286 "graphicsmagick:coder_SVGZ_fuzzer:
+        Direct-leak in xmlNewReference".
 
 2021-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

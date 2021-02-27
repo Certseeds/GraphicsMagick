@@ -3621,6 +3621,10 @@ SVGReference(void *context,const xmlChar *name)
                         "  SAX.reference(%.1024s)",name);
   svg_info=(SVGInfo *) context;
   parser=svg_info->parser;
+  if (parser == (xmlParserCtxtPtr) NULL)
+    return;
+  if (parser->node == (xmlNodePtr) NULL)
+    return;
   if (*name == '#')
     (void) xmlAddChild(parser->node,xmlNewCharRef(svg_info->document,name));
   else
