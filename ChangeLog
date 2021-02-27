@@ -3,6 +3,11 @@
         * coders/svg.c (ProcessStyleClassDefs): Fix memory leak upon
         malformed class name list.  Addresses oss-fuzz 31234
         "graphicsmagick:coder_SVG_fuzzer: Direct-leak in MagickMalloc".
+        (ProcessStyleClassDefs): Fix non-terminal loop and huge memory
+        allocation caused by self-referential list.  Not sure if
+        implementation is as intended, but it does not crash. Addresses
+        oss-fuzz "graphicsmagick:coder_SVG_fuzzer: Out-of-memory in
+        coder_SVG_fuzzer".
 
 2021-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

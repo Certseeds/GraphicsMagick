@@ -2776,6 +2776,7 @@ void    ProcessStyleClassDefs (
 
   /* a macro to allocate an zero out a new struct instance,
       and add it to the end of a linked list */
+  /* FIXME: Does not deal with allocation failure! */
 #define ADD_NEW_STRUCT(pNew,pLast,TheTypeDef)                           \
   pNew = MagickAllocateClearedMemory(TheTypeDef *,sizeof(TheTypeDef));  \
   pLast = pLast->pNext = pNew
@@ -2820,22 +2821,65 @@ void    ProcessStyleClassDefs (
               while  ( (c = *cp) && !(isspace(c) || (c == ',')) )  cp++;  /* find white space/comma/null */
               if  ( *cp )
                 *cp++ = '\0';   /* terminate identifier string and increment */
+#if 0
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "  Found ClassName: \"%s\"", pClassName);
+#endif
               /* add uniquely to list */
               for  (  pClassDef = ClassDefHead.pNext;
                       pClassDef && (strcmp(pClassName,pClassDef->pName) != 0);
                       pClassDef = pClassDef->pNext );
               if  ( pClassDef == 0 )
-                {/*new class name*/
+                {/*not found, is new unique class name*/
                   ADD_NEW_STRUCT(pClassDef,pClassDefLast,ClassDef);
                   pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
                   pClassDef->pName = pClassName;
+                  /* Following line used to be outside this scope (see below) */
+                  pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;
+#if 0
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "  Adding ClassName: \"%s\"", pClassName);
+#endif
                 }/*new class name*/
-              if (pClassDef !=  ClassDefHead.pNext)
-                pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;   /* add to active list */
+              /* Following original line of code can result in a looping self-referential list */
+              /* pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; */   /* add to active list */
+
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "pClassDefActiveLast=%p, pClassDefActiveLast->pActiveNext=%p, pClassDef=%p",
+                                    pClassDefActiveLast, pClassDefActiveLast->pActiveNext, pClassDef);
 
               }/*found class name*/
 
         }/*extract class name loop*/
+
+#if 0
+      /* verify lists */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "=== Verifying full ClassDef list...");
+      for  (  pClassDef = ClassDefHead.pNext;
+              pClassDef;
+              pClassDef = pClassDef->pNext )
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "%p Class %s", pClassDef, pClassDef->pName);
+        }
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Done Verifying full ClassDef list");
+#endif
+
+#if 0
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "=== Verifying active ClassDef list...");
+      for  (  pClassDef = ClassDefActiveHead.pActiveNext;
+              pClassDef;
+              pClassDef = pClassDef->pActiveNext ) /* Seems this is supposed to be pActiveNext */
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "%p Class %s", pClassDef, pClassDef->pName);
+        }
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Done Verifying active ClassDef list");
+#endif
 
       /* find the end of the style elements */
       while  ( (c = *pString) && (c != '}') )  pString++;
@@ -2875,7 +2919,9 @@ void    ProcessStyleClassDefs (
                     *cp++ = '\0';   /* terminate style value string and increment */
 
                   /* add style element/value pair to each active class def */
-                  for  ( pClassDef = ClassDefActiveHead.pActiveNext; pClassDef; pClassDef = pClassDef->pActiveNext )
+                  for  ( pClassDef = ClassDefActiveHead.pActiveNext;
+                         pClassDef;
+                         pClassDef = pClassDef->pActiveNext )
                     {
                       ElementValue * pEV;
                       ADD_NEW_STRUCT(pEV,pClassDef->pElementValueLast,ElementValue);
