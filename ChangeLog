@@ -1,3 +1,9 @@
+2021-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (ProcessStyleClassDefs): Fix memory leak upon
+        malformed class name list.  Addresses oss-fuzz 31234
+        "graphicsmagick:coder_SVG_fuzzer: Direct-leak in MagickMalloc".
+
 2021-02-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (MSLCDataBlock): Fix leak of value from

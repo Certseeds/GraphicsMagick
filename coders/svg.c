@@ -2776,9 +2776,8 @@ void    ProcessStyleClassDefs (
 
   /* a macro to allocate an zero out a new struct instance,
       and add it to the end of a linked list */
-  #define       ADD_NEW_STRUCT(pNew,pLast,TheTypeDef) \
-  pNew = MagickAllocateMemory(TheTypeDef *,sizeof(TheTypeDef)); \
-  memset(pNew,0,sizeof(TheTypeDef)); \
+#define ADD_NEW_STRUCT(pNew,pLast,TheTypeDef)                           \
+  pNew = MagickAllocateClearedMemory(TheTypeDef *,sizeof(TheTypeDef));  \
   pLast = pLast->pNext = pNew
 
   /* we will get a modifiable value of the string, and delimit
@@ -2798,7 +2797,9 @@ void    ProcessStyleClassDefs (
       if  ( !*pString )
         {
           /* malformed input: class name list not followed by '{' */
-          MagickFreeMemory(pCopyOfText);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    Malformed input: class name list not followed by '{");
+          goto process_style_class_defs_abort;
           return;
         }
       *pString++ = '\0';
@@ -2841,8 +2842,9 @@ void    ProcessStyleClassDefs (
       if  ( !*pString )
         {
           /* malformed input: style elements not terminated by '{' */
-          MagickFreeMemory(pCopyOfText);
-          return;
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "    Malformed input: style elements not terminated by '{'");
+          goto process_style_class_defs_abort;
         }
       *pString++ = '\0';  /* advance past '}' for next loop pass */
 
@@ -3120,6 +3122,7 @@ void    ProcessStyleClassDefs (
     }/*pClassDef loop*/
 
   /* clean up */
+ process_style_class_defs_abort:;
   {
     ClassDef * pClassDef;
     for(pClassDef = ClassDefHead.pNext; pClassDef; )
