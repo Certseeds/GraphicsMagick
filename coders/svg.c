@@ -2842,6 +2842,7 @@ void    ProcessStyleClassDefs (
 #endif
                 }/*new class name*/
               /* Following original line of code can result in a looping self-referential list */
+              /* FIXME: Maybe just needs de-duplication similar to above? */
               /* pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; */   /* add to active list */
 
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
