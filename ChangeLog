@@ -1,3 +1,8 @@
+2021-02-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * fuzzing/oss-fuzz-build.sh: Disable support for Jasper codecs we
+        don't want or need.
+
 2021-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (MSLStartElement): Fix assertion in TranslateText()
