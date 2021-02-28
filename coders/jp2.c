@@ -394,7 +394,7 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
 }
 
 static Image *ReadJP2Image(const ImageInfo *image_info,
-  ExceptionInfo *exception)
+                           ExceptionInfo *exception)
 {
   Image
     *image;
@@ -426,6 +426,12 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   register PixelPacket
     *q;
 
+  size_t
+    magick_length;
+
+  magick_off_t
+    pos;
+
   int
     component,
     components[4],
@@ -433,6 +439,9 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
 
   Quantum
     *channel_lut[4];
+
+  unsigned char
+    magick[16];
 
   unsigned int
     status;
@@ -462,39 +471,24 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
   /*
-    Validate that this is a supported format since Jasper's own
-    recovery mechanism is just to exit.  The Jasper library appears to
-    read other formats such as JPEG via other libraries.
+    Get the header so we can auto-detect the format.
   */
-  {
-    unsigned char magick[16];
-    size_t length;
-    magick_off_t pos;
 
-    /* Get current seek position (normally 0) */
-    pos=TellBlob(image);
+  /* Get current seek position (normally 0) */
+  pos=TellBlob(image);
 
-    /* Read header */
-    if ((length=ReadBlob(image,sizeof(magick),magick)) != sizeof(magick))
-      {
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
-                             image);
-      }
+  /* Read header */
+  if ((magick_length=ReadBlob(image,sizeof(magick),magick)) != sizeof(magick))
+    {
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
+                           image);
+    }
 
-    /* Verify that it is a supported format */
-    if (!IsJP2(magick,sizeof(magick)) &&
-        !IsJPC(magick,sizeof(magick)) &&
-        !IsPGX(magick,sizeof(magick)))
-      {
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-      }
-
-    /* Restore seek position */
-    if (SeekBlob(image,pos,SEEK_SET) != pos)
-      {
-        ThrowReaderException(BlobError,UnableToSeekToOffset,image);
-      }
-  }
+  /* Restore seek position */
+  if (SeekBlob(image,pos,SEEK_SET) != pos)
+    {
+      ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+    }
 
   /*
     Obtain a JP2 Stream.
@@ -502,7 +496,41 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
-  jp2_image=jas_image_decode(jp2_stream,-1,0);
+
+#if HAVE_JP2_DECODE
+  if (IsJP2(magick,sizeof(magick)))
+    {
+      /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
+      jp2_image=jp2_decode(jp2_stream,0);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Decoding JP2...");
+    }
+#endif
+#if HAVE_JPC_DECODE
+  if (IsJPC(magick,sizeof(magick)))
+    {
+      /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
+      jp2_image=jpc_decode(jp2_stream,0);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Decoding JPC...");
+    }
+#endif
+#if HAVE_PGX_DECODE
+  if (IsPGX(magick,sizeof(magick)))
+    {
+      /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
+      jp2_image=pgx_decode(jp2_stream,0);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Decoding PGX...");
+    }
+#endif
+
+  /*
+    Using jas_image_decode() makes us subject to Jasper's own format
+    determination, which may include file formats we don't want to
+    support via Jasper.
+  */
+  /* jp2_image=jas_image_decode(jp2_stream,-1,0); */
   if (jp2_image == (jas_image_t *) NULL)
     ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
 
@@ -700,7 +728,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
           for (x=0; x < (long) image->columns; x++)
             q[x].blue=(channel_lut[2])[jas_matrix_getv(pixels,x)];
 
-            /* Opacity */
+          /* Opacity */
           if (number_components > 3)
             {
               (void) jas_image_readcmpt(jp2_image,(short) components[3],0,

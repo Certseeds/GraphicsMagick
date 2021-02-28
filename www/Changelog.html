@@ -37,8 +37,15 @@
 
 <p>2021-02-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* fuzzing/oss-fuzz-build.sh: Disable support for Jasper codecs we
-don't want or need.</blockquote>
+<p>* configure.ac: Add tests for Jasper jp2_decode(), jpc_decode(),
+and pgx_decode().</p>
+<p>* coders/jp2.c (ReadJP2Image): Call jp2_decode(), jpc_decode(), or
+pgx_decode(), directly. Using jas_image_decode() makes us subject
+to Jasper's own format determination, which may include file
+formats we don't want to support via Jasper.</p>
+<p>* fuzzing/oss-fuzz-build.sh: Disable support for Jasper codecs we
+don't want or need.</p>
+</blockquote>
 <p>2021-02-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (MSLStartElement): Fix assertion in TranslateText()
