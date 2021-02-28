@@ -3154,6 +3154,14 @@ MSLStartElement(void *context,const xmlChar *name,
             for (i=0; (attributes[i] != (const xmlChar *) NULL); i++)
               {
                 keyword=(const char *) attributes[i++];
+
+                if (msl_info->attributes[n] == (Image *) NULL)
+                  {
+                    ThrowException(msl_info->exception,OptionError,
+                                   NoImagesDefined,(char *) keyword);
+                    break;
+                  }
+
                 value=TranslateText(msl_info->image_info[n],
                                     msl_info->attributes[n],
                                     (char *) attributes[i]);

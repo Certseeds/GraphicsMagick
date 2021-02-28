@@ -1,5 +1,10 @@
 2021-02-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/msl.c (MSLStartElement): Fix assertion in TranslateText()
+        when there are no attributes available.  Addresses oss-fuzz 31307
+        "graphicsmagick:coder_MSL_fuzzer: ASSERT: image != (Image *)
+        NULL".
+
         * coders/svg.c (ProcessStyleClassDefs): Fix memory leak upon
         malformed class name list.  Addresses oss-fuzz 31234
         "graphicsmagick:coder_SVG_fuzzer: Direct-leak in MagickMalloc".
