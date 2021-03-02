@@ -1,3 +1,9 @@
+2021-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (ProcessStyleClassDefs): Corrected fix for oss-fuzz
+        31234 "graphicsmagick:coder_SVG_fuzzer: Direct-leak in
+        MagickMalloc" based on a patch by Gregory J Wolfe.
+
 2021-02-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * configure.ac: Add tests for Jasper jp2_decode(), jpc_decode(),

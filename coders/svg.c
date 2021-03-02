@@ -2815,7 +2815,7 @@ void    ProcessStyleClassDefs (
           while  ( (c = *cp) && (isspace(c) || (c ==',')) )  cp++;  /* skip white space/commas */
           if  ( *cp == '.' )  cp++;     /* .classname, skip leading period */
           if  ( *cp )
-          {/*found class name*/
+            {/*found class name*/
 
               char * pClassName = cp;
               while  ( (c = *cp) && !(isspace(c) || (c == ',')) )  cp++;  /* find white space/comma/null */
@@ -2830,26 +2830,29 @@ void    ProcessStyleClassDefs (
                       pClassDef && (strcmp(pClassName,pClassDef->pName) != 0);
                       pClassDef = pClassDef->pNext );
               if  ( pClassDef == 0 )
-                {/*not found, is new unique class name*/
+                { /* new class name */
                   ADD_NEW_STRUCT(pClassDef,pClassDefLast,ClassDef);
                   pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
                   pClassDef->pName = pClassName;
-                  /* Following line used to be outside this scope (see below) */
-                  pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef;
+                  pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; /* add to active list */
+                } /* new class name */
+              else
+                { /* found on "all" list; if already on active list, ignore */
+                  ClassDef * pClassDefActive;
+                  for  ( pClassDefActive = ClassDefActiveHead.pActiveNext;
+                         pClassDefActive && (pClassDefActive != pClassDef);
+                         pClassDefActive = pClassDefActive->pActiveNext );
+                  if  ( pClassDefActive == 0 ) /* did not find on active list */
+                    {
+                      pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; /* add to active list */
 #if 0
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Adding ClassName: \"%s\"", pClassName);
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "  Adding Active Class: \"%s\"", pClassDef->pName);
 #endif
-                }/*new class name*/
-              /* Following original line of code can result in a looping self-referential list */
-              /* FIXME: Maybe just needs de-duplication similar to above? */
-              /* pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; */   /* add to active list */
+                    }
+                }/* found on "all" list; if already on active list, ignore */
 
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "pClassDefActiveLast=%p, pClassDefActiveLast->pActiveNext=%p, pClassDef=%p",
-                                    pClassDefActiveLast, pClassDefActiveLast->pActiveNext, pClassDef);
-
-              }/*found class name*/
+            }/*found class name*/
 
         }/*extract class name loop*/
 
