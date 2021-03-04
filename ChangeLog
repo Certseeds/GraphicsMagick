@@ -1,3 +1,10 @@
+2021-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (ProcessStyleClassDefs): Fix non-terminal execution
+        while traversing "active" list based on a patch by Gregory J
+        Wolfe.  Addresses oss-fuzz 31663
+        "graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer".
+
 2021-03-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (ProcessStyleClassDefs): Corrected fix for oss-fuzz

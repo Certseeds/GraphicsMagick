@@ -2834,6 +2834,7 @@ void    ProcessStyleClassDefs (
                   ADD_NEW_STRUCT(pClassDef,pClassDefLast,ClassDef);
                   pClassDef->pElementValueLast = &pClassDef->ElementValueHead;
                   pClassDef->pName = pClassName;
+                  pClassDef->pActiveNext = 0;
                   pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; /* add to active list */
                 } /* new class name */
               else
@@ -2844,6 +2845,7 @@ void    ProcessStyleClassDefs (
                          pClassDefActive = pClassDefActive->pActiveNext );
                   if  ( pClassDefActive == 0 ) /* did not find on active list */
                     {
+                      pClassDef->pActiveNext = 0;
                       pClassDefActiveLast = pClassDefActiveLast->pActiveNext = pClassDef; /* add to active list */
 #if 0
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
