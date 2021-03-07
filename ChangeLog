@@ -1,3 +1,13 @@
+2021-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * README.txt: Add mention of libdeflate library, since it is an
+        optional dependency of the next libtiff release, and might be
+        required to link if libtiff itself depends on it.
+
+        * configure.ac (MAGICK_DEP_LIBS): Liblzma is a libtiff dependency.
+        GraphicsMagick does not directly use liblzma.  Do not include
+        liblzma as direct dependency for the modules build.
+
 2021-03-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (ProcessStyleClassDefs): Fix non-terminal execution

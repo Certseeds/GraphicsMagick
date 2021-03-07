@@ -386,3 +386,10 @@ building under Microsoft Windows:
 
   to read or write Zstd compressed TIFF images.  In the future it is
   likely that other purposes will be found for Zstd.
+
+* GraphicsMagick may require the deflate library to link with libtiff.
+
+    Libtiff may optionally depend on the libdeflate library (from
+    https://github.com/ebiggers/libdeflate).  Linking with this
+    library may be necessary for builds where libtiff depends on
+    libdeflate.

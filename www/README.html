@@ -412,6 +412,14 @@ distributed with &quot;.xz&quot; or &quot;.lzma&quot; extensions.</p>
 <p>to read or write Zstd compressed TIFF images.  In the future it is
 likely that other purposes will be found for Zstd.</p>
 </li>
+<li><p class="first">GraphicsMagick may require the deflate library to link with libtiff.</p>
+<blockquote>
+<p>Libtiff may optionally depend on the libdeflate library (from
+<a class="reference external" href="https://github.com/ebiggers/libdeflate">https://github.com/ebiggers/libdeflate</a>).  Linking with this
+library may be necessary for builds where libtiff depends on
+libdeflate.</p>
+</blockquote>
+</li>
 </ul>
 </div>
 </div>
