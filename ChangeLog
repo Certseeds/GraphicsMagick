@@ -1,5 +1,10 @@
 2021-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/msl.c (MSLStartElement): Consistently verify that
+        attributes are non-NULL before calling TranslateText().  Fixes
+        oss-fuzz 31779 "graphicsmagick:coder_MSL_fuzzer: ASSERT: image !=
+        (Image *) NULL".
+
         * README.txt: Add mention of libdeflate library, since it is an
         optional dependency of the next libtiff release, and might be
         required to link if libtiff itself depends on it.

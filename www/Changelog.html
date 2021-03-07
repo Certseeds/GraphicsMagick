@@ -37,6 +37,10 @@
 
 <p>2021-03-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/msl.c (MSLStartElement): Consistently verify that
+attributes are non-NULL before calling TranslateText().  Fixes
+oss-fuzz 31779 &quot;graphicsmagick:coder_MSL_fuzzer: ASSERT: image !=
+(Image *) NULL&quot;.</p>
 <p>* README.txt: Add mention of libdeflate library, since it is an
 optional dependency of the next libtiff release, and might be
 required to link if libtiff itself depends on it.</p>
