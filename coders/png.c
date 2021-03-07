@@ -5735,14 +5735,26 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 by simple pixel replication.
               */
               if (image->columns == 1)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  MNG MAGN X_method reduced from %u to 1 due to columns = 1",
+                                          mng_info->magn_methx);
                   mng_info->magn_methx = 1;
+                }
 
               /*
                 If the image height is 1, then Y magnification is done
                 by simple pixel replication.
               */
               if (image->rows == 1)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  MNG MAGN Y_method reduced from %u to 1 due to rows = 1",
+                                          mng_info->magn_methy);
                   mng_info->magn_methy = 1;
+                }
 
               if (mng_info->magn_methx == 1)
                 {
@@ -6104,7 +6116,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                   if (magn_methx == 5)
                                     {
                                       /* Interpolate */
-                                      (*q).opacity=(QM) ((2*i*((*n).opacity
+                                      (*q).opacity=(QM) ((2*i*((*n).opacity /* oss-fuzz 31109 buffer over-read */
                                                          -(*p).opacity)+m)/
                                                          ((long) (m*2))
                                                          +(*p).opacity);
