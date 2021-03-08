@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2005,2013,2014 GraphicsMagick Group
+  Copyright (C) 2005-2021 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -113,6 +113,7 @@ MagickExport MagickPassFail MagickTsdKeyDelete(MagickTsdKey_t key)
             }
         }
     }
+  MagickFreeMemory(keyd->values);
   MagickFreeMemory(keyd);
   return MagickPass;
 #endif

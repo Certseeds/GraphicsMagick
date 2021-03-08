@@ -1,3 +1,8 @@
+2021-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/tsd.c (MagickTsdKeyDelete): Fix memory leak of key values
+        array at exit when use of pthread or WIN32 TSD APIs is disabled.
+
 2021-03-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (MSLStartElement): Consistently verify that
