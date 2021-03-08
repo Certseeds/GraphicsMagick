@@ -37,8 +37,13 @@
 
 <p>2021-03-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/tsd.c (MagickTsdKeyDelete): Fix memory leak of key values
-array at exit when use of pthread or WIN32 TSD APIs is disabled.</blockquote>
+<p>* coders/msl.c (ProcessMSLScript): Replicate clean-up actions
+which should already be done by MSLPopImage().  Trying to address
+oss-fuzz 31259 &quot;graphicsmagick:coder_MSL_fuzzer: Direct-leak in
+MagickMalloc&quot;, which I have not been able to reproduce.</p>
+<p>* magick/tsd.c (MagickTsdKeyDelete): Fix memory leak of key values
+array at exit when use of pthread or WIN32 TSD APIs is disabled.</p>
+</blockquote>
 <p>2021-03-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (MSLStartElement): Consistently verify that

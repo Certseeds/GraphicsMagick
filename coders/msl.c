@@ -489,8 +489,13 @@ MSLEndDocument(void *context)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  SAX.endDocument()");
   msl_info=(MSLInfo *) context;
 
-  /* Don't free xmlParserCtxtPtr parser which is used later */
+  /*
+    ProcessMSLScript() cleans up its own direct allocations.
+  */
 
+  /*
+    Don't free xmlParserCtxtPtr parser which is used later
+  */
   if (msl_info->document != (xmlDocPtr) NULL)
     {
       xmlFreeDoc(msl_info->document);
@@ -522,7 +527,7 @@ MSLPushImage(MSLInfo *msl_info,Image *image)
       (msl_info->image == (Image **) NULL))
     MagickFatalError3(ResourceLimitFatalError,
                       MemoryAllocationFailed,UnableToAllocateImage);
-  msl_info->image_info[n]=CloneImageInfo(msl_info->image_info[n-1]);
+  msl_info->image_info[n]=CloneImageInfo(msl_info->image_info[n-1]); /* oss-fuzz 31259, leak */
   msl_info->draw_info[n]=
     CloneDrawInfo(msl_info->image_info[n-1], msl_info->draw_info[n-1]);
   msl_info->attributes[n]=AllocateImage(msl_info->image_info[n]);
@@ -554,11 +559,8 @@ MSLPopImage(MSLInfo *msl_info)
   */
   if ( (msl_info->nGroups == 0) && (msl_info->n > 0) )
     {
-      if (msl_info->image[msl_info->n] != (Image *) NULL)
-        {
-          DestroyImage(msl_info->image[msl_info->n]);
-          msl_info->image[msl_info->n]=(Image *) NULL;
-        }
+      DestroyImage(msl_info->image[msl_info->n]);
+      msl_info->image[msl_info->n]=(Image *) NULL;
 
       DestroyDrawInfo(msl_info->draw_info[msl_info->n]);
       msl_info->draw_info[msl_info->n]=(DrawInfo *) NULL;
@@ -569,6 +571,12 @@ MSLPopImage(MSLInfo *msl_info)
       DestroyImageInfo(msl_info->image_info[msl_info->n]);
       msl_info->image_info[msl_info->n]=(ImageInfo *) NULL;
       msl_info->n--;
+    }
+  if (msl_info->nGroups != 0)
+    {
+      (void) LogMagickEvent
+        (CoderEvent,GetMagickModule(),
+         "  Skipping destroy due to nGroups = %lu", msl_info->nGroups);
     }
 }
 
@@ -4909,21 +4917,36 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   if (*image == (Image *) NULL)
     *image=*msl_info.image;
 
-  if (msl_info.draw_info[0] != (DrawInfo *) NULL)
+  /*
+    Allocations from MSLPushImage().  MSLPopImage() should already do this.
+  */
+  if (msl_info.nGroups == 0)
     {
-      DestroyDrawInfo(msl_info.draw_info[0]);
-      msl_info.draw_info[0]=(DrawInfo *) NULL;
+      while (msl_info.n > 0)
+        {
+          DestroyImage(msl_info.image[msl_info.n]);
+          msl_info.image[msl_info.n]=(Image *) NULL;
+
+          DestroyDrawInfo(msl_info.draw_info[msl_info.n]);
+          msl_info.draw_info[msl_info.n]=(DrawInfo *) NULL;
+
+          DestroyImage(msl_info.attributes[msl_info.n]);
+          msl_info.attributes[msl_info.n]=(Image *) NULL;
+
+          DestroyImageInfo(msl_info.image_info[msl_info.n]);
+          msl_info.image_info[msl_info.n]=(ImageInfo *) NULL;
+          msl_info.n--;
+        }
     }
-  if (msl_info.attributes[0] != (Image *) NULL)
-    {
-      DestroyImage(msl_info.attributes[0]);
-      msl_info.attributes[0]=(Image *) NULL;
-    }
-  if (msl_info.image_info[0] != (ImageInfo *) NULL)
-    {
-      DestroyImageInfo(msl_info.image_info[0]);
-      msl_info.image_info[0]=(ImageInfo *) NULL;
-    }
+
+  DestroyDrawInfo(msl_info.draw_info[0]);
+  msl_info.draw_info[0]=(DrawInfo *) NULL;
+
+  DestroyImage(msl_info.attributes[0]);
+  msl_info.attributes[0]=(Image *) NULL;
+
+  DestroyImageInfo(msl_info.image_info[0]);
+  msl_info.image_info[0]=(ImageInfo *) NULL;
 
   MagickFreeMemory(msl_info.image_info);
   MagickFreeMemory(msl_info.draw_info);

@@ -1,5 +1,10 @@
 2021-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/msl.c (ProcessMSLScript): Replicate clean-up actions
+        which should already be done by MSLPopImage().  Trying to address
+        oss-fuzz 31259 "graphicsmagick:coder_MSL_fuzzer: Direct-leak in
+        MagickMalloc", which I have not been able to reproduce.
+
         * magick/tsd.c (MagickTsdKeyDelete): Fix memory leak of key values
         array at exit when use of pthread or WIN32 TSD APIs is disabled.
 
