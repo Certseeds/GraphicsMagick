@@ -4649,6 +4649,7 @@ MSLError(void *context,const char *format,...)
 #endif
   ThrowException2(msl_info->exception,DelegateFatalError,reason,"some text");
   va_end(operands);
+  msl_info->parser->instate = XML_PARSER_EOF;
 }
 
 static void

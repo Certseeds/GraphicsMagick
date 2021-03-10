@@ -1,3 +1,13 @@
+2021-03-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (SVGError): Force xml parser input state to
+        XML_PARSER_EOF state upon error to abort parsing.
+
+        * coders/msl.c (MSLError): Force xml parser input state to
+        XML_PARSER_EOF state upon error to abort parsing.  Fixes oss-fuzz
+        31401 "graphicsmagick:coder_MSL_fuzzer: Timeout in
+        coder_MSL_fuzzer".
+
 2021-03-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (ProcessMSLScript): Replicate clean-up actions

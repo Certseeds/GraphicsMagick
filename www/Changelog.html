@@ -35,6 +35,15 @@
 <div class="document">
 
 
+<p>2021-03-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* coders/svg.c (SVGError): Force xml parser input state to
+XML_PARSER_EOF state upon error to abort parsing.</p>
+<p>* coders/msl.c (MSLError): Force xml parser input state to
+XML_PARSER_EOF state upon error to abort parsing.  Fixes oss-fuzz
+31401 &quot;graphicsmagick:coder_MSL_fuzzer: Timeout in
+coder_MSL_fuzzer&quot;.</p>
+</blockquote>
 <p>2021-03-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (ProcessMSLScript): Replicate clean-up actions

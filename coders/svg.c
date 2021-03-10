@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -3748,6 +3748,7 @@ SVGError(void *context,const char *format,...)
 #endif
   ThrowException2(svg_info->exception,CoderError,reason,(char *) NULL);
   va_end(operands);
+  svg_info->parser->instate = XML_PARSER_EOF;
 }
 
 static void
