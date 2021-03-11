@@ -2779,7 +2779,7 @@ AccessMutableIndexes(Image *image)
 %  SetImagePixels() or GetImagePixels(). This is useful in order to access
 %  an already selected region without passing the geometry of the region.
 %
-%  The format of the GetPixels() method is:
+%  The format of the AccessMutablePixels() method is:
 %
 %      PixelPacket *AccessMutablePixels(Image image)
 %
