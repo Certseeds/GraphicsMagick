@@ -35,6 +35,13 @@
 <div class="document">
 
 
+<p>2021-03-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/dcm.c (DCM_ReadNonNativeImages): Enforce that image depth
+is in the supported range of 1-16.  Embedded PGX was observed to
+cause JasPer to report a component depth of 20 bits.  Fixes
+oss-fuzz issue 31373 &quot;graphicsmagick:coder_DCM_fuzzer:
+Heap-buffer-overflow in DCM_SetupRescaleMap&quot;.</blockquote>
 <p>2021-03-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/svg.c (SVGError): Force xml parser input state to

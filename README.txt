@@ -233,15 +233,16 @@ building under Microsoft Windows:
   to read lossless jpeg-encoded DICOM images, please disregard the patch.
 
 * GraphicsMagick requires the JasPer Project's JasPer library from
-  https://github.com/jasper-software/jasper, although older versions
-  1.701.0 are available via http from
+  https://jasper-software.github.io/jasper/ (although older versions
+  back to 1.701.0 are still available via http from the original web
+  site at http://www.ece.uvic.ca/~mdadams/jasper/) to read and write
+  the JPEG-2000 format.  Due to security concerns, using the latest
+  version of JasPer is recommended.
 
-     http://www.ece.uvic.ca/~mdadams/jasper/
-
-  to read and write the JPEG-2000 format. Please note that JasPer 1.900.1
-  may have a problem when used with GraphicsMagick's modules build. To
-  solve this problem, edit the file src/libjasper/base/jas_init.c and
-  comment out the line which invokes atexit().
+  Please note that JasPer 1.900.1 may have a problem when used with
+  GraphicsMagick's modules build. To solve this problem, edit the file
+  src/libjasper/base/jas_init.c and comment out the line which invokes
+  atexit().
 
 * On Unix-type systems, Windows/MinGW, and Windows/Cygwin,
   GraphicsMagick requires libltdl from libtool in order to support
