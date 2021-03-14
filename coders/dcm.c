@@ -6486,7 +6486,7 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Allocating %"MAGICK_SIZE_T_F"u entries for rescale map...", num_entries);
+                              "Allocating %"MAGICK_SIZE_T_F"u entries for rescale map...", (MAGICK_SIZE_T) num_entries);
       dcm->rescale_map=MagickAllocateResourceLimitedClearedArray(Quantum *,num_entries,sizeof(Quantum));
       if (dcm->rescale_map == NULL)
         {
