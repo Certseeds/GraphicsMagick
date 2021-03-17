@@ -1486,6 +1486,9 @@
         <Message name="UnableToGetPackageInfo">
           Unable to get package info
         </Message>
+        <Message name="UnableToInterpretMSLImage">
+          unable to interpret MSL image
+        </Message>
         <Message name="UnableToLevelImage">
           unable to level image
         </Message>

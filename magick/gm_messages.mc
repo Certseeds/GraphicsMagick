@@ -2735,6 +2735,12 @@ Unable to get package info
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorUnableToInterpretMSLImage
+Language        = English
+unable to interpret MSL image
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorUnableToLevelImage
 Language        = English
 unable to level image

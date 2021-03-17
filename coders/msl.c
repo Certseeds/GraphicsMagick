@@ -527,7 +527,7 @@ MSLPushImage(MSLInfo *msl_info,Image *image)
       (msl_info->image == (Image **) NULL))
     MagickFatalError3(ResourceLimitFatalError,
                       MemoryAllocationFailed,UnableToAllocateImage);
-  msl_info->image_info[n]=CloneImageInfo(msl_info->image_info[n-1]); /* oss-fuzz 31259, leak */
+  msl_info->image_info[n]=CloneImageInfo(msl_info->image_info[n-1]);
   msl_info->draw_info[n]=
     CloneDrawInfo(msl_info->image_info[n-1], msl_info->draw_info[n-1]);
   msl_info->attributes[n]=AllocateImage(msl_info->image_info[n]);
@@ -4802,6 +4802,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image **) NULL);
+  (void) memset(&msl_info,0,sizeof(msl_info));
   msl_image=AllocateImage(image_info);
   status=OpenBlob(image_info,msl_image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
@@ -4829,8 +4830,11 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
       (msl_info.image == (Image **) NULL) ||
       (msl_info.attributes == (Image **) NULL) ||
       (msl_info.group_info == (MSLGroupInfo *) NULL))
-    MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-                      UnableToInterpretMSLImage);
+    {
+      ThrowException3(exception,ResourceLimitError,
+                      MemoryAllocationFailed,UnableToInterpretMSLImage);
+      goto  msl_info_error;
+    }
   msl_info.image_info[0]=CloneImageInfo(image_info);
   msl_info.draw_info[0]=CloneDrawInfo(image_info,(DrawInfo *) NULL);
   if (image_info->attributes)
@@ -4872,6 +4876,12 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   SAXModules.getParameterEntity=MSLGetParameterEntity;
   SAXModules.cdataBlock=MSLCDataBlock;
   SAXModules.externalSubset=MSLExternalSubset;
+  /*
+    The following fields are extensions available only on version 2:
+    startElementNsSAX2Func startElementNs;
+    endElementNsSAX2Func endElementNs;
+    xmlStructuredErrorFunc serror;
+  */
 
   SAXHandler=(&SAXModules);
   msl_info.parser=xmlCreatePushParserCtxt(SAXHandler,&msl_info,(char *) NULL,0,
@@ -4916,7 +4926,9 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 /*   printf("ProcessMSLScript(msl_info->n=%ld\n",msl_info.n); */
 
   if (*image == (Image *) NULL)
-    *image=*msl_info.image;
+    *image=msl_info.image[0]; /* Was allocated as "msl_image" */
+
+ msl_info_error:
 
   /*
     Allocations from MSLPushImage().  MSLPopImage() should already do this.
@@ -4955,10 +4967,16 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MagickFreeMemory(msl_info.image);
   MagickFreeMemory(msl_info.group_info);
 
-  CloseBlob(*image);
+  CloseBlob(msl_image);
+  if (image[0] != msl_image)
+    {
+      DestroyImage(msl_image);
+      msl_image=(Image *) NULL;
+    }
 
-  return((*image != (Image *) NULL) &&
-         ((*image)->exception.severity == UndefinedException));
+  /* FIXME: It is not clear what constitutes "success" for MSL */
+  return((image[0] != (Image *) NULL) &&
+         (image[0]->exception.severity == UndefinedException));
 }
 
 static Image *
@@ -4977,6 +4995,19 @@ ReadMSLImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   image=(Image *) NULL;
   (void) ProcessMSLScript(image_info,&image,exception);
+
+  /*
+    Verify if a useful image was returned. FIXME:
+  */
+#if 0
+  if ((image->rows == 0) || (image->columns == 0) ||
+      !GetPixelCachePresent(image))
+    {
+      DestroyImage(image);
+      image=(Image *) NULL;
+    }
+#endif
+
   return(image);
 }
 #endif /* defined(HasXML) */
