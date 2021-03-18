@@ -129,4 +129,6 @@ EXPORTS
 	jas_tvparser_gettag
 	jas_tvparser_getval
 	jas_tvparser_next
-
+	jp2_decode
+	jpc_decode
+	pgx_decode
