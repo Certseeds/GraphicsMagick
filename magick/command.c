@@ -270,7 +270,6 @@ static char commandline[MAX_PARAM_CHAR+2];
    length (not including terminating null). */
 #define TrimStringNewLine(text,length)             \
   do {                                             \
-  fprintf(stderr,"TrimStringNewLine\n"); \
     if ((length > 1) && text[length-1] == '\n')    \
       text[length-1]='\0';                         \
     if ((length > 2) && text[length-2] == '\r')    \

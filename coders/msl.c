@@ -4968,15 +4968,18 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MagickFreeMemory(msl_info.group_info);
 
   CloseBlob(msl_image);
-  if (image[0] != msl_image)
+  if (*image != msl_image)
     {
       DestroyImage(msl_image);
       msl_image=(Image *) NULL;
     }
 
+  if ((*image != (Image *) NULL) &&
+      ((*image)->exception.severity > exception->severity))
+    CopyException(exception,&(*image)->exception);
+
   /* FIXME: It is not clear what constitutes "success" for MSL */
-  return((image[0] != (Image *) NULL) &&
-         (image[0]->exception.severity == UndefinedException));
+  return exception->severity < ErrorException ? MagickPass : MagickFail;
 }
 
 static Image *
@@ -4984,6 +4987,9 @@ ReadMSLImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image *
     image;
+
+  MagickPassFail
+    status;
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -4994,20 +5000,11 @@ ReadMSLImage(const ImageInfo *image_info,ExceptionInfo *exception)
     Open image file.
   */
   image=(Image *) NULL;
-  (void) ProcessMSLScript(image_info,&image,exception);
+  status=ProcessMSLScript(image_info,&image,exception);
 
-  /*
-    Verify if a useful image was returned. FIXME:
-  */
-#if 0
-  if ((image->rows == 0) || (image->columns == 0) ||
-      !GetPixelCachePresent(image))
-    {
-      DestroyImage(image);
-      image=(Image *) NULL;
-    }
-#endif
-
+  if (status == MagickFail)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "ProcessMSLScript() returned MagickFail!");
   return(image);
 }
 #endif /* defined(HasXML) */
@@ -5111,12 +5108,18 @@ UnregisterMSLImage(void)
 #if defined(HasXML)
 static unsigned int WriteMSLImage(const ImageInfo *image_info,Image *image)
 {
+  MagickPassFail
+    status;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  (void) ReferenceImage(image);
-  (void) ProcessMSLScript(image_info,&image,&image->exception);
-  return(True);
+  /* (void) ReferenceImage(image); what for? */
+  status=ProcessMSLScript(image_info,&image,&image->exception);
+  if (status == MagickFail)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "ProcessMSLScript() returned MagickFail!");
+  return status;
 }
 #endif /* defined(HasXML) */

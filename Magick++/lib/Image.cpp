@@ -2128,8 +2128,9 @@ void Magick::Image::write ( Blob *blob_ )
                             image(),
                             &length,
                             &exceptionInfo);
-  throwImageException( exceptionInfo );
+  // ImageToBlob() can return data even if it throws exception
   blob_->updateNoCopy( data, length, Blob::MallocAllocator );
+  throwImageException( exceptionInfo );
   throwImageException();
 }
 void Magick::Image::write ( Blob *blob_,
@@ -2144,8 +2145,9 @@ void Magick::Image::write ( Blob *blob_,
                             image(),
                             &length,
                             &exceptionInfo);
-  throwImageException( exceptionInfo );
+  // ImageToBlob() can return data even if it throws exception
   blob_->updateNoCopy( data, length, Blob::MallocAllocator );
+  throwImageException( exceptionInfo );
   throwImageException();
 }
 void Magick::Image::write ( Blob *blob_,
@@ -2162,8 +2164,9 @@ void Magick::Image::write ( Blob *blob_,
                             image(),
                             &length,
                             &exceptionInfo);
-  throwImageException( exceptionInfo );
+  // ImageToBlob() can return data even if it throws exception
   blob_->updateNoCopy( data, length, Blob::MallocAllocator );
+  throwImageException( exceptionInfo );
   throwImageException();
 }
 
@@ -4122,6 +4125,7 @@ void Magick::Image::unregisterId( void )
   _imgRef->id( -1 );
 }
 
+// Throw an exception using the provided ExceptionInfo
 void Magick::Image::throwImageException( MagickLib::ExceptionInfo &exception_ ) const
 {
   throwException( exception_, quiet() );

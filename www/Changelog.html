@@ -35,6 +35,13 @@
 <div class="document">
 
 
+<p>2021-03-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* Magick++/lib/Image.cpp (Magick::Image::write): Due to the design
+of ImageToBlob(), it is possible for data to be returned although
+an exception was thrown.  Deposit it in the Blob so that it will
+be freed.  May finish fixing oss-fuzz 31965
+&quot;graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc&quot;.</blockquote>
 <p>2021-03-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/msl.c (ProcessMSLScript): Attempt to address leak of
