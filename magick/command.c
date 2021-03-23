@@ -6265,6 +6265,7 @@ static void ConvertUsage(void)
   (void) puts("  -flip                flip image in the vertical direction");
   (void) puts("  -flop                flop image in the horizontal direction");
   (void) puts("  -font name           render text with this font");
+  (void) puts("  -format \"string\"   output formatted image info for 'info:' format");
   (void) puts("  -frame geometry      surround image with an ornamental border");
   (void) puts("  -fuzz distance       colors within this distance are considered equal");
   (void) puts("  -gamma value         level of gamma correction");
