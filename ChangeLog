@@ -1,3 +1,9 @@
+2021-03-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (ProcessMSLScript): Fix oss-fuzz 32263
+        "graphicsmagick:coder_MSL_fuzzer: Heap-use-after-free in
+        ProcessMSLScript".
+
 2021-03-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Magick++/lib/Image.cpp (Magick::Image::write): Due to the design

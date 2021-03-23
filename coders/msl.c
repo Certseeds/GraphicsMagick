@@ -4843,7 +4843,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     msl_info.attributes[0]=(Image *) NULL;
   msl_info.group_info[0].numImages=0;
   /* the first slot is used to point to the MSL file image */
-  *msl_info.image=msl_image;
+  msl_info.image[0]=msl_image;
   if (*image != (Image *) NULL)
     MSLPushImage(&msl_info,*image);
   (void) xmlSubstituteEntitiesDefault(1);
@@ -4931,6 +4931,15 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
  msl_info_error:
 
   /*
+    Capture any exception which might have been reported to MSL file
+    image.
+  */
+  if ((msl_info.image != (Image **) NULL) &&
+      (msl_info.image[0] != NULL) &&
+      (msl_info.image[0]->exception.severity > exception->severity))
+    CopyException(exception,&msl_info.image[0]->exception);
+
+  /*
     Allocations from MSLPushImage().  MSLPopImage() should already do this.
   */
   if (msl_info.nGroups == 0)
@@ -4951,15 +4960,21 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
           msl_info.n--;
         }
     }
+  else
+    {
+      /*
+        FIXME: May also need to handle group destruction similar to in
+        MSLEndElement.
+      */
+      DestroyDrawInfo(msl_info.draw_info[0]);
+      msl_info.draw_info[0]=(DrawInfo *) NULL;
 
-  DestroyDrawInfo(msl_info.draw_info[0]);
-  msl_info.draw_info[0]=(DrawInfo *) NULL;
+      DestroyImage(msl_info.attributes[0]);
+      msl_info.attributes[0]=(Image *) NULL;
 
-  DestroyImage(msl_info.attributes[0]);
-  msl_info.attributes[0]=(Image *) NULL;
-
-  DestroyImageInfo(msl_info.image_info[0]);
-  msl_info.image_info[0]=(ImageInfo *) NULL;
+      DestroyImageInfo(msl_info.image_info[0]);
+      msl_info.image_info[0]=(ImageInfo *) NULL;
+    }
 
   MagickFreeMemory(msl_info.image_info);
   MagickFreeMemory(msl_info.draw_info);
@@ -4973,10 +4988,6 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
       DestroyImage(msl_image);
       msl_image=(Image *) NULL;
     }
-
-  if ((*image != (Image *) NULL) &&
-      ((*image)->exception.severity > exception->severity))
-    CopyException(exception,&(*image)->exception);
 
   /* FIXME: It is not clear what constitutes "success" for MSL */
   return exception->severity < ErrorException ? MagickPass : MagickFail;
