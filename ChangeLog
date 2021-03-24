@@ -1,5 +1,8 @@
 2021-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jp2.c (ReadJP2Image): Support both old and new ways to
+        determine if JasPer codec support is available.
+
         * coders/msl.c (ProcessMSLScript): Another attempt to properly fix
         oss-fuzz 32263 "graphicsmagick:coder_MSL_fuzzer:
         Heap-use-after-free in ProcessMSLScript" without causing new
