@@ -4759,6 +4759,10 @@ MSLExternalSubset(void *context,const xmlChar *name,
 /* } */
 #endif
 
+/*
+  Note that if an image is passed in, that it is from the writer and
+  should never be freed!
+ */
 static unsigned int
 ProcessMSLScript(const ImageInfo *image_info,Image **image,
                  ExceptionInfo *exception)
@@ -4770,6 +4774,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     message[MaxTextExtent];
 
   Image
+    *writer_image,
     *msl_image;
 
   long
@@ -4802,6 +4807,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image **) NULL);
+  writer_image=*image; /* Non-null if writing */
   (void) memset(&msl_info,0,sizeof(msl_info));
   msl_image=AllocateImage(image_info);
   status=OpenBlob(image_info,msl_image,ReadBinaryBlobMode,exception);
@@ -4844,8 +4850,8 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   msl_info.group_info[0].numImages=0;
   /* the first slot is used to point to the MSL file image */
   msl_info.image[0]=msl_image;
-  if (*image != (Image *) NULL)
-    MSLPushImage(&msl_info,*image);
+  if (writer_image != (Image *) NULL)
+    MSLPushImage(&msl_info,writer_image);
   (void) xmlSubstituteEntitiesDefault(1);
 
   (void) memset(&SAXModules,0,sizeof(SAXModules));
@@ -4925,19 +4931,14 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 
 /*   printf("ProcessMSLScript(msl_info->n=%ld\n",msl_info.n); */
 
-  if (*image == (Image *) NULL)
-    *image=msl_info.image[0]; /* Was allocated as "msl_image" */
-
  msl_info_error:
 
   /*
     Capture any exception which might have been reported to MSL file
     image.
   */
-  if ((msl_info.image != (Image **) NULL) &&
-      (msl_info.image[0] != NULL) &&
-      (msl_info.image[0]->exception.severity > exception->severity))
-    CopyException(exception,&msl_info.image[0]->exception);
+  if (msl_image->exception.severity > exception->severity)
+    CopyException(exception,&msl_image->exception);
 
   /*
     Allocations from MSLPushImage().  MSLPopImage() should already do this.
@@ -4946,8 +4947,16 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     {
       while (msl_info.n > 0)
         {
-          DestroyImage(msl_info.image[msl_info.n]);
-          msl_info.image[msl_info.n]=(Image *) NULL;
+          /*
+            Do not destroy image which was passed in from the writer!
+          */
+          if (writer_image != msl_info.image[msl_info.n])
+            {
+              if (msl_info.image[msl_info.n]->exception.severity > exception->severity)
+                CopyException(exception,&msl_info.image[msl_info.n]->exception);
+              DestroyImage(msl_info.image[msl_info.n]);
+              msl_info.image[msl_info.n]=(Image *) NULL;
+            }
 
           DestroyDrawInfo(msl_info.draw_info[msl_info.n]);
           msl_info.draw_info[msl_info.n]=(DrawInfo *) NULL;
@@ -4960,21 +4969,19 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
           msl_info.n--;
         }
     }
-  else
-    {
-      /*
-        FIXME: May also need to handle group destruction similar to in
-        MSLEndElement.
-      */
-      DestroyDrawInfo(msl_info.draw_info[0]);
-      msl_info.draw_info[0]=(DrawInfo *) NULL;
 
-      DestroyImage(msl_info.attributes[0]);
-      msl_info.attributes[0]=(Image *) NULL;
+  /*
+    FIXME: May also need to handle group destruction similar to in
+    MSLEndElement() if libxml2 does not process an end element.
+  */
+  DestroyDrawInfo(msl_info.draw_info[0]);
+  msl_info.draw_info[0]=(DrawInfo *) NULL;
 
-      DestroyImageInfo(msl_info.image_info[0]);
-      msl_info.image_info[0]=(ImageInfo *) NULL;
-    }
+  DestroyImage(msl_info.attributes[0]);
+  msl_info.attributes[0]=(Image *) NULL;
+
+  DestroyImageInfo(msl_info.image_info[0]);
+  msl_info.image_info[0]=(ImageInfo *) NULL;
 
   MagickFreeMemory(msl_info.image_info);
   MagickFreeMemory(msl_info.draw_info);
@@ -4983,10 +4990,18 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MagickFreeMemory(msl_info.group_info);
 
   CloseBlob(msl_image);
-  if (*image != msl_image)
+  /*
+    If acting as writer, then destroy temporary msl_image, otherwise,
+    return msl_image as the image which was read
+  */
+  if (writer_image != (Image *) NULL)
     {
       DestroyImage(msl_image);
       msl_image=(Image *) NULL;
+    }
+  else if (exception->severity < ErrorException)
+    {
+        *image=msl_image;
     }
 
   /* FIXME: It is not clear what constitutes "success" for MSL */
