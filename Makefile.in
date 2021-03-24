@@ -216,9 +216,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = $(am__EXEEXT_1)
-TESTS = $(PERLMAGICK_TESTS) $(TESTS_TESTS) $(am__EXEEXT_6) \
-	$(WAND_TESTS) $(UTILITIES_TESTS)
-XFAIL_TESTS = $(am__EXEEXT_7) $(am__EXEEXT_7) $(am__EXEEXT_7)
+TESTS = $(am__EXEEXT_6) $(TESTS_TESTS) $(am__EXEEXT_7) $(WAND_TESTS) \
+	$(UTILITIES_TESTS)
+XFAIL_TESTS = $(am__EXEEXT_8) $(am__EXEEXT_8) $(am__EXEEXT_8)
 check_PROGRAMS = $(am__EXEEXT_2) $(am__EXEEXT_4) $(am__EXEEXT_5)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -2309,9 +2309,10 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
-@WITH_MAGICK_PLUS_PLUS_TRUE@am__EXEEXT_6 =  \
+@WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@am__EXEEXT_6 = PerlMagick/PerlMagickCheck.sh
+@WITH_MAGICK_PLUS_PLUS_TRUE@am__EXEEXT_7 =  \
 @WITH_MAGICK_PLUS_PLUS_TRUE@	$(MAGICKPP_TEST_SCRIPTS_OPT)
-am__EXEEXT_7 =
+am__EXEEXT_8 =
 TEST_SUITE_LOG = test-suite.log
 am__test_logs1 = $(TESTS:=.log)
 am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
@@ -4771,12 +4772,22 @@ PERLMAGICK_MAINTAINER_TARGETS = $(top_srcdir)/$(PERLMAGICK)/Magick.pm
 @WITH_PERL_TRUE@PERLMAGICK_CLEAN_LOCAL_TARGETS = clean-perl
 @WITH_PERL_TRUE@PERLMAGICK_DISTCLEAN_LOCAL_TARGETS = clean-perl
 @WITH_PERL_TRUE@PERLMAGICK_MAINTAINER_CLEAN_LOCAL_TARGETS = distclean-local
-#PERLMAGICK_CHECK_LOCAL_TARGETS = check-perl
-@WITH_PERL_TRUE@PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_CHECKSCRIPTS = perl-build
+#PERLMAGICK_CHECK_LOCAL_TARGETS = check-perl
 
 #PERLMAGICK_CHECKSCRIPTS = perl-build
+
+# Please note that a dynamic PerlMagick is no longer built as part of
+# the GraphicsMagick build because it is not at all portable (or
+# reliable) to try to force the PerlMagick build to use the
+# uninstalled GraphicsMagick libraries, yet behave properly for
+# testing, and for when it is installed.  GraphicsMagick must be
+# installed, and then PerlMagick may be built, tested, and installed.
+# Due to this, only enough functionality is provided to configure the
+# PerlMagick source tree and Makefile for subsequent building.
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_CHECKSCRIPTS = 
+@WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_TESTS = #PerlMagick/PerlMagickCheck.sh
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLSTATICNAME = PerlMagick
 
 # Pkgconfig directory
@@ -11106,11 +11117,13 @@ $(top_srcdir)/$(PERLMAGICK)/Magick.pm : $(PERLMAGICK)/Magick.pm
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@uninstall-exec-perl: $(PERLMAKEFILE)
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	echo "Uninstall not supported for PerlMagick"
 
-@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@check-perl: $(PERLMAKEFILE)
-@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
-
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@perl-build: $(PERLMAKEFILE)
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	( cd $(PERLMAGICK) && $(MAKE) CC='@CC@' )
+
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@perl-check: $(PERLMAKEFILE)
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
+
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@check-perl:
 
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@$(PERLMAKEFILE): perl-sources $(LIBMAGICK) $(PERLMAKEMAKER)
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && @PERL@ Makefile.PL MAP_TARGET=$(PERLSTATICNAME) $(PERL_MAKE_OPTIONS) && $(MAKE) Makefile ; $(MAKE) Makefile

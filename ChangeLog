@@ -1,5 +1,10 @@
 2021-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * PerlMagick/Makefile.am (check-perl): Nullify the check-perl
+        target when PerlMagick is enabled and shared libraries are used.
+        This is because a dynamic GraphicsMagick needs to be formally
+        installed before PerlMagick can be tested.
+
         * coders/jp2.c (ReadJP2Image): Support both old and new ways to
         determine if JasPer codec support is available.
 

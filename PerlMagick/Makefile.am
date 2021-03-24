@@ -45,13 +45,23 @@ PERLMAGICK_DISTCLEAN_LOCAL_TARGETS = clean-perl
 PERLMAGICK_MAINTAINER_CLEAN_LOCAL_TARGETS = distclean-local
 #PERLMAGICK_CHECK_LOCAL_TARGETS = check-perl
 
-PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
 
 #PERLMAGICK_CHECKSCRIPTS = perl-build
 
 if WITH_PERL_DYNAMIC
 
+# Please note that a dynamic PerlMagick is no longer built as part of
+# the GraphicsMagick build because it is not at all portable (or
+# reliable) to try to force the PerlMagick build to use the
+# uninstalled GraphicsMagick libraries, yet behave properly for
+# testing, and for when it is installed.  GraphicsMagick must be
+# installed, and then PerlMagick may be built, tested, and installed.
+# Due to this, only enough functionality is provided to configure the
+# PerlMagick source tree and Makefile for subsequent building.
+
 PERLMAGICK_CHECKSCRIPTS =
+
+PERLMAGICK_TESTS = #PerlMagick/PerlMagickCheck.sh
 
 $(PERLMAKEFILE): perl-sources $(LIBMAGICK) $(PERLMAKEMAKER)
 	cd $(PERLMAGICK) && @PERL@ Makefile.PL $(PERL_MAKE_OPTIONS)
@@ -65,11 +75,13 @@ all-perl: perl-sources
 uninstall-exec-perl: $(PERLMAKEFILE)
 	echo "Uninstall not supported for PerlMagick"
 
-check-perl: $(PERLMAKEFILE)
-	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
-
 perl-build: $(PERLMAKEFILE)
 	( cd $(PERLMAGICK) && $(MAKE) CC='@CC@' )
+
+perl-check: $(PERLMAKEFILE)
+	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
+
+check-perl:
 
 else
 if WITH_PERL_STATIC
@@ -77,6 +89,8 @@ if WITH_PERL_STATIC
 PERLSTATICNAME=PerlMagick
 
 PERLMAGICK_CHECKSCRIPTS = perl-build
+
+PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
 
 $(PERLMAKEFILE): perl-sources $(LIBMAGICK) $(PERLMAKEMAKER)
 	cd $(PERLMAGICK) && @PERL@ Makefile.PL MAP_TARGET=$(PERLSTATICNAME) $(PERL_MAKE_OPTIONS) && $(MAKE) Makefile ; $(MAKE) Makefile
