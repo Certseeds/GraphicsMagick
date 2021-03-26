@@ -77,6 +77,21 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #endif
+/*
+  Old JasPer uses non-persistent '!defined(EXCLUDE_FOO_SUPPORT)' and
+  modern JasPer uses persistent 'if defined(JAS_INCLUDE_FOO_CODEC)'
+  in jas_image.h
+*/
+#if defined(EXCLUDE_JP2_SUPPORT)
+#  undef HAVE_JP2_DECODE
+#endif
+#if defined(EXCLUDE_JPC_SUPPORT)
+#  undef HAVE_JPC_DECODE
+#endif
+#if defined(EXCLUDE_PGX_SUPPORT)
+#  undef HAVE_PGX_DECODE
+#endif
+
 
 /*
   Forward declarations.
@@ -497,13 +512,8 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   if (jp2_stream == (jas_stream_t *) NULL)
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
 
-  /*
-    Old JasPer uses non-persistent '!defined(EXCLUDE_FOO_SUPPORT)' and
-    modern JasPer uses persistent 'if defined(JAS_INCLUDE_FOO_CODEC)'
-    in jas_image.h
-  */
 
-#if HAVE_JP2_DECODE && (!defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_INCLUDE_JP2_CODEC))
+#if HAVE_JP2_DECODE
   if (IsJP2(magick,sizeof(magick)))
     {
       /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
@@ -512,7 +522,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
                             "Decoding JP2...");
     }
 #endif
-#if HAVE_JPC_DECODE && (!defined(EXCLUDE_JPC_SUPPORT) || defined(JAS_INCLUDE_JPC_CODEC))
+#if HAVE_JPC_DECODE
   if (IsJPC(magick,sizeof(magick)))
     {
       /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
@@ -521,7 +531,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
                             "Decoding JPC...");
     }
 #endif
-#if HAVE_PGX_DECODE && (!defined(EXCLUDE_PGX_SUPPORT) || defined(JAS_INCLUDE_PGX_CODEC))
+#if HAVE_PGX_DECODE
   if (IsPGX(magick,sizeof(magick)))
     {
       /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
