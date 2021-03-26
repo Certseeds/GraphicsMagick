@@ -4999,9 +4999,17 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
       DestroyImage(msl_image);
       msl_image=(Image *) NULL;
     }
-  else if (exception->severity < ErrorException)
+  else
     {
-        *image=msl_image;
+      if (exception->severity < ErrorException)
+        {
+          *image=msl_image;
+        }
+      else
+        {
+          DestroyImage(msl_image);
+          msl_image=(Image *) NULL;
+        }
     }
 
   /* FIXME: It is not clear what constitutes "success" for MSL */

@@ -1,3 +1,9 @@
+2021-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (ProcessMSLScript): Free msl_image upon reader
+        failure.  Should fix oss-fuzz 32479
+        "graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc".
+
 2021-03-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * PerlMagick/Makefile.am (check-perl): Nullify the check-perl
