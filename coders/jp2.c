@@ -849,11 +849,19 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
 */
 ModuleExport void RegisterJP2Image(void)
 {
+  static char
+    version[16];
+
   MagickInfo
     *entry;
 
+  (void) strlcpy(version,"JasPer ",sizeof(version));
+  (void) strlcat(version,jas_getversion(),sizeof(version));
+
+#if HAVE_JPC_DECODE
   entry=SetMagickInfo("J2C");
   entry->description="JPEG-2000 Code Stream Syntax";
+  entry->version=version;
   entry->module="JP2";
   entry->magick=(MagickHandler) IsJPC;
   entry->adjoin=False;
@@ -865,9 +873,12 @@ ModuleExport void RegisterJP2Image(void)
 #endif
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if HAVE_JPC_DECODE */
 
+#if HAVE_JP2_DECODE
   entry=SetMagickInfo("JP2");
   entry->description="JPEG-2000 JP2 File Format Syntax";
+  entry->version=version;
   entry->module="JP2";
   entry->magick=(MagickHandler) IsJP2;
   entry->adjoin=False;
@@ -879,9 +890,12 @@ ModuleExport void RegisterJP2Image(void)
 #endif
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* HAVE_JP2_DECODE */
 
+#if HAVE_JPC_DECODE
   entry=SetMagickInfo("JPC");
   entry->description="JPEG-2000 Code Stream Syntax";
+  entry->version=version;
   entry->module="JP2";
   entry->magick=(MagickHandler) IsJPC;
   entry->adjoin=False;
@@ -893,9 +907,12 @@ ModuleExport void RegisterJP2Image(void)
 #endif
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if HAVE_JPC_DECODE */
 
+#if HAVE_PGX_DECODE
   entry=SetMagickInfo("PGX");
   entry->description="JPEG-2000 VM Format";
+  entry->version=version;
   entry->module="JP2";
   entry->magick=(MagickHandler) IsPGX;
   entry->adjoin=False;
@@ -907,6 +924,7 @@ ModuleExport void RegisterJP2Image(void)
 #endif
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if HAVE_PGX_DECODE */
 }
 
 /*

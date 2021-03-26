@@ -1,5 +1,7 @@
 2021-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jp2.c (RegisterJP2Image): Report JasPer library version.
+
         * coders/msl.c (ProcessMSLScript): Free msl_image upon reader
         failure.  Should fix oss-fuzz 32479
         "graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc".
