@@ -100,7 +100,7 @@ extern "C" {
 /* Define to 1 if you have the `jpc_decode' function. */
 #define HAVE_JPC_DECODE 1
 /* Define to 1 if you have the `pgx_decode' function. */
-#define HAVE_PGX_DECODE 1
+#define HAVE_PGX_DECODE 0
 #endif /* if defined(HasJP2) */
 
 // Define to support memory mapping files for improved performance
