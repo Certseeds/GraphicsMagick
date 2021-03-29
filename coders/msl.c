@@ -5149,11 +5149,15 @@ static unsigned int WriteMSLImage(const ImageInfo *image_info,Image *image)
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+  status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
+  if (status == False)
+    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   /* (void) ReferenceImage(image); what for? */
   status=ProcessMSLScript(image_info,&image,&image->exception);
   if (status == MagickFail)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "ProcessMSLScript() returned MagickFail!");
+  CloseBlob(image);
   return status;
 }
 #endif /* defined(HasXML) */

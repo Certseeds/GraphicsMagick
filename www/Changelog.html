@@ -35,6 +35,12 @@
 <div class="document">
 
 
+<p>2021-03-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/msl.c (WriteMSLImage): Add OpenBlob()/CloseBlob() which
+seems necessary to avoid memory leak in ImageToBlob().  Hopefully
+will fix oss-fuzz 32575 &quot;graphicsmagick:coder_MSL_fuzzer:
+Direct-leak in MagickMalloc&quot;.</blockquote>
 <p>2021-03-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/jp2.c (RegisterJP2Image): Report JasPer library version.</p>

@@ -1,3 +1,10 @@
+2021-03-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (WriteMSLImage): Add OpenBlob()/CloseBlob() which
+        seems necessary to avoid memory leak in ImageToBlob().  Hopefully
+        will fix oss-fuzz 32575 "graphicsmagick:coder_MSL_fuzzer:
+        Direct-leak in MagickMalloc".
+
 2021-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (RegisterJP2Image): Report JasPer library version.
