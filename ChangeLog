@@ -1,3 +1,9 @@
+2021-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLReference): Fix memory leak when parser node is
+        null. Addresses oss-fuzz 32713 "graphicsmagick:coder_MSL_fuzzer:
+        Direct-leak in xmlNewReference".
+
 2021-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/png.c (ReadOnePNGImage): Avoid use of null

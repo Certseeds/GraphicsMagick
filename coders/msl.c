@@ -4534,6 +4534,10 @@ MSLReference(void *context,const xmlChar *name)
                         "  SAX.reference(%.1024s)",name);
   msl_info=(MSLInfo *) context;
   parser=msl_info->parser;
+  if (parser == (xmlParserCtxtPtr) NULL)
+    return;
+  if (parser->node == (xmlNodePtr) NULL)
+    return;
   if (*name == '#')
     (void) xmlAddChild(parser->node,xmlNewCharRef(msl_info->document,name));
   else
