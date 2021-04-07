@@ -3,6 +3,9 @@
         * coders/svg.c (GetStyleTokens): Limit the number of style tokens.
         Addresses oss-fuzz 32921 "graphicsmagick:coder_SVG_fuzzer:
         Out-of-memory in coder_SVG_fuzzer".
+        (SVGComment): Only capture first comment rather than concatenating
+        all comments.  Addresses oss-fuzz 32944
+        "graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer".
 
 2021-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

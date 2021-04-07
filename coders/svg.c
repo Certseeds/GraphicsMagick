@@ -3685,9 +3685,14 @@ SVGComment(void *context,const xmlChar *value)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "  SAX.comment(%.1024s)",value);
   svg_info=(SVGInfo *) context;
+  if (svg_info->comment == (char *) NULL)
+    svg_info->comment=AllocateString((char *) value);
+  /*
+    Old way concatenated all comments
   if (svg_info->comment != (char *) NULL)
     (void) ConcatenateString(&svg_info->comment,"\n");
   (void) ConcatenateString(&svg_info->comment,(char *) value);
+  */
 }
 
 static void
