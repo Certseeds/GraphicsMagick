@@ -273,6 +273,8 @@ GetUserSpaceCoordinateValue(const SVGInfo *svg_info,
 
 static char **GetStyleTokens(void *context,const char *text,size_t *number_tokens)
 {
+#define MaxStyleTokens 256
+
   char
     **tokens;
 
@@ -306,6 +308,8 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       alloc_tokens+=2;
   if (alloc_tokens == 0)
     return((char **) NULL);
+  if (alloc_tokens >= MaxStyleTokens)
+    alloc_tokens=MaxStyleTokens;
   tokens=MagickAllocateMemory(char **,(alloc_tokens+2)*sizeof(*tokens));
   if (tokens == (char **) NULL)
     {
@@ -328,7 +332,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       */
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
-      tokens[i]=AllocateString(p);
+      tokens[i]=AcquireString(p); /* Makes a full copy of remaining text! */
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
@@ -368,7 +372,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
     }
   if (i < alloc_tokens)
     {
-      tokens[i]=AllocateString(p);
+      tokens[i]=AcquireString(p); /* Makes a full copy of remaining text! */
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
@@ -438,13 +442,13 @@ static char **GetTransformTokens(void *context,const char *text,
               return((char **) NULL);
             }
         }
-      tokens[i]=AllocateString(p);
+      tokens[i]=AcquireString(p);
       (void) strlcpy(tokens[i],p,q-p+1);
       Strip(tokens[i]);
       i++;
       p=q+1;
     }
-  tokens[i]=AllocateString(p);
+  tokens[i]=AcquireString(p);
   (void) strlcpy(tokens[i],p,q-p+1);
   Strip(tokens[i++]);
   tokens[i]=(char *) NULL;
@@ -1111,8 +1115,8 @@ SVGStartElement(void *context,const xmlChar *name,
       return;
     }
   svg_info->scale[svg_info->n]=svg_info->scale[svg_info->n-1];
-  color=AllocateString("none");
-  units=AllocateString("userSpaceOnUse");
+  color=AcquireString("none");
+  units=AcquireString("userSpaceOnUse");
   value=(const char *) NULL;
   svg_element_background_color[0]='\0';
   IsTextOrTSpan = IsTSpan = LocaleCompare((char *) name,"tspan") == 0;  /* need to know this early */
@@ -4456,7 +4460,7 @@ WriteSVGImage(const ImageInfo *image_info,Image *image)
   if (primitive_info == (PrimitiveInfo *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   IdentityAffine(&affine);
-  token=AllocateString(attribute->value);
+  token=AcquireString(attribute->value);
   token_max_length=strlen(token);
   active=False;
   n=0;
