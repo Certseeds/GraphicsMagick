@@ -2710,7 +2710,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                 for (x=0; x < (long) image->columns; x++)
                   {
                     index=indexes[x];
-                    if (index < (unsigned int) ping_num_trans)
+                    if ((index < (unsigned int) ping_num_trans) &&
+                        (ping_trans_alpha != (png_bytep) NULL))
                       q->opacity=
                         ScaleCharToQuantum(255-ping_trans_alpha[index]);
                     else

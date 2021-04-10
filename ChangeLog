@@ -1,5 +1,10 @@
 2021-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/png.c (ReadOnePNGImage): Assure that null
+        ping_trans_alpha pointer is not dereferenced.  Addresses oss-fuzz
+        33119 "graphicsmagick:coder_MNG_fuzzer: Null-dereference READ in
+        ReadOnePNGImage".
+
         * magick/profile.c (SetImageProfile): Use the resource-limited
         memory allocator to allocate embedded profiles.
 

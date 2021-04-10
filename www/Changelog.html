@@ -37,6 +37,10 @@
 
 <p>2021-04-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/png.c (ReadOnePNGImage): Assure that null
+ping_trans_alpha pointer is not dereferenced.  Addresses oss-fuzz
+33119 &quot;graphicsmagick:coder_MNG_fuzzer: Null-dereference READ in
+ReadOnePNGImage&quot;.</p>
 <p>* magick/profile.c (SetImageProfile): Use the resource-limited
 memory allocator to allocate embedded profiles.</p>
 <p>* magick/map.c (MagickMapCopyResourceLimitedString): New private
