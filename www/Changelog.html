@@ -35,6 +35,19 @@
 <div class="document">
 
 
+<p>2021-04-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* magick/profile.c (SetImageProfile): Use the resource-limited
+memory allocator to allocate embedded profiles.</p>
+<p>* magick/map.c (MagickMapCopyResourceLimitedString): New private
+function to copy a resource-limited string.
+(MagickMapDeallocateResourceLimitedString): New private function
+to deallocate a resource-limited string.
+(MagickMapCopyResourceLimitedBlob): New private function to copy a
+resource-limited blob.
+(MagickMapDeallocateResourceLimitedBlob): New private function to
+deallocate a resource-limited blob.</p>
+</blockquote>
 <p>2021-04-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/svg.c (GetStyleTokens): Limit the number of style tokens.

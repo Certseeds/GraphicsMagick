@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1248,8 +1248,8 @@ SetImageProfile(Image *image,const char *name, const unsigned char *profile,
         Add or replace entry.
       */
       if (image->profiles == 0)
-        image->profiles=MagickMapAllocateMap(MagickMapCopyBlob,
-                                             MagickMapDeallocateBlob);
+        image->profiles=MagickMapAllocateMap(MagickMapCopyResourceLimitedBlob,
+                                             MagickMapDeallocateResourceLimitedBlob);
 
       if (image->profiles == 0)
         ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,

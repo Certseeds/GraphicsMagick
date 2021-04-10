@@ -1,3 +1,17 @@
+2021-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/profile.c (SetImageProfile): Use the resource-limited
+        memory allocator to allocate embedded profiles.
+
+        * magick/map.c (MagickMapCopyResourceLimitedString): New private
+        function to copy a resource-limited string.
+        (MagickMapDeallocateResourceLimitedString): New private function
+        to deallocate a resource-limited string.
+        (MagickMapCopyResourceLimitedBlob): New private function to copy a
+        resource-limited blob.
+        (MagickMapDeallocateResourceLimitedBlob): New private function to
+        deallocate a resource-limited blob.
+
 2021-04-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (GetStyleTokens): Limit the number of style tokens.

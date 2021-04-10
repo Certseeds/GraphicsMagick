@@ -63,7 +63,6 @@
 #include "magick/log.h"
 #include "magick/magic.h"
 #include "magick/magick.h"
-#include "magick/map.h"
 #include "magick/module.h"
 #include "magick/monitor.h"
 #include "magick/montage.h"

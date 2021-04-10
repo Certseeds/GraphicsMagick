@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -1086,7 +1086,17 @@ MagickMapCopyString(const void *string, const size_t size)
 {
   ARG_NOT_USED(size);
   if (string)
-    return (void *) AcquireString((const char *)string);
+    {
+      size_t length = strlen(string);
+      char *dstring=MagickAllocateMemory(char *,length+1);
+      if (dstring != (char *) NULL)
+        {
+          if (length != 0)
+            (void) memcpy(dstring,string,length);
+          dstring[length]='\0';
+        }
+      return dstring;
+    }
   return 0;
 }
 
@@ -1114,7 +1124,7 @@ MagickMapCopyString(const void *string, const size_t size)
 %    o string: pointer to string data to deallocate
 %
 */
-extern MagickExport void
+MagickExport void
 MagickMapDeallocateString(void *string)
 {
   MagickFreeMemory(string);
@@ -1186,8 +1196,158 @@ MagickMapCopyBlob(const void *blob, const size_t size)
 %    o blob: pointer to BLOB data to deallocate
 %
 */
-extern MagickExport void
+MagickExport void
 MagickMapDeallocateBlob(void *blob)
 {
   MagickFreeMemory(blob);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k M a p C o p y R e s o u r c e L i m i t e d S t r i n g       %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickMapCopyResourceLimitedString() copies a string using the
+%  resource-limited memory allocator. It is intended for use as the clone
+%  function for strings so that C strings may easily be stored in a map.
+%
+%  The format of the MagickMapCopyResourceLimitedString method is:
+%
+%       void *MagickMapCopyResourceLimitedString(const void *string, const size_t size)
+%
+%  A description of each parameter follows:
+%
+%    o string: pointer to string data
+%
+%    o size: ignored by this method.
+%
+*/
+MagickExport void *
+MagickMapCopyResourceLimitedString(const void *string, const size_t size)
+{
+  ARG_NOT_USED(size);
+  if (string)
+    {
+      size_t length = strlen(string);
+      char *dstring=MagickAllocateResourceLimitedMemory(char *,length+1);
+      if (dstring != (char *) NULL)
+        {
+          if (length != 0)
+            (void) memcpy(dstring,string,length);
+          dstring[length]='\0';
+        }
+      return dstring;
+    }
+  return 0;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k M a p D e a l l o c a t e R e s o u r c e L i m i t e d S t r i n g %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickMapDeallocateResourceLimitedString() deallocates a string allocated
+%  using the resource-limited memory allocator. It is intended for
+%  use as the deallocate function for strings so that C strings may easily
+%  be stored in a map.
+%
+%  The format of the MagickMapDeallocateResourceLimitedString method is:
+%
+%       void MagickMapDeallocateResourceLimitedString(void *string)
+%
+%  A description of each parameter follows:
+%
+%    o string: pointer to string data to deallocate
+%
+*/
+MagickExport void
+MagickMapDeallocateResourceLimitedString(void *string)
+{
+  MagickFreeResourceLimitedMemory(string);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k M a p C o p y R e s o u r c e L i m i t e d B l o b           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickMapCopyResourceLimitedBlob() copies a BLOB using the
+%  resource-limited memory allocator. It is intended for use as the
+%  clone function for BLOBs so that BLOB may easily be stored in
+%  a map.
+%
+%  The format of the MagickMapCopyResourceLimitedBlob method is:
+%
+%       void *MagickMapCopyResourceLimitedBlob(const void *blob, const size_t size)
+%
+%  A description of each parameter follows:
+%
+%    o blob: pointer to BLOB data
+%
+%    o size: BLOB size
+%
+*/
+MagickExport void *
+MagickMapCopyResourceLimitedBlob(const void *blob, const size_t size)
+{
+  if (blob)
+    {
+      void
+        *memory;
+
+      memory=MagickAllocateResourceLimitedMemory(void *,size);
+      if (memory)
+        (void) memcpy(memory,blob,size);
+      return (memory);
+    }
+  return 0;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   M a g i c k M a p D e a l l o c a t e R e s o u r c e L i m i t e d B l o b %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickMapDeallocateResourceLimitedBlob() deallocates a BLOB allocated
+%  using the resource-limited memory allocator. It is intended for
+%  use as the deallocate function for BLOBs so that BLOBs may easily
+%  be stored in a map.
+%
+%  The format of the MagickMapDeallocateResourceLimitedBlob method is:
+%
+%       void MagickMapDeallocateResourceLimitedBlob(void *blob)
+%
+%  A description of each parameter follows:
+%
+%    o blob: pointer to BLOB data to deallocate
+%
+*/
+MagickExport void
+MagickMapDeallocateResourceLimitedBlob(void *blob)
+{
+  MagickFreeResourceLimitedMemory(blob);
 }

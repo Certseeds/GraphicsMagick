@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 GraphicsMagick Group
+  Copyright (C) 2003-2021 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -163,6 +163,30 @@ extern MagickExport void *
 */
 extern MagickExport void
   MagickMapDeallocateBlob(void *blob);
+
+/*
+  Function to copy a string allocated using resource-limited memory.
+*/
+extern MagickExport void *
+MagickMapCopyResourceLimitedString(const void *string, const size_t size);
+
+/*
+  Function to deallocate a string allocated using resource-limited memory.
+*/
+extern MagickExport void
+MagickMapDeallocateResourceLimitedString(void *string);
+
+/*
+  Function to copy a BLOB using resource-limited memory allocator.
+*/
+extern MagickExport void *
+MagickMapCopyResourceLimitedBlob(const void *blob, const size_t size);
+
+/*
+  Function to deallocate a BLOB allocated using resource-limited memory.
+*/
+extern MagickExport void
+MagickMapDeallocateResourceLimitedBlob(void *blob);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
