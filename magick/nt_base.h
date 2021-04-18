@@ -94,7 +94,7 @@ extern "C" {
 /* Define to 1 if you have the <ft2build.h> header file. */
 #define HAVE_FT2BUILD_H 1
 
-#if defined(HasJP2)
+#if defined(HasJP2) && defined(_VISUALC_)
 /* Define to 1 if you have the `jp2_decode' function. */
 #  define HAVE_JP2_DECODE 1
 /* Define to 1 if you have the `jpc_decode' function. */
