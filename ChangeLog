@@ -1,3 +1,9 @@
+2021-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jpeg.c: Restructure client data so it is allocated on the
+        heap rather than the stack.  Happens to fix SourceForge issue 641
+        "SIGSEGV thrown performing longjmp in jpeg.c".
+
 2021-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/png.c (ReadOnePNGImage): Assure that null
