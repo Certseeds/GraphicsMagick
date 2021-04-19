@@ -1147,6 +1147,12 @@ IsITUFax(const Image* image)
     return status;
 }
 
+#define ThrowJPEGReaderException(code_,reason_,image_)  \
+  {                                                     \
+    client_data=FreeMagickClientData(client_data);      \
+    ThrowReaderException(code_,reason_,image_);         \
+  }
+
 static Image *ReadJPEGImage(const ImageInfo *image_info,
                             ExceptionInfo *exception)
 {
@@ -1204,15 +1210,15 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
   if (image == (Image *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   client_data=AllocateMagickClientData();
   if (client_data == (MagickClientData *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFail)
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    ThrowJPEGReaderException(FileOpenError,UnableToOpenFile,image);
   if (BlobIsSeekable(image) && GetBlobSize(image) < 107)
-    ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+    ThrowJPEGReaderException(CorruptImageError,InsufficientImageDataInFile,image);
   /*
     Initialize structures.
   */
@@ -1482,7 +1488,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowJPEGReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     }
 
   if (image->logging)
@@ -1523,7 +1529,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     if (!AllocateImageColormap(image,1 << image->depth))
       {
         jpeg_destroy_decompress(&jpeg_info);
-        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
   if (image_info->ping)
     {
@@ -1535,7 +1541,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     {
       jpeg_destroy_decompress(&jpeg_info);
-      ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      ThrowJPEGReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
     }
 
   /*
@@ -1546,7 +1552,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       (jpeg_info.output_components != 4))
     {
       jpeg_destroy_decompress(&jpeg_info);
-      ThrowReaderException(CoderError,ImageTypeNotSupported,image);
+      ThrowJPEGReaderException(CoderError,ImageTypeNotSupported,image);
     }
   /*
     Verify that file size is reasonable (if we can)
@@ -1588,7 +1594,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                                 jpeg_info.output_components, blob_size, ratio);
 
           jpeg_destroy_decompress(&jpeg_info);
-          ThrowReaderException(CorruptImageError,InsufficientImageDataInFile,image);
+          ThrowJPEGReaderException(CorruptImageError,InsufficientImageDataInFile,image);
         }
     }
 
@@ -1599,7 +1605,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   if (jpeg_pixels == (JSAMPLE *) NULL)
     {
       jpeg_destroy_decompress(&jpeg_info);
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   (void) memset(jpeg_pixels,0,MagickArraySize(jpeg_info.output_components,
                                               MagickArraySize(image->columns,
@@ -2349,6 +2355,12 @@ static void JPEGEncodeProgressMonitor(j_common_ptr cinfo)
 }
 
 
+#define ThrowJPEGWriterException(code_,reason_,image_)  \
+  {                                                     \
+    client_data=FreeMagickClientData(client_data);      \
+    ThrowWriterException(code_,reason_,image_);         \
+  }
+
 static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 {
   Image
@@ -2422,10 +2434,10 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   assert(imagep->signature == MagickSignature);
   client_data=AllocateMagickClientData();
   if (client_data == (MagickClientData *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowJPEGWriterException(FileOpenError,UnableToOpenFile,image);
 
   (void) memset(&jpeg_progress,0,sizeof(jpeg_progress));
   (void) memset(&jpeg_info,0,sizeof(jpeg_info));
@@ -2952,7 +2964,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     {
       if (huffman_memory)
         LiberateMagickResource(MemoryResource,huffman_memory);
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   scanline[0]=(JSAMPROW) jpeg_pixels;
   if (jpeg_info.data_precision > 8)

@@ -1,3 +1,13 @@
+2021-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jpeg.c (ReadJPEGImage): Error cases depending on
+        ThrowReaderException() were now leaking client data memory.
+        Replace such cases with customized ThrowJPEGReaderException()
+        which assures that it is freed.
+        (WriteJPEGImage): Error cases depending on ThrowWriterException()
+        were now client data memory.  Replace such cases with customized
+        ThrowJPEGWriterException() which assures that it is freed.
+
 2021-04-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jpeg.c: Restructure client data so it is allocated on the
