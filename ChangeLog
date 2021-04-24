@@ -1,3 +1,10 @@
+2021-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jpeg.c: It is apparently now undefined behavior to assign
+        the return value from setjmp() to a variable.  Remove recently
+        added code which is now doing that.  Much thanks to Chris Gravely
+        for noticing this.
+
 2021-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jpeg.c (ReadJPEGImage): Error cases depending on

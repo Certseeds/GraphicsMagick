@@ -300,7 +300,7 @@ static void JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
         {
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
-          longjmp(client_data->error_recovery,__LINE__);
+          longjmp(client_data->error_recovery,1);
         }
 
       if ((err->num_warnings == 0) ||
@@ -352,7 +352,7 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Quitting due to progress monitor");
-          longjmp(client_data->error_recovery,__LINE__);
+          longjmp(client_data->error_recovery,1);
         }
   }
 #endif /* USE_LIBJPEG_PROGRESS */
@@ -369,7 +369,7 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s", message);
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
-          longjmp(client_data->error_recovery,__LINE__);
+          longjmp(client_data->error_recovery,1);
         }
     }
 }
@@ -459,7 +459,7 @@ static void JPEGErrorHandler(j_common_ptr jpeg_info)
   else
     ThrowException2(&image->exception,CoderError,(char *) message,
                     image->filename);
-  longjmp(client_data->error_recovery,__LINE__);
+  longjmp(client_data->error_recovery,1);
 }
 
 #define GetProfileLength(jpeg_info, length)                             \
@@ -1195,9 +1195,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   MagickPassFail
     status;
 
-  int
-    setjmp_ret;
-
   unsigned long
     number_pixels;
 
@@ -1244,10 +1241,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   /*
     Set initial longjmp based error handler.
   */
-  if ((setjmp_ret=setjmp(client_data->error_recovery)) != 0)
+  if (setjmp(client_data->error_recovery) != 0)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Long jump from line %d!",setjmp_ret);
+                            "Setjmp return from longjmp!");
       jpeg_destroy_decompress(&jpeg_info);
       GetImageException(image,exception);
       client_data=FreeMagickClientData(client_data);
@@ -1614,10 +1611,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   /*
     Extended longjmp-based error handler (with jpeg_pixels)
   */
-  if ((setjmp_ret=setjmp(client_data->error_recovery)) != 0)
+  if (setjmp(client_data->error_recovery) != 0)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Long jump from line %d!",setjmp_ret);
+                            "Setjmp return from longjmp!");
       /* Error handling code executed if longjmp was invoked */
       MagickFreeResourceLimitedMemory(jpeg_pixels);
       jpeg_destroy_decompress(&jpeg_info);
@@ -1760,10 +1757,10 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         then we skip over it again.
       */
       client_data->completed=MagickTrue;
-      if ((setjmp_ret=setjmp(client_data->error_recovery)) != 0)
+      if (setjmp(client_data->error_recovery) != 0)
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Long jump from line %d!",setjmp_ret);
+                                "Setjmp return from longjmp!");
         }
       else
         {
@@ -2296,7 +2293,7 @@ static void JPEGEncodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
         {
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
-          longjmp(client_data->error_recovery,__LINE__);
+          longjmp(client_data->error_recovery,1);
         }
 
       if ((err->num_warnings == 0) ||
@@ -2347,7 +2344,7 @@ static void JPEGEncodeProgressMonitor(j_common_ptr cinfo)
       {
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Quitting due to progress monitor");
-        longjmp(client_data->error_recovery,__LINE__);
+        longjmp(client_data->error_recovery,1);
       }
 #else
   (void) cinfo;
@@ -2410,9 +2407,6 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   MagickPassFail
     status;
 
-  int
-    setjmp_ret;
-
   unsigned long
     input_colorspace;
 
@@ -2459,10 +2453,10 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
     client_data->max_warning_count=strtol(value,(char **) NULL, 10);
   jpeg_info.client_data=(void *) client_data;
-  if ((setjmp_ret=setjmp(client_data->error_recovery)) != 0)
+  if (setjmp(client_data->error_recovery) != 0)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Long jump from line %d!",setjmp_ret);
+                            "Setjmp return from longjmp!");
       jpeg_destroy_compress(&jpeg_info);
       client_data=FreeMagickClientData(client_data);
       CloseBlob(image);
