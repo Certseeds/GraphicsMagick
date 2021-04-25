@@ -1,3 +1,11 @@
+2021-04-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/compare.c (IsImagesEqual): Eliminate hard
+        "ImageOpacityDiffers" error when matte channel flag differs
+        between the images being compared.  Instead of throwing a hard
+        error, treat the opacity channel of the image as opaque if the
+        matte flag is not set.
+
 2021-04-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jpeg.c: It is apparently now undefined behavior to assign

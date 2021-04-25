@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -842,6 +842,11 @@ ComputePixelError(void *mutable_data,
   register long
     i;
 
+  const MagickBool
+    first_image_matte = first_image->matte,
+    second_image_matte = second_image->matte,
+    matte = (first_image->matte || second_image->matte);
+
   ARG_NOT_USED(immutable_data);
   ARG_NOT_USED(first_indexes);
   ARG_NOT_USED(second_image);
@@ -862,9 +867,11 @@ ComputePixelError(void *mutable_data,
       difference=(first_pixels[i].blue-(double) second_pixels[i].blue)/MaxRGBDouble;
       distance_squared+=(difference*difference);
 
-      if (first_image->matte)
+      if (matte)
         {
-          difference=(first_pixels[i].opacity-(double) second_pixels[i].opacity)/MaxRGBDouble;
+          const Quantum first_opacity = first_image_matte ? first_pixels[i].opacity : OpaqueOpacity;
+          const Quantum second_opacity = second_image_matte ? second_pixels[i].opacity : OpaqueOpacity;
+          difference=(first_opacity-(double) second_opacity)/MaxRGBDouble;
           distance_squared+=(difference*difference);
         }
       distance=sqrt(distance_squared);
@@ -897,6 +904,9 @@ IsImagesEqual(Image *image,const Image *reference)
     normalize,
     number_pixels;
 
+  MagickBool
+    matte;
+
   /*
     Initialize measurement.
   */
@@ -913,13 +923,11 @@ IsImagesEqual(Image *image,const Image *reference)
       (!IsRGBColorspace(image->colorspace) || !IsRGBColorspace(reference->colorspace)))
     ThrowBinaryException3(ImageError,UnableToCompareImages,
       ImageColorspaceDiffers);
-  if(image->matte != reference->matte)
-    ThrowBinaryException3(ImageError,UnableToCompareImages,
-      ImageOpacityDiffers);
 
   /*
     For each pixel, collect error statistics.
   */
+  matte=(image->matte || reference->matte);
   number_pixels=(double) image->columns*image->rows;
 
   stats.maximum=0.0;
@@ -938,7 +946,7 @@ IsImagesEqual(Image *image,const Image *reference)
     Compute final error statistics.
   */
 
-  if (image->matte)
+  if (matte)
     normalize = sqrt(4.0); /* sqrt(1.0*1.0+1.0*1.0+1.0*1.0+1.0*1.0) */
   else
     normalize = sqrt(3.0); /* sqrt(1.0*1.0+1.0*1.0+1.0*1.0) */
