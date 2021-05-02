@@ -2775,6 +2775,16 @@ CompareImageCommand(ImageInfo *image_info,
       (void) TransformColorspace(compare_image,image_info->colorspace);
     }
 
+  /*
+    If user has not indicated a preference, then use StoreMatte if
+    either image has a matte channel.
+  */
+  if ((UndefinedMatte == matte) &&
+      (compare_image->matte || reference_image->matte))
+    {
+      matte=StoreMatte;
+    }
+
   if (matte != UndefinedMatte)
   {
     if (matte == IgnoreMatte)

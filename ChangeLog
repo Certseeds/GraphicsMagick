@@ -1,3 +1,11 @@
+2021-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/command.c (CompareImageCommand): If user has not
+        indicated a 'matte' preference, then include the opacity channel
+        in the compare if either image has a matte channel.  Addresses
+        SourceForge issue #642 "Result of command "gm compare" depends on
+        order of images".
+
 2021-04-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/compare.c (IsImagesEqual): Eliminate hard
