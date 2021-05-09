@@ -127,10 +127,14 @@ namespace Magick
   // https://en.cppreference.com/w/cpp/utility/functional/unary_function
   // https://en.cppreference.com/w/cpp/utility/functional/function
   //
-  class MagickDLLDecl DrawableBase
 #if __cplusplus < 201703L
+#  define MAGICK_UNARY_FUNCTION_DRAWCONTEXT_REF_BASE \
   : public std::unary_function<MagickLib::DrawContext,void>
+#else
+#  define MAGICK_UNARY_FUNCTION_DRAWCONTEXT_REF_BASE
 #endif // if __cplusplus < 201703L
+
+  class MagickDLLDecl DrawableBase MAGICK_UNARY_FUNCTION_DRAWCONTEXT_REF_BASE
   {
   public:
     // Constructor

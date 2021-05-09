@@ -1,3 +1,11 @@
+2021-05-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * Magick++/lib/Magick++/STL.h: Support compiling with C++'98
+        through C++'17.
+
+        * Magick++/lib/Magick++/Drawable.h: Support compiling with C++'98
+        through C++'17.
+
 2021-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/command.c (CompareImageCommand): If user has not
