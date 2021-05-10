@@ -1,3 +1,10 @@
+2021-05-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * Magick++/lib/Magick++/{Drawable.h, STL.h}: Use _MSVC_LANG in
+        addition to __cplusplus when testing for C++'17 since the
+        Microsoft C++ compiler only properly defines __cplusplus if the
+        /Zc:__cplusplus switch was provided.
+
 2021-05-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Magick++/lib/Magick++/STL.h: Support compiling with C++'98

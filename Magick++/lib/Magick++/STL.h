@@ -51,12 +51,12 @@ namespace Magick
   // https://en.cppreference.com/w/cpp/utility/functional/function
   //
 
-#if __cplusplus < 201703L
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+#  define MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
+#else
 #  define MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE \
   : public std::unary_function<Image&,void>
-#else
-#  define MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
-#endif // if __cplusplus < 201703L
+#endif
 
   // Local adaptive threshold image
   // http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm
