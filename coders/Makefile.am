@@ -36,6 +36,11 @@ MAGICK_JPEG_MODULES = coders/jnx.la coders/jpeg.la
 MAGICK_JPEG_SRCS = coders/jnx.c coders/jpeg.c
 endif
 
+if HasJXL
+MAGICK_JXL_MODULES = coders/jxl.la
+MAGICK_JXL_SRCS = coders/jxl.c
+endif
+
 if HasJP2
 MAGICK_JP2_MODULES = coders/jp2.la
 MAGICK_JP2_SRCS = coders/jp2.c
@@ -164,6 +169,7 @@ MAGICK_CODER_SRCS = \
 	$(MAGICK_FPX_SRCS) \
 	$(MAGICK_JBIG_SRCS) \
 	$(MAGICK_JPEG_SRCS) \
+	$(MAGICK_JXL_SRCS) \
 	$(MAGICK_JP2_SRCS) \
 	$(MAGICK_TIFF_SRCS) \
 	$(MAGICK_X11_CODER_SRCS) \
@@ -261,7 +267,7 @@ coders_LTLIBRARIES = \
 	$(MAGICK_DPS_MODULES) $(MAGICK_FPX_MODULES) $(MAGICK_GDI32_MODULES) \
 	$(MAGICK_JBIG_MODULES) $(MAGICK_JPEG_MODULES) $(MAGICK_JP2_MODULES) \
 	$(MAGICK_PNG_MODULES) $(MAGICK_TIFF_MODULES) $(MAGICK_X11_CODER_MODULES) \
-	$(MAGICK_WEBP_MODULES)
+	$(MAGICK_WEBP_MODULES) $(MAGICK_JXL_MODULES)
 else
 coders_LTLIBRARIES =
 endif # WITH_MODULES
@@ -463,6 +469,12 @@ coders_jp2_la_SOURCES      = coders/jp2.c
 coders_jp2_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_jp2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_JPEG) $(LIB_MATH)
+
+# JXL coder module
+coders_jxl_la_SOURCES     = coders/jxl.c
+coders_jxl_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
+coders_jxl_la_LDFLAGS     = $(MODULECOMMONFLAGS)
+coders_jxl_la_LIBADD      = $(LIBMAGICK) $(LIB_JXL)
 
 # LABEL coder module
 coders_label_la_SOURCES    = coders/label.c

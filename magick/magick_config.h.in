@@ -432,6 +432,9 @@
 /* Define if you have JPEG library */
 #undef HasJPEG
 
+/* Define if you have JPEG-XL library */
+#undef HasJXL
+
 /* Define if you have LCMS (v2.0 or later) library */
 #undef HasLCMS
 

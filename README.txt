@@ -394,3 +394,9 @@ building under Microsoft Windows:
     https://github.com/ebiggers/libdeflate).  Linking with this
     library may be necessary for builds where libtiff depends on
     libdeflate.
+
+* GraphicsMagick requires the JPEG-XL library from
+
+    https://gitlab.com/wg1/jpeg-xl
+
+  to read and write the JPEG-XL image format.
