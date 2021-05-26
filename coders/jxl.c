@@ -30,7 +30,6 @@
 #include "magick/utility.h"
 #include "magick/resource.h"
 
-
 #if defined(HasJXL)
 #include <jxl/decode.h>
 #include <jxl/encode.h>
@@ -170,6 +169,65 @@ static MagickBool fill_pixels_char(Image *image, ExceptionInfo *exception,
   return MagickTrue;
 }
 
+static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *exception,
+  unsigned char *p)
+{
+  size_t
+    x,
+    y;
+
+  PixelPacket
+    *q;
+
+  IndexPacket
+    index;
+
+  for (y=0; y < (size_t) image->rows; y++)
+    {
+      register IndexPacket
+        *indexes;
+
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+      if (q == (PixelPacket *) NULL)
+        return MagickFail;
+
+      indexes=AccessMutableIndexes(image);
+      if (indexes == NULL)
+        return MagickFail;
+
+      for (x=0; x < (size_t) image->columns; x++) {
+        index=(IndexPacket)(*p++);
+        VerifyColormapIndex(image,index);
+        indexes[x]=index;
+        *q++=image->colormap[index];
+      }
+      if (!SyncImagePixels(image))
+        return MagickFail;
+    }
+  return MagickTrue;
+}
+
+
+
+/** The JXL API is not quite clear on who they returns JXL_TYPE_FLOAT.
+ *  While the encode clearly states that JXL_TYPE_FLOAT is linear SRGB
+ *  And JXL_TYPE_UNIT8 is non-linear its not that clear for decode.
+ *  However it looks like it's implicit in at least some Situation
+ *  that the same rule applys to decode.
+ *  Therefore convert all linear values to internal non-linear SRGB
+ *  for the Quantums.
+ *  Formula from wikipedia:
+ *	https://en.wikipedia.org/wiki/SRGB
+ */
+static float linear2nonlinear(float p)
+{
+    if(p < 0.0031308) {
+	return p * 12.92;
+    } else {
+	return 1.055 * powf(p, 1.0/2.4) - 0.055;
+    }
+}
+
 static MagickBool fill_pixels_float(Image *image, ExceptionInfo *exception,
   float *p)
 {
@@ -183,19 +241,19 @@ static MagickBool fill_pixels_float(Image *image, ExceptionInfo *exception,
   if (image->matte) {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,RoundDoubleToQuantum(*p++));
-        SetGreenSample(q,RoundDoubleToQuantum(*p++));
-        SetBlueSample(q,RoundDoubleToQuantum(*p++));
-        SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(*p++));
+        SetRedSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetGreenSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetBlueSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(linear2nonlinear(*p++)));
 	q++;
       }
     END_FOR_PIXEL_PACKETS
   } else {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,ScaleCharToQuantum(*p++));
-        SetGreenSample(q,ScaleCharToQuantum(*p++));
-        SetBlueSample(q,ScaleCharToQuantum(*p++));
+        SetRedSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetGreenSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetBlueSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
         SetOpacitySample(q,OpaqueOpacity);
 	q++;
       }
@@ -246,6 +304,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
     *in_buf = NULL,
     *out_buf = NULL;
 
+  MagickBool
+    grayscale = MagickFalse;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -279,11 +340,10 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
         != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  /* TODO: Useful value might be JXL_DEC_COLOR_ENCODING to get the ICC profile */
   if (JxlDecoderSubscribeEvents(jxl,
         (JxlDecoderStatus)(image_info->ping == MagickTrue
           ? JXL_DEC_BASIC_INFO
-          : JXL_DEC_BASIC_INFO | JXL_DEC_FULL_IMAGE)
+          : JXL_DEC_BASIC_INFO | JXL_DEC_FULL_IMAGE | JXL_DEC_COLOR_ENCODING)
       ) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -321,11 +381,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
           break;
 
         if (basic_info.have_animation == 1)
-            ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
-        /* validate expected channels in particular Grayscale not supported */
-        if (basic_info.num_color_channels != 3)
           ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
 
+	
         image->columns=basic_info.xsize;
         image->rows=basic_info.ysize;
         image->depth=basic_info.bits_per_sample;
@@ -334,13 +392,48 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
         image->orientation=convert_orientation(basic_info.orientation);
 
-        memset(&format,0,sizeof(format));
+	memset(&format,0,sizeof(format));
+
+        if (basic_info.num_color_channels == 1 && image->depth == 8) {
+	  if (!AllocateImageColormap(image,1 << image->depth))
+	    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+	  grayscale = MagickTrue;
+	  format.num_channels=1;
+        } else if (basic_info.num_color_channels != 3) {
+          ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+        } else
+	  format.num_channels=image->matte ? 4 : 3;
+
         format.endianness = JXL_NATIVE_ENDIAN;
-        format.num_channels=image->matte ? 4 : 3;
         format.data_type=(image->depth > 8) ? JXL_TYPE_FLOAT : JXL_TYPE_UINT8;
         break;
       }
 
+      case JXL_DEC_COLOR_ENCODING:
+      {
+	/* check the colorspace that will be used for output buffer*/
+	JxlColorEncoding
+	  color_encoding;
+
+	status=JxlDecoderGetColorAsEncodedProfile(jxl,&format,
+	    JXL_COLOR_PROFILE_TARGET_DATA,&color_encoding);
+	if (status != JXL_DEC_SUCCESS)
+          break;
+	if(color_encoding.color_space != JXL_COLOR_SPACE_RGB && color_encoding.color_space != JXL_COLOR_SPACE_GRAY)
+	  /* are other values even relevant? */
+          ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+	if(color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_LINEAR
+	    && format.data_type == JXL_TYPE_FLOAT) {
+	  /* expected combination: Linear SRGB, will be converted */
+	} else if(color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_SRGB
+	    && format.data_type == JXL_TYPE_UINT8) {
+	  /* expected combination: SRGB */
+	} else
+	  /* are the other possible values/combinations even relevant? */
+          ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+
+	/*TODO: get ICC-profile and keep as metadata?*/
+      }
       case JXL_DEC_NEED_IMAGE_OUT_BUFFER:
       { /* allocate output buffer */
         size_t
@@ -360,15 +453,19 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       case JXL_DEC_FULL_IMAGE:
       { /* got image */
         assert(out_buf != (unsigned char *)NULL);
-        if (format.data_type == JXL_TYPE_UINT8) {
+        if (!grayscale && format.data_type == JXL_TYPE_UINT8) {
           if (fill_pixels_char(image, exception, out_buf) == MagickFail) {
             status = JXL_DEC_ERROR;
           }
-        } else {
+        } else if(!grayscale) {
           if (fill_pixels_float(image, exception, (float*)out_buf) == MagickFail) {
             status = JXL_DEC_ERROR;
           }
-        }
+        } else if(grayscale) {
+	  if (fill_pixels_char_grayscale(image, exception, out_buf) == MagickFail) {
+            status = JXL_DEC_ERROR;
+          }
+	}
         break;
       }
       default:
