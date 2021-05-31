@@ -4291,6 +4291,58 @@ MagickSpawnVP(const unsigned int verbose,const char *file, char *const argv[])
 %                                                                             %
 %                                                                             %
 %                                                                             %
+%   M a g i c k S t r i p S t r i n g                                        %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method MagickStripString strips any whitespace or quotes from the
+%  beginning and end of a string of characters.  The final string length
+%  is returned.
+%
+%  The format of the _MagickStripString method is:
+%
+%      size_t _MagickStripString(char *message)
+%
+%  A description of each parameter follows:
+%
+%    o message: Specifies an array of characters.
+%
+%
+*/
+MagickExport size_t MagickStripString(char *message)
+{
+  register char
+    *p,
+    *q;
+
+  assert(message != (char *) NULL);
+  if (*message == '\0')
+    return 0;
+  if (strlen(message) == 1)
+    return 1;
+  p=message;
+  while (isspace((int)(unsigned char) (*p)))
+    p++;
+  if ((*p == '\'') || (*p == '"'))
+    p++;
+  q=message+strlen(message)-1;
+  while (isspace((int)(unsigned char) (*q)) && (q > p))
+    q--;
+  if (q > p)
+    if ((*q == '\'') || (*q == '"'))
+      q--;
+  (void) memmove(message,p,q-p+1);
+  message[q-p+1]='\0';
+  return (size_t) (q-p+1);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
 %   M a g i c k S t r i p S p a c e s F r o m S t r i n g                     %
 %                                                                             %
 %                                                                             %
@@ -5317,56 +5369,6 @@ MagickExport char **StringToList(const char *text)
     }
   textlist[i]=(char *) NULL;
   return(textlist);
-}
-
-/*
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                             %
-%                                                                             %
-%                                                                             %
-%   S t r i p                                                                 %
-%                                                                             %
-%                                                                             %
-%                                                                             %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  Method Strip strips any whitespace or quotes from the beginning and end of
-%  a string of characters.
-%
-%  The format of the Strip method is:
-%
-%      void Strip(char *message)
-%
-%  A description of each parameter follows:
-%
-%    o message: Specifies an array of characters.
-%
-%
-*/
-MagickExport void Strip(char *message)
-{
-  register char
-    *p,
-    *q;
-
-  assert(message != (char *) NULL);
-  if (*message == '\0')
-    return;
-  if (strlen(message) == 1)
-    return;
-  p=message;
-  while (isspace((int)(unsigned char) (*p)))
-    p++;
-  if ((*p == '\'') || (*p == '"'))
-    p++;
-  q=message+strlen(message)-1;
-  while (isspace((int)(unsigned char) (*q)) && (q > p))
-    q--;
-  if (q > p)
-    if ((*q == '\'') || (*q == '"'))
-      q--;
-  (void) memmove(message,p,q-p+1);
-  message[q-p+1]='\0';
 }
 
 /*

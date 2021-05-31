@@ -1,3 +1,20 @@
+2021-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/svg.c (SVGComment): Re-implement comment callback to be based on
+        the managed-memory allocator and avoid excessive use of strlen().
+        (SVGCharacters): Re-implement characters callback to to be based
+        on the managed-memory allocator and avoid excessive use of
+        strlen().  Addresses oss-fuzz 34168
+        "graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer".
+
+        * magick/memory.c (_MagickResourceLimitedMemoryGetSizeAttribute):
+        New private function to retrieve various integral size values from
+        the managed-memory allocator regarding a specified allocation.
+
+        * magick/utility.c (MagickStripString): New function to replace
+        'Strip' which is now deprecated.  This version returns the string
+        length.
+
 2021-05-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Magick++/lib/Magick++/{Drawable.h, STL.h}: Use _MSVC_LANG in

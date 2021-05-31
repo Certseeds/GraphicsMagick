@@ -140,7 +140,7 @@ extern MagickExport void
   GetToken(const char *,char **,char *) MAGICK_FUNC_DEPRECATED,
   LocaleLower(char *),
   LocaleUpper(char *),
-  Strip(char *),
+  Strip(char *) MAGICK_FUNC_DEPRECATED,
   SetGeometry(const Image *,RectangleInfo *);
 
 extern MagickExport size_t
@@ -155,7 +155,6 @@ extern MagickExport magick_int64_t
 extern MagickExport size_t
   MagickGetToken(const char *start,char **end,char *token,
                  const size_t buffer_length),
-  MagickStripSpacesFromString(char *string),
   MagickStrlCat(char *dst, const char *src, const size_t size) MAGICK_FUNC_NONNULL,
   MagickStrlCpy(char *dst, const char *src, const size_t size) MAGICK_FUNC_NONNULL,
   MagickStrlCpyTrunc(char *dst, const char *src, const size_t size) MAGICK_FUNC_NONNULL;

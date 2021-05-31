@@ -35,6 +35,21 @@
 <div class="document">
 
 
+<p>2021-05-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* coders/svg.c (SVGComment): Re-implement comment callback to be based on
+the managed-memory allocator and avoid excessive use of strlen().
+(SVGCharacters): Re-implement characters callback to to be based
+on the managed-memory allocator and avoid excessive use of
+strlen().  Addresses oss-fuzz 34168
+&quot;graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer&quot;.</p>
+<p>* magick/memory.c (_MagickResourceLimitedMemoryGetSizeAttribute):
+New private function to retrieve various integral size values from
+the managed-memory allocator regarding a specified allocation.</p>
+<p>* magick/utility.c (MagickStripString): New function to replace
+'Strip' which is now deprecated.  This version returns the string
+length.</p>
+</blockquote>
 <p>2021-05-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * Magick++/lib/Magick++/{Drawable.h, STL.h}: Use _MSVC_LANG in

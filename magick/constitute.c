@@ -2002,7 +2002,7 @@ static Image *ReadImages(const ImageInfo *image_info,ExceptionInfo *exception)
   command=(char *) FileToBlob(image_info->filename+1,&length,exception);
   if (command == (char *) NULL)
     return((Image *) NULL);
-  Strip(command);
+  (void) MagickStripString(command);
   images=StringToArgv(command,&number_images);
   MagickFreeMemory(command);
   if (images == (char **) NULL)

@@ -155,6 +155,10 @@ typedef struct _SVGInfo
     *vertices,
     *url;
 
+  size_t
+    comment_len,
+    text_len;
+
   /*
     Even though it's unlikely to happen, keep track of nested <defs> and
     elements tagged with an id.
@@ -340,7 +344,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
           break;
         }
       (void) strlcpy(tokens[i],p,q-p+1);
-      Strip(tokens[i]);
+      (void) MagickStripString(tokens[i]);
       /*
         Check for "font-size", which we will move to the first position in
         the list.  This will ensure that any following numerical conversions
@@ -381,7 +385,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       else
         {
           (void) strlcpy(tokens[i],p,q-p+1);
-          Strip(tokens[i]);
+          (void) MagickStripString(tokens[i]);
           i++;
         }
     }
@@ -444,13 +448,13 @@ static char **GetTransformTokens(void *context,const char *text,
         }
       tokens[i]=AcquireString(p);
       (void) strlcpy(tokens[i],p,q-p+1);
-      Strip(tokens[i]);
+      (void) MagickStripString(tokens[i]);
       i++;
       p=q+1;
     }
   tokens[i]=AcquireString(p);
   (void) strlcpy(tokens[i],p,q-p+1);
-  Strip(tokens[i++]);
+  (void) MagickStripString(tokens[i++]);
   tokens[i]=(char *) NULL;
   *number_tokens=i;
   return(tokens);
@@ -857,11 +861,11 @@ SVGEndDocument(void *context)
   svg_info=(SVGInfo *) context;
   MagickFreeMemory(svg_info->size);
   MagickFreeMemory(svg_info->title);
-  MagickFreeMemory(svg_info->comment);
+  MagickFreeResourceLimitedMemory(svg_info->comment);
   MagickFreeMemory(svg_info->scale);
   MagickFreeMemory(svg_info->stop_color);
   MagickFreeMemory(svg_info->offset);
-  MagickFreeMemory(svg_info->text);
+  MagickFreeResourceLimitedMemory(svg_info->text);
   MagickFreeMemory(svg_info->vertices);
   MagickFreeMemory(svg_info->url);
 
@@ -1569,7 +1573,7 @@ SVGStartElement(void *context,const xmlChar *name,
         if (LocaleCompare((char *) name,"tspan") == 0)
           {
             IsTextOrTSpan = MagickTrue;
-            Strip(svg_info->text);
+            svg_info->text_len=MagickStripString(svg_info->text);
             if (*svg_info->text != '\0')
               {
                 char
@@ -1585,6 +1589,7 @@ SVGStartElement(void *context,const xmlChar *name,
                   This functionality is now handled by DrawImage() in render.c.
                 */
                 *svg_info->text='\0';
+                svg_info->text_len=strlen(svg_info->text);
               }
             MVGPrintf(svg_info->file,"push graphic-context\n");
             break;
@@ -3259,7 +3264,7 @@ SVGEndElement(void *context,const xmlChar *name)
             register char
               *p;
 
-            Strip(svg_info->text);
+            svg_info->text_len=MagickStripString(svg_info->text);
             if (*svg_info->text == '\0')
               break;
             (void) fputc('#',svg_info->file);
@@ -3271,6 +3276,7 @@ SVGEndElement(void *context,const xmlChar *name)
               }
             (void) fputc('\n',svg_info->file);
             *svg_info->text='\0';
+            svg_info->text_len=strlen(svg_info->text);
             break;
           }
         break;
@@ -3490,7 +3496,7 @@ SVGEndElement(void *context,const xmlChar *name)
       {
         if (LocaleCompare((char *) name,"text") == 0)
           {
-            Strip(svg_info->text);
+            svg_info->text_len=MagickStripString(svg_info->text);
             if (*svg_info->text != '\0')
               {
                 char
@@ -3500,6 +3506,7 @@ SVGEndElement(void *context,const xmlChar *name)
                 MVGPrintf(svg_info->file,"textc '%s'\n",text);  /* write text at current position */
                 MagickFreeMemory(text);
                 *svg_info->text='\0';
+                svg_info->text_len=strlen(svg_info->text);
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
             if  ( svg_info->idLevelInsideDefs == svg_info->n )  /* emit a "pop id" if warranted */
@@ -3511,7 +3518,7 @@ SVGEndElement(void *context,const xmlChar *name)
           }
         if (LocaleCompare((char *) name,"tspan") == 0)
           {
-            Strip(svg_info->text);
+            svg_info->text_len=MagickStripString(svg_info->text);
             if (*svg_info->text != '\0')
               {
                 char
@@ -3527,17 +3534,19 @@ SVGEndElement(void *context,const xmlChar *name)
                   This functionality is now handled by DrawImage() in render.c.
                 */
                 *svg_info->text='\0';
+                svg_info->text_len=strlen(svg_info->text);
               }
             MVGPrintf(svg_info->file,"pop graphic-context\n");
             break;
           }
         if (LocaleCompare((char *) name,"title") == 0)
           {
-            Strip(svg_info->text);
+            svg_info->text_len=MagickStripString(svg_info->text);
             if (*svg_info->text == '\0')
               break;
             (void) CloneString(&svg_info->title,svg_info->text);
             *svg_info->text='\0';
+            svg_info->text_len=strlen(svg_info->text);
             break;
           }
         break;
@@ -3576,43 +3585,55 @@ SVGEndElement(void *context,const xmlChar *name)
   (void) memset(&svg_info->segment,0,sizeof(svg_info->segment));
   (void) memset(&svg_info->element,0,sizeof(svg_info->element));
   *svg_info->text='\0';
+  svg_info->text_len=strlen(svg_info->text);
   svg_info->n--;
 }
 
 static void
 SVGCharacters(void *context,const xmlChar *c,int length)
 {
-  register char
-    *p;
-
-  register size_t
-    i;
-
   SVGInfo
     *svg_info;
+
+  char
+    *p;
+
+  char
+    *new_text;
+
+  register int
+    i;
+
+  size_t
+    new_text_len;
 
   /*
     Receiving some characters from the parser.
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "  SAX.characters(%.1024s,%d)",c,length);
+
   svg_info=(SVGInfo *) context;
-  if (svg_info->text != (char *) NULL)
+
+  new_text_len = svg_info->text_len+length;
+  new_text = MagickReallocateResourceLimitedMemory(char *,svg_info->text,new_text_len+1);
+  if (new_text != NULL)
     {
-      MagickReallocMemory(char *,svg_info->text,strlen(svg_info->text)+length+1);
+      svg_info->text = new_text;
     }
   else
     {
-      svg_info->text=MagickAllocateMemory(char *,(size_t) length+1);
-      if (svg_info->text != (char *) NULL)
-        *svg_info->text='\0';
+      /* There was a problem! Retain existing buffer. */
+      return;
     }
+
   if (svg_info->text == (char *) NULL)
     return;
-  p=svg_info->text+strlen(svg_info->text);
-  for (i=0; i < (size_t) length; i++)
+  p=svg_info->text+svg_info->text_len;
+  for (i=0; i < length; i++)
     *p++=c[i];
   *p='\0';
+  svg_info->text_len = new_text_len;
 }
 
 static void
@@ -3679,20 +3700,64 @@ SVGComment(void *context,const xmlChar *value)
   SVGInfo
     *svg_info;
 
+  char
+    *p;
+
+  char
+    *new_comment;
+
+  size_t
+    i;
+
+  size_t
+    new_comment_len,
+    length;
+
   /*
     A comment has been parsed.
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "  SAX.comment(%.1024s)",value);
   svg_info=(SVGInfo *) context;
-  if (svg_info->comment == (char *) NULL)
-    svg_info->comment=AllocateString((char *) value);
   /*
-    Old way concatenated all comments
+    Old way concatenated all comments like this:
   if (svg_info->comment != (char *) NULL)
     (void) ConcatenateString(&svg_info->comment,"\n");
   (void) ConcatenateString(&svg_info->comment,(char *) value);
   */
+  for (length = 0; value[length] != 0; length++)
+    ;
+  new_comment_len = svg_info->comment_len+length+(svg_info->comment_len ? 1 : 0);
+
+  /* Cap the maximum collected comment size */
+  if (new_comment_len > 4*MaxTextExtent)
+    return;
+
+  new_comment = MagickReallocateResourceLimitedMemory(char *,svg_info->comment,new_comment_len+1);
+  if (new_comment != NULL)
+    {
+      svg_info->comment = new_comment;
+    }
+  else
+    {
+      /* There was a problem! Retain existing buffer. */
+      return;
+    }
+  if (svg_info->comment == (char *) NULL)
+    return;
+
+  p=svg_info->comment+svg_info->comment_len;
+  if (svg_info->comment_len)
+    {
+      /* Add a new-line when appending */
+      *p='\n';
+      p++;
+    }
+  for (i=0; i < length; i++)
+    *p++=value[i];
+  *p='\0';
+
+  svg_info->comment_len = new_comment_len;
 }
 
 static void
@@ -3943,16 +4008,18 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   svg_info.exception=exception;
   svg_info.image=image;
   svg_info.image_info=image_info;
-  svg_info.text=AllocateString("");
+  svg_info.text=MagickAllocateResourceLimitedMemory(char *, MaxTextExtent);
   svg_info.scale=MagickAllocateMemory(double *,sizeof(double));
   if ((svg_info.text == (char *) NULL) || (svg_info.scale == (double *) NULL))
     {
       (void) fclose(file);
       (void) LiberateTemporaryFile(filename);
-      MagickFreeMemory(svg_info.text);
+      MagickFreeResourceLimitedMemory(svg_info.text);
       MagickFreeMemory(svg_info.scale);
       ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
+  svg_info.text[0] = '\0';
+  svg_info.text_len=strlen(svg_info.text);
   IdentityAffine(&svg_info.affine);
   svg_info.affine.sx=
     image->x_resolution == 0.0 ? 1.0 : image->x_resolution/72.0;
@@ -4071,9 +4138,9 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   MagickFreeMemory(svg_info.size);
   MagickFreeMemory(svg_info.title);
-  MagickFreeMemory(svg_info.comment);
+  MagickFreeResourceLimitedMemory(svg_info.comment);
   MagickFreeMemory(svg_info.scale);
-  MagickFreeMemory(svg_info.text);
+  MagickFreeResourceLimitedMemory(svg_info.text);
 
   (void) memset(&svg_info,0xbf,sizeof(SVGInfo));
   (void) LiberateTemporaryFile(filename);

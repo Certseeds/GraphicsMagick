@@ -33,6 +33,10 @@ extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
 extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
 
+extern MagickExport size_t
+  MagickStripSpacesFromString(char *string),
+  MagickStripString(char *string);
+
 /*
   Compute a value which is the next kilobyte power of 2 larger than
   the requested value or MaxTextExtent, whichever is larger.

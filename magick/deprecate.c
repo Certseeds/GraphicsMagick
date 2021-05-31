@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2010 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -490,4 +490,33 @@ MagickExport MagickPassFail
 SyncCacheView(ViewInfo *view)
 {
   return SyncCacheViewPixels(view,&GetCacheViewImage(view)->exception);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   S t r i p                                                                 %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method Strip strips any whitespace or quotes from the beginning and end of
+%  a string of characters.
+%
+%  The format of the Strip method is:
+%
+%      void Strip(char *message)
+%
+%  A description of each parameter follows:
+%
+%    o message: Specifies an array of characters.
+%
+%
+*/
+MagickExport void Strip(char *message)
+{
+  (void) MagickStripString(message);
 }

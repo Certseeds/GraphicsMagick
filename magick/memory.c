@@ -587,6 +587,8 @@ typedef struct _MagickMemoryResource_T
   void *memory;                 /* Pointer to memory allocation */
   size_t alloc_size;            /* Requested allocation size */
   size_t alloc_size_real;       /* Real/underlying allocation size */
+  size_t num_realloc;           /* Number of actual reallocations performed */
+  size_t num_realloc_moves;     /* Number of reallocations which moved memory */
   size_t signature;             /* Initialized to MagickSignature */
 
 } MagickMemoryResource_T;
@@ -598,9 +600,33 @@ typedef struct _MagickMemoryResource_T
 /* Return MemoryResource_T pointer given user-land pointer */
 #define MagickAccessMemoryResource_T_From_Pub(p) \
   ((MagickMemoryResource_T *) ((char *) p-sizeof(MagickMemoryResource_T)))
+
 /* Return user-land pointer given private base allocation pointer */
 #define UserLandPointerGivenBaseAlloc(p) \
   ((char *)p+sizeof(MagickMemoryResource_T))
+
+/* Copy (or init) MagickMemoryResource_T based on provided user-land pointer */
+#define MagickCopyMemoryResource_T_From_Pub(memory_resource, p)         \
+  do {                                                                  \
+    if (p != 0)                                                         \
+      {                                                                 \
+        assert(((ptrdiff_t) p - sizeof(MagickMemoryResource_T)) > 0);   \
+        (void) memcpy(memory_resource,                                  \
+                      (void *) MagickAccessMemoryResource_T_From_Pub(p), \
+                      sizeof(MagickMemoryResource_T));                  \
+        assert((memory_resource)->signature == MagickSignature);        \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        (memory_resource)->memory = 0;                                  \
+        (memory_resource)->alloc_size = 0;                              \
+        (memory_resource)->alloc_size_real = 0;                         \
+        (memory_resource)->num_realloc = 0;                             \
+        (memory_resource)->num_realloc_moves = 0;                       \
+        (memory_resource)->signature = MagickSignature;                 \
+      }                                                                 \
+  } while(0)
+
 /* Trace MemoryResource_T content given a pointer to it */
 #if defined(MAGICK_DEBUG_RL_MEMORY) && MAGICK_DEBUG_RL_MEMORY
 #define TraceMagickAccessMemoryResource_T(operation,memory_resource)    \
@@ -632,8 +658,10 @@ static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_re
     }
   if (memory_resource->alloc_size != 0)
     LiberateMagickResource(MemoryResource, memory_resource->alloc_size);
-  memory_resource->alloc_size_real=0;
-  memory_resource->alloc_size=0;
+  memory_resource->alloc_size_real = 0;
+  memory_resource->alloc_size = 0;
+  memory_resource->num_realloc = 0;
+  memory_resource->num_realloc_moves = 0;
 }
 
 
@@ -653,6 +681,7 @@ static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_re
 
   Linux malloc produces allocations aligned to 16-bytes.
  */
+
 MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                                                           const size_t count,
                                                           const size_t size,
@@ -669,21 +698,8 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
   fprintf(stderr,"%d: p = %p, count = %zu, size =%zu\n", __LINE__, p, count, size);
 #endif
 
-  if (p != 0)
-    {
-      assert(((ptrdiff_t) p - sizeof(MagickMemoryResource_T)) > 0);
-      (void) memcpy(&memory_resource,
-                    (void *) MagickAccessMemoryResource_T_From_Pub(p),
-                    sizeof(MagickMemoryResource_T));
-      assert(memory_resource.signature == MagickSignature);
-    }
-  else
-    {
-      memory_resource.memory = 0;
-      memory_resource.alloc_size = 0;
-      memory_resource.alloc_size_real = 0;
-      memory_resource.signature = MagickSignature;
-    }
+  /* Copy (or init) 'memory_resource' based on provided user-land pointer */
+  MagickCopyMemoryResource_T_From_Pub(&memory_resource, p);
   TraceMagickAccessMemoryResource_T("BEFORE", &memory_resource);
 
   do
@@ -722,6 +738,11 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                         (void) memset(UserLandPointerGivenBaseAlloc(realloc_memory)+
                                       memory_resource.alloc_size,0,size_diff);
 
+                      /* Tally actual reallocations */
+                      memory_resource.num_realloc++;
+                      /* Tally reallocations which resulted in a memory move */
+                      if (realloc_memory != memory_resource.memory)
+                        memory_resource.num_realloc_moves++;
                       memory_resource.memory = realloc_memory;
                       memory_resource.alloc_size = new_size;
                       memory_resource.alloc_size_real = new_size;
@@ -798,4 +819,39 @@ MagickExport void *_MagickAllocateResourceLimitedMemory(const size_t size)
 MagickExport void _MagickFreeResourceLimitedMemory(void *p)
 {
   _MagickReallocateResourceLimitedMemory(p,0,0,MagickFalse);
+}
+
+/*
+  Get current resource-limited memory size attribute (or defaulted value if NULL)
+*/
+MagickExport size_t _MagickResourceLimitedMemoryGetSizeAttribute(const void *p,
+                                                                 const MagickAllocateResourceLimitedMemoryAttribute attr)
+{
+  MagickMemoryResource_T memory_resource;
+  size_t result = 0;
+
+  /* Copy (or init) 'memory_resource' based on provided user-land pointer */
+  MagickCopyMemoryResource_T_From_Pub(&memory_resource, p);
+
+  switch (attr)
+    {
+    case ResourceLimitedMemoryAttributeAllocSize:
+      /* Currently requested allocation size */
+      result = memory_resource.alloc_size;
+      break;
+    case ResourceLimitedMemoryAttributeAllocSizeReal:
+      /* Actual underlying requested allocation size */
+      result = memory_resource.alloc_size_real;
+      break;
+    case ResourceLimitedMemoryAttributeAllocNumReallocs:
+      /* Number of reallocations performed on buffer */
+      result = memory_resource.num_realloc;
+      break;
+    case ResourceLimitedMemoryAttributeAllocNumReallocsMoved:
+      /* Number of reallocations performed on buffer which moved memory */
+      result = memory_resource.num_realloc_moves;
+      break;
+    }
+
+  return result;
 }
