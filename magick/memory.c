@@ -729,9 +729,19 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
               if (new_size > memory_resource.alloc_size_real)
                 {
                   void *realloc_memory;
-                  /* FIXME: Maybe over-allocate here if re-alloc? */
+                  size_t realloc_size = new_size+sizeof(MagickMemoryResource_T);
+                  /*
+                    If this is a realloc, then round up underlying
+                    allocation sizes for small allocations in order to
+                    lessen realloc calls and lessen memory moves.
+                  */
+                  if ((memory_resource.alloc_size_real != 0) && (realloc_size < 131072))
+                    {
+                      /* realloc_size <<= 1; */
+                      MagickRoundUpStringLength(realloc_size);
+                    }
                   realloc_memory = (ReallocFunc)(memory_resource.memory,
-                                                 new_size+sizeof(MagickMemoryResource_T));
+                                                 realloc_size);
                   if (realloc_memory != 0)
                     {
                       if (clear)
@@ -745,7 +755,7 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                         memory_resource.num_realloc_moves++;
                       memory_resource.memory = realloc_memory;
                       memory_resource.alloc_size = new_size;
-                      memory_resource.alloc_size_real = new_size;
+                      memory_resource.alloc_size_real = realloc_size-sizeof(MagickMemoryResource_T);
                     }
                   else
                     {

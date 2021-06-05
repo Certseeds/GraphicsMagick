@@ -1,3 +1,9 @@
+2021-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/memory.c (_MagickReallocateResourceLimitedMemory): Round
+        up allocation size on small reallocs in order to lessen the number
+        of actual reallocs.
+
 2021-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/svg.c (SVGComment): Re-implement comment callback to be based on
