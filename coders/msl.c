@@ -2016,9 +2016,23 @@ MSLStartElement(void *context,const xmlChar *name,
           }
         else if (LocaleCompare((char *) name, "group") == 0)
           {
+            MSLGroupInfo *new_group_info;
             msl_info->nGroups++;
-            MagickReallocMemory(MSLGroupInfo *,msl_info->group_info,
-                                (msl_info->nGroups+1)*sizeof(MSLGroupInfo));
+            new_group_info =
+              MagickReallocateResourceLimitedClearedArray(MSLGroupInfo *,
+                                                          msl_info->group_info,
+                                                          msl_info->nGroups+1,
+                                                          sizeof(MSLGroupInfo));
+            if (new_group_info != (MSLGroupInfo *) NULL)
+              {
+                msl_info->group_info = new_group_info;
+              }
+            else
+            {
+              msl_info->nGroups--;
+              MagickFatalError3(ResourceLimitFatalError,
+                      MemoryAllocationFailed,UnableToAllocateImage);
+            }
             break;
           }
         ThrowException(msl_info->exception,OptionError,
@@ -4833,8 +4847,8 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   /* top of the stack is the MSL file itself */
   msl_info.image=MagickAllocateMemory(Image **,sizeof(Image *));
   msl_info.attributes=MagickAllocateMemory(Image **,sizeof(Image *));
-  msl_info.group_info=MagickAllocateMemory(MSLGroupInfo *,
-                                           sizeof(MSLGroupInfo));
+  msl_info.group_info=MagickAllocateResourceLimitedClearedMemory(MSLGroupInfo *,
+                                                                 sizeof(MSLGroupInfo));
   if ((msl_info.image_info == (ImageInfo **) NULL) ||
       (msl_info.draw_info == (DrawInfo **) NULL) ||
       (msl_info.image == (Image **) NULL) ||
@@ -4991,7 +5005,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   MagickFreeMemory(msl_info.draw_info);
   MagickFreeMemory(msl_info.attributes);
   MagickFreeMemory(msl_info.image);
-  MagickFreeMemory(msl_info.group_info);
+  MagickFreeResourceLimitedMemory(msl_info.group_info);
 
   CloseBlob(msl_image);
   /*

@@ -1,5 +1,12 @@
 2021-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/msl.c (MSLStartElement): Use resource-managed memory
+        allocator for msl_info->group_info and assure that memory is
+        cleared so that empty group does not result in use of
+        uninitialized data.  Addresses oss-fuzz 34869
+        "graphicsmagick:coder_MSL_fuzzer: Use-of-uninitialized-value in
+        MSLEndElement".
+
         * magick/memory.c (_MagickReallocateResourceLimitedMemory): Round
         up allocation size on small reallocs in order to lessen the number
         of actual reallocs.
