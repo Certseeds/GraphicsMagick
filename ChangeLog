@@ -8,6 +8,10 @@
         to avoid DOS.
         (GetStyleTokens): Fix massive over-allocation of string due to use
         of AcquireString() on entire remaining text buffer.
+        (GetStyleTokens): Don't use strlcpy() to copy token because it
+        scans full text.
+        (GetTransformTokens): Don't use strlcpy() to copy token because it
+        scans full text.
 
 2021-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

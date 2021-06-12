@@ -275,6 +275,12 @@ GetUserSpaceCoordinateValue(const SVGInfo *svg_info,
   return(value);
 }
 
+#define MagickCopySubstrToToken(dst, src, size)     \
+  do {                                            \
+    (void) memcpy(dst,src,(size));                \
+    dst[(size)]='\0';                             \
+  } while (0);
+
 static char **GetStyleTokens(void *context,const char *text,size_t *number_tokens)
 {
 #define MaxStyleTokens 256
@@ -336,14 +342,14 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       */
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
-      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1));
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
                           MemoryAllocationFailed,UnableToConvertStringToTokens);
           break;
         }
-      (void) strlcpy(tokens[i],p,q-p+1);
+      MagickCopySubstrToToken(tokens[i], p, q-p);
       (void) MagickStripString(tokens[i]);
       /*
         Check for "font-size", which we will move to the first position in
@@ -376,7 +382,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
     }
   if (i < alloc_tokens)
     {
-      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1));
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
@@ -384,7 +390,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
         }
       else
         {
-          (void) strlcpy(tokens[i],p,q-p+1);
+          MagickCopySubstrToToken(tokens[i], p, q-p);
           (void) MagickStripString(tokens[i]);
           i++;
         }
@@ -404,7 +410,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
 static char **GetTransformTokens(void *context,const char *text,
                                  size_t *number_tokens)
 {
-#define MaxTransformTokens 4096
+#define MaxTransformTokens 256
 
   char
     **tokens;
@@ -456,21 +462,22 @@ static char **GetTransformTokens(void *context,const char *text,
       */
       if (i >= MaxTransformTokens)
         break;
-      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1));
       if (tokens[i] == NULL)
         THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
-      (void) strlcpy(tokens[i],p,q-p+1);
+      MagickCopySubstrToToken(tokens[i], p, q-p);
       (void) MagickStripString(tokens[i]);
       i++;
       p=q+1;
     }
   if (i < MaxTransformTokens)
     {
-      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1));
       if (tokens[i] == NULL)
         THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
-      (void) strlcpy(tokens[i],p,q-p+1);
-      (void) MagickStripString(tokens[i++]);
+      MagickCopySubstrToToken(tokens[i], p, q-p);
+      (void) MagickStripString(tokens[i]);
+      i++;
     }
   tokens[i]=(char *) NULL;
   *number_tokens=i;
