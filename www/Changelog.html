@@ -35,6 +35,12 @@
 <div class="document">
 
 
+<p>2021-06-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/svg.c (GetTransformTokens): Fix massive over-allocation
+of string due to use of AcquireString() on entire remaining text
+buffer. Addresses oss-fuzz 35171 &quot;graphicsmagick:coder_SVG_fuzzer:
+Out-of-memory in coder_SVG_fuzzer&quot;.</blockquote>
 <p>2021-06-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (MSLStartElement): Use resource-managed memory

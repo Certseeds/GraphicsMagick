@@ -394,6 +394,13 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
   return(tokens);
 }
 
+
+#define THROW_GET_TRANSFORM_TOKENS_EXCEPTION()                          \
+  do {                                                                  \
+    ThrowException3(svg_info->exception,ResourceLimitError,             \
+                    MemoryAllocationFailed,UnableToConvertStringToTokens); \
+  } while (0)
+
 static char **GetTransformTokens(void *context,const char *text,
                                  size_t *number_tokens)
 {
@@ -440,19 +447,19 @@ static char **GetTransformTokens(void *context,const char *text,
           alloc_tokens <<= 1;
           MagickReallocMemory(char **,tokens,(alloc_tokens+2)*sizeof(*tokens));
           if (tokens == (char **) NULL)
-            {
-              ThrowException3(svg_info->exception,ResourceLimitError,
-                              MemoryAllocationFailed,UnableToConvertStringToTokens);
-              return((char **) NULL);
-            }
+            THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
         }
-      tokens[i]=AcquireString(p);
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      if (tokens[i] == NULL)
+        THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
       (void) strlcpy(tokens[i],p,q-p+1);
       (void) MagickStripString(tokens[i]);
       i++;
       p=q+1;
     }
-  tokens[i]=AcquireString(p);
+  tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+  if (tokens[i] == NULL)
+    THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
   (void) strlcpy(tokens[i],p,q-p+1);
   (void) MagickStripString(tokens[i++]);
   tokens[i]=(char *) NULL;
