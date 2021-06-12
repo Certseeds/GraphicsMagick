@@ -336,7 +336,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
       */
       if ((*q != ':') && (*q != ';') && (*q != '\0'))
         continue;
-      tokens[i]=AcquireString(p); /* Makes a full copy of remaining text! */
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
@@ -376,7 +376,7 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
     }
   if (i < alloc_tokens)
     {
-      tokens[i]=AcquireString(p); /* Makes a full copy of remaining text! */
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
       if (tokens[i] == NULL)
         {
           ThrowException3(svg_info->exception,ResourceLimitError,
@@ -404,6 +404,8 @@ static char **GetStyleTokens(void *context,const char *text,size_t *number_token
 static char **GetTransformTokens(void *context,const char *text,
                                  size_t *number_tokens)
 {
+#define MaxTransformTokens 4096
+
   char
     **tokens;
 
@@ -449,6 +451,11 @@ static char **GetTransformTokens(void *context,const char *text,
           if (tokens == (char **) NULL)
             THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
         }
+      /*
+        Apply an arbitrary limit on number of tokens to avoid DOS
+      */
+      if (i >= MaxTransformTokens)
+        break;
       tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
       if (tokens[i] == NULL)
         THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
@@ -457,11 +464,14 @@ static char **GetTransformTokens(void *context,const char *text,
       i++;
       p=q+1;
     }
-  tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
-  if (tokens[i] == NULL)
-    THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
-  (void) strlcpy(tokens[i],p,q-p+1);
-  (void) MagickStripString(tokens[i++]);
+  if (i < MaxTransformTokens)
+    {
+      tokens[i]=MagickAllocateMemory(char *,(size_t) (q-p+1+1));
+      if (tokens[i] == NULL)
+        THROW_GET_TRANSFORM_TOKENS_EXCEPTION();
+      (void) strlcpy(tokens[i],p,q-p+1);
+      (void) MagickStripString(tokens[i++]);
+    }
   tokens[i]=(char *) NULL;
   *number_tokens=i;
   return(tokens);

@@ -4,6 +4,10 @@
         of string due to use of AcquireString() on entire remaining text
         buffer. Addresses oss-fuzz 35171 "graphicsmagick:coder_SVG_fuzzer:
         Out-of-memory in coder_SVG_fuzzer".
+        (GetTransformTokens): Apply an arbitrary limit on number of tokens
+        to avoid DOS.
+        (GetStyleTokens): Fix massive over-allocation of string due to use
+        of AcquireString() on entire remaining text buffer.
 
 2021-06-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
