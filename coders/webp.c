@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2020 GraphicsMagick Group
+% Copyright (C) 2013-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -278,7 +278,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
 
   for (y=0; y < (size_t) image->rows; y++)
     {
-      q=GetImagePixelsEx(image,0,y,image->columns,1,exception);
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
 
