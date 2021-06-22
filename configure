@@ -27068,7 +27068,13 @@ $as_echo_n "checking for JXL support ... " >&6; }
 $as_echo "" >&6; }
     failed=0
     passed=0
-    ac_fn_c_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
+    ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+    ac_fn_cxx_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
 if test "x$ac_cv_header_jxl_decode_h" = xyes; then :
   passed=`expr $passed + 1`
 else
@@ -27077,15 +27083,13 @@ fi
 
 
     # jxl always requires hwy no extra test needed
-    # Both hwy and jxl are c++ projects. Therefore either link with c++ or
-    # manually add libstdc++
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlDecoderCreate in -ljxl" >&5
 $as_echo_n "checking for JxlDecoderCreate in -ljxl... " >&6; }
 if ${ac_cv_lib_jxl_JxlDecoderCreate+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljxl -lhwy -lstdc++ $LIBS"
+LIBS="-ljxl -lhwy $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27104,7 +27108,7 @@ return JxlDecoderCreate ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
+if ac_fn_cxx_try_link "$LINENO"; then :
   ac_cv_lib_jxl_JxlDecoderCreate=yes
 else
   ac_cv_lib_jxl_JxlDecoderCreate=no
@@ -27127,7 +27131,7 @@ if ${ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljxl_threads -lstdc++ $LIBS"
+LIBS="-ljxl_threads  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27146,7 +27150,7 @@ return JxlThreadParallelRunnerCreate ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
+if ac_fn_cxx_try_link "$LINENO"; then :
   ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate=yes
 else
   ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate=no
@@ -27189,7 +27193,7 @@ return BrotliDecoderVersion ();
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
+if ac_fn_cxx_try_link "$LINENO"; then :
   ac_cv_lib_brotlidec_BrotliDecoderVersion=yes
 else
   ac_cv_lib_brotlidec_BrotliDecoderVersion=no
@@ -27206,6 +27210,12 @@ else
   failed=`expr $failed + 1`
 fi
 
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking if JXL package is complete" >&5
 $as_echo_n "checking if JXL package is complete... " >&6; }
     if test $passed -gt 0
@@ -27216,7 +27226,10 @@ $as_echo_n "checking if JXL package is complete... " >&6; }
 $as_echo "no -- some components failed test" >&6; }
         have_jxl='no (failed tests)'
     else
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lstdc++ -lbrotlidec -lbrotlienc'
+	# JXL is a C++ Lib so requires linking with stdc++.
+	# TODO: A better solution would be to tell automake to do any linking with
+	# c++, but I can't figure out a way to get this working.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lskcms -lstdc++'
         LIBS="$LIB_JXL $LIBS"
 
 $as_echo "#define HasJXL 1" >>confdefs.h
@@ -27224,6 +27237,7 @@ $as_echo "#define HasJXL 1" >>confdefs.h
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_jxl='yes'
+        PERLMAINCC="$CXX"
     fi
     else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -30259,7 +30273,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_JXL $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 

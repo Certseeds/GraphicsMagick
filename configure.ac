@@ -2517,14 +2517,14 @@ then
     AC_MSG_RESULT()
     failed=0
     passed=0
+    AC_LANG_PUSH([C++])
     AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # jxl always requires hwy no extra test needed
-    # Both hwy and jxl are c++ projects. Therefore either link with c++ or
-    # manually add libstdc++
-    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lstdc++])
-    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lstdc++])
+    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy])
+    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # Testing for decoder should also cover encoder
     AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_LANG_POP
     AC_MSG_CHECKING([if JXL package is complete])
     if test $passed -gt 0
     then
@@ -2533,11 +2533,15 @@ then
         AC_MSG_RESULT([no -- some components failed test])
         have_jxl='no (failed tests)'
     else
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lstdc++ -lbrotlidec -lbrotlienc'
+	# JXL is a C++ Lib so requires linking with stdc++.
+	# TODO: A better solution would be to tell automake to do any linking with
+	# c++, but I can't figure out a way to get this working.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lskcms -lstdc++'
         LIBS="$LIB_JXL $LIBS"
         AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
         AC_MSG_RESULT([yes])
         have_jxl='yes'
+        PERLMAINCC="$CXX"
     fi
     else
         AC_MSG_RESULT([no])
@@ -3729,7 +3733,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_JXL $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST([MAGICK_DEP_LIBS])
