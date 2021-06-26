@@ -1,5 +1,10 @@
 2021-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/pcx.c (ReadPCXImage): Fix problem that 16-colors are used
+        rather than 256-colors given sample file provided.  Resolves
+        SourceForge patch #65 "PCX file not read correctly".  Patch is by
+        Sam Yang.
+
         * coders/jp2.c (ReadJP2Image): Pass "max_samples" option to Jasper
         to try to limit the amount of memory it may allocate while opening
         a file.  Addresses oss-fuzz 35265

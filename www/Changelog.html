@@ -37,11 +37,16 @@
 
 <p>2021-06-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c (ReadJP2Image): Pass &quot;max_samples&quot; option to Jasper
+<p>* coders/pcx.c (ReadPCXImage): Fix problem that 16-colors are used
+rather than 256-colors given sample file provided.  Resolves
+SourceForge patch #65 &quot;PCX file not read correctly&quot;.  Patch is by
+Sam Yang.</p>
+<p>* coders/jp2.c (ReadJP2Image): Pass &quot;max_samples&quot; option to Jasper
 to try to limit the amount of memory it may allocate while opening
 a file.  Addresses oss-fuzz 35265
 &quot;graphicsmagick:coder_PGX_fuzzer: Out-of-memory in
-coder_PGX_fuzzer&quot;.</blockquote>
+coder_PGX_fuzzer&quot;.</p>
+</blockquote>
 <p>2021-06-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/webp.c (ReadWEBPImage): Use SetImagePixelsEx() rather
