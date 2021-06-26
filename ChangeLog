@@ -1,3 +1,11 @@
+2021-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c (ReadJP2Image): Pass "max_samples" option to Jasper
+        to try to limit the amount of memory it may allocate while opening
+        a file.  Addresses oss-fuzz 35265
+        "graphicsmagick:coder_PGX_fuzzer: Out-of-memory in
+        coder_PGX_fuzzer".
+
 2021-06-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/webp.c (ReadWEBPImage): Use SetImagePixelsEx() rather

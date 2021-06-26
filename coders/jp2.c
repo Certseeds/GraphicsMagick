@@ -44,6 +44,7 @@
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/profile.h"
+#include "magick/resource.h"
 #include "magick/utility.h"
 #if defined(HasJP2)
 #if !defined(uchar)
@@ -458,6 +459,9 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   unsigned char
     magick[16];
 
+  char
+    options[MaxTextExtent];
+
   unsigned int
     status;
 
@@ -480,6 +484,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   (void) memset(channel_lut,0,sizeof(channel_lut));
+  options[0]='\0';
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
@@ -513,11 +518,21 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
 
 
+  {
+    /* Pass options argument which specifies "max_samples" to cap memory usage. */
+    const magick_uint64_t memory_limit = (magick_uint64_t) GetMagickResourceLimit(MemoryResource);
+    const magick_uint64_t max_samples = memory_limit/4U * sizeof(magick_uint32_t);
+
+    FormatString(options,"max_samples=%" MAGICK_UINT64_F "u", max_samples);
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "JP2 options = \"%s\"", options);
+  }
+
 #if HAVE_JP2_DECODE
   if (IsJP2(magick,sizeof(magick)))
     {
       /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=jp2_decode(jp2_stream,0);
+      jp2_image=jp2_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding JP2...");
     }
@@ -526,7 +541,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   if (IsJPC(magick,sizeof(magick)))
     {
       /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=jpc_decode(jp2_stream,0);
+      jp2_image=jpc_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding JPC...");
     }
@@ -535,7 +550,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   if (IsPGX(magick,sizeof(magick)))
     {
       /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=pgx_decode(jp2_stream,0);
+      jp2_image=pgx_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding PGX...");
     }
@@ -546,7 +561,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     determination, which may include file formats we don't want to
     support via Jasper.
   */
-  /* jp2_image=jas_image_decode(jp2_stream,-1,0); */
+  /* jp2_image=jas_image_decode(jp2_stream,-1,options); */
   if (jp2_image == (jas_image_t *) NULL)
     ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
 
