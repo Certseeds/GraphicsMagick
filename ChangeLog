@@ -1,5 +1,9 @@
 2021-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/msl.c (ProcessMSLScript): Fix possible use of freed
+        memory.  Fixes oss-fuzz 35621 "graphicsmagick:coder_MSL_fuzzer:
+        ASSERT: image->signature == MagickSignature".
+
         * fuzzing/oss-fuzz-build.sh: Disable reading and writing of
         gzip/bzip files since we don't have a viable solution for formats
         which require an uncompressed file as input.

@@ -4951,6 +4951,8 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
 
  msl_info_error:
 
+  msl_image=msl_info.image[0];
+
   /*
     Capture any exception which might have been reported to MSL file
     image.
