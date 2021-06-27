@@ -20,7 +20,7 @@ CONVERT_CMD="${GM} convert"
 COMPARE_CMD="${GM} compare"
 DISPLAY_CMD="${GM} display"
 
-FORMAT=".miff"
+FORMAT="_out.pnm"
 
 BLANK="comp_blank$FORMAT"
 CENTER="comp_Center$FORMAT"
@@ -147,7 +147,7 @@ test_command_fn 'Verify Result' test $status
 if test $status -eq 0
 then
   rm -f $TEMPFILE $BLANK $CENTER $NORTH $NORTHEAST $EAST $SOUTHEAST $SOUTH \
-    $SOUTHWEST $WEST $NORTHWEST $RESULT
+    $SOUTHWEST $WEST $NORTHWEST $RESULT $CONJURE_RESULT
 fi
 #diff --report-identical-files $RESULT $CONJURE_RESULT
 #$COMPARE_CMD $RESULT $CONJURE_RESULT $COMPARED || exit 5
