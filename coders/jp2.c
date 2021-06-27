@@ -532,27 +532,27 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   if (IsJP2(magick,sizeof(magick)))
     {
       /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=jp2_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding JP2...");
+      jp2_image=jp2_decode(jp2_stream,options);
     }
 #endif
 #if HAVE_JPC_DECODE
   if (IsJPC(magick,sizeof(magick)))
     {
       /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=jpc_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding JPC...");
+      jp2_image=jpc_decode(jp2_stream,options);
     }
 #endif
 #if HAVE_PGX_DECODE
   if (IsPGX(magick,sizeof(magick)))
     {
       /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
-      jp2_image=pgx_decode(jp2_stream,options);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Decoding PGX...");
+      jp2_image=pgx_decode(jp2_stream,options);
     }
 #endif
 
