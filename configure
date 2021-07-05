@@ -26132,7 +26132,7 @@ $as_echo "#define HasJP2 1" >>confdefs.h
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_jp2='yes'
-        for ac_func in jp2_decode jpc_decode pgx_decode
+        for ac_func in jas_init_custom jp2_decode jpc_decode pgx_decode
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

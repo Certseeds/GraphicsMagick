@@ -2231,7 +2231,7 @@ then
         AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
         AC_MSG_RESULT([yes])
         have_jp2='yes'
-        AC_CHECK_FUNCS([jp2_decode jpc_decode pgx_decode])
+        AC_CHECK_FUNCS([jas_init_custom jp2_decode jpc_decode pgx_decode])
     fi
     else
     AC_MSG_RESULT([no])
