@@ -493,7 +493,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   /* every break outside of success is some kind of error */
   if(status != JXL_DEC_SUCCESS) {
     /* no details available */
-    ThrowReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
+    ThrowJXLReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
   }
 
   JXLReadCleanup()
