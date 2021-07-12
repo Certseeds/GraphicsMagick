@@ -74,6 +74,7 @@ static const struct
     MODULEALIAS("H","LOGO"),
     MODULEALIAS("HTM","HTML"),
     MODULEALIAS("HTTP","URL"),
+    MODULEALIAS("HEIC","HEIF"),
     MODULEALIAS("ICB","TGA"),
     MODULEALIAS("ICC","META"),
     MODULEALIAS("ICM","META"),

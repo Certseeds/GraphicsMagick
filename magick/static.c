@@ -96,6 +96,9 @@ static const struct
   STATICM("HISTOGRAM",RegisterHISTOGRAMImage,UnregisterHISTOGRAMImage),
   STATICM("HRZ",RegisterHRZImage,UnregisterHRZImage),
   STATICM("HTML",RegisterHTMLImage,UnregisterHTMLImage),
+#if defined(HasHEIF)
+  STATICM("HEIF",RegisterHEIFImage,UnregisterHEIFImage),
+#endif
   STATICM("ICON",RegisterICONImage,UnregisterICONImage),
   STATICM("IDENTITY",RegisterIDENTITYImage,UnregisterIDENTITYImage),
   STATICM("INFO",RegisterINFOImage,UnregisterINFOImage),

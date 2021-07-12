@@ -61,6 +61,11 @@ MAGICK_WEBP_MODULES = coders/webp.la
 MAGICK_WEBP_SRCS = coders/webp.c
 endif
 
+if HasHEIF
+MAGICK_HEIF_MODULES = coders/heif.la
+MAGICK_HEIF_SRCS = coders/heif.c
+endif
+
 if ENABLE_BROKEN_CODERS
 MAGICK_BROKEN_MODULES = coders/psd.la
 MAGICK_BROKEN_SRCS = coders/psd.c
@@ -167,7 +172,8 @@ MAGICK_CODER_SRCS = \
 	$(MAGICK_JP2_SRCS) \
 	$(MAGICK_TIFF_SRCS) \
 	$(MAGICK_X11_CODER_SRCS) \
-	$(MAGICK_WEBP_SRCS)
+	$(MAGICK_WEBP_SRCS) \
+	$(MAGICK_HEIF_SRCS)
 
 if WITH_MODULES
 coders_LTLIBRARIES = \
@@ -261,7 +267,7 @@ coders_LTLIBRARIES = \
 	$(MAGICK_DPS_MODULES) $(MAGICK_FPX_MODULES) $(MAGICK_GDI32_MODULES) \
 	$(MAGICK_JBIG_MODULES) $(MAGICK_JPEG_MODULES) $(MAGICK_JP2_MODULES) \
 	$(MAGICK_PNG_MODULES) $(MAGICK_TIFF_MODULES) $(MAGICK_X11_CODER_MODULES) \
-	$(MAGICK_WEBP_MODULES)
+	$(MAGICK_WEBP_MODULES) $(MAGICK_HEIF_MODULES)
 else
 coders_LTLIBRARIES =
 endif # WITH_MODULES
@@ -871,3 +877,9 @@ coders_webp_la_SOURCES     = coders/webp.c
 coders_webp_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_webp_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_webp_la_LIBADD      = $(LIBMAGICK) $(LIB_WEBP)
+
+# HEIF coder module
+coders_heif_la_SOURCES     = coders/heif.c
+coders_heif_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
+coders_heif_la_LDFLAGS     = $(MODULECOMMONFLAGS)
+coders_heif_la_LIBADD      = $(LIBMAGICK) $(LIB_HEIF)

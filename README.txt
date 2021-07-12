@@ -394,3 +394,9 @@ building under Microsoft Windows:
     https://github.com/ebiggers/libdeflate).  Linking with this
     library may be necessary for builds where libtiff depends on
     libdeflate.
+
+* GraphicsMagick requires the heif library from
+
+    https://github.com/strukturag/libheif
+
+    to read heif/heic files.
