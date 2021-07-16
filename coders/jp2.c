@@ -422,18 +422,24 @@ static void initialize_jasper(void)
   if (!jasper_initialized)
     {
 #if HAVE_JAS_INIT_CUSTOM
-      jas_allocator_t jas_allocator;
       jas_conf_t jas_conf;
 
-      (void) memset(&jas_allocator,0,sizeof(jas_allocator));
-      (void) memset(&jas_conf,0,sizeof(jas_conf));
+      /* Get the default configuration parameters that were selected at
+         when the library was built. */
+      jas_get_default_conf(&jas_conf);
 
-      jas_allocator.alloc = _MagickAllocateResourceLimitedMemory;
-      jas_allocator.free = _MagickFreeResourceLimitedMemory;
-      jas_allocator.realloc = _MagickReallocateResourceLimitedMemoryTraditional;
+      /* Use our own resource-limited memory allocation functions */
+      jas_conf.allocator.alloc = _MagickAllocateResourceLimitedMemory;
+      jas_conf.allocator.free = _MagickFreeResourceLimitedMemory;
+      jas_conf.allocator.realloc = _MagickReallocateResourceLimitedMemoryTraditional;
 
+      /* The maximum number of samples allowable in an image to be decoded. */
       jas_conf.dec_default_max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
-      (void) jas_init_custom(&jas_allocator,&jas_conf);
+
+      /* Do not register jas_cleanup() via atexit() */
+      jas_conf.atexit_cleanup = false;
+
+      (void) jas_init_custom(&jas_conf);
 #else
       jas_init();
 #endif  /* HAVE_JAS_INIT_CUSTOM */
@@ -1042,7 +1048,7 @@ ModuleExport void RegisterJP2Image(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method UnregisterJP2Image removes format registrations made by the
-%  PNG module from the list of supported formats.
+%  JP2 module from the list of supported formats.
 %
 %  The format of the UnregisterJP2Image method is:
 %
