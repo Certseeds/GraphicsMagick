@@ -818,24 +818,25 @@ Debian Packages
 These packages may be installed on a Debian Linux system (or one that
 derives from Debian such as Ubuntu or Mint) in order to quickly build
 a full GraphicsMagick.  Most of these are optional depending on the
-features desired:
+features desired::
 
-gcc (and/or clang), make,
-libbz2-dev, libfreetype6-dev, libjbig-dev, liblcms2-dev, liblzma-dev,
-libpng-dev, libtiff-dev, libtool, libwebp-dev, libwmf-dev, libx11-dev,
-libxdmcp-dev, libxext-dev, libxft-dev, libxml2-dev, libxt-dev,
-libzstd-dev, zlib1g-dev, libperl-dev
+  gcc (and/or clang), make, libbz2-dev, libfreetype6-dev, libjbig-dev,
+  liblcms2-dev, liblzma-dev, libpng-dev, libtiff-dev, libtool,
+  libwebp-dev, libwmf-dev, libx11-dev, libxdmcp-dev, libxext-dev,
+  libxft-dev, libxml2-dev, libxt-dev, libzstd-dev, zlib1g-dev,
+  libperl-dev
 
 These additional packages are useful in order to improve the run-time
 features of the software (and could be installed prior to building
-GraphicsMagick):
+GraphicsMagick)::
 
-dcraw, fonts-urw-base35, ghostscript, hp2xx, ttf-mscorefonts-installer
+  dcraw, fonts-urw-base35, ghostscript, hp2xx,
+  ttf-mscorefonts-installer
 
 These additional packages are useful in order to maintain
-GraphicsMagick itself:
+GraphicsMagick itself::
 
-autoconf, automake, graphviz, libtool, docutils-common, python, m4
+  autoconf, automake, graphviz, libtool, docutils-common, python, m4
 
 
 Building under Cygwin
