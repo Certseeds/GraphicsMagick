@@ -1,3 +1,14 @@
+2021-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLStartElement): Use macros to simplify
+        validations and reduce repeated code fragments. Add validations
+        for image size and pixels present where applicable.  Fixes
+        oss-fuzz 36224 "graphicsmagick:coder_MSL_fuzzer: Timeout in
+        coder_MSL_fuzzer".
+
+        * magick/transform.c (RollImage): Assert that image rows and
+        columns are not zero.
+
 2021-07-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (initialize_jasper): Update for the latest version

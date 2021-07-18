@@ -35,6 +35,16 @@
 <div class="document">
 
 
+<p>2021-07-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* coders/msl.c (MSLStartElement): Use macros to simplify
+validations and reduce repeated code fragments. Add validations
+for image size and pixels present where applicable.  Fixes
+oss-fuzz 36224 &quot;graphicsmagick:coder_MSL_fuzzer: Timeout in
+coder_MSL_fuzzer&quot;.</p>
+<p>* magick/transform.c (RollImage): Assert that image rows and
+columns are not zero.</p>
+</blockquote>
 <p>2021-07-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/jp2.c (initialize_jasper): Update for the latest version
