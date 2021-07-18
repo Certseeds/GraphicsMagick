@@ -1,5 +1,10 @@
 2021-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Makefile.am: Add support for using an external
+        'graphicsmagick_snapshot_copy' script to copy files for the
+        'snapshot' target.  This provides local control over how files are
+        copied and where they are copied to.
+
         * coders/msl.c (MSLStartElement): Use macros to simplify
         validations and reduce repeated code fragments. Add validations
         for image size and pixels present where applicable.  Fixes

@@ -2436,6 +2436,7 @@ FIGDecodeDelegate = @FIGDecodeDelegate@
 FT_CFLAGS = @FT_CFLAGS@
 FT_LIBS = @FT_LIBS@
 GMDelegate = @GMDelegate@
+GRAPHICSMAGICK_SNAPSHOT_COPY = @GRAPHICSMAGICK_SNAPSHOT_COPY@
 GREP = @GREP@
 GSCMYKDevice = @GSCMYKDevice@
 GSColorAlphaDevice = @GSColorAlphaDevice@
@@ -4855,10 +4856,8 @@ DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
 	$(distdir).tar.xz $(distdir).tar.zst
 
 
-#
-# Build a validated snapshot release and move to the snapshots directory.
-#
-SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
+# Use a hard-coded mechanism and destination path to copy snapshot files
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
 COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL = GraphicsMagick.xz
 COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
@@ -11298,14 +11297,27 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 dist-zstd: distdir
 	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
 	$(am__post_remove_distdir)
-snapshot: distcheck
-	$(MAKE) $(DIST_ARCHIVE_SRPM)
-	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
-	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
-	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
-	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
-	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
-	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+
+#
+# Build a validated snapshot release and move to the snapshots directory.
+#
+
+# Use a graphicsmagick_snapshot_copy script to copy snapshot files
+# somewhere using some mechanism only known to itself.
+#
+# The arguments to the script are the original path names of the files to distribute.
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 # New URL is https://brb.synopsys.com/?project=GraphicsMagick
 coverity:
 	$(MAKE) clean

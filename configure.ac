@@ -491,6 +491,9 @@ AM_CONDITIONAL([ENABLE_BROKEN_CODERS],[test "$with_broken_coders" != 'no'])
 # Add configure option --enable-maintainer-mode which enables dependency
 # checking and generation useful to package maintainers.  This is made an
 # option to avoid confusing end users.
+#
+# Defines shell/Automake variable 'MAINT' to '' when enabled or '#' when not
+# Also sets MAINTAINER_MODE_FALSE / MAINTAINER_MODE_TRUE with similar values.
 AM_MAINTAINER_MODE
 
 # Enable prof-based profiling support
@@ -3038,15 +3041,32 @@ have_ralcgm='no'  ; if test "$CGMDecodeDelegate" != "$CGMDecodeDelegateDefault" 
 # Automake conditional to support test suite
 AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
-# Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
-AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
-AC_SUBST([RST2HTML])
-AM_CONDITIONAL([HasRST2HTML],[test "x$RST2HTML" != 'x'])
+# Tests for programs only used while in maintainer mode
+if test "$MAINT" == '' ; then
+   # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
+   AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
 
-# Test for optional txt2html utility and define automake conditional HasTXT2HTML if found.
-AC_PATH_PROGS([TXT2HTML], [txt2html])
+   # Test for optional txt2html utility and define automake conditional HasTXT2HTML if found.
+   AC_PATH_PROGS([TXT2HTML], [txt2html])
+
+   # Test for optional graphicsmagick_snapshot_copy program/script.
+   # If this script is found, it is used to copy files using the script-provided
+   # mechanism due to 'snapshot' target.
+   AC_PATH_PROGS([GRAPHICSMAGICK_SNAPSHOT_COPY], [graphicsmagick_snapshot_copy])
+else
+   RST2HTML=''
+   TXT2HTML=''
+   GRAPHICSMAGICK_SNAPSHOT_COPY=''
+fi
+
+AC_SUBST([RST2HTML])
+AM_CONDITIONAL([HasRST2HTML],[test "x${RST2HTML}" != 'x'])
+
 AC_SUBST([TXT2HTML])
-AM_CONDITIONAL([HasTXT2HTML],[test "$TXT2HTML" != 'x'])
+AM_CONDITIONAL([HasTXT2HTML],[test "x${TXT2HTML}" != 'x'])
+
+AC_SUBST([GRAPHICSMAGICK_SNAPSHOT_COPY])
+AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'x'])
 
 #
 # Test for font directories

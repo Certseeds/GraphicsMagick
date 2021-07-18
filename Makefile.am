@@ -379,6 +379,21 @@ dist-zstd: distdir
 #
 # Build a validated snapshot release and move to the snapshots directory.
 #
+
+if HasGRAPHICSMAGICK_SNAPSHOT_COPY
+
+# Use a graphicsmagick_snapshot_copy script to copy snapshot files
+# somewhere using some mechanism only known to itself.
+#
+# The arguments to the script are the original path names of the files to distribute.
+snapshot: distcheck
+	$(MAKE) $(DIST_ARCHIVE_SRPM)
+	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+
+else
+
+# Use a hard-coded mechanism and destination path to copy snapshot files
 SNAPSHOT_DIRECTORY=/ftp/pub/GraphicsMagick/snapshots
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
@@ -388,6 +403,8 @@ snapshot: distcheck
 	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+
+endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
 COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz
