@@ -1258,7 +1258,7 @@ SetImageProfile(Image *image,const char *name, const unsigned char *profile,
       (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                             "Adding %s profile with length %ld bytes",name,
                             (unsigned long) length);
-      if (profile != 0)
+      if ((profile != 0) && (length != 0))
         {
           status &= MagickMapAddEntry(image->profiles,name,profile,length,
                                       &image->exception);

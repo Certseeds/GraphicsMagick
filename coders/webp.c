@@ -315,19 +315,22 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     if (webp_flags & ICCP_FLAG)
       {
         WebPMuxGetChunk(mux,"ICCP",&flag_data);
-        SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
       }
 
     if (webp_flags & EXIF_FLAG)
       {
         WebPMuxGetChunk(mux,"EXIF",&flag_data);
-        SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
       }
 
     if (webp_flags & XMP_FLAG)
       {
         WebPMuxGetChunk(mux,"XMP",&flag_data);
-        SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
       }
 
     WebPMuxDelete(mux);
