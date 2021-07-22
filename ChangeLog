@@ -1,5 +1,9 @@
 2021-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/pdf.c (WritePDFImage): Use appropriate memory deallocator
+        for memory returned by StringToList().  Fixes SourceForge issue
+        646 "Assertion failed using -label with PDF".
+
         * coders/webp.c (ReadWEBPImage): Add full error checking when
         retrieving embedded profiles.
 

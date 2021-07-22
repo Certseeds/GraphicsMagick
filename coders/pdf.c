@@ -1046,9 +1046,9 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
               FormatString(buffer,"(%.1024s) Tj\n",labels[i]);
               (void) WriteBlobString(image,buffer);
               (void) WriteBlobString(image,"ET\n");
-              MagickFreeResourceLimitedMemory(labels[i]);
+              MagickFreeMemory(labels[i]);
             }
-          MagickFreeResourceLimitedMemory(labels);
+          MagickFreeMemory(labels);
         }
       FormatString(buffer,"%g 0 0 %g %ld %ld cm\n",x_scale,y_scale,geometry.x,
                    geometry.y);
