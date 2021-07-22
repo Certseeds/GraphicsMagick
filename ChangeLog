@@ -1,5 +1,8 @@
 2021-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/webp.c (ReadWEBPImage): Add full error checking when
+        retrieving embedded profiles.
+
         * magick/profile.c (SetImageProfile): Do not try to store a
         zero-sized profile.
 
