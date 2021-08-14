@@ -4344,9 +4344,9 @@ MSLError(void *context,const char *format,...)
 #else
   (void) vsnprintf(reason,MaxTextExtent,format,operands);
 #endif
-  ThrowException2(msl_info->exception,DelegateFatalError,reason,"some text");
+  ThrowException2(msl_info->exception,DelegateFatalError,reason,(char *) NULL);
   va_end(operands);
-  msl_info->parser->instate = XML_PARSER_EOF;
+  xmlStopParser(msl_info->parser);
 }
 
 static void
@@ -4598,10 +4598,12 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
       n=(long) strlen(message);
       if (n == 0)
         continue;
-      status=xmlParseChunk(msl_info.parser,message,(int) n,False);
+      status=xmlParseChunk(msl_info.parser,message,(int) n,False); /* here */
       if (status != 0)
         break;
-      (void) xmlParseChunk(msl_info.parser," ",1,False);
+      status=xmlParseChunk(msl_info.parser," ",1,False);
+      if (status != 0)
+        break;
       if (msl_info.exception->severity != UndefinedException)
         break;
     }

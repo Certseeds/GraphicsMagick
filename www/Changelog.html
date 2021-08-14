@@ -35,6 +35,13 @@
 <div class="document">
 
 
+<p>2021-08-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* coders/msl.c (MSLError): Call xmlStopParser() rather than
+setting parser instate = XML_PARSER_EOF.</p>
+<p>* coders/svg.c (SVGError): Call xmlStopParser() rather than
+setting parser instate = XML_PARSER_EOF.</p>
+</blockquote>
 <p>2021-07-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/pdf.c (WritePDFImage): Use appropriate memory deallocator

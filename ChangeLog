@@ -1,3 +1,11 @@
+2021-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLError): Call xmlStopParser() rather than
+        setting parser instate = XML_PARSER_EOF.
+
+        * coders/svg.c (SVGError): Call xmlStopParser() rather than
+        setting parser instate = XML_PARSER_EOF.
+
 2021-07-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/pdf.c (WritePDFImage): Use appropriate memory deallocator
