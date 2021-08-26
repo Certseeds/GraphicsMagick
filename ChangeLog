@@ -1,3 +1,11 @@
+2021-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c (initialize_jasper): Make minimal use of new JasPer
+        function jas_initialize() in order to avoid severe problems with
+        jas_init().
+
+        * configure.ac: Detect new JasPer function jas_initialize().
+
 2021-08-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (MSLError): Call xmlStopParser() rather than

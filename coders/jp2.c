@@ -424,6 +424,9 @@ static void initialize_jasper(void)
 #if HAVE_JAS_INIT_CUSTOM
       jas_conf_t jas_conf;
 
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Initializing JasPer...");
+
       /* Get the default configuration parameters that were selected at
          when the library was built. */
       jas_get_default_conf(&jas_conf);
@@ -439,11 +442,42 @@ static void initialize_jasper(void)
       /* Do not register jas_cleanup() via atexit() */
       jas_conf.atexit_cleanup = false;
 
-      (void) jas_init_custom(&jas_conf);
+      if (jas_init_custom(&jas_conf) == 0)
+        {
+          jasper_initialized=MagickTrue;
+        }
+#elif HAVE_JAS_INITIALIZE
+      {
+        /* static jas_std_allocator_t allocator; */
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Initializing JasPer...");
+        jas_conf_clear();
+        /* jas_std_allocator_init(&allocator); */
+        /* jas_conf_set_allocator(&allocator.base); */
+        /* jas_conf_set_debug_level(cmdopts->debug); */
+        /* jas_conf_set_max_mem(cmdopts->max_mem); */
+
+        if (jas_initialize() == 0)
+          {
+            jasper_initialized=MagickTrue;
+          }
+      }
 #else
-      jas_init();
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Initializing JasPer...");
+        if (jas_init() == 0)
+          {
+            jasper_initialized=MagickTrue;
+          }
+      }
 #endif  /* HAVE_JAS_INIT_CUSTOM */
-      jasper_initialized=MagickTrue;
+
+      if (!jasper_initialized)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Failed to initialize JasPer!");
+        }
     }
 }
 
@@ -455,7 +489,11 @@ static void cleanup_jasper(void)
 {
   if (jasper_initialized)
     {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Destroying JasPer...");
+#if HAVE_JAS_INITIALIZE || HAVE_JAS_INIT_CUSTOM
       jas_cleanup();
+#endif /* if HAVE_JAS_INITIALIZE || HAVE_JAS_INIT_CUSTOM */
       jasper_initialized=MagickFalse;
     }
 }

@@ -146,8 +146,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `jas_init_custom' function. */
-#undef HAVE_JAS_INIT_CUSTOM
+/* Define to 1 if you have the `jas_initialize' function. */
+#undef HAVE_JAS_INITIALIZE
 
 /* Define to 1 if you have the `jp2_decode' function. */
 #undef HAVE_JP2_DECODE
