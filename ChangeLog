@@ -1,3 +1,8 @@
+2021-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/blob.c (WriteBlob): Use appropriate handle for bzip2.
+        Patch by Sam James <sam@gentoo.org>.
+
 2021-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (initialize_jasper): Make minimal use of new JasPer
