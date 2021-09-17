@@ -5040,7 +5040,7 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
             else
               amount=(int) remaining;
 
-            bz_count=BZ2_bzwrite(blob->handle.gz,
+            bz_count=BZ2_bzwrite(blob->handle.bz,
                                  (void *) ((unsigned char *) data+i),amount);
             if (bz_count <= 0)
               break;
