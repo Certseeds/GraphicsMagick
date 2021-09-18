@@ -1,6 +1,7 @@
-2021-18-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2021-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* PerlMagick/t/JPGinside.emf Add test file: EMF that embedds JPG.
+        * PerlMagick/t/wmf/JPGinside.emf: Add test file: EMF that embedds
+        JPG.
 
 2021-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
