@@ -1,3 +1,7 @@
+2021-18-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* PerlMagick/t/JPGinside.emf Add test file: EMF that embedds JPG.
+
 2021-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/blob.c (WriteBlob): Use appropriate handle for bzip2.
