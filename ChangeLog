@@ -1,3 +1,7 @@
+2019-10-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* magick/wpg.c: ObjectID>=0x8000 automatically switches double precision on.
+
 2021-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * PerlMagick/t/wmf/JPGinside.emf: Add test file: EMF that embedds

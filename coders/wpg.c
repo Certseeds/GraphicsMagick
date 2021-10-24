@@ -744,7 +744,7 @@ unpack_wpg2_error:;
 
 typedef float tCTM[3][3];
 
-static unsigned LoadWPG2Flags(Image *image,char Precision,float *Angle,tCTM *CTM)
+static unsigned LoadWPG2Flags(Image *image, char Precision, float *Angle, tCTM *CTM)
 {
 const unsigned char TPR=1,TRN=2,SKW=4,SCL=8,ROT=0x10,OID=0x20,LCK=0x80;
 long x;
@@ -761,9 +761,16 @@ unsigned Flags;
  if(Flags & OID)
         {
         if(Precision==0)
-          {/*x=*/ (void) ReadBlobLSBShort(image);}      /*ObjectID*/
+          {x = ReadBlobLSBShort(image);
+	   if(x >= 0x8000)
+	     {
+	     Precision = 1;	// Double precision Switched on.
+	     (void)ReadBlobLSBShort(image);
+	     //ObjectId = ((xW & 0x7FFF)<<16) | DenX;
+	     }
+	  }      /*ObjectID*/
         else
-          {/*x=*/ (void) ReadBlobLSBLong(image);}       /*ObjectID (Double precision)*/
+          {/*x=*/ (void) ReadBlobLSBLong(image);}  /*ObjectID native (Double precision)*/
         }
  if(Flags & ROT)
         {
