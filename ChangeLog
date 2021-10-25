@@ -1,4 +1,4 @@
-2019-10-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2021-10-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* magick/wpg.c: ObjectID>=0x8000 automatically switches double precision on.
 
