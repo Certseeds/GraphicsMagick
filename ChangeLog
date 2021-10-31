@@ -1,6 +1,12 @@
+2021-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/widget.c (MagickXPreferencesWidget): Eliminate
+        compilation warning about 'strlen' argument missing terminating
+        nul.
+
 2021-10-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* magick/wpg.c: ObjectID>=0x8000 automatically switches double precision on.
+        * magick/wpg.c: ObjectID>=0x8000 automatically switches double precision on.
 
 2021-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 

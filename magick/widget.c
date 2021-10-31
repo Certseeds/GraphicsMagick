@@ -8426,7 +8426,7 @@ unsigned int MagickXPreferencesWidget(Display *display,
 #define CancelButtonText  "Cancel"
 #define NumberPreferences  7
   static const char
-    Preferences[NumberPreferences][47] =
+    Preferences[NumberPreferences][48] =
     {
       "display image centered on a backdrop",
       "confirm on program exit",
