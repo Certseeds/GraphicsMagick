@@ -1,3 +1,11 @@
+2021-11-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLStartElement): Return immediately if there is
+        already an error or the image is NULL.  Do not discard exceptions
+        when calling functions which return a new image.  Try even harder
+        to shut down the libxml2 parser. Fixes SourceForge issue 652 "SEGV
+        in gm at coders/msl.c:883".
+
 2021-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/widget.c (MagickXPreferencesWidget): Eliminate
