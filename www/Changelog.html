@@ -37,6 +37,11 @@
 
 <p>2021-11-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/tiff.c (ReadTIFFImage): Make sure that loops using
+TIFFReadScanline(), etc, do quit upon first reported error.  Fixes
+oss-fuzz 39167 &quot;graphicsmagick:coder_BIGTIFF_fuzzer:
+Use-of-uninitialized-value in DisassociateAlphaRegion&quot;, as well as
+other such cases.</p>
 <p>* coders/png.c (png_get_data): On a short read, assure that the
 remainder of the buffer is initialized just in case subsequent
 code accesses it.</p>

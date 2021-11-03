@@ -2590,9 +2590,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
-            for (sample=0; sample < max_sample; sample++)
+            for (sample=0; (status != MagickFail) && (sample < max_sample); sample++)
               {
-                for (y=0; y < image->rows; y++)
+                for (y=0; (status != MagickFail) && (y < image->rows); y++)
                   {
                     if (sample == 0)
                       q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
@@ -2609,6 +2609,13 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       Obtain a scanline
                     */
                     if (TIFFReadScanline(tiff,(char *) scanline,(uint32) y,sample) == -1)
+                      {
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "TIFFReadScanline() failed!");
+                        status=MagickFail;
+                        break;
+                      }
+                    if (image->exception.severity >= ErrorException)
                       {
                         status=MagickFail;
                         break;
@@ -2781,7 +2788,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Process each plane
             */
-            for (sample=0; sample < max_sample; sample++)
+            for (sample=0; (status != MagickFail) && (sample < max_sample); sample++)
               {
                 rows_remaining=0;
                 /*
@@ -2797,7 +2804,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     status=MagickFail;
                     break;
                   }
-                for (y=0; y < image->rows; y++)
+                for (y=0; (status != MagickFail) && (y < image->rows); y++)
                   {
                     /*
                       Access Magick pixels.
@@ -3030,7 +3037,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Process each plane.
             */
-            for (sample=0; sample < max_sample; sample++)
+            for (sample=0; (status != MagickFail) && (sample < max_sample); sample++)
               {
                 /*
                   Determine quantum parse method.
@@ -3044,9 +3051,9 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     status=MagickFail;
                     break;
                   }
-                for (y=0; y < image->rows; y+=tile_rows)
+                for (y=0; (status != MagickFail) && (y < image->rows); y+=tile_rows)
                   {
-                    for (x=0; x < image->columns; x+=tile_columns)
+                    for (x=0; (status != MagickFail) && (x < image->columns); x+=tile_columns)
                       {
                         long
                           tile_set_columns,
@@ -3084,7 +3091,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           SwabDataToBigEndian(bits_per_sample,tile,tile_size);
 #endif
                         p=tile;
-                        for (yy=y; yy < (long) y+tile_set_rows; yy++)
+                        for (yy=y; (status != MagickFail) && (yy < (long) y+tile_set_rows); yy++)
                           {
                             /*
                               Obtain pixel region corresponding to tile row.
@@ -3217,7 +3224,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             i=0;
             p=0;
-            for (y=0; y < image->rows; y++)
+            for (y=0; (status != MagickFail) && (y < image->rows); y++)
               {
                 q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
                 if (q == (PixelPacket *) NULL)
@@ -3239,7 +3246,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
                 i--;
                 p=strip_pixels+(size_t) image->columns*i;
-                for (x=0; x < image->columns; x++)
+                for (x=0; (status != MagickFail) && (x < image->columns); x++)
                   {
                     q->red=ScaleCharToQuantum(TIFFGetR(*p));
                     q->green=ScaleCharToQuantum(TIFFGetG(*p));
@@ -3385,7 +3392,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
-            for (y=0; y < image->rows; y+=tile_rows)
+            for (y=0; (status != MagickFail) && (y < image->rows); y+=tile_rows)
               {
                 /*
                   Retrieve a tile height's worth of rows
@@ -3411,7 +3418,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     status=MagickFail;
                     break;
                   }
-                for (x=0; x < image->columns; x+=tile_columns)
+                for (x=0; (status != MagickFail) && (x < image->columns); x+=tile_columns)
                   {
                     register unsigned int
                       tile_column,
@@ -5904,7 +5911,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             /*
               For each plane
             */
-            for (sample=0; sample < max_sample; sample++)
+            for (sample=0; (status != MagickFail) && (sample < max_sample); sample++)
               {
                 /*
                   Determine quantum parse method.
@@ -5918,7 +5925,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                     status=MagickFail;
                     break;
                   }
-                for (y=0; y < image->rows; y++)
+                for (y=0; (status != MagickFail) && (y < image->rows); y++)
                   {
                     if ((image->matte) && (alpha_type == AssociatedAlpha))
                       p=GetImagePixels(image,0,y,image->columns,1);
@@ -6105,7 +6112,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             /*
               Process each plane.
             */
-            for (sample=0; sample < max_sample; sample++)
+            for (sample=0; (status != MagickFail) && (sample < max_sample); sample++)
               {
                 /*
                   Determine quantum parse method.
@@ -6119,9 +6126,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                     status=MagickFail;
                     break;
                   }
-                for (y=0; y < image->rows; y+=tile_rows)
+                for (y=0; (status != MagickFail) && (y < image->rows); y+=tile_rows)
                   {
-                    for (x=0; x < image->columns; x+=tile_columns)
+                    for (x=0; (status != MagickFail) && (x < image->columns); x+=tile_columns)
                       {
                         const PixelPacket
                           *p;
@@ -6149,7 +6156,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                           tile_set_rows=tile_rows;
 
                         q=tile;
-                        for (yy=y; yy < (long) y+tile_set_rows; yy++)
+                        for (yy=y; (status != MagickFail) && (yy < (long) y+tile_set_rows); yy++)
                           {
                             /*
                               Obtain pixel region corresponding to tile row.
