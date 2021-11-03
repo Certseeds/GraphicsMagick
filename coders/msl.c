@@ -1887,6 +1887,7 @@ MSLStartElement(void *context,const xmlChar *name,
           {
 
             MSL_BREAK_IF_IMAGE_NULL(msl_info->image[n]);
+            MSL_BREAK_IF_IMAGE_NULL(msl_info->attributes[n]);
 
             if (attributes == (const xmlChar **) NULL)
               break;
@@ -3103,6 +3104,7 @@ MSLStartElement(void *context,const xmlChar *name,
         else if (LocaleCompare((char *) name, "set") == 0)
           {
             MSL_BREAK_IF_IMAGE_NULL(msl_info->image[n]);
+            MSL_BREAK_IF_IMAGE_NULL(msl_info->attributes[n]);
 
             if (attributes == (const xmlChar **) NULL)
               break;

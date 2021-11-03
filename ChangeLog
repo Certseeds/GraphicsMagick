@@ -1,3 +1,11 @@
+2021-11-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/msl.c (MSLStartElement): Assure that
+        'msl_info->attributes[n]' is not NULL before attempting to use it.
+        This is assumed to eliminate oss-fuzz 40226
+        "graphicsmagick:coder_MSL_fuzzer: ASSERT: image != (Image *)
+        NULL".
+
 2021-11-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/msl.c (MSLStartElement): Return immediately if there is

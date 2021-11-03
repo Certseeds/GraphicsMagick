@@ -35,6 +35,13 @@
 <div class="document">
 
 
+<p>2021-11-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/msl.c (MSLStartElement): Assure that
+'msl_info-&gt;attributes[n]' is not NULL before attempting to use it.
+This is assumed to eliminate oss-fuzz 40226
+&quot;graphicsmagick:coder_MSL_fuzzer: ASSERT: image != (Image *)
+NULL&quot;.</blockquote>
 <p>2021-11-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/msl.c (MSLStartElement): Return immediately if there is
