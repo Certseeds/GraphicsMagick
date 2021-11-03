@@ -788,20 +788,23 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
   image=(Image *) png_get_io_ptr(png_ptr);
   if (length)
     {
-      png_size_t
+      size_t
         check;
 
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
-      check=(png_size_t) ReadBlob(image,(size_t) length,(char *) data);
+      check=ReadBlob(image,(size_t) length,(char *) data);
       if (check != length)
         {
           char
             msg[MaxTextExtent];
 
-            (void) sprintf(msg,"Expected %lu bytes; found %lu bytes",
-                           (unsigned long) length,(unsigned long) check);
+          (void) sprintf(msg,"Expected %" MAGICK_SIZE_T_F "u bytes;"
+                         " found %" MAGICK_SIZE_T_F "u bytes",
+                         (MAGICK_SIZE_T) length,(MAGICK_SIZE_T) check);
           png_warning(png_ptr,msg);
+          if (check < length)
+            (void) memset(data+check,0,length-check);
           png_error(png_ptr,"Read Exception");
         }
     }
