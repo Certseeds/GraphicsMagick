@@ -1,5 +1,16 @@
 2021-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/gif.c (ReadGIFImage): Handle GIF files where the 'opaque'
+        index matches the number of colors by producing an extra colormap
+        entry of transparent black. Fixes SourceForge issue 649 "Bug with
+        gm identify" where the test case produces the error "Invalid
+        colormap index (index 128 >= 128 colors, /tmp/broken.gif)".
+
+        * magick/enum_strings.c (StringToDisposeType): New utility
+        function to convert a string to a DisposeType.
+        (DisposeTypeToString) New utility function to convert a
+        DisposeType to a string.
+
         * coders/msl.c (MSLEndElement): Ignore imbalanced group
         closure. Fixes oss-fuzz 40680 "graphicsmagick:coder_MSL_fuzzer:
         Heap-buffer-overflow in MSLEndElement".

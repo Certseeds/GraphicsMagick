@@ -37,9 +37,19 @@
 
 <p>2021-11-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (MSLEndElement): Ignore imbalanced group
+<p>* coders/gif.c (ReadGIFImage): Handle GIF files where the 'opaque'
+index matches the number of colors by producing an extra colormap
+entry of transparent black. Fixes SourceForge issue 649 &quot;Bug with
+gm identify&quot; where the test case produces the error &quot;Invalid
+colormap index (index 128 &gt;= 128 colors, /tmp/broken.gif)&quot;.</p>
+<p>* magick/enum_strings.c (StringToDisposeType): New utility
+function to convert a string to a DisposeType.
+(DisposeTypeToString) New utility function to convert a
+DisposeType to a string.</p>
+<p>* coders/msl.c (MSLEndElement): Ignore imbalanced group
 closure. Fixes oss-fuzz 40680 &quot;graphicsmagick:coder_MSL_fuzzer:
-Heap-buffer-overflow in MSLEndElement&quot;.</blockquote>
+Heap-buffer-overflow in MSLEndElement&quot;.</p>
+</blockquote>
 <p>2021-11-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/tiff.c (ReadTIFFImage): Make sure that loops using
