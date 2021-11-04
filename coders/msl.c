@@ -4161,7 +4161,8 @@ MSLEndElement(void *context,const xmlChar *name)
       {
         if (LocaleCompare((char *) name, "group") == 0 )
           {
-            if (msl_info->group_info[msl_info->nGroups-1].numImages > 0 )
+            if ((msl_info->nGroups > 0) &&
+                (msl_info->group_info[msl_info->nGroups-1].numImages > 0))
               {
                 long  i = (long)
                   (msl_info->group_info[msl_info->nGroups-1].numImages);
