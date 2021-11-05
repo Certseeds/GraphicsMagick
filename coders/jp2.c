@@ -405,57 +405,47 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
   ThrowReaderException(code_,reason_,image_); \
 }
 
-#undef HAVE_JAS_INIT_CUSTOM
-
-#if HAVE_JAS_INIT_CUSTOM
-static void* _MagickReallocateResourceLimitedMemoryTraditional(void *p,const size_t size)
-{
-  return _MagickReallocateResourceLimitedMemory(p,1,size,0);
-}
-#endif /* if HAVE_JAS_INIT_CUSTOM */
-
 /*
   Initialize Jasper
 */
+#if HAVE_JAS_INITIALIZE
+static void *alloc_rlm(struct jas_allocator_s *allocator, size_t size)
+{
+  (void) allocator;
+  return _MagickAllocateResourceLimitedMemory(size);
+}
+static void free_rlm(struct jas_allocator_s *allocator, void *pointer)
+{
+  (void) allocator;
+  _MagickFreeResourceLimitedMemory(pointer);
+}
+static void *realloc_rlm(struct jas_allocator_s *allocator, void *pointer,
+                         size_t new_size)
+{
+  (void) allocator;
+  return _MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+}
+#endif /* if HAVE_JAS_INITIALIZE */
 static void initialize_jasper(void)
 {
   if (!jasper_initialized)
     {
-#if HAVE_JAS_INIT_CUSTOM
-      jas_conf_t jas_conf;
-
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Initializing JasPer...");
-
-      /* Get the default configuration parameters that were selected at
-         when the library was built. */
-      jas_get_default_conf(&jas_conf);
-
-      /* Use our own resource-limited memory allocation functions */
-      jas_conf.allocator.alloc = _MagickAllocateResourceLimitedMemory;
-      jas_conf.allocator.free = _MagickFreeResourceLimitedMemory;
-      jas_conf.allocator.realloc = _MagickReallocateResourceLimitedMemoryTraditional;
-
-      /* The maximum number of samples allowable in an image to be decoded. */
-      jas_conf.dec_default_max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
-
-      /* Do not register jas_cleanup() via atexit() */
-      jas_conf.atexit_cleanup = false;
-
-      if (jas_init_custom(&jas_conf) == 0)
-        {
-          jasper_initialized=MagickTrue;
-        }
-#elif HAVE_JAS_INITIALIZE
+#if HAVE_JAS_INITIALIZE
       {
         /* static jas_std_allocator_t allocator; */
+        static jas_allocator_t allocator;
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Initializing JasPer...");
         jas_conf_clear();
-        /* jas_std_allocator_init(&allocator); */
-        /* jas_conf_set_allocator(&allocator.base); */
+        /* Use our own resource-limited memory allocation functions */
+        allocator.cleanup = 0;
+        allocator.alloc = alloc_rlm;
+        allocator.free = free_rlm;
+        allocator.realloc = realloc_rlm;
+        /* jas_std_allocator_init(&allocator); */ /* Uses JasPer allocators */
+        jas_conf_set_allocator(&allocator); /* Assigns jas_allocator_t to jas_conf.allocator in library */
         /* jas_conf_set_debug_level(cmdopts->debug); */
-        /* jas_conf_set_max_mem(cmdopts->max_mem); */
+        /* jas_conf_set_max_mem(cmdopts->max_mem); */ /* Only pertains to JasPer allocators */
 
         if (jas_initialize() == 0)
           {
@@ -471,7 +461,7 @@ static void initialize_jasper(void)
             jasper_initialized=MagickTrue;
           }
       }
-#endif  /* HAVE_JAS_INIT_CUSTOM */
+#endif  /* HAVE_JAS_INITIALIZE */
 
       if (!jasper_initialized)
         {
@@ -491,9 +481,9 @@ static void cleanup_jasper(void)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Destroying JasPer...");
-#if HAVE_JAS_INITIALIZE || HAVE_JAS_INIT_CUSTOM
+#if HAVE_JAS_INITIALIZE
       jas_cleanup();
-#endif /* if HAVE_JAS_INITIALIZE || HAVE_JAS_INIT_CUSTOM */
+#endif /* if HAVE_JAS_INITIALIZE */
       jasper_initialized=MagickFalse;
     }
 }
