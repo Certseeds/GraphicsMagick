@@ -1,3 +1,9 @@
+2021-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/caption.c (ReadCAPTIONImage): Set draw_info to NULL upon
+        deallocation.  Fixes an assertion reported by Michael Melcher via
+        the graphicsmagick-bugs list on November 11, 2021.
+
 2021-11-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (initialize_jasper): For JasPer 3.0.0 and later,
