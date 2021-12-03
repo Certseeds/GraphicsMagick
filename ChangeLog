@@ -1,3 +1,8 @@
+2021-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/wpg.c (LoadWPG2Flags): Fix comment type and whitespace
+        issues.
+
 2021-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/caption.c (ReadCAPTIONImage): Set draw_info to NULL upon

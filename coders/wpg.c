@@ -421,13 +421,13 @@ static MagickPassFail ZeroFillMissingData(unsigned char *BImgBuff,unsigned long 
 
   while(y<image->rows && image->exception.severity!=UndefinedException)
   {
-    if((long) x<ldblk) 
+    if((long) x<ldblk)
     {
       memset(BImgBuff+x, 0, (size_t)ldblk-(size_t)x);
       if(x == 0)
-        x = ldblk;	/* Do not memset any more */
+        x = ldblk;      /* Do not memset any more */
       else
-        x = 0;		/* Next pass will need to clear whole row */
+        x = 0;          /* Next pass will need to clear whole row */
     }
     if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
       {
@@ -529,12 +529,12 @@ static int UnpackWPGRaster(Image *image,int bpp)
             {           /* Here I need to duplicate previous row RUNCOUNT* */
                         /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
-                {                  
+                {
                   MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
-                { 
+                {
                   MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-6);
                 }
@@ -762,13 +762,13 @@ unsigned Flags;
         {
         if(Precision==0)
           {x = ReadBlobLSBShort(image);
-	   if(x >= 0x8000)
-	     {
-	     Precision = 1;	// Double precision Switched on.
-	     (void)ReadBlobLSBShort(image);
-	     //ObjectId = ((xW & 0x7FFF)<<16) | DenX;
-	     }
-	  }      /*ObjectID*/
+           if(x >= 0x8000)
+             {
+               Precision = 1;   /* Double precision Switched on. */
+             (void)ReadBlobLSBShort(image);
+             /* ObjectId = ((xW & 0x7FFF)<<16) | DenX; */
+             }
+          }      /*ObjectID*/
         else
           {/*x=*/ (void) ReadBlobLSBLong(image);}  /*ObjectID native (Double precision)*/
         }
