@@ -130,7 +130,7 @@ typedef enum _MagickAllocateResourceLimitedMemoryAttribute
     ResourceLimitedMemoryAttributeAllocSize,
     ResourceLimitedMemoryAttributeAllocSizeReal,
     ResourceLimitedMemoryAttributeAllocNumReallocs,
-    ResourceLimitedMemoryAttributeAllocNumReallocsMoved,
+    ResourceLimitedMemoryAttributeAllocNumReallocsMoved
   } MagickAllocateResourceLimitedMemoryAttribute;
 
 /*

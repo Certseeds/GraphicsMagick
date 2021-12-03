@@ -1,5 +1,9 @@
 2021-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * magick/memory-private.h
+        (MagickAllocateResourceLimitedMemoryAttribute): Remove extraneous
+        comma.
+
         * coders/wpg.c (LoadWPG2Flags): Fix comment type and whitespace
         issues.
 
