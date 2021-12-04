@@ -1,5 +1,7 @@
 2021-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * www/index.rst: Development snapshots are now at SourceForge.
+
         * www/download.rst, www/index.rst, README.txt: Remove references
         to ftp.graphicsmagick.org, which was shut down due to continuing
         abusive practices and lack of support from the user community.

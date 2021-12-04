@@ -21,17 +21,20 @@ GraphicsMagick Image Processing System
               image processing, software development, TclMagick, Magick++
 
 
-.. _download GraphicsMagick release : http://sourceforge.net/projects/graphicsmagick/files/
-.. _`visit Mercurial repository`: http://sourceforge.net/p/graphicsmagick/code/
+.. _`download GraphicsMagick release` : https://sourceforge.net/projects/graphicsmagick/files/
+.. _`download development snapshots` : https://sourceforge.net/projects/graphicsmagick/files/graphicsmagick-snapshots/
+.. _`visit Mercurial repository`: https://sourceforge.net/p/graphicsmagick/code/
 
 .. _programming : programming.html
 
 ===========================  ========================================================
 Current Release              1.3.36 (Released December 26, 2020) `download release`__
+Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
 
 __ `download GraphicsMagick release`_
+__ `download development snapshots`_
 __ `visit Mercurial repository`_
 
 
