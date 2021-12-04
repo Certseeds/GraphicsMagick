@@ -22,19 +22,16 @@ GraphicsMagick Image Processing System
 
 
 .. _download GraphicsMagick release : http://sourceforge.net/projects/graphicsmagick/files/
-.. _`download development snapshots` : ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/snapshots/
 .. _`visit Mercurial repository`: http://sourceforge.net/p/graphicsmagick/code/
 
 .. _programming : programming.html
 
 ===========================  ========================================================
 Current Release              1.3.36 (Released December 26, 2020) `download release`__
-Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
 
 __ `download GraphicsMagick release`_
-__ `download development snapshots`_
 __ `visit Mercurial repository`_
 
 

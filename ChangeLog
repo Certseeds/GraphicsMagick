@@ -1,3 +1,9 @@
+2021-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * www/download.rst, www/index.rst, README.txt: Remove references
+        to ftp.graphicsmagick.org, which was shut down due to continuing
+        abusive practices and lack of support from the user community.
+
 2021-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/memory-private.h
