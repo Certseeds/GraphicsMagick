@@ -11306,10 +11306,14 @@ dist-zstd: distdir
 # somewhere using some mechanism only known to itself.
 #
 # The arguments to the script are the original path names of the files to distribute.
+#
+# Removed $(DIST_ARCHIVE_SRPM) and $(DIST_WINDOWS_SRC_7ZIP) as well as changed from
+#   $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM)
+# to
+#   $(distdir).tar.xz
+# in order to reduce the copy/upload cost for the archives.
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(distdir).tar.xz $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)

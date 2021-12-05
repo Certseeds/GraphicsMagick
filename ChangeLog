@@ -1,5 +1,10 @@
 2021-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Makefile.am (snapshot): Update the snapshot target to distribute
+        a minimal set of files.
+
+        * magick/symbols.h: Update the list of Gm prefixed symbols.
+
         * NEWS.txt: Updated with changes until today.
 
 2021-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

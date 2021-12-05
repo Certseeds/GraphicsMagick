@@ -386,10 +386,14 @@ if HasGRAPHICSMAGICK_SNAPSHOT_COPY
 # somewhere using some mechanism only known to itself.
 #
 # The arguments to the script are the original path names of the files to distribute.
+#
+# Removed $(DIST_ARCHIVE_SRPM) and $(DIST_WINDOWS_SRC_7ZIP) as well as changed from
+#   $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM)
+# to
+#   $(distdir).tar.xz
+# in order to reduce the copy/upload cost for the archives.
 snapshot: distcheck
-	$(MAKE) $(DIST_ARCHIVE_SRPM)
-	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
-	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(distdir).tar.xz $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 
 else
 

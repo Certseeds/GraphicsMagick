@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012-2018 GraphicsMagick Group
+  Copyright (C) 2012-2021 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -176,6 +176,7 @@
 #define DispatchImage GmDispatchImage
 #define DisplayImageCommand GmDisplayImageCommand
 #define DisplayImages GmDisplayImages
+#define DisposeTypeToString GmDisposeTypeToString
 #define DrawAffine GmDrawAffine
 #define DrawAffineImage GmDrawAffineImage
 #define DrawAllocateContext GmDrawAllocateContext
@@ -569,10 +570,14 @@
 #define MagickMapClearMap GmMagickMapClearMap
 #define MagickMapCloneMap GmMagickMapCloneMap
 #define MagickMapCopyBlob GmMagickMapCopyBlob
+#define MagickMapCopyResourceLimitedBlob GmMagickMapCopyResourceLimitedBlob
+#define MagickMapCopyResourceLimitedString GmMagickMapCopyResourceLimitedString
 #define MagickMapCopyString GmMagickMapCopyString
 #define MagickMapDeallocateBlob GmMagickMapDeallocateBlob
 #define MagickMapDeallocateIterator GmMagickMapDeallocateIterator
 #define MagickMapDeallocateMap GmMagickMapDeallocateMap
+#define MagickMapDeallocateResourceLimitedBlob GmMagickMapDeallocateResourceLimitedBlob
+#define MagickMapDeallocateResourceLimitedString GmMagickMapDeallocateResourceLimitedString
 #define MagickMapDeallocateString GmMagickMapDeallocateString
 #define MagickMapDereferenceIterator GmMagickMapDereferenceIterator
 #define MagickMapIterateNext GmMagickMapIterateNext
@@ -596,6 +601,7 @@
 #define MagickSizeStrToInt64 GmMagickSizeStrToInt64
 #define MagickSpawnVP GmMagickSpawnVP
 #define MagickStripSpacesFromString GmMagickStripSpacesFromString
+#define MagickStripString GmMagickStripString
 #define MagickStrlCat GmMagickStrlCat
 #define MagickStrlCpy GmMagickStrlCpy
 #define MagickStrlCpyTrunc GmMagickStrlCpyTrunc
@@ -969,6 +975,7 @@
 #define StringToColorspaceType GmStringToColorspaceType
 #define StringToCompositeOperator GmStringToCompositeOperator
 #define StringToCompressionType GmStringToCompressionType
+#define StringToDisposeType GmStringToDisposeType
 #define StringToDouble GmStringToDouble
 #define StringToEndianType GmStringToEndianType
 #define StringToFilterTypes GmStringToFilterTypes
