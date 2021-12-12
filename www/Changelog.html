@@ -37,6 +37,15 @@
 
 <p>2021-12-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* scripts/graphicsmagick_snapshot_copy-ssh: Sample
+graphicsmagick_snapshot_copy script which uses scp to copy
+snapshot files to a directory at a remote host, and then rsync
+over ssh from there to SourceForge.  Copy to a local script
+directory and edit to suit local requirements.</p>
+<p>* scripts/graphicsmagick_snapshot_copy-local: Sample
+graphicsmagick_snapshot_copy script to copy snapshot files to a
+local directory and then rsync over ssh to SourceForge.  Copy to a
+local script directory and edit to suit local requirements.</p>
 <p>* Makefile.am (snapshot): Rely on the graphicsmagick_snapshot_copy
 script to reduce files we don't care to distribute so that all
 targets are still produced.</p>
