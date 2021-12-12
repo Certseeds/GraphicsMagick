@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2020 GraphicsMagick Group
+  Copyright (C) 2003 - 2021 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -16,7 +16,7 @@ DestroyMagickMonitor(void);
 extern MagickPassFail
 InitializeMagickMonitor(void);
 
-extern MagickBool
+extern MagickExport MagickBool
 MagickMonitorActive(void) MAGICK_FUNC_PURE;
 
 /*

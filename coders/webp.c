@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2020 GraphicsMagick Group
+% Copyright (C) 2013-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -278,7 +278,7 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
 
   for (y=0; y < (size_t) image->rows; y++)
     {
-      q=GetImagePixelsEx(image,0,y,image->columns,1,exception);
+      q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
       if (q == (PixelPacket *) NULL)
         break;
 
@@ -307,27 +307,37 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
     uint32_t webp_flags=0;
     WebPData flag_data;
     WebPData content={stream,length};
+    WebPMuxError mux_error;
 
     WebPMux *mux=WebPMuxCreate(&content,0);
     (void) memset(&flag_data,0,sizeof(flag_data));
     WebPMuxGetFeatures(mux,&webp_flags);
 
-    if (webp_flags & ICCP_FLAG)
+    if ((webp_flags & ICCP_FLAG) &&
+        ((mux_error=WebPMuxGetChunk(mux,"ICCP",&flag_data)) == WEBP_MUX_OK))
       {
-        WebPMuxGetChunk(mux,"ICCP",&flag_data);
-        SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ICCP Profile: %lu bytes",
+                              (unsigned long) flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"ICC",flag_data.bytes,flag_data.size);
       }
 
-    if (webp_flags & EXIF_FLAG)
+    if ((webp_flags & EXIF_FLAG) &&
+        ((mux_error=WebPMuxGetChunk(mux,"EXIF",&flag_data)) == WEBP_MUX_OK))
       {
-        WebPMuxGetChunk(mux,"EXIF",&flag_data);
-        SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),"EXIF Profile: %lu bytes",
+                              (unsigned long) flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
       }
 
-    if (webp_flags & XMP_FLAG)
+    if ((webp_flags & XMP_FLAG) &&
+        ((mux_error=WebPMuxGetChunk(mux,"XMP",&flag_data)) == WEBP_MUX_OK))
       {
-        WebPMuxGetChunk(mux,"XMP",&flag_data);
-        SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),"XMP Profile: %lu bytes",
+                              (unsigned long) flag_data.size);
+        if ((flag_data.bytes != NULL) && (flag_data.size > 0))
+          SetImageProfile(image,"XMP",flag_data.bytes,flag_data.size);
       }
 
     WebPMuxDelete(mux);

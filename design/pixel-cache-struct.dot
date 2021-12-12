@@ -13,6 +13,10 @@
   'dot' is installed.  For example:
 
     gm display -density 100  pixel-cache-struct.dot
+
+  or (to convert to PDF) do
+
+    dot -T pdf pixel-cache-struct.dot > pixel-cache-struct.pdf
 */
 
 digraph "pixel-cache-struct" {

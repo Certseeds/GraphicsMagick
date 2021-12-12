@@ -167,6 +167,7 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
 
   if (status == MagickFail)
     {
+      CopyException(exception,&image->exception);
       DestroyImage(image);
       image=(Image *) NULL;
     }

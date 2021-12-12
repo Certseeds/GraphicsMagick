@@ -31,25 +31,31 @@ extern MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value);
 extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value);
 extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
-extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/);
+extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
+
+extern MagickExport size_t
+  MagickStripSpacesFromString(char *string),
+  MagickStripString(char *string);
 
 /*
   Compute a value which is the next kilobyte power of 2 larger than
-  the requested value or MaxTextExtent, whichever is larger.
+  the requested value or 256 whichever is larger.
 
   The objective is to round up the size quickly (and in repeatable
   steps) in order to reduce the number of memory copies due to realloc
   for strings which grow rapidly, while producing a reasonable size
   for smaller strings.
 */
-#define MagickRoundUpStringLength(size) \
-{ \
-  size_t \
-    _rounded; \
- \
-  for (_rounded=256U; _rounded < (Max(size,256)); _rounded *= 2); \
-  size=_rounded; \
-}
+#define MagickRoundUpStringLength(size)                                 \
+  do {                                                                  \
+    size_t                                                              \
+      _rounded,                                                         \
+      _target;                                                          \
+                                                                        \
+    _target=(Max(size,256));                                            \
+    for (_rounded=256U; _rounded < _target; _rounded *= 2);             \
+    size=_rounded;                                                      \
+} while(0)
 
 /*
  * Local Variables:

@@ -658,6 +658,46 @@ MagickExport CompressionType StringToCompressionType(const char *option)
 }
 
 /*
+  DisposeType
+ */
+MagickExport DisposeType StringToDisposeType(const char *option)
+{
+  DisposeType dispose_type = UndefinedDispose;
+
+  if (LocaleCompare("None",option) == 0)
+    dispose_type = NoneDispose;
+  else if (LocaleCompare("Background",option) == 0)
+    dispose_type = BackgroundDispose;
+  else if (LocaleCompare("Previous",option) == 0)
+    dispose_type = PreviousDispose;
+
+  return dispose_type;
+}
+MagickExport const char *DisposeTypeToString(const DisposeType dispose_type)
+{
+  const char
+    *dispose_string="?";
+
+  switch (dispose_type)
+    {
+    case UndefinedDispose:
+      dispose_string = "Undefined";
+      break;
+    case NoneDispose:
+      dispose_string = "None";
+      break;
+    case BackgroundDispose:
+      dispose_string = "Background";
+      break;
+    case PreviousDispose:
+      dispose_string = "Previous";
+      break;
+    }
+
+  return dispose_string;
+}
+
+/*
   ConfirmAccessMode
 */
 MagickExport const char *ConfirmAccessModeToString(const ConfirmAccessMode access_mode)

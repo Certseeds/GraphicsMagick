@@ -247,7 +247,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         {
           (void) strncpy(message,p,(size_t)(q-p));
           message[q-p]='\0';
-          Strip(message);
+          (void) MagickStripString(message);
           (void) strlcat(locale,message,sizeof(locale));
           (void) strlcat(locale,"\n",sizeof(locale));
           (void) SetImageAttribute(image,"[Locale]",locale);

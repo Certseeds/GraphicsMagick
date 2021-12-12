@@ -700,6 +700,9 @@
       <Message name="UnreasonableDashPolygonLength">
         unreasonable dash polygon length
       </Message>
+      <Message name="UnreasonableAffineMatrix">
+        unreasonable affine matrix
+      </Message>
       <Message name="UnableToDrawOnImage">
         unable to draw on image
       </Message>
@@ -1026,27 +1029,7 @@
         Matrix is not square (%s elements)
       </Message>
       <Message name="RegionAreaExceedsLimit">
-        Region area exceeds implementation limit
-      </Message>
-      <Message name="MissingAnImageFilename">
-        Missing an image filename
-      </Message>
-      <Message name="MissingArgument">
-        Option '%s' requires an argument or argument is malformed
-      </Message>
-      <Message name="MustSpecifyAnImageName">
-        Must specify a image name
-      </Message>
-      <Message name="MustSpecifyImageSize">
-        Must specify image size
-      </Message>
-      <Message name="NoBlobDefined">
-        No Binary Large OBjects defined
-      </Message>
-      <Message name="NoImagesDefined">
-        No images defined
-      </Message>
-      <Message name="NonzeroWidthAndHeightRequired">
+NonzeroWidthAndHeightRequired">
         Non-zero width and height required
       </Message>
       <Message name="NoProfileNameWasGiven">
@@ -1482,6 +1465,9 @@
         </Message>
         <Message name="UnableToGetPackageInfo">
           Unable to get package info
+        </Message>
+        <Message name="UnableToInterpretMSLImage">
+          unable to interpret MSL image
         </Message>
         <Message name="UnableToLevelImage">
           unable to level image

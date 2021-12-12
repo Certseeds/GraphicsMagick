@@ -1,0 +1,21 @@
+#!/bin/sh
+# -*- shell-script -*-
+# Copyright (C) 2020 GraphicsMagick Group
+# Test many 'convert' command-lines
+. ./common.shi
+. ${top_srcdir}/utilities/tests/common.sh
+
+commands=${top_srcdir}/utilities/tests/convert-cmds.txt
+
+# Count how many commands there are
+count=`wc -l ${commands} | sed -e 's/ .*//'`
+
+# Number of tests we plan to execute
+test_plan_fn ${count}
+
+cat ${commands} | while read subcommand
+do
+    #set -x
+    eval test_command_fn "\"${subcommand}\"" ${GM} convert -size 1000x1000 pattern:bricks ${subcommand} info:-
+    #set +x
+done

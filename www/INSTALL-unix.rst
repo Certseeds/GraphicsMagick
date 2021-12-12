@@ -805,6 +805,39 @@ Several configure options require special note:
   the default libc memory allocator, and more performant in
   multi-threaded programs than umem, but is less memory efficient.
 
+Popular Distribution Packages
+-----------------------------
+
+We will attempt to document the package names useful for
+GraphicsMagick on various primordial operating system distributions
+here.
+
+Debian Packages
+~~~~~~~~~~~~~~~
+
+These packages may be installed on a Debian Linux system (or one that
+derives from Debian such as Ubuntu or Mint) in order to quickly build
+a full GraphicsMagick.  Most of these are optional depending on the
+features desired::
+
+  gcc (and/or clang), make, libbz2-dev, libfreetype6-dev, libjbig-dev,
+  liblcms2-dev, liblzma-dev, libpng-dev, libtiff-dev, libtool,
+  libwebp-dev, libwmf-dev, libx11-dev, libxdmcp-dev, libxext-dev,
+  libxft-dev, libxml2-dev, libxt-dev, libzstd-dev, zlib1g-dev,
+  libperl-dev
+
+These additional packages are useful in order to improve the run-time
+features of the software (and could be installed prior to building
+GraphicsMagick)::
+
+  dcraw, fonts-urw-base35, ghostscript, hp2xx,
+  ttf-mscorefonts-installer
+
+These additional packages are useful in order to maintain
+GraphicsMagick itself::
+
+  autoconf, automake, graphviz, libtool, docutils-common, python, m4
+
 
 Building under Cygwin
 ---------------------
@@ -844,15 +877,27 @@ Linux!
 
 When using MSYS2, requesting to install these packages using 'pacman
 -S' should result in getting up to speed very quicky with a featureful
-build:
+64-bit build:
 
 mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
 mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
-mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
-mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
-mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp
+mingw-w64-x86_64-jasper, mingw-w64-x86_64-jbigkit,
+mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libjpeg-turbo,
+mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtiff,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
 mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
 mingw-w64-x86_64-zlib
+
+and/or use the following to add support for a 32-bit build:
+
+mingw-w64-i686-toolchain, mingw-w64-i686-bzip2,
+mingw-w64-i686-freetype, mingw-w64-i686-ghostscript,
+mingw-w64-i686-jasper, mingw-w64-i686-jbigkit,
+mingw-w64-i686-lcms2, mingw-w64-i686-libjpeg-turbo,
+mingw-w64-i686-libpng, mingw-w64-i686-libtiff,
+mingw-w64-i686-libtool, mingw-w64-i686-libwebp,
+mingw-w64-i686-libwmf, mingw-w64-i686-libxml2,
+mingw-w64-i686-zlib
 
 GraphicsMagick may also be built using the free MinGW
 ("Minimalistic GNU for Windows") package, available from

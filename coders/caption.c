@@ -160,6 +160,7 @@ static Image *ReadCAPTIONImage(const ImageInfo *image_info,
     if (status == MagickFail)
       {
         DestroyDrawInfo(draw_info);
+        draw_info=(DrawInfo *) NULL;
         MagickFreeMemory(caption);
         ThrowCAPTIONException(TypeError,UnableToGetTypeMetrics,image);
       }

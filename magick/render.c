@@ -1321,27 +1321,41 @@ AffineEdge(const Image *image,const AffineMatrix *affine,
   return(inverse_edge);
 }
 
-static AffineMatrix
-InverseAffineMatrix(const AffineMatrix *affine)
+static MagickPassFail
+InverseAffineMatrix(const AffineMatrix *affine, AffineMatrix *inverse_affine,
+                    ExceptionInfo *exception)
 {
-  AffineMatrix
-    inverse_affine;
-
   double
-    determinant,
     divisor;
 
+  MagickPassFail
+    status;
+
   divisor=affine->sx*affine->sy-affine->rx*affine->ry;
-  determinant=1.0/divisor; /* oss-fuzz 28293 runtime error: division by zero */
-  inverse_affine.sx=determinant*affine->sy;
-  inverse_affine.rx=determinant*(-affine->rx);
-  inverse_affine.ry=determinant*(-affine->ry);
-  inverse_affine.sy=determinant*affine->sx;
-  inverse_affine.tx=
-    (-affine->tx)*inverse_affine.sx-affine->ty*inverse_affine.ry;
-  inverse_affine.ty=
-    (-affine->tx)*inverse_affine.rx-affine->ty*inverse_affine.sy;
-  return(inverse_affine);
+  if (AbsoluteValue(divisor) < 0.0001)
+    {
+      char message[MaxTextExtent];
+      FormatString(message,"Inverse affine divisor: %g", divisor);
+      ThrowException(exception,DrawError,UnreasonableAffineMatrix,message);
+      status=MagickFail;
+    }
+  else
+    {
+      double
+        determinant;
+
+      determinant=1.0/divisor; /* oss-fuzz 28293 runtime error: division by zero */
+      inverse_affine->sx=determinant*affine->sy;
+      inverse_affine->rx=determinant*(-affine->rx);
+      inverse_affine->ry=determinant*(-affine->ry);
+      inverse_affine->sy=determinant*affine->sx;
+      inverse_affine->tx=
+        (-affine->tx)*inverse_affine->sx-affine->ty*inverse_affine->ry;
+      inverse_affine->ty=
+        (-affine->tx)*inverse_affine->rx-affine->ty*inverse_affine->sy;
+      status=MagickPass;
+    }
+  return status;
 }
 
 #define AffineDrawImageText "[%s] Affine composite..."
@@ -1425,7 +1439,9 @@ DrawAffineImage(Image *image,const Image *composite,
   edge.y1=min.y;
   edge.x2=max.x;
   edge.y2=max.y;
-  inverse_affine=InverseAffineMatrix(affine);
+  status &= InverseAffineMatrix(affine,&inverse_affine,&image->exception);
+  if (status == MagickFail)
+    return status;
   if (edge.y1 < 0)
     edge.y1=0.0;
   if (edge.y2 > image->rows - 1)
@@ -2257,7 +2273,7 @@ IsPoint(const char *point)
   return(p != point);
 }
 
-// Add two size_t values and check for unsigned overflow.
+/* Add two size_t values and check for unsigned overflow. */
 static MagickPassFail MagickAddSizeT(const size_t b, const size_t o, size_t *r)
 {
   *r = b+o;

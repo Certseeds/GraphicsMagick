@@ -1289,6 +1289,12 @@ unbalanced push-pop
 .
 
 MessageId       = +1
+SymbolicName    = DrawErrorUnreasonableAffineMatrix
+Language        = English
+unreasonable affine matrix
+.
+
+MessageId       = +1
 SymbolicName    = DrawErrorUnreasonableDashPolygonLength
 Language        = English
 unreasonable dash polygon length
@@ -2726,6 +2732,12 @@ MessageId       = +1
 SymbolicName    = LimitErrorUnableToGetPackageInfo
 Language        = English
 Unable to get package info
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorUnableToInterpretMSLImage
+Language        = English
+unable to interpret MSL image
 .
 
 MessageId       = +1

@@ -403,12 +403,26 @@ ExecuteModuleProcess(const char *tag,Image **image,
     method=(unsigned int (*)(Image **,const int,char **))
       lt_dlsym(handle,method_name);
 
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "Invoking \"%.1024s\" filter module",tag);
 
     /* Execute module method */
     if (method != (unsigned int (*)(Image **,const int,char **)) NULL)
-      status=(*method)(image,argc,argv);
+      {
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Invoking \"%.1024s\" filter module",tag);
+        status=(*method)(image,argc,argv);
+      }
+    else
+      {
+        char
+          message[MaxTextExtent];
+
+        FormatString(message,
+                     "Method name \"%.1024s\" was not found in module \"%.1024s\"!",
+                     method_name, tag);
+        ThrowException(&(*image)->exception,ModuleError,UnableToLoadModule,
+                       message);
+        status=MagickFail;
+      }
 
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
       "Returned from \"%.1024s\" filter module",tag);

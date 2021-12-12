@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2004-2019 GraphicsMagick Group
+# Copyright (C) 2004-2021 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -90,7 +90,7 @@
 # Makefile for building Wand library
 #
 
-# Copyright (C) 2008 - 2019 GraphicsMagick Group
+# Copyright (C) 2008 - 2021 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -216,9 +216,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = $(am__EXEEXT_1)
-TESTS = $(PERLMAGICK_TESTS) $(TESTS_TESTS) $(am__EXEEXT_6) \
-	$(WAND_TESTS) $(UTILITIES_TESTS)
-XFAIL_TESTS = $(am__EXEEXT_7) $(am__EXEEXT_7) $(am__EXEEXT_7)
+TESTS = $(am__EXEEXT_6) $(TESTS_TESTS) $(am__EXEEXT_7) $(WAND_TESTS) \
+	$(UTILITIES_TESTS)
+XFAIL_TESTS = $(am__EXEEXT_8) $(am__EXEEXT_8) $(am__EXEEXT_8)
 check_PROGRAMS = $(am__EXEEXT_2) $(am__EXEEXT_4) $(am__EXEEXT_5)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -2309,9 +2309,10 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
-@WITH_MAGICK_PLUS_PLUS_TRUE@am__EXEEXT_6 =  \
+@WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@am__EXEEXT_6 = PerlMagick/PerlMagickCheck.sh
+@WITH_MAGICK_PLUS_PLUS_TRUE@am__EXEEXT_7 =  \
 @WITH_MAGICK_PLUS_PLUS_TRUE@	$(MAGICKPP_TEST_SCRIPTS_OPT)
-am__EXEEXT_7 =
+am__EXEEXT_8 =
 TEST_SUITE_LOG = test-suite.log
 am__test_logs1 = $(TESTS:=.log)
 am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
@@ -2435,6 +2436,7 @@ FIGDecodeDelegate = @FIGDecodeDelegate@
 FT_CFLAGS = @FT_CFLAGS@
 FT_LIBS = @FT_LIBS@
 GMDelegate = @GMDelegate@
+GRAPHICSMAGICK_SNAPSHOT_COPY = @GRAPHICSMAGICK_SNAPSHOT_COPY@
 GREP = @GREP@
 GSCMYKDevice = @GSCMYKDevice@
 GSColorAlphaDevice = @GSColorAlphaDevice@
@@ -2699,7 +2701,7 @@ xml2_config = @xml2_config@
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
 # nostdinc
-AUTOMAKE_OPTIONS = 1.12 subdir-objects nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
 topincludedir = @includedir@/GraphicsMagick
 
 # CPPFLAGS required by all C/C++ code
@@ -2759,6 +2761,7 @@ TESTS_ENVIRONMENT = \
 # should want to concatenate them.
 CHANGELOGS = \
 	ChangeLog \
+	ChangeLog.2020 \
 	ChangeLog.2019 \
 	ChangeLog.2018 \
 	ChangeLog.2017 \
@@ -4374,6 +4377,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2017.html \
 	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/ChangeLog-2019.html \
+	$(WWWDIR)/ChangeLog-2020.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -4493,6 +4497,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2017.html \
 	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/ChangeLog-2019.html \
+	$(WWWDIR)/ChangeLog-2020.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -4717,6 +4722,7 @@ UTILITIES_XFAIL_TESTS =
 
 # Tests to run
 UTILITIES_TESTS = \
+	utilities/tests/convert.tap \
 	utilities/tests/effects.tap \
 	utilities/tests/pipe.tap \
 	utilities/tests/hald-clut.tap \
@@ -4738,6 +4744,7 @@ UTILITIES_EXTRA_DIST = \
 	$(UTILITIES_MANS) \
 	$(UTILITIES_TESTS) \
 	utilities/tests/BetaRGB.icc \
+	utilities/tests/convert-cmds.txt \
 	utilities/tests/common.sh \
 	utilities/tests/sunrise.jpg \
 	utilities/tests/sunrise.miff
@@ -4766,12 +4773,22 @@ PERLMAGICK_MAINTAINER_TARGETS = $(top_srcdir)/$(PERLMAGICK)/Magick.pm
 @WITH_PERL_TRUE@PERLMAGICK_CLEAN_LOCAL_TARGETS = clean-perl
 @WITH_PERL_TRUE@PERLMAGICK_DISTCLEAN_LOCAL_TARGETS = clean-perl
 @WITH_PERL_TRUE@PERLMAGICK_MAINTAINER_CLEAN_LOCAL_TARGETS = distclean-local
-#PERLMAGICK_CHECK_LOCAL_TARGETS = check-perl
-@WITH_PERL_TRUE@PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_CHECKSCRIPTS = perl-build
+#PERLMAGICK_CHECK_LOCAL_TARGETS = check-perl
 
 #PERLMAGICK_CHECKSCRIPTS = perl-build
+
+# Please note that a dynamic PerlMagick is no longer built as part of
+# the GraphicsMagick build because it is not at all portable (or
+# reliable) to try to force the PerlMagick build to use the
+# uninstalled GraphicsMagick libraries, yet behave properly for
+# testing, and for when it is installed.  GraphicsMagick must be
+# installed, and then PerlMagick may be built, tested, and installed.
+# Due to this, only enough functionality is provided to configure the
+# PerlMagick source tree and Makefile for subsequent building.
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_CHECKSCRIPTS = 
+@WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_TESTS = PerlMagick/PerlMagickCheck.sh
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@PERLMAGICK_TESTS = #PerlMagick/PerlMagickCheck.sh
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@PERLSTATICNAME = PerlMagick
 
 # Pkgconfig directory
@@ -4839,10 +4856,8 @@ DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
 	$(distdir).tar.xz $(distdir).tar.zst
 
 
-#
-# Build a validated snapshot release and move to the snapshots directory.
-#
-SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
+# Use a hard-coded mechanism and destination path to copy snapshot files
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
 COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL = GraphicsMagick.xz
 COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
@@ -10953,6 +10968,9 @@ uninstall-data-html:
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
+@MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2019.rst: $(top_srcdir)/ChangeLog.2019
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
@@ -11098,11 +11116,13 @@ $(top_srcdir)/$(PERLMAGICK)/Magick.pm : $(PERLMAGICK)/Magick.pm
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@uninstall-exec-perl: $(PERLMAKEFILE)
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	echo "Uninstall not supported for PerlMagick"
 
-@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@check-perl: $(PERLMAKEFILE)
-@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
-
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@perl-build: $(PERLMAKEFILE)
 @WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	( cd $(PERLMAGICK) && $(MAKE) CC='@CC@' )
+
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@perl-check: $(PERLMAKEFILE)
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
+
+@WITH_PERL_DYNAMIC_TRUE@@WITH_PERL_TRUE@check-perl:
 
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@$(PERLMAKEFILE): perl-sources $(LIBMAGICK) $(PERLMAKEMAKER)
 @WITH_PERL_DYNAMIC_FALSE@@WITH_PERL_STATIC_TRUE@@WITH_PERL_TRUE@	cd $(PERLMAGICK) && @PERL@ Makefile.PL MAP_TARGET=$(PERLSTATICNAME) $(PERL_MAKE_OPTIONS) && $(MAKE) Makefile ; $(MAKE) Makefile
@@ -11277,14 +11297,25 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 dist-zstd: distdir
 	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
 	$(am__post_remove_distdir)
-snapshot: distcheck
-	$(MAKE) $(DIST_ARCHIVE_SRPM)
-	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
-	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
-	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
-	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
-	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
-	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+
+#
+# Build a validated snapshot release and move to the snapshots directory.
+#
+
+# Use a graphicsmagick_snapshot_copy script to copy snapshot files
+# somewhere using some mechanism only known to itself.
+#
+# The arguments to the script are the original path names of the files to distribute.
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 # New URL is https://brb.synopsys.com/?project=GraphicsMagick
 coverity:
 	$(MAKE) clean

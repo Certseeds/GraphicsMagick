@@ -4444,7 +4444,7 @@ The default preview is <s>JPEG</s>.</pp>
 
 <pp>
 The command argument has the form <s>module=arg1,arg2,arg3,...,argN</s>
-where <s>module</s> is the name of the module to invoke (e.g. "analyze")
+where <s>module</s> is the name of the module to invoke (e.g. "Analyze")
 and arg1,arg2,arg3,...,argN are an arbitrary number of arguments to
 pass to the process module.</pp><pp>
 The sequence of images
@@ -4452,6 +4452,15 @@ is terminated by the appearance of any option.</pp>
 <pp>
 If the <s>-process</s>
 option appears after all of the input images, all images are processed.</pp>
+
+<pp>
+For example:</pp>
+
+<pp><pre>
+     gm convert logo: -process Analyze= \
+       -format "%[BrightnessMean],%[BrightnessStddev]" info:-
+     51952,23294
+<pre></pp>
 
 </utils>
 

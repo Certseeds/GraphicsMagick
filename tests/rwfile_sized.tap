@@ -10,12 +10,15 @@ rwfile=./rwfile
 check_types='truecolor_70x46'
 
 # Number of tests we plan to run
-test_plan_fn 16
+test_plan_fn 22
 
 # CMYK format
 for type in ${check_types}
 do
-  test_command_fn "CMYK ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" -size 70x46 "${SRCDIR}/input_${type}.miff" CMYK
+  for interlace in none line plane
+  do
+    test_command_fn "CMYK ${type} interlace=${interlace}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_${interlace}_%d" -size 70x46  -interlace ${interlace} "${SRCDIR}/input_${type}.miff" CMYK
+  done
 done
 
 # GRAY format
@@ -87,13 +90,19 @@ done
 # RGB format
 for type in ${check_types}
 do
-  test_command_fn "RGB ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" -size 70x46 "${SRCDIR}/input_${type}.miff" RGB
+  for interlace in none line plane
+  do
+    test_command_fn "RGB ${type} interlace=${interlace}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_${interlace}_%d" -size 70x46 -interlace ${interlace} "${SRCDIR}/input_${type}.miff" RGB
+  done
 done
 
 # RGBA format
 for type in ${check_types}
 do
-  test_command_fn "RGBA ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" -size 70x46 "${SRCDIR}/input_${type}.miff" RGBA
+  for interlace in none line plane
+  do
+    test_command_fn "RGBA ${type} interlace=${interlace}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_${interlace}_%d" -size 70x46 -interlace ${interlace} "${SRCDIR}/input_${type}.miff" RGBA
+  done
 done
 
 # UYVY format

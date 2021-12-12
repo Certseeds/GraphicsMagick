@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2018 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2238,6 +2238,7 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
     {
       /*
         Native blob support for this image format.
+        FIXME: This results in a memory leak if the blob is not opened.
       */
       clone_info->blob=MagickAllocateMemory(void *,65535L);
       if (clone_info->blob == (void *) NULL)
@@ -2258,7 +2259,7 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
       *image->filename='\0';
       /* Write the image to the blob */
       status=WriteImage(clone_info,image);
-      if (status == MagickFalse)
+      if (status == MagickFail)
         {
           /* Only assert our own exception if an exception was not already reported. */
           if (image->exception.severity == UndefinedException)
@@ -5039,7 +5040,7 @@ MagickExport size_t WriteBlob(Image *image,const size_t length,const void *data)
             else
               amount=(int) remaining;
 
-            bz_count=BZ2_bzwrite(blob->handle.gz,
+            bz_count=BZ2_bzwrite(blob->handle.bz,
                                  (void *) ((unsigned char *) data+i),amount);
             if (bz_count <= 0)
               break;

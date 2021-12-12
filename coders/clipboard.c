@@ -41,10 +41,32 @@
 #    include <windows.h>
 #  else
      /* All MinGW needs ... */
+#    include <winuser.h>
 #    include <wingdi.h>
 #  endif
 #endif
+/*
+  https://docs.microsoft.com/en-us/windows/win32/api/winuser/
+  https://docs.microsoft.com/en-us/windows/win32/api/wingdi/
 
+  Library symbols directly used (unioned with those used by
+  ImageToHBITMAP()):
+
+  BitBlt                wingdi.h / Gdi32.lib
+  CloseClipboard        winuser.h / User32.lib
+  CreateCompatibleDC    wingdi.h / Gdi32.lib
+  CreateDIBSection      wingdi.h / Gdi32.lib
+  DeleteDC              wingdi.h / Gdi32.lib
+  DeleteObject          wingdi.h / Gdi32.lib
+  EmptyClipboard        winuser.h / User32.lib
+  GetClipboardData      winuser.h / User32.lib
+  GetDC                 winuser.h / User32.lib
+  GetObjectA            wingdi.h / Gdi32.lib
+  OpenClipboard         winuser.h / User32.lib
+  ReleaseDC             winuser.h / User32.lib
+  SelectObject          wingdi.h / Gdi32.lib
+  SetClipboardData      winuser.h / User32.lib
+ */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

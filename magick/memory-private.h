@@ -54,6 +54,7 @@ extern MagickExport
 /*
   Allocate/Reallocate/Free memory (resource limited)
  */
+
 #define MagickAllocateResourceLimitedMemory(type,size)                  \
   ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
    ((type) _MagickReallocateResourceLimitedMemory(0,1,(size_t) (size),MagickFalse)))
@@ -118,6 +119,34 @@ extern MagickExport
   MagickFreeAligned(_magick_mp);                \
   memory=0;                                     \
 }
+
+
+/*
+  Enumeration used with _MagickResourceLimitedMemoryGetSizeAttribute to avoid
+  explosion of private accessor functions.
+*/
+typedef enum _MagickAllocateResourceLimitedMemoryAttribute
+  {
+    ResourceLimitedMemoryAttributeAllocSize,
+    ResourceLimitedMemoryAttributeAllocSizeReal,
+    ResourceLimitedMemoryAttributeAllocNumReallocs,
+    ResourceLimitedMemoryAttributeAllocNumReallocsMoved
+  } MagickAllocateResourceLimitedMemoryAttribute;
+
+/*
+  Get requested allocation size
+*/
+#define MagickResourceLimitedMemoryGetAllocSize(p) \
+  _MagickResourceLimitedMemoryGetSizeAttribute(p, ResourceLimitedMemoryAttributeAllocSize);
+
+/*
+  Get actual underlying allocation size
+*/
+#define MagickResourceLimitedMemoryGetAllocSizeReal(p) \
+  _MagickResourceLimitedMemoryGetSizeAttribute(p, ResourceLimitedMemoryAttributeAllocSizeReal);
+
+MagickExport size_t _MagickResourceLimitedMemoryGetSizeAttribute(const void *p,
+                                                                 const MagickAllocateResourceLimitedMemoryAttribute attr);
 
 /*
  * Local Variables:

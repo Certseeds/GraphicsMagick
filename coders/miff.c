@@ -784,7 +784,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
   QuantumType
     quantum_type;
 
-  register long
+  register unsigned long
     i;
 
   register PixelPacket
@@ -1505,7 +1505,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     */
     if (number_of_profiles > 0)
       {
-        for (i=0; i < (long) number_of_profiles; i++)
+        for (i=0; i < number_of_profiles; i++)
         {
           if (profiles[i].length > 0)
             {
@@ -1573,7 +1573,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               {
               case 8:
                 {
-                  for (i=0; i < (long) image->colors; i++)
+                  for (i=0; i < image->colors; i++)
                     {
                       image->colormap[i].red=ScaleCharToQuantum(*p++);
                       image->colormap[i].green=ScaleCharToQuantum(*p++);
@@ -1583,7 +1583,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 }
               case 16:
                 {
-                  for (i=0; i < (long) image->colors; i++)
+                  for (i=0; i < image->colors; i++)
                     {
                       pixel=((unsigned int) *p << 8) | (unsigned int) *(p+1);
                       image->colormap[i].red=ScaleShortToQuantum(pixel);
@@ -1599,7 +1599,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 }
               case 32:
                 {
-                  for (i=0; i < (long) image->colors; i++)
+                  for (i=0; i < image->colors; i++)
                     {
                       pixel=((unsigned int) *p << 24) |
                         ((unsigned int) *(p+1) << 16) |
@@ -2353,8 +2353,10 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
   register const IndexPacket
     *indexes;
 
+  register unsigned long
+    i;
+
   register long
-    i,
     x;
 
   unsigned char
@@ -2665,13 +2667,13 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
       FormatString(buffer,"%.1024s=",attribute->key);
       (void) WriteBlobString(image,buffer);
       attribute_length=strlen(attribute->value);
-      for (i=0; i < (long) attribute_length; i++)
+      for (i=0; i < attribute_length; i++)
         if (isspace((int) attribute->value[i]))
           break;
-      if (i < (long) attribute_length)
+      if (i < attribute_length)
         (void) WriteBlobByte(image,'{');
       (void) WriteBlob(image,attribute_length,attribute->value);
-      if (i < (long) attribute_length)
+      if (i < attribute_length)
         (void) WriteBlobByte(image,'}');
       (void) WriteBlobByte(image,'\n');
     }
@@ -2736,7 +2738,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
           {
           case 8:
             {
-              for (i=0; i < (long) image->colors; i++)
+              for (i=0; i < image->colors; i++)
                 {
                   *q++=ScaleQuantumToChar(image->colormap[i].red);
                   *q++=ScaleQuantumToChar(image->colormap[i].green);
@@ -2747,7 +2749,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 #if QuantumDepth > 8
           case 16:
             {
-              for (i=0; i < (long) image->colors; i++)
+              for (i=0; i < image->colors; i++)
                 {
                   *q++=ScaleQuantumToShort(image->colormap[i].red) >> 8;
                   *q++=ScaleQuantumToShort(image->colormap[i].red);
@@ -2762,7 +2764,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
 #if QuantumDepth > 16
           case 32:
             {
-              for (i=0; i < (long) image->colors; i++)
+              for (i=0; i < image->colors; i++)
                 {
                   *q++=image->colormap[i].red >> 24;
                   *q++=image->colormap[i].red >> 16;

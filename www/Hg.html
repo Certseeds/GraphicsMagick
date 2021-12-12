@@ -73,17 +73,26 @@ your changes with others.</p>
 </div>
 <div class="section" id="web-access">
 <h1><a class="toc-backref" href="#id2">Web Access</a></h1>
-<p>The <a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code/">GraphicsMagick repository at SourceForge</a> web interface is
-available which may be used to interactively view the latest versions
-of files, or the changes to files, using your web browser.</p>
+<p>The <a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code/">GraphicsMagick repository at SourceForge</a> and <a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">GraphicsMagick
+repository at OSDN</a> web interfaces are available which may be used to
+interactively view the latest versions of files (or the changes to
+files) using your web browser.  These two servers will be updated at
+about the same time so they should normally contain the same content.</p>
 </div>
 <div class="section" id="cloning-the-mercurial-repository">
 <h1><a class="toc-backref" href="#id3">Cloning the Mercurial Repository</a></h1>
 <p>To get the tree and place it in a sub-directory of your current working
-directory, issue the command:</p>
+directory, issue the command to one of the two public servers:</p>
 <pre class="literal-block">
 hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 </pre>
+<p>or:</p>
+<pre class="literal-block">
+hg clone https://hg.osdn.net/view/graphicsmagick/GM
+</pre>
+<p>The repository is large (e.g. 239MB of Hg content, resulting in 299MB
+after files are extracted), so some time may be required to transfer
+all the changesets.  Patience is a virtue!</p>
 <p>Please note that since the introduction of an HTTP load balancer,
 SourceForge has become unreliable when cloning with the default http
 protocol.  Due to this, using ssh protocol may be required.  Any
@@ -99,9 +108,9 @@ hg clone <a class="reference external" href="ssh://YOURID&#64;hg.code.sf.net/p/g
 <p>By default the cloned directory is populated with files from the
 <cite>default</cite> (i.e. head) branch of the code, which is where active
 development happens.</p>
-<p>If you require a specific release of GraphicsMagick (e.g. 1.3.23), you may select it like:</p>
+<p>If you require a specific release of GraphicsMagick (e.g. 1.3.36), you may select it like:</p>
 <pre class="literal-block">
-hg update -r GraphicsMagick-1_3_23
+hg update -r GraphicsMagick-1_3_36
 </pre>
 <p>or if you require a specific branch of GraphicsMagick (e.g. 1.3), you may use:</p>
 <pre class="literal-block">
@@ -187,17 +196,23 @@ user ID as on the GraphicsMagick server.</p>
 </ol>
 <blockquote>
 The stable repository is available via http at
-&quot;<a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code">http://hg.code.sf.net/p/graphicsmagick/code</a>&quot;.  Any changes in the
-unstable development repository are pushed to the stable repository
-(by the developer responsible for this role) once any necessary
-adjustments have been made, documentation files have been generated,
-and the software test suite has passed on at least one machine.</blockquote>
+&quot;<a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code">http://hg.code.sf.net/p/graphicsmagick/code</a>&quot; or
+&quot;<a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">https://hg.osdn.net/view/graphicsmagick/GM</a>&quot;.  Any changes in the
+unstable development repository are pushed to the stable
+repositories (by the developer responsible for this role) once any
+necessary adjustments have been made, documentation files have been
+generated, and the software test suite has passed on at least one
+machine.</blockquote>
 <p>To build your local development repository (as quickly as possible),
 you may use these steps:</p>
 <ol class="arabic">
-<li><p class="first">Clone the stable respository at SourceForge:</p>
+<li><p class="first">Clone the stable respository at SourceForge or OSDN:</p>
 <pre class="literal-block">
 hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
+
+or
+
+hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
 </pre>
 </li>
 <li><p class="first">Adjust your local repository path default to use the unstable repository.</p>
@@ -268,7 +283,7 @@ notified by email of changes when they occur.</p>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2021<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

@@ -279,6 +279,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
           Line interlacing:  CCC...MMM...YYY...KKK...CCC...MMM...YYY...KKK...
         */
         packet_size=(quantum_size)/8;
+        tile_packets=(size_t) packet_size*image->tile_info.width;
         for (y=0; y < image->tile_info.y; y++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;
@@ -343,6 +344,7 @@ static Image *ReadCMYKImage(const ImageInfo *image_info,
               ThrowCMYKReaderException(FileOpenError,UnableToOpenFile,image);
           }
         packet_size=(quantum_size)/8;
+        tile_packets=(size_t) packet_size*image->tile_info.width;
         for (y=0; y < image->tile_info.y; y++)
           if (ReadBlob(image,tile_packets,scanline) != tile_packets)
             break;

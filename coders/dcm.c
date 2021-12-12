@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -5765,7 +5765,7 @@ static MagickPassFail funcDCM_BitsStored(Image *image,DicomStream *dcm,Exception
     {
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "DICOM significant_bits = %u",
+                              "DICOM significant_bits = %u (supported range is 1-16)",
                               dcm->significant_bits);
       ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
       return MagickFail;
@@ -5773,6 +5773,10 @@ static MagickPassFail funcDCM_BitsStored(Image *image,DicomStream *dcm,Exception
   if (dcm->significant_bits > 8)
     dcm->bytes_per_pixel=2;
   dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
+  if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Set max_value_in to %u due to %u significant bits",
+                              dcm->max_value_in, dcm->significant_bits);
   dcm->max_value_out=dcm->max_value_in;
   image->depth=Min(dcm->significant_bits,QuantumDepth);
   return MagickPass;
@@ -6452,17 +6456,43 @@ static MagickPassFail DCM_SetupRescaleMap(Image *image,DicomStream *dcm,Exceptio
     are outright rejected) so dcm->max_value_in and dcm->max_value_out
     are limited to 65535.
   */
-
+  if (dcm->significant_bits == 0 || dcm->significant_bits > 16)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "DICOM significant_bits = %u (supported range is 1-16)",
+                            dcm->significant_bits);
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      return MagickFail;
+    }
+  if (dcm->max_value_in > MaxMap+1)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "DICOM max_value_in out of range %u (supported range is 0 - %u)",
+                            dcm->max_value_in, MaxMap+1);
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      return MagickFail;
+    }
+    if (dcm->max_value_out > MaxMap+1)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "DICOM max_value_out out of range %u (supported range is 0 - %u)",
+                            dcm->max_value_out, MaxMap+1);
+      ThrowException(exception,CorruptImageError,ImproperImageHeader,image->filename);
+      return MagickFail;
+    }
   if (dcm->rescale_map == (Quantum *) NULL)
     {
       size_t num_entries = Max((size_t) MaxMap+1,(size_t) dcm->max_value_in+1);
-      dcm->rescale_map=MagickAllocateResourceLimitedArray(Quantum *,num_entries,sizeof(Quantum));
+
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Allocating %"MAGICK_SIZE_T_F"u entries for rescale map...", (MAGICK_SIZE_T) num_entries);
+      dcm->rescale_map=MagickAllocateResourceLimitedClearedArray(Quantum *,num_entries,sizeof(Quantum));
       if (dcm->rescale_map == NULL)
         {
           ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
           return MagickFail;
         }
-      (void) memset(dcm->rescale_map,0,num_entries*sizeof(Quantum));
     }
 
   if (dcm->window_width == 0)
@@ -7141,7 +7171,7 @@ static MagickPassFail DCM_ReadOffsetTable(Image *image,DicomStream *dcm,Exceptio
       return MagickFail;
     }
 
-  dcm->offset_arr=MagickAllocateResourceLimitedArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));
+  dcm->offset_arr=MagickAllocateResourceLimitedClearedArray(magick_uint32_t *,dcm->offset_ct,sizeof(magick_uint32_t));
   if (dcm->offset_arr == (magick_uint32_t *) NULL)
     {
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
@@ -7308,13 +7338,25 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
                   scaling using the image depth (unless avoid-scaling is in force)
                 */
                 /* Allow for libjpeg having changed depth of image */
-                dcm->significant_bits=next_image->depth;
-                dcm->bytes_per_pixel=1;
-                if (dcm->significant_bits > 8)
-                  dcm->bytes_per_pixel=2;
-                dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
-                dcm->max_value_out=dcm->max_value_in;
-                status=DCM_PostRescaleImage(next_image,dcm,True,exception);
+                if ((next_image->depth == 0U) || (next_image->depth > 16U))
+                  {
+                    if (next_image->logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Depth out of range! depth = %u (supported range is 1-16)",
+                                            next_image->depth);
+                    ThrowException(exception,CorruptImageError,ImproperImageHeader,next_image->filename);
+                    status=MagickFail;
+                  }
+                else
+                  {
+                    dcm->significant_bits=next_image->depth;
+                    dcm->bytes_per_pixel=1;
+                    if (dcm->significant_bits > 8)
+                      dcm->bytes_per_pixel=2;
+                    dcm->max_value_in=MaxValueGivenBits(dcm->significant_bits);
+                    dcm->max_value_out=dcm->max_value_in;
+                    status=DCM_PostRescaleImage(next_image,dcm,True,exception);
+                  }
               }
           if (status == MagickPass)
             {

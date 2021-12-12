@@ -27,16 +27,15 @@ the file `Copyright.txt <Copyright.html>`_ for the GraphicsMagick licence.
 Availability
 ------------
 
-The master ftp site for GraphicsMagick distributions is
-ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/. Bandwidth on this
-site is very limited, so it is recommended to download from SourceForge
-at http://sourceforge.net/projects/graphicsmagick/files/ if
-possible.
+GraphicsMagick release files may be downloaded from SourceForge
+at http://sourceforge.net/projects/graphicsmagick/files/.
 
 GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
 tool (https://www.mercurial-scm.org/). GraphicsMagick may be retrieved
-via the following command:
+from OSDN or SourceForge via the following commands:
+
+  hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code/ GM
 
@@ -115,11 +114,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires Ghostscript software available from
 
-    http://pages.cs.wisc.edu/~ghost/
-
-      or
-
-    http://sourceforge.net/projects/ghostscript/
+    https://www.ghostscript.com/download.html
 
   to read the Postscript or the Portable Document Format (PDF).
 
@@ -227,24 +222,17 @@ building under Microsoft Windows:
   GraphicsMagick supports both 8-bit and 12-bit JPEG, but
   unfortunately it does not yet support both at once.
 
-  Apply this JPEG patch to Independent JPEG Group's (6b release!)
-  source distribution if you want to read lossless jpeg-encoded DICOM
-  (medical) images:
+* GraphicsMagick requires the JasPer Project's JasPer library from
+  https://jasper-software.github.io/jasper/ (although older versions
+  back to 1.701.0 are still available via http from the original web
+  site at http://www.ece.uvic.ca/~mdadams/jasper/) to read and write
+  the JPEG-2000 format.  Due to security concerns, using the latest
+  version of JasPer is recommended.
 
-     ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/delegates/ljpeg-6b.tar.gz
-
-  Use of lossless JPEG is not encouraged. Unless you have a requirement
-  to read lossless jpeg-encoded DICOM images, please disregard the patch.
-
-* GraphicsMagick requires the JasPer Project's JasPer library version
-  1.701.0 (or later) available via http from
-
-     http://www.ece.uvic.ca/~mdadams/jasper/
-
-  to read and write the JPEG-2000 format. Please note that JasPer 1.900.1
-  may have a problem when used with GraphicsMagick's modules build. To
-  solve this problem, edit the file src/libjasper/base/jas_init.c and
-  comment out the line which invokes atexit().
+  Please note that JasPer 1.900.1 may have a problem when used with
+  GraphicsMagick's modules build. To solve this problem, edit the file
+  src/libjasper/base/jas_init.c and comment out the line which invokes
+  atexit().
 
 * On Unix-type systems, Windows/MinGW, and Windows/Cygwin,
   GraphicsMagick requires libltdl from libtool in order to support
@@ -253,12 +241,9 @@ building under Microsoft Windows:
 
      ftp://ftp.gnu.org/pub/gnu/libtool/
 
-* GraphicsMagick requires the MPEG utilities from the MPEG Software
-  Simulation Group, which are available via anonymous FTP as
-
-     ftp://ftp.GraphicsMagick.org/pub/GraphicsMagick/delegates/mpeg2vidcodec_v12.tar.gz
-
-  to read or write the MPEG image format.
+* GraphicsMagick requires the MPEG utilities
+  (`mpeg2vidcodec_v12.tar.gz`) from the MPEG Software Simulation Group
+  in order to read or write the MPEG image format.
 
 * GraphicsMagick requires the LIBPNG library, version 1.0 or above, from
 
@@ -379,9 +364,20 @@ building under Microsoft Windows:
 
   to read or write the PNG or Zip compressed MIFF images.
 
-* GraphicsMagick requires the Zstd library from
+* GraphicsMagick requires the Zstandard (Zstd) library from
 
      https://facebook.github.io/zstd/
 
+     or
+
+     https://github.com/facebook/zstd/releases
+
   to read or write Zstd compressed TIFF images.  In the future it is
   likely that other purposes will be found for Zstd.
+
+* GraphicsMagick may require the deflate library to link with libtiff.
+
+    Libtiff may optionally depend on the libdeflate library (from
+    https://github.com/ebiggers/libdeflate).  Linking with this
+    library may be necessary for builds where libtiff depends on
+    libdeflate.

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -421,13 +421,13 @@ static MagickPassFail ZeroFillMissingData(unsigned char *BImgBuff,unsigned long 
 
   while(y<image->rows && image->exception.severity!=UndefinedException)
   {
-    if((long) x<ldblk) 
+    if((long) x<ldblk)
     {
       memset(BImgBuff+x, 0, (size_t)ldblk-(size_t)x);
       if(x == 0)
-        x = ldblk;	/* Do not memset any more */
+        x = ldblk;      /* Do not memset any more */
       else
-        x = 0;		/* Next pass will need to clear whole row */
+        x = 0;          /* Next pass will need to clear whole row */
     }
     if(InsertRow(BImgBuff,y,image,bpp) == MagickFail)
       {
@@ -529,12 +529,12 @@ static int UnpackWPGRaster(Image *image,int bpp)
             {           /* Here I need to duplicate previous row RUNCOUNT* */
                         /* when x=0; y points to a new empty line. For y=0 zero line will be populated. */
               if(y>=image->rows)
-                {                  
+                {
                   MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-4);
                 }
               if(InsertRow(BImgBuff,y,image,bpp)==MagickFail)
-                { 
+                {
                   MagickFreeResourceLimitedMemory(BImgBuff);
                   return(-6);
                 }
@@ -744,7 +744,7 @@ unpack_wpg2_error:;
 
 typedef float tCTM[3][3];
 
-static unsigned LoadWPG2Flags(Image *image,char Precision,float *Angle,tCTM *CTM)
+static unsigned LoadWPG2Flags(Image *image, char Precision, float *Angle, tCTM *CTM)
 {
 const unsigned char TPR=1,TRN=2,SKW=4,SCL=8,ROT=0x10,OID=0x20,LCK=0x80;
 long x;
@@ -761,14 +761,21 @@ unsigned Flags;
  if(Flags & OID)
         {
         if(Precision==0)
-          {/*x=*/ (void) ReadBlobLSBShort(image);}      /*ObjectID*/
+          {x = ReadBlobLSBShort(image);
+           if(x >= 0x8000)
+             {
+               Precision = 1;   /* Double precision Switched on. */
+             (void)ReadBlobLSBShort(image);
+             /* ObjectId = ((xW & 0x7FFF)<<16) | DenX; */
+             }
+          }      /*ObjectID*/
         else
-          {/*x=*/ (void) ReadBlobLSBLong(image);}       /*ObjectID (Double precision)*/
+          {/*x=*/ (void) ReadBlobLSBLong(image);}  /*ObjectID native (Double precision)*/
         }
  if(Flags & ROT)
         {
         x=ReadBlobLSBLong(image);       /*Rot Angle*/
-        if(Angle) *Angle=x/65536.0;
+        if(Angle) *Angle=(float) (x/65536.0);
         }
  if(Flags & (ROT|SCL))
         {
@@ -940,7 +947,26 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Zero copy read.");
     }
+#if 0
+  /*
+    Write in-memory blob to file for test purposes.
+  */
+  {
+    char file_name[MaxTextExtent];
+    FILE *file;
 
+    FormatString(file_name,"wpg-blob.%s",format);
+    if ((file=fopen(file_name,"w")) != (FILE *) NULL)
+      {
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Writing %s...", file_name);
+        (void) fwrite(ps_data, 1, PS_Size, file);
+        (void) fclose(file);
+      }
+    SeekBlob(image,PS_Offset,SEEK_SET);
+  }
+#endif
   /*
     Read nested image from blob, forcing read as Postscript format
   */

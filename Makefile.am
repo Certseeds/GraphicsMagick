@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2019 GraphicsMagick Group
+# Copyright (C) 2004-2021 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -11,7 +11,7 @@
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
 # nostdinc
-AUTOMAKE_OPTIONS = 1.12 subdir-objects nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
 
 topincludedir = @includedir@/GraphicsMagick
 
@@ -95,6 +95,7 @@ XFAIL_TESTS = \
 # should want to concatenate them.
 CHANGELOGS = \
 	ChangeLog \
+	ChangeLog.2020 \
 	ChangeLog.2019 \
 	ChangeLog.2018 \
 	ChangeLog.2017 \
@@ -378,6 +379,19 @@ dist-zstd: distdir
 #
 # Build a validated snapshot release and move to the snapshots directory.
 #
+
+if HasGRAPHICSMAGICK_SNAPSHOT_COPY
+
+# Use a graphicsmagick_snapshot_copy script to copy snapshot files
+# somewhere using some mechanism only known to itself.
+#
+# The arguments to the script are the original path names of the files to distribute.
+snapshot: distcheck
+	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+
+else
+
+# Use a hard-coded mechanism and destination path to copy snapshot files
 SNAPSHOT_DIRECTORY=/ftp/pub/GraphicsMagick/snapshots
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
@@ -387,6 +401,8 @@ snapshot: distcheck
 	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+
+endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
 COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz

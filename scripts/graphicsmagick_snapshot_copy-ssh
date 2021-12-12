@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# Copy GraphicsMagick snapshot release files to a different host to make them available.
+# Then use rsync to send them to SourceForge.
+# Uses ssh for commands and copy.
+#
+#
+SNAPSHOT_HOST='scrappy.simplesystems.org'
+SNAPSHOT_DIRECTORY='/ftp/pub/GraphicsMagick/snapshots'
+RM='rm -f'
+SSH='ssh'
+SCP='scp'
+
+#printf "ARGS: %s\n" "$@"
+
+# Remove all existing snapshot archive files
+printf "${SSH} ${SNAPSHOT_HOST} ${RM} ${SNAPSHOT_DIRECTORY}"/'GraphicsMagick-*'"\n"
+${SSH} ${SNAPSHOT_HOST} ${RM} "${SNAPSHOT_DIRECTORY}"/'GraphicsMagick-*'
+
+for file in "$@" ; do
+
+    source=${file}
+    file_base=$(basename "${file}")
+
+    case "${file_base}" in
+        ChangeLog)
+            destf="ChangeLog.txt"
+            ;;
+        Changelog.html)
+            destf="ChangeLog.html"
+            ;;
+        *.rpm)
+            continue
+            ;;
+        *.tar.bz2)
+            continue
+            ;;
+        *.tar.gz)
+            continue
+            ;;
+        *.tar.lz)
+            continue
+            ;;
+        *.tar.zst)
+            continue
+            ;;
+        *-windows.7z)
+            continue
+            ;;
+        *)
+            destf=${file_base}
+            ;;
+    esac
+
+    dest="${SNAPSHOT_DIRECTORY}/${destf}"
+
+    printf "${SSH} ${SNAPSHOT_HOST} ${RM} ${dest}\n"
+    ${SSH} ${SNAPSHOT_HOST} ${RM} ${dest}
+    printf "${SCP} ${source} ${SNAPSHOT_HOST}:${dest}\n"
+    ${SCP} "${source}" "${SNAPSHOT_HOST}:${dest}"
+
+done
+# Now use rsync to send to SourceForge frs.sourceforge.net:/home/pfs/project/g/gr/graphicsmagick/graphicsmagick-snapshots
+printf "rsync ${SNAPSHOT_DIRECTORY}/ ...\n"
+# -a == -rlptgoD
+# -vrtc
+# --bwlimit is in bytes rather than bits!  Requests are rounded up to units of 1024 bytes.
+${SSH} ${SNAPSHOT_HOST} time rsync -vrtzc --delete --delete-after --bwlimit=34k --stats ${SNAPSHOT_DIRECTORY}/ bfriesen,graphicsmagick@frs.sourceforge.net:/home/pfs/project/g/gr/graphicsmagick/graphicsmagick-snapshots

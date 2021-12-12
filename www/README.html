@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>Installing GraphicsMagick</title>
 <link rel="stylesheet" href="docutils-articles.css" type="text/css" />
 </head>
@@ -62,17 +62,16 @@ the file <a class="reference external" href="Copyright.html">Copyright.txt</a> f
 </div>
 <div class="section" id="availability">
 <h1><a class="toc-backref" href="#id2">Availability</a></h1>
-<p>The master ftp site for GraphicsMagick distributions is
-<a class="reference external" href="ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/">ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/</a>. Bandwidth on this
-site is very limited, so it is recommended to download from SourceForge
-at <a class="reference external" href="http://sourceforge.net/projects/graphicsmagick/files/">http://sourceforge.net/projects/graphicsmagick/files/</a> if
-possible.</p>
+<p>GraphicsMagick release files may be downloaded from SourceForge
+at <a class="reference external" href="http://sourceforge.net/projects/graphicsmagick/files/">http://sourceforge.net/projects/graphicsmagick/files/</a>.</p>
 <p>GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
 tool (<a class="reference external" href="https://www.mercurial-scm.org/">https://www.mercurial-scm.org/</a>). GraphicsMagick may be retrieved
-via the following command:</p>
+from OSDN or SourceForge via the following commands:</p>
 <blockquote>
-hg clone <a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code/">http://hg.code.sf.net/p/graphicsmagick/code/</a> GM</blockquote>
+<p>hg clone <a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">https://hg.osdn.net/view/graphicsmagick/GM</a> GM</p>
+<p>hg clone <a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code/">http://hg.code.sf.net/p/graphicsmagick/code/</a> GM</p>
+</blockquote>
 <p>Mercurial provides a complete stand-alone repository which contains
 the full history of the GraphicsMagick project.  You may use the
 cloned repository for your own purposes related to GraphicsMagick
@@ -148,11 +147,7 @@ available as</p>
 </li>
 <li><p class="first">GraphicsMagick requires Ghostscript software available from</p>
 <blockquote>
-<p><a class="reference external" href="http://pages.cs.wisc.edu/~ghost/">http://pages.cs.wisc.edu/~ghost/</a></p>
-<blockquote>
-<p>or</p>
-</blockquote>
-<p><a class="reference external" href="http://sourceforge.net/projects/ghostscript/">http://sourceforge.net/projects/ghostscript/</a></p>
+<p><a class="reference external" href="https://www.ghostscript.com/download.html">https://www.ghostscript.com/download.html</a></p>
 </blockquote>
 <p>to read the Postscript or the Portable Document Format (PDF).</p>
 <p>Ghostscript Fonts (also known as &quot;URW Standard postscript fonts
@@ -254,24 +249,17 @@ lossless coding mode JPEG extension introduced in IJG JPEG v9 (which
 is not compatible with standard lossless JPEG!).</p>
 <p>GraphicsMagick supports both 8-bit and 12-bit JPEG, but
 unfortunately it does not yet support both at once.</p>
-<p>Apply this JPEG patch to Independent JPEG Group's (6b release!)
-source distribution if you want to read lossless jpeg-encoded DICOM
-(medical) images:</p>
-<blockquote>
-<p><a class="reference external" href="ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/delegates/ljpeg-6b.tar.gz">ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/delegates/ljpeg-6b.tar.gz</a></p>
-</blockquote>
-<p>Use of lossless JPEG is not encouraged. Unless you have a requirement
-to read lossless jpeg-encoded DICOM images, please disregard the patch.</p>
 </li>
-<li><p class="first">GraphicsMagick requires the JasPer Project's JasPer library version
-1.701.0 (or later) available via http from</p>
-<blockquote>
-<p><a class="reference external" href="http://www.ece.uvic.ca/~mdadams/jasper/">http://www.ece.uvic.ca/~mdadams/jasper/</a></p>
-</blockquote>
-<p>to read and write the JPEG-2000 format. Please note that JasPer 1.900.1
-may have a problem when used with GraphicsMagick's modules build. To
-solve this problem, edit the file src/libjasper/base/jas_init.c and
-comment out the line which invokes atexit().</p>
+<li><p class="first">GraphicsMagick requires the JasPer Project's JasPer library from
+<a class="reference external" href="https://jasper-software.github.io/jasper/">https://jasper-software.github.io/jasper/</a> (although older versions
+back to 1.701.0 are still available via http from the original web
+site at <a class="reference external" href="http://www.ece.uvic.ca/~mdadams/jasper/">http://www.ece.uvic.ca/~mdadams/jasper/</a>) to read and write
+the JPEG-2000 format.  Due to security concerns, using the latest
+version of JasPer is recommended.</p>
+<p>Please note that JasPer 1.900.1 may have a problem when used with
+GraphicsMagick's modules build. To solve this problem, edit the file
+src/libjasper/base/jas_init.c and comment out the line which invokes
+atexit().</p>
 </li>
 <li><p class="first">On Unix-type systems, Windows/MinGW, and Windows/Cygwin,
 GraphicsMagick requires libltdl from libtool in order to support
@@ -281,12 +269,9 @@ is available via anonymous FTP from</p>
 <p><a class="reference external" href="ftp://ftp.gnu.org/pub/gnu/libtool/">ftp://ftp.gnu.org/pub/gnu/libtool/</a></p>
 </blockquote>
 </li>
-<li><p class="first">GraphicsMagick requires the MPEG utilities from the MPEG Software
-Simulation Group, which are available via anonymous FTP as</p>
-<blockquote>
-<p><a class="reference external" href="ftp://ftp.GraphicsMagick.org/pub/GraphicsMagick/delegates/mpeg2vidcodec_v12.tar.gz">ftp://ftp.GraphicsMagick.org/pub/GraphicsMagick/delegates/mpeg2vidcodec_v12.tar.gz</a></p>
-</blockquote>
-<p>to read or write the MPEG image format.</p>
+<li><p class="first">GraphicsMagick requires the MPEG utilities
+(<cite>mpeg2vidcodec_v12.tar.gz</cite>) from the MPEG Software Simulation Group
+in order to read or write the MPEG image format.</p>
 </li>
 <li><p class="first">GraphicsMagick requires the LIBPNG library, version 1.0 or above, from</p>
 <blockquote>
@@ -406,12 +391,22 @@ distributed with &quot;.xz&quot; or &quot;.lzma&quot; extensions.</p>
 </blockquote>
 <p>to read or write the PNG or Zip compressed MIFF images.</p>
 </li>
-<li><p class="first">GraphicsMagick requires the Zstd library from</p>
+<li><p class="first">GraphicsMagick requires the Zstandard (Zstd) library from</p>
 <blockquote>
 <p><a class="reference external" href="https://facebook.github.io/zstd/">https://facebook.github.io/zstd/</a></p>
+<p>or</p>
+<p><a class="reference external" href="https://github.com/facebook/zstd/releases">https://github.com/facebook/zstd/releases</a></p>
 </blockquote>
 <p>to read or write Zstd compressed TIFF images.  In the future it is
 likely that other purposes will be found for Zstd.</p>
+</li>
+<li><p class="first">GraphicsMagick may require the deflate library to link with libtiff.</p>
+<blockquote>
+<p>Libtiff may optionally depend on the libdeflate library (from
+<a class="reference external" href="https://github.com/ebiggers/libdeflate">https://github.com/ebiggers/libdeflate</a>).  Linking with this
+library may be necessary for builds where libtiff depends on
+libdeflate.</p>
+</blockquote>
 </li>
 </ul>
 </div>
@@ -419,7 +414,7 @@ likely that other purposes will be found for Zstd.</p>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2021<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>

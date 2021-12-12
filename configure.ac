@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2020 GraphicsMagick Group
+# Copyright (C) 2003-2021 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -491,6 +491,9 @@ AM_CONDITIONAL([ENABLE_BROKEN_CODERS],[test "$with_broken_coders" != 'no'])
 # Add configure option --enable-maintainer-mode which enables dependency
 # checking and generation useful to package maintainers.  This is made an
 # option to avoid confusing end users.
+#
+# Defines shell/Automake variable 'MAINT' to '' when enabled or '#' when not
+# Also sets MAINTAINER_MODE_FALSE / MAINTAINER_MODE_TRUE with similar values.
 AM_MAINTAINER_MODE
 
 # Enable prof-based profiling support
@@ -642,10 +645,10 @@ if test "$with_fpx" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-fpx=$with_fpx "
 fi
 
-# Enable Windows lgdi32 library
+# Enable Windows gdi32/user32 libraries
 AC_ARG_WITH([gdi32],
               AS_HELP_STRING([--without-gdi32],
-                             [disable Windows gdi32 support]),
+                             [disable Windows gdi32/user32 (clipboard) support]),
               [with_gdi32=$withval],
               [with_gdi32='yes'])
 if test "$with_gdi32" != 'yes' ; then
@@ -2231,6 +2234,7 @@ then
         AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
         AC_MSG_RESULT([yes])
         have_jp2='yes'
+        AC_CHECK_FUNCS([jas_initialize jp2_decode jpc_decode pgx_decode])
     fi
     else
     AC_MSG_RESULT([no])
@@ -2739,7 +2743,7 @@ AC_SUBST([LIB_WMF_DEPS])
 
 
 #
-# Check for Windows gdi32 library
+# Check for Windows gdi32/user32 libraries (for Windows clipboard support)
 #
 have_gdi32='no'
 if test "$with_gdi32" != 'no'
@@ -2749,15 +2753,23 @@ then
   AC_MSG_RESULT()
   failed=0
   passed=0
-  found_libgdi32=0
+  #found_libuser32=0
+  #found_libgdi32=0
   AC_CHECK_HEADER([windows.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+  AC_CHECK_HEADER([winuser.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[#include <windows.h>])
   AC_CHECK_HEADER([wingdi.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[#include <windows.h>])
-  AC_CHECK_LIB([gdi32],[OpenClipboard],[found_libgdi32=`expr $found_libgdi32 + 1`],,)
-  if test $found_libgdi32 -gt 0
+  # For some reason MSYS2 and Cygwin i686 build fails library tests.
+  #AC_CHECK_LIB([user32],[OpenClipboard],[found_libuser32=`expr $found_libuser32 + 1`],[],[])
+  #AC_CHECK_LIB([gdi32],[CreateDIBSection],[found_libgdi32=`expr $found_libgdi32 + 1`],[],[])
+  #if test $found_libuser32 -gt 0 -a  $found_libgdi32 -gt 0
+  #then
+  #  passed=`expr $passed + 1`
+  #else
+  #  failed=`expr $failed + 1`
+  #fi
+  if test "$cygwin_build" = yes -o "$native_win32_build" = yes
   then
-    passed=`expr $passed + 1`
-  else
-    failed=`expr $failed + 1`
+        passed=`expr $passed + 1`
   fi
   AC_MSG_CHECKING([if Windows GDI32 support is complete])
   if test $passed -gt 0
@@ -2767,7 +2779,7 @@ then
       AC_MSG_RESULT([no -- some components failed test])
       have_gdi32='no (failed tests)'
     else
-      LIB_GDI32='-lgdi32'
+      LIB_GDI32='-lgdi32 -luser32'
       LIBS="$LIB_GDI32 $LIBS"
       AC_DEFINE([HasWINGDI32],[1],[Define to use the Windows GDI32 library])
       AC_MSG_RESULT([yes])
@@ -3029,15 +3041,32 @@ have_ralcgm='no'  ; if test "$CGMDecodeDelegate" != "$CGMDecodeDelegateDefault" 
 # Automake conditional to support test suite
 AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
-# Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
-AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
-AC_SUBST([RST2HTML])
-AM_CONDITIONAL([HasRST2HTML],[test "x$RST2HTML" != 'x'])
+# Tests for programs only used while in maintainer mode
+if test "$MAINT" == '' ; then
+   # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
+   AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
 
-# Test for optional txt2html utility and define automake conditional HasTXT2HTML if found.
-AC_PATH_PROGS([TXT2HTML], [txt2html])
+   # Test for optional txt2html utility and define automake conditional HasTXT2HTML if found.
+   AC_PATH_PROGS([TXT2HTML], [txt2html])
+
+   # Test for optional graphicsmagick_snapshot_copy program/script.
+   # If this script is found, it is used to copy files using the script-provided
+   # mechanism due to 'snapshot' target.
+   AC_PATH_PROGS([GRAPHICSMAGICK_SNAPSHOT_COPY], [graphicsmagick_snapshot_copy])
+else
+   RST2HTML=''
+   TXT2HTML=''
+   GRAPHICSMAGICK_SNAPSHOT_COPY=''
+fi
+
+AC_SUBST([RST2HTML])
+AM_CONDITIONAL([HasRST2HTML],[test "x${RST2HTML}" != 'x'])
+
 AC_SUBST([TXT2HTML])
-AM_CONDITIONAL([HasTXT2HTML],[test "$TXT2HTML" != 'x'])
+AM_CONDITIONAL([HasTXT2HTML],[test "x${TXT2HTML}" != 'x'])
+
+AC_SUBST([GRAPHICSMAGICK_SNAPSHOT_COPY])
+AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'x'])
 
 #
 # Test for font directories
@@ -3663,7 +3692,7 @@ fi
 
 if test "$build_modules" != 'no'
 then
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi

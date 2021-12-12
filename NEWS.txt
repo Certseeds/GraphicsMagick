@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 26, 2020
+This file was last updated to reflect changes up to December 4, 2021
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,170 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.37 (December ?, 2021)
+==========================
+
+Special Issues:
+
+* The FTP site ftp.graphicsmagick.org is now shut down due to a lack
+  of bandwith, extremely abusive users (including from Google and
+  customers of Amazon Web Services), and a lack of support from the
+  user community.  Another factor is that FTP support has been removed
+  from popular web browsers.  This is very unfortunate since the site
+  served multiple usages, including providing a lot of historical data
+  (e.g. related to PNG) which may not be available elsewhere.
+
+* The Microsoft Visual Studio build has not been updated for this
+  release (although it does compile and the results do work fine) and
+  I will not be providing any Windows installation packages
+  corresponding to this release.  The problem is that the third-party
+  'delegate' libraries are out of date and they need to be updated
+  since some of them are known to contain severe security
+  vulnerabilities.  Several third-party 'delegate' libraries now
+  require real C'99 support, which means that Visual Studio 2015 or
+  later would be required to build them.  The 'configure' program used
+  to build the Visual Studio project files needs to be updated since
+  otherwise a 20 minute project upgrade cycle is needed when using
+  Visual Studio 2019, and to make minor path changes to avoid a
+  multitude of project-file warnings while building.  The installation
+  requirements for Visual Studio 2015 or later are different (related
+  to run-time "redistributables", which are now very onerous) and so
+  the Inno Setup installer needs some minor (or major) changes.  Many
+  pleas for assistance have been made (e.g. even to help with testing
+  to see if the software executes at all) but thus far the Microsoft
+  Windows user community has not been helpful with regards to the
+  Microsoft Visual Studio build.
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me.  I have been sheparding the project for 19 years already (and
+  contributed to ImageMagick and GraphicsMagick combined for 25 years
+  already).  It is not reasonable to expect someone with a full time
+  job (and expecting to retire in a couple of years) to do all of the
+  work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project due to
+  the contributions and assistance of Alex Gaynor. Since February 4
+  2018, 590 issues have been opened by oss-fuzz and 23 issues remain
+  open (most of which are in third-party software such as development
+  JasPer).  The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+
+Bug fixes:
+
+* CAPTION: Eliminate an assertion upon deallocation.
+
+* CMYK: Fix broken reading of planar CMYK files (a regression since 1.3.27).
+
+* ExecuteModuleProcess(): Add missing error reporting related to
+  the -module command option.
+
+* GIF: Handle GIF files where the 'opaque' index matches the number of
+  colors by producing an extra colormap entry of transparent
+  black. (SourceForge issue #649)
+
+* JP2: Adaptations to compile cleanly with JasPer 2.0.20.
+
+* META: Fix types used to prefer unsigned types where possible and to
+  use 'size_t' rather than 'int' for size values.
+
+* MSL: A great many MSL parser fixes.
+
+* Microsoft Windows: Detect and use Ghostscript point versions added
+  after 9.52, after which the version number format was changed.
+
+* PCX: Fix problem that 16-colors are used rather than 256-colors
+  (SourceForge patch #65).
+
+* PDF: Fix MediaBox dimensions (SourceForge patch #64 "Incorrect
+  MediaBox in PDF export").
+
+* PDF: Use appropriate memory deallocator for memory returned by
+  StringToList().  (SourceForge issue #646)
+
+* RGB: Fix broken reading of planar RGB files (a regression since
+  1.3.27).
+
+* TIFF: Fix double-charging for memory allocations (a regression since
+  1.3.36).
+
+* TIFF: Make sure that loops using TIFFReadScanline(), etc, do quit
+  upon first reported error.
+
+* WEBP: Enforce that embedded profiles provided by libWebP are not
+  zero-sized.
+
+* WEBP: Use SetImagePixelsEx() rather than GetImagePixelsEx() in
+  reader (SourceForge patch #66).
+
+* WriteBlob(): Use appropriate handle for bzip2.
+
+New Features:
+
+* None
+
+API Updates:
+
+* DisposeTypeToString(): New utility function to convert a DisposeType
+  to a string.
+
+* StringToDisposeType(): New utility function to convert a string to a
+  DisposeType.
+
+Feature improvements:
+
+* JP2: Support building using development JasPer 3.0.0 and request
+  that it use our managed-memory allocators for resource control.
+
+* Pixel Cache: Memory cache implementation of pixel cache now uses
+  resource limited memory allocator.
+
+* Analyze filter module: Add OpenMP speed-ups.
+
+* IsImagesEqual(): Allow comparing images when the 'matte' channel
+  flag differs.
+
+Windows Delegate Updates/Additions:
+
+* Remove bundled hp2xx.exe, mpeg2dec.exe, and mpeg2enc.exe.
+
+Build Changes:
+
+* Microsoft Windows: configure.ac fixes for gdi32 to depend on user32
+  as well.
+
+* Microsoft Windows: VisualMagick/All/All.vcproj.in updated to fix
+  problem with not being able to load the 'All' project if the project
+  supports the x64 target.
+
+* Autotools build, many more TAP tests have been added, including to
+  exercise all of the 'convert' commands.
+
+* TIFF: Adaptations to compile cleanly for libtiff versions
+  beyond 20201219.
+
+* Magick++: Support compiling with C++'98 through C++'17.
+
+* Autotools build, Add support for using an external
+  'graphicsmagick_snapshot_copy' script to copy files for the
+  'snapshot' target. This provides local control over how files are
+  copied and where they are copied to.
+
+Behavior Changes:
+
+* TranslateTextEx(): If image resolution is impossibly small, then
+  report the default resolution of 72 DPI, or the equivalent in
+  centimeters if units is in pixels-per-centimeter.
+
 
 1.3.36 (December 26, 2020)
 ==========================

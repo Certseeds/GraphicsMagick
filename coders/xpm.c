@@ -453,7 +453,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         if (q != (char *) NULL)
           *q='\0';
       }
-    Strip(target);
+    (void) MagickStripString(target);
     if (LocaleCompare(target,"none") == 0)
       {
         image->storage_class=DirectClass;

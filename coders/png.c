@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -788,20 +788,23 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
   image=(Image *) png_get_io_ptr(png_ptr);
   if (length)
     {
-      png_size_t
+      size_t
         check;
 
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
-      check=(png_size_t) ReadBlob(image,(size_t) length,(char *) data);
+      check=ReadBlob(image,(size_t) length,(char *) data);
       if (check != length)
         {
           char
             msg[MaxTextExtent];
 
-            (void) sprintf(msg,"Expected %lu bytes; found %lu bytes",
-                           (unsigned long) length,(unsigned long) check);
+          (void) sprintf(msg,"Expected %" MAGICK_SIZE_T_F "u bytes;"
+                         " found %" MAGICK_SIZE_T_F "u bytes",
+                         (MAGICK_SIZE_T) length,(MAGICK_SIZE_T) check);
           png_warning(png_ptr,msg);
+          if (check < length)
+            (void) memset(data+check,0,length-check);
           png_error(png_ptr,"Read Exception");
         }
     }
@@ -1494,7 +1497,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     text;
 
   png_bytep
-     ping_trans_alpha;
+     ping_trans_alpha = (png_bytep) NULL;
 
   size_t
     length,
@@ -1518,8 +1521,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     transparent_color;
 
   png_color_16p
-     ping_background,
-     ping_trans_color;
+     ping_background = (png_color_16p) NULL,
+     ping_trans_color = (png_color_16p) NULL;
 
   png_uint_32
     ping_width,
@@ -2113,7 +2116,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     }
 #endif
 
-  if (png_get_valid(ping, ping_info, PNG_INFO_tRNS))
+  if (png_get_valid(ping, ping_info, PNG_INFO_tRNS) &&
+      (ping_trans_color != (png_color_16p) NULL))
     {
       int
         bit_mask;
@@ -2709,7 +2713,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                 for (x=0; x < (long) image->columns; x++)
                   {
                     index=indexes[x];
-                    if (index < (unsigned int) ping_num_trans)
+                    if ((index < (unsigned int) ping_num_trans) &&
+                        (ping_trans_alpha != (png_bytep) NULL))
                       q->opacity=
                         ScaleCharToQuantum(255-ping_trans_alpha[index]);
                     else
@@ -4745,7 +4750,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     igamma;
 
                   igamma=mng_get_long(p);
-                  mng_info->global_gamma=((float) igamma)*0.00001;
+                  mng_info->global_gamma=((float) igamma*0.00001f);
                   mng_info->have_global_gama=MagickTrue;
                 }
               else
@@ -5735,14 +5740,26 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 by simple pixel replication.
               */
               if (image->columns == 1)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  MNG MAGN X_method reduced from %u to 1 due to columns = 1",
+                                          mng_info->magn_methx);
                   mng_info->magn_methx = 1;
+                }
 
               /*
                 If the image height is 1, then Y magnification is done
                 by simple pixel replication.
               */
               if (image->rows == 1)
+                {
+                  if (logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  MNG MAGN Y_method reduced from %u to 1 due to rows = 1",
+                                          mng_info->magn_methy);
                   mng_info->magn_methy = 1;
+                }
 
               if (mng_info->magn_methx == 1)
                 {
@@ -6104,7 +6121,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                   if (magn_methx == 5)
                                     {
                                       /* Interpolate */
-                                      (*q).opacity=(QM) ((2*i*((*n).opacity
+                                      (*q).opacity=(QM) ((2*i*((*n).opacity /* oss-fuzz 31109 buffer over-read */
                                                          -(*p).opacity)+m)/
                                                          ((long) (m*2))
                                                          +(*p).opacity);

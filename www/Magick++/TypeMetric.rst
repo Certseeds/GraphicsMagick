@@ -64,4 +64,4 @@ The following is the definition of the Magick::TypeMetric class::
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| Bob Friesenhahn 1999 - 2020
+Copyright |copy| Bob Friesenhahn 1999 - 2021

@@ -4367,7 +4367,7 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>process a sequence of images using a process module</td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The command argument has the form <strong>module=arg1,arg2,arg3,...,argN</strong>
-where <strong>module</strong> is the name of the module to invoke (e.g. "analyze")
+where <strong>module</strong> is the name of the module to invoke (e.g. "Analyze")
 and arg1,arg2,arg3,...,argN are an arbitrary number of arguments to
 pass to the process module.</font></td></tr></table><table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The sequence of images
@@ -4375,6 +4375,13 @@ is terminated by the appearance of any option.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 If the <strong>-process</strong>
 option appears after all of the input images, all images are processed.</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+For example:</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
+     gm convert logo: -process Analyze= \
+       -format "%[BrightnessMean],%[BrightnessStddev]" info:-
+     51952,23294
+<pre></font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 

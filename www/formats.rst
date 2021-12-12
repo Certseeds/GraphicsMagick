@@ -53,8 +53,9 @@ GraphicsMagick Supported Formats
 .. _SVG : http://www.w3.org/Graphics/SVG/
 .. _TIFF : http://www.simplesystems.org/libtiff/
 .. _TopoL : http://www.topol.cz/english/share/index.php3
-.. _VIFF: http://www.fileformat.info/format/viff/egff.htm
+.. _VIFF : http://www.fileformat.info/format/viff/egff.htm
 .. _WBMP : http://www.openmobilealliance.org/Technical/wapindex.aspx
+.. _WebP : https://developers.google.com/speed/webp/
 .. _WMF : http://www.fileformat.info/format/wmf/egff.htm
 .. _WPG : http://www.fileformat.info/format/wpg/egff.htm
 .. _XBM : http://www.fileformat.info/format/xbm/egff.htm
@@ -418,6 +419,11 @@ image formats.
    |              |      | Image File Format         |                                                  |
    +--------------+------+---------------------------+--------------------------------------------------+
    | WBMP_        | RW   | Wireless bitmap           | Support for uncompressed monochrome only.        |
+   +--------------+------+---------------------------+--------------------------------------------------+
+   | WebP_        | RW   | Google's WebP             | Requires libwebp from                            |
+   |              |      |                           | "https://developers.google.com/speed/webp/".     |
+   |              |      |                           | WebP is good for small photos for the web and is |
+   |              |      |                           | supported by Google's Chrome and Firefox.        |
    +--------------+------+---------------------------+--------------------------------------------------+
    |              |      |                           | Requires libwmf. By default, renders WMF files   |
    |              |      |                           | using the dimensions specified by the metafile   |

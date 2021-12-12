@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -266,18 +266,17 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
     c=ReadBlobByte(file);
     if (c == EOF || c == '\n')
       break;
-    if ((q-p+1) >= (int) len)
+    if ((size_t) (q-p+1) >= len)
       {
         unsigned char
           *new_p;
 
-        int
+        size_t
           tlen;
 
-        tlen=q-p;
+        tlen=(size_t) (q-p);
         len<<=1;
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
-        *b=(char *) new_p;
         if (new_p == (unsigned char *) NULL)
           {
             MagickFreeResourceLimitedMemory(p);
@@ -288,19 +287,20 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
       }
     *q=(unsigned char) c;
   }
+  *b=(char *)p;
   *blen=0;
   if (p != (unsigned char *) NULL)
     {
-      int
+      size_t
         tlen;
 
-      tlen=q-p;
+      tlen=(size_t) (q-p);
       if (tlen == 0)
         return (char *) NULL;
       p[tlen] = '\0';
       *blen=++tlen;
     }
-  return (char *)p;
+  return *b;
 }
 
 #define BUFFER_SZ 4096
@@ -565,18 +565,17 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
       break;
    if (EOFBlob(file))
       break;
-   if ((q-p+1) >= (int) len)
+   if ((size_t) (q-p+1) >= len)
       {
         unsigned char
           *new_p;
 
-        int
+        size_t
           tlen;
 
-        tlen=q-p;
+        tlen=(size_t) (q-p);
         len<<=1;
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
-        *b=(char *) new_p;
         if (new_p == (unsigned char *) NULL)
           {
             MagickFreeResourceLimitedMemory(p);
@@ -587,19 +586,20 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
       }
     *q=(unsigned char) c;
   }
+  *b=(char *)p;
   *blen=0;
-  if ((*b) != (char *) NULL)
+  if (p != (unsigned char *) NULL)
     {
-      int
+      size_t
         tlen;
 
-      tlen=q-p;
+      tlen=(size_t) (q-p);
       if (tlen == 0)
         return (char *) NULL;
       p[tlen] = '\0';
       *blen=++tlen;
     }
-  return (char *) p;
+  return *b;
 }
 
 static long parse8BIMW(Image *ifile, Image *ofile)
@@ -1202,13 +1202,14 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
             (void) WriteBlobByte(buff,c);
           }
         }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff);  /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store IPTC profile, size %lu bytes",
                             (unsigned long) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
     t8bim_failure:;
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       DetachBlob(buff->blob);
       MagickFreeMemory(blob);
       DestroyImage(buff);
@@ -1246,6 +1247,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           if ((pinfo == (ProfileInfo *) NULL) ||
               (pinfo->info == (unsigned char *) NULL) || (pinfo->length == 0))
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1254,6 +1256,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           iptc=AllocateImage((ImageInfo *) NULL);
           if (iptc == (Image *) NULL)
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1270,6 +1273,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           DestroyImage(iptc);
           if (result == 0)
             {
+              blob=GetBlobStreamData(buff); /* blob may be realloced */
               DetachBlob(buff->blob);
               MagickFreeMemory(blob);
               DestroyImage(buff);
@@ -1319,7 +1323,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
             }
 #endif
         }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store APP1 profile, size %lu bytes",
@@ -1350,7 +1354,7 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
           break;
         (void) WriteBlobByte(buff,c);
       }
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store ICM profile, size %lu bytes",
@@ -1407,14 +1411,14 @@ static Image *ReadMETAImage(const ImageInfo *image_info,
       length=GetBlobSize(buff)-12;
       blob[10]=(unsigned char) ((length >> 8) & 0xff);
       blob[11]=(unsigned char) (length & 0xff);
-      blob=GetBlobStreamData(buff);
+      blob=GetBlobStreamData(buff); /* blob may be realloced */
       length=GetBlobSize(buff);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Store IPTC profile, size %" MAGICK_SIZE_T_F
                             "u bytes",(MAGICK_SIZE_T) length);
       (void) SetImageProfile(image,"IPTC",blob,length);
       DetachBlob(buff->blob);
-      MagickFreeMemory(blob)
+      MagickFreeMemory(blob);
       DestroyImage(buff);
     }
   CloseBlob(image);

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2005-2020 GraphicsMagick Group
+% Copyright (C) 2005-2021 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -2348,7 +2348,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                       "Element offset (%u) is outside the bounds of"
                                       " actual file size (%" MAGICK_OFF_F "d)",
                                       dpx_image_info.element_info[element].data_offset,
-                                      file_size);
+                                      (magick_off_t) file_size);
               ThrowDPXReaderException(CorruptImageError,ImproperImageHeader,image);
             }
           samples_per_pixel=DPXSamplesPerPixel(element_descriptor);
@@ -2361,7 +2361,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "File size estimate %" MAGICK_OFF_F
                               "u bytes (have %" MAGICK_OFF_F "u bytes)",
-                              file_size_estimate, file_size);
+                              file_size_estimate, (magick_off_t) file_size);
       if ((file_size_estimate <= 0) || (file_size < file_size_estimate))
         ThrowDPXReaderException(CorruptImageError,InsufficientImageDataInFile,image);
     }
@@ -2976,7 +2976,7 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     {
                       (void) fprintf(stderr,"### File length %u, TellBlob says %" MAGICK_OFF_F "d\n",
                                      dpx_file_info.file_size,
-                                     reported_file_offset);
+                                     (magick_off_t) reported_file_offset);
                       break;
                     }
                 }
@@ -3606,9 +3606,9 @@ STATIC void WriteRowSamples(const sample_t *samples,
     *definition_value_; \
 \
   if ((definition_value_=AccessDefinition(image_info,"dpx",&key[4]))) \
-    member.f=strtod(definition_value_, (char **) NULL); \
+    member.f=(float) strtod(definition_value_, (char **) NULL); \
   else if ((attribute_=GetImageAttribute(image,key))) \
-    member.f=strtod(attribute_->value, (char **) NULL); \
+    member.f=(float) strtod(attribute_->value, (char **) NULL); \
   else \
     SET_UNDEFINED_R32(member); \
 }
@@ -4448,7 +4448,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
           {
             (void) fprintf(stderr,"### Descriptor %u offset %u, TellBlob says %" MAGICK_OFF_F "d\n",
                            element+1, dpx_image_info.element_info[element].data_offset,
-                           reported_file_offset);
+                           (magick_off_t) reported_file_offset);
           }
       }
       if (image->logging)
@@ -4773,7 +4773,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
       {
         (void) fprintf(stderr,"### File length %u, TellBlob says %" MAGICK_OFF_F "d\n",
                        dpx_file_info.file_size,
-                       reported_file_offset);
+                       (magick_off_t) reported_file_offset);
       }
   }
 

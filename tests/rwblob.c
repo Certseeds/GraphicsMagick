@@ -129,6 +129,10 @@ int main ( int argc, char **argv )
             {
               (void) SetLogFormat(argv[++arg]);
             }
+          else if (LocaleCompare("interlace",option+1) == 0)
+            {
+              imageInfo->interlace=StringToInterlaceType(argv[++arg]);
+            }
           else if (LocaleCompare("nocheck",option+1) == 0)
             {
               check=MagickFalse;
@@ -166,10 +170,11 @@ int main ( int argc, char **argv )
   if (arg != argc-2)
     {
       (void) printf("arg=%d, argc=%d\n", arg, argc);
-      (void) printf ( "Usage: %s [-compress algorithm -debug events -depth "
-                      "integer -define value -log format -nocheck -quality quality "
-                      "-size geometry -verbose] "
-                      "infile format\n", argv[0] );
+      (void) printf ( "Usage: %s [-compress algorithm] [-debug events]"
+                      " [-depth integer] [-define value] [-log format]"
+                      " [-interlace interlace] [-nocheck] [-quality quality] "
+                      " [-size geometry] [-verbose]"
+                      " infile format\n", argv[0] );
       (void) fflush(stdout);
       exit_status = 1;
       goto program_exit;

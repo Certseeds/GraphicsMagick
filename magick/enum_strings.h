@@ -33,6 +33,7 @@ extern "C" {
   extern MagickExport ColorspaceType StringToColorspaceType(const char *colorspace_string) MAGICK_FUNC_PURE;
   extern MagickExport CompositeOperator StringToCompositeOperator(const char *option) MAGICK_FUNC_PURE;
   extern MagickExport CompressionType StringToCompressionType(const char *option) MAGICK_FUNC_PURE;
+  extern MagickExport DisposeType StringToDisposeType(const char *option) MAGICK_FUNC_PURE;
   extern MagickExport EndianType StringToEndianType(const char *option) MAGICK_FUNC_PURE;
   extern MagickExport FilterTypes StringToFilterTypes(const char *option) MAGICK_FUNC_PURE;
   extern MagickExport GravityType StringToGravityType(const char *option) MAGICK_FUNC_PURE;
@@ -54,6 +55,7 @@ extern "C" {
   extern MagickExport const char *CompositeOperatorToString(const CompositeOperator composite_op) MAGICK_FUNC_CONST;
   extern MagickExport const char *CompressionTypeToString(const CompressionType compression_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *ConfirmAccessModeToString(const ConfirmAccessMode access_mode) MAGICK_FUNC_CONST;
+  extern MagickExport const char *DisposeTypeToString(const DisposeType dispose_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *GravityTypeToString(const GravityType gravity_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *EndianTypeToString(const EndianType endian_type) MAGICK_FUNC_CONST;
   extern MagickExport const char *HighlightStyleToString(const HighlightStyle difference_algorithm) MAGICK_FUNC_CONST;

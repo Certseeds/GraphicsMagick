@@ -21,14 +21,14 @@ GraphicsMagick Image Processing System
               image processing, software development, TclMagick, Magick++
 
 
-.. _download GraphicsMagick release : http://sourceforge.net/projects/graphicsmagick/files/
-.. _`download development snapshots` : ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/snapshots/
-.. _`visit Mercurial repository`: http://sourceforge.net/p/graphicsmagick/code/
+.. _`download GraphicsMagick release` : https://sourceforge.net/projects/graphicsmagick/files/
+.. _`download development snapshots` : https://sourceforge.net/projects/graphicsmagick/files/graphicsmagick-snapshots/
+.. _`visit Mercurial repository`: https://sourceforge.net/p/graphicsmagick/code/
 
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.36 (Released December 26, 2020) `download release`__
+Current Release              1.3.37 (Released December 12, 2021) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -81,7 +81,7 @@ GraphicsMagick is quite portable, and compiles under almost every general
 purpose operating system that runs on 32-bit or 64-bit CPUs.
 GraphicsMagick is available for virtually any Unix or Unix-like system,
 including Linux. It also runs under `Windows <INSTALL-windows.html>`_
-2000 and later (Windows 2000, XP, Vista, 7, 8.X, 10), and MacOS-X.
+Vista and later (Vista, 7, 8.X, 10), and MacOS-X.
 
 GraphicsMagick supports huge images and has been tested with
 gigapixel-size images. GraphicsMagick can create new images on the

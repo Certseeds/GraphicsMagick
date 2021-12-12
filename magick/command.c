@@ -63,7 +63,6 @@
 #include "magick/log.h"
 #include "magick/magic.h"
 #include "magick/magick.h"
-#include "magick/map.h"
 #include "magick/module.h"
 #include "magick/monitor.h"
 #include "magick/montage.h"
@@ -270,7 +269,6 @@ static char commandline[MAX_PARAM_CHAR+2];
    length (not including terminating null). */
 #define TrimStringNewLine(text,length)             \
   do {                                             \
-  fprintf(stderr,"TrimStringNewLine\n"); \
     if ((length > 1) && text[length-1] == '\n')    \
       text[length-1]='\0';                         \
     if ((length > 2) && text[length-2] == '\r')    \
@@ -2775,6 +2773,16 @@ CompareImageCommand(ImageInfo *image_info,
     {
       (void) TransformColorspace(reference_image,image_info->colorspace);
       (void) TransformColorspace(compare_image,image_info->colorspace);
+    }
+
+  /*
+    If user has not indicated a preference, then use StoreMatte if
+    either image has a matte channel.
+  */
+  if ((UndefinedMatte == matte) &&
+      (compare_image->matte || reference_image->matte))
+    {
+      matte=StoreMatte;
     }
 
   if (matte != UndefinedMatte)
@@ -6266,6 +6274,7 @@ static void ConvertUsage(void)
   (void) puts("  -flip                flip image in the vertical direction");
   (void) puts("  -flop                flop image in the horizontal direction");
   (void) puts("  -font name           render text with this font");
+  (void) puts("  -format \"string\"   output formatted image info for 'info:' format");
   (void) puts("  -frame geometry      surround image with an ornamental border");
   (void) puts("  -fuzz distance       colors within this distance are considered equal");
   (void) puts("  -gamma value         level of gamma correction");
@@ -11662,7 +11671,7 @@ MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
               continue;
             next=0;
             /* FIXME: This code truncates the last character for an
-               argument like "analyze" but works for "analyze=" */
+               argument like "Analyze" but works for "Analyze=" */
             arguments=argv[i];
             t_status=Tokenizer(&token_info,0,token,length,arguments,
                                (char *) "",(char *) "=",(char *) "\"",

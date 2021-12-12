@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2424,7 +2424,6 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
           }
         case MemoryCache:
           {
-            LiberateMagickResource(MemoryResource,cache_info->length);
             break;
           }
         case DiskCache:
@@ -2498,14 +2497,21 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   if ((offset/number_pixels == (sizeof(PixelPacket)+sizeof(IndexPacket))) &&
       (offset == (magick_uint64_t) ((size_t) offset)) &&
       ((cache_info->type == UndefinedCache) ||
-       (cache_info->type == MemoryCache)) &&
-      (AcquireMagickResource(MemoryResource,offset)))
+       (cache_info->type == MemoryCache))
+      )
     {
-      MagickReallocMemory(PixelPacket *,cache_info->pixels,(size_t) offset);
-      pixels=cache_info->pixels;
+      pixels=MagickReallocateResourceLimitedMemory(PixelPacket *,
+                                                   cache_info->pixels,
+                                                   (size_t) offset);
       if (pixels == (PixelPacket *) NULL)
-        LiberateMagickResource(MemoryResource,offset);
+      {
+        MagickFreeResourceLimitedMemory(cache_info->pixels);
+      }
       else
+      {
+        cache_info->pixels=pixels;
+      }
+      if (pixels != (PixelPacket *) NULL)
         {
           /*
             Create in-memory pixel cache.
@@ -2773,7 +2779,7 @@ AccessMutableIndexes(Image *image)
 %  SetImagePixels() or GetImagePixels(). This is useful in order to access
 %  an already selected region without passing the geometry of the region.
 %
-%  The format of the GetPixels() method is:
+%  The format of the AccessMutablePixels() method is:
 %
 %      PixelPacket *AccessMutablePixels(Image image)
 %
@@ -3623,8 +3629,7 @@ DestroyCacheInfo(Cache cache_info)
   */
   if (MemoryCache == cache_info->type)
     {
-      MagickFreeMemory(cache_info->pixels);
-      LiberateMagickResource(MemoryResource,cache_info->length);
+      MagickFreeResourceLimitedMemory(cache_info->pixels);
     }
   else if (MapCache == cache_info->type)
     {

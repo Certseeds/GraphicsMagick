@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1515,6 +1515,8 @@ MagickExport Image *RollImage(const Image *image,const long x_offset,
   */
   assert(image != (const Image *) NULL);
   assert(image->signature == MagickSignature);
+  assert(image->columns != 0);
+  assert(image->rows != 0);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   roll_image=CloneImage(image,image->columns,image->rows,True,exception);

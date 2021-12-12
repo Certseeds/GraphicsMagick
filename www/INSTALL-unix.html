@@ -46,15 +46,19 @@
 <li><a class="reference internal" href="#optional-packages-options" id="id4">Optional Packages/Options</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#building-under-cygwin" id="id5">Building under Cygwin</a></li>
-<li><a class="reference internal" href="#building-under-mingw-msys2" id="id6">Building under MinGW &amp; MSYS2</a><ul>
-<li><a class="reference internal" href="#cross-compilation-on-unix-linux-host" id="id7">Cross-compilation On Unix/Linux Host</a></li>
+<li><a class="reference internal" href="#popular-distribution-packages" id="id5">Popular Distribution Packages</a><ul>
+<li><a class="reference internal" href="#debian-packages" id="id6">Debian Packages</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#dealing-with-configuration-failures" id="id8">Dealing with configuration failures</a></li>
-<li><a class="reference internal" href="#makefile-build-targets" id="id9">Makefile Build Targets</a></li>
-<li><a class="reference internal" href="#build-install" id="id10">Build &amp; Install</a></li>
-<li><a class="reference internal" href="#verifying-the-build" id="id11">Verifying The Build</a></li>
+<li><a class="reference internal" href="#building-under-cygwin" id="id7">Building under Cygwin</a></li>
+<li><a class="reference internal" href="#building-under-mingw-msys2" id="id8">Building under MinGW &amp; MSYS2</a><ul>
+<li><a class="reference internal" href="#cross-compilation-on-unix-linux-host" id="id9">Cross-compilation On Unix/Linux Host</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dealing-with-configuration-failures" id="id10">Dealing with configuration failures</a></li>
+<li><a class="reference internal" href="#makefile-build-targets" id="id11">Makefile Build Targets</a></li>
+<li><a class="reference internal" href="#build-install" id="id12">Build &amp; Install</a></li>
+<li><a class="reference internal" href="#verifying-the-build" id="id13">Verifying The Build</a></li>
 </ul>
 </div>
 <div class="section" id="archive-formats">
@@ -893,8 +897,40 @@ multi-threaded programs than umem, but is less memory efficient.</td></tr>
 </table>
 </div>
 </div>
+<div class="section" id="popular-distribution-packages">
+<h1><a class="toc-backref" href="#id5">Popular Distribution Packages</a></h1>
+<p>We will attempt to document the package names useful for
+GraphicsMagick on various primordial operating system distributions
+here.</p>
+<div class="section" id="debian-packages">
+<h2><a class="toc-backref" href="#id6">Debian Packages</a></h2>
+<p>These packages may be installed on a Debian Linux system (or one that
+derives from Debian such as Ubuntu or Mint) in order to quickly build
+a full GraphicsMagick.  Most of these are optional depending on the
+features desired:</p>
+<pre class="literal-block">
+gcc (and/or clang), make, libbz2-dev, libfreetype6-dev, libjbig-dev,
+liblcms2-dev, liblzma-dev, libpng-dev, libtiff-dev, libtool,
+libwebp-dev, libwmf-dev, libx11-dev, libxdmcp-dev, libxext-dev,
+libxft-dev, libxml2-dev, libxt-dev, libzstd-dev, zlib1g-dev,
+libperl-dev
+</pre>
+<p>These additional packages are useful in order to improve the run-time
+features of the software (and could be installed prior to building
+GraphicsMagick):</p>
+<pre class="literal-block">
+dcraw, fonts-urw-base35, ghostscript, hp2xx,
+ttf-mscorefonts-installer
+</pre>
+<p>These additional packages are useful in order to maintain
+GraphicsMagick itself:</p>
+<pre class="literal-block">
+autoconf, automake, graphviz, libtool, docutils-common, python, m4
+</pre>
+</div>
+</div>
 <div class="section" id="building-under-cygwin">
-<h1><a class="toc-backref" href="#id5">Building under Cygwin</a></h1>
+<h1><a class="toc-backref" href="#id7">Building under Cygwin</a></h1>
 <p>GraphicsMagick may be built under the Windows '95-XP Cygwin
 Unix-emulation environment available for free from</p>
 <blockquote>
@@ -916,7 +952,7 @@ be possible to catch C++ exceptions thrown from DLLs.  The test suite
 are working properly.</p>
 </div>
 <div class="section" id="building-under-mingw-msys2">
-<h1><a class="toc-backref" href="#id6">Building under MinGW &amp; MSYS2</a></h1>
+<h1><a class="toc-backref" href="#id8">Building under MinGW &amp; MSYS2</a></h1>
 <p>GraphicsMagick may easily be built using the free <a class="reference external" href="https://www.msys2.org/">MSYS2</a> distribution which provides GCC compilers,
 libraries, and headers, targeting native Windows along with a
 Unix-like command shell and a package manager ('Pacman') to install
@@ -925,14 +961,24 @@ almost as easy to compile GraphicsMagick under MSYS2 as it is under
 Linux!</p>
 <p>When using MSYS2, requesting to install these packages using 'pacman
 -S' should result in getting up to speed very quicky with a featureful
-build:</p>
+64-bit build:</p>
 <p>mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
 mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
-mingw-w64-x86_64-jbigkit, mingw-w64-x86_64-lcms2,
-mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
-mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp
+mingw-w64-x86_64-jasper, mingw-w64-x86_64-jbigkit,
+mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libjpeg-turbo,
+mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtiff,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
 mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
 mingw-w64-x86_64-zlib</p>
+<p>and/or use the following to add support for a 32-bit build:</p>
+<p>mingw-w64-i686-toolchain, mingw-w64-i686-bzip2,
+mingw-w64-i686-freetype, mingw-w64-i686-ghostscript,
+mingw-w64-i686-jasper, mingw-w64-i686-jbigkit,
+mingw-w64-i686-lcms2, mingw-w64-i686-libjpeg-turbo,
+mingw-w64-i686-libpng, mingw-w64-i686-libtiff,
+mingw-w64-i686-libtool, mingw-w64-i686-libwebp,
+mingw-w64-i686-libwmf, mingw-w64-i686-libxml2,
+mingw-w64-i686-zlib</p>
 <p>GraphicsMagick may also be built using the free MinGW
 (&quot;Minimalistic GNU for Windows&quot;) package, available from</p>
 <blockquote>
@@ -994,7 +1040,7 @@ installation layout (e.g. <tt class="docutils literal"><span class="pre">C:\Grap
 which may be embedded in libraries and configuration files are
 transformed into Windows paths so they don't depend on MSYS.</p>
 <div class="section" id="cross-compilation-on-unix-linux-host">
-<h2><a class="toc-backref" href="#id7">Cross-compilation On Unix/Linux Host</a></h2>
+<h2><a class="toc-backref" href="#id9">Cross-compilation On Unix/Linux Host</a></h2>
 <p>Given a modern and working MinGW32 or mingw-w64 installation, it is
 easy to cross-compile GraphicsMagick from a Unix-type host to produce
 Microsoft Windows executables.</p>
@@ -1031,7 +1077,7 @@ system (e.g. by packaging via an installer).</p>
 </div>
 </div>
 <div class="section" id="dealing-with-configuration-failures">
-<h1><a class="toc-backref" href="#id8">Dealing with configuration failures</a></h1>
+<h1><a class="toc-backref" href="#id10">Dealing with configuration failures</a></h1>
 <p>While configure is designed to ease installation of GraphicsMagick, it
 often discovers problems that would otherwise be encountered later
 when compiling GraphicsMagick. The configure script tests for headers
@@ -1067,7 +1113,7 @@ configure output and a description of what you expected to see (and
 why) so the failure you are observing can be identified and resolved.</p>
 </div>
 <div class="section" id="makefile-build-targets">
-<h1><a class="toc-backref" href="#id9">Makefile Build Targets</a></h1>
+<h1><a class="toc-backref" href="#id11">Makefile Build Targets</a></h1>
 <p>Once GraphicsMagick is configured, these standard build targets are
 available from the generated Makefiles:</p>
 <blockquote>
@@ -1102,7 +1148,7 @@ an 'uninstall' target.</blockquote>
 </blockquote>
 </div>
 <div class="section" id="build-install">
-<h1><a class="toc-backref" href="#id10">Build &amp; Install</a></h1>
+<h1><a class="toc-backref" href="#id12">Build &amp; Install</a></h1>
 <p>Now that GraphicsMagick is configured, type</p>
 <pre class="literal-block">
 make
@@ -1120,7 +1166,7 @@ make DESTDIR=/my/dest/dir install
 </pre>
 </div>
 <div class="section" id="verifying-the-build">
-<h1><a class="toc-backref" href="#id11">Verifying The Build</a></h1>
+<h1><a class="toc-backref" href="#id13">Verifying The Build</a></h1>
 <p>To confirm your installation of the GraphicsMagick distribution was
 successful, ensure that the installation directory is in your executable
 search path and type</p>
@@ -1173,7 +1219,7 @@ libraries.</p>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2020<!--SPONSOR_LOGO--></p>
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2021<!--SPONSOR_LOGO--></p>
 </div>
 </body>
 </html>
