@@ -1,3 +1,8 @@
+2021-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c (alloc_rlm): JasPer expects its allocator to return
+        non-null for zero size
+
 2021-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Makefile.am (snapshot): Update the snapshot target to distribute

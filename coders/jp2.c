@@ -412,7 +412,8 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
 static void *alloc_rlm(struct jas_allocator_s *allocator, size_t size)
 {
   (void) allocator;
-  return _MagickAllocateResourceLimitedMemory(size);
+  /* JasPer expects its allocator to return non-null for zero size */
+  return _MagickAllocateResourceLimitedMemory(size == 0 ? 1 : size);
 }
 static void free_rlm(struct jas_allocator_s *allocator, void *pointer)
 {
