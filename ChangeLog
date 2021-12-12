@@ -1,5 +1,9 @@
 2021-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Makefile.am (snapshot): Rely on the graphicsmagick_snapshot_copy
+        script to reduce files we don't care to distribute so that all
+        targets are still produced.
+
         * coders/jp2.c (alloc_rlm): JasPer expects its allocator to return
         non-null for zero size
 
