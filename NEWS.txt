@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 4, 2021
+This file was last updated to reflect changes up to December 12, 2021
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.37 (December ?, 2021)
+1.3.37 (December 12, 2021)
 ==========================
 
 Special Issues:
@@ -34,7 +34,7 @@ Special Issues:
 
 * The Microsoft Visual Studio build has not been updated for this
   release (although it does compile and the results do work fine) and
-  I will not be providing any Windows installation packages
+  I might not be providing any Windows installation packages
   corresponding to this release.  The problem is that the third-party
   'delegate' libraries are out of date and they need to be updated
   since some of them are known to contain severe security
