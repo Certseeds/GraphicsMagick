@@ -2436,6 +2436,7 @@ FIGDecodeDelegate = @FIGDecodeDelegate@
 FT_CFLAGS = @FT_CFLAGS@
 FT_LIBS = @FT_LIBS@
 GMDelegate = @GMDelegate@
+GPG = @GPG@
 GRAPHICSMAGICK_SNAPSHOT_COPY = @GRAPHICSMAGICK_SNAPSHOT_COPY@
 GREP = @GREP@
 GSCMYKDevice = @GSCMYKDevice@
@@ -11312,7 +11313,7 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.sig ; \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
@@ -11321,7 +11322,7 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
@@ -11355,7 +11356,7 @@ release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
 	  rm -f $${file}.sig ; \
-	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

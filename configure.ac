@@ -3053,10 +3053,14 @@ if test "$MAINT" == '' ; then
    # If this script is found, it is used to copy files using the script-provided
    # mechanism due to 'snapshot' target.
    AC_PATH_PROGS([GRAPHICSMAGICK_SNAPSHOT_COPY], [graphicsmagick_snapshot_copy])
+
+   # Search for a GnuPG program
+   AC_CHECK_PROGS([GPG], [gpg gpg2 gpg1], [false])
 else
    RST2HTML=''
    TXT2HTML=''
-   GRAPHICSMAGICK_SNAPSHOT_COPY=''
+   GRAPHICSMAGICK_SNAPSHOT_COPY='false'
+   GPG='false'
 fi
 
 AC_SUBST([RST2HTML])
@@ -3066,7 +3070,10 @@ AC_SUBST([TXT2HTML])
 AM_CONDITIONAL([HasTXT2HTML],[test "x${TXT2HTML}" != 'x'])
 
 AC_SUBST([GRAPHICSMAGICK_SNAPSHOT_COPY])
-AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'x'])
+AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'xfalse'])
+
+AC_SUBST([GPG])
+AM_CONDITIONAL([HasGPG],[test "x${GPG}" != 'xfalse'])
 
 #
 # Test for font directories

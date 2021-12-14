@@ -392,7 +392,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  rm -f $${file}.sig ; \
-	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	done
 	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
@@ -406,7 +406,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
@@ -463,5 +463,5 @@ release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
 	  rm -f $${file}.sig ; \
-	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	done
