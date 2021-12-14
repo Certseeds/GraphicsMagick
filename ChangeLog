@@ -1,5 +1,7 @@
 2021-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Makefile.am (snapshot): Add support for PGP-signed snapshots.
+
         * www/download.rst: Add documentation for how to validate
         downloaded files.
 

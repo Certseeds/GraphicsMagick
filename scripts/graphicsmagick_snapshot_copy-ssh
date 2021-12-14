@@ -29,22 +29,22 @@ for file in "$@" ; do
         Changelog.html)
             destf="ChangeLog.html"
             ;;
-        *.rpm)
+        *.rpm*)
             continue
             ;;
-        *.tar.bz2)
+        *.tar.bz2*)
             continue
             ;;
-        *.tar.gz)
+        *.tar.gz*)
             continue
             ;;
-        *.tar.lz)
+        *.tar.lz*)
             continue
             ;;
-        *.tar.zst)
+        *.tar.zst*)
             continue
             ;;
-        *-windows.7z)
+        *-windows.7z*)
             continue
             ;;
         *)
