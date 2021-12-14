@@ -38,8 +38,21 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#download-sites" id="id1">Download Sites</a></li>
+<li><a class="reference internal" href="#verifying-the-download" id="id2">Verifying The Download</a><ul>
+<li><a class="reference internal" href="#using-a-pgp-key" id="id3">Using a PGP key</a></li>
+<li><a class="reference internal" href="#using-a-sha-1-checksum" id="id4">Using a SHA-1 checksum</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="download-sites">
+<h1><a class="toc-backref" href="#id1">Download Sites</a></h1>
 <p>The source distribution of GraphicsMagick as well as pre-compiled
-binaries may be downloaded from the <a class="reference external" href="http://sourceforge.net/projects/graphicsmagick/files/">SourceForge Download</a> page.</p>
+binaries may be downloaded from the <a class="reference external" href="http://sourceforge.net/projects/graphicsmagick/files/">SourceForge Download</a> page.
+This is also where 'snapshot' distribution archives may be found.</p>
 <p>Until recently (December, 2021) GraphicsMagick provided its own ftp
 site for downloads but this has been disabled due to abusive download
 practices and because support for FTP has been removed from popular
@@ -49,6 +62,66 @@ continues to exist and will be maintained.  If you are an
 administrator of a high-bandwidth ftp or https mirror site and would
 like to provide a GraphicsMagick mirror, please contact <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;graphicsmagick&#46;org">Bob
 Friesenhahn</a> and we will work something out.</p>
+</div>
+<div class="section" id="verifying-the-download">
+<h1><a class="toc-backref" href="#id2">Verifying The Download</a></h1>
+<div class="section" id="using-a-pgp-key">
+<h2><a class="toc-backref" href="#id3">Using a PGP key</a></h2>
+<p>GraphicsMagick is software which runs on a computer, and if its code
+(source or binary code) was subtly modified (perhaps on the download
+server, or modified after download), it could do almost anything!  Due
+to this, it is useful to verify the download before you use it.</p>
+<p>Distributed packages may be verified (both for integrity and origin)
+using GnuPG (gpg).  GnuPG is normally provided as a package for your
+operating system (often already installed), or may be downloaded from
+<a class="reference external" href="https://gnupg.org/download/">https://gnupg.org/download/</a>.  The installed program on your system
+might be named 'gpg', 'gpg2', or 'gpg1'.</p>
+<p>The signing key used (currently DSA key id
+EBDFDB21B020EE8FD151A88DE301047DE1198975) may be extracted from
+<a class="reference external" href="http://www.graphicsmagick.org/security.html">http://www.graphicsmagick.org/security.html</a>.  If using this
+approach (rather than a key server) to obtain the key, then copy the
+entire block of text including the all of the &quot;BEGIN&quot; and &quot;END&quot; lines
+to a file (e.g. <cite>gm-sigs.asc</cite>) and import it into your collection of
+keys.  For example:</p>
+<pre class="literal-block">
+gpg --import gm-sigs.asc
+</pre>
+<p>After this, you can easily verify any GraphicsMagick distribution file
+with an associated &quot;.sig&quot; file (requires downloading two files) by
+doing this:</p>
+<pre class="literal-block">
+gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
+</pre>
+<p>and you should see output similar to:</p>
+<pre class="literal-block">
+gpg: assuming signed data in 'GraphicsMagick-1.3.37.tar.xz'
+gpg: Signature made Sun Dec 12 15:30:02 2021 CST
+gpg:                using DSA key EBDFDB21B020EE8FD151A88DE301047DE1198975
+gpg: Good signature from &quot;Bob Friesenhahn &lt;bfriesen&#64;simple.dallas.tx.us&gt;&quot; [ultimate]
+gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;simplesystems.org&gt;&quot; [ultimate]
+gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;graphicsmagick.org&gt;&quot; [ultimate]
+gpg:                 aka &quot;Bob Friesenhahn &lt;bobjfriesenhahn&#64;gmail.com&gt;&quot; [ultimate]
+gpg:                 aka &quot;[jpeg image of size 4917]&quot; [ultimate]
+</pre>
+</div>
+<div class="section" id="using-a-sha-1-checksum">
+<h2><a class="toc-backref" href="#id4">Using a SHA-1 checksum</a></h2>
+<p>While verifying distribution files using GnuPG is by far the most
+secure way to validate a release file, you may find SHA-1 checksums in
+a distribution release announcement (e.g. from the
+graphicsmagick-announce list at
+<a class="reference external" href="https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/">https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/</a>
+which you <em>should</em> subscribe to).  In this case you may do:</p>
+<pre class="literal-block">
+sha1sum GraphicsMagick-1.3.37.tar.xz
+</pre>
+<p>and then compare the generated checksum with the checksum provided in
+the release announcement.  While this is much more secure than doing
+nothing, it does not fully defend against forgery.  If someone is able
+to forge a modified release archive as well as a release announcment,
+then you could be duped!</p>
+</div>
+</div>
 </div>
 
 <hr class="docutils">

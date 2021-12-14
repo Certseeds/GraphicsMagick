@@ -1,3 +1,8 @@
+2021-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * www/download.rst: Add documentation for how to validate
+        downloaded files.
+
 2021-12-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * version.sh: Update shared library versioning information for

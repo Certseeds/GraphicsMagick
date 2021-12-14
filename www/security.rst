@@ -151,8 +151,8 @@ PGP Public Key
 --------------
 
 The following PGP public key (belonging to Bob Friesenhahn) is used to
-sign release files on the ftp site and may be used for private
-correspondence::
+sign release files (there is an associated .sig file) and may be used
+for private correspondence::
 
   -----BEGIN PGP PUBLIC KEY BLOCK-----
 
