@@ -8,7 +8,7 @@
 commands=${top_srcdir}/utilities/tests/convert-cmds.txt
 
 # Count how many commands there are
-count=`wc -l ${commands} | sed -e 's/ .*//'`
+count=`sed -n '$=' ${commands}`
 
 # Number of tests we plan to execute
 test_plan_fn ${count}
