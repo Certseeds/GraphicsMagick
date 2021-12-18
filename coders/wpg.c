@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2018                               %
+%                              June 2000 - 2021                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -793,13 +793,10 @@ unsigned Flags;
         }
  if(Flags & TRN)
         {
-        x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Tx*/
-        if(x>=0) (*CTM)[0][2] = (float)x+(float)DenX/0x10000;
-            else (*CTM)[0][2] = (float)x-(float)DenX/0x10000;
-        x=ReadBlobLSBLong(image); DenX=ReadBlobLSBShort(image);  /*Ty*/
-        (*CTM)[1][2]=(float)x + ((x>=0)?1:-1)*(float)DenX/0x10000;
-        if(x>=0) (*CTM)[1][2] = (float)x+(float)DenX/0x10000;
-            else (*CTM)[1][2] = (float)x-(float)DenX/0x10000;
+        DenX=ReadBlobLSBShort(image); x=ReadBlobLSBLong(image);	 /*Tx*/
+        (*CTM)[0][2] = (double)x + (float)DenX/0x10000;
+        DenX=ReadBlobLSBShort(image); x=ReadBlobLSBLong(image);  /*Ty*/
+        (*CTM)[1][2] = (double)x + (float)DenX/0x10000;        
         }
  if(Flags & TPR)
         {
