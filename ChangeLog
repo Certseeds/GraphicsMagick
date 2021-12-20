@@ -1,8 +1,7 @@
 2021-12-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * magick/wpg.c: Fix incorrect TrX and TrY elements in CTM.
-	Backported from WP2LaTeX: https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67
-
+        Backported from WP2LaTeX: https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67
 
 2021-12-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
