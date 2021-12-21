@@ -794,7 +794,7 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
       check=ReadBlob(image,(size_t) length,(char *) data);
-      if (check != length)
+      if (check != (size_t) length)
         {
           char
             msg[MaxTextExtent];
@@ -803,8 +803,6 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
                          " found %" MAGICK_SIZE_T_F "u bytes",
                          (MAGICK_SIZE_T) length,(MAGICK_SIZE_T) check);
           png_warning(png_ptr,msg);
-          if (check < length)
-            (void) memset(data+check,0,length-check);
           png_error(png_ptr,"Read Exception");
         }
     }
@@ -1311,9 +1309,13 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      Note that libpng has already taken care of the CRC handling.
 
      Returns one of the following:
-         return(-n);  chunk had an error
-         return(0);  did not recognize
-         return(n);  success
+         return(-n);  An error occurred; png_chunk_error will be called.
+         return(0);   The chunk was not handled, the chunk will be discarded
+                      unless png_set_keep_unknown_chunks has been used to set
+                      a 'keep' behavior for this particular chunk, in which
+                      case that will be used.  A critical chunk will cause an
+                      error at this point unless it is to be saved.
+         return(n);  The chunk was handled, libpng will ignore/discard it.
   */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1624,6 +1626,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
           if (image->exception.severity > exception->severity)
             CopyException(exception,&image->exception);
           image->columns=0;
+        }
+      if (image)
+        {
+          DestroyImage(image);
+          image=(Image *) NULL;
         }
       return(image);
     }
@@ -3057,6 +3064,7 @@ DestroyJNG(unsigned char *chunk,Image **color_image,
   }
   if (*alpha_image)
   {
+    (void) LiberateUniqueFileResource((*alpha_image)->filename);
     DestroyImageList(*alpha_image);
     *alpha_image = (Image *)NULL;
   }
@@ -3443,7 +3451,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "Unsupported Alpha_compression_method: %u",
+                                          "Unsupported Alpha_compression_method: %u"
+                                          " (returning NULL)",
                                           jng_alpha_compression_method);
                   DestroyJNG(chunk,&color_image,&color_image_info,
                              &alpha_image,&alpha_image_info);
@@ -3459,7 +3468,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not allocate alpha_image_info");
+                      "    could not allocate alpha_image_info (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
@@ -3471,7 +3480,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not allocate alpha_image");
+                      "    could not allocate alpha_image (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
@@ -3479,7 +3488,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "    Creating alpha_blob.");
-              (void) AcquireUniqueFilename(alpha_image->filename);
+              (void) AcquireUniqueFilename(alpha_image->filename); /* Freed by DestroyJNG() */
               status=OpenBlob(alpha_image_info,alpha_image,WriteBinaryBlobMode,
                               exception);
               if (status == MagickFalse)
@@ -3487,7 +3496,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not open alpha_image blob");
+                      "    could not open alpha_image blob (returning NULL)");
                   return ((Image *)NULL);
                 }
               if (jng_alpha_compression_method == 0)
@@ -3949,7 +3958,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                      if (!SyncImagePixels(image))
                        break;
                    }
-                 (void) LiberateUniqueFileResource(alpha_image->filename);
                  DestroyJNG(NULL,&color_image,&color_image_info,
                    &alpha_image,&alpha_image_info);
                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
