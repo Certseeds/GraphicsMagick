@@ -37,6 +37,7 @@
 */
 #include "magick/studio.h"
 #include "magick/attribute.h"
+#include "magick/memory.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/signature.h"
@@ -46,6 +47,35 @@
   Define declarations.
 */
 #define Trunc32(x)  ((x) & 0xffffffffUL)
+
+#define SignatureSize  64
+
+/*
+  Typedef declarations.
+*/
+typedef struct _SignatureInfo
+{
+  unsigned long
+    digest[8],
+    low_order,
+    high_order;
+
+  long
+    offset;
+
+  unsigned char
+    message[SignatureSize];
+} SignatureInfo;
+
+/*
+  Method declarations (FIXME: should be static!).
+*/
+extern MagickExport void
+  FinalizeSignature(SignatureInfo *),
+  GetSignatureInfo(SignatureInfo *),
+  TransformSignature(SignatureInfo *),
+  UpdateSignature(SignatureInfo *,const unsigned char *,const size_t);
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -202,7 +232,7 @@ MagickExport unsigned int SignatureImage(Image *image)
   */
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  message=MagickAllocateArray(unsigned char *,20,image->columns);
+  message=MagickAllocateResourceLimitedArray(unsigned char *,20,image->columns);
   if (message == (unsigned char *) NULL)
     ThrowBinaryException3(ResourceLimitError,MemoryAllocationFailed,
       UnableToComputeImageSignature);
@@ -275,7 +305,7 @@ MagickExport unsigned int SignatureImage(Image *image)
         break;
   }
   FinalizeSignature(&signature_info);
-  MagickFreeMemory(message);
+  MagickFreeResourceLimitedMemory(message);
   /*
     Convert digital signature to a 64 character hex string.
   */

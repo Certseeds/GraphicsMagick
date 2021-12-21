@@ -1,5 +1,10 @@
 2021-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * magick/signature.c: Remove functions FinalizeSignature,
+        GetSignatureInfo, TransformSignature, UpdateSignature and other
+        private implementation details from signature.h.  Use managed
+        memory allocator.
+
         * coders/png.c (DestroyJNG): Deallocate alpha_image temporary file in DestroyJNG().
         (ReadOnePNGImage): If setjmp fires, then don't return a broken
         image.
