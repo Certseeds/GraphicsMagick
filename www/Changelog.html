@@ -37,9 +37,14 @@
 
 <p>2021-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/mat.c (ReadMATImageV4): Change 'ldblk' to size_t and
+<p>* coders/jp2.c (realloc_rlm): JasPer wants its custom memory
+allocators to return non-null for a zero-sized request.  Make it
+so for the 'realloc' case as well.  Development JasPer 3.0.0
+jas_initialize() is not yet ready for our purposes.</p>
+<p>* coders/mat.c (ReadMATImageV4): Change 'ldblk' to size_t and
 check related calculations for overflow and to avoid possible
-negative seek offsets.</blockquote>
+negative seek offsets.</p>
+</blockquote>
 <p>2021-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* magick/signature.c: Remove functions FinalizeSignature,

@@ -92,6 +92,11 @@
 #    undef HAVE_PGX_DECODE
 #  endif
 
+/* Development JasPer 3.0.0 jas_initialize() is not yet ready for our purposes */
+#if !(defined(ENABLE_JAS_INITIALIZE) && ENABLE_JAS_INITIALIZE)
+#undef HAVE_JAS_INITIALIZE
+#endif /* if !defined(ENABLE_JAS_INITIALIZE) */
+
 
 /*
   Forward declarations.
