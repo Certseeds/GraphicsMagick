@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -42,6 +42,7 @@
 #include "magick/color.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/magick_endian.h"
 #include "magick/monitor.h"
@@ -525,6 +526,9 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
     HDR.nRows = ReadBlobXXXLong(image);
     HDR.nCols = ReadBlobXXXLong(image);
+
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"MAT v4 %ux%u", HDR.nCols, HDR.nRows);
 
     if (HDR.nRows == 0 || HDR.nCols == 0) RET_CHECK(image);
 
@@ -1088,6 +1092,10 @@ NEXT_FRAME:
     image->columns = MATLAB_HDR.SizeX;
     image->rows = MATLAB_HDR.SizeY;
     image->colors = 1l << image->depth;
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"MAT %lux%lu (%u colors)",
+                            image->columns, image->rows, image->colors);
+
     if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
     if((unsigned long)ldblk*MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
