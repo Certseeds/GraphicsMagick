@@ -491,7 +491,8 @@ magick_uint32_t (*ReadBlobXXXLong)(Image *image);
 size_t (*ReadBlobXXXDoubles)(Image *image, size_t len, double *data);
 size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
-  (void)SeekBlob(image,0,SEEK_SET);
+ if (SeekBlob(image,0,SEEK_SET) != (magick_off_t) 0)
+   RET_CHECK(image);
   while(!EOFBlob(image)) /* object parser loop */
   {
     ldblk = ReadBlobLSBLong(image);
@@ -532,7 +533,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
 
     HDR.nameLen = ReadBlobXXXLong(image);
     if(HDR.nameLen>0xFFFF) RET_CHECK(image);
-    (void)SeekBlob(image,HDR.nameLen,SEEK_CUR); /* Skip a matrix name. */
+    if (SeekBlob(image,HDR.nameLen,SEEK_CUR) < 0) /* Skip a matrix name. */
+      RET_CHECK(image);
 
     switch(HDR.Type[1])
     {
@@ -598,7 +600,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       if(HDR.imagf==1) ldblk=MagickArraySize(2,ldblk); /*ldblk *= 2;*/
       offset=MagickArraySize(HDR.nCols,ldblk);
       if(offset==0) RET_CHECK(image);
-      SeekBlob(image, offset, SEEK_CUR);;
+      if (SeekBlob(image, offset, SEEK_CUR) < 0)
+        RET_CHECK(image);
       goto skip_reading_current;
     }
 
@@ -995,7 +998,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       case 0:
         size = ReadBlobXXXLong(image2); /* Object name string size */
         size = 4 * (((size_t) size + 3 + 1) / 4);
-        (void) SeekBlob(image2, size, SEEK_CUR);
+        if (SeekBlob(image2, size, SEEK_CUR) < 0) goto MATLAB_KO;
         break;
       case 1:
       case 2:
