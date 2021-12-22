@@ -480,7 +480,7 @@ static Image *ReadMATImageV4(const ImageInfo *image_info, Image *image, ImportPi
 {
 MAT4_HDR HDR;
 Image *rotated_image;
-long ldblk;
+size_t ldblk;
 int sample_size;
 void *BImgBuff = NULL;
 double MinVal_c, MaxVal_c;
@@ -496,7 +496,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
   {
     ldblk = ReadBlobLSBLong(image);
     if(EOFBlob(image)) break;
-    if(ldblk>9999 || ldblk<0) RET_CHECK(image);
+    if(ldblk>9999 /*|| ldblk<0*/) RET_CHECK(image); /* Zero is allowed! */
     HDR.Type[3] = ldblk % 10;   ldblk /= 10;    /* T digit */
     HDR.Type[2] = ldblk % 10;   ldblk /= 10;    /* P digit */
     HDR.Type[1] = ldblk % 10;   ldblk /= 10;    /* O digit */
@@ -525,6 +525,8 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     HDR.nRows = ReadBlobXXXLong(image);
     HDR.nCols = ReadBlobXXXLong(image);
 
+    if (HDR.nRows == 0 || HDR.nCols == 0) RET_CHECK(image);
+
     HDR.imagf = ReadBlobXXXLong(image);
     if(HDR.imagf!=0 && HDR.imagf!=1) RET_CHECK(image);
 
@@ -538,7 +540,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
               image->depth = Min(QuantumDepth,32);        /* double type cell */
               import_options->sample_type = FloatQuantumSampleType;
               if(sizeof(double) != 8) RET_CHECK(image);      /* incompatible double size */
-              ldblk = (long) (8 * HDR.nRows);
+              ldblk = MagickArraySize(8,HDR.nRows);
               break;
 
       case 1: sample_size = 32;                         /* single-precision (32-bit) floating point numbers */
@@ -548,12 +550,12 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
               if(sizeof(float) != 4)
                 ThrowMATReaderException(CoderError, IncompatibleSizeOfFloat, image);
 #endif
-              ldblk = (long) (4 * HDR.nRows);
+              ldblk = MagickArraySize(4,HDR.nRows);
               break;
 
       case 2: sample_size = 32;                         /* 32-bit signed integers */
               image->depth = Min(QuantumDepth,32);        /* Dword type cell */
-              ldblk = (long) (4 * HDR.nRows);
+              ldblk = MagickArraySize(4,HDR.nRows);
               import_options->sample_type = UnsignedQuantumSampleType;
               break;
 
@@ -561,18 +563,20 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       case 4:                           /* 16-bit unsigned integers */
               sample_size = 16;
               image->depth = Min(QuantumDepth,16);        /* Word type cell */
-              ldblk = (long) (2 * HDR.nRows);
-             import_options->sample_type = UnsignedQuantumSampleType;
+              ldblk = MagickArraySize(2,HDR.nRows);
+              import_options->sample_type = UnsignedQuantumSampleType;
               break;
 
       case 5: sample_size = 8;          /* 8-bit unsigned integers */
               image->depth = Min(QuantumDepth,8);         /* Byte type cell */
               import_options->sample_type = UnsignedQuantumSampleType;
-              ldblk = (long) HDR.nRows;
+              ldblk = HDR.nRows;
               break;
 
       default: RET_CHECK(image);
     }
+
+    if(ldblk==0) RET_CHECK(image);
 
     image->columns = HDR.nRows;
     image->rows = HDR.nCols;
@@ -588,15 +592,18 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     if(image_info->ping)
     {
       unsigned long temp = image->columns;  /* The true image is rotater 90 degs. Do rotation without data. */
+      size_t offset;
       image->columns = image->rows;
       image->rows = temp;
-      if(HDR.imagf==1) ldblk *= 2;
-      SeekBlob(image, (size_t) HDR.nCols*ldblk, SEEK_CUR);
+      if(HDR.imagf==1) ldblk=MagickArraySize(2,ldblk); /*ldblk *= 2;*/
+      offset=MagickArraySize(HDR.nCols,ldblk);
+      if(offset==0) RET_CHECK(image);
+      SeekBlob(image, offset, SEEK_CUR);;
       goto skip_reading_current;
     }
 
         /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) (ldblk));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateResourceLimitedMemory(unsigned char *,ldblk);    /* Ldblk was set in the check phase */
     if(BImgBuff == NULL) RET_CHECK(image);
 
     if(HDR.Type[1]==0)          /* Find Min and Max Values for doubles */
