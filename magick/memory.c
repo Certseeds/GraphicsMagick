@@ -695,7 +695,7 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
     status = MagickPass;
 
 #if defined(MAGICK_DEBUG_RL_MEMORY) && MAGICK_DEBUG_RL_MEMORY
-  fprintf(stderr,"%d: p = %p, count = %zu, size =%zu\n", __LINE__, p, count, size);
+  fprintf(stderr,"%d: p = %p, count = %zu, size = %zu\n", __LINE__, p, count, size);
 #endif
 
   /* Copy (or init) 'memory_resource' based on provided user-land pointer */

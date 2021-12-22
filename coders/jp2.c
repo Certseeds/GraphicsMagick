@@ -424,7 +424,7 @@ static void *realloc_rlm(struct jas_allocator_s *allocator, void *pointer,
                          size_t new_size)
 {
   (void) allocator;
-  return _MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+  return _MagickReallocateResourceLimitedMemory(pointer,1,new_size == 0 ? 1 : new_size,0);
 }
 #endif /* if HAVE_JAS_INITIALIZE */
 static void initialize_jasper(void)
@@ -460,6 +460,8 @@ static void initialize_jasper(void)
         if (jas_init() == 0)
           {
             jasper_initialized=MagickTrue;
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Initialized JasPer");
           }
       }
 #endif  /* HAVE_JAS_INITIALIZE */

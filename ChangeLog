@@ -1,5 +1,9 @@
 2021-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jp2.c (realloc_rlm): JasPer wants its custom memory
+        allocators to return non-null for a zero-sized request.  Make it
+        so for the 'realloc' case as well.
+
         * coders/mat.c (ReadMATImageV4): Change 'ldblk' to size_t and
         check related calculations for overflow and to avoid possible
         negative seek offsets.
