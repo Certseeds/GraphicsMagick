@@ -93,7 +93,7 @@
 #  endif
 
 /* Development JasPer 3.0.0 jas_initialize() is not yet ready for our purposes */
-#if !(defined(ENABLE_JAS_INITIALIZE) && ENABLE_JAS_INITIALIZE)
+#if !(defined(MAGICK_ENABLE_JAS_INITIALIZE) && MAGICK_ENABLE_JAS_INITIALIZE)
 #undef HAVE_JAS_INITIALIZE
 #endif /* if !defined(ENABLE_JAS_INITIALIZE) */
 
@@ -105,33 +105,44 @@ static unsigned int
   WriteJP2Image(const ImageInfo *,Image *);
 
 static MagickBool jasper_initialized=MagickFalse;
-static const char jasper_options[][11] =
+static const char jasper_enc_options[][11] =
   {
+    "cblkheight",
+    "cblkwidth",
+    "debug",
+    "eph",
+    "ilyrrates",
     "imgareatlx",
     "imgareatly",
+    "lazy",
+    "mode",
+    "nomct",
+    "numgbits",
+    "numrlvls",
+    "prcheight",
+    "prcwidth",
+    "prg",
+    "pterm",
+    "rate",
+    "resetprob",
+    "segsym",
+    "sop",
+    "termall",
     "tilegrdtlx",
     "tilegrdtly",
-    "tilewidth",
     "tileheight",
-    "prcwidth",
-    "prcheight",
-    "cblkwidth",
-    "cblkheight",
-    "mode",
-    "ilyrrates",
-    "prg",
-    "nomct",
-    "numrlvls",
-    "sop",
-    "eph",
-    "lazy",
-    "rate",
-    "termall",
-    "segsym",
-    "vcausal",
-    "pterm",
-    "resetprob",
-    "numgbits"
+    "tilewidth",
+    "vcausal"
+  };
+
+static const char jasper_dec_options[][12] =
+  {
+    "allow_trunc",
+    "debug",
+    "max_samples",
+    "maxlyrs",
+    "maxpkts",
+    "version"
   };
 
 
@@ -407,6 +418,7 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
     (void) jas_stream_close(jp2_stream); \
   if (jp2_image) \
     jas_image_destroy(jp2_image); \
+  MagickFreeMemory(options); \
   ThrowReaderException(code_,reason_,image_); \
 }
 
@@ -541,7 +553,8 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     *channel_lut[4];
 
   char
-    options[MaxTextExtent];
+    option_keyval[MaxTextExtent],
+    *options = NULL;
 
   unsigned int
     status;
@@ -564,7 +577,6 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   (void) memset(channel_lut,0,sizeof(channel_lut));
-  options[0]='\0';
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
@@ -650,12 +662,51 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   if (jp2_stream == (jas_stream_t *) NULL)
     ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
 
+  /*
+    Support passing Jasper options.
+  */
   {
-    /* Pass options argument which specifies "max_samples" to cap memory usage. */
-    const magick_uint64_t memory_limit = (magick_uint64_t) GetMagickResourceLimit(MemoryResource);
-    const magick_uint64_t max_samples = memory_limit/4U * sizeof(magick_uint32_t);
+    unsigned int
+      i;
 
-    FormatString(options,"max_samples=%" MAGICK_UINT64_F "u", max_samples);
+    MagickBool
+      max_samples_specified = MagickFalse;
+
+    for (i=0; i < ArraySize(jasper_dec_options); i++)
+      {
+        const char
+          *option = jasper_dec_options[i];
+
+        const char
+          *value;
+
+        if ((value=AccessDefinition(image_info,"jp2",option)) != NULL)
+          {
+            FormatString(option_keyval,"%s=%.1024s ",option,value);
+            ConcatenateString(&options,option_keyval);
+
+            if (LocaleCompare(option,"max_samples") == 0)
+              max_samples_specified=MagickTrue;
+
+            /* Setting debug mode seems to require extra assistance */
+            if (LocaleCompare(option,"debug") == 0)
+              jas_setdbglevel(atoi(value));
+          }
+      }
+
+    /*
+      If max_samples argument was not specified, then pass options
+      argument which specifies "max_samples" to cap memory usage.
+    */
+    if (!max_samples_specified)
+      {
+        const magick_uint64_t memory_limit = (magick_uint64_t) GetMagickResourceLimit(MemoryResource);
+        const magick_uint64_t max_samples = memory_limit/4U * sizeof(magick_uint32_t);
+
+        FormatString(option_keyval,"max_samples=%" MAGICK_UINT64_F "u ", max_samples);
+        ConcatenateString(&options,option_keyval);
+      }
+
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "JP2 options = \"%s\"", options);
   }
@@ -969,6 +1020,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     MagickFreeResourceLimitedMemory(channel_lut[component]);
   jas_matrix_destroy(pixels);
   (void) jas_stream_close(jp2_stream);
+  MagickFreeMemory(options);
   jas_image_destroy(jp2_image);
   StopTimer(&image->timer);
   return(image);
@@ -1179,8 +1231,10 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   register int
     x;
 
-  unsigned int
-    rate_specified=False,
+  MagickBool
+    rate_specified=MagickFalse;
+
+  MagickPassFail
     status;
 
   int
@@ -1230,6 +1284,53 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
       CloseBlob(image);
       return MagickFail;
     }
+
+  /*
+    Support passing Jasper options.
+  */
+  {
+    unsigned int
+      i;
+
+    for (i=0; i < ArraySize(jasper_enc_options); i++)
+      {
+        const char
+          *option = jasper_enc_options[i];
+
+        const char
+          *value;
+
+        if ((value=AccessDefinition(image_info,"jp2",option)) != NULL)
+          {
+            if (LocaleCompare(option,"rate") == 0)
+              {
+                /*
+                  It is documented that a rate specification of 1.0 should
+                  result in lossless compression.  However, Jasper only
+                  provides lossless compression if rate was not specified
+                  at all.  Support lossless compression as documented.
+                */
+                const double rate=atof(value);
+
+                if (rate < 1.0-MagickEpsilon)
+                  {
+                    FormatString(option_keyval,"%s=%.1024s ",option,value);
+                    ConcatenateString(&options,option_keyval);
+                    rate_specified=MagickTrue;
+                  }
+              }
+            else
+              {
+                FormatString(option_keyval,"%s=%.1024s ",option,value);
+                ConcatenateString(&options,option_keyval);
+
+                /* Setting debug mode seems to require extra assistance */
+                if (LocaleCompare(option,"debug") == 0)
+                  jas_setdbglevel(atoi(value));
+              }
+          }
+      }
+  }
 
   /*
     Obtain a JP2 stream.
@@ -1395,46 +1496,10 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   format=jas_image_strtofmt(magick);
 
   /*
-    Support passing Jasper options.
-  */
-  {
-    unsigned int
-      i;
-
-    for (i=0; i < ArraySize(jasper_options); i++)
-      {
-        const char
-          *value;
-
-        if ((value=AccessDefinition(image_info,"jp2",jasper_options[i])) != NULL)
-          {
-            if(LocaleCompare(jasper_options[i],"rate") == 0)
-              rate_specified=True;
-            /*
-              It is documented that a rate specification of 1.0 should
-              result in lossless compression.  However, Jasper only
-              provides lossless compression if rate was not specified
-              at all.  Support lossless compression as documented.
-            */
-            {
-              double
-                rate;
-
-              rate=atof(value);
-              if (rate < 1.0-MagickEpsilon)
-                {
-                  FormatString(option_keyval,"%s=%.1024s ",jasper_options[i],value);
-                  ConcatenateString(&options,option_keyval);
-                }
-            }
-          }
-      }
-  }
-  /*
     Provide an emulation of IJG JPEG "quality" by default if rate was
     not specified.
   */
-  if (rate_specified == False)
+  if (rate_specified == MagickFalse)
     {
       double
         rate=INFINITY;
@@ -1469,6 +1534,8 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Compression rate: %g (%3.2f:1)",rate,1.0/rate);
     }
+
+
   if (options)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
        "Jasper options: \"%s\"", options);
