@@ -2,6 +2,9 @@
 
         * coders/jp2.c: Properly support passing JasPer options for
         decoder and encoder, including the 'debug' option.
+        (initialize_jasper): Call jas_conf_set_allocator() and pass the
+        maximum amount of memory it should be allocated to use.  This
+        seems to avoid a malfunction.  Re-enable use of jas_initialize().
 
 2021-12-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

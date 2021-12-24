@@ -92,10 +92,12 @@
 #    undef HAVE_PGX_DECODE
 #  endif
 
+#if 0
 /* Development JasPer 3.0.0 jas_initialize() is not yet ready for our purposes */
 #if !(defined(MAGICK_ENABLE_JAS_INITIALIZE) && MAGICK_ENABLE_JAS_INITIALIZE)
 #undef HAVE_JAS_INITIALIZE
 #endif /* if !defined(ENABLE_JAS_INITIALIZE) */
+#endif
 
 
 /*
@@ -428,20 +430,27 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
 #if HAVE_JAS_INITIALIZE
 static void *alloc_rlm(struct jas_allocator_s *allocator, size_t size)
 {
+  char *p;
   (void) allocator;
   /* JasPer expects its allocator to return non-null for zero size */
-  return _MagickAllocateResourceLimitedMemory(size == 0 ? 1 : size);
+  p=_MagickAllocateResourceLimitedMemory(size == 0 ? 1 : size);
+  /* fprintf(stderr,"alloc_rlm(%p, %zu) -> %p\n", allocator, size, p); */
+  return p;
 }
 static void free_rlm(struct jas_allocator_s *allocator, void *pointer)
 {
   (void) allocator;
+  /* fprintf(stderr,"free_rlm(%p, %p\n", allocator, pointer); */
   _MagickFreeResourceLimitedMemory(pointer);
 }
 static void *realloc_rlm(struct jas_allocator_s *allocator, void *pointer,
                          size_t new_size)
 {
+  char *p;
   (void) allocator;
-  return _MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+  p =_MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+  /* fprintf(stderr,"realloc_rlm(%p, %p, %zu) -> %p\n", allocator, pointer, new_size, p); */
+  return p;
 }
 #endif /* if HAVE_JAS_INITIALIZE */
 static void initialize_jasper(void)
@@ -455,15 +464,46 @@ static void initialize_jasper(void)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Initializing JasPer...");
         jas_conf_clear();
-        /* Use our own resource-limited memory allocation functions */
+        /*
+          Provide our own resource-limited memory allocation
+          functions.
+
+          See src/libjasper/include/jasper/jas_malloc.h
+        */
+
+        /*
+          Function to clean up the allocator when no longer needed.
+          The allocator cannot be used after the clean-up operation is performed.
+          This function pointer may be null, in which case the clean-up operation
+          is treated as a no-op.
+        */
         allocator.cleanup = 0;
+
+        /*
+          Function to allocate memory.
+          This function should have behavior similar to malloc.
+        */
         allocator.alloc = alloc_rlm;
+
+        /*
+          Function to deallocate memory.
+          This function should have behavior similar to free.
+        */
         allocator.free = free_rlm;
+
+        /*
+          Function to reallocate memory.
+          This function should have behavior similar to realloc.
+        */
         allocator.realloc = realloc_rlm;
         /* jas_std_allocator_init(&allocator); */ /* Uses JasPer allocators */
         jas_conf_set_allocator(&allocator); /* Assigns jas_allocator_t to jas_conf.allocator in library */
         /* jas_conf_set_debug_level(cmdopts->debug); */
-        /* jas_conf_set_max_mem(cmdopts->max_mem); */ /* Only pertains to JasPer allocators */
+
+        /*
+          Tell JasPer how much memory it could ever be allowed to use.
+        */
+        jas_conf_set_max_mem((size_t) GetMagickResourceLimit(MemoryResource));
 
         if (jas_initialize() == 0)
           {
