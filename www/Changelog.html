@@ -37,6 +37,13 @@
 
 <p>2021-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* PerlMagick/Magick.xs: Fix issue that image fill attribute had
+its opacity reset to transparent so it could not be usefully set
+at image scope.  Note that this fix may change results if the fill
+attribute is not set since then the default will actually be used.
+Support Get of &quot;fill&quot; and &quot;stroke&quot;.  Addresses SourceForge issue
+#650 &quot;Image attributes not working and not as documented for
+PerlMagick&quot;.  Eliminate use of dangerous strncpy().</p>
 <p>* magick/transform.c (TransformImage): Trace crop geometry. Trace
 transform geometry.
 (CropImage): Trace crop geometry. Trace bounding page.</p>

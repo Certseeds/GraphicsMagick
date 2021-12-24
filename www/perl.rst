@@ -34,12 +34,10 @@ best way to avoid problems.
 For Unix, you typically need to be root to install the software. There
 are ways around this. Consult the Perl manual pages for more information.
 
-Windows XP - Windows 8
-----------------------
+Windows XP - Windows 12
+-----------------------
 
-Please note that a nice GUI installer is available for GraphicsMagick.
-PerlMagick is included in this installer. If you are using the installer,
-then there is no need to compile PerlMagick.
+[ These procedures have not been exercised for some time ]
 
 After GraphicsMagick has been compiled from the GraphicsMagick Windows
 source distribution using Microsoft Visual C++, PerlMagick may be

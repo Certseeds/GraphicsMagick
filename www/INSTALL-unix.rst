@@ -703,6 +703,14 @@ Several configure options require special note:
   PerlMagick builds may not be fully successful (at least for
   executing the test suite) for Perl versions newer than 5.8.8.
 
+  As a convenience, the Makefile targets 'perl-build',
+  'install-exec-perl', and 'perl-check' are provided.  In order to
+  assure that library dependencies and search paths are correct, it is
+  necessary to first install GraphicsMagick via 'make install', then
+  build PerlMagick using 'make perl-build', then install PerlMagick
+  using 'sudo make install-exec-perl', and then 'make perl-check' to
+  make sure that it actually works.
+
 --with-perl-options
 
   The PerlMagick module is normally installed using the Perl

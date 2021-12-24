@@ -52,6 +52,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define MAGICK_COMMA_DELIM_COLORS 1 /* set to 0 to report color names */
 #define PERL_NO_GET_CONTEXT  /* faster */
 #include "EXTERN.h"
 #include "perl.h"
@@ -1453,10 +1454,10 @@ static void SetAttribute(pTHX_ struct PackageInfo *info,Image *image,
       if (LocaleCompare(attribute,"filename") == 0)
         {
           if (info)
-            (void) strncpy(info->image_info->filename,SvPV(sval,na),
-              MaxTextExtent-1);
+            (void) MagickStrlCpy(info->image_info->filename,SvPV(sval,na),
+                                 sizeof(info->image_info->filename));
           for ( ; image; image=image->next)
-            (void) strncpy(image->filename,SvPV(sval,na),MaxTextExtent-1);
+            (void) MagickStrlCpy(image->filename,SvPV(sval,na),sizeof(image->filename));
           return;
         }
       if (LocaleCompare(attribute,"file") == 0)
@@ -1613,8 +1614,8 @@ static void SetAttribute(pTHX_ struct PackageInfo *info,Image *image,
                   info->image_info->filename);
               else
                 for ( ; image; image=image->next)
-                  (void) strncpy(image->magick,info->image_info->magick,
-                    MaxTextExtent-1);
+                  (void) MagickStrlCpy(image->magick,info->image_info->magick,
+                                       sizeof(image->magick));
               DestroyExceptionInfo(&exception);
             }
           return;
@@ -1685,8 +1686,12 @@ static void SetAttribute(pTHX_ struct PackageInfo *info,Image *image,
       if (LocaleCompare(attribute,"pen") == 0)
         {
           if (info)
-            (void) QueryColorDatabase(SvPV(sval,na),&info->draw_info->fill,
-              image ? &image->exception : &exception);
+            {
+              (void) QueryColorDatabase(SvPV(sval,na),&info->draw_info->fill,
+                                        image ? &image->exception : &exception);
+              (void) QueryColorDatabase(SvPV(sval,na),&info->image_info->pen,
+                                        image ? &image->exception : &exception);
+            }
           return;
         }
       if (LocaleNCompare(attribute,"pixel",5) == 0)
@@ -2411,7 +2416,7 @@ Average(ref)
     info=GetPackageInfo(aTHX_ (void *) av,info);
     FormatString(info->image_info->filename,"average-%.*s",MaxTextExtent-9,
       ((p=strrchr(image->filename,'/')) ? p+1 : image->filename));
-    (void) strncpy(image->filename,info->image_info->filename,MaxTextExtent-1);
+    (void) MagickStrlCpy(image->filename,info->image_info->filename,sizeof(image->filename));
     SetImageInfo(info->image_info,SETMAGICK_WRITE,&image->exception);
     SvREFCNT_dec(MY_CXT.error_list);
     MY_CXT.error_jump=NULL;
@@ -3021,7 +3026,7 @@ Flatten(ref)
     info=GetPackageInfo(aTHX_ (void *) av,info);
     FormatString(info->image_info->filename,"average-%.*s",MaxTextExtent-9,
       ((p=strrchr(image->filename,'/')) ? p+1 : image->filename));
-    (void) strncpy(image->filename,info->image_info->filename,MaxTextExtent-1);
+    (void) MagickStrlCpy(image->filename,info->image_info->filename,sizeof(image->filename));
     SetImageInfo(info->image_info,SETMAGICK_WRITE,&image->exception);
     SvREFCNT_dec(MY_CXT.error_list);
     MY_CXT.error_jump=NULL;
@@ -3141,9 +3146,14 @@ Get(ref,...)
             {
               if (!image)
                 break;
+#if MAGICK_COMMA_DELIM_COLORS
               FormatString(color,"%u,%u,%u,%u",image->background_color.red,
                 image->background_color.green,image->background_color.blue,
                 image->background_color.opacity);
+#else
+              (void) QueryColorname(image,&image->background_color,AllCompliance,
+                                    color,&image->exception);
+#endif
               s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
@@ -3197,9 +3207,14 @@ Get(ref,...)
             {
               if (!image)
                 break;
+#if MAGICK_COMMA_DELIM_COLORS
               FormatString(color,"%u,%u,%u,%u",image->border_color.red,
                 image->border_color.green,image->border_color.blue,
                 image->border_color.opacity);
+#else
+              (void) QueryColorname(image, &image->border_color,AllCompliance,
+                                    color,&image->exception);
+#endif
               s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
@@ -3286,9 +3301,14 @@ Get(ref,...)
               (void) sscanf(attribute,"%*[^[][%d",&j);
               if (j > (long) image->colors)
                 j%=image->colors;
+#if MAGICK_COMMA_DELIM_COLORS
               FormatString(color,"%u,%u,%u,%u",image->colormap[j].red,
                 image->colormap[j].green,image->colormap[j].blue,
                 image->colormap[j].opacity);
+#else
+              (void) QueryColorname(image, &image->colormap[j],AllCompliance,
+                                    color,&image->exception);
+#endif
               s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
@@ -3427,6 +3447,23 @@ Get(ref,...)
               else
                 if (info && info->image_info->filename[0])
                   s=newSVpv(info->image_info->filename,0);
+              PUSHs(s ? sv_2mortal(s) : &sv_undef);
+              continue;
+            }
+          if (LocaleCompare(attribute,"fill") == 0)
+            {
+              if (!info)
+                break;
+              /* Value duplicated in info->image_info->pen */
+#if MAGICK_COMMA_DELIM_COLORS
+              FormatString(color,"%u,%u,%u,%u",info->draw_info->fill.red,
+                           info->draw_info->fill.green,info->draw_info->fill.blue,
+                           info->draw_info->fill.opacity);
+#else
+              (void) QueryColorname(image, &info->draw_info->fill,AllCompliance,
+                                    color,&image->exception);
+#endif
+              s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
             }
@@ -3689,9 +3726,14 @@ Get(ref,...)
             {
               if (!image)
                 break;
+#if MAGICK_COMMA_DELIM_COLORS
               FormatString(color,"%u,%u,%u,%u",image->matte_color.red,
                 image->matte_color.green,image->matte_color.blue,
                 image->matte_color.opacity);
+#else
+              (void) QueryColorname(image, &image->matte_color,AllCompliance,
+                                    color,&image->exception);
+#endif
               s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
@@ -3752,8 +3794,13 @@ Get(ref,...)
               (void) sscanf(attribute,"%*[^[][%ld%*[,/]%ld",&x,&y);
               (void) AcquireOnePixelByReference(image,&pixel,(long) (x % image->columns),
                 (long) (y % image->rows),&image->exception);
+#if MAGICK_COMMA_DELIM_COLORS
               FormatString(name,"%u,%u,%u,%u",pixel.red,pixel.green,pixel.blue,
                 pixel.opacity);
+#else
+              (void) QueryColorname(image, &pixel,AllCompliance,
+                                    color,&image->exception);
+#endif
               s=newSVpv(name,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
@@ -3885,6 +3932,22 @@ Get(ref,...)
               attribute=GetImageAttribute(image,"signature");
               if (attribute != (ImageAttribute *) NULL)
                 s=newSVpv(attribute->value,0);
+              PUSHs(s ? sv_2mortal(s) : &sv_undef);
+              continue;
+            }
+          if (LocaleCompare(attribute,"stroke") == 0)
+            {
+              if (!info)
+                break;
+#if MAGICK_COMMA_DELIM_COLORS
+              FormatString(color,"%u,%u,%u,%u",info->draw_info->stroke.red,
+                           info->draw_info->stroke.green,info->draw_info->stroke.blue,
+                           info->draw_info->stroke.opacity);
+#else
+              (void) QueryColorname(image, &info->draw_info->stroke,AllCompliance,
+                                    color,&image->exception);
+#endif
+              s=newSVpv(color,0);
               PUSHs(s ? sv_2mortal(s) : &sv_undef);
               continue;
             }
@@ -4134,11 +4197,11 @@ ImageToBlob(ref,...)
     package_info=ClonePackageInfo(info);
     for (i=2; i < items; i+=2)
       SetAttribute(aTHX_ package_info,image,SvPV(ST(i-1),na),ST(i));
-    (void) strncpy(filename,package_info->image_info->filename,MaxTextExtent-1);
+    (void) MagickStrlCpy(filename,package_info->image_info->filename,sizeof(filename));
     scene=0;
     for (next=image; next; next=next->next)
     {
-      (void) strncpy(next->filename,filename,MaxTextExtent-1);
+      (void) MagickStrlCpy(next->filename,filename,sizeof(next->filename));
       next->scene=scene++;
     }
     SetImageInfo(package_info->image_info,SETMAGICK_WRITE,&image->exception);
@@ -5280,7 +5343,7 @@ Mogrify(ref,...)
 
           draw_info=CloneDrawInfo(info ? info->image_info : (ImageInfo *) NULL,
             info ? info->draw_info : (DrawInfo *) NULL);
-          draw_info->fill.opacity=TransparentOpacity;
+          /* draw_info->fill.opacity=TransparentOpacity; */
           draw_info->stroke.opacity=OpaqueOpacity;
           (void) CloneString(&draw_info->primitive,"Point");
           if (attribute_flag[0] && (argument_list[0].int_reference > 0))
@@ -6711,7 +6774,7 @@ Mosaic(ref)
     av_push(av,sv_bless(rv,hv));
     SvREFCNT_dec(sv);
     info=GetPackageInfo(aTHX_ (void *) av,info);
-    (void) strncpy(image->filename,info->image_info->filename,MaxTextExtent-1);
+    (void) MagickStrlCpy(image->filename,info->image_info->filename,sizeof(image->filename));
     SetImageInfo(info->image_info,SETMAGICK_WRITE,&image->exception);
     if (exception.severity != UndefinedException)
       CatchException(&exception);
@@ -6848,8 +6911,8 @@ Ping(ref,...)
     GetExceptionInfo(&exception);
     for (i=0; i < n; i++)
     {
-      (void) strncpy(package_info->image_info->filename,list[i],
-        MaxTextExtent-1);
+      (void) MagickStrlCpy(package_info->image_info->filename,list[i],
+                           sizeof(package_info->image_info->filename));
       image=PingImage(package_info->image_info,&exception);
       if (exception.severity != UndefinedException)
         CatchException(&exception);
@@ -7458,7 +7521,7 @@ QueryFormat(ref,...)
               PUSHs(&sv_undef);
               continue;
             }
-          (void) strncpy(message,p->name,MaxTextExtent-1);
+          (void) MagickStrlCpy(message,p->name,sizeof(message));
           LocaleLower(message);
           PUSHs(sv_2mortal(newSVpv(message,0)));
         }
@@ -7626,8 +7689,8 @@ Read(ref,...)
     number_images=0;
     for (i=0; i < n; i++)
     {
-      (void) strncpy(package_info->image_info->filename,list[i],
-        MaxTextExtent-1);
+      (void) MagickStrlCpy(package_info->image_info->filename,list[i],
+                           sizeof(package_info->image_info->filename));
       image=ReadImage(package_info->image_info,&exception);
       if (exception.severity != UndefinedException)
         CatchException(&exception);
@@ -8005,11 +8068,11 @@ Write(ref,...)
       if (items > 2)
         for (i=2; i < items; i+=2)
           SetAttribute(aTHX_ package_info,image,SvPV(ST(i-1),na),ST(i));
-    (void) strncpy(filename,package_info->image_info->filename,MaxTextExtent-1);
+    (void) MagickStrlCpy(filename,package_info->image_info->filename,sizeof(filename));
     scene=0;
     for (next=image; next; next=next->next)
     {
-      (void) strncpy(next->filename,filename,MaxTextExtent-1);
+      (void) MagickStrlCpy(next->filename,filename,sizeof(next->filename));
       next->scene=scene++;
     }
     (void) SetImageInfo(package_info->image_info,

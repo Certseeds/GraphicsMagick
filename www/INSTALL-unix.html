@@ -751,12 +751,19 @@ shared library build of GraphicsMagick, it is necessary to formally
 install GraphicsMagick prior to building PerlMagick in order to
 achieve a working PerlMagick since otherwise the wrong
 GraphicsMagick libraries may be used.</p>
-<p class="last">If the argument ''--with-perl=/path/to/perl'' is supplied, then
+<p>If the argument ''--with-perl=/path/to/perl'' is supplied, then
 /path/to/perl will be taken as the PERL interpreter to use. This is
 important in case the 'perl' executable in your PATH is not PERL5,
 or is not the PERL you want to use.  Experience suggests that static
 PerlMagick builds may not be fully successful (at least for
 executing the test suite) for Perl versions newer than 5.8.8.</p>
+<p class="last">As a convenience, the Makefile targets 'perl-build',
+'install-exec-perl', and 'perl-check' are provided.  In order to
+assure that library dependencies and search paths are correct, it is
+necessary to first install GraphicsMagick via 'make install', then
+build PerlMagick using 'make perl-build', then install PerlMagick
+using 'sudo make install-exec-perl', and then 'make perl-check' to
+make sure that it actually works.</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--with-perl-options</span></kbd></td>
