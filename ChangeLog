@@ -1,3 +1,16 @@
+2021-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/transform.c (TransformImage): Trace crop geometry. Trace
+        transform geometry.
+        (CropImage): Trace crop geometry. Trace bounding page.
+
+        * Magick++/lib/Image.cpp (Magick::Image::trim): Trim requires
+        NorthWestGravity.
+
+        * magick/command.c (MogrifyImage): Trim requires
+        NorthWestGravity. Fixes SourceForge issue #653 "convert: warning
+        when using -gravity with -trim".  This was more than a warning.
+
 2021-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c: Properly support passing JasPer options for

@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2021-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* magick/transform.c (TransformImage): Trace crop geometry. Trace
+transform geometry.
+(CropImage): Trace crop geometry. Trace bounding page.</p>
+<p>* Magick++/lib/Image.cpp (Magick::Image::trim): Trim requires
+NorthWestGravity.</p>
+<p>* magick/command.c (MogrifyImage): Trim requires
+NorthWestGravity. Fixes SourceForge issue #653 &quot;convert: warning
+when using -gravity with -trim&quot;.  This was more than a warning.</p>
+</blockquote>
 <p>2021-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/jp2.c: Properly support passing JasPer options for

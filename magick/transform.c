@@ -40,6 +40,7 @@
 #include "magick/analyze.h"
 #include "magick/color.h"
 #include "magick/composite.h"
+#include "magick/log.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/resize.h"
@@ -504,6 +505,11 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
   assert(geometry != (const RectangleInfo *) NULL);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  if (image->logging)
+    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                          "Crop Geometry: %lux%lu%+ld%+ld",
+                          geometry->width, geometry->height,
+                          geometry->x, geometry->y);
   if ((geometry->width != 0) || (geometry->height != 0))
     {
       if (((geometry->x+(long) geometry->width) < 0) ||
@@ -545,6 +551,10 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
       page.y-=geometry->y;
       if (page.y < 0)
         page.y=0;
+      if (image->logging)
+        (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                              "Bounding Page: %lux%lu%+ld%+ld",
+                              page.width, page.height, page.x, page.y);
       if ((((long) page.width+page.x) > (long) image->columns) ||
           (((long) page.height+page.y) > (long) image->rows))
         ThrowImageException(OptionError,GeometryDoesNotContainImage,
@@ -1677,6 +1687,11 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
       */
       crop_image=(Image *) NULL;
       flags=GetImageGeometry(transform_image,crop_geometry,False,&geometry);
+      if (transform_image->logging)
+        (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                              "Crop Geometry: %lux%lu%+ld%+ld",
+                              geometry.width, geometry.height,
+                              geometry.x, geometry.y);
       if ((geometry.width == 0) || (geometry.height == 0) ||
           ((flags & XValue) != 0) || ((flags & YValue) != 0) ||
           (flags & PercentValue))
@@ -1755,6 +1770,11 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
   SetGeometry(transform_image,&geometry);
   flags=GetMagickGeometry(image_geometry,&geometry.x,&geometry.y,
                           &geometry.width,&geometry.height);
+  if (transform_image->logging)
+    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                          "Transform Geometry: %lux%lu%+ld%+ld",
+                          geometry.width, geometry.height,
+                          geometry.x, geometry.y);
   if ((transform_image->columns == geometry.width) &&
       (transform_image->rows == geometry.height))
     return status;

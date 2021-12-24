@@ -11135,6 +11135,8 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         if (LocaleCompare("trim",option+1) == 0)
           {
+            /* SourceForge issue #653 Trim requires NorthWestGravity */
+            (*image)->gravity=NorthWestGravity;
             TransformImage(image,"0x0",(char *) NULL);
             continue;
           }
