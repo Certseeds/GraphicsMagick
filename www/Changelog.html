@@ -35,6 +35,17 @@
 <div class="document">
 
 
+<p>2021-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/png.c (ReadOnePNGImage): Support the define
+png:chunk-malloc-max=limit in order to allow reading PNG files
+which report &quot;chunk data is too large&quot; or to reduce the default
+limit.  The default libpng limit is 8,000,000 bytes, which is more
+than sufficient for normal files.  Note that since PNG uses
+compression, the limit is on the uncompressed data and a
+relatively small file may be able to provide a chunk which
+decompresses to a large size.  Addresses SourceForge #594 &quot;Be able
+to affect libpng user_chunk_malloc_max&quot;.</blockquote>
 <p>2021-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* PerlMagick/Magick.xs: Fix issue that image fill attribute had

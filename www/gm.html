@@ -394,7 +394,7 @@ can tell if <strong>gm</strong> was compiled in 16-bit mode by typing "gm
 version" without any options, and looking for "Q:16" in the first line
 of output.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -473,7 +473,7 @@ prepend an at sign <tt>@</tt> to a filename to read a list of image
 filenames from that file. This is convenient in the event you have too
 many image filenames to fit on the command line.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -1573,6 +1573,15 @@ are not.
 <dd>If the pcl:fit-to-page flag is defined, then the printer is
 requested to scale the image to fit the page size (width and/or
 height).</dd>
+<dt>png:chunk-malloc-max=&lt;value&gt;</dt>
+<dd>png:chunk-malloc-max specifies the maximum chunk size that libpng
+will be allowed to read.  Libpng's default is normally 8,000,000
+bytes. Very rarely, a valid PNG file may be encountered where the
+error is reported "chunk data is too large".  In this case, the limit
+may be increased using this option.  Take care when increasing this
+limit since an excessively large limit could allow untrusted files to
+use excessive memory.
+</dd>
 <dt>mng:maximum-loops=&lt;value&gt;</dt>
 <dd>mng:maximum-loops specifies the maximum number of loops allowed to
 be specified by a MNG LOOP chunk. Without an imposed limit, a MNG file
@@ -5899,7 +5908,7 @@ See
 "X Resources", below,
 for details.</font></td></tr></table>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -6288,7 +6297,7 @@ use to the number of processor cores available while others default to
 just one thread. See the OpenMP specification for other standard
 adjustments and your compiler's manual for vendor-specific settings.</td></tr></table>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -6400,7 +6409,7 @@ width=15><b><font face="Helvetica, Arial"
   &lt;/typemap&gt;
 </pre></font></td></tr></table>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <br>&nbsp;<br>
@@ -6439,7 +6448,7 @@ You can define a Standard Colormap with <em>xstdcmap</em>. See <strong>xstdcmap(
 for details. This method is recommended for colormapped X server because
 it eliminates the need to compute a global colormap.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -6472,7 +6481,7 @@ use:
     gm animate +borderwidth -backdrop cockatoo.*
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7075,7 +7084,7 @@ format is <em>MIFF</em> (refer to <strong>miff(5)</strong> and the
 is specified in the image. Otherwise the images will display in the order
 they appear on the command line.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7092,7 +7101,7 @@ color="#00B04F"><font size="+1">
 Press any button to map or unmap the Command widget. See the next section
 for more information about the Command widget.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7138,7 +7147,7 @@ desired sub-menu item, release the button and the command is executed.
 Move the pointer away from the sub-menu if you decide not to execute a
 particular command.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7173,7 +7182,7 @@ and the total number of unique colors in the image.</dd>
 <dd>Press to discard all images and exit program.</dd>
 </dl>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7260,7 +7269,7 @@ information is sometimes used by a window manager to provide some sort
 of header identifying the window. The default is the image file name.</dd>
 </dl>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <br>&nbsp;<br>
@@ -7330,7 +7339,7 @@ as the script to execute:
   gm batch -echo on -feedback on script.txt
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7556,7 +7565,7 @@ worry about thermal management.  The <strong>powertop</strong> utility available
 under Linux and Solaris provides a way to observe CPU core clock rates
 while a benchmark is running.</em>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -7686,7 +7695,7 @@ To create an annotated difference image use:
       -file diff.miff original.miff compare.miff
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -8046,7 +8055,7 @@ try
               gm composite.png
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -8793,7 +8802,7 @@ invoked with
 All operations will closely follow the key/value pairs defined in
 PerlMagick, unless otherwise noted.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -8909,7 +8918,7 @@ width=15><b><font face="Helvetica, Arial"
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -9160,7 +9169,7 @@ process. <strong>Convert</strong> recognizes the image formats listed in
 <em>GraphicsMagick(1)</em>.
 <br>&nbsp;<br>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -9254,7 +9263,7 @@ To create a MNG animation from a DNA molecule sequence, use:
     gm convert -delay 20 dna.* dna.mng
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -11052,7 +11061,7 @@ With <strong>display</strong>, you can perform these functions on an image:
 <dd><img SRC="images/ball.png" ALT="*">display images specified by a World Wide Web (WWW) uniform resource locator (URL)
 </dl>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -11105,7 +11114,7 @@ To display histogram of an image, use:
     gm gm convert file.jpg HISTOGRAM:- | gm display -
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12022,7 +12031,7 @@ For a more detailed description of each option, see
 Options, above.
 <br>&nbsp;<br>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12100,7 +12109,7 @@ all the image tiles with their respective images. See
 and
 <a href="miff.html">miff</a> for more details.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12255,7 +12264,7 @@ desired sub-menu item, release the button and the command is executed.
 Move the pointer away from the sub-menu if you decide not to execute a
 particular command.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12400,7 +12409,7 @@ button 2.
 Press ALT and one of the arrow keys to trim off one pixel from any side
 of the image.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12774,7 +12783,7 @@ For example, to set the Pan window geometry to 256x256, use:
     gm display.pan.geometry: 256x256
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12806,7 +12815,7 @@ with <tt>.jpg</tt>.
 To select your image from the X server screen instead of from a file, Choose
 <strong>Grab</strong> of the <strong>Open</strong> widget.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12838,7 +12847,7 @@ by the thumbnail is displayed at its full size. Choose <strong>Next</strong> fro
 the <strong>File</strong> sub-menu of the Command widget to return to the Visual
 Image Directory.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12887,7 +12896,7 @@ You can make adjustments by moving the pointer to one of the cut rectangle
 corners, pressing a button, and dragging. Finally, press Cut to commit
 your copy region. To exit without cutting the image, press Dismiss.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -12929,7 +12938,7 @@ You can make adjustments by moving the pointer to one of the copy rectangle
 corners, pressing a button, and dragging. Finally, press Copy to commit
 your copy region. To exit without copying the image, press Dismiss.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13186,7 +13195,7 @@ To force a
 <em>PseudoClass</em> image to remain <em>PseudoClass</em>,
 use <strong>-colors</strong>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13227,7 +13236,7 @@ You can make adjustments by moving the pointer to one of the cropping rectangle
 corners, pressing a button, and dragging. Finally, press Crop to commit
 your cropping region. To exit without cropping the image, press Dismiss.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13273,7 +13282,7 @@ by which direction you choose from the Command widget.
 To cancel the image chopping, move the pointer back to the starting point
 of the line and release the button.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13337,10 +13346,10 @@ sub-menu of the Command widget.
 To cancel the image rotation, move the pointer back to the starting point
 of the line and release the button.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13509,7 +13518,7 @@ to <em>DirectClass</em> (see miff(5)). To force a <em>PseudoClass</em> image
 to remain
 <em>PseudoClass</em>, use <strong>-colors</strong>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13797,7 +13806,7 @@ final image, any PseudoClass image is promoted to <em>DirectClass</em> (see
 To force a <em>PseudoClass</em> image to remain <em>PseudoClass</em>,
 use <strong>-colors</strong>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -13941,7 +13950,7 @@ to <em>DirectClass</em>
 To force a <em>PseudoClass</em> image to remain
 <em>PseudoClass</em>, use <strong>-colors</strong>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14065,7 +14074,7 @@ unless you immediately save your image to a file (refer to Write). Correct
 matte editing behavior may require a <em>TrueColor</em> or <em>DirectColor</em>
 visual or a <em>Standard Colormap</em>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14208,7 +14217,7 @@ is updated when you press and release the button without moving the pointer.
 To cancel image drawing, move the pointer back to the starting point of
 the line and release the button.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14371,7 +14380,7 @@ more than one image processing technique to apply to an area. Alternatively,
 you can move the region of interest before applying another image processing
 technique. To exit, press Dismiss.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14399,7 +14408,7 @@ within the image window.
 The panning icon is withdrawn if the image becomes smaller than the dimensions
 of the X server screen.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14465,7 +14474,7 @@ image. Panning is much faster with Pixmaps than with a XImage. Pixmaps
 are considered a precious resource, use them with discretion.</dd>
 </dl>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <br>&nbsp;<br>
@@ -14517,7 +14526,7 @@ For some formats, additional format-specific information about the file
 will be written if the <tt>-debug coder</tt> or <tt>-debug all</tt> option
 is used.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14709,7 +14718,7 @@ For a more detailed description of each option, see
 Options, above.
 <br>&nbsp;<br>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <br>&nbsp;<br>
@@ -14738,7 +14747,7 @@ moves. To save the portion of the screen defined by the rectangle, just
 release the button. The keyboard bell is rung once at the beginning of
 the screen capture and twice when it completes.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -14778,7 +14787,7 @@ without using the mouse,  use:
            corner.png
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -15325,7 +15334,7 @@ filename.
 The graphics formats supported by <strong>mogrify</strong> are listed in
 <em>GraphicsMagick(1)</em>.
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -15364,7 +15373,7 @@ pixels in height, use:
     gm mogrify -resize 640x480! cockatoo.miff
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -16930,7 +16939,7 @@ For a more detailed description of each option, see
 Options, above.
 <br>&nbsp;<br>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <br>&nbsp;<br>
@@ -17005,7 +17014,7 @@ behaves differently than other images. You can think of the composite as
 a visual image directory. Choose a particular tile of the composite and
 press a button to display it. See <strong>display(1)</strong> and <strong>miff(5)</strong>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -17053,7 +17062,7 @@ no label, no shadowing, no surrounding tile frame), use:
             -geometry 50x50+0+0 *.png joined.png
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -17889,7 +17898,7 @@ For a more detailed description of each option, see
 Options, above.
 <br>&nbsp;<br>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -18061,7 +18070,7 @@ convert input.ppm -gaussian 0x2 output.ppm    22.60s user 0.00s system 2354% cpu
 <li><strong>total</strong> - the total elapsed time consumed.
 </ul>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 
@@ -18159,7 +18168,7 @@ color="#00B04F"><font size="+1">
     LIBS     = ...
 </pre>
 </td></tr></table>
-<p>
+     <p>
 <i><a href="#top">Back to Contents</a></i> 
 &nbsp;</p>
 <table BORDER=0 WIDTH="100%"> 

@@ -1656,13 +1656,39 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   png_set_benign_errors(ping, 1);
 #endif
 
-  /* Just use libpng's limit (PNG_USER_CHUNK_MALLOC_MAX == 8000000) on
-     chunk size */
+  /* Default to using libpng's limit (PNG_USER_CHUNK_MALLOC_MAX ==
+     8000000) on chunk size */
 #ifdef PNG_SET_USER_LIMITS_SUPPORTED
   /* Reject images with too many rows or columns */
   png_set_user_limits(ping,
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(WidthResource)),
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(HeightResource)));
+  /* Allow specifying a different chunk size limit than the
+     PNG_USER_CHUNK_MALLOC_MAX baked into libpng */
+# if PNG_LIBPNG_VER >= 10401 /* png_set_chunk_malloc_max was added in 1.4.1 */
+  {
+    const char *chunk_malloc_max_str;
+    if ((chunk_malloc_max_str=AccessDefinition(image_info,"png","chunk-malloc-max")))
+      {
+        unsigned long chunk_malloc_max;
+        if (MagickAtoULChk(chunk_malloc_max_str, &chunk_malloc_max) == MagickPass)
+          {
+            png_set_chunk_malloc_max(ping, chunk_malloc_max);
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Set PNG chunk-malloc-max to %lu bytes",
+                                    chunk_malloc_max);
+          }
+        else
+          {
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Failed to parse chunk-malloc-max value \"%s\"",
+                                    chunk_malloc_max_str);
+          }
+      }
+  }
+# endif
 #endif /* PNG_SET_USER_LIMITS_SUPPORTED */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
