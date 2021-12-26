@@ -37,6 +37,11 @@
 
 <p>2021-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* magick/profile.c (AppendImageProfile): Deprecate this function
+since JPEG was the last user.</p>
+<p>* coders/jpeg.c (AppendProfile): Implement more efficient way to
+append JPEG profile chunks.  Addresses SourceForge issue #634
+&quot;Slow to read JPEG with big APP1 profile&quot;.</p>
 <p>* coders/jp2.c (ReadJP2Image): Free 'options' which is now
 allocated memory.</p>
 <p>* coders/png.c (ReadOnePNGImage): Support the define

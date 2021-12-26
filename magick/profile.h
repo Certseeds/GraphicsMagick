@@ -46,7 +46,7 @@ extern MagickExport MagickPassFail
   extern MagickExport MagickPassFail
   AppendImageProfile(Image *image,const char *name,
                      const unsigned char *profile_chunk,
-                     const size_t chunk_length);
+                     const size_t chunk_length) MAGICK_FUNC_DEPRECATED;
 
 /*
   Generic iterator for traversing profiles.
