@@ -783,6 +783,8 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     }
 #endif /* if HAVE_PGX_DECODE */
 
+  MagickFreeMemory(options);
+
   /*
     Using jas_image_decode() makes us subject to Jasper's own format
     determination, which may include file formats we don't want to

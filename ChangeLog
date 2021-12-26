@@ -1,5 +1,8 @@
 2021-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jp2.c (ReadJP2Image): Free 'options' which is now
+        allocated memory.
+
         * coders/png.c (ReadOnePNGImage): Support the define
         png:chunk-malloc-max=limit in order to allow reading PNG files
         which report "chunk data is too large" or to reduce the default
