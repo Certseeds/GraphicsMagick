@@ -1,3 +1,9 @@
+2021-12-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
+        check related calculations for overflow and to avoid possible
+        negative seek offsets.
+
 2021-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/profile.c (AppendImageProfile): Deprecate this function

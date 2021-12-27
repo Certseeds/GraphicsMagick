@@ -791,7 +791,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   magick_uint32_t CellType;
   ImportPixelAreaOptions import_options;
   int i;
-  long ldblk;
+  size_t ldblk;
   unsigned char *BImgBuff = NULL;
   double MinVal_c, MaxVal_c;
   unsigned z, z2;
@@ -1036,27 +1036,27 @@ NEXT_FRAME:
         else
           image->depth = Min(QuantumDepth,8);         /* Byte type cell */
         import_options.sample_type = UnsignedQuantumSampleType;
-        ldblk = (long) MATLAB_HDR.SizeX;
+        ldblk =  MATLAB_HDR.SizeX;
         break;
       case miINT16:
       case miUINT16:
         sample_size = 16;
         image->depth = Min(QuantumDepth,16);        /* Word type cell */
-        ldblk = (long) (2 * MATLAB_HDR.SizeX);
+        ldblk = MagickArraySize(2,MATLAB_HDR.SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miINT32:
       case miUINT32:
         sample_size = 32;
         image->depth = Min(QuantumDepth,32);        /* Dword type cell */
-        ldblk = (long) (4 * MATLAB_HDR.SizeX);
+        ldblk = MagickArraySize(4,MATLAB_HDR.SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miINT64:
       case miUINT64:
         sample_size = 64;
         image->depth = Min(QuantumDepth,32);        /* Qword type cell */
-        ldblk = (long) (8 * MATLAB_HDR.SizeX);
+        ldblk = MagickArraySize(8,MATLAB_HDR.SizeX);
         import_options.sample_type = UnsignedQuantumSampleType;
         break;
       case miSINGLE:
@@ -1070,7 +1070,7 @@ NEXT_FRAME:
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
         {                                           /* complex float type cell */
         }
-        ldblk = (long) (4 * MATLAB_HDR.SizeX);
+        ldblk = MagickArraySize(4,MATLAB_HDR.SizeX);
         break;
       case miDOUBLE:
         sample_size = 64;
@@ -1083,7 +1083,7 @@ NEXT_FRAME:
         if (MATLAB_HDR.StructureFlag & FLAG_COMPLEX)
         {                         /* complex double type cell */
         }
-        ldblk = (long) (8 * MATLAB_HDR.SizeX);
+        ldblk = MagickArraySize(8,MATLAB_HDR.SizeX);
         break;
       default:
         ThrowImg2MATReaderException(CoderError, UnsupportedCellTypeInTheMatrix, image)
@@ -1098,7 +1098,8 @@ NEXT_FRAME:
 
     if(image->columns == 0 || image->rows == 0)
       goto MATLAB_KO;
-    if((unsigned long)ldblk*MATLAB_HDR.SizeY > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
+    if(MagickArraySize(ldblk,MATLAB_HDR.SizeY) == 0 ||
+       MagickArraySize(ldblk,MATLAB_HDR.SizeY) > MATLAB_HDR.ObjectSize)  /* Safety check for forged and or corrupted data. */
       goto MATLAB_KO;
 
     if(CheckImagePixelLimits(image, exception) != MagickPass)
@@ -1133,7 +1134,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     }
 
   /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,(size_t) (ldblk),sizeof(double));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,ldblk,sizeof(double));    /* Ldblk was set in the check phase */
     if (BImgBuff == NULL)
       goto NoMemory;
     (void) memset(BImgBuff,0,ldblk*sizeof(double));
@@ -1175,7 +1176,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
               "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1));
           goto skip_reading_current;            /* Skip image rotation, when cannot set image pixels */
         }
-        if(ReadBlob(image2,ldblk,(char *)BImgBuff) != (size_t) ldblk)
+        if(ReadBlob(image2,ldblk,(char *)BImgBuff) != ldblk)
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
@@ -1251,7 +1252,7 @@ ExitLoop:
       if (CellType==miDOUBLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          if ((long) ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff) != ldblk)
+          if (ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff) != ldblk)
             ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexDoubleRow((double *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
@@ -1259,7 +1260,7 @@ ExitLoop:
       if (CellType==miSINGLE)
         for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
         {
-          if ((long) ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff) != ldblk)
+          if (ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff) != ldblk)
             ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           InsertComplexFloatRow((float *)BImgBuff, i, image, MinVal_c, MaxVal_c);
         }
