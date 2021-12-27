@@ -3188,6 +3188,7 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
               }
             else
               {
+                *((unsigned char *)data)=0;
                 count=0;
               }
           }
