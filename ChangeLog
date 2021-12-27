@@ -3,6 +3,7 @@
         * coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
         check related calculations for overflow and to avoid possible
         negative seek offsets.
+        (FixLogical): Pass 'ldblk' as size_t.
 
 2021-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

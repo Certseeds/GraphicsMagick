@@ -39,7 +39,8 @@
 <blockquote>
 * coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
 check related calculations for overflow and to avoid possible
-negative seek offsets.</blockquote>
+negative seek offsets.
+(FixLogical): Pass 'ldblk' as size_t.</blockquote>
 <p>2021-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* magick/profile.c (AppendImageProfile): Deprecate this function

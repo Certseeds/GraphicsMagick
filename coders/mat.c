@@ -272,8 +272,11 @@ static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, 
 
 
 
-static void FixSignedValues(PixelPacket *q, int y)
+static void FixSignedValues(PixelPacket *q, magick_uint32_t y)
 {
+  if (y == 0)
+    return;
+
   while(y-->0)
   {
      /* Please note that negative values will overflow
@@ -288,26 +291,28 @@ static void FixSignedValues(PixelPacket *q, int y)
 
 
 /** Fix whole row of logical/binary data. It means pack it. */
-static void FixLogical(unsigned char *Buff,int ldblk)
+static void FixLogical(unsigned char *Buff,size_t ldblk)
 {
-unsigned char mask=128;
-unsigned char *BuffL = Buff;
-unsigned char val = 0;
+  unsigned char mask=128;
+  unsigned char *BuffL = Buff;
+  unsigned char val = 0;
+
+  if (ldblk == 0)
+    return;
 
   while(ldblk-->0)
-  {
-    if(*Buff++ != 0)
-      val |= mask;
-
-    mask >>= 1;
-    if(mask==0)
     {
-      *BuffL++ = val;
-      val = 0;
-      mask = 128;
-    }
+      if(*Buff++ != 0)
+        val |= mask;
 
-  }
+      mask >>= 1;
+      if(mask==0)
+        {
+          *BuffL++ = val;
+          val = 0;
+          mask = 128;
+        }
+    }
   *BuffL = val;
 }
 
@@ -896,7 +901,7 @@ MATLAB_KO: ThrowMATReaderException(CorruptImageError,ImproperImageHeader,image);
       ThrowMATReaderException(BlobError,UnableToObtainOffset,image);
     }
     if(SeekBlob(image,filepos,SEEK_SET) != filepos) break;
-    /* printf("pos=%X\n",TellBlob(image)); */
+    /* printf("pos=%lX\n",(long) TellBlob(image)); */
 
     MATLAB_HDR.DataType = ReadBlobXXXLong(image);
     if(EOFBlob(image)) break;
@@ -1134,10 +1139,9 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     }
 
   /* ----- Load raster data ----- */
-    BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,ldblk,sizeof(double));    /* Ldblk was set in the check phase */
+    BImgBuff = MagickAllocateResourceLimitedClearedArray(unsigned char *,ldblk,sizeof(double));    /* Ldblk was set in the check phase */
     if (BImgBuff == NULL)
       goto NoMemory;
-    (void) memset(BImgBuff,0,ldblk*sizeof(double));
 
     if (CellType==miDOUBLE)        /* Find Min and Max Values for floats */
     {
