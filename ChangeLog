@@ -4,6 +4,8 @@
         check related calculations for overflow and to avoid possible
         negative seek offsets.
         (FixLogical): Pass 'ldblk' as size_t.
+        (ReadMATImage): Assure that corrupt/incomplete image is not
+        returned.
 
 2021-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

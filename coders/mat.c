@@ -650,6 +650,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       {
         if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                    "  MAT cannot read scanrow %u from a file.", (unsigned)(i));
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
         DestroyImagePixels(image);              /* The unread data contains crap in memory, erase current image data. */
         image->columns = image->rows = 0;
         goto ExitLoop;
@@ -795,7 +796,7 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
   size_t size;
   magick_uint32_t CellType;
   ImportPixelAreaOptions import_options;
-  int i;
+  magick_uint32_t i;
   size_t ldblk;
   unsigned char *BImgBuff = NULL;
   double MinVal_c, MaxVal_c;
@@ -1178,13 +1179,15 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
               "  MAT set image pixels returns unexpected NULL on a row %u.", (unsigned)(MATLAB_HDR.SizeY-i-1));
-          goto skip_reading_current;            /* Skip image rotation, when cannot set image pixels */
+          goto skip_reading_current;  /* Skip image rotation, when cannot set image pixels */
         }
         if(ReadBlob(image2,ldblk,(char *)BImgBuff) != ldblk)
         {
           if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
              "  MAT cannot read scanrow %u from a file.", (unsigned)(MATLAB_HDR.SizeY-i-1));
           ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+          DestroyImagePixels(image);  /* The unread data contains crap in memory, erase current image data. */
+          image->columns = image->rows = 0;
           goto ExitLoop;        /* It would be great to be able to read corrupted images. */
                                 /* this goto will abort reading, but there remains not fully read image
                                    in the memory. */
