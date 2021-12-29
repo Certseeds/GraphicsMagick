@@ -1,3 +1,12 @@
+2021-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/memory-private.h(_MagickReallocateResourceLimitedMemory)
+        : Remove use of GCC/Clang '__attribute_malloc__' since it is not
+        appropriate for this function.
+
+        * magick/memory.c (_MagickReallocateResourceLimitedMemory):
+        Maintain a tally of the total number of octets moved by realloc.
+
 2021-12-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
