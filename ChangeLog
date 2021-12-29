@@ -1,5 +1,12 @@
 2021-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/{gif.c, meta.c, miff.c, mpc.c, pdb.c, pnm.c xpm.c}: Rely
+        on _MagickReallocateResourceLimitedMemory() to extend memory
+        allocation.
+
+        * magick/memory.c (_MagickReallocateResourceLimitedMemory): Remove
+        size limit from realloc binary expansion.  Fix reallocs tally counts.
+
         * magick/memory-private.h(_MagickReallocateResourceLimitedMemory)
         : Remove use of GCC/Clang '__attribute_malloc__' since it is not
         appropriate for this function.

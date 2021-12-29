@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -194,7 +194,6 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
                   *new_comment;
 
                 text_length=(size_t) (p-comment);
-                length<<=1;
                 length+=MaxTextExtent;
                 new_comment=MagickReallocateResourceLimitedMemory(char *,comment,length+sizeof(P7Comment));
                 if (new_comment == (char *) NULL)

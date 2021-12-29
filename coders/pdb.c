@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -689,7 +689,6 @@ static Image *ReadPDBImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   char
                     *new_comment;
 
-                  length<<=1;
                   length+=MaxTextExtent;
                   new_comment=MagickReallocateResourceLimitedMemory(char *,comment,length+1);
                   if (new_comment == (char *) NULL)

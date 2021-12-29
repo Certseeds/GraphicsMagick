@@ -275,7 +275,7 @@ static char *super_fgets(char **b, size_t *blen, Image *file)
           tlen;
 
         tlen=(size_t) (q-p);
-        len<<=1;
+        len += MaxTextExtent;
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
         if (new_p == (unsigned char *) NULL)
           {
@@ -574,7 +574,7 @@ static char *super_fgets_w(char **b, size_t *blen, Image *file)
           tlen;
 
         tlen=(size_t) (q-p);
-        len<<=1;
+        len += MaxTextExtent;
         new_p=MagickReallocateResourceLimitedMemory(unsigned char *,p,(len+2));
         if (new_p == (unsigned char *) NULL)
           {

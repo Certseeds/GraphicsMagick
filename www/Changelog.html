@@ -37,6 +37,11 @@
 
 <p>2021-12-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/{gif.c, meta.c, miff.c, mpc.c, pdb.c, pnm.c xpm.c}: Rely
+on _MagickReallocateResourceLimitedMemory() to extend memory
+allocation.</p>
+<p>* magick/memory.c (_MagickReallocateResourceLimitedMemory): Remove
+size limit from realloc binary expansion.  Fix reallocs tally counts.</p>
 <p>* magick/memory-private.h(_MagickReallocateResourceLimitedMemory)
 : Remove use of GCC/Clang '__attribute_malloc__' since it is not
 appropriate for this function.</p>

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -278,7 +278,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   *new_comment;
 
                 *p='\0';
-                comment_length<<=1;
+                comment_length += MaxTextExtent;
                 new_comment=MagickReallocateResourceLimitedMemory(char *,comment,comment_length);
                 if (new_comment == (char *) NULL)
                   {
@@ -361,7 +361,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       *new_values;
 
                     *p='\0';
-                    values_length<<=1;
+                    values_length += MaxTextExtent;
                     new_values=MagickReallocateResourceLimitedMemory(char *,values,values_length);
                     if (new_values == (char *) NULL)
                       {

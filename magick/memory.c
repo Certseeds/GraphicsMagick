@@ -634,13 +634,19 @@ typedef struct _MagickMemoryResource_T
 #define TraceMagickAccessMemoryResource_T(operation,memory_resource)    \
   fprintf(stderr,__FILE__ ":%d - %s memory_resource: memory=%p (user %p)," \
           " alloc_size=%zu,"                                            \
-          " alloc_size_real=%zu\n",                                     \
+          " alloc_size_real=%zu,"                                       \
+          " num_realloc=%zu,"                                           \
+          " num_realloc_moves=%zu,"                                     \
+          " realloc_octets_moved=%zu\n",                                \
           __LINE__,                                                     \
           operation,                                                    \
           (memory_resource)->memory,                                    \
           (memory_resource)->memory ? UserLandPointerGivenBaseAlloc((memory_resource)->memory) : 0, \
           (memory_resource)->alloc_size,                                \
-          (memory_resource)->alloc_size_real);
+          (memory_resource)->alloc_size_real,                           \
+          (memory_resource)->num_realloc,                               \
+          (memory_resource)->num_realloc_moves,                         \
+          (memory_resource)->realloc_octets_moved);
 #else
 #define TraceMagickAccessMemoryResource_T(operation,memory_resource) ;
 #endif
@@ -653,6 +659,23 @@ typedef struct _MagickMemoryResource_T
 static void _MagickFreeResourceLimitedMemory_T(MagickMemoryResource_T *memory_resource)
 {
   TraceMagickAccessMemoryResource_T("FREE",memory_resource);
+#if defined(MAGICK_MEMORY_LOG_REALLOC_STATS) && MAGICK_MEMORY_LOG_REALLOC_STATS
+  if (memory_resource->num_realloc > 0)
+    {
+      fprintf(stderr,
+              "FreeResourceLimitedMemory:"
+              " alloc_size=%zu,"
+              " alloc_size_real=%zu,"
+              " num_realloc=%zu,"
+              " num_realloc_moves=%zu,"
+              " realloc_octets_moved=%zu\n",
+              (memory_resource)->alloc_size,
+              (memory_resource)->alloc_size_real+sizeof(MagickMemoryResource_T),
+              (memory_resource)->num_realloc,
+              (memory_resource)->num_realloc_moves,
+              (memory_resource)->realloc_octets_moved);
+    }
+#endif /* defined(MAGICK_MEMORY_LOG_REALLOC_STATS) && MAGICK_MEMORY_LOG_REALLOC_STATS */
   if (memory_resource->memory != 0)
     {
       MagickFree(memory_resource->memory);
@@ -735,10 +758,10 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                   size_t realloc_size = new_size+sizeof(MagickMemoryResource_T);
                   /*
                     If this is a realloc, then round up underlying
-                    allocation sizes for small allocations in order to
-                    lessen realloc calls and lessen memory moves.
+                    allocation sizes in order to lessen realloc calls
+                    and lessen memory moves.
                   */
-                  if ((memory_resource.alloc_size_real != 0) && (realloc_size < 131072))
+                  if ((memory_resource.alloc_size_real != 0) /*&& (realloc_size < 131072)*/)
                     {
                       /* realloc_size <<= 1; */
                       MagickRoundUpStringLength(realloc_size);
@@ -751,13 +774,19 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                         (void) memset(UserLandPointerGivenBaseAlloc(realloc_memory)+
                                       memory_resource.alloc_size,0,size_diff);
 
-                      /* Tally actual reallocations */
-                      memory_resource.num_realloc++;
-                      /* Tally reallocations which resulted in a memory move */
-                      if (realloc_memory != memory_resource.memory)
+                      /* A realloc has pre-existing memory */
+                      if (memory_resource.alloc_size_real != 0) /* FIXME: memory_resource.alloc_size_real ? */
                         {
-                          memory_resource.num_realloc_moves++;
-                          memory_resource.realloc_octets_moved += memory_resource.alloc_size;
+                          fprintf(stderr,"realloc: %zu -> %zu\n", memory_resource.alloc_size_real, realloc_size);
+                          /* Tally actual reallocations */
+                          memory_resource.num_realloc++;
+                          /* Tally reallocations which resulted in a memory move */
+                          if (realloc_memory != memory_resource.memory)
+                            {
+                              memory_resource.num_realloc_moves++;
+                              memory_resource.realloc_octets_moved +=
+                                memory_resource.alloc_size_real+sizeof(MagickMemoryResource_T);
+                            }
                         }
                       memory_resource.memory = realloc_memory;
                       memory_resource.alloc_size = new_size;

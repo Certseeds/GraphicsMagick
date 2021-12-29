@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -993,7 +993,6 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   {
                     char *comments_new;
                     allocation_length=allocation_length+count+1;
-                    MagickRoundUpStringLength(allocation_length);
                     comments_new=MagickReallocateResourceLimitedMemory(char *,
                                                                        comments,
                                                                        allocation_length);

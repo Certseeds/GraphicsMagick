@@ -296,7 +296,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Read XPM file.
   */
-  length=MaxTextExtent;
+  length=MaxTextExtent*4;
   xpm_buffer=MagickAllocateResourceLimitedMemory(char *,length);
   if (xpm_buffer != (char *) NULL)
     {
@@ -313,7 +313,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           p+=strlen(p);
           if (((size_t) (p-xpm_buffer)+MaxTextExtent+1) < length)
             continue;
-          length<<=1;
+          length += MaxTextExtent*4;
           new_xpm_buffer=MagickReallocateResourceLimitedMemory(char *,xpm_buffer,length);
           if (new_xpm_buffer == (char *) NULL)
             {
