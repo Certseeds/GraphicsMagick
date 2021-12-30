@@ -1,3 +1,10 @@
+2021-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * www/programming.rst: Update URLs.  Add a link to a 'Go' binding.
+
+        * Copyright.txt: Update Copyright text for 2022 and prepare for
+        new year.
+
 2021-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/{gif.c, meta.c, miff.c, mpc.c, pdb.c, pnm.c xpm.c}: Rely

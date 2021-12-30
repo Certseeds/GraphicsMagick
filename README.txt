@@ -91,7 +91,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires 'dcraw' (version 8.95 or later) from
 
-    http://www.cybercom.net/~dcoffin/dcraw/
+    https://www.dechifro.org/dcraw/
 
   to read raw images from digital cameras.  Dcraw is invoked
   automatically when used to read files using a common RAW file format
@@ -100,7 +100,7 @@ building under Microsoft Windows:
 * GraphicsMagick requires 'fig2dev' provided in the transfig package
   from
 
-    http://www.xfig.org/
+    http://mcj.sourceforge.net/
 
   to read the Fig image format. Ghostscript and Ghostscript Fonts (see
   below) are also required.
@@ -114,7 +114,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires Ghostscript software available from
 
-    https://www.ghostscript.com/download.html
+    https://ghostscript.com/releases/index.html
 
   to read the Postscript or the Portable Document Format (PDF).
 
@@ -185,7 +185,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires html2ps available from
 
-     http://user.it.uu.se/~jan/html2ps.html
+     https://sourceforge.net/projects/html2ps/
 
   to rasterize HTML files.  Ghostscript (see above) is also required.
 
@@ -255,7 +255,7 @@ building under Microsoft Windows:
 * GraphicsMagick requires Sam Leffler's TIFF software available via
   HTTP at
 
-     http://www.simplesystems.org/libtiff/
+     https://libtiff.gitlab.io/libtiff/
 
   to read the TIFF image format. It in turn optionally requires the
   JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.
@@ -287,7 +287,7 @@ building under Microsoft Windows:
   which is included in Sun's Solaris operating system, and
   OpenSolaris/Illumos derivatives, or available from
 
-     https://labs.omniti.com/trac/portableumem
+     https://github.com/omniti-labs/portableumem
 
   to provide enhanced versions of the standard memory allocation
   facilities. Use of umem may improve performance for multi-threaded
@@ -338,10 +338,6 @@ building under Microsoft Windows:
 
      http://www.cygwin.com/
 
-  There is a nearly free X server available for Windows and Macintosh at
-
-     http://www.microimages.com/downloads/mix/
-
 * GraphicsMagick requires libxml2 available from
 
      http://xmlsoft.org/
@@ -351,7 +347,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires the liblzma library from XZ Utils available from
 
-     http://www.tukaani.org/xz/
+     https://www.tukaani.org/xz/
 
   to support TIFF with LZMA compression and future LZMA-compression
   features (yet to be developed).  The utilities from this package are

@@ -2,6 +2,12 @@
 
 # imdoc2man utility utility.imdoc > utility.1
 
+# FIXME: There is an output difference between System V sed and GNU
+# sed in paragraph delimiters:
+#
+# -<p>
+# +     <p>
+
 echo ".TH $1 1 \"`date '+%Y/%m/%d'`\" \"GraphicsMagick\""
 
 ${SED}  "

@@ -41,7 +41,7 @@ __ `visit Mercurial repository`_
 Check http://www.GraphicsMagick.org/ for the latest version of this page.
 
 .. _FSF : http://www.fsf.org/
-.. _`GNU GPL` :  http://www.fsf.org/licenses/licenses.html
+.. _`GNU GPL` :  https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses
 .. _ImageMagick : http://www.imagemagick.org/
 .. _Open Source Initiative : http://www.opensource.org/
 .. _`MIT License` : http://opensource.org/licenses/MIT
@@ -54,7 +54,7 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _Mercurial : https://www.mercurial-scm.org/
 .. _`NEWS` : NEWS.html
-.. _`SLOCCount` : http://www.dwheeler.com/sloccount/
+.. _`SLOCCount` : https://dwheeler.com/sloccount/
 .. _`authors` : authors.html
 .. _`benchmarks` : benchmarks.html
 .. _`manual page` : GraphicsMagick.html
