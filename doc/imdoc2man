@@ -1,17 +1,13 @@
 #!/bin/sh
 
 # imdoc2man utility utility.imdoc > utility.1
-
-# FIXME: There is an output difference between System V sed and GNU
-# sed in paragraph delimiters:
-#
-# -<p>
-# +     <p>
+# See https://www.gnu.org/software/groff/manual/html_node/man.html#man
+# See https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter14.html
+# See https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 
 echo ".TH $1 1 \"`date '+%Y/%m/%d'`\" \"GraphicsMagick\""
 
 ${SED}  "
-   : begin
      /<imdoc>/d
      /<\/imdoc>/d
      /<include file=/d
@@ -69,8 +65,9 @@ ${SED}  "
      /<utils/d
      /<\/utils>/d
      /<!--/d
-     s/<pre>//
-     s/<\/pre>//
+     s/<pre>/\\
+.nf/
+     s/<\/pre>/.fi/
      /<tab>/d
      /<\/tab>/d
 
@@ -100,7 +97,7 @@ ${SED}  "
      s/<\/s>/\\\\fP/g
      s/<tt>//g
      s/<\/tt>//g
-     s/^\\'/\\\\'/g
+     s/^'/\\\\'/g
 
      " $2
-
+#      s/^'/\\\\'/g

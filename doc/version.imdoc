@@ -55,7 +55,7 @@ software was configured and the host system.</p>
 
 <p>To display the version information:</p>
 
-<pre>
+<pp><pre>
   GraphicsMagick 1.3.37 2021-12-12 Q16 http://www.GraphicsMagick.org/
   Copyright (C) 2002-2021 GraphicsMagick Group.
   Additional copyrights and licenses apply to this software.
@@ -102,7 +102,7 @@ software was configured and the host system.</p>
     LDFLAGS  = ...
     LIBS     = ...
 
-</pre>
+</pre></pp>
 
 </sect>
 <back>

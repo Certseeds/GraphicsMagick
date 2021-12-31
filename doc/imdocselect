@@ -23,8 +23,6 @@ ${SED} "
               \
               \
 ${SED} "
-     : begin
-
        /<imdoc>/d
        /<\/imdoc>/d
        /<im>/d

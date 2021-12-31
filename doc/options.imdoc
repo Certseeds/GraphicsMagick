@@ -130,7 +130,7 @@ option appears after all of the input images, all images are appended.</pp>
 <!-- ------------ -asc-cdl ------------------------------------------- -->
 
 <utils apps=convert,mogrify>
-<dopt> -asc-cdl <spec></opt>
+<dopt>-asc-cdl <spec></opt>
 
 <abs>apply ASC CDL color transform</abs>
 
@@ -1931,7 +1931,7 @@ For example,
 
 <pp><pre>
      -draw 'text 100,100 "%m:%f %wx%h"'
-</pre></pp>
+</pp>
 
 <pp>
 annotates the image with <tt>MIFF:bird.miff 512x480</tt> for an image titled

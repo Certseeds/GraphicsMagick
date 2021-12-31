@@ -2,12 +2,7 @@
 
 # gmdoc2html utility utility.imdoc > utility.html
 
-# FIXME: There is an output difference between System V sed and GNU
-# sed in paragraph delimiters:
-# -
-# +\'
-#
-# Pre-formatted text is losing all blank lines.
+# FIXME: Pre-formatted text is losing all blank lines.
 
 # <!-- ---------------------------------------------------------------- -->
 # <!-- Options.xml: "options" subsection of convert, composite, et al.  -->
