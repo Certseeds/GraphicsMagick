@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -777,7 +777,6 @@ MagickExport void *_MagickReallocateResourceLimitedMemory(void *p,
                       /* A realloc has pre-existing memory */
                       if (memory_resource.alloc_size_real != 0) /* FIXME: memory_resource.alloc_size_real ? */
                         {
-                          fprintf(stderr,"realloc: %zu -> %zu\n", memory_resource.alloc_size_real, realloc_size);
                           /* Tally actual reallocations */
                           memory_resource.num_realloc++;
                           /* Tally reallocations which resulted in a memory move */
