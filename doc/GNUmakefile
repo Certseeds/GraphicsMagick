@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2013 GraphicsMagick Group
+# Copyright (C) 2003-2021 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -8,7 +8,9 @@
 # Written by Bob Friesenhahn based on previous work by Glenn Randers-Pehrson
 #
 
+# This list also determines the order of the manual page
 UTILITIES = \
+	GraphicsMagick \
 	animate \
 	batch \
 	benchmark \
@@ -22,12 +24,11 @@ UTILITIES = \
 	mogrify \
 	montage \
 	time \
-	version \
-	GraphicsMagick
+	version
 
 UTILSUBDIR       = expanded/$(UTILITY)
 UTILBASE         = $(UTILITY)
-UTILSUBWILDCARD  = expanded/*
+UTILSUBWILDCARD  = $(addprefix expanded/, $(UTILITIES))
 INSTALLWWW       = ../www
 INSTALLUTILITIES = ../utilities
 GMSUBDIR=Gm
@@ -104,22 +105,22 @@ $(INSTALLWWW)/gm.html: gm.html
 $(INSTALLUTILITIES)/gm.1: gm.1
 	cp -p $< $@
 
-$(GMSUBDIR)/man.imdoc: targets-man
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
+$(GMSUBDIR):
+	mkdir -p $(GMSUBDIR)
+
+$(GMSUBDIR)/man.imdoc: targets-man $(GMSUBDIR)
 	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/man.imdoc > $@.tmp && \
+	cat $(addsuffix /man.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && \
 	mv $@.tmp $@
 
-$(GMSUBDIR)/html.imdoc: targets-html
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
+$(GMSUBDIR)/html.imdoc: targets-html $(GMSUBDIR)
 	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/html.imdoc > $@.tmp && \
+	cat $(addsuffix /html.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && \
 	mv $@.tmp $@
 
-$(GMSUBDIR)/tex.imdoc: targets-tex
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
+$(GMSUBDIR)/tex.imdoc: targets-tex $(GMSUBDIR)
 	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/tex.imdoc > $@.tmp && \
+	cat $(addsuffix /tex.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && \
 	mv $@.tmp $@
 
 #
