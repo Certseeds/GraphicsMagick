@@ -1,5 +1,9 @@
 2021-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * www/index.rst: Document that
+        https://graphicsmagick.sourceforge.io/index.html is also
+        available.
+
         * www/programming.rst: Update URLs.  Add a link to a 'Go' binding.
 
         * Copyright.txt: Update Copyright text for 2022 and prepare for

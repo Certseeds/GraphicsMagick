@@ -394,7 +394,7 @@ snapshot: distcheck
 	  rm -f $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	done
-	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
+	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
 	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 

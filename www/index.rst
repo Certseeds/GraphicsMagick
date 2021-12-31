@@ -38,7 +38,9 @@ __ `download development snapshots`_
 __ `visit Mercurial repository`_
 
 
-Check http://www.GraphicsMagick.org/ for the latest version of this page.
+Check http://www.GraphicsMagick.org/ or
+https://graphicsmagick.sourceforge.io/index.html for the latest
+version of this page.
 
 .. _FSF : http://www.fsf.org/
 .. _`GNU GPL` :  https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses
