@@ -3210,30 +3210,45 @@ interface works similar to Photoshop's "Image->Adjustments->Levels..."
 <utils apps=animate,compare,composite,convert,display,identify,import,mogrify,montage>
 <dopt>-limit <type> <value></opt>
 
-<abs>Disk, File, Map, Memory, Pixels, Width, Height or Threads resource limit</abs>
+<abs>Disk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit</abs>
 
 <pp>
 By default, resource limits are estimated based on the available
-resources of the system. The resource limits are <s>Disk</s>, maximum
-total disk space consumed; <s>File</s>, maximum number of file
-descriptors allowed to be open at once; <s>Map</s>, maximum total
-number of file bytes which may be memory mapped; <s>Memory</s>,
-maximum total number of bytes of heap memory used for image storage;
-<s>Pixels</s>, maximum absolute image size (per image); <s>Width</s>,
-maximum image pixels width; <s>Height</s>, maximum image pixels
-height; and <s>Threads</s>, the maximum number of worker threads to
-use per OpenMP thread team.</pp>
+resources and capabilities of the system. The resource limits are
+<s>Disk</s>, maximum total disk space consumed; <s>File</s>, maximum
+number of file descriptors allowed to be open at once; <s>Map</s>,
+maximum total number of file bytes which may be memory mapped;
+<s>Memory</s>, maximum total number of bytes of heap memory used for
+image storage; <s>Pixels</s>, maximum absolute image size (per image);
+<s>Width</s>, maximum image pixels width; <s>Height</s>, maximum image
+pixels height; <s>Read</s>, maximum number of uncompressed bytes to
+read; and <s>Threads</s>, the maximum number of worker threads to use
+per OpenMP thread team.</pp>
 
 <pp>
-These resource limits are used to decide if (for a given image) the
-decoded image ("pixel cache") should be stored in heap memory (RAM),
-in a memory-mapped disk file, or in a disk file accessed via
-read/write I/O.  The number of total pixels in one image, and/or the
-width/height, may also be limited in order to force the reading, or
-creation of images larger than the limit (in pixels) to intentionally
-fail. The disk limit establishes an overall limit since using the disk
-is the means of last resort. When the disk limit has been reached, no
-more images may be read.</pp>
+The <s>Disk</s> and <s>Map</s> resource limits are used to decide if
+(for a given image) the decoded image ("pixel cache") should be stored
+in heap memory (RAM), in a memory-mapped disk file, or in a disk file
+accessed via read/write I/O.</pp>
+
+<pp>
+The number of total pixels in one image (<s>Pixels</s>), and/or the
+width/height (<s>Width</s>/<s>Height</s>), may be limited in order to
+force the reading, or creation of images larger than the limit (in
+pixels) to intentionally fail. The disk limit (<s>Disk</s>)
+establishes an overall limit since using the disk is the means of last
+resort. When the disk limit has been reached, no more images may be
+read.</pp>
+
+<pp>
+The amount of uncompressed data read when reading one image may be
+limited by the <s>Read</s> limit.  Reading the image fails when the
+limit is hit.  This option is useful if the data is read from a stream
+(pipe) or from a compressed file such as a gzipped file.  Some files
+are very compressable and so a small compressed file can decompress to
+a huge amount of data.  This option also defends against files which
+produce seemingly endless loops while decoding by seeking backwards in
+the file.</pp>
 
 <pp>
 The value argument is an absolute value, but may have standard binary
@@ -3249,10 +3264,11 @@ Resource limits may also be set using environment variables. The
 environment variables <s>MAGICK_LIMIT_DISK</s>,
 <s>MAGICK_LIMIT_FILES</s>, <s>MAGICK_LIMIT_MAP</s>,
 <s>MAGICK_LIMIT_MEMORY</s>, <s>MAGICK_LIMIT_PIXELS</s>,
-<s>MAGICK_LIMIT_WIDTH</s>, <s>MAGICK_LIMIT_HEIGHT</s>,and
-<s>OMP_NUM_THREADS</s> may be used to set the limits for disk space,
-open files, memory mapped size, heap memory, per-image pixels, image
-width, image height, and threads respectively.</pp>
+<s>MAGICK_LIMIT_WIDTH</s>, <s>MAGICK_LIMIT_HEIGHT</s>.
+<s>MAGICK_LIMIT_READ</s>, and <s>OMP_NUM_THREADS</s> may be used to
+set the limits for disk space, open files, memory mapped size, heap
+memory, per-image pixels, image width, image height, and threads
+respectively.</pp>
 
 <pp>
 Use the option <tt>-list resource</tt> list the current limits.</pp>

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2015 GraphicsMagick Group
+  Copyright (C) 2003 - 2022 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -28,7 +28,8 @@ typedef enum
   PixelsResource,      /* Maximum number of pixels in single image (Pixels) */
   ThreadsResource,     /* Maximum number of worker threads */
   WidthResource,       /* Maximum pixel width of an image (Pixels) */
-  HeightResource       /* Maximum pixel height of an image (Pixels) */
+  HeightResource,      /* Maximum pixel height of an image (Pixels) */
+  ReadResource         /* Maximum amount of uncompressed file data to read */
 } ResourceType;
 
 /*

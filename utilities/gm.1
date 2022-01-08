@@ -1,4 +1,4 @@
-.TH gm 1 "2021/12/31" "GraphicsMagick"
+.TH gm 1 "2022/01/08" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -2987,28 +2987,41 @@ interface works similar to Photoshop's "Image->Adjustments->Levels..."
 "Input Levels" interface.
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 
 By default, resource limits are estimated based on the available
-resources of the system. The resource limits are \fBDisk\fP, maximum
-total disk space consumed; \fBFile\fP, maximum number of file
-descriptors allowed to be open at once; \fBMap\fP, maximum total
-number of file bytes which may be memory mapped; \fBMemory\fP,
-maximum total number of bytes of heap memory used for image storage;
-\fBPixels\fP, maximum absolute image size (per image); \fBWidth\fP,
-maximum image pixels width; \fBHeight\fP, maximum image pixels
-height; and \fBThreads\fP, the maximum number of worker threads to
-use per OpenMP thread team.
+resources and capabilities of the system. The resource limits are
+\fBDisk\fP, maximum total disk space consumed; \fBFile\fP, maximum
+number of file descriptors allowed to be open at once; \fBMap\fP,
+maximum total number of file bytes which may be memory mapped;
+\fBMemory\fP, maximum total number of bytes of heap memory used for
+image storage; \fBPixels\fP, maximum absolute image size (per image);
+\fBWidth\fP, maximum image pixels width; \fBHeight\fP, maximum image
+pixels height; \fBRead\fP, maximum number of uncompressed bytes to
+read; and \fBThreads\fP, the maximum number of worker threads to use
+per OpenMP thread team.
 
-These resource limits are used to decide if (for a given image) the
-decoded image ("pixel cache") should be stored in heap memory (RAM),
-in a memory-mapped disk file, or in a disk file accessed via
-read/write I/O.  The number of total pixels in one image, and/or the
-width/height, may also be limited in order to force the reading, or
-creation of images larger than the limit (in pixels) to intentionally
-fail. The disk limit establishes an overall limit since using the disk
-is the means of last resort. When the disk limit has been reached, no
-more images may be read.
+The \fBDisk\fP and \fBMap\fP resource limits are used to decide if
+(for a given image) the decoded image ("pixel cache") should be stored
+in heap memory (RAM), in a memory-mapped disk file, or in a disk file
+accessed via read/write I/O.
+
+The number of total pixels in one image (\fBPixels\fP), and/or the
+width/height (\fBWidth\fP/\fBHeight\fP), may be limited in order to
+force the reading, or creation of images larger than the limit (in
+pixels) to intentionally fail. The disk limit (\fBDisk\fP)
+establishes an overall limit since using the disk is the means of last
+resort. When the disk limit has been reached, no more images may be
+read.
+
+The amount of uncompressed data read when reading one image may be
+limited by the \fBRead\fP limit.  Reading the image fails when the
+limit is hit.  This option is useful if the data is read from a stream
+(pipe) or from a compressed file such as a gzipped file.  Some files
+are very compressable and so a small compressed file can decompress to
+a huge amount of data.  This option also defends against files which
+produce seemingly endless loops while decoding by seeking backwards in
+the file.
 
 The value argument is an absolute value, but may have standard binary
 suffix characters applied ('K', 'M', 'G', 'T', 'P', 'E') to apply a
@@ -3022,10 +3035,11 @@ Resource limits may also be set using environment variables. The
 environment variables \fBMAGICK_LIMIT_DISK\fP,
 \fBMAGICK_LIMIT_FILES\fP, \fBMAGICK_LIMIT_MAP\fP,
 \fBMAGICK_LIMIT_MEMORY\fP, \fBMAGICK_LIMIT_PIXELS\fP,
-\fBMAGICK_LIMIT_WIDTH\fP, \fBMAGICK_LIMIT_HEIGHT\fP,and
-\fBOMP_NUM_THREADS\fP may be used to set the limits for disk space,
-open files, memory mapped size, heap memory, per-image pixels, image
-width, image height, and threads respectively.
+\fBMAGICK_LIMIT_WIDTH\fP, \fBMAGICK_LIMIT_HEIGHT\fP.
+\fBMAGICK_LIMIT_READ\fP, and \fBOMP_NUM_THREADS\fP may be used to
+set the limits for disk space, open files, memory mapped size, heap
+memory, per-image pixels, image width, image height, and threads
+respectively.
 
 Use the option -list resource list the current limits.
 .TP
@@ -5079,6 +5093,15 @@ immediately.  This is a per-image limit and does not limit the total
 number of pixels due to multiple image frames/pages (e.g. multi-page
 document or an animation).
 .TP
+.B "MAGICK_LIMIT_READ"
+\fRMaximum number of uncompressed bytes which may be read while
+decoding an image.  Each read by the software from the input file is
+counted against the total, even if it has been read before.  Decoding
+fails when the limit is reached.  This limit helps defend against
+highly compressed files (e.g. via gzip), or files which use complex
+looping structures, or when data is being read from a stream
+(pipe).
+.TP
 .B "MAGICK_LIMIT_WIDTH"
 \fRMaximum pixel width of an image read, or created.
 .TP
@@ -5302,7 +5325,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -5905,7 +5928,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -6086,7 +6109,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -7105,7 +7128,7 @@ Options, above.
 \fRadjust the level of image contrast
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-list \fI<type>"\fP
 \fRthe type of list
@@ -7620,7 +7643,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -9630,7 +9653,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -9777,7 +9800,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -10085,7 +10108,7 @@ Options, above.
 \fRadjust the level of image contrast
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-linewidth"
 \fRthe line width for subsequent draw operations
@@ -10552,7 +10575,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log

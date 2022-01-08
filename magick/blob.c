@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -104,6 +104,8 @@ struct _BlobInfo
     block_size,         /* I/O block size */
     length,             /* The current size of the BLOB data. */
     extent,             /* The amount of backing store currently allocated */
+    read_limit,         /* Limit on data to return to user */
+    read_total,         /* Amount of data read thus far */
     quantum;            /* The amount by which to increase the size of the backing store */
 
   unsigned int
@@ -269,10 +271,11 @@ static inline size_t ReadBlobStream(Image *image,const size_t length,
       return 0;
     }
   *data=(void *)(blob->data+blob->offset);
-  available=Min(length,blob->length-blob->offset);
+  available=Min(Min(length,blob->read_limit-blob->read_total),blob->length-blob->offset);
   blob->offset+=available;
-  if (available < length)
+  if (available == 0)
     blob->eof=True;
+  blob->read_total += available;
   return available;
 }
 
@@ -1318,38 +1321,41 @@ MagickExport int EOFBlob(const Image *image)
   assert(image->blob != (BlobInfo *) NULL);
   assert(image->blob->type != UndefinedStream);
   blob=image->blob;
-  switch (blob->type)
-  {
-    case UndefinedStream:
-      break;
-    case FileStream:
-    case StandardStream:
-    case PipeStream:
+  if (!blob->eof)
     {
-      blob->eof=feof(blob->handle.std);
-      break;
-    }
-    case ZipStream:
-    {
+      switch (blob->type)
+        {
+        case UndefinedStream:
+          break;
+        case FileStream:
+        case StandardStream:
+        case PipeStream:
+          {
+            blob->eof=feof(blob->handle.std);
+            break;
+          }
+        case ZipStream:
+          {
 #if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
-      blob->eof=gzeof(blob->handle.gz);
+            blob->eof=gzeof(blob->handle.gz);
 #endif /* defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES) */
-      break;
-    }
-    case BZipStream:
-    {
+            break;
+          }
+        case BZipStream:
+          {
 #if defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES)
-      int
-        status;
+            int
+              status;
 
-      (void) BZ2_bzerror(blob->handle.bz,&status);
-      blob->eof=status == BZ_UNEXPECTED_EOF;
+            (void) BZ2_bzerror(blob->handle.bz,&status);
+            blob->eof=status == BZ_UNEXPECTED_EOF;
 #endif /* defined(HasBZLIB) && !defined(DISABLE_COMPRESSED_FILES) */
-      break;
+            break;
+          }
+        case BlobStream:
+          break;
+        }
     }
-    case BlobStream:
-      break;
-  }
   return(blob->eof);
 }
 
@@ -2387,7 +2393,8 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
 
   size_t
     block_size,
-    length;
+    length,
+    total=0;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -2421,6 +2428,7 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
       count=write(file,buffer+i,(MAGICK_POSIX_IO_SIZE_T) (length-i));
       if (count <= 0)
         break;
+      total += count;
     }
     if (i < length)
       break;
@@ -2428,7 +2436,8 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
   (void) close(file);
   if (image->logging)
     (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                          "Copyied %"MAGICK_SIZE_T_F"u bytes from Blob stream to \"%s\"",(MAGICK_SIZE_T) i,filename);
+                          "Copied %"MAGICK_SIZE_T_F"u bytes from Blob stream to \"%s\"",
+                          (MAGICK_SIZE_T) total,filename);
   MagickFreeMemory(buffer);
   return (i < length ? MagickFail : MagickPass);
 }
@@ -2710,6 +2719,11 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                           "Opening blob stream: image %p, blob %p,"
                           " mode %s ...", image, image->blob,
                           BlobModeToString(mode));
+  /*
+    Set read limits
+  */
+  image->blob->read_limit = (size_t) GetMagickResourceLimit(ReadResource);
+  image->blob->read_total = 0;
   /*
     Cache I/O block size
   */
@@ -3152,13 +3166,14 @@ MagickExport Image *PingBlob(const ImageInfo *image_info,const void *blob,
 %
 %
 */
-MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
+MagickExport size_t ReadBlob(Image *image,const size_t req_length,void *data)
 {
   BlobInfo
     * restrict blob;
 
   size_t
-    count;
+    count,
+    length;
 
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
@@ -3167,6 +3182,9 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
   assert(data != (void *) NULL);
 
   blob=image->blob;
+
+  length=Min(req_length,blob->read_limit-blob->read_total);
+
   count=0;
   switch (blob->type)
     {
@@ -3336,6 +3354,9 @@ MagickExport size_t ReadBlob(Image *image,const size_t length,void *data)
       }
     }
   assert(count <= length);
+  blob->read_total += count;
+  if (count == 0)
+    blob->eof=True;
   return(count);
 }
 
@@ -3434,6 +3455,12 @@ MagickExport int ReadBlobByte(Image *image)
 
   blob=image->blob;
 
+  if (blob->read_total >= blob->read_limit)
+    {
+      blob->eof=1;
+      return EOF;
+    }
+
   switch (blob->type)
     {
     case FileStream:
@@ -3449,6 +3476,10 @@ MagickExport int ReadBlobByte(Image *image)
                   blob->first_errno=errno;
               }
           }
+        else
+          {
+            blob->read_total++;
+          }
         break;
       }
     case BlobStream:
@@ -3457,6 +3488,7 @@ MagickExport int ReadBlobByte(Image *image)
           {
             octet=*((unsigned char *)blob->data+blob->offset);
             blob->offset++;
+            blob->read_total++;
             c=octet;
           }
         else
@@ -3472,6 +3504,7 @@ MagickExport int ReadBlobByte(Image *image)
           c=octet;
       }
     }
+
   return c;
 }
 

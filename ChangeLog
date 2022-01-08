@@ -1,3 +1,13 @@
+2022-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/resource.c: Add support for setting a read resource limit
+        via the MAGICK_LIMIT_READ environment variable, or similar to
+        '-limit read 5mb'.
+
+        * magick/resource.h: Added a ReadResource limit, which is a limit
+        on how many uncompressed file bytes may be read while decoding an
+        input file.
+
 2022-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * ChangeLog.2021: Rotate ChangeLog for 2022.  Happy New Year!

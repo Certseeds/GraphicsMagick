@@ -3323,28 +3323,41 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a name="details-limit"></a>-limit <i>&lt;type&gt; &lt;value&gt;</i>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Disk, File, Map, Memory, Pixels, Width, Height or Threads resource limit</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Disk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit</td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 By default, resource limits are estimated based on the available
-resources of the system. The resource limits are <strong>Disk</strong>, maximum
-total disk space consumed; <strong>File</strong>, maximum number of file
-descriptors allowed to be open at once; <strong>Map</strong>, maximum total
-number of file bytes which may be memory mapped; <strong>Memory</strong>,
-maximum total number of bytes of heap memory used for image storage;
-<strong>Pixels</strong>, maximum absolute image size (per image); <strong>Width</strong>,
-maximum image pixels width; <strong>Height</strong>, maximum image pixels
-height; and <strong>Threads</strong>, the maximum number of worker threads to
-use per OpenMP thread team.</font></td></tr></table>
+resources and capabilities of the system. The resource limits are
+<strong>Disk</strong>, maximum total disk space consumed; <strong>File</strong>, maximum
+number of file descriptors allowed to be open at once; <strong>Map</strong>,
+maximum total number of file bytes which may be memory mapped;
+<strong>Memory</strong>, maximum total number of bytes of heap memory used for
+image storage; <strong>Pixels</strong>, maximum absolute image size (per image);
+<strong>Width</strong>, maximum image pixels width; <strong>Height</strong>, maximum image
+pixels height; <strong>Read</strong>, maximum number of uncompressed bytes to
+read; and <strong>Threads</strong>, the maximum number of worker threads to use
+per OpenMP thread team.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-These resource limits are used to decide if (for a given image) the
-decoded image ("pixel cache") should be stored in heap memory (RAM),
-in a memory-mapped disk file, or in a disk file accessed via
-read/write I/O.  The number of total pixels in one image, and/or the
-width/height, may also be limited in order to force the reading, or
-creation of images larger than the limit (in pixels) to intentionally
-fail. The disk limit establishes an overall limit since using the disk
-is the means of last resort. When the disk limit has been reached, no
-more images may be read.</font></td></tr></table>
+The <strong>Disk</strong> and <strong>Map</strong> resource limits are used to decide if
+(for a given image) the decoded image ("pixel cache") should be stored
+in heap memory (RAM), in a memory-mapped disk file, or in a disk file
+accessed via read/write I/O.</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+The number of total pixels in one image (<strong>Pixels</strong>), and/or the
+width/height (<strong>Width</strong>/<strong>Height</strong>), may be limited in order to
+force the reading, or creation of images larger than the limit (in
+pixels) to intentionally fail. The disk limit (<strong>Disk</strong>)
+establishes an overall limit since using the disk is the means of last
+resort. When the disk limit has been reached, no more images may be
+read.</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+The amount of uncompressed data read when reading one image may be
+limited by the <strong>Read</strong> limit.  Reading the image fails when the
+limit is hit.  This option is useful if the data is read from a stream
+(pipe) or from a compressed file such as a gzipped file.  Some files
+are very compressable and so a small compressed file can decompress to
+a huge amount of data.  This option also defends against files which
+produce seemingly endless loops while decoding by seeking backwards in
+the file.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 The value argument is an absolute value, but may have standard binary
 suffix characters applied ('K', 'M', 'G', 'T', 'P', 'E') to apply a
@@ -3358,10 +3371,11 @@ Resource limits may also be set using environment variables. The
 environment variables <strong>MAGICK_LIMIT_DISK</strong>,
 <strong>MAGICK_LIMIT_FILES</strong>, <strong>MAGICK_LIMIT_MAP</strong>,
 <strong>MAGICK_LIMIT_MEMORY</strong>, <strong>MAGICK_LIMIT_PIXELS</strong>,
-<strong>MAGICK_LIMIT_WIDTH</strong>, <strong>MAGICK_LIMIT_HEIGHT</strong>,and
-<strong>OMP_NUM_THREADS</strong> may be used to set the limits for disk space,
-open files, memory mapped size, heap memory, per-image pixels, image
-width, image height, and threads respectively.</font></td></tr></table>
+<strong>MAGICK_LIMIT_WIDTH</strong>, <strong>MAGICK_LIMIT_HEIGHT</strong>.
+<strong>MAGICK_LIMIT_READ</strong>, and <strong>OMP_NUM_THREADS</strong> may be used to
+set the limits for disk space, open files, memory mapped size, heap
+memory, per-image pixels, image width, image height, and threads
+respectively.</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Use the option <tt>-list resource</tt> list the current limits.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
@@ -6257,6 +6271,23 @@ image memory allocation is denied and an error is returned
 immediately.  This is a per-image limit and does not limit the total
 number of pixels due to multiple image frames/pages (e.g. multi-page
 document or an animation).</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    MAGICK_LIMIT_READ
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>Maximum number of uncompressed bytes which may be read while
+decoding an image.  Each read by the software from the input file is
+counted against the total, even if it has been read before.  Decoding
+fails when the limit is reached.  This limit helps defend against
+highly compressed files (e.g. via gzip), or files which use complex
+looping structures, or when data is being read from a stream
+(pipe).</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
