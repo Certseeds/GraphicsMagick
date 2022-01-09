@@ -151,7 +151,7 @@ static const QuantumType z2qtype[4] = {GrayQuantum, BlueQuantum, GreenQuantum, R
 /* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
  Please note that this function expects gray image on input. Additional channel contents
  checking is wasting of resources only. */
-static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal,
+static void InsertComplexDoubleRow(double *p, long y, Image *image, double MinVal,
                                   double MaxVal)
 {
   double f;
@@ -211,7 +211,7 @@ static void InsertComplexDoubleRow(double *p, int y, Image *image, double MinVal
 /* Add coloring to gray image. C=R+j*Q. Colors to red when Q>0 and blue for Q<0.
  Please note that this function expects gray image on input. Additional channel contents
  checking is wasting of resources only. */
-static void InsertComplexFloatRow(float *p, int y, Image *image, double MinVal, double MaxVal)
+static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal, double MaxVal)
 {
   double f;
   int x;
@@ -1172,7 +1172,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
                 /* else read color scanlines */
     do
     {
-      for(i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+      for(i = 0; i < MATLAB_HDR.SizeY; i++)
       {
         q = SetImagePixelsEx(image,0,MATLAB_HDR.SizeY-i-1,image->columns,1,&image->exception);
         if (q == (PixelPacket *)NULL)
@@ -1223,7 +1223,7 @@ ImportImagePixelAreaFailed:
     } while(z-- >= 2);
 ExitLoop:
 
-    if (i != (long) MATLAB_HDR.SizeY)
+    if (i != MATLAB_HDR.SizeY)
       {
         if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "Failed to read all scanlines (failed at row %d of %u rows, z=%d)",
@@ -1257,7 +1257,7 @@ ExitLoop:
       }
 
       if (CellType==miDOUBLE)
-        for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+        for (i = 0; i < MATLAB_HDR.SizeY; i++)
         {
           if (ReadBlobXXXDoubles(image2, ldblk, (double *)BImgBuff) != ldblk)
             ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -1265,7 +1265,7 @@ ExitLoop:
         }
 
       if (CellType==miSINGLE)
-        for (i = 0; i < (long) MATLAB_HDR.SizeY; i++)
+        for (i = 0; i < MATLAB_HDR.SizeY; i++)
         {
           if (ReadBlobXXXFloats(image2, ldblk, (float *)BImgBuff) != ldblk)
             ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
