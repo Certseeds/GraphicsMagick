@@ -274,7 +274,7 @@ static inline size_t ReadBlobStream(Image *image,const size_t length,
     }
   *data=(void *)(blob->data+blob->offset);
   available=Min(Min(length,blob->read_limit-blob->read_total),
-                blob->length-blob->offset);
+                (size_t)(blob->length-blob->offset));
   blob->offset+=available;
   if (available == 0)
     blob->eof=True;
