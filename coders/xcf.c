@@ -424,7 +424,7 @@ static MagickPassFail load_tile_rle (Image* image,
     nmemb_read_successfully;
 
   int
-    count,
+    /* count, */
     length,
     bpp,    /* BYTES per pixel! */
     i,
@@ -470,7 +470,7 @@ static MagickPassFail load_tile_rle (Image* image,
           goto bogus_rle;
         }
       size = MagickArraySize(tile_image->rows,tile_image->columns);
-      count = 0;
+      /* count = 0; */
 
       while (size > 0)
         {
@@ -498,7 +498,7 @@ static MagickPassFail load_tile_rle (Image* image,
                   xcfdata += 2;
                 }
 
-              count += length;
+              /* count += length; */
               size -= length;
 
               if (size < 0)
@@ -567,7 +567,7 @@ static MagickPassFail load_tile_rle (Image* image,
                   xcfdata += 2;
                 }
 
-              count += length;
+              /* count += length; */
               size -= length;
 
               if (size < 0)
