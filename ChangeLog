@@ -1,3 +1,8 @@
+2022-01-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/blob.c: Make sure that read resource limiting can support
+        very large files.
+
 2022-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/resource.c: Add support for setting a read resource limit

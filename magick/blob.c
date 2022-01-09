@@ -100,12 +100,14 @@ typedef union _MagickFileHandle
 
 struct _BlobInfo
 {
+  magick_uint64_t
+    read_limit,         /* Limit on data to return to API user */
+    read_total;         /* Amount of data read thus far */
+
   size_t
     block_size,         /* I/O block size */
     length,             /* The current size of the BLOB data. */
     extent,             /* The amount of backing store currently allocated */
-    read_limit,         /* Limit on data to return to user */
-    read_total,         /* Amount of data read thus far */
     quantum;            /* The amount by which to increase the size of the backing store */
 
   unsigned int
@@ -271,7 +273,8 @@ static inline size_t ReadBlobStream(Image *image,const size_t length,
       return 0;
     }
   *data=(void *)(blob->data+blob->offset);
-  available=Min(Min(length,blob->read_limit-blob->read_total),blob->length-blob->offset);
+  available=Min(Min(length,blob->read_limit-blob->read_total),
+                blob->length-blob->offset);
   blob->offset+=available;
   if (available == 0)
     blob->eof=True;
@@ -2722,7 +2725,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
   /*
     Set read limits
   */
-  image->blob->read_limit = (size_t) GetMagickResourceLimit(ReadResource);
+  image->blob->read_limit = (magick_uint64_t) GetMagickResourceLimit(ReadResource);
   image->blob->read_total = 0;
   /*
     Cache I/O block size
