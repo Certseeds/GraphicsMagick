@@ -942,6 +942,17 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
                               scanline_length, (MAGICK_SIZE_T)scanline_alloc);
       if (scanline_length < 2)
         {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Scanline length %u < 2!",scanline_length);
+          ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
+                         image->filename);
+          goto decode_error_exit;
+        }
+      if (scanline_length > scanline_alloc)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Scanline length %u exceeds allocation %"MAGICK_SIZE_T_F"u",
+                                scanline_length, (MAGICK_SIZE_T)scanline_alloc);
           ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
                          image->filename);
           goto decode_error_exit;

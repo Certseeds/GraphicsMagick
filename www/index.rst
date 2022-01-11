@@ -66,8 +66,8 @@ version of this page.
 .. _`oss-fuzz` : https://github.com/google/oss-fuzz
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
-of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
-of source code in the base package (or 1,225K including 3rd party
+of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
+of source code in the base package (or 1,275K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
 over 89 major formats including important formats like DPX, GIF, JPEG,
