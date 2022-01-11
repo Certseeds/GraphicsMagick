@@ -37,9 +37,11 @@
 
 <p>2022-01-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/pict.c (DecodeImage): Assure that the claimed scanline
+<p>* coders/jpeg.c: Add tracing and fallback for longjmp().</p>
+<p>* coders/pict.c (DecodeImage): Assure that the claimed scanline
 length is within the bounds of the scanline allocation to avoid
-possible heap overflow.</blockquote>
+possible heap overflow.</p>
+</blockquote>
 <p>2022-01-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * magick/blob.c: Make sure that read resource limiting can support

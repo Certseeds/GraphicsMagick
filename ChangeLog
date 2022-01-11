@@ -1,5 +1,7 @@
 2022-01-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jpeg.c: Add tracing and fallback for longjmp().
+
         * coders/pict.c (DecodeImage): Assure that the claimed scanline
         length is within the bounds of the scanline allocation to avoid
         possible heap overflow.

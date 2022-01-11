@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -372,7 +372,10 @@ static void JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
         {
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Longjmp error recovery");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
 
       if ((err->num_warnings == 0) ||
@@ -423,8 +426,9 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
                                   p->completed_passes+1, p->total_passes))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Quitting due to progress monitor");
+                                "Quitting (longjmp) due to progress monitor");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
   }
 #endif /* USE_LIBJPEG_PROGRESS */
@@ -441,7 +445,10 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s", message);
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Longjmp error recovery");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
     }
 }
@@ -531,7 +538,9 @@ static void JPEGErrorHandler(j_common_ptr jpeg_info)
   else
     ThrowException2(&image->exception,CoderError,(char *) message,
                     image->filename);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Longjmp error recovery");
   longjmp(client_data->error_recovery,1);
+  SignalHandlerExit(EXIT_FAILURE);
 }
 
 #define GetProfileLength(jpeg_info, length)                             \
