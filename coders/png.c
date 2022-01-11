@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1089,7 +1089,7 @@ static void PNGErrorHandler(png_struct *ping,png_const_charp message)
 #else
   png_longjmp(ping,1);
 #endif
-  SignalHandlerExit(1); /* Avoid GCC warning about non-exit function which does exit */
+  SignalHandlerExit(EXIT_FAILURE); /* Avoid GCC warning about non-exit function which does exit */
 }
 
 static void PNGWarningHandler(png_struct *ping,png_const_charp message)
