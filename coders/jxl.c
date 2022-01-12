@@ -19,7 +19,7 @@
 % Status: Only support basic images (no animations) with grayscale/SRGB colorspace
 * Note that JXL is a C++ library so does require linking with a c++ compiler.
 *
-* Currently tested vs libjxl-0.3.7 on linux only, likely will have build problems
+* Currently tested vs libjxl-0.6.1 on ubuntu only, likely will have build problems
 * on other platforms. Also note the amount of third-party-libs required!
 */
 
@@ -214,7 +214,7 @@ static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *except
 
 
 
-/** The JXL API is not quite clear on who they returns JXL_TYPE_FLOAT.
+/** The JXL API is not quite clear on how they return JXL_TYPE_FLOAT.
  *  While the encode clearly states that JXL_TYPE_FLOAT is linear SRGB
  *  And JXL_TYPE_UNIT8 is non-linear its not that clear for decode.
  *  However it looks like it's implicit in at least some Situation
@@ -298,6 +298,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
   JxlPixelFormat
     format;
+  memset(&format,0,sizeof(format));
 
   struct MyJXLMemoryManager
     mm;
@@ -380,6 +381,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       { /* got image information */
         JxlBasicInfo
           basic_info;
+	JxlEncoderInitBasicInfo(&basic_info);
 
         status=JxlDecoderGetBasicInfo(jxl,&basic_info);
         if (status != JXL_DEC_SUCCESS)
@@ -387,7 +389,6 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
         if (basic_info.have_animation == 1)
           ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
-
 	
         image->columns=basic_info.xsize;
         image->rows=basic_info.ysize;
@@ -397,7 +398,6 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
         image->orientation=convert_orientation(basic_info.orientation);
 
-	memset(&format,0,sizeof(format));
 
         if (basic_info.num_color_channels == 1 && image->depth == 8) {
 	  if (!AllocateImageColormap(image,1 << image->depth))
@@ -574,6 +574,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
   JxlPixelFormat
     format;
+  memset(&format,0,sizeof(format));
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -614,15 +615,14 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     format.data_type = JXL_TYPE_UINT8;
   else if(image->depth <= 16)
     format.data_type = JXL_TYPE_UINT16;
+  else if(image->depth <= 32)
+    format.data_type = JXL_TYPE_FLOAT;
   else
-    {
-      ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
-      // TODO JXL_TYPE_FLOAT requires linear-SRGB colorspace
-    }
+    ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
 
   JxlBasicInfo
     basic_info;
-  memset(&basic_info, 0, sizeof(basic_info));
+  JxlEncoderInitBasicInfo(&basic_info);
   basic_info.xsize = image->columns;
   basic_info.ysize = image->rows;
   if(image->depth == 8)
@@ -635,8 +635,23 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   if (image->matte)
     basic_info.alpha_bits=basic_info.bits_per_sample;
 
-  if (JxlEncoderSetBasicInfo(jxl,&basic_info) != JXL_ENC_SUCCESS)
-    ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  if ((jxl_status = JxlEncoderSetBasicInfo(jxl,&basic_info)) != JXL_ENC_SUCCESS)
+    {
+      // TODO better error codes
+      if (jxl_status == JXL_ENC_ERROR)
+	ThrowJXLWriterException(CoderError,NoDataReturned,image)
+      else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
+	ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image)
+      else
+	ThrowJXLWriterException(CoderFatalError,Default,image)
+    }
+
+  // Set expected input colorspace
+  basic_info.uses_original_profile = JXL_TRUE;
+  JxlColorEncoding color_encoding = {};
+  JxlColorEncodingSetToSRGB(&color_encoding, /*is_gray=*/format.num_channels < 3);
+  if (JxlEncoderSetColorEncoding(jxl, &color_encoding) != JXL_ENC_SUCCESS)
+      ThrowJXLWriterException(CoderFatalError,Default,image)
 
   encoder_options=JxlEncoderOptionsCreate(jxl,(JxlEncoderOptions *) NULL);
   if (encoder_options == (JxlEncoderOptions *) NULL)

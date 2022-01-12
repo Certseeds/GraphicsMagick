@@ -27082,14 +27082,14 @@ else
 fi
 
 
-    # jxl always requires hwy no extra test needed
+    # jxl always requires hwy/brotli no extra test needed
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlDecoderCreate in -ljxl" >&5
 $as_echo_n "checking for JxlDecoderCreate in -ljxl... " >&6; }
 if ${ac_cv_lib_jxl_JxlDecoderCreate+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljxl -lhwy $LIBS"
+LIBS="-ljxl -lhwy -lbrotlidec -lbrotlienc $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27229,7 +27229,7 @@ $as_echo "no -- some components failed test" >&6; }
 	# JXL is a C++ Lib so requires linking with stdc++.
 	# TODO: A better solution would be to tell automake to do any linking with
 	# c++, but I can't figure out a way to get this working.
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lskcms -lstdc++'
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
         LIBS="$LIB_JXL $LIBS"
 
 $as_echo "#define HasJXL 1" >>confdefs.h
