@@ -1,5 +1,8 @@
 2022-01-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * magick/blob.c: Throw a user-friendly exception when the read
+        limit has been exceeded.
+
         * coders/jpeg.c: Add tracing and fallback for longjmp().
 
         * coders/pict.c (DecodeImage): Assure that the claimed scanline

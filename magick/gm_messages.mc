@@ -2513,6 +2513,12 @@ Pixel cache allocation failed
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorReadLimitExceeded
+Language        = English
+Read limit exceeded (see -limit Read)
+.
+
+MessageId       = +1
 SymbolicName    = LimitErrorUnableToAddColorProfile
 Language        = English
 unable to add ICC Color profile

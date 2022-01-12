@@ -37,6 +37,8 @@
 
 <p>2022-01-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* magick/blob.c: Throw a user-friendly exception when the read
+limit has been exceeded.</p>
 <p>* coders/jpeg.c: Add tracing and fallback for longjmp().</p>
 <p>* coders/pict.c (DecodeImage): Assure that the claimed scanline
 length is within the bounds of the scanline allocation to avoid
