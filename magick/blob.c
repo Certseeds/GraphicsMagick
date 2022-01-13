@@ -3365,7 +3365,7 @@ MagickExport size_t ReadBlob(Image *image,const size_t req_length,void *data)
     }
   assert(count <= length);
   blob->read_total += count;
-  if (count == 0)
+  if (count < req_length)
     {
       blob->eof=True;
       if (blob->read_limit <= blob->read_total)

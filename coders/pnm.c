@@ -1152,15 +1152,18 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             DestroyThreadViewDataSet(scanline_set);
             image->is_monochrome=is_monochrome;
             image->is_grayscale=is_grayscale;
+            if ((status == MagickFail) && (image->exception.severity))
+              CopyException(exception,&image->exception);
             if (EOFBlob(image))
-              ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                             image->filename);
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             break;
           }
         default:
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       StopTimer(&image->timer);
+      if (status ==MagickFail)
+        break;
       /*
         Proceed to next image.
       */

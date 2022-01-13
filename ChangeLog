@@ -1,3 +1,12 @@
+2022-01-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/blob.c (ReadBlob): Fix EOF logic. Addresses oss-fuzz
+        43490 "graphicsmagick:coder_PNM_fuzzer: Use-of-uninitialized-value
+        in SyncImageCallBack".
+
+        * coders/pnm.c (ReadPNMImage): Make sure that we don't lose the
+        image exception.
+
 2022-01-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/blob.c: Throw a user-friendly exception when the read
