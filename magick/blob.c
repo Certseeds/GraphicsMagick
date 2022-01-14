@@ -279,11 +279,14 @@ static inline size_t ReadBlobStream(Image *image,const size_t length,
   blob->read_total += available;
   if (available < length)
     {
-      blob->eof=True;
-      if (blob->read_limit <= blob->read_total)
+      if (MagickFalse == blob->eof)
         {
-          ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
-                         image->filename);
+          blob->eof=MagickTrue;
+          if (blob->read_limit <= blob->read_total)
+            {
+              ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
+                             image->filename);
+            }
         }
     }
   return available;
@@ -3367,11 +3370,14 @@ MagickExport size_t ReadBlob(Image *image,const size_t req_length,void *data)
   blob->read_total += count;
   if (count < req_length)
     {
-      blob->eof=True;
-      if (blob->read_limit <= blob->read_total)
+      if (MagickFalse == blob->eof)
         {
-          ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
-                         image->filename);
+          blob->eof=MagickTrue;
+          if (blob->read_limit <= blob->read_total)
+            {
+              ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
+                             image->filename);
+            }
         }
     }
   return(count);
