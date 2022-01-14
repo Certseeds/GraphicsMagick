@@ -277,7 +277,7 @@ static inline size_t ReadBlobStream(Image *image,const size_t length,
                 (size_t)(blob->length-blob->offset));
   blob->offset+=available;
   blob->read_total += available;
-  if (available == 0)
+  if (available < length)
     {
       blob->eof=True;
       if (blob->read_limit <= blob->read_total)

@@ -1,3 +1,10 @@
+2022-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/blob.c (ReadBlobStream): Fix EOF logic similar to
+        ReadBlob. Addresses oss-fuzz 43617
+        "graphicsmagick:coder_P7_fuzzer: Use-of-uninitialized-value in
+        WritePNMImage".
+
 2022-01-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/blob.c (ReadBlob): Fix EOF logic. Addresses oss-fuzz
