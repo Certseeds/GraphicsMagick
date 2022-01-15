@@ -426,6 +426,9 @@
 /* Enable use of Ghostscript */
 #undef HasGS
 
+/* Define if you have HEIF library */
+#undef HasHEIF
+
 /* Define if you have JBIG library */
 #undef HasJBIG
 

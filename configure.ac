@@ -689,6 +689,16 @@ if test "$with_webp" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-webp=$with_webp "
 fi
 
+# Disable HEIF.
+AC_ARG_WITH([heif],
+        AS_HELP_STRING([--without-heif],
+                             [disable HEIF support]),
+        [with_heif=$withval],
+        [with_heif='yes'])
+if test "$with_heif" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-heif=$with_heif "
+fi
+
 # Disable JPEG.
 AC_ARG_WITH([jpeg],
               AS_HELP_STRING([--without-jpeg],
@@ -2535,6 +2545,40 @@ fi
 AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
 AC_SUBST([LIB_WEBP])
 
+# Check for HEIF
+#
+have_heif='no'
+LIB_HEIF=''
+if test "$with_heif" != 'no'
+then
+    AC_MSG_CHECKING([for HEIF support ])
+    AC_MSG_RESULT()
+    failed=0
+    passed=0
+    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # heif always requires hwy no extra test needed
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_MSG_CHECKING([if HEIF package is complete])
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_heif='no (failed tests)'
+    else
+        LIB_HEIF='-lheif'
+        LIBS="$LIB_HEIF $LIBS"
+        AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
+        AC_MSG_RESULT([yes])
+        have_heif='yes'
+    fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasHEIF],[test "$have_heif" = 'yes'])
+AC_SUBST([LIB_HEIF])
+
 #
 # Check for XML
 #
@@ -3576,6 +3620,10 @@ if test "$have_webp"   = 'yes' ; then
    DELEGATES="$DELEGATES webp"
    MAGICK_FEATURES="$MAGICK_FEATURES WEBP"
 fi
+if test "$have_heif"   = 'yes' ; then
+   DELEGATES="$DELEGATES heif"
+   MAGICK_FEATURES="$MAGICK_FEATURES HEIF"
+fi
 if test "$have_png$have_jpeg" = 'yesyes' ; then
    DELEGATES="$DELEGATES jng"
    MAGICK_FEATURES="$MAGICK_FEATURES JNG"
@@ -3701,7 +3749,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST([MAGICK_DEP_LIBS])
@@ -3845,6 +3893,7 @@ printf "Solaris umem      --with-umem=$with_umem        \t$have_umem\n"
 printf "TIFF              --with-tiff=$with_tiff        \t$have_tiff\n"
 printf "TRIO              --with-trio=$with_trio        \t$have_trio\n"
 printf "WEBP              --with-webp=$with_webp        \t$have_webp\n"
+printf "HEIF              --with-heif=$with_heif        \t$have_heif\n"
 result_windows_font_dir='none'
 if test "${windows_font_dir}x" != 'x'
 then

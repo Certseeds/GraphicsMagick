@@ -37,10 +37,13 @@
 
 <p>2022-01-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/blob.c (ReadBlobStream): Fix EOF logic similar to
+<p>* coders/heif.c: HEIF reader written by Tobias Mark.  From
+SourceForge Code Merge Request #15: &quot;Added minimal heif support&quot;.</p>
+<p>* magick/blob.c (ReadBlobStream): Fix EOF logic similar to
 ReadBlob. Addresses oss-fuzz 43617
 &quot;graphicsmagick:coder_P7_fuzzer: Use-of-uninitialized-value in
-WritePNMImage&quot;.</blockquote>
+WritePNMImage&quot;.</p>
+</blockquote>
 <p>2022-01-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* magick/blob.c (ReadBlob): Fix EOF logic. Addresses oss-fuzz

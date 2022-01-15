@@ -1,5 +1,8 @@
 2022-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/heif.c: HEIF reader written by Tobias Mark.  From
+        SourceForge Code Merge Request #15: "Added minimal heif support".
+
         * magick/blob.c (ReadBlobStream): Fix EOF logic similar to
         ReadBlob. Addresses oss-fuzz 43617
         "graphicsmagick:coder_P7_fuzzer: Use-of-uninitialized-value in
