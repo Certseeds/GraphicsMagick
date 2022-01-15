@@ -1,5 +1,9 @@
 2022-01-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jxl.c: Added preliminary JPEG XL support written by
+        Tobias Mark.  From Code Merge Request #14: "Added (basic) jpeg-xl
+        support".  The writer is not working properly at this time.
+
         * www/formats.rst: Add HEIF to the list of supported formats.
 
         * README.txt: Expand the text regarding support for HEIF/HVEC
