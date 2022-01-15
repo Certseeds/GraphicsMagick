@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2021 GraphicsMagick Group
+# Copyright (C) 2003-2022 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -717,6 +717,16 @@ AC_ARG_WITH([jp2],
               [with_jp2='yes'])
 if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
+fi
+
+# Disable JXL
+AC_ARG_WITH([jxl],
+              AS_HELP_STRING([--with-jxl],
+                             [enable JPEG-XL support]),
+              [with_jxl=$withval],
+              [with_jxl='no'])
+if test "$with_jxl" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jxl=$with_jxl "
 fi
 
 # Disable LCMS2.
@@ -2510,6 +2520,50 @@ AM_CONDITIONAL([HasJBIG],[test "$have_jbig" = 'yes'])
 AC_SUBST([LIB_JBIG])
 
 #
+# Check for JXL
+#
+have_jxl='no'
+LIB_JXL=''
+if test "$with_jxl" != 'no'
+then
+    AC_MSG_CHECKING([for JXL support ])
+    AC_MSG_RESULT()
+    failed=0
+    passed=0
+    AC_LANG_PUSH([C++])
+    AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # jxl always requires hwy/brotli no extra test needed
+    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc])
+    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # Testing for decoder should also cover encoder
+    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_LANG_POP
+    AC_MSG_CHECKING([if JXL package is complete])
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_jxl='no (failed tests)'
+    else
+        # JXL is a C++ Lib so requires linking with stdc++.
+        # TODO: A better solution would be to tell automake to do any linking with
+        # c++, but I can't figure out a way to get this working.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
+        LIBS="$LIB_JXL $LIBS"
+        AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
+        AC_MSG_RESULT([yes])
+        have_jxl='yes'
+        PERLMAINCC="$CXX"
+    fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasJXL],[test "$have_jxl" = 'yes'])
+AC_SUBST([LIB_JXL])
+
+#
 # Check for WEBP
 #
 have_webp='no'
@@ -3616,6 +3670,10 @@ if test "$have_jbig"   = 'yes' ; then
    DELEGATES="$DELEGATES jbig"
    MAGICK_FEATURES="$MAGICK_FEATURES JBIG"
 fi
+if test "$have_jxl"   = 'yes' ; then
+   DELEGATES="$DELEGATES jxl"
+   MAGICK_FEATURES="$MAGICK_FEATURES JXL"
+fi
 if test "$have_webp"   = 'yes' ; then
    DELEGATES="$DELEGATES webp"
    MAGICK_FEATURES="$MAGICK_FEATURES WEBP"
@@ -3749,7 +3807,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST([MAGICK_DEP_LIBS])
@@ -3876,6 +3934,7 @@ printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"
 printf "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2\n"
+printf "JPEG-XL           --with-jxl=$with_jxl          \t$have_jxl\n"
 printf "LCMS v2           --with-lcms2=$with_lcms2        \t$have_lcms2\n"
 # printf "MPEG v2           --with-mpeg2=$with_mpeg2    \t$have_mpeg2\n"
 printf "LZMA              --with-lzma=$with_lzma        \t$have_lzma\n"

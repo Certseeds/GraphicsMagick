@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2018 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -26,6 +26,11 @@ MAGICK_GDI32_MODULES = coders/clipboard.la coders/emf.la
 MAGICK_GDI32_SRCS = coders/clipboard.c coders/emf.c
 endif
 
+if HasHEIF
+MAGICK_HEIF_MODULES = coders/heif.la
+MAGICK_HEIF_SRCS = coders/heif.c
+endif
+
 if HasJBIG
 MAGICK_JBIG_MODULES = coders/jbig.la
 MAGICK_JBIG_SRCS = coders/jbig.c
@@ -39,6 +44,11 @@ endif
 if HasJP2
 MAGICK_JP2_MODULES = coders/jp2.la
 MAGICK_JP2_SRCS = coders/jp2.c
+endif
+
+if HasJXL
+MAGICK_JXL_MODULES = coders/jxl.la
+MAGICK_JXL_SRCS = coders/jxl.c
 endif
 
 if HasPNG
@@ -61,11 +71,6 @@ MAGICK_WEBP_MODULES = coders/webp.la
 MAGICK_WEBP_SRCS = coders/webp.c
 endif
 
-if HasHEIF
-MAGICK_HEIF_MODULES = coders/heif.la
-MAGICK_HEIF_SRCS = coders/heif.c
-endif
-
 if ENABLE_BROKEN_CODERS
 MAGICK_BROKEN_MODULES = coders/psd.la
 MAGICK_BROKEN_SRCS = coders/psd.c
@@ -76,11 +81,11 @@ MAGICK_CODER_CPPFLAGS = \
 	$(MODULE_EXTRA_CPPFLAGS)
 
 MAGICK_CODER_SRCS = \
-	$(MAGICK_PNG_SRCS) \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \
 	coders/braille.c \
+	$(MAGICK_BROKEN_SRCS) \
 	coders/cals.c \
 	coders/caption.c \
 	coders/cineon.c \
@@ -89,18 +94,26 @@ MAGICK_CODER_SRCS = \
 	coders/dcm.c \
 	coders/dcraw.c \
 	coders/dib.c \
+	$(MAGICK_DPS_SRCS) \
 	coders/dpx.c \
 	coders/fax.c \
 	coders/fits.c \
+	$(MAGICK_FPX_SRCS) \
+	$(MAGICK_GDI32_SRCS) \
 	coders/gif.c \
 	coders/gradient.c \
 	coders/gray.c \
+	$(MAGICK_HEIF_SRCS) \
 	coders/histogram.c \
 	coders/hrz.c \
 	coders/html.c \
 	coders/icon.c \
 	coders/identity.c \
 	coders/info.c \
+	$(MAGICK_JBIG_SRCS) \
+	$(MAGICK_JP2_SRCS) \
+	$(MAGICK_JPEG_SRCS) \
+	$(MAGICK_JXL_SRCS) \
 	coders/label.c \
 	coders/locale.c \
 	coders/logo.c \
@@ -128,6 +141,7 @@ MAGICK_CODER_SRCS = \
 	coders/pict.c \
 	coders/pix.c \
 	coders/plasma.c \
+	$(MAGICK_PNG_SRCS) \
 	coders/pnm.c \
 	coders/preview.c \
 	coders/ps.c \
@@ -144,6 +158,7 @@ MAGICK_CODER_SRCS = \
 	coders/sun.c \
 	coders/svg.c \
 	coders/tga.c \
+	$(MAGICK_TIFF_SRCS) \
 	coders/tile.c \
 	coders/tim.c \
 	coders/topol.c \
@@ -156,24 +171,15 @@ MAGICK_CODER_SRCS = \
 	coders/vid.c \
 	coders/viff.c \
 	coders/wbmp.c \
+	$(MAGICK_WEBP_SRCS) \
 	coders/wmf.c \
 	coders/wpg.c \
+	$(MAGICK_X11_CODER_SRCS) \
 	coders/xbm.c \
 	coders/xc.c \
 	coders/xcf.c \
 	coders/xpm.c \
-	coders/yuv.c \
-	$(MAGICK_BROKEN_SRCS) \
-	$(MAGICK_DPS_SRCS) \
-	$(MAGICK_GDI32_SRCS) \
-	$(MAGICK_FPX_SRCS) \
-	$(MAGICK_JBIG_SRCS) \
-	$(MAGICK_JPEG_SRCS) \
-	$(MAGICK_JP2_SRCS) \
-	$(MAGICK_TIFF_SRCS) \
-	$(MAGICK_X11_CODER_SRCS) \
-	$(MAGICK_WEBP_SRCS) \
-	$(MAGICK_HEIF_SRCS)
+	coders/yuv.c
 
 if WITH_MODULES
 coders_LTLIBRARIES = \
@@ -181,6 +187,7 @@ coders_LTLIBRARIES = \
 	coders/avs.la \
 	coders/bmp.la \
 	coders/braille.la \
+	$(MAGICK_BROKEN_MODULES) \
 	coders/cals.la \
 	coders/caption.la \
 	coders/cineon.la \
@@ -189,18 +196,26 @@ coders_LTLIBRARIES = \
 	coders/dcm.la \
 	coders/dcraw.la \
 	coders/dib.la \
+	$(MAGICK_DPS_MODULES) \
 	coders/dpx.la \
 	coders/fax.la \
 	coders/fits.la \
+	$(MAGICK_FPX_MODULES) \
+	$(MAGICK_GDI32_MODULES) \
 	coders/gif.la \
 	coders/gradient.la \
 	coders/gray.la \
+	$(MAGICK_HEIF_MODULES) \
 	coders/histogram.la \
 	coders/hrz.la \
 	coders/html.la \
 	coders/icon.la \
 	coders/identity.la \
 	coders/info.la \
+	$(MAGICK_JBIG_MODULES) \
+	$(MAGICK_JP2_MODULES) \
+	$(MAGICK_JPEG_MODULES) \
+	$(MAGICK_JXL_MODULES) \
 	coders/label.la \
 	coders/locale.la \
 	coders/logo.la \
@@ -228,6 +243,7 @@ coders_LTLIBRARIES = \
 	coders/pict.la \
 	coders/pix.la \
 	coders/plasma.la \
+	$(MAGICK_PNG_MODULES) \
 	coders/pnm.la \
 	coders/preview.la \
 	coders/ps.la \
@@ -244,6 +260,7 @@ coders_LTLIBRARIES = \
 	coders/sun.la \
 	coders/svg.la \
 	coders/tga.la \
+	$(MAGICK_TIFF_MODULES) \
 	coders/tile.la \
 	coders/tim.la \
 	coders/topol.la \
@@ -256,18 +273,15 @@ coders_LTLIBRARIES = \
 	coders/vid.la \
 	coders/viff.la \
 	coders/wbmp.la \
+	$(MAGICK_WEBP_MODULES) \
 	coders/wmf.la \
 	coders/wpg.la \
+	$(MAGICK_X11_CODER_MODULES) \
 	coders/xbm.la \
 	coders/xc.la \
 	coders/xcf.la \
 	coders/xpm.la \
-	coders/yuv.la \
-	$(MAGICK_BROKEN_MODULES) \
-	$(MAGICK_DPS_MODULES) $(MAGICK_FPX_MODULES) $(MAGICK_GDI32_MODULES) \
-	$(MAGICK_JBIG_MODULES) $(MAGICK_JPEG_MODULES) $(MAGICK_JP2_MODULES) \
-	$(MAGICK_PNG_MODULES) $(MAGICK_TIFF_MODULES) $(MAGICK_X11_CODER_MODULES) \
-	$(MAGICK_WEBP_MODULES) $(MAGICK_HEIF_MODULES)
+	coders/yuv.la
 else
 coders_LTLIBRARIES =
 endif # WITH_MODULES
@@ -410,6 +424,12 @@ coders_gradient_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_gradient_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_gradient_la_LIBADD  = $(LIBMAGICK)
 
+# HEIF coder module
+coders_heif_la_SOURCES     = coders/heif.c
+coders_heif_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
+coders_heif_la_LDFLAGS     = $(MODULECOMMONFLAGS)
+coders_heif_la_LIBADD      = $(LIBMAGICK) $(LIB_HEIF)
+
 # HISTOGRAM coder module
 coders_histogram_la_SOURCES = coders/histogram.c
 coders_histogram_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
@@ -469,6 +489,12 @@ coders_jp2_la_SOURCES      = coders/jp2.c
 coders_jp2_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_jp2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_JPEG) $(LIB_MATH)
+
+# JXL coder module
+coders_jxl_la_SOURCES     = coders/jxl.c
+coders_jxl_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
+coders_jxl_la_LDFLAGS     = $(MODULECOMMONFLAGS)
+coders_jxl_la_LIBADD      = $(LIBMAGICK) $(LIB_JXL)
 
 # LABEL coder module
 coders_label_la_SOURCES    = coders/label.c
@@ -818,6 +844,12 @@ coders_wbmp_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_wbmp_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_wbmp_la_LIBADD      = $(LIBMAGICK)
 
+# WEBP coder module
+coders_webp_la_SOURCES     = coders/webp.c
+coders_webp_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
+coders_webp_la_LDFLAGS     = $(MODULECOMMONFLAGS)
+coders_webp_la_LIBADD      = $(LIBMAGICK) $(LIB_WEBP)
+
 # WMF coder module
 coders_wmf_la_SOURCES      = coders/wmf.c
 coders_wmf_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
@@ -871,15 +903,3 @@ coders_yuv_la_SOURCES      = coders/yuv.c
 coders_yuv_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_yuv_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_yuv_la_LIBADD       = $(LIBMAGICK)
-
-# WEBP coder module
-coders_webp_la_SOURCES     = coders/webp.c
-coders_webp_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
-coders_webp_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_webp_la_LIBADD      = $(LIBMAGICK) $(LIB_WEBP)
-
-# HEIF coder module
-coders_heif_la_SOURCES     = coders/heif.c
-coders_heif_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
-coders_heif_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_heif_la_LIBADD      = $(LIBMAGICK) $(LIB_HEIF)

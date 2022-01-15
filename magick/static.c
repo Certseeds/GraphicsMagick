@@ -114,6 +114,9 @@ static const struct
 #if defined(HasJP2)
   STATICM("JP2",RegisterJP2Image,UnregisterJP2Image),
 #endif
+#if defined(HasJXL)
+  STATICM("JXL",RegisterJXLImage,UnregisterJXLImage),
+#endif
   STATICM("LABEL",RegisterLABELImage,UnregisterLABELImage),
   STATICM("LOCALE",RegisterLOCALEImage,UnregisterLOCALEImage),
   STATICM("LOGO",RegisterLOGOImage,UnregisterLOGOImage),

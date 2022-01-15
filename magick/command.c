@@ -17001,6 +17001,13 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 #endif /* defined(HasGSLIB) */
   PrintFeature("Ghostscript (Library)", supported);
 
+  /* HEIF/HVEC */
+  supported=MagickFalse;
+#if defined(HasHEIF)
+  supported=MagickTrue;
+#endif /* defined(HasHEIF) */
+  PrintFeature("HEIF/HVEC",supported);
+
   /* JBIG */
   supported=MagickFalse;
 #if defined(HasJBIG)
@@ -17021,6 +17028,13 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
   supported=MagickTrue;
 #endif /* defined(HasJPEG) */
   PrintFeature("JPEG", supported);
+
+  /* JPEG XL */
+  supported=MagickFalse;
+#if defined(HasJXL)
+  supported=MagickTrue;
+#endif /* defined(HasJXL) */
+  PrintFeature("JPEG XL", supported);
 
   /* Little CMS */
   supported=MagickFalse;

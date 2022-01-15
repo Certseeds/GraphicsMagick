@@ -740,6 +740,9 @@ HasHEIF_TRUE
 LIB_WEBP
 HasWEBP_FALSE
 HasWEBP_TRUE
+LIB_JXL
+HasJXL_FALSE
+HasJXL_TRUE
 LIB_JBIG
 HasJBIG_FALSE
 HasJBIG_TRUE
@@ -1073,6 +1076,7 @@ with_webp
 with_heif
 with_jpeg
 with_jp2
+with_jxl
 with_lcms2
 with_lzma
 with_png
@@ -1799,6 +1803,7 @@ Optional Packages:
   --without-heif          disable HEIF support
   --without-jpeg          disable JPEG support
   --without-jp2           disable JPEG v2 support
+  --with-jxl              enable JPEG-XL support
   --without-lcms2         disable lcms (v2.X) support
   --without-lzma          disable LZMA support
   --without-png           disable PNG support
@@ -19470,6 +19475,19 @@ if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
 fi
 
+# Disable JXL
+
+# Check whether --with-jxl was given.
+if test "${with_jxl+set}" = set; then :
+  withval=$with_jxl; with_jxl=$withval
+else
+  with_jxl='no'
+fi
+
+if test "$with_jxl" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jxl=$with_jxl "
+fi
+
 # Disable LCMS2.
 
 # Check whether --with-lcms2 was given.
@@ -27065,6 +27083,205 @@ fi
 
 
 #
+# Check for JXL
+#
+have_jxl='no'
+LIB_JXL=''
+if test "$with_jxl" != 'no'
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JXL support " >&5
+$as_echo_n "checking for JXL support ... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+$as_echo "" >&6; }
+    failed=0
+    passed=0
+    ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+    ac_fn_cxx_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
+if test "x$ac_cv_header_jxl_decode_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+    # jxl always requires hwy/brotli no extra test needed
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlDecoderCreate in -ljxl" >&5
+$as_echo_n "checking for JxlDecoderCreate in -ljxl... " >&6; }
+if ${ac_cv_lib_jxl_JxlDecoderCreate+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljxl -lhwy -lbrotlidec -lbrotlienc $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char JxlDecoderCreate ();
+int
+main ()
+{
+return JxlDecoderCreate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_jxl_JxlDecoderCreate=yes
+else
+  ac_cv_lib_jxl_JxlDecoderCreate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_JxlDecoderCreate" >&5
+$as_echo "$ac_cv_lib_jxl_JxlDecoderCreate" >&6; }
+if test "x$ac_cv_lib_jxl_JxlDecoderCreate" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlThreadParallelRunnerCreate in -ljxl_threads" >&5
+$as_echo_n "checking for JxlThreadParallelRunnerCreate in -ljxl_threads... " >&6; }
+if ${ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljxl_threads  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char JxlThreadParallelRunnerCreate ();
+int
+main ()
+{
+return JxlThreadParallelRunnerCreate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate=yes
+else
+  ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" >&5
+$as_echo "$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" >&6; }
+if test "x$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+    # Testing for decoder should also cover encoder
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for BrotliDecoderVersion in -lbrotlidec" >&5
+$as_echo_n "checking for BrotliDecoderVersion in -lbrotlidec... " >&6; }
+if ${ac_cv_lib_brotlidec_BrotliDecoderVersion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lbrotlidec  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char BrotliDecoderVersion ();
+int
+main ()
+{
+return BrotliDecoderVersion ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_brotlidec_BrotliDecoderVersion=yes
+else
+  ac_cv_lib_brotlidec_BrotliDecoderVersion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_brotlidec_BrotliDecoderVersion" >&5
+$as_echo "$ac_cv_lib_brotlidec_BrotliDecoderVersion" >&6; }
+if test "x$ac_cv_lib_brotlidec_BrotliDecoderVersion" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if JXL package is complete" >&5
+$as_echo_n "checking if JXL package is complete... " >&6; }
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+$as_echo "no -- some components failed test" >&6; }
+        have_jxl='no (failed tests)'
+    else
+        # JXL is a C++ Lib so requires linking with stdc++.
+        # TODO: A better solution would be to tell automake to do any linking with
+        # c++, but I can't figure out a way to get this working.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
+        LIBS="$LIB_JXL $LIBS"
+
+$as_echo "#define HasJXL 1" >>confdefs.h
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        have_jxl='yes'
+        PERLMAINCC="$CXX"
+    fi
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    fi
+fi
+ if test "$have_jxl" = 'yes'; then
+  HasJXL_TRUE=
+  HasJXL_FALSE='#'
+else
+  HasJXL_TRUE='#'
+  HasJXL_FALSE=
+fi
+
+
+
+#
 # Check for WEBP
 #
 have_webp='no'
@@ -30174,6 +30391,10 @@ if test "$have_jbig"   = 'yes' ; then
    DELEGATES="$DELEGATES jbig"
    MAGICK_FEATURES="$MAGICK_FEATURES JBIG"
 fi
+if test "$have_jxl"   = 'yes' ; then
+   DELEGATES="$DELEGATES jxl"
+   MAGICK_FEATURES="$MAGICK_FEATURES JXL"
+fi
 if test "$have_webp"   = 'yes' ; then
    DELEGATES="$DELEGATES webp"
    MAGICK_FEATURES="$MAGICK_FEATURES WEBP"
@@ -30303,7 +30524,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 
@@ -30668,6 +30889,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasJBIG_TRUE}" && test -z "${HasJBIG_FALSE}"; then
   as_fn_error $? "conditional \"HasJBIG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HasJXL_TRUE}" && test -z "${HasJXL_FALSE}"; then
+  as_fn_error $? "conditional \"HasJXL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasWEBP_TRUE}" && test -z "${HasWEBP_FALSE}"; then
@@ -33222,6 +33447,7 @@ printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"
 printf "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2\n"
+printf "JPEG-XL           --with-jxl=$with_jxl          \t$have_jxl\n"
 printf "LCMS v2           --with-lcms2=$with_lcms2        \t$have_lcms2\n"
 # printf "MPEG v2           --with-mpeg2=$with_mpeg2    \t$have_mpeg2\n"
 printf "LZMA              --with-lzma=$with_lzma        \t$have_lzma\n"
