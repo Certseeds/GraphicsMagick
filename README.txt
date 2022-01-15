@@ -362,24 +362,42 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires the Zstandard (Zstd) library from
 
-     https://facebook.github.io/zstd/
+    https://facebook.github.io/zstd/
 
-     or
+      or
 
-     https://github.com/facebook/zstd/releases
+    https://github.com/facebook/zstd/releases
 
   to read or write Zstd compressed TIFF images.  In the future it is
   likely that other purposes will be found for Zstd.
 
 * GraphicsMagick may require the deflate library to link with libtiff.
 
-    Libtiff may optionally depend on the libdeflate library (from
-    https://github.com/ebiggers/libdeflate).  Linking with this
-    library may be necessary for builds where libtiff depends on
-    libdeflate.
+  Libtiff may optionally depend on the libdeflate library (from
+  https://github.com/ebiggers/libdeflate).  Linking with this library
+  may be necessary for builds where libtiff depends on libdeflate.
 
 * GraphicsMagick requires the heif library from
 
     https://github.com/strukturag/libheif
 
-    to read heif/heic files.
+    and the libde265 library from
+
+    https://github.com/strukturag/libde265
+
+  to read HEIF/h.265 files. Libheif makes use of libde265 for
+  h.265/HEVC decoding and libx265 for encoding.  GraphicsMagick does
+  not itself provide any h.265/HEVC algoriths and it does not
+  currently support encoding.
+
+  The HEVC codec is covered by a huge number of patents (the MPEG LA
+  HEVC patent list is 164 pages long!).  While GraphicsMagick is
+  unable to grant any patent usage rights to users or offer legal
+  advice, HEVC patents are normally paid for "per device" and so it is
+  possible and even likely that the user's modern "device" is already
+  covered.  For example, users of Windows 10, Apple's OS-X, or popular
+  video cards may already be entitled to use the HEVC codec since the
+  vendor has already paid for it.  Some countries do not support
+  software patents.  The user is responsible for assuring that some
+  entity has paid to allow use of any applicable HEVC patents on their
+  device, or that the patents do not apply in their country.

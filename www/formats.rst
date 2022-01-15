@@ -31,6 +31,7 @@ GraphicsMagick Supported Formats
 .. _Ghostscript : http://pages.cs.wisc.edu/~ghost/
 .. _GIF : http://www.fileformat.info/format/gif/egff.htm
 .. _`Hald CLUT` : http://www.quelsolaar.com/technology/clut.html
+.. _HEIF : https://en.wikipedia.org/wiki/High_Efficiency_Image_File_Format
 .. _JBIG : http://www.jpeg.org/
 .. _JNG : http://www.libmng.com/
 .. _JPEG : http://www.jpeg.org/
@@ -191,6 +192,10 @@ image formats.
    +--------------+------+---------------------------+--------------------------------------------------+
    | GRAYA        | RW   | Raw gray samples + alpha  | Use -size, -depth, and -endian to specify the    |
    |              |      |                           | image width, height, depth, and byte order.      |
+   +--------------+------+---------------------------+--------------------------------------------------+
+   | HEIF_        | R    | High Efficiency Image     | HEIF is a container format supporting multiple   |
+   |              |      | File Format (with         | codecs.  HEIF with h.265/HEVC encoding           |
+   |              |      | h.265/HEVC encoding)      | is supported via libheif and libde265.           |
    +--------------+------+---------------------------+--------------------------------------------------+
    | HPGL         | R    | HP-GL plotter language    | Requires hp2xx_ 3.2.0 or later                   |
    +--------------+------+---------------------------+--------------------------------------------------+
