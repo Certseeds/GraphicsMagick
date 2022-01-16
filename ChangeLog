@@ -1,3 +1,9 @@
+2022-01-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/heif.c (ReadHEIFImage): Take row stride into account when
+        reading pixel rows. Add support for 'ping' mode.  Add header magic
+        detection.  Add module aliases.  Add useful traces.
+
 2022-01-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jxl.c: Added preliminary JPEG XL support written by

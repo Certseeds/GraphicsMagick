@@ -60,6 +60,7 @@ StaticMagic[] =
 {
 #define MAGIC(name,offset,magic) {name,(const unsigned char * const)magic,sizeof(magic)-1,offset}
   MAGIC("WEBP", 8, "WEBP"),
+  MAGIC("AVIF", 4, "ftypavif"),
   /* MAGIC("AVI", 0, "RIFF"), */
   MAGIC("8BIMWTEXT", 0, "8\000B\000I\000M\000#"),
   MAGIC("8BIMTEXT", 0, "8BIM#"),
@@ -90,6 +91,9 @@ StaticMagic[] =
   MAGIC("FITS", 0, "SIMPLE"),
   MAGIC("FPX", 0, "\320\317\021\340"),
   MAGIC("GIF", 0, "GIF8"),
+  MAGIC("HEIC", 4, "ftypheic"),
+  MAGIC("HEIC", 4, "ftypheix"),
+  MAGIC("HEIC", 4, "ftypmif1"),
   MAGIC("HDF", 1, "HDF"),
   MAGIC("HPGL", 0, "IN;"),
   MAGIC("HTML", 1, "HTML"),
