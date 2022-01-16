@@ -1,5 +1,10 @@
 2022-01-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/miff.c (ReadMIFFImage): Do not proceed to next image in
+        sequence unless the character read is the expected 'i' character.
+        Inspired by GraphicsMagick bug #659 "Can not escape $0 in a batch
+        command".
+
         * coders/heif.c (ReadHEIFImage): Take row stride into account when
         reading pixel rows. Add support for 'ping' mode.  Add header magic
         detection.  Add module aliases.  Add useful traces.

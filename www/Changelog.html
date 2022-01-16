@@ -37,9 +37,14 @@
 
 <p>2022-01-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/heif.c (ReadHEIFImage): Take row stride into account when
+<p>* coders/miff.c (ReadMIFFImage): Do not proceed to next image in
+sequence unless the character read is the expected 'i' character.
+Inspired by GraphicsMagick bug #659 &quot;Can not escape $0 in a batch
+command&quot;.</p>
+<p>* coders/heif.c (ReadHEIFImage): Take row stride into account when
 reading pixel rows. Add support for 'ping' mode.  Add header magic
-detection.  Add module aliases.  Add useful traces.</blockquote>
+detection.  Add module aliases.  Add useful traces.</p>
+</blockquote>
 <p>2022-01-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/jxl.c: Added preliminary JPEG XL support written by

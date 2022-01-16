@@ -2007,7 +2007,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
     {
       c=ReadBlobByte(image);
     } while (!isgraph(c) && (c != EOF));
-    if (c != EOF)
+    if (c != EOF && ((c == 'i') || (c == 'I')))
       {
         /*
           Allocate next image structure.
@@ -2025,7 +2025,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         if (status == MagickFail)
           break;
       }
-  } while (c != EOF);
+  } while (c != EOF && ((c == 'i') || (c == 'I')));
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
