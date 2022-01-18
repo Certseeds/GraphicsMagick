@@ -2611,7 +2611,7 @@ then
     passed=0
     AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # heif always requires hwy no extra test needed
-    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lde265])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
     then
@@ -2620,7 +2620,7 @@ then
         AC_MSG_RESULT([no -- some components failed test])
         have_heif='no (failed tests)'
     else
-        LIB_HEIF='-lheif'
+        LIB_HEIF='-lheif -lde265'
         LIBS="$LIB_HEIF $LIBS"
         AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
         AC_MSG_RESULT([yes])
