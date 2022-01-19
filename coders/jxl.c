@@ -417,12 +417,15 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   if (JxlDecoderSetKeepOrientation(jxl, JXL_TRUE) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
-  if (jxl_thread_runner == (void *) NULL)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  if (JxlDecoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
-      != JXL_DEC_SUCCESS)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  if(!image_info->ping)
+    {
+      jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
+      if (jxl_thread_runner == (void *) NULL)
+	ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      if (JxlDecoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
+	  != JXL_DEC_SUCCESS)
+	ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
 
   if (JxlDecoderSubscribeEvents(jxl,
                                 (JxlDecoderStatus)(image_info->ping == MagickTrue
