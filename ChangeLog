@@ -1,3 +1,9 @@
+2022-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/mpc.c: Fix warnings from GCC 11.
+
+        * coders/miff.c: Fix warnings from GCC 11.
+
 2022-01-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c: Adaptations to work with Jasper 3.0.0's

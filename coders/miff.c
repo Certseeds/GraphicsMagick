@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -736,7 +736,7 @@ do { \
   MagickFreeResourceLimitedMemory(values); \
   if (number_of_profiles > 0) \
     { \
-      unsigned int _index; \
+      unsigned long _index; \
       for (_index=0; _index < number_of_profiles; _index++) \
         { \
           MagickFreeMemory(profiles[_index].name); \
@@ -814,7 +814,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
   ProfileInfo
     *profiles=0;
 
-  unsigned int
+  unsigned long
     number_of_profiles=0;
 
   char
@@ -1081,24 +1081,15 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                 if (LocaleCompare(keyword,"color-profile") == 0)
                   {
                     ProfileInfo
-                      *new_profiles;
+                      *new_profiles = (ProfileInfo *) NULL;
 
                     if (MagickAtoL(values) <= 0)
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
-                    i=(long) number_of_profiles;
+                    i=number_of_profiles;
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      (size_t) i+1,sizeof(ProfileInfo));
+                                                                      number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
-                      {
-                        for (i=0; i < number_of_profiles; i++)
-                          {
-                            MagickFreeMemory(profiles[i].name);
-                            MagickFreeResourceLimitedMemory(profiles[i].info);
-                          }
-                        MagickFreeResourceLimitedMemory(profiles);
-                        MagickFreeResourceLimitedMemory(values);
-                        ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-                      }
+                      ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
                     profiles[i].name=AllocateString("icc");
                     profiles[i].length=MagickAtoL(values);
@@ -1278,20 +1269,11 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
 
                     if (MagickAtoL(values) <= 0)
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
-                    i=(long) number_of_profiles;
+                    i=number_of_profiles;
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      (size_t) i+1,sizeof(ProfileInfo));
+                                                                      number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
-                      {
-                        for (i=0; i < number_of_profiles; i++)
-                          {
-                            MagickFreeMemory(profiles[i].name);
-                            MagickFreeResourceLimitedMemory(profiles[i].info);
-                          }
-                        MagickFreeResourceLimitedMemory(profiles);
-                        MagickFreeResourceLimitedMemory(values);
-                        ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-                      }
+                      ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
                     profiles[i].name=AllocateString(keyword+8);
                     profiles[i].length=MagickAtoL(values);
