@@ -543,7 +543,13 @@ static MagickPassFail initialize_jasper(ExceptionInfo *exception)
         /*
           Tell JasPer how much memory it could ever be allowed to use.
         */
-        jas_conf_set_max_mem_usage((size_t) GetMagickResourceLimit(MemoryResource));
+        {
+          size_t max_mem_gm = (size_t) GetMagickResourceLimit(MemoryResource);
+          size_t max_mem_jas = jas_get_total_mem_size();
+          if (max_mem_jas == 0)
+            max_mem_jas=max_mem_gm;
+          jas_conf_set_max_mem_usage(Min(max_mem_jas,max_mem_gm));
+        }
 
         /*
           Inform JasPer that app may be multi-threaded
@@ -554,6 +560,7 @@ static MagickPassFail initialize_jasper(ExceptionInfo *exception)
         if (jas_init_library() == 0)
           {
             jasper_initialized=MagickTrue;
+            /* jas_set_debug_level(110); */
           }
         else
           {
@@ -982,6 +989,10 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     {
       (void) jas_stream_close(jp2_stream);
       jas_image_destroy(jp2_image);
+#if HAVE_JAS_INIT_LIBRARY
+      /* Perform any per-thread clean-up for the JasPer library. */
+      JAS_CLEANUP_THREAD();
+#endif /* if HAVE_JAS_INIT_LIBRARY */
       return(image);
     }
 

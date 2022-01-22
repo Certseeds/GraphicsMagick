@@ -38,7 +38,9 @@
 <p>2022-01-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/jp2.c: Adaptations to work with Jasper 3.0.0's
-jas_init_library() and other related functions.</blockquote>
+jas_init_library() and other related functions.  Add missing
+jas_cleanup_thread().  Do not request a higher memory limit than
+JasPer's own limit in order to avoid a warning.</blockquote>
 <p>2022-01-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/miff.c (ReadMIFFImage): Do not proceed to next image in
