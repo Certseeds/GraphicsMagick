@@ -38,6 +38,9 @@ fi
 if test -z "$MAGICK_LIMIT_DISK" ; then
     export MAGICK_LIMIT_DISK=0
 fi
+#if test -z "$MAGICK_LIMIT_READ" ; then
+#    export MAGICK_LIMIT_READ=800000
+#fi
 # Enable debug traces for exceptions
 if test -z "MAGICK_DEBUG" ; then
     export MAGICK_DEBUG=exception

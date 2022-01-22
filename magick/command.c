@@ -2398,7 +2398,7 @@ CompareImageCommand(ImageInfo *image_info,
               }
             break;
           }
-        ThrowCompareException(OptionError,UnrecognizedOption,option)
+        ThrowCompareException(OptionError,UnrecognizedOption,option);
       }
       case 'c':
       {
@@ -2418,7 +2418,23 @@ CompareImageCommand(ImageInfo *image_info,
               }
             break;
           }
-        ThrowCompareException(OptionError,UnrecognizedOption,option)
+        if (LocaleCompare("compress",option+1) == 0)
+          {
+            image_info->compression=NoCompression;
+            if (*option == '-')
+              {
+                i++;
+                if (i == argc)
+                  ThrowCompareException(OptionError,MissingArgument,option);
+                option=argv[i];
+                image_info->compression=StringToCompressionType(option);
+                if (image_info->compression == UndefinedCompression)
+                  ThrowCompareException(OptionError,UnrecognizedImageCompression,
+                    option);
+              }
+            break;
+          }
+        ThrowCompareException(OptionError,UnrecognizedOption,option);
       }
       case 'd':
       {
@@ -2913,6 +2929,7 @@ static void CompareUsage(void)
   (void) puts("Where options include:");
   (void) puts("  -authenticate value  decrypt image with this password");
   (void) puts("  -colorspace type     alternate image colorspace");
+  (void) puts("  -compress type       image compression type");
   (void) puts("  -debug events        display copious debugging information");
   (void) puts("  -define values       coder/decoder specific options");
   (void) puts("  -density geometry    horizontal and vertical density of the image");

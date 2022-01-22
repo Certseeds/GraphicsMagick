@@ -1,5 +1,11 @@
 2022-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * utilities/tests: Write compressed MIFF files to reduce disk
+        space usage.
+
+        * magick/command.c (CompareImageCommand): Support '-compress'
+        option.
+
         * coders/mpc.c: Fix warnings from GCC 11.
 
         * coders/miff.c: Fix warnings from GCC 11.

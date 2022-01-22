@@ -870,7 +870,7 @@ space, then the change-image pixel intensities are used.
 
 <!-- ------------ -compress ----------------------------------------- -->
 
-<utils apps=composite,convert,display,mogrify,montage>
+<utils apps=composite,compare,convert,display,mogrify,montage>
 <dopt>-compress <type></opt>
 
 <abs>the type of image compression</abs>
