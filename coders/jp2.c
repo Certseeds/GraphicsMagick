@@ -704,7 +704,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    ThrowJP2ReaderException(FileOpenError,UnableToOpenFile,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Requested format is \"%s\"",
@@ -729,14 +729,13 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     /* Read header */
     if ((magick_length=ReadBlob(image,sizeof(magick),magick)) != sizeof(magick))
       {
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
-                             image);
+        ThrowJP2ReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
 
     /* Restore seek position */
     if (SeekBlob(image,pos,SEEK_SET) != pos)
       {
-        ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+        ThrowJP2ReaderException(BlobError,UnableToSeekToOffset,image);
       }
 
     /* Inspect header to see what it might actually be */
@@ -755,7 +754,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       {
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Not a \"%s\" file!", image_info->magick);
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        ThrowJP2ReaderException(CorruptImageError,ImproperImageHeader,image);
       }
 
     /*
@@ -765,7 +764,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       {
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Header is not a supported type for this coder");
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        ThrowJP2ReaderException(CorruptImageError,ImproperImageHeader,image);
       }
 
     /*
@@ -775,7 +774,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
          (const MagickInfo *) NULL) ||
         (magick_info->decoder == (DecoderHandler) NULL))
       {
-        ThrowReaderException(DelegateError,UnableToDecodeImageFile,image);
+        ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
       }
   }
 
@@ -784,7 +783,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   */
   jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
-    ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
+    ThrowJP2ReaderException(DelegateError,UnableToManageJP2Stream,image);
 
   /*
     Support passing Jasper options.

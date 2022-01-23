@@ -1,3 +1,10 @@
+2022-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c (ReadJP2Image): Always use
+        ThrowJP2ReaderException().  Should address oss-fuzz Issue 43979:
+        "graphicsmagick:enhance_fuzzer: ASSERT: jas_get_ctx() ==
+        jas_global.ctx".
+
 2022-01-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * utilities/tests: Write compressed MIFF files to reduce disk

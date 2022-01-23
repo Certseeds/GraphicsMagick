@@ -35,8 +35,18 @@
 <div class="document">
 
 
+<p>2022-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/jp2.c (ReadJP2Image): Always use
+ThrowJP2ReaderException().  Should address oss-fuzz Issue 43979:
+&quot;graphicsmagick:enhance_fuzzer: ASSERT: jas_get_ctx() ==
+jas_global.ctx&quot;.</blockquote>
 <p>2022-01-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* utilities/tests: Write compressed MIFF files to reduce disk
+space usage.</p>
+<p>* magick/command.c (CompareImageCommand): Support '-compress'
+option.</p>
 <p>* coders/mpc.c: Fix warnings from GCC 11.</p>
 <p>* coders/miff.c: Fix warnings from GCC 11.</p>
 </blockquote>
