@@ -140,7 +140,8 @@ static inline OrientationType convert_orientation(JxlOrientation orientation)
         return MagickFail; \
     } \
 
-static MagickBool fill_pixels_char(Image *image, ExceptionInfo *exception,
+static MagickBool fill_pixels_char(Image *image,
+                                   ExceptionInfo *exception,
                                    unsigned char *p)
 {
   long
@@ -153,19 +154,55 @@ static MagickBool fill_pixels_char(Image *image, ExceptionInfo *exception,
   if (image->matte) {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,ScaleCharToQuantum(*p++));
-        SetGreenSample(q,ScaleCharToQuantum(*p++));
-        SetBlueSample(q,ScaleCharToQuantum(*p++));
-        SetOpacitySample(q,MaxRGB-ScaleCharToQuantum(*p++));
+        SetRedSample(q,ScaleCharToQuantum(*p)); p++;
+        SetGreenSample(q,ScaleCharToQuantum(*p)); p++;
+        SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
+        SetOpacitySample(q,MaxRGB-ScaleCharToQuantum(*p)); p++;
         q++;
       }
     END_FOR_PIXEL_PACKETS
       } else {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,ScaleCharToQuantum(*p++));
-        SetGreenSample(q,ScaleCharToQuantum(*p++));
-        SetBlueSample(q,ScaleCharToQuantum(*p++));
+        SetRedSample(q,ScaleCharToQuantum(*p)); p++;
+        SetGreenSample(q,ScaleCharToQuantum(*p)); p++;
+        SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
+        SetOpacitySample(q,OpaqueOpacity);
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      }
+
+  return MagickTrue;
+}
+
+static MagickBool fill_pixels_float(Image *image,
+                                    ExceptionInfo *exception,
+                                    float *p)
+{
+  long
+    x,
+    y;
+
+  PixelPacket
+    *q;
+
+  if (image->matte) {
+    FOR_PIXEL_PACKETS
+      {
+        SetRedSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        SetGreenSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        SetBlueSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      } else {
+    FOR_PIXEL_PACKETS
+      {
+        SetRedSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        SetGreenSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        SetBlueSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
         SetOpacitySample(q,OpaqueOpacity);
         q++;
       }
@@ -213,29 +250,23 @@ static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *except
   return MagickTrue;
 }
 
-
-
-/** The JXL API is not quite clear on how they return JXL_TYPE_FLOAT.
- *  While the encode clearly states that JXL_TYPE_FLOAT is linear SRGB
- *  And JXL_TYPE_UNIT8 is non-linear its not that clear for decode.
- *  However it looks like it's implicit in at least some Situation
- *  that the same rule applys to decode.
- *  Therefore convert all linear values to internal non-linear SRGB
- *  for the Quantums.
+/** Convert any linear RGB to SRGB
  *  Formula from wikipedia:
  *      https://en.wikipedia.org/wiki/SRGB
  */
-static float linear2nonlinear(float p)
+static Quantum linear2nonlinear(float p)
 {
   if (p < 0.0031308) {
-    return p * 12.92;
+    p=p * 12.92;
   } else {
-    return 1.055 * powf(p, 1.0/2.4) - 0.055;
+    p=1.055 * powf(p, 1.0/2.4) - 0.055;
   }
+  return RoundFloatToQuantum(p * MaxRGBFloat);
 }
 
-static MagickBool fill_pixels_float(Image *image, ExceptionInfo *exception,
-                                    float *p)
+static MagickBool fill_pixels_float_linear(Image *image,
+                                           ExceptionInfo *exception,
+                                           float *p)
 {
   long
     x,
@@ -247,19 +278,66 @@ static MagickBool fill_pixels_float(Image *image, ExceptionInfo *exception,
   if (image->matte) {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
-        SetGreenSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
-        SetBlueSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
-        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetRedSample(q,linear2nonlinear(*p++));
+        SetGreenSample(q,linear2nonlinear(*p++));
+        SetBlueSample(q,linear2nonlinear(*p++));
+        SetOpacitySample(q,MaxRGB-linear2nonlinear(*p++));
         q++;
       }
     END_FOR_PIXEL_PACKETS
       } else {
     FOR_PIXEL_PACKETS
       {
-        SetRedSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
-        SetGreenSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
-        SetBlueSample(q,RoundFloatToQuantum(linear2nonlinear(*p++)));
+        SetRedSample(q,linear2nonlinear(*p++));
+        SetGreenSample(q,linear2nonlinear(*p++));
+        SetBlueSample(q,linear2nonlinear(*p++));
+        SetOpacitySample(q,OpaqueOpacity);
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      }
+
+  return MagickTrue;
+}
+
+static Quantum linear2nonlinear_char(unsigned char c)
+{
+  float p = c * (1.0f/256.0f);
+  if (p < 0.0031308) {
+    p=p * 12.92;
+  } else {
+    p=1.055 * powf(p, 1.0/2.4) - 0.055;
+  }
+  return RoundFloatToQuantum(p * MaxRGBFloat);
+}
+
+static MagickBool fill_pixels_char_linear(Image *image,
+                                          ExceptionInfo *exception,
+                                          unsigned char *p)
+{
+  long
+    x,
+    y;
+
+  PixelPacket
+    *q;
+
+  if (image->matte) {
+    FOR_PIXEL_PACKETS
+      {
+        SetRedSample(q,linear2nonlinear_char(*p++));
+        SetGreenSample(q,linear2nonlinear_char(*p++));
+        SetBlueSample(q,linear2nonlinear_char(*p++));
+        SetOpacitySample(q,MaxRGB-linear2nonlinear_char(*p++));
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      } else {
+    FOR_PIXEL_PACKETS
+      {
+        SetRedSample(q,linear2nonlinear_char(*p++));
+        SetGreenSample(q,linear2nonlinear_char(*p++));
+        SetBlueSample(q,linear2nonlinear_char(*p++));
         SetOpacitySample(q,OpaqueOpacity);
         q++;
       }
@@ -313,6 +391,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   MagickBool
     grayscale = MagickFalse;
 
+  MagickBool
+    isLinear = MagickFalse;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -340,12 +421,15 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   if (JxlDecoderSetKeepOrientation(jxl, JXL_TRUE) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
-  if (jxl_thread_runner == (void *) NULL)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  if (JxlDecoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
-      != JXL_DEC_SUCCESS)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  if(!image_info->ping)
+    {
+      jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
+      if (jxl_thread_runner == (void *) NULL)
+        ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      if (JxlDecoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
+          != JXL_DEC_SUCCESS)
+        ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
 
   if (JxlDecoderSubscribeEvents(jxl,
                                 (JxlDecoderStatus)(image_info->ping == MagickTrue
@@ -398,50 +482,121 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
             image->orientation=convert_orientation(basic_info.orientation);
 
+            if (basic_info.num_color_channels == 1 && image->depth == 8)
+              {
+                if (!AllocateImageColormap(image,1 << image->depth))
+                  ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                grayscale=MagickTrue;
+                format.num_channels=1;
+                format.data_type=JXL_TYPE_UINT8;
+              }
+            else if (basic_info.num_color_channels != 3)
+              {
+                ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+              }
+            else
+              {
+                /* use encoder suggested pixel format if possible */
+                if ((JxlDecoderDefaultPixelFormat(jxl, &format) != JXL_DEC_SUCCESS)
+                    || (format.data_type != JXL_TYPE_FLOAT && JXL_TYPE_FLOAT != JXL_TYPE_UINT8))
+                  {
+                    format.data_type=(image->depth > 8) ? JXL_TYPE_FLOAT : JXL_TYPE_UINT8;
+                  }
+                format.endianness=JXL_NATIVE_ENDIAN;
+                format.num_channels=image->matte ? 4 : 3;
+                format.align=0;
+              }
 
-            if (basic_info.num_color_channels == 1 && image->depth == 8) {
-              if (!AllocateImageColormap(image,1 << image->depth))
-                ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-              grayscale = MagickTrue;
-              format.num_channels=1;
-            } else if (basic_info.num_color_channels != 3) {
-              ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
-            } else
-              format.num_channels=image->matte ? 4 : 3;
-
-            format.endianness = JXL_NATIVE_ENDIAN;
-            format.data_type=(image->depth > 8) ? JXL_TYPE_FLOAT : JXL_TYPE_UINT8;
             break;
           }
 
         case JXL_DEC_COLOR_ENCODING:
           {
-            /* check the colorspace that will be used for output buffer*/
+            /* check the colorspace that will be used for output buffer
+             *
+             * The JXL API does return the pixels in their original colorspace
+             * which has a large number of possibilities with profiles etc.
+             *
+             * We need to try to convert this to the internel SRGB Colorspace
+             * as best as possibly. Better to read a image somewhat bogus then
+             * to error out.
+             *
+             * Handling is inspired by the JXL lib example for the GIMP-Plugin.
+             */
             JxlColorEncoding
               color_encoding;
 
             status=JxlDecoderGetColorAsEncodedProfile(jxl,&format,
                                                       JXL_COLOR_PROFILE_TARGET_DATA,&color_encoding);
             if (status == JXL_DEC_ERROR)
-              /* The lib can't give us an exact color profile so just use the
-                 image-pixels more or less plain hoping that the default will match. */
-              status = JXL_DEC_SUCCESS;
+              {
+                status=JXL_DEC_SUCCESS;
+                if (image->logging)
+                  {
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "[%s] failed to get ColorEncoding assuming SRGB",
+                                          image->filename);
+                  }
+              }
             else if (status == JXL_DEC_SUCCESS)
               {
-                if (color_encoding.color_space != JXL_COLOR_SPACE_RGB && color_encoding.color_space != JXL_COLOR_SPACE_GRAY)
-                  /* are other values even relevant? */
-                  ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
-                if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_LINEAR
-                    && format.data_type == JXL_TYPE_FLOAT) {
-                  /* expected combination: Linear SRGB, will be converted */
-                } else if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_SRGB
-                           && format.data_type == JXL_TYPE_UINT8) {
-                  /* expected combination: SRGB */
-                } else
-                  /* are the other possible values/combinations even relevant? */
-                  ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
-              }
+                switch (color_encoding.transfer_function) {
+                case JXL_TRANSFER_FUNCTION_LINEAR:
+                  isLinear=MagickTrue;
+                  break;
 
+                case JXL_TRANSFER_FUNCTION_709:
+                case JXL_TRANSFER_FUNCTION_PQ:
+                case JXL_TRANSFER_FUNCTION_HLG:
+                case JXL_TRANSFER_FUNCTION_GAMMA:
+                case JXL_TRANSFER_FUNCTION_DCI:
+                case JXL_TRANSFER_FUNCTION_SRGB:
+                  isLinear=MagickFalse;
+                  break;
+
+                case JXL_TRANSFER_FUNCTION_UNKNOWN:
+                default:
+                  ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+                }
+
+                switch (color_encoding.color_space) {
+                case JXL_COLOR_SPACE_RGB:
+                  if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
+                      color_encoding.primaries == JXL_PRIMARIES_SRGB)
+                    {
+                      /* ok */
+                    }
+                  else if(!isLinear &&
+                          color_encoding.white_point == JXL_WHITE_POINT_D65 &&
+                          (color_encoding.primaries_green_xy[0] == 0.2100 ||
+                           color_encoding.primaries_green_xy[1] == 0.7100))
+                    {
+                      /* Probably Adobe RGB */
+                      ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+                    }
+                  else if (image->logging)
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "[%s] Unknown colorspace assume SRGB",
+                                            image->filename);
+                    }
+                  break;
+                case JXL_COLOR_SPACE_GRAY:
+                  if(!grayscale || isLinear)
+                    ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+                  break;
+                case JXL_COLOR_SPACE_XYB:
+                case JXL_COLOR_SPACE_UNKNOWN:
+                default:
+                  if (image->logging)
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "[%s] Unsupported/Unknown colorspace treat as SRGB",
+                                            image->filename);
+                    }
+                  break;
+                }
+              }
             /*TODO: get ICC-profile and keep as metadata?*/
             break;
           }
@@ -454,7 +609,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             if (status != JXL_DEC_SUCCESS)
               break;
 
-            out_buf=MagickAllocateResourceLimitedArray(unsigned char *,out_len,sizeof(*in_buf));
+            out_buf=MagickAllocateResourceLimitedArray(unsigned char *,out_len,sizeof(*out_buf));
             if (out_buf == (unsigned char *) NULL)
               ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -463,20 +618,32 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
           }
         case JXL_DEC_FULL_IMAGE:
           { /* got image */
+            MagickBool
+              res=MagickFail;
+
             assert(out_buf != (unsigned char *)NULL);
-            if (!grayscale && format.data_type == JXL_TYPE_UINT8) {
-              if (fill_pixels_char(image, exception, out_buf) == MagickFail) {
-                status = JXL_DEC_ERROR;
+            if (!grayscale)
+              {
+                if (format.data_type == JXL_TYPE_UINT8)
+                  {
+                    if (isLinear)
+                      res=fill_pixels_char_linear(image, exception, out_buf);
+                    else
+                      res=fill_pixels_char(image, exception, out_buf);
+                  }
+                else
+                  {
+                    if (isLinear)
+                      res=fill_pixels_float_linear(image, exception, (float*)out_buf);
+                    else
+                      res=fill_pixels_float(image, exception, (float*)out_buf);
+                  }
               }
-            } else if (!grayscale) {
-              if (fill_pixels_float(image, exception, (float*)out_buf) == MagickFail) {
-                status = JXL_DEC_ERROR;
-              }
-            } else if (grayscale) {
-              if (fill_pixels_char_grayscale(image, exception, out_buf) == MagickFail) {
-                status = JXL_DEC_ERROR;
-              }
-            }
+            else if (format.data_type == JXL_TYPE_UINT8)
+              res=fill_pixels_char_grayscale(image, exception, out_buf);
+
+            if (!res)
+              status=JXL_DEC_ERROR;
             break;
           }
         default:
@@ -575,7 +742,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   MagickBool
     grayscale = MagickFalse;
 
-  JxlPixelFormat
+ JxlPixelFormat
     format;
 
   JxlColorEncoding
@@ -642,7 +809,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
   if ((jxl_status = JxlEncoderSetBasicInfo(jxl,&basic_info)) != JXL_ENC_SUCCESS)
     {
-      // TODO better error codes
+      /* TODO better error codes */
       if (jxl_status == JXL_ENC_ERROR)
         ThrowJXLWriterException(CoderError,NoDataReturned,image)
       else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
@@ -651,7 +818,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
         ThrowJXLWriterException(CoderFatalError,Default,image)
     }
 
-  // Set expected input colorspace
+  /* Set expected input colorspace */
   basic_info.uses_original_profile = JXL_TRUE;
   JxlColorEncodingSetToSRGB(&color_encoding, /*is_gray=*/format.num_channels < 3);
   if (JxlEncoderSetColorEncoding(jxl, &color_encoding) != JXL_ENC_SUCCESS)
@@ -694,7 +861,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   /* real encode */
   if (JxlEncoderAddImageFrame(encoder_options,&format,in_buf,
     image->rows * size_row) != JXL_ENC_SUCCESS)
-    // TODO Better Error-code?
+    /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
 
   out_buf=MagickAllocateResourceLimitedArray(unsigned char *,MaxBufferExtent,sizeof(*out_buf));
@@ -717,7 +884,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlob(image,MaxBufferExtent-count,out_buf);
     }
   if (jxl_status != JXL_ENC_SUCCESS)
-    // TODO Better Error-code?
+    /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
 
   CloseBlob(image);

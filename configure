@@ -27453,7 +27453,7 @@ if ${ac_cv_lib_heif_heif_context_alloc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lheif  $LIBS"
+LIBS="-lheif -lde265 $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27499,7 +27499,7 @@ $as_echo_n "checking if HEIF package is complete... " >&6; }
 $as_echo "no -- some components failed test" >&6; }
         have_heif='no (failed tests)'
     else
-        LIB_HEIF='-lheif'
+        LIB_HEIF='-lheif -lde265'
         LIBS="$LIB_HEIF $LIBS"
 
 $as_echo "#define HasHEIF 1" >>confdefs.h
