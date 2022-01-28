@@ -17019,11 +17019,12 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
   PrintFeature("Ghostscript (Library)", supported);
 
   /* HEIF/HVEC */
+  /* FIXME: libheif also supports AVIF "HEIF/AVI" */
   supported=MagickFalse;
 #if defined(HasHEIF)
   supported=MagickTrue;
 #endif /* defined(HasHEIF) */
-  PrintFeature("HEIF/HVEC",supported);
+  PrintFeature("HEIF/HVEC (\"HEIC\")",supported);
 
   /* JBIG */
   supported=MagickFalse;
