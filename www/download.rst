@@ -47,18 +47,25 @@ https://gnupg.org/download/.  The installed program on your system
 might be named 'gpg', 'gpg2', or 'gpg1'.
 
 The signing key used (currently DSA key id
-EBDFDB21B020EE8FD151A88DE301047DE1198975) may be extracted from
-http://www.graphicsmagick.org/security.html.  If using this
-approach (rather than a key server) to obtain the key, then copy the
-entire block of text including the all of the "BEGIN" and "END" lines
-to a file (e.g. `gm-sigs.asc`) and import it into your collection of
-keys.  For example::
+EBDFDB21B020EE8FD151A88DE301047DE1198975) may be downloaded from a
+public key server like::
+
+  gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
+
+or it may be extracted from
+http://www.graphicsmagick.org/security.html.
+
+If extracting the key from the web page, (rather than using a key
+server) to obtain the key, then copy the entire block of text
+including the all of the "BEGIN" and "END" lines to a file
+(e.g. `gm-sigs.asc`) and import it into your collection of keys.  For
+example::
 
   gpg --import gm-sigs.asc
 
-After this, you can easily verify any GraphicsMagick distribution file
-with an associated ".sig" file (requires downloading two files) by
-doing this::
+After importing the key, you can easily verify any GraphicsMagick
+distribution file with an associated ".sig" file (requires downloading
+two files) by doing this::
 
   gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
 

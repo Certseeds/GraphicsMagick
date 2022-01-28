@@ -1,3 +1,8 @@
+2022-01-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * www/download.rst: Document how to retrieve the PGP signing key
+        from a key server.
+
 2022-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (ReadJP2Image): Always use

@@ -77,18 +77,24 @@ operating system (often already installed), or may be downloaded from
 <a class="reference external" href="https://gnupg.org/download/">https://gnupg.org/download/</a>.  The installed program on your system
 might be named 'gpg', 'gpg2', or 'gpg1'.</p>
 <p>The signing key used (currently DSA key id
-EBDFDB21B020EE8FD151A88DE301047DE1198975) may be extracted from
-<a class="reference external" href="http://www.graphicsmagick.org/security.html">http://www.graphicsmagick.org/security.html</a>.  If using this
-approach (rather than a key server) to obtain the key, then copy the
-entire block of text including the all of the &quot;BEGIN&quot; and &quot;END&quot; lines
-to a file (e.g. <cite>gm-sigs.asc</cite>) and import it into your collection of
-keys.  For example:</p>
+EBDFDB21B020EE8FD151A88DE301047DE1198975) may be downloaded from a
+public key server like:</p>
+<pre class="literal-block">
+gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
+</pre>
+<p>or it may be extracted from
+<a class="reference external" href="http://www.graphicsmagick.org/security.html">http://www.graphicsmagick.org/security.html</a>.</p>
+<p>If extracting the key from the web page, (rather than using a key
+server) to obtain the key, then copy the entire block of text
+including the all of the &quot;BEGIN&quot; and &quot;END&quot; lines to a file
+(e.g. <cite>gm-sigs.asc</cite>) and import it into your collection of keys.  For
+example:</p>
 <pre class="literal-block">
 gpg --import gm-sigs.asc
 </pre>
-<p>After this, you can easily verify any GraphicsMagick distribution file
-with an associated &quot;.sig&quot; file (requires downloading two files) by
-doing this:</p>
+<p>After importing the key, you can easily verify any GraphicsMagick
+distribution file with an associated &quot;.sig&quot; file (requires downloading
+two files) by doing this:</p>
 <pre class="literal-block">
 gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
 </pre>
