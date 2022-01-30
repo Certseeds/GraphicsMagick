@@ -2241,6 +2241,8 @@ then
     passed=0
     AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_LIB([jasper],[jas_stream_fopen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_strtofmt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_decode],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
     AC_MSG_CHECKING([if JPEG version 2 support package is complete])
     if test $passed -gt 0
     then
@@ -2254,7 +2256,7 @@ then
         AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
         AC_MSG_RESULT([yes])
         have_jp2='yes'
-        AC_CHECK_FUNCS([jas_init_library jp2_decode jpc_decode pgx_decode])
+        AC_CHECK_FUNCS([jas_init_library])
     fi
     else
     AC_MSG_RESULT([no])

@@ -834,46 +834,43 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
                           "JP2 options = \"%s\"", options);
   }
 
-  /* JP2, JPC, PGX (J2C is an alias for JPC) */
-#if HAVE_JP2_DECODE
-  /* JPEG-2000 JP2 File Format Syntax */
-  if (jp2_hdr)
-    {
-      /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding JP2...");
-      jp2_image=jp2_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_JP2_DECODE */
-#if HAVE_JPC_DECODE
-  /* JPEG-2000 Code Stream Syntax */
-  if (jpc_hdr)
-    {
-      /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding JPC...");
-      jp2_image=jpc_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_JPC_DECODE */
-#if HAVE_PGX_DECODE
-  /* JPEG-2000 VM Format */
-  if (pgx_hdr)
-    {
-      /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding PGX...");
-      jp2_image=pgx_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_PGX_DECODE */
+  /*
+    Decode
+  */
+  {
+    int
+      jas_fmt = -1;
+
+    const char *
+      jas_fmt_str = NULL;
+
+    if (jp2_hdr)
+      jas_fmt_str = "jp2";
+    else if (jpc_hdr)
+      jas_fmt_str = "jpc";
+    else if (pgx_hdr)
+      jas_fmt_str = "pgx";
+
+    if (jas_fmt_str != (const char *) NULL)
+      {
+        jas_fmt = jas_image_strtofmt(jas_fmt_str);
+        if (-1 != jas_fmt)
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Decoding %s...", jas_fmt_str);
+            jp2_image=jas_image_decode(jp2_stream,jas_fmt,options);
+          }
+        else
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JasPer does not support format %s!",
+                                  jas_fmt_str);
+          }
+      }
+  }
 
   MagickFreeMemory(options);
 
-  /*
-    Using jas_image_decode() makes us subject to Jasper's own format
-    determination, which may include file formats we don't want to
-    support via Jasper.
-  */
-  /* jp2_image=jas_image_decode(jp2_stream,-1,options); */
   if (jp2_image == (jas_image_t *) NULL)
     ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
 
@@ -1195,7 +1192,7 @@ ModuleExport void RegisterJP2Image(void)
   (void) strlcpy(version,"JasPer ",sizeof(version));
   (void) strlcat(version,jas_getversion(),sizeof(version));
 
-#if HAVE_JPC_DECODE
+#if !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC)
   entry=SetMagickInfo("J2C");
   entry->description="JPEG-2000 Code Stream Syntax";
   entry->version=version;
@@ -1208,9 +1205,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_JPC_DECODE */
+#endif /* !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC) */
 
-#if HAVE_JP2_DECODE
+#if !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC)
   entry=SetMagickInfo("JP2");
   entry->description="JPEG-2000 JP2 File Format Syntax";
   entry->version=version;
@@ -1223,9 +1220,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* HAVE_JP2_DECODE */
+#endif /* !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC) */
 
-#if HAVE_JPC_DECODE
+#if !defined(EXCLUDE_JPC_SUPPORT) || defined(JAS_ENABLE_JPC_CODEC)
   entry=SetMagickInfo("JPC");
   entry->description="JPEG-2000 Code Stream Syntax";
   entry->version=version;
@@ -1238,9 +1235,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_JPC_DECODE */
+#endif /* !defined(EXCLUDE_JPC_SUPPORT) || defined(JAS_ENABLE_JPC_CODEC) */
 
-#if HAVE_PGX_DECODE
+#if !defined(EXCLUDE_PGX_SUPPORT) || defined(JAS_ENABLE_PGX_CODEC)
   entry=SetMagickInfo("PGX");
   entry->description="JPEG-2000 VM Format";
   entry->version=version;
@@ -1253,7 +1250,8 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_PGX_DECODE */
+#endif /* !defined(EXCLUDE_PGX_SUPPORT) || defined(JAS_ENABLE_PGX_CODEC) */
+
 #endif /* if defined(HasJP2) */
 }
 

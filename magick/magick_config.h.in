@@ -149,12 +149,6 @@
 /* Define to 1 if you have the `jas_init_library' function. */
 #undef HAVE_JAS_INIT_LIBRARY
 
-/* Define to 1 if you have the `jp2_decode' function. */
-#undef HAVE_JP2_DECODE
-
-/* Define to 1 if you have the `jpc_decode' function. */
-#undef HAVE_JPC_DECODE
-
 /* Define if you have the <lcms2.h> header file. */
 #undef HAVE_LCMS2_H
 
@@ -210,9 +204,6 @@
 
 /* Define to 1 if you have the `pclose' function. */
 #undef HAVE_PCLOSE
-
-/* Define to 1 if you have the `pgx_decode' function. */
-#undef HAVE_PGX_DECODE
 
 /* Define to 1 if you have the `poll' function. */
 #undef HAVE_POLL
