@@ -1,3 +1,9 @@
+2022-02-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/fx.c (ColorizeImagePixelsCB): Apply clipping and rounding
+        to handle out of range values and provide the most accurate
+        result.  Addresses SourceForge bug #662 "Broken -colorize".
+
 2022-01-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jp2.c (ReadJP2Image): Jasper 3.0.0 hid the functions we
