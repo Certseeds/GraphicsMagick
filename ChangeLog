@@ -1,3 +1,8 @@
+2022-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jp2.c: Fix compilation with JasPer 3.0.0 (which is now
+        released).
+
 2022-02-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/fx.c (ColorizeImagePixelsCB): Apply clipping and rounding

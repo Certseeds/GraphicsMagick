@@ -332,17 +332,17 @@ typedef struct _StreamManager
   int (*write_)(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
 
   In Jasper 3.0.0 the interface changed again:
-  jas_ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt);
-  jas_ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt);
+  ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt);
+  ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt);
 
   We have yet to find a useful way to determine the version of the
   JasPer library using the C pre-processor.
  */
 
 /* Read characters from a file object. */
-/* jas_ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt); */
+/* ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt); */
 #if defined(HAVE_JAS_STREAM_IO_V3)
-static jas_ssize_t BlobRead(jas_stream_obj_t *obj, char *buf, size_t cnt)
+static ssize_t BlobRead(jas_stream_obj_t *obj, char *buf, size_t cnt)
 #else
 static int BlobRead(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 #endif
@@ -358,9 +358,9 @@ static int BlobRead(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 }
 
 /* Write characters to a file object. */
-/* jas_ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt); */
+/* ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt); */
 #if defined(HAVE_JAS_STREAM_IO_V3)
-static jas_ssize_t  BlobWrite(jas_stream_obj_t *obj, const char *buf, size_t cnt)
+static ssize_t  BlobWrite(jas_stream_obj_t *obj, const char *buf, size_t cnt)
 #else
 static int BlobWrite(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
 #endif
