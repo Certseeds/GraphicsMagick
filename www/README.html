@@ -251,15 +251,9 @@ is not compatible with standard lossless JPEG!).</p>
 unfortunately it does not yet support both at once.</p>
 </li>
 <li><p class="first">GraphicsMagick requires the JasPer Project's JasPer library from
-<a class="reference external" href="https://jasper-software.github.io/jasper/">https://jasper-software.github.io/jasper/</a> (although older versions
-back to 1.701.0 are still available via http from the original web
-site at <a class="reference external" href="http://www.ece.uvic.ca/~mdadams/jasper/">http://www.ece.uvic.ca/~mdadams/jasper/</a>) to read and write
-the JPEG-2000 format.  Due to security concerns, using the latest
-version of JasPer is recommended.</p>
-<p>Please note that JasPer 1.900.1 may have a problem when used with
-GraphicsMagick's modules build. To solve this problem, edit the file
-src/libjasper/base/jas_init.c and comment out the line which invokes
-atexit().</p>
+<a class="reference external" href="https://jasper-software.github.io/jasper/">https://jasper-software.github.io/jasper/</a> to read and write the
+JPEG-2000 format.  Due to security concerns, using the latest
+version of JasPer (3.0.0 or later) is recommended.</p>
 </li>
 <li><p class="first">On Unix-type systems, Windows/MinGW, and Windows/Cygwin,
 GraphicsMagick requires libltdl from libtool in order to support

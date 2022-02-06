@@ -1,5 +1,11 @@
 2022-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * README.txt: Recomend using JasPer 3.0.0 (or later).
+
+        * VisualMagick/magick/magick_config.h.in: Disable building with
+        bundled JasPer sources by default since the bundled sources are
+        archaic.
+
         * coders/jp2.c: Fix compilation with JasPer 3.0.0 (which is now
         released).
 
