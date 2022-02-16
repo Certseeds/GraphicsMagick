@@ -102,7 +102,8 @@ make install
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the
 # maximum extent possible.
-MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a"
+MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/libz.a"
+# Removed $WORK/lib/liblzma.a from above list (was before libz)
 
 echo "=== Building fuzzers..."
 for f in fuzzing/*_fuzzer.cc; do
