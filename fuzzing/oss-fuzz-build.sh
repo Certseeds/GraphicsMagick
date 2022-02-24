@@ -14,7 +14,7 @@ popd
 # build xz
 #echo "=== Building xz..."
 pushd "$SRC/xz"
-./autogen.sh --no-po4a
+./autogen.sh
 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-l#zma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
 make -j$(nproc)
 make install
