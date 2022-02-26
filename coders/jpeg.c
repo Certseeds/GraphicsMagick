@@ -1601,6 +1601,22 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_destroy_decompress(&jpeg_info);
         ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
+
+  /*
+    Store profiles in image.
+  */
+  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+    {
+      ProfileInfo *profile=&client_data->profiles[i];
+      if (!profile->name)
+        continue;
+      if (!profile->length)
+        continue;
+      if (!profile->info)
+        continue;
+      (void) SetImageProfile(image,profile->name,profile->info,profile->length);
+    }
+
   if (image_info->ping)
     {
       jpeg_destroy_decompress(&jpeg_info);
@@ -1842,22 +1858,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     }
   jpeg_destroy_decompress(&jpeg_info);
   MagickFreeResourceLimitedMemory(jpeg_pixels);
-
-  /*
-    Store profiles in image.
-  */
-  for (i=0 ; i < ArraySize(client_data->profiles); i++)
-    {
-      ProfileInfo *profile=&client_data->profiles[i];
-      if (!profile->name)
-        continue;
-      if (!profile->length)
-        continue;
-      if (!profile->info)
-        continue;
-      (void) SetImageProfile(image,profile->name,profile->info,profile->length);
-    }
-
   client_data=FreeMagickClientData(client_data);
   CloseBlob(image);
 

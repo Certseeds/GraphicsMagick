@@ -1,5 +1,10 @@
 2022-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jpeg.c (ReadJPEGImage): Store embedded profiles in image,
+        even if in 'ping' mode.  This addresses a problem discovered when
+        interfacing with minimagick (Debian bug #1006374 "graphicsmagick
+        breaks ruby-mini-magick").
+
         * coders/url.c (ReadURLImage): Deal with libxml2 not offering HTTP
         or FTP capabilities.  It seems that support for FTP has now been
         removed by default.
