@@ -91,6 +91,7 @@
 extern "C" {
 #endif
 
+#if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT
 static void GetFTPData(void *userdata,const char *data,int length)
 {
   FILE
@@ -103,6 +104,7 @@ static void GetFTPData(void *userdata,const char *data,int length)
     return;
   (void) fwrite(data,length,1,file);
 }
+#endif /* if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT */
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }
@@ -113,7 +115,6 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
 #define MaxBufferExtent  8192
 
   char
-    buffer[MaxBufferExtent],
     filename[MaxTextExtent];
 
   FILE
@@ -124,9 +125,6 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   ImageInfo
     *clone_info;
-
-  void
-    *context;
 
   ConfirmAccessMode
     access_mode=UndefinedConfirmAccessMode;
@@ -173,6 +171,13 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       if (LocaleCompare(clone_info->magick,"http") == 0)
         {
+#if defined(HAVE_XMLNANOHTTPOPEN) && HAVE_XMLNANOHTTPOPEN
+          char
+            buffer[MaxBufferExtent];
+
+          void
+            *context;
+
           char
             *type;
 
@@ -189,9 +194,14 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
               xmlFree(type);
               xmlNanoHTTPCleanup();
             }
+#endif /* if defined(HAVE_XMLNANOHTTPOPEN) && HAVE_XMLNANOHTTPOPEN */
         }
       else if (LocaleCompare(clone_info->magick,"ftp") == 0)
         {
+#if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT
+          void
+            *context;
+
           xmlNanoFTPInit();
           context=xmlNanoFTPNewCtxt(filename);
           if (context != (void *) NULL)
@@ -201,6 +211,7 @@ static Image *ReadURLImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                      (char *) NULL);
               (void) xmlNanoFTPClose(context);
             }
+#endif /* if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT */
         }
       (void) fclose(file);
       if (!IsAccessibleAndNotEmpty(clone_info->filename))
@@ -249,6 +260,7 @@ ModuleExport void RegisterURLImage(void)
   MagickInfo
     *entry;
 
+#if defined(HAVE_XMLNANOHTTPOPEN) && HAVE_XMLNANOHTTPOPEN
   entry=SetMagickInfo("HTTP");
   entry->decoder=(DecoderHandler) ReadURLImage;
   entry->description="Uniform Resource Locator (http://)";
@@ -256,7 +268,9 @@ ModuleExport void RegisterURLImage(void)
   entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if defined(HAVE_XMLNANOHTTPOPEN) && HAVE_XMLNANOHTTPOPEN */
 
+#if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT
   entry=SetMagickInfo("FTP");
   entry->decoder=(DecoderHandler) ReadURLImage;
   entry->description="Uniform Resource Locator (ftp://)";
@@ -264,6 +278,7 @@ ModuleExport void RegisterURLImage(void)
   entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT */
 
   entry=SetMagickInfo("FILE");
   entry->decoder=(DecoderHandler) ReadURLImage;

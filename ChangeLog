@@ -1,3 +1,9 @@
+2022-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/url.c (ReadURLImage): Deal with libxml2 not offering HTTP
+        or FTP capabilities.  It seems that support for FTP has now been
+        removed by default.
+
 2022-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * README.txt: Recomend using JasPer 3.0.0 (or later).

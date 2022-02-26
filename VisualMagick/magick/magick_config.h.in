@@ -229,5 +229,14 @@ $$QuantumDepth
 //
 // The remaining defines should not require user modification.
 //
+/* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
-#define HAVE_LCMS2_H 1  // Using LCMS2
+
+/* Define if you have the <lcms2.h> header file. */
+#define HAVE_LCMS2_H 1
+
+/* Define to 1 if you have the `xmlNanoFTPNewCtxt' function. */
+#define HAVE_XMLNANOFTPNEWCTXT 1
+
+/* Define to 1 if you have the `xmlNanoHTTPOpen' function. */
+#define HAVE_XMLNANOHTTPOPEN 1

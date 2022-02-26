@@ -393,6 +393,12 @@
 /* Define to 1 if you have the <wincrypt.h> header file. */
 #undef HAVE_WINCRYPT_H
 
+/* Define to 1 if you have the `xmlNanoFTPNewCtxt' function. */
+#undef HAVE_XMLNANOFTPNEWCTXT
+
+/* Define to 1 if you have the `xmlNanoHTTPOpen' function. */
+#undef HAVE_XMLNANOHTTPOPEN
+
 /* Define to 1 if you have the `_exit' function. */
 #undef HAVE__EXIT
 

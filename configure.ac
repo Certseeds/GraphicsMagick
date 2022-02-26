@@ -2779,6 +2779,8 @@ then
         AC_DEFINE([HasXML],[1],[Define if you have XML library])
         AC_MSG_RESULT([yes])
         have_xml='yes'
+        AC_CHECK_FUNCS([xmlNanoHTTPOpen \
+                        xmlNanoFTPNewCtxt])
     fi
     else
         AC_MSG_RESULT([no])
