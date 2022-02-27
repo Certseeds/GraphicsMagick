@@ -32,6 +32,9 @@
 #include "magick/utility.h"
 #include "magick/resource.h"
 
+/* Set to 1 to enable the currently non-functional progress monitor callbacks */
+#define HEIF_ENABLE_PROGRESS_MONITOR 0
+
 #if defined(HasHEIF)
 #include <libheif/heif.h>
 
@@ -116,7 +119,6 @@ static unsigned int IsHEIF(const unsigned char *magick,const size_t length)
     ThrowReaderException(code_,reason_,image_)         \
   }
 
-
 static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
                            Image *image, ExceptionInfo *exception)
 {
@@ -194,6 +196,74 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
   return image;
 }
 
+/*
+  This progress monitor implementation is tentative since it is not invoked
+
+  According to libheif issue 161
+  (https://github.com/strukturag/libheif/issues/161) progress monitor
+  does not actually work since the decoders it depends on do not
+  support it.
+
+  Libheif issue 546 (https://github.com/strukturag/libheif/pull/546)
+  suggests changing the return type of on_progress and start_progress
+  to "bool" so that one can implement cancelation support.
+ */
+typedef struct ProgressUserData_
+{
+  ExceptionInfo *exception;
+  Image *image;
+  enum heif_progress_step step;
+  unsigned long int progress;
+  unsigned long int max_progress;
+
+} ProgressUserData;
+
+#if HEIF_ENABLE_PROGRESS_MONITOR
+/* Called when progress monitor starts.  The 'max_progress' parameter indicates the maximum value of progress */
+static void start_progress(enum heif_progress_step step, int max_progress, void* progress_user_data)
+{
+  ProgressUserData *context= (ProgressUserData *) progress_user_data;
+  Image *image=context->image;
+  context->step = step;
+  context->progress = 0;
+  context->max_progress = max_progress;
+  if (context->image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "start_progress: step=%d, max_progress=%d",step, max_progress);
+  MagickMonitorFormatted(context->progress,context->max_progress,&image->exception,
+                         "[%s] Loading image: %lux%lu...  ",
+                         image->filename,
+                         image->columns,image->rows);
+}
+
+/* Called for each step of progress.  The 'progress' parameter represents the progress within the span of 'max_progress' */
+static void on_progress(enum heif_progress_step step, int progress, void* progress_user_data)
+{
+  ProgressUserData *context = (ProgressUserData *) progress_user_data;
+  Image *image=context->image;
+  context->step = step;
+  context->progress = progress;
+  if (context->image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "on_progress: step=%d, progress=%d",step, progress);
+  MagickMonitorFormatted(context->progress,context->max_progress,&image->exception,
+                         "[%s] Loading image: %lux%lu...  ",
+                         image->filename,
+                         image->columns,image->rows);
+}
+
+/* Called when progress monitor stops */
+static void end_progress(enum heif_progress_step step, void* progress_user_data)
+{
+  ProgressUserData *context = (ProgressUserData *) progress_user_data;
+  context->step = step;
+  if (context->image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "end_progress: step=%d",step);
+}
+
+#endif /* if HEIF_ENABLE_PROGRESS_MONITOR */
+
 static Image *ReadHEIFImage(const ImageInfo *image_info,
                             ExceptionInfo *exception)
 {
@@ -211,6 +281,12 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
 
   struct heif_image
     *heif_image = NULL;
+
+  struct heif_decoding_options
+    *decode_options;
+
+  ProgressUserData
+    progress_user_data;
 
   size_t
     in_len;
@@ -316,11 +392,41 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   if (CheckImagePixelLimits(image, exception) != MagickPass)
     ThrowHEIFReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
-  /* FIXME: Add decoding options support such as a progress monitor */
+  /* Add decoding options support */
+  decode_options = heif_decoding_options_alloc();
+  if (decode_options == (struct heif_decoding_options*) NULL)
+    ThrowHEIFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+  progress_user_data.exception = exception;
+  progress_user_data.image = image;
+  progress_user_data.max_progress = 0;
+  progress_user_data.progress = 0;
+
+  /* version 1 options */
+  decode_options->ignore_transformations = 0;
+#if HEIF_ENABLE_PROGRESS_MONITOR
+  decode_options->start_progress = start_progress;
+  decode_options->on_progress = on_progress;
+  decode_options->end_progress = end_progress;
+#endif /* if HEIF_ENABLE_PROGRESS_MONITOR */
+  decode_options->progress_user_data = &progress_user_data;
+
+  /* version 2 options */
+#if LIBHEIF_NUMERIC_VERSION > 0x01070000
+  decode_options->convert_hdr_to_8bit = 1;
+#endif /* if LIBHEIF_NUMERIC_VERSION > 0x01070000 */
+
+  /* version 3 options */
+
+  /* When enabled, an error is returned for invalid input. Otherwise, it will try its best and
+     add decoding warnings to the decoded heif_image. Default is non-strict. */
+  /* uint8_t strict_decoding; */
+
   heif_status=heif_decode_image(heif_image_handle, &heif_image,
                                 heif_colorspace_RGB, image->matte ? heif_chroma_interleaved_RGBA :
                                 heif_chroma_interleaved_RGB,
-                                /* const struct heif_decoding_options* */ NULL );
+                                decode_options);
+  heif_decoding_options_free(decode_options);
   if (heif_status.code == heif_error_Memory_allocation_error)
     ThrowHEIFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   if (heif_status.code != heif_error_Ok)

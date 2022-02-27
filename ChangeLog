@@ -1,5 +1,10 @@
 2022-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/heif.c (ReadHEIFImage): Pass decode options to
+        heif_decode_image().  Include rough implementation of progress
+        monitor support but leave it disabled since libheif does not
+        currently invoke the callbacks.
+
         * coders/jpeg.c (ReadJPEGImage): Store embedded profiles in image,
         even if in 'ping' mode.  This addresses a problem discovered when
         interfacing with minimagick (Debian bug #1006374 "graphicsmagick
