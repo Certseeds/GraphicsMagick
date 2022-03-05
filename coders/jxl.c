@@ -24,6 +24,7 @@
 */
 
 #include "magick/studio.h"
+#include "magick/analyze.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/log.h"
@@ -41,6 +42,9 @@
 #include <jxl/thread_parallel_runner.h>
 
 #define MaxBufferExtent 16384
+
+/* Enable use of functions which produce deprecation warnings */
+#define ENABLE_DEPRECATED 0
 
 struct MyJXLMemoryManager {
   JxlMemoryManager super;
@@ -128,17 +132,17 @@ static inline OrientationType convert_orientation(JxlOrientation orientation)
 }
 
 #define FOR_PIXEL_PACKETS \
-  for (y=0; y < (long)image->rows; y++) \
-    { \
-      q=SetImagePixelsEx(image,0,y,image->columns,1,exception); \
-      if (q == (PixelPacket *) NULL) \
-        return MagickFail; \
-      for (x=0; x < (long)image->columns; x++)
+  for (y=0; y < (long)image->rows; y++)                              \
+    {                                                                \
+       q=SetImagePixelsEx(image,0,y,image->columns,1,exception);     \
+       if (q == (PixelPacket *) NULL)                                \
+         return MagickFail;                                          \
+       for (x=0; x < (long)image->columns; x++)
 
 #define END_FOR_PIXEL_PACKETS      \
       if (!SyncImagePixels(image)) \
-        return MagickFail; \
-    } \
+        return MagickFail;         \
+    }                              \
 
 static MagickBool fill_pixels_char(Image *image,
                                    ExceptionInfo *exception,
@@ -347,18 +351,20 @@ static MagickBool fill_pixels_char_linear(Image *image,
   return MagickTrue;
 }
 
-#define JXLReadCleanup() \
-  if (jxl_thread_runner) JxlThreadParallelRunnerDestroy(jxl_thread_runner); \
-  if (jxl) JxlDecoderDestroy(jxl); \
-  MagickFreeResourceLimitedMemory(in_buf); \
-  MagickFreeResourceLimitedMemory(out_buf) \
+#define JXLReadCleanup()                                \
+  MagickFreeResourceLimitedMemory(out_buf);             \
+  MagickFreeResourceLimitedMemory(in_buf);              \
+  if (jxl_thread_runner)                                \
+    JxlThreadParallelRunnerDestroy(jxl_thread_runner);  \
+  if (jxl)                                              \
+    JxlDecoderDestroy(jxl);
 
 
-#define ThrowJXLReaderException(code_,reason_,image_) \
-{ \
-  JXLReadCleanup();                           \
-  ThrowReaderException(code_,reason_,image_); \
-}
+#define ThrowJXLReaderException(code_,reason_,image_)   \
+  {                                                     \
+    JXLReadCleanup();                                   \
+    ThrowReaderException(code_,reason_,image_);         \
+  }
 
 static Image *ReadJXLImage(const ImageInfo *image_info,
                            ExceptionInfo *exception)
@@ -381,7 +387,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   struct MyJXLMemoryManager
     mm;
 
-  size_t
+  const size_t
     in_len = MaxBufferExtent;
 
   unsigned char
@@ -640,7 +646,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                   }
               }
             else if (format.data_type == JXL_TYPE_UINT8)
-              res=fill_pixels_char_grayscale(image, exception, out_buf);
+              {
+                res=fill_pixels_char_grayscale(image, exception, out_buf);
+              }
 
             if (!res)
               status=JXL_DEC_ERROR;
@@ -695,7 +703,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
 #define JXLWriteCleanup() \
   if (jxl_thread_runner) JxlThreadParallelRunnerDestroy(jxl_thread_runner); \
-  if (jxl) JxlEncoderDestroy(jxl); \
+  if (jxl_encoder) JxlEncoderDestroy(jxl_encoder); \
   MagickFreeResourceLimitedMemory(in_buf); \
   MagickFreeResourceLimitedMemory(out_buf); \
 
@@ -712,13 +720,18 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     status;
 
   JxlEncoder
-    *jxl = NULL;
+    *jxl_encoder = NULL;
 
+#if  ENABLE_DEPRECATED
   JxlEncoderOptions
     *encoder_options;
+#endif
 
   void
     *jxl_thread_runner = NULL;
+
+  JxlEncoderFrameSettings
+    *frame_settings = NULL; /* Deallocated when encoder is destroyed with JxlEncoderDestroy() */
 
   JxlEncoderStatus
     jxl_status;
@@ -727,10 +740,10 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     basic_info;
 
   struct MyJXLMemoryManager
-    mm;
+    memory_manager;
 
-  const char
-    *value;
+  ImageCharacteristics
+    characteristics;
 
   size_t
     size_row;
@@ -739,21 +752,47 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     *in_buf = NULL,
     *out_buf = NULL;
 
-  MagickBool
-    grayscale = MagickFalse;
-
- JxlPixelFormat
-    format;
+  JxlPixelFormat
+    pixel_format;
 
   JxlColorEncoding
     color_encoding = {};
 
-  memset(&format,0,sizeof(format));
+  memset(&pixel_format,0,sizeof(pixel_format));
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
+
+  /*
+    Ensure that image is in desired output space
+  */
+  if ((image_info->type != UndefinedType) &&
+      (image_info->type != OptimizeType))
+    (void) SetImageType(image,image_info->type);
+  else if (!IsCMYKColorspace(image->colorspace) &&
+           (!IsRGBColorspace(image->colorspace)))
+    (void) TransformColorspace(image,RGBColorspace);
+
+  /*
+    Analyze image to be written.
+  */
+  if (!GetImageCharacteristics(image,&characteristics,
+                               (OptimizeType == image_info->type),
+                               &image->exception))
+    {
+      return MagickFail;
+    }
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Image characteristics: cmyk=%c, gray=%c, mono=%c,"
+                        " opaque=%c, palette=%c",
+                        (characteristics.cmyk ? 'y' : 'n'),
+                        (characteristics.grayscale ? 'y' : 'n'),
+                        (characteristics.monochrome ? 'y' : 'n'),
+                        (characteristics.opaque ? 'y' : 'n'),
+                        (characteristics.palette ? 'y' : 'n'));
 
   /*
     Open output image file.
@@ -763,68 +802,100 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   /* Init JXL-Decoder handles */
-  MyJxlMemoryManagerInit(&mm,image,&image->exception);
-  jxl=JxlEncoderCreate(&mm.super);
-  if (jxl == (JxlEncoder *) NULL)
+  MyJxlMemoryManagerInit(&memory_manager,image,&image->exception);
+  jxl_encoder=JxlEncoderCreate(&memory_manager.super);
+  if (jxl_encoder == (JxlEncoder *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(
-    ThreadsResource));
+  jxl_thread_runner=
+    JxlThreadParallelRunnerCreate(NULL,
+                                  (size_t) GetMagickResourceLimit(ThreadsResource));
   if (jxl_thread_runner == (void *) NULL)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  if (JxlEncoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
-        != JXL_ENC_SUCCESS)
+  if (JxlEncoderSetParallelRunner(jxl_encoder, JxlThreadParallelRunner, jxl_thread_runner)
+      != JXL_ENC_SUCCESS)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  grayscale = IsGrayColorspace(image_info->colorspace);
-  if (grayscale)
-    format.num_channels = 1;
+  if (characteristics.grayscale)
+    pixel_format.num_channels = 1;
   else
     {
-      (void) TransformColorspace(image,RGBColorspace);
       image->storage_class=DirectClass;
-      format.num_channels = image->matte ? 4 : 3;
+      pixel_format.num_channels = characteristics.opaque ? 3 : 4;
     }
   if (image->depth <= 8)
-    format.data_type = JXL_TYPE_UINT8;
+    pixel_format.data_type = JXL_TYPE_UINT8;
   else if (image->depth <= 16)
-    format.data_type = JXL_TYPE_UINT16;
+    pixel_format.data_type = JXL_TYPE_UINT16;
   else if (image->depth <= 32)
-    format.data_type = JXL_TYPE_FLOAT;
+    pixel_format.data_type = JXL_TYPE_UINT32;
   else
     ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
 
+
+  /* Initialize JxlBasicInfo struct to default values. */
   JxlEncoderInitBasicInfo(&basic_info);
+  /* Width of the image in pixels, before applying orientation. */
   basic_info.xsize = image->columns;
+  /* Height of the image in pixels, before applying orientation. */
   basic_info.ysize = image->rows;
+
+  /* JXL_TYPE_FLOAT requires a nominal range of 0 to 1 */
+
+  if (pixel_format.data_type == JXL_TYPE_UINT8)
+    basic_info.bits_per_sample = 8;
+  else if (pixel_format.data_type == JXL_TYPE_UINT16)
+    basic_info.bits_per_sample = 16;
+  else if ((pixel_format.data_type == JXL_TYPE_UINT32) || (pixel_format.data_type == JXL_TYPE_FLOAT))
+    basic_info.bits_per_sample = 32;
+
+  pixel_format.endianness = JXL_NATIVE_ENDIAN;
+  pixel_format.align = 0;
+
+  if (pixel_format.data_type == JXL_TYPE_FLOAT)
+    basic_info.exponent_bits_per_sample = 8;
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Using %u bits per sample", basic_info.bits_per_sample);
+
+#if 0
   if (image->depth == 8)
+    /* Original image color channel bit depth. */
     basic_info.bits_per_sample = 8;
   else
     {
+      /* FIXME: It seems that JXL_TYPE_UINT16/JXL_TYPE_UINT32 should be used and no floating point */
+      /* Original image color channel bit depth. */
       basic_info.bits_per_sample=32;
+      /* Original image color channel floating point exponent bits, or
+         0 if they are unsigned integer. */
       basic_info.exponent_bits_per_sample=8;
     }
-  if (image->matte)
+#endif
+  if (!characteristics.opaque)
     basic_info.alpha_bits=basic_info.bits_per_sample;
 
-  if ((jxl_status = JxlEncoderSetBasicInfo(jxl,&basic_info)) != JXL_ENC_SUCCESS)
+  /* Set the global metadata of the image encoded by this encoder. */
+  if ((jxl_status = JxlEncoderSetBasicInfo(jxl_encoder,&basic_info)) != JXL_ENC_SUCCESS)
     {
       /* TODO better error codes */
       if (jxl_status == JXL_ENC_ERROR)
         ThrowJXLWriterException(CoderError,NoDataReturned,image)
-      else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
-        ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image)
-      else
-        ThrowJXLWriterException(CoderFatalError,Default,image)
-    }
+        else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
+          ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image)
+          else
+            ThrowJXLWriterException(CoderFatalError,Default,image)
+              }
 
   /* Set expected input colorspace */
+  /* FIXME: For RGB we want to set JXL_COLOR_SPACE_RGB and for gray we want JXL_COLOR_SPACE_GRAY */
   basic_info.uses_original_profile = JXL_TRUE;
-  JxlColorEncodingSetToSRGB(&color_encoding, /*is_gray=*/format.num_channels < 3);
-  if (JxlEncoderSetColorEncoding(jxl, &color_encoding) != JXL_ENC_SUCCESS)
-      ThrowJXLWriterException(CoderFatalError,Default,image)
+  JxlColorEncodingSetToSRGB(&color_encoding, pixel_format.num_channels < 3);
+  if (JxlEncoderSetColorEncoding(jxl_encoder, &color_encoding) != JXL_ENC_SUCCESS)
+    ThrowJXLWriterException(CoderFatalError,Default,image)
 
-  encoder_options=JxlEncoderOptionsCreate(jxl,(JxlEncoderOptions *) NULL);
+#if  ENABLE_DEPRECATED
+      encoder_options=JxlEncoderOptionsCreate(jxl_encoder,(JxlEncoderOptions *) NULL);
   if (encoder_options == (JxlEncoderOptions *) NULL)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
   if (image_info->quality == 100)
@@ -834,54 +905,152 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       /* same as cjxl.c: roughly similar to jpeg-quality for range 1-99 */
       if (image_info->quality >= 30) {
         JxlEncoderOptionsSetDistance(encoder_options,
-            0.1 + (100 - image_info->quality) * 0.09);
+                                     0.1 + (100 - image_info->quality) * 0.09);
       } else {
         JxlEncoderOptionsSetDistance(encoder_options,
-            6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f);
+                                     6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f);
       }
     }
-  if ((value=AccessDefinition(image_info,"jxl","effort")))
-    JxlEncoderOptionsSetEffort(encoder_options, MagickAtoI(value));
-  if ((value=AccessDefinition(image_info,"jxl","decodingspeed")))
-    JxlEncoderOptionsSetDecodingSpeed(encoder_options, MagickAtoI(value));
+  {
+    const char
+      *value;
+
+    if ((value=AccessDefinition(image_info,"jxl","effort")))
+      JxlEncoderOptionsSetEffort(encoder_options, MagickAtoI(value)); /* FIXME: deprecated */
+  }
+  {
+    const char
+      *value;
+
+    if ((value=AccessDefinition(image_info,"jxl","decodingspeed")))
+      JxlEncoderOptionsSetDecodingSpeed(encoder_options, MagickAtoI(value)); /* FIXME: deprecated */
+  }
+#endif /* if ENABLE_DEPRECATED */
+
+  frame_settings = JxlEncoderFrameSettingsCreate(jxl_encoder, NULL);
+  if (image_info->quality == 100)
+    {
+      if (JxlEncoderSetFrameLossless(frame_settings,JXL_TRUE) != JXL_ENC_SUCCESS)
+        ThrowJXLWriterException(CoderFatalError,Default,image);
+    }
+  else
+    {
+      /* same as cjxl.c: roughly similar to jpeg-quality for range 1-99 */
+      if (image_info->quality >= 30)
+        {
+          if (JxlEncoderSetFrameDistance(frame_settings,
+                                         0.1 + (100 - image_info->quality) * 0.09) != JXL_ENC_SUCCESS)
+            ThrowJXLWriterException(CoderFatalError,Default,image);
+        }
+      else
+        {
+          if (JxlEncoderSetFrameDistance(frame_settings,
+                                         6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f) != JXL_ENC_SUCCESS)
+            ThrowJXLWriterException(CoderFatalError,Default,image);
+        }
+    }
+  /*
+    Handle key/value for settings handled by JxlEncoderFrameSettingsSetOption()
+  */
+  {
+    static const struct
+    {
+      const char key[14];
+      JxlEncoderFrameSettingId fs_id;
+    } int_frame_settings[]
+        =
+        {
+         { "effort", JXL_ENC_FRAME_SETTING_EFFORT },
+         { "decodingspeed", JXL_ENC_FRAME_SETTING_DECODING_SPEED },
+        };
+
+    unsigned int
+      index;
+
+    for (index = 0; index < ArraySize(int_frame_settings); index++)
+      {
+        const char *key = int_frame_settings[index].key;
+        const char *value;
+        if ((value=AccessDefinition(image_info,"jxl",key)))
+          {
+            int int_value =  MagickAtoI(value);
+            if (JxlEncoderFrameSettingsSetOption(frame_settings, int_frame_settings[index].fs_id, int_value) != JXL_ENC_SUCCESS)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "JXL does not support \"%s\" frame setting!", key);
+            else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Set \"%s\" to %d", key, int_value);
+          }
+      }
+  }
 
   /* get & fill pixel buffer */
-  size_row=image->columns * format.num_channels *
-    ((format.data_type == JXL_TYPE_FLOAT) ? sizeof(float) : sizeof(char));
+  size_row=image->columns * pixel_format.num_channels * (basic_info.bits_per_sample/8);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "size_row = %zu", size_row);
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,image->rows,size_row);
   if (in_buf == (unsigned char *) NULL)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "DispatchImage(0,0,%lu,%lu, %s)",
+                        image->columns,image->rows,
+                        characteristics.grayscale ? "I" : (characteristics.opaque ? "RGB" : "RGBA"));
+
   status=DispatchImage(image,0,0,image->columns,image->rows,
-    grayscale ? "I" : (image->matte ? "RGBA" : "RGB"),
-    format.data_type ==  JXL_TYPE_UINT8 ? CharPixel : ShortPixel,
-    in_buf,&image->exception);
+                       characteristics.grayscale ? "I" : (image->matte ? "RGBA" : "RGB"),
+                       basic_info.bits_per_sample == 8 ? CharPixel :
+                       (basic_info.bits_per_sample == 16 ? ShortPixel :
+                        basic_info.bits_per_sample == LongPixel),
+                       in_buf,&image->exception);
   if (status == MagickFail)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
   /* real encode */
-  if (JxlEncoderAddImageFrame(encoder_options,&format,in_buf,
-    image->rows * size_row) != JXL_ENC_SUCCESS)
+  if (JxlEncoderAddImageFrame(frame_settings,&pixel_format,in_buf,
+                              image->rows * size_row) != JXL_ENC_SUCCESS)
     /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
+#if 0
+  /* From examples/encode_oneshot.cc */
+  compressed->resize(64);
+  uint8_t* next_out = compressed->data();
+  size_t avail_out = compressed->size() - (next_out - compressed->data());
+  JxlEncoderStatus process_result = JXL_ENC_NEED_MORE_OUTPUT;
+  while (process_result == JXL_ENC_NEED_MORE_OUTPUT) {
+    process_result = JxlEncoderProcessOutput(enc.get(), &next_out, &avail_out);
+    if (process_result == JXL_ENC_NEED_MORE_OUTPUT) {
+      size_t offset = next_out - compressed->data();
+      compressed->resize(compressed->size() * 2);
+      next_out = compressed->data() + offset;
+      avail_out = compressed->size() - offset;
+    }
+  }
+  compressed->resize(next_out - compressed->data());
+#endif
 
   out_buf=MagickAllocateResourceLimitedArray(unsigned char *,MaxBufferExtent,sizeof(*out_buf));
   if (out_buf == (unsigned char *) NULL)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
   jxl_status=JXL_ENC_NEED_MORE_OUTPUT;
-
   while (jxl_status == JXL_ENC_NEED_MORE_OUTPUT)
     {
       size_t
-        count;
+        avail_out,
+        write_out;
 
       unsigned char
-        *p;
+        *next_out;
 
-      count=MaxBufferExtent;
-      p=out_buf;
-      jxl_status=JxlEncoderProcessOutput(jxl,&p,&count);
-      (void) WriteBlob(image,MaxBufferExtent-count,out_buf);
+      avail_out=MaxBufferExtent;
+      next_out=out_buf;
+      /* fprintf(stderr,"Before: next_out=%p, avail_out=%zu\n", next_out, avail_out); */
+      jxl_status=JxlEncoderProcessOutput(jxl_encoder,&next_out,&avail_out);
+      write_out=next_out-out_buf;
+      /* fprintf(stderr,"After: next_out=%p, avail_out=%zu, write_out=%zu\n", next_out, avail_out, write_out); */
+
+      if (WriteBlob(image,write_out,out_buf) != write_out)
+        ThrowJXLWriterException(BlobError,UnableToWriteBlob,image);
     }
   if (jxl_status != JXL_ENC_SUCCESS)
     /* TODO Better Error-code? */

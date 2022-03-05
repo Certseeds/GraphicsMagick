@@ -310,6 +310,10 @@ Optional Packages/Options
 
     disable JPEG v2 support
 
+--with-jxl
+
+    enable JPEG-XL support
+
 --without-jpeg
 
     disable JPEG support
@@ -812,6 +816,24 @@ Several configure options require special note:
   library, which is more performant in multi-threaded programs than
   the default libc memory allocator, and more performant in
   multi-threaded programs than umem, but is less memory efficient.
+
+JPEG XL
+-------
+
+JPEG XL seems to be a work in progress.  For development testing with
+it we build it as described on its git page
+(https://github.com/libjxl/libjxl), but configure and build it like::
+
+  git clone https://github.com/libjxl/libjxl.git --recursive --shallow-submodules
+  cd ./libjxl
+  mkdir build
+  cd ./build
+  export CC=clang-12 CXX=clang++-12
+  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local ..
+  cmake --build . -- -j$(nproc)
+  make test
+  [ check for 100% tests passed ]
+  make install
 
 Popular Distribution Packages
 -----------------------------

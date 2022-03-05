@@ -394,3 +394,6 @@ building under Microsoft Windows:
   software patents.  The user is responsible for assuring that some
   entity has paid to allow use of any applicable HEVC patents on their
   device, or that the patents do not apply in their country.
+
+* GraphicsMagick requires the JPEG XL library from
+  https://github.com/libjxl/libjxl to read and write JPEG XL files.

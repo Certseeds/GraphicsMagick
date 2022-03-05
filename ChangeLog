@@ -1,3 +1,8 @@
+2022-03-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jxl.c (WriteJXLImage): Work to update JXL writer code to
+        compile clean with libjxl v0.7.0.  Still not working!
+
 2022-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/heif.c (ReadHEIFImage): Pass decode options to
