@@ -43,9 +43,6 @@
 
 #define MaxBufferExtent 16384
 
-/* Enable use of functions which produce deprecation warnings */
-#define ENABLE_DEPRECATED 0
-
 struct MyJXLMemoryManager {
   JxlMemoryManager super;
   ExceptionInfo *exception;
@@ -722,11 +719,6 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   JxlEncoder
     *jxl_encoder = NULL;
 
-#if  ENABLE_DEPRECATED
-  JxlEncoderOptions
-    *encoder_options;
-#endif
-
   void
     *jxl_thread_runner = NULL;
 
@@ -828,10 +820,9 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   else if (image->depth <= 16)
     pixel_format.data_type = JXL_TYPE_UINT16;
   else if (image->depth <= 32)
-    pixel_format.data_type = JXL_TYPE_UINT32;
+    pixel_format.data_type = JXL_TYPE_UINT16; /* JXL_TYPE_UINT32; */
   else
     ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
-
 
   /* Initialize JxlBasicInfo struct to default values. */
   JxlEncoderInitBasicInfo(&basic_info);
@@ -858,20 +849,6 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Using %u bits per sample", basic_info.bits_per_sample);
 
-#if 0
-  if (image->depth == 8)
-    /* Original image color channel bit depth. */
-    basic_info.bits_per_sample = 8;
-  else
-    {
-      /* FIXME: It seems that JXL_TYPE_UINT16/JXL_TYPE_UINT32 should be used and no floating point */
-      /* Original image color channel bit depth. */
-      basic_info.bits_per_sample=32;
-      /* Original image color channel floating point exponent bits, or
-         0 if they are unsigned integer. */
-      basic_info.exponent_bits_per_sample=8;
-    }
-#endif
   if (!characteristics.opaque)
     basic_info.alpha_bits=basic_info.bits_per_sample;
 
@@ -893,39 +870,6 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   JxlColorEncodingSetToSRGB(&color_encoding, pixel_format.num_channels < 3);
   if (JxlEncoderSetColorEncoding(jxl_encoder, &color_encoding) != JXL_ENC_SUCCESS)
     ThrowJXLWriterException(CoderFatalError,Default,image)
-
-#if  ENABLE_DEPRECATED
-      encoder_options=JxlEncoderOptionsCreate(jxl_encoder,(JxlEncoderOptions *) NULL);
-  if (encoder_options == (JxlEncoderOptions *) NULL)
-    ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  if (image_info->quality == 100)
-    JxlEncoderOptionsSetLossless(encoder_options,JXL_TRUE);
-  else
-    {
-      /* same as cjxl.c: roughly similar to jpeg-quality for range 1-99 */
-      if (image_info->quality >= 30) {
-        JxlEncoderOptionsSetDistance(encoder_options,
-                                     0.1 + (100 - image_info->quality) * 0.09);
-      } else {
-        JxlEncoderOptionsSetDistance(encoder_options,
-                                     6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f);
-      }
-    }
-  {
-    const char
-      *value;
-
-    if ((value=AccessDefinition(image_info,"jxl","effort")))
-      JxlEncoderOptionsSetEffort(encoder_options, MagickAtoI(value)); /* FIXME: deprecated */
-  }
-  {
-    const char
-      *value;
-
-    if ((value=AccessDefinition(image_info,"jxl","decodingspeed")))
-      JxlEncoderOptionsSetDecodingSpeed(encoder_options, MagickAtoI(value)); /* FIXME: deprecated */
-  }
-#endif /* if ENABLE_DEPRECATED */
 
   frame_settings = JxlEncoderFrameSettingsCreate(jxl_encoder, NULL);
   if (image_info->quality == 100)
@@ -1010,23 +954,6 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
                               image->rows * size_row) != JXL_ENC_SUCCESS)
     /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
-#if 0
-  /* From examples/encode_oneshot.cc */
-  compressed->resize(64);
-  uint8_t* next_out = compressed->data();
-  size_t avail_out = compressed->size() - (next_out - compressed->data());
-  JxlEncoderStatus process_result = JXL_ENC_NEED_MORE_OUTPUT;
-  while (process_result == JXL_ENC_NEED_MORE_OUTPUT) {
-    process_result = JxlEncoderProcessOutput(enc.get(), &next_out, &avail_out);
-    if (process_result == JXL_ENC_NEED_MORE_OUTPUT) {
-      size_t offset = next_out - compressed->data();
-      compressed->resize(compressed->size() * 2);
-      next_out = compressed->data() + offset;
-      avail_out = compressed->size() - offset;
-    }
-  }
-  compressed->resize(next_out - compressed->data());
-#endif
 
   out_buf=MagickAllocateResourceLimitedArray(unsigned char *,MaxBufferExtent,sizeof(*out_buf));
   if (out_buf == (unsigned char *) NULL)
