@@ -79,11 +79,11 @@ make -j$(nproc)
 make install
 popd
 
-pushd "$SRC/libxml2"
-./autogen.sh --disable-shared --without-debug --without-legacy --without-python --prefix="${WORK}"
-make -j$(nproc)
-make install
-popd
+#pushd "$SRC/libxml2"
+#./autogen.sh --disable-shared --without-debug --without-legacy --without-python --prefix="${WORK}"
+#make -j$(nproc)
+#make install
+#popd
 
 pushd "$SRC/jasper"
 cmake -G "Unix Makefiles" -H. -Bstaging -DJAS_ENABLE_SHARED=false -DCMAKE_INSTALL_PREFIX=$WORK #-DJAS_INCLUDE_BMP_CODEC=false -DJAS_INCLUDE_JPG_CODEC=false -DJAS_INCLUDE_MIF_CODEC=false -DJAS_INCLUDE_PNM_CODEC=false -DJAS_INCLUDE_RAS_CODEC=false -DJAS_ENABLE_OPENGL=false -DJAS_ENABLE_LIBJPEG=false -DJAS_ENABLE_OPENGL=false -DJAS_ENABLE_LIBHEIF=false
