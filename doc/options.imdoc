@@ -180,7 +180,7 @@ encryption.  Encrypting images being written is not supported.</pp>
 
 <!-- ------------ -auto-orient ------------------------------------- -->
 
-<utils apps=convert,mogrify>
+<utils apps=compare,convert,mogrify>
 <dopt>-auto-orient</opt>
 
 <abs>orient (rotate) image so it is upright</abs>

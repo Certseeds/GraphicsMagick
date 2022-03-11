@@ -1,3 +1,9 @@
+2022-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/command.c (CompareImageCommand): Add -auto-orient support
+        to 'compare'.  This tries to assure that the two images are right
+        side up before comparing.
+
 2022-03-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jxl.c (WriteJXLImage): Work to update JXL writer code to

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2309,6 +2309,9 @@ CompareImageCommand(ImageInfo *image_info,
   register long
     i;
 
+  MagickBool
+    auto_orient = MagickFalse;
+
   unsigned int
     status;
 
@@ -2396,6 +2399,11 @@ CompareImageCommand(ImageInfo *image_info,
                   ThrowCompareException(OptionError,MissingArgument,option);
                 (void) CloneString(&image_info->authenticate,argv[i]);
               }
+            break;
+          }
+        if (LocaleCompare("auto-orient",option+1) == 0)
+          {
+            auto_orient = MagickTrue;
             break;
           }
         ThrowCompareException(OptionError,UnrecognizedOption,option);
@@ -2779,6 +2787,7 @@ CompareImageCommand(ImageInfo *image_info,
   /*
     Apply any user settings to images prior to compare.
   */
+
   if (image_info->type != UndefinedType)
     {
       (void) SetImageType(reference_image,image_info->type);
@@ -2789,6 +2798,36 @@ CompareImageCommand(ImageInfo *image_info,
     {
       (void) TransformColorspace(reference_image,image_info->colorspace);
       (void) TransformColorspace(compare_image,image_info->colorspace);
+    }
+
+  if (auto_orient)
+    {
+      if (reference_image->orientation != UndefinedOrientation &&
+          reference_image->orientation != TopLeftOrientation)
+        {
+          Image
+            *orient_image;
+
+          orient_image = AutoOrientImage(reference_image,reference_image->orientation,exception);
+          if (orient_image != (Image *) NULL)
+            {
+              DestroyImageList(reference_image);
+              reference_image = orient_image;
+            }
+        }
+      if (compare_image->orientation != UndefinedOrientation &&
+          compare_image->orientation != TopLeftOrientation)
+        {
+          Image
+            *orient_image;
+
+          orient_image = AutoOrientImage(compare_image,compare_image->orientation,exception);
+          if (orient_image != (Image *) NULL)
+            {
+              DestroyImageList(compare_image);
+              compare_image = orient_image;
+            }
+        }
     }
 
   /*
@@ -2928,6 +2967,7 @@ static void CompareUsage(void)
   (void) puts("");
   (void) puts("Where options include:");
   (void) puts("  -authenticate value  decrypt image with this password");
+  (void) puts("  -auto-orient         orient (rotate) images so they are upright");
   (void) puts("  -colorspace type     alternate image colorspace");
   (void) puts("  -compress type       image compression type");
   (void) puts("  -debug events        display copious debugging information");
