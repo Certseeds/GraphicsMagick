@@ -1,5 +1,9 @@
 2022-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * coders/jxl.c (WriteJXLImage): Call JxlEncoderCloseInput() so
+        that encoder output is not corrupt.  JXL passes testsuite tests
+        now!
+
         * magick/command.c (CompareImageCommand): Add -auto-orient support
         to 'compare'.  This tries to assure that the two images are right
         side up before comparing.

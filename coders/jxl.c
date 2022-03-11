@@ -12,7 +12,7 @@
 %                                   J   X   L                                 %
 %                                 JJJ  X X  LLL                               %
 %                                                                             %
-%                     Read/Write Google JPEG-XL Image Format.                 %
+%                        Read/Write JPEG-XL Image Format.                     %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -954,6 +954,11 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
                               image->rows * size_row) != JXL_ENC_SUCCESS)
     /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
+
+  /* Close any input to the encoder. No further input of any kind may
+     be given to the encoder, but further JxlEncoderProcessOutput
+     calls should be done to create the final output. */
+  JxlEncoderCloseInput(jxl_encoder);
 
   out_buf=MagickAllocateResourceLimitedArray(unsigned char *,MaxBufferExtent,sizeof(*out_buf));
   if (out_buf == (unsigned char *) NULL)
